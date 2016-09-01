@@ -1,0 +1,11 @@
+*.pyc
+*.log
+*.old
+*.out
+*.~
+*~
+*.user
+
+build*
+install*
+buildenv*
