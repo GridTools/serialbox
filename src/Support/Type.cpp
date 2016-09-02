@@ -16,7 +16,7 @@
 
 namespace serialbox {
 
-std::string to_string(TypeID id) {
+std::string TypeUtil::toString(TypeID id) {
   switch(id) {
   case TypeID::Boolean:
     return std::string("bool");
@@ -28,11 +28,22 @@ std::string to_string(TypeID id) {
     return std::string("float");
   case TypeID::Float64:
     return std::string("double");
-  case TypeID::String:
-    return std::string("string");
-  default:
-    return std::string("unknown");
   }
+  //  serialbox_unreachable("TypeID <Invalid>");
+}
+
+int TypeUtil::sizeOf(TypeID id) noexcept {
+  switch(id) {
+  case TypeID::Boolean:
+    return 1;
+  case TypeID::Float32:
+  case TypeID::Int32:
+    return 4;
+  case TypeID::Int64:
+  case TypeID::Float64:
+    return 8;
+  }
+  //  serialbox_unreachable("TypeID <Invalid>");
 }
 
 } // namespace serialbox

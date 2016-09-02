@@ -22,7 +22,21 @@ namespace serialbox {
 
 /// \enum TypeID
 /// \brief Type id of types recognized by serialbox
-enum class TypeID : std::uint8_t { Invalid = 0, Boolean, Int32, Int64, Float32, Float64, String };
+enum class TypeID : std::uint8_t { Invalid = 0, Boolean, Int32, Int64, Float32, Float64 };
+
+/// \brief Utilites for TypeID
+struct TypeUtil {
+
+  /// \brief Convert to string
+  static std::string toString(TypeID id);
+
+  /// \brief Get size of the type
+  static int sizeOf(TypeID id) noexcept;
+};
+
+//===------------------------------------------------------------------------------------------===//
+//     Compile time conversion
+//===------------------------------------------------------------------------------------------===//
 
 /// \brief Convert C++ type \c T to \ref serialbox::TypeID "TypeID"
 template <class T>
@@ -53,11 +67,6 @@ struct toTypeID<double> {
   static constexpr TypeID value = TypeID::Float64;
 };
 
-template <>
-struct toTypeID<std::string> {
-  static constexpr TypeID value = TypeID::String;
-};
-
 /// \brief Convert \ref serialbox::Type "TypeID" to C++ type
 template <TypeID ID>
 struct toType {};
@@ -86,15 +95,6 @@ template <>
 struct toType<TypeID::Float64> {
   using type = double;
 };
-
-template <>
-struct toType<TypeID::String> {
-  using type = std::string;
-};
-
-/// \fn to_string
-/// \brief Convert \ref serialbox::TypeID "TypeID" to \c std::string
-std::string to_string(TypeID id);
 
 } // namespace serialbox
 
