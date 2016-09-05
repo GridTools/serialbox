@@ -41,7 +41,6 @@ void Logging::setColorLogToStdErr(bool value) noexcept { FLAGS_colorlogtostderr 
 
 void Logging::setLogDir(const char* value) noexcept { FLAGS_log_dir = value; }
 
-
 #else // SERIALBOX_DISABLE_LOGGING
 
 void Logging::init(const char* programName, bool useSignalHandler) noexcept {}

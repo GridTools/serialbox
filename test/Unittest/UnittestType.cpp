@@ -33,18 +33,18 @@ TEST(TypeTest, toString) {
   EXPECT_STREQ(TypeUtil::toString(TypeID::Float64).c_str(), "double");
 }
 
-TEST(TypeTest, toTypeID) {
-  static_assert(toTypeID<bool>::value == TypeID::Boolean, "Boolean");
-  static_assert(toTypeID<std::int32_t>::value == TypeID::Int32, "Int32");
-  static_assert(toTypeID<std::int64_t>::value == TypeID::Int64, "Int64");
-  static_assert(toTypeID<float>::value == TypeID::Float32, "Float32");
-  static_assert(toTypeID<double>::value == TypeID::Float64, "Float64");
+TEST(TypeTest, ToTypeID) {
+  static_assert(ToTypeID<bool>::value == TypeID::Boolean, "Boolean");
+  static_assert(ToTypeID<std::int32_t>::value == TypeID::Int32, "Int32");
+  static_assert(ToTypeID<std::int64_t>::value == TypeID::Int64, "Int64");
+  static_assert(ToTypeID<float>::value == TypeID::Float32, "Float32");
+  static_assert(ToTypeID<double>::value == TypeID::Float64, "Float64");
 }
 
-TEST(TypeTest, toType) {
-  testing::StaticAssertTypeEq<toType<TypeID::Boolean>::type, bool>();
-  testing::StaticAssertTypeEq<toType<TypeID::Int32>::type, std::int32_t>();
-  testing::StaticAssertTypeEq<toType<TypeID::Int64>::type, std::int64_t>();
-  testing::StaticAssertTypeEq<toType<TypeID::Float32>::type, float>();
-  testing::StaticAssertTypeEq<toType<TypeID::Float64>::type, double>();
+TEST(TypeTest, ToType) {
+  testing::StaticAssertTypeEq<ToType<TypeID::Boolean>::type, bool>();
+  testing::StaticAssertTypeEq<ToType<TypeID::Int32>::type, std::int32_t>();
+  testing::StaticAssertTypeEq<ToType<TypeID::Int64>::type, std::int64_t>();
+  testing::StaticAssertTypeEq<ToType<TypeID::Float32>::type, float>();
+  testing::StaticAssertTypeEq<ToType<TypeID::Float64>::type, double>();
 }

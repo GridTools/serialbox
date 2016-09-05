@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+#s
 #
 # Runs clang format in the given directory
 # Arguments:
@@ -32,12 +32,14 @@ shift
 if [ "$APPLY_FIXES" == "1" ]; then
   $CLANG_TIDY -p $COMPILE_COMMANDS -fix $@
 else
-  NUM_CORRECTIONS=`$CLANG_TIDY -p $COMPILE_COMMANDS $@ 2>&1 | grep \
-                   -v Skipping | grep "warnings* generated" | wc -l`
+  NUM_CORRECTIONS=`$CLANG_TIDY -p $COMPILE_COMMANDS $@ -export-fixes=clang-tidy-fixes.yml 2>&1 | \
+                   grep -v Skipping | grep "warnings* generated" | wc -l`
   if [ "$NUM_CORRECTIONS" -gt "0" ]; then
-    echo "-------------------------------------------------"
-    echo "clang-tidy had suggested fixes. Please fix these!"
-    echo "-------------------------------------------------"
+    echo -e "\e[1m---------------------------------------------------------------------\e[0m"
+    echo -e "\e[1mclang-tidy suggested fixes, please fix these or run 'make clang-tidy'\e[0m"
+    echo -e "\e[1m---------------------------------------------------------------------\e[0m"
+    cat clang-tidy-fixes.yml
+    rm -f clang-tidy-fixes.yml
     exit 1
   fi
 fi

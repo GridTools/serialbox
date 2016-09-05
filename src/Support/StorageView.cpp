@@ -1,4 +1,4 @@
-//===-- Support/Type.cpp ------------------------------------------------------------*- C++ -*-===//
+//===-- Support/StorageView.cpp -----------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -13,87 +13,20 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/Support/Logging.h"
 #include "serialbox/Support/StorageView.h"
-
-
-//
-//                    stride
-//   <---------------------------------------->
-//   <---><------------------------------><--->
-//    pad              dim                 pad
-//
-
-static inline int computeIndex(const std::vector<int>& indices,
-                               const std::vector<int>& strides,
-                               const std::vector<std::pair<int, int>>& padding) noexcept {
-  int pos = 0;
-  const int size = indices.size();
-  for(int i = 0; i < size; ++i) {
-    pos += strides[i] * indices[i];
-  }
-  return pos;
-}
+#include "serialbox/Support/StorageViewIterator.h"
+#include <algorithm>
 
 namespace serialbox {
-
-StorageViewIterator::StorageViewIterator(char* curData, std::vector<int>&& dimIndices,
-                                         int bytesPerElement, StorageView* storageView)
-    : curData_(curData), dimIndices_(dimIndices), bytesPerElement_(bytesPerElement),
-      storageView_(storageView) {
-  
-  //TODO: do the check
-  isContiguous_ = false;
-}
-
-
-StorageViewIterator::iterator& StorageViewIterator::operator++() noexcept {
-  for(int i = 0; i < dimIndices_.size(); ++i)
-    if(++dimIndices_[i] < storageView_->dims()[i])
-      break;
-    else
-      dimIndices_[i] = 0;
-
-  curData_ = storageView_->data() +
-             computeIndex(dimIndices_, storageView_->strides(), storageView_->padding());
-
-  return (*this);
-}
-
-StorageViewIterator::iterator StorageViewIterator::operator++(int) noexcept {
-  iterator tmp = *this;
-  ++*this;
-  return (tmp);
-}
-
-void StorageViewIterator::swap(StorageViewIterator& other) noexcept {
-  std::swap(curData_, other.curData_);
-  dimIndices_.swap(other.dimIndices_);
-  std::swap(bytesPerElement_, other.bytesPerElement_);
-  std::swap(storageView_, other.storageView_);
-}
 
 StorageView::StorageView(void* data, TypeID type, const std::vector<int>& dims,
                          const std::vector<int>& strides,
                          const std::vector<std::pair<int, int>>& padding)
-    : data_(reinterpret_cast<char*>(data)), type_(type), dims_(dims), strides_(strides),
+    : data_(reinterpret_cast<Byte*>(data)), type_(type), dims_(dims), strides_(strides),
       padding_(padding) {
-  CHECK(data_ != nullptr) << "invalid data";
   CHECK(!dims_.empty()) << "empty dimension";
   CHECK(dims_.size() == strides_.size() && dims_.size() == padding_.size()) << "dimension mismatch";
-}
-
-StorageViewIterator StorageView::begin() noexcept {
-  int bytesPerElement = TypeUtil::sizeOf(type_);
-  char* curData = data_;
-  std::vector<int> dimIndices(dims_.size(), 0);
-  return StorageViewIterator(curData, std::move(dimIndices), bytesPerElement, this);
-}
-
-StorageViewIterator StorageView::end() noexcept {
-  int bytesPerElement = TypeUtil::sizeOf(type_);
-  char* curData = data_ + bytesPerElement * (strides_.back() * dims_.back());
-  std::vector<int> dimIndices(dims_);
-  return StorageViewIterator(curData, std::move(dimIndices), bytesPerElement, this);
 }
 
 void StorageView::swap(StorageView& other) noexcept {
@@ -101,6 +34,33 @@ void StorageView::swap(StorageView& other) noexcept {
   std::swap(type_, other.type_);
   dims_.swap(other.dims_);
   strides_.swap(other.strides_);
+  padding_.swap(other.padding_);
+}
+
+bool StorageView::operator==(const StorageView& right) const noexcept {
+  return (data_ == right.data_ && type_ == right.type_ && dims_ == right.dims_ &&
+          strides_ == right.strides_ && padding_ == right.padding_);
+}
+
+std::ostream& operator<<(std::ostream& stream, const StorageView& s) {
+  stream << "StorageView [\n";
+  stream << "  data = " << static_cast<void*>(s.data_) << "\n";
+  stream << "  type = " << TypeUtil::toString(s.type_) << "\n";
+  
+  stream << "  dims = {";
+  for(auto i : s.dims_)
+    stream << " " << i;
+  
+  stream << " }\n  strides = {";
+  for(auto i : s.strides_)
+    stream << " " << i;
+  
+  stream << " }\n  padding = {";
+  for(auto i : s.padding_)
+    stream << " [" << i.first << "," << i.second << "]";
+  
+  stream << " }\n]\n";
+  return stream;
 }
 
 void swap(StorageView& a, StorageView& b) noexcept { a.swap(b); }

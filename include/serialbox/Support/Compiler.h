@@ -53,7 +53,7 @@
 /// \macro SERIALBOX_BUILTIN_UNREACHABLE
 /// \brief Indicate unreachable state
 ///
-/// On compilers which support it, expands to an expression which states that it is undefined 
+/// On compilers which support it, expands to an expression which states that it is undefined
 /// behaviour for the compiler to reach this point. Otherwise is not defined.
 #if __has_builtin(__builtin_unreachable) || SERIALBOX_GNUC_PREREQ(4, 5, 0)
 #define SERIALBOX_BUILTIN_UNREACHABLE __builtin_unreachable()

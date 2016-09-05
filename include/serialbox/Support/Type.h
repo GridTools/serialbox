@@ -20,6 +20,10 @@
 
 namespace serialbox {
 
+/// \typedef Byte
+/// \brief Represent a byte i.e sizeof(Byte) == 1
+using Byte = char;
+
 /// \enum TypeID
 /// \brief Type id of types recognized by serialbox
 enum class TypeID : std::uint8_t { Invalid = 0, Boolean, Int32, Int64, Float32, Float64 };
@@ -40,59 +44,59 @@ struct TypeUtil {
 
 /// \brief Convert C++ type \c T to \ref serialbox::TypeID "TypeID"
 template <class T>
-struct toTypeID {};
+struct ToTypeID {};
 
 template <>
-struct toTypeID<bool> {
+struct ToTypeID<bool> {
   static constexpr TypeID value = TypeID::Boolean;
 };
 
 template <>
-struct toTypeID<std::int32_t> {
+struct ToTypeID<std::int32_t> {
   static constexpr TypeID value = TypeID::Int32;
 };
 
 template <>
-struct toTypeID<std::int64_t> {
+struct ToTypeID<std::int64_t> {
   static constexpr TypeID value = TypeID::Int64;
 };
 
 template <>
-struct toTypeID<float> {
+struct ToTypeID<float> {
   static constexpr TypeID value = TypeID::Float32;
 };
 
 template <>
-struct toTypeID<double> {
+struct ToTypeID<double> {
   static constexpr TypeID value = TypeID::Float64;
 };
 
 /// \brief Convert \ref serialbox::Type "TypeID" to C++ type
 template <TypeID ID>
-struct toType {};
+struct ToType {};
 
 template <>
-struct toType<TypeID::Boolean> {
+struct ToType<TypeID::Boolean> {
   using type = bool;
 };
 
 template <>
-struct toType<TypeID::Int32> {
+struct ToType<TypeID::Int32> {
   using type = std::int32_t;
 };
 
 template <>
-struct toType<TypeID::Int64> {
+struct ToType<TypeID::Int64> {
   using type = std::int64_t;
 };
 
 template <>
-struct toType<TypeID::Float32> {
+struct ToType<TypeID::Float32> {
   using type = float;
 };
 
 template <>
-struct toType<TypeID::Float64> {
+struct ToType<TypeID::Float64> {
   using type = double;
 };
 

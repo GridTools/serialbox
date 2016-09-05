@@ -34,9 +34,9 @@ if [ "$APPLY_FIXES" == "1" ]; then
 else
   NUM_CORRECTIONS=`$CLANG_FORMAT -style=file -output-replacements-xml $@ | grep offset | wc -l`
   if [ "$NUM_CORRECTIONS" -gt "0" ]; then
-    echo "--------------------------------------------------------"
-    echo "clang-format suggested changes, please run 'make format'"
-    echo "--------------------------------------------------------"
+    echo -e "\e[1m--------------------------------------------------------\e[0m"
+    echo -e "\e[1mclang-format suggested changes, please run 'make format'\e[0m"
+    echo -e "\e[1m--------------------------------------------------------\e[0m"
     exit 1
   fi
 fi
