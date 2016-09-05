@@ -13,6 +13,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/Support/Type.h"
+#include "serialbox/Support/Unreachable.h"
 
 namespace serialbox {
 
@@ -28,8 +29,9 @@ std::string TypeUtil::toString(TypeID id) {
     return std::string("float");
   case TypeID::Float64:
     return std::string("double");
+  default:
+    serialbox_unreachable("TypeID <Invalid>");
   }
-  //  serialbox_unreachable("TypeID <Invalid>");
 }
 
 int TypeUtil::sizeOf(TypeID id) noexcept {
@@ -42,8 +44,9 @@ int TypeUtil::sizeOf(TypeID id) noexcept {
   case TypeID::Int64:
   case TypeID::Float64:
     return 8;
+  default:
+    serialbox_unreachable("TypeID <Invalid>");
   }
-  //  serialbox_unreachable("TypeID <Invalid>");
 }
 
 } // namespace serialbox

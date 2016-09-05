@@ -31,7 +31,7 @@ StorageViewIterator::StorageViewIterator(StorageView* storageView, bool beginnin
 
 StorageViewIterator::iterator& StorageViewIterator::operator++() noexcept {
   if(!end_) {
-    // Consecutively increment the dimensions
+    // Consecutively increment the dimensions (column major order)
     int size = index_.size();
     for(int i = 0; i < size; ++i)
       if(++index_[i] < storageView_->dims()[i])
@@ -43,7 +43,7 @@ StorageViewIterator::iterator& StorageViewIterator::operator++() noexcept {
           end_ = true;
       }
 
-    // Compute the current data pointer according to index_
+    // Compute the current data pointer
     ptr_ = storageView_->data() + computeCurrentIndex();
   }
   return (*this);
@@ -54,6 +54,7 @@ bool StorageViewIterator::operator==(const iterator& right) const noexcept {
 }
 
 StorageViewIterator::iterator StorageViewIterator::operator++(int)noexcept {
+  LOG(INFO) << "usage of this operator is discouraged, user pre-increment instead";
   iterator tmp = *this;
   ++*this;
   return (tmp);

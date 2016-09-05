@@ -12,7 +12,8 @@ cmake_minimum_required(VERSION 3.1)
 set(SUPPORT_SOURCES Logging.cpp
                     Type.cpp
                     StorageView.cpp
-                    StorageViewIterator.cpp)
+                    StorageViewIterator.cpp
+                    Unreachable.cpp)
 set(SUPPORT_EXTERNAL_LIBRARIES)
 
 serialbox_add_library(SerialboxSupport "${SUPPORT_SOURCES}" "${SUPPORT_EXTERNAL_LIBRARIES}")

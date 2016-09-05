@@ -24,6 +24,8 @@ namespace serialbox {
 class StorageView;
 
 /// \brief Forward Iterator to access the data of a StorageView
+/// 
+/// The data is accessed in column major order.
 class StorageViewIterator {
 public:
   /// \name Typedef
@@ -46,7 +48,7 @@ public:
   /// \brief Construct iterator at specific location in the data
   /// 
   /// \param storageView  Associated StorageView
-  /// \param beginning    Create a pointer to the beginning of the data or end 
+  /// \param beginning    Create a pointer to the beginning of the data or the end 
   StorageViewIterator(StorageView* storageView, bool beginning);
 
   /// @}
