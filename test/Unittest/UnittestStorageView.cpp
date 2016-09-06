@@ -121,9 +121,9 @@ public:
   std::shared_ptr<Storage<double>> storage_1d_padded;
 
   // --- 2D ---
-  std::shared_ptr<Storage<double>> storage_2d_col_major;  
+  std::shared_ptr<Storage<double>> storage_2d_col_major;
   std::shared_ptr<Storage<double>> storage_2d_col_major_padded;
-  
+
   std::shared_ptr<Storage<double>> storage_2d_row_major;
   std::shared_ptr<Storage<double>> storage_2d_row_major_padded;
 
@@ -143,7 +143,7 @@ protected:
         std::make_shared<Storage<double>>(il{dim1, dim2}, il{1, dim1 + pad1_left + pad1_right},
                                           ipl{std::pair<int, int>(pad1_left, pad1_right),
                                               std::pair<int, int>(pad2_left, pad2_right)});
-    
+
     storage_2d_row_major = std::make_shared<Storage<double>>(il{dim1, dim2}, il{dim2, 1});
     storage_2d_row_major_padded =
         std::make_shared<Storage<double>>(il{dim1, dim2}, il{dim2 + pad2_left + pad2_right, 1},
@@ -154,12 +154,13 @@ protected:
   virtual void TearDown() override {}
 };
 
+} // anonymous namespace
+
 template <class T>
 static std::shared_ptr<StorageView> toStorageView(std::shared_ptr<Storage<T>>& storage) {
   auto type = ToTypeID<T>::value;
   return std::make_shared<StorageView>(storage->data.data(), type, storage->dims, storage->strides,
                                        storage->padding);
-}
 }
 
 TEST_F(StorageViewTest, Construction) {

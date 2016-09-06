@@ -6,6 +6,10 @@
 *~
 *.user
 
+# Build directories
 build*
 install*
 buildenv*
+
+# Generated files
+include/serialbox/Support/Config.h

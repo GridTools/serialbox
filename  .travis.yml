@@ -1,0 +1,88 @@
+install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9"; export CC="gcc-4.9"; fi
+  - if [ "$CXX" = "clang++" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then export CXX="clang++-3.8"; export CC="clang-3.8"; fi
+  
+  # Info about Compiler
+  - echo ${PATH}
+  - echo ${CXX}
+  - ${CXX} --version
+  - ${CXX} -v
+  - python --version
+
+  # Info about OS
+  - uname -a
+  - echo $TRAVIS_OS_NAME
+  
+# APT (Linux)
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.8
+      - boost-latest
+    packages:
+      - gcc-4.9
+      - g++-4.9
+      - clang-3.8
+      - cmake
+      - libboost1.54-all-dev
+
+os:
+  - linux
+  - osx
+  
+env:
+  - CONFIG=Release
+  - CONFIG=Debug
+
+language: cpp
+
+compiler:
+  - clang
+  - gcc
+  
+matrix:
+  exclude:
+    # OSX boost is compiled with Clang (skip gcc builds)
+    - os: osx
+      compiler: gcc
+      env: CONFIG=Release
+      
+    - os: osx
+      compiler: gcc
+      env: CONFIG=Debug
+
+before_script:
+  - mkdir build
+  - pushd $(pwd)
+  - cd build
+
+  # Build on Linux
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cmake ../; fi
+  
+  # Build on OSX 
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then cmake ../; fi
+  
+  # Build & Install
+  - make
+  
+  - popd
+
+script:
+  - pushd $(pwd)
+  - cd build
+
+  # Run C++ unittests
+  - ctest --output-on-failure --force-new-ctest-process
+
+  - popd
+ 
+notifications:
+  email:
+    recipients:
+      - thfabian@student.ethz.ch
+    on_success: never
+    on_failure: always
+    
+sudo: false
+

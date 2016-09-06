@@ -40,6 +40,8 @@ function(serialbox_add_unittest_executable name sources)
   if(BUILD_GLOG)
     add_dependencies(${name} glog)
   endif(BUILD_GLOG)
+  
+  add_test(RunSerialboxUnittest ${name} --gtest_color=yes)
 
 endfunction(serialbox_add_unittest_executable)
 
