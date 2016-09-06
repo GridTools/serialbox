@@ -78,7 +78,10 @@ std::ostream& operator<<(std::ostream& stream, const StorageViewIterator& it) {
   return stream;
 }
 
-//                    stride
+//
+// We assume the padding (alignmment) is INCLUDED in the strides
+//
+//                        stride
 //   <-------------------------------------------------->
 //   <--------><------------------------------><-------->
 //   pad.first              dim                pad.second

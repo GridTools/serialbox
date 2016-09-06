@@ -89,7 +89,7 @@ struct Storage {
     int pos = 0;
     int size = index.size();
     auto it = index.begin();
-    CHECK(size == dims.size()) << "invalid access";
+    CHECK(size == static_cast<int>(dims.size())) << "invalid access";
 
     for(int i = 0; i < size; ++i, ++it)
       pos += (strides[i] * (padding[i].first + (*it)));
