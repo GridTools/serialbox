@@ -12,6 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/Support/Compiler.h"
 #include "serialbox/Support/StorageView.h"
 #include "serialbox/Support/StorageViewIterator.h"
 
@@ -24,22 +25,19 @@ StorageViewIterator::StorageViewIterator(StorageView* storageView, bool beginnin
     index_.resize(storageView_->dims().size(), 0);
     ptr_ = storageView_->data() + computeCurrentIndex();
   }
-
-  // TODO
-  isContiguous_ = false;
 }
 
 StorageViewIterator::iterator& StorageViewIterator::operator++() noexcept {
   if(!end_) {
-    // Consecutively increment the dimensions (column major order)
+    // Consecutively increment the dimensions (column-major order)
     int size = index_.size();
     for(int i = 0; i < size; ++i)
-      if(++index_[i] < storageView_->dims()[i])
+      if(SERIALBOX_BUILTIN_LIKELY(++index_[i] < storageView_->dims()[i]))
         break;
       else {
         index_[i] = 0;
         // If we overflow in the last dimension we reached the end
-        if(i == size - 1)
+        if(SERIALBOX_BUILTIN_UNLIKELY(i == size - 1))
           end_ = true;
       }
 
@@ -76,18 +74,16 @@ std::ostream& operator<<(std::ostream& stream, const StorageViewIterator& it) {
     stream << " " << i;
   stream << " }\n  bytesPerElement = " << it.bytesPerElement_ << "\n";
   stream << "  storageView = " << std::hex << it.storageView_ << "\n";
-  stream << "  isContiguous = " << it.isContiguous_ << "\n";  
   stream << "]\n";
   return stream;
 }
 
-
-//
 //                    stride
 //   <-------------------------------------------------->
 //   <--------><------------------------------><-------->
 //   pad.first              dim                pad.second
 // 
+
 
 int StorageViewIterator::computeCurrentIndex() const noexcept {
   int pos = 0;

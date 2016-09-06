@@ -10,7 +10,13 @@
 cmake_minimum_required(VERSION 3.1)
 
 set(UNITTEST_SOURCES UnittestMain.cpp
+                     UnittestStorage.cpp
                      UnittestStorageView.cpp
-                     UnittestType.cpp)
+                     UnittestStorageViewGridTools.cpp
+                     UnittestType.cpp
+
+                     GridTools.h
+                     Storage.h
+                     STELLA.h)
   
 serialbox_add_unittest_executable(SerialboxUnittest "${UNITTEST_SOURCES}")

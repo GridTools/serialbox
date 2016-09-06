@@ -47,13 +47,15 @@ void Logging::init(const char* programName, bool useSignalHandler) noexcept {}
 
 void Logging::setLogToStderr(bool value) noexcept {}
 
-void Logging::setAlsoLogToStderr(SeverityKind value) noexcept {}
+void Logging::setAlsoLogToStderr(bool value) noexcept {}
 
 void Logging::setStdErrThreshold(SeverityKind value) noexcept {}
 
-void Logging::setMinLogLevel(int value) noexcept {}
+void Logging::setMinLogLevel(SeverityKind value) noexcept {}
 
 void Logging::setColorLogToStdErr(bool value) noexcept {}
+
+void Logging::setLogDir(const char* value) noexcept {}
 
 namespace internal {
 

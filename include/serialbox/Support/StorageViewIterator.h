@@ -23,9 +23,9 @@ namespace serialbox {
 
 class StorageView;
 
-/// \brief Forward Iterator to access the data of a StorageView
+/// \brief Mutable forward iterator to access the data of a StorageView
 /// 
-/// The data is accessed in column major order.
+/// The data is accessed in column-major order.
 class StorageViewIterator {
 public:
   /// \name Typedef
@@ -69,7 +69,10 @@ public:
 
   /// \brief Post-increment
   iterator operator++(int)noexcept;
-
+  
+  /// \brief Derefrence
+  refrence operator*() noexcept { return *ptr_; }
+  
   /// \brief Swap with other
   void swap(StorageViewIterator& other) noexcept;
   
@@ -77,9 +80,6 @@ public:
   friend std::ostream& operator<<(std::ostream& stream, const StorageViewIterator& it); 
 
   /// @}
-
-  /// \brief Return true if the storage is contiguous in memory
-  bool isContiguous() noexcept { return isContiguous_; }
 
   /// \brief Get bytes per element
   int bytesPerElement() noexcept { return bytesPerElement_; }
@@ -100,8 +100,6 @@ private:
   // Associated StorageView
   int bytesPerElement_;
   StorageView* storageView_;
-
-  bool isContiguous_;
 };
 
 } // namespace serialbox

@@ -35,4 +35,13 @@
 /* SERIALBOX version string */
 #define SERIALBOX_VERSION_STRING "${SERIALBOX_VERSION_MAJOR}.${SERIALBOX_VERSION_MINOR}.${SERIALBOX_VERSION_PATCH}"
 
+/* Define if GridTools Serializer is built */
+#cmakedefine SERIALBOX_HAS_GRIDTOOLS ${SERIALBOX_HAS_GRIDTOOLS}
+
+/* Define if STELLA Serializer is built */
+#cmakedefine SERIALBOX_HAS_STELLA ${SERIALBOX_HAS_STELLA}
+
+/* Define if Fortran Serializer is built */
+#cmakedefine SERIALBOX_HAS_FORTRAN ${SERIALBOX_HAS_FORTRAN}
+
 #endif

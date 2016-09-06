@@ -7,9 +7,14 @@
 *.user
 
 # Build directories
+build.sh
 build*
 install*
 buildenv*
+
+# External projects
+external/gridtools
+external/STELLA
 
 # Generated files
 include/serialbox/Support/Config.h

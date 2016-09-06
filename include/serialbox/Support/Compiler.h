@@ -81,4 +81,20 @@
 #define SERIALBOX_ATTRIBUTE_NORETURN
 #endif
 
+/// \macro SERIALBOX_BUILTIN_LIKELY
+/// \brief Mark this expression as being likely evaluated to "true"  
+#if __has_builtin(__builtin_expect) || SERIALBOX_GNUC_PREREQ(4, 5, 0)
+#define SERIALBOX_BUILTIN_LIKELY(x) __builtin_expect(!!(x), 1)
+#else
+#define SERIALBOX_BUILTIN_LIKELY(x)
+#endif
+
+/// \macro SERIALBOX_BUILTIN_UNLIKELY
+/// \brief Mark this expression as being likely evaluated to "false"  
+#if __has_builtin(__builtin_expect) || SERIALBOX_GNUC_PREREQ(4, 5, 0)
+#define SERIALBOX_BUILTIN_UNLIKELY(x) __builtin_expect(!!(x), 0)
+#else
+#define SERIALBOX_BUILTIN_UNLIKELY(x)
+#endif
+
 #endif

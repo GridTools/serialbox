@@ -23,8 +23,7 @@ namespace serialbox {
 
 /// \brief Logging infrastructure based on glog
 ///
-/// The logging can be completely turned off by defining
-/// SERIALBOX_DISABLE_LOGGING.
+/// The logging can be completely turned off by defining SERIALBOX_DISABLE_LOGGING.
 ///
 /// \see http://rpg.ifi.uzh.ch/docs/glog.html
 class Logging {
@@ -35,10 +34,8 @@ public:
   /// \brief Initialize glog
   ///
   /// \brief programName        Name of the program used to prefix the logs
-  /// \brief useSignalHandler   Install a signal handler that will dump useful
-  /// information when the
-  ///                           program crashes on certain signals such as
-  ///                           SIGSEGV
+  /// \brief useSignalHandler   Install a signal handler that will dump useful information when the
+  ///                           program crashes on certain signals such as SIGSEGV
   static void init(const char* programName = "serialbox", bool useSignalHandler = true) noexcept;
 
   /// @{ Logging Options
@@ -49,8 +46,7 @@ public:
   /// \brief Additionally log messages to stderr [default: false]
   static void setAlsoLogToStderr(bool value) noexcept;
 
-  /// \brief Copy log messages at or above this level to stderr in addition to
-  /// logfiles [default:
+  /// \brief Copy log messages at or above this level to stderr in addition to ogfiles [default:
   /// SeverityKind::Error]
   static void setStdErrThreshold(SeverityKind value) noexcept;
 
@@ -60,8 +56,7 @@ public:
   /// \brief Use colored output when logging messages to stderr [default: false]
   static void setColorLogToStdErr(bool value) noexcept;
 
-  /// \brief Logfiles are written into this directory instead of the default
-  /// logging directory
+  /// \brief Logfiles are written into this directory instead of the default logging directory
   /// [default: /tmp/]
   static void setLogDir(const char* value) noexcept;
 

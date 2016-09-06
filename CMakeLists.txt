@@ -24,11 +24,11 @@ include(GetGitRevisionDescription)
 #---------------------------------------- Configure ------------------------------------------------
 
 if(UNIX)
-  set(SERIALBOX_ON_UNIX ON)
+  set(SERIALBOX_ON_UNIX 1)
 endif(UNIX)
 
 if(WIN32)
-  set(SERIALBOX_ON_WIN32 ON)
+  set(SERIALBOX_ON_WIN32 1)
 endif(WIN32)
 
 # Serialbox version
@@ -41,12 +41,6 @@ set(SERIALBOX_VERSION_STRING
 # Current head revision
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 
-# Configure project
-set(SERIALBOX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/include/serialbox/Support/Config.h.cmake)
-set(SERIALBOX_CONFIG_FILE ${PROJECT_SOURCE_DIR}/include/serialbox/Support/Config.h)
-set(SERIALBOX_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
-configure_file(${SERIALBOX_CONFIG_FILE_IN} ${SERIALBOX_CONFIG_FILE})
-
 message(STATUS "Serialbox version: ${SERIALBOX_VERSION_STRING}")
 message(STATUS "Git HEAD revision: ${GIT_SHA1}")
 
@@ -55,6 +49,10 @@ message(STATUS "Git HEAD revision: ${GIT_SHA1}")
 option(SERIALBOX_TESTING "Build unit-test executables" ON)
 option(SERIALBOX_LOGGING "Enable logging" ON)
 option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" ON)
+
+option(SERIALBOX_ENABLE_GRIDTOOLS "Build GridTools Serializer" OFF)
+option(SERIALBOX_ENABLE_STELLA "Build STELLA Serializer" OFF)
+option(SERIALBOX_ENABLE_FORTRAN "Build Fortran Serializer" OFF)
   
 #---------------------------------------- CMake options --------------------------------------------
  
@@ -163,10 +161,12 @@ if(SERIALBOX_LOGGING)
     find_package(GLog REQUIRED)
   endif()
   include_directories(SYSTEM ${GLOG_INCLUDE_DIRS})
-endif(SERIALBOX_LOGGING)
+else()
+  add_definitions(-DSERIALBOX_DISABLE_LOGGING)
+endif()
 
 #---------------------------------------- Boost ----------------------------------------------------
-find_package(Boost 1.54 REQUIRED)
+find_package(Boost 1.54 REQUIRED system chrono filesystem)
 
 if(NOT(${Boost_FOUND}))
   message(FATAL_ERROR "Boost not found or insufficient version.")
@@ -174,6 +174,39 @@ endif(NOT(${Boost_FOUND}))
 
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
+
+#---------------------------------------- GridTools ------------------------------------------------
+if(SERIALBOX_ENABLE_GRIDTOOLS)
+
+  # If GRIDTOOLS_ROOT is not provided, we try to find it in external/
+  set(GRIDTOOLS_ROOT_ENV "$ENV{GRIDTOOLS_ROOT}")
+  if(NOT(GRIDTOOLS_ROOT) AND NOT(GRIDTOOLS_ROOT_ENV) AND 
+     EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/gridtools/CMakeLists.txt" )
+    message(STATUS "Using GridTools from: ${CMAKE_CURRENT_SOURCE_DIR}/external/gridtools")
+    set(GRIDTOOLS_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/external/gridtools")
+  endif()
+
+  find_package(GridTools QUIET REQUIRED)
+  include_directories(SYSTEM ${GRIDTOOLS_INCLUDE_DIRS})
+  set(SERIALBOX_HAS_GRIDTOOLS 1)
+
+endif(SERIALBOX_ENABLE_GRIDTOOLS)
+
+#---------------------------------------- STELLA ---------------------------------------------------
+if(SERIALBOX_ENABLE_STELLA)
+
+  #TODO
+  set(SERIALBOX_HAS_STELLA ON)
+
+endif(SERIALBOX_ENABLE_STELLA)
+
+#---------------------------------------- Fortran ---------------------------------------------------
+if(SERIALBOX_ENABLE_FORTRAN)
+
+  #TODO
+  set(SERIALBOX_HAS_FORTRAN ON)
+
+endif(SERIALBOX_ENABLE_FORTRAN)
 
 #---------------------------------------- Doxygen --------------------------------------------------
 find_package(Doxygen)
@@ -236,6 +269,12 @@ endif()
 
 #---------------------------------------- Compilation ----------------------------------------------
 
+# Generate serialbox/Support/Config.h
+set(SERIALBOX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/include/serialbox/Support/Config.h.cmake)
+set(SERIALBOX_CONFIG_FILE ${PROJECT_SOURCE_DIR}/include/serialbox/Support/Config.h)
+set(SERIALBOX_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
+configure_file(${SERIALBOX_CONFIG_FILE_IN} ${SERIALBOX_CONFIG_FILE})
+
 enable_testing()
 
 # Setup include directories and glob the headers (for IDEs)
@@ -247,8 +286,7 @@ file(GLOB_RECURSE SERIALBOX_HEADERS
      
      
 # Setup external libraries
-set(SERIALBOX_EXTERNAL_LIBRARIES ${BOOST_LIBRARIES} ${GTEST_LIBRARIES} ${GLOG_LIBRARIES})
-
+set(SERIALBOX_EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${GTEST_LIBRARIES} ${GLOG_LIBRARIES})
 
 # Build Serialbox
 add_subdirectory(src)

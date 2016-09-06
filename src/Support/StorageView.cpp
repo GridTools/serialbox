@@ -63,6 +63,32 @@ std::ostream& operator<<(std::ostream& stream, const StorageView& s) {
   return stream;
 }
 
+StorageView& StorageView::operator=(StorageView other) noexcept {
+  swap(other);
+  return *this;
+}
+
 void swap(StorageView& a, StorageView& b) noexcept { a.swap(b); }
+
+bool StorageView::isMemCopyable() const noexcept {
+
+  // Check if data is contiguous in memory
+  for(const auto& padPair : padding_)
+    if(!(padPair.first == 0 && padPair.second == 0))
+      return false;
+
+  // Check if data is col-major
+  int stride = 1;
+  if(strides_[0] != 1)
+    return false;
+
+  for(std::size_t i = 1; i < dims_.size(); ++i) {
+    stride *= dims_[i - 1];
+    if(strides_[i] != stride)
+      return false;
+  }
+
+  return true;
+}
 
 } // namespace serialbox

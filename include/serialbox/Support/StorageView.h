@@ -86,24 +86,25 @@ public:
   /// @{
 
   /// \brief Copy assignment
-  StorageView& operator=(StorageView other) noexcept {
-    swap(other);
-    return *this;
-  }
+  StorageView& operator=(StorageView other) noexcept;
 
   /// \brief Swap with \c other
   void swap(StorageView& other) noexcept;
 
   /// \brief Test for equality
   bool operator==(const StorageView& right) const noexcept;
-  
+
   /// \brief Test for inequality
   bool operator!=(const StorageView& right) const noexcept { return (!(*this == right)); }
-  
-  /// \brief Convert to stream  
+
+  /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const StorageView& s);
 
   /// @}
+
+  /// \brief Return true if the storage is contiguous in memory (i.e no padding) and is column-major
+  /// ordered
+  bool isMemCopyable() const noexcept;
 
 private:
   Byte* data_;

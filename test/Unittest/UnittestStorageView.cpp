@@ -8,114 +8,47 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains the unittests for the StorageView.
+/// This file contains the unittests for the StorageView and StorageViewIterator.
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "Storage.h"
 #include "serialbox/Support/STLExtras.h"
 #include "serialbox/Support/StorageView.h"
 #include "serialbox/Support/Type.h"
-#include <gtest/gtest.h>
 #include <cstring>
-#include <initializer_list>
-#include <memory>
-#include <numeric>
-#include <type_traits>
+#include <gtest/gtest.h>
 
 using namespace serialbox;
+using namespace unittest;
 
 namespace {
-
-// Represent a dummy storage
-template <class T>
-struct Storage {
-  using value_type = T;
-
-  std::vector<T> data;
-  std::vector<int> dims;
-  std::vector<int> strides;
-  std::vector<std::pair<int, int>> padding;
-
-  Storage(std::initializer_list<int> d, std::initializer_list<int> s, bool init = true)
-      : dims(d), strides(s) {
-    padding.resize(dims.size(), std::make_pair<int, int>(0, 0));
-    data.resize(size(), T());
-    if(init)
-      initData();
-  }
-
-  Storage(std::initializer_list<int> d, std::initializer_list<int> s,
-          std::initializer_list<std::pair<int, int>> p, bool init = true)
-      : dims(d), strides(s), padding(p) {
-    data.resize(size(), T());
-    if(init)
-      initData();
-  }
-
-  // Initialize storage with random data
-  void initData() {
-    for(std::size_t i = 0; i < data.size(); ++i)
-      data[i] = i;
-  }
-
-  // Get total size of the storage
-  int size() const noexcept {
-    int size = 1;
-    for(std::size_t i = 0; i < dims.size(); ++i)
-      size *= (padding[i].first + dims[i] + padding[i].second);
-    return size;
-  }
-
-  // TODO: Implement this efficiently
-  T& at(std::initializer_list<int> index) {
-    int pos = 0;
-    int size = index.size();
-    auto it = index.begin();
-
-    for(int i = 0; i < size; ++i, ++it)
-      pos += (strides[i] * (padding[i].first + (*it)));
-
-    return *(data.data() + pos);
-  }
-
-  // Convert to stream
-  friend std::ostream& operator<<(std::ostream& stream, const Storage& s) {
-    stream << "Storage [\n";
-    stream << "  data = {\n";
-    for(auto d : s.data)
-      stream << "    " << d << "\n";
-
-    stream << "  }\n  size = " << s.size() << "\n";
-    stream << "  dims = {";
-    for(auto i : s.dims)
-      stream << " " << i;
-
-    stream << " }\n  strides = {";
-    for(auto i : s.strides)
-      stream << " " << i;
-
-    stream << " }\n  padding = {";
-    for(auto i : s.padding)
-      stream << " [" << i.first << "," << i.second << "]";
-
-    stream << " }\n]\n";
-    return stream;
-  }
-};
 
 class StorageViewTest : public testing::Test {
 public:
   // Dimensions
-  static constexpr int dim1 = 2;
-  static constexpr int dim2 = 3;
+  int dim1;
+  int dim2;
+  int dim3;
+  int dim4;
+  int dim5;
 
   // Padding
-  static constexpr int pad1_left = 1;
-  static constexpr int pad1_right = 1;
+  int pad1_left;
+  int pad1_right;
 
-  static constexpr int pad2_left = 1;
-  static constexpr int pad2_right = 1;
+  int pad2_left;
+  int pad2_right;
 
+  int pad3_left;
+  int pad3_right;
+
+  int pad4_left;
+  int pad4_right;
+
+  int pad5_left;
+  int pad5_right;
+  
   // --- 1D ---
   std::shared_ptr<Storage<double>> storage_1d;
   std::shared_ptr<Storage<double>> storage_1d_padded;
@@ -127,28 +60,89 @@ public:
   std::shared_ptr<Storage<double>> storage_2d_row_major;
   std::shared_ptr<Storage<double>> storage_2d_row_major_padded;
 
+  // --- 3D ---
+  std::shared_ptr<Storage<double>> storage_3d_col_major;
+  std::shared_ptr<Storage<double>> storage_3d_col_major_padded;
+
+  std::shared_ptr<Storage<double>> storage_3d_row_major;
+  std::shared_ptr<Storage<double>> storage_3d_row_major_padded;
+
+  // --- 5D ---
+  std::shared_ptr<Storage<double>> storage_5d_col_major_padded;
+  std::shared_ptr<Storage<double>> storage_5d_row_major_padded;
+
 protected:
   virtual void SetUp() override {
     using il = std::initializer_list<int>;
     using ipl = std::initializer_list<std::pair<int, int>>;
 
+    // Dimensions
+    dim1 = 2;
+    dim2 = 3;
+    dim3 = 4;
+    dim4 = 2;
+    dim5 = 2;
+
+    // Padding
+    pad1_left = 1;
+    pad1_right = 2;
+
+    pad2_left = 3;
+    pad2_right = 1;
+
+    pad3_left = 0;
+    pad3_right = 1;
+
+    pad4_left = 0;
+    pad4_right = 0;
+
+    pad5_left = 1;
+    pad5_right = 0;
+
+    auto colMajor = Storage<double>::ColMajor;
+    auto rowMajor = Storage<double>::RowMajor;
+
     // --- 1D ---
-    storage_1d = std::make_shared<Storage<double>>(il{dim1}, il{1});
+    storage_1d = std::make_shared<Storage<double>>(colMajor, il{dim1});
     storage_1d_padded = std::make_shared<Storage<double>>(
-        il{dim1}, il{1}, ipl{std::pair<int, int>(pad1_left, pad1_right)});
+        colMajor, il{dim1}, ipl{std::pair<int, int>(pad1_left, pad1_right)});
 
     // --- 2D ---
-    storage_2d_col_major = std::make_shared<Storage<double>>(il{dim1, dim2}, il{1, dim1});
-    storage_2d_col_major_padded =
-        std::make_shared<Storage<double>>(il{dim1, dim2}, il{1, dim1 + pad1_left + pad1_right},
-                                          ipl{std::pair<int, int>(pad1_left, pad1_right),
-                                              std::pair<int, int>(pad2_left, pad2_right)});
+    storage_2d_col_major = std::make_shared<Storage<double>>(colMajor, il{dim1, dim2});
+    storage_2d_col_major_padded = std::make_shared<Storage<double>>(
+        colMajor, il{dim1, dim2}, ipl{std::pair<int, int>(pad1_left, pad1_right),
+                                      std::pair<int, int>(pad2_left, pad2_right)});
 
-    storage_2d_row_major = std::make_shared<Storage<double>>(il{dim1, dim2}, il{dim2, 1});
-    storage_2d_row_major_padded =
-        std::make_shared<Storage<double>>(il{dim1, dim2}, il{dim2 + pad2_left + pad2_right, 1},
-                                          ipl{std::pair<int, int>(pad1_left, pad1_right),
-                                              std::pair<int, int>(pad2_left, pad2_right)});
+    storage_2d_row_major = std::make_shared<Storage<double>>(rowMajor, il{dim1, dim2});
+    storage_2d_row_major_padded = std::make_shared<Storage<double>>(
+        rowMajor, il{dim1, dim2}, ipl{std::pair<int, int>(pad1_left, pad1_right),
+                                      std::pair<int, int>(pad2_left, pad2_right)});
+
+    // --- 3D ---
+    storage_3d_col_major = std::make_shared<Storage<double>>(colMajor, il{dim1, dim2, dim3});
+    storage_3d_col_major_padded = std::make_shared<Storage<double>>(
+        colMajor, il{dim1, dim2, dim3},
+        ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
+            std::pair<int, int>(pad3_left, pad3_right)});
+
+    storage_3d_row_major = std::make_shared<Storage<double>>(rowMajor, il{dim1, dim2, dim3});
+    storage_3d_row_major_padded = std::make_shared<Storage<double>>(
+        rowMajor, il{dim1, dim2, dim3},
+        ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
+            std::pair<int, int>(pad3_left, pad3_right)});
+
+    // --- 5D ---
+    storage_5d_col_major_padded = std::make_shared<Storage<double>>(
+        colMajor, il{dim1, dim2, dim3, dim4, dim5},
+        ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
+            std::pair<int, int>(pad3_left, pad3_right), std::pair<int, int>(pad4_left, pad4_right),
+            std::pair<int, int>(pad5_left, pad5_right)});
+
+    storage_5d_row_major_padded = std::make_shared<Storage<double>>(
+        rowMajor, il{dim1, dim2, dim3, dim4, dim5},
+        ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
+            std::pair<int, int>(pad3_left, pad3_right), std::pair<int, int>(pad4_left, pad4_right),
+            std::pair<int, int>(pad5_left, pad5_right)});
   }
 
   virtual void TearDown() override {}
@@ -167,8 +161,7 @@ TEST_F(StorageViewTest, Construction) {
 
   // Constructor
   auto sv_1d = *toStorageView(storage_1d);
-  EXPECT_EQ(static_cast<void*>(storage_1d->data.data()),
-            static_cast<void*>(sv_1d.data()));
+  EXPECT_EQ(static_cast<void*>(storage_1d->data.data()), static_cast<void*>(sv_1d.data()));
   EXPECT_EQ(storage_1d->strides, sv_1d.strides());
   EXPECT_EQ(storage_1d->dims, sv_1d.dims());
   EXPECT_EQ(storage_1d->padding, sv_1d.padding());
@@ -199,13 +192,19 @@ TEST_F(StorageViewTest, IteratorConstruction) {
   auto sv_2d_col_major_pad = *toStorageView(storage_2d_col_major_padded);
   auto sv_2d_row_major = *toStorageView(storage_2d_row_major);
   auto sv_2d_row_major_pad = *toStorageView(storage_2d_row_major_padded);
+  auto sv_3d_col_major = *toStorageView(storage_3d_col_major);
+  auto sv_3d_col_major_pad = *toStorageView(storage_3d_col_major_padded);
+  auto sv_3d_row_major = *toStorageView(storage_3d_row_major);
+  auto sv_3d_row_major_pad = *toStorageView(storage_3d_row_major_padded);
+  auto sv_5d_col_major_pad = *toStorageView(storage_5d_col_major_padded);
+  auto sv_5d_row_major_pad = *toStorageView(storage_5d_row_major_padded);
 
   EXPECT_NE(sv_1d.begin(), sv_1d.end());
   EXPECT_EQ(sv_1d.begin(), sv_1d.begin());
   EXPECT_EQ(sv_1d.end(), sv_1d.end());
   EXPECT_NE(sv_1d.begin(), sv_2d_col_major.begin());
 
-  // Check if begin() points to the beginning of the data
+  // Check if begin() points to the beginning of the data i.e skips any padding
 
   // --- 1D ---
   EXPECT_EQ(static_cast<void*>(sv_1d.begin().ptr()), static_cast<void*>(sv_1d.data()));
@@ -228,6 +227,27 @@ TEST_F(StorageViewTest, IteratorConstruction) {
   EXPECT_EQ(static_cast<void*>(sv_2d_row_major_pad.begin().ptr()),
             static_cast<void*>(&storage_2d_row_major_padded->at({0, 0})));
 
+  // --- 3D ---
+  EXPECT_EQ(static_cast<void*>(sv_3d_col_major.begin().ptr()),
+            static_cast<void*>(sv_3d_col_major.data()));
+  EXPECT_EQ(static_cast<void*>(sv_3d_col_major.begin().ptr()),
+            static_cast<void*>(&storage_3d_col_major->at({0, 0, 0})));
+  EXPECT_EQ(static_cast<void*>(sv_3d_col_major_pad.begin().ptr()),
+            static_cast<void*>(&storage_3d_col_major_padded->at({0, 0, 0})));
+
+  EXPECT_EQ(static_cast<void*>(sv_3d_row_major.begin().ptr()),
+            static_cast<void*>(sv_3d_row_major.data()));
+  EXPECT_EQ(static_cast<void*>(sv_3d_row_major.begin().ptr()),
+            static_cast<void*>(&storage_3d_row_major->at({0, 0, 0})));
+  EXPECT_EQ(static_cast<void*>(sv_3d_row_major_pad.begin().ptr()),
+            static_cast<void*>(&storage_3d_row_major_padded->at({0, 0, 0})));
+  
+  // --- 5D ---
+  EXPECT_EQ(static_cast<void*>(sv_5d_col_major_pad.begin().ptr()),
+            static_cast<void*>(&storage_5d_col_major_padded->at({0, 0, 0, 0, 0})));
+  EXPECT_EQ(static_cast<void*>(sv_5d_row_major_pad.begin().ptr()),
+            static_cast<void*>(&storage_5d_row_major_padded->at({0, 0, 0, 0, 0})));
+
   // Copy constructor
   auto it_sv_1d(sv_1d.begin());
   auto copy_it_sv_1d(it_sv_1d);
@@ -249,120 +269,93 @@ TEST_F(StorageViewTest, IteratorConstruction) {
 
 TEST_F(StorageViewTest, IteratorCopy) {
 
+  // ----------------------------------------------------------------------------------------------
   // The idea of this test is to copy a contiguous piece of data into the storages using the
   // StorageView and StorageViewIterator interfaces.
+  //
+  // This will make sure the operator++ as well as end() of StoraViewIterator are working correclty.
+  // ----------------------------------------------------------------------------------------------
 
-  std::vector<double> data(storage_2d_row_major_padded->size());
+  // Setup data (5D)
+  std::vector<double> data(dim1 * dim2 * dim3 * dim4 * dim5);
   std::iota(data.begin(), data.end(), 1);
   char* dataPtr;
   const int bytesPerElement = sizeof(double);
 
+#define COPY_INTO_STORAGE(name)                                                                    \
+  auto sv_##name = toStorageView(name);                                                            \
+  dataPtr = reinterpret_cast<char*>(data.data());                                                  \
+  for(auto it = sv_##name->begin(), end = sv_##name->end(); it != end;                             \
+      ++it, dataPtr += bytesPerElement)                                                            \
+    std::memcpy(it.ptr(), dataPtr, bytesPerElement);
+
   // --- 1D ---
 
-  // Copy data into storage_1d using StorageView and StorageViewIterator
-  auto sv_1d = toStorageView(storage_1d);
-  dataPtr = reinterpret_cast<char*>(data.data());
-  for(auto it = sv_1d->begin(), end = sv_1d->end(); it != end; ++it, dataPtr += bytesPerElement)
-    std::memcpy(it.ptr(), dataPtr, bytesPerElement);
-
-  // Copy data into storage_1d_pad using StorageView and StorageViewIterator
-  auto sv_1d_pad = toStorageView(storage_1d_padded);
-  dataPtr = reinterpret_cast<char*>(data.data());
-  for(auto it = sv_1d_pad->begin(), end = sv_1d_pad->end(); it != end;
-      ++it, dataPtr += bytesPerElement)
-    std::memcpy(it.ptr(), dataPtr, bytesPerElement);
-
-  ASSERT_EQ(sv_1d->bytesPerElement(), bytesPerElement);
-  ASSERT_EQ(sv_1d_pad->bytesPerElement(), bytesPerElement);
-  ASSERT_EQ(storage_1d->dims[0], storage_1d_padded->dims[0]);
+  COPY_INTO_STORAGE(storage_1d);
+  COPY_INTO_STORAGE(storage_1d_padded);
 
   // Check data was copied correctly
-  for(int i = 0; i < storage_1d->dims[0]; ++i) {
-    EXPECT_DOUBLE_EQ(data[i], storage_1d->at({i}));
-    EXPECT_DOUBLE_EQ(data[i], storage_1d_padded->at({i}));
+  for(int i = 0; i < dim1; ++i) {
+    ASSERT_DOUBLE_EQ(data[i], storage_1d->at({i}));
+    ASSERT_DOUBLE_EQ(data[i], storage_1d_padded->at({i}));
   }
 
   // --- 2D ---
 
-  // --------------------------------
+  COPY_INTO_STORAGE(storage_2d_col_major);
+  COPY_INTO_STORAGE(storage_2d_row_major);
+  COPY_INTO_STORAGE(storage_2d_col_major_padded);
+  COPY_INTO_STORAGE(storage_2d_row_major_padded);
 
-  //  std::cout << *storage_1d_padded << std::endl;
+  // Check data was copied correctly
+  for(int j = 0; j < dim2; ++j)
+    for(int i = 0; i < dim1; ++i) {
+      double val = data[j * dim1 + i];
+      ASSERT_DOUBLE_EQ(val, storage_2d_col_major->at({i, j}));
+      ASSERT_DOUBLE_EQ(val, storage_2d_row_major->at({i, j}));
+      ASSERT_DOUBLE_EQ(val, storage_2d_col_major_padded->at({i, j}));
+      ASSERT_DOUBLE_EQ(val, storage_2d_row_major_padded->at({i, j}));
+    }
 
-  //  for(int i = 0; i < storage_1d_padded->dims[0]; ++i)
-  //    std::cout << storage_1d_padded->at({i}) << "\n";
+  // --- 3D ---
+  COPY_INTO_STORAGE(storage_3d_col_major);
+  COPY_INTO_STORAGE(storage_3d_row_major);
+  COPY_INTO_STORAGE(storage_3d_col_major_padded);
+  COPY_INTO_STORAGE(storage_3d_row_major_padded);
 
-  // --------------------------------
+  // Check data was copied correctly
+  for(int k = 0; k < dim3; ++k)
+    for(int j = 0; j < dim2; ++j)
+      for(int i = 0; i < dim1; ++i) {
+        double val = data[k * dim1 * dim2 + j * dim1 + i];
+        ASSERT_DOUBLE_EQ(val, storage_3d_col_major->at({i, j, k}));
+        ASSERT_DOUBLE_EQ(val, storage_3d_row_major->at({i, j, k}));
+        ASSERT_DOUBLE_EQ(val, storage_3d_col_major_padded->at({i, j, k}));
+        ASSERT_DOUBLE_EQ(val, storage_3d_row_major_padded->at({i, j, k}));
+      }
 
-  //  std::cout << *storage_1d << std::endl;
+  // --- 5D ---
+  COPY_INTO_STORAGE(storage_5d_col_major_padded);
+  COPY_INTO_STORAGE(storage_5d_row_major_padded);
 
-  //  for(int i = 0; i < storage_1d->dims[0]; ++i)
-  //    std::cout << storage_1d->at({i}) << "\n";
-
-  // --------------------------------
-
-  //    std::cout << *storage_2d_col_major << std::endl;
-
-  //    for(int j = 0; j < storage_2d_col_major->dims[1]; ++j)
-  //      for(int i = 0; i < storage_2d_col_major->dims[0]; ++i)
-  //        std::cout << storage_2d_col_major->at({i, j}) << "\n";
-
-  //    std::cout << *storage_2d_row_major << std::endl;
-
-  //    for(int j = 0; j < storage_2d_row_major->dims[1]; ++j)
-  //      for(int i = 0; i < storage_2d_row_major->dims[0]; ++i)
-  //        std::cout << storage_2d_row_major->at({i, j}) << "\n";
-
-  // ---------------------------------
-
-  //    std::cout << *storage_2d_col_major_padded << std::endl;
-
-  //    for(int j = 0; j < storage_2d_col_major_padded->dims[1]; ++j)
-  //      for(int i = 0; i < storage_2d_col_major_padded->dims[0]; ++i)
-  //        std::cout << storage_2d_col_major_padded->at({i, j}) << "\n";
-
-  //  std::cout << (*reinterpret_cast<double*>(it_sv_2d.data<double>())) << std::endl;
+  // Check data was copied correctly
+  for(int m = 0; m < dim5; ++m)
+    for(int l = 0; l < dim4; ++l)
+      for(int k = 0; k < dim3; ++k)
+        for(int j = 0; j < dim2; ++j)
+          for(int i = 0; i < dim1; ++i) {
+            double val = data[m * dim1 * dim2 * dim3 * dim4 + l * dim1 * dim2 * dim3 +
+                              k * dim1 * dim2 + j * dim1 + i];
+            ASSERT_DOUBLE_EQ(val, storage_5d_col_major_padded->at({i, j, k, l, m}));
+            ASSERT_DOUBLE_EQ(val, storage_5d_row_major_padded->at({i, j, k, l, m}));
+          }
 }
 
-TEST_F(StorageViewTest, Testing) {
-
-  auto type = ToTypeID<double>::value;  
-  const int bytesPerElement = sizeof(double);  
-  
-  std::vector<double> data({0.0, 1.0, 2.0, 3.0, 4.0, 5.0});
-  char* dataPtr;
-  
-  // ----------------------------------------
-  
-  Storage<double> colMajor2D({2, 3}, {1, 2}, false); 
-
-  StorageView svColMajor2D(colMajor2D.data.data(), type, colMajor2D.dims, colMajor2D.strides,
-                           colMajor2D.padding);  
-  
-  dataPtr = reinterpret_cast<char*>(data.data());
-  for(auto it = svColMajor2D.begin(), end = svColMajor2D.end(); it != end; ++it, dataPtr += bytesPerElement) {
-    std::memcpy(it.ptr(), dataPtr, bytesPerElement);
-//    std::cout << (*reinterpret_cast<double*>(it.ptr())) << std::endl;      
-  }
-  
-//  std::cout << colMajor2D << std::endl; 
-  
-  // -------------------------------------
-  
-  Storage<double> rowMajor2D({2, 3}, {3, 1}, false);
-  
-  StorageView svRowMajor2D(rowMajor2D.data.data(), type, rowMajor2D.dims, rowMajor2D.strides,
-                           rowMajor2D.padding);  
-  
-  dataPtr = reinterpret_cast<char*>(data.data());
-  for(auto it = svRowMajor2D.begin(), end = svRowMajor2D.end(); it != end; ++it, dataPtr += bytesPerElement) {
-    std::memcpy(it.ptr(), dataPtr, bytesPerElement);
-//    std::cout << (*reinterpret_cast<double*>(it.ptr())) << std::endl;      
-  }
-  
-//  std::cout << rowMajor2D << std::endl; 
-  
-  for(int j = 0; j < 3; ++j)
-    for(int i = 0; i < 2; ++i) {
-      ASSERT_DOUBLE_EQ(rowMajor2D.at({i, j}), colMajor2D.at({i, j})) << std::endl;
-    }
+TEST_F(StorageViewTest, isMemCopyable) {
+  EXPECT_TRUE(toStorageView(storage_1d)->isMemCopyable());
+  EXPECT_FALSE(toStorageView(storage_1d_padded)->isMemCopyable());
+  EXPECT_TRUE(toStorageView(storage_2d_col_major)->isMemCopyable());
+  EXPECT_FALSE(toStorageView(storage_2d_col_major_padded)->isMemCopyable());
+  EXPECT_FALSE(toStorageView(storage_2d_row_major)->isMemCopyable());
+  EXPECT_FALSE(toStorageView(storage_2d_row_major_padded)->isMemCopyable());
 }
