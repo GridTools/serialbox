@@ -54,7 +54,7 @@ struct Storage {
 
   // Initialize storage with random data
   void initData() {
-    for(int i = 0; i < data.size(); ++i)
+    for(std::size_t i = 0; i < data.size(); ++i)
       data[i] = i;
   }
 
