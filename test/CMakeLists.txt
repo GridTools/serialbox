@@ -23,8 +23,7 @@ cmake_minimum_required(VERSION 3.1)
 function(serialbox_add_unittest_executable name sources)
   add_executable(${name} ${sources} ${SERIALBOX_HEADERS})
 
-  target_link_libraries(${name} SerialboxSupport
-                                ${SERIALBOX_EXTERNAL_LIBRARIES})
+  target_link_libraries(${name} SerialboxCore ${SERIALBOX_EXTERNAL_LIBRARIES})
   
   # Compile with warnings?
   if(SERIALBOX_VERBOSE_WARNINGS)

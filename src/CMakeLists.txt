@@ -40,6 +40,5 @@ function(serialbox_add_library name sources libraries)
 endfunction(serialbox_add_library)
 
 ## Add subdirectories
-add_subdirectory(Support)
-
+add_subdirectory(Core)
 
