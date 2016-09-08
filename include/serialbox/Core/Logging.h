@@ -1,4 +1,4 @@
-//===-- serialbox/Support/Logging.h -------------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/Logging.h ----------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_SUPPORT_LOGGING_H
-#define SERIALBOX_SUPPORT_LOGGING_H
+#ifndef SERIALBOX_CORE_LOGGING_H
+#define SERIALBOX_CORE_LOGGING_H
 
 #ifndef SERIALBOX_DISABLE_LOGGING
 #include <glog/logging.h>

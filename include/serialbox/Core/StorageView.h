@@ -1,4 +1,4 @@
-//===-- serialbox/Support/StorageView.h ---------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/StorageView.h ------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -13,13 +13,14 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_SUPPORT_STORAGEVIEW_H
-#define SERIALBOX_SUPPORT_STORAGEVIEW_H
+#ifndef SERIALBOX_CORE_STORAGEVIEW_H
+#define SERIALBOX_CORE_STORAGEVIEW_H
 
-#include "serialbox/Support/Logging.h"
-#include "serialbox/Support/StorageViewIterator.h"
-#include "serialbox/Support/Type.h"
+#include "serialbox/Core/Logging.h"
+#include "serialbox/Core/StorageViewIterator.h"
+#include "serialbox/Core/Type.h"
 #include <vector>
+#include <utility>
 
 namespace serialbox {
 
@@ -29,15 +30,19 @@ public:
   /// \name Constructors
   /// @{
 
-  /// \brief Construct StorageView from pointer
+  /// \brief Construct StorageView
   StorageView(void* data, TypeID type, const std::vector<int>& dims,
               const std::vector<int>& strides, const std::vector<std::pair<int, int>>& padding);
+
+  /// \brief Construct StorageView (move version)
+  StorageView(void* data, TypeID type, std::vector<int>&& dims, std::vector<int>&& strides,
+              std::vector<std::pair<int, int>>&& padding);
 
   /// \brief Copy constructor
   StorageView(const StorageView& other) = default;
 
   /// \brief Move constructor
-  StorageView(const StorageView&& other) = delete;
+  StorageView(StorageView&& other) = default;
 
   /// @}
   /// \name Iterator
@@ -109,9 +114,10 @@ public:
 private:
   Byte* data_;
   TypeID type_;
-  std::vector<int> dims_;
-  std::vector<int> strides_;
-  std::vector<std::pair<int, int>> padding_;
+
+  std::vector<int> dims_;                    ///< Unaligned dimensions (including the halos)
+  std::vector<int> strides_;                 ///< Total strides including all padding
+  std::vector<std::pair<int, int>> padding_; ///< Left and right padding in each dimension
 };
 
 /// \fn swap

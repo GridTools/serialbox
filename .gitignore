@@ -13,8 +13,10 @@ install*
 buildenv*
 
 # External projects
-external/gridtools
-external/STELLA
+external/*
+!external/gtest
+!external/glog
+!external/json
 
 # Generated files
 include/serialbox/Support/Config.h

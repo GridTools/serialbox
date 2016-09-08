@@ -1,4 +1,4 @@
-//===-- serialbox/Support/Type.h ----------------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/Type.h -------------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_SUPPORT_TYPE_H
-#define SERIALBOX_SUPPORT_TYPE_H
+#ifndef SERIALBOX_CORE_TYPE_H
+#define SERIALBOX_CORE_TYPE_H
 
 #include <cstdint>
 #include <string>

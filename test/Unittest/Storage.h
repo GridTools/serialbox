@@ -15,7 +15,7 @@
 #ifndef SERIALBOX_UNITTEST_STORAGE_H
 #define SERIALBOX_UNITTEST_STORAGE_H
 
-#include "serialbox/Support/Logging.h"
+#include "serialbox/Core/Logging.h"
 #include <cstring>
 #include <initializer_list>
 #include <iostream>
@@ -30,7 +30,7 @@ namespace serialbox {
 
 namespace unittest {
 
-/// \brief Represent a dummy storage
+/// \brief Represent a dummy storage to test the StorageView in absence of gridtools or STELLA
 template <class T>
 struct Storage {
   /// \brief Storage order
@@ -122,7 +122,6 @@ struct Storage {
   }
 
 private:
-  // Compute strides
   void computeStrides() {
     int numDim = dims.size();
 
@@ -147,7 +146,6 @@ private:
     }
   }
 
-  // Initialize storage
   void initData() {
     for(std::size_t i = 0; i < data.size(); ++i)
       data[i] = i;

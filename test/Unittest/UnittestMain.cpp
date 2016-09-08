@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Support/Logging.h"
+#include "serialbox/Core/Logging.h"
 #include <gtest/gtest.h>
 
 int main(int argc, char *argv[]) {

@@ -15,10 +15,11 @@
 #ifndef SERIALBOX_UNITTEST_GRIDTOOLS_H
 #define SERIALBOX_UNITTEST_GRIDTOOLS_H
 
-#include "serialbox/Support/Compiler.h"
+#include "serialbox/Core/Compiler.h"
 
 #ifdef SERIALBOX_HAS_GRIDTOOLS
 
+#define CXX11_ENABLED
 #define STRUCTURED_GRIDS
 #define SUPPRESS_MESSAGES
 

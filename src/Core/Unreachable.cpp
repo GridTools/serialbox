@@ -1,4 +1,4 @@
-//===-- Support/Unreachable.cpp -----------------------------------------------------*- C++ -*-===//
+//===-- Core/Unreachable.cpp --------------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Support/Unreachable.h"
+#include "serialbox/Core/Unreachable.h"
 #include <cstdio>
 #include <iostream>
 

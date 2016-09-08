@@ -13,6 +13,7 @@ set(UNITTEST_SOURCES UnittestMain.cpp
                      UnittestStorage.cpp
                      UnittestStorageView.cpp
                      UnittestStorageViewGridTools.cpp
+                     UnittestStorageViewSTELLA.cpp
                      UnittestType.cpp
 
                      GridTools.h

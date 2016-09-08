@@ -1,4 +1,4 @@
-//===-- Unittest/STELLA.h -----------------------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/Json.h -------------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,19 +8,14 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file includes all the necessary STELLA headers.
+/// This file includes the headers of the json library
+/// See: https://github.com/nlohmann/json/tree/master
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_UNITTEST_STELLA_H
-#define SERIALBOX_UNITTEST_STELLA_H
+#ifndef SERIALBOX_CORE_JSON_H
+#define SERIALBOX_CORE_JSON_H
 
-#include "serialbox/Core/Compiler.h"
-
-#ifdef SERIALBOX_HAS_STELLA
-
-#include "SharedInfrastructure.h"
-
-#endif
+#include <json/json.hpp>
 
 #endif

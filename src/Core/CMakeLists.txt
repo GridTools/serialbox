@@ -9,19 +9,14 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-set(CORE_SOURCES 
-  # Support
+set(SOURCES 
   Logging.cpp
-  Type.cpp
   StorageView.cpp
   StorageViewIterator.cpp
+  Type.cpp
   Unreachable.cpp
-    
-  # Serializer
-  
-  # Archive
 )
 
-set(CORE_EXTERNAL_LIBRARIES)
+set(EXTERNAL_LIBRARIES ${BOOST_LIBRARIES} ${GLOG_LIBRARIES})
 
-serialbox_add_library(SerialboxCore "${CORE_SOURCES}" "${CORE_EXTERNAL_LIBRARIES}")
+serialbox_add_library(SerialboxCore "${SOURCES}" "${EXTERNAL_LIBRARIES}")

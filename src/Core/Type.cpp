@@ -1,4 +1,4 @@
-//===-- Support/Type.cpp ------------------------------------------------------------*- C++ -*-===//
+//===-- Core/Type.cpp ---------------------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Support/Type.h"
-#include "serialbox/Support/Unreachable.h"
+#include "serialbox/Core/Type.h"
+#include "serialbox/Core/Unreachable.h"
 
 namespace serialbox {
 

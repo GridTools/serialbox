@@ -1,4 +1,4 @@
-//===-- serialbox/Support/StorageViewIterator.h -------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/StorageViewIterator.h ----------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,10 +12,10 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_SUPPORT_STORAGEVIEWITERATOR_H
-#define SERIALBOX_SUPPORT_STORAGEVIEWITERATOR_H
+#ifndef SERIALBOX_CORE_STORAGEVIEWITERATOR_H
+#define SERIALBOX_CORE_STORAGEVIEWITERATOR_H
 
-#include "serialbox/Support/Type.h"
+#include "serialbox/Core/Type.h"
 #include <iterator>
 #include <vector>
 
@@ -85,7 +85,16 @@ public:
   int bytesPerElement() noexcept { return bytesPerElement_; }
 
   /// \brief Get current data pointer
-  Byte* ptr() noexcept { return ptr_; } 
+  Byte* ptr() noexcept { return ptr_; }
+  
+  /// \brief Interpret current data pointer as type T
+  /// @{
+  template<class T>
+  T& as() noexcept { return *(reinterpret_cast<T*>(ptr_)); }
+
+  template<class T>
+  const T& as() const noexcept { return *(reinterpret_cast<T*>(ptr_)); }
+  /// @}
 
 private:
   /// \brief Compute the current linear index in the data according to the \c index vector

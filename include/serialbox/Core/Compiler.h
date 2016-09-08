@@ -1,4 +1,4 @@
-//===-- serialbox/Support/Compiler.h ------------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/Compiler.h ---------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -13,11 +13,11 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_SUPPORT_COMPILER_H
-#define SERIALBOX_SUPPORT_COMPILER_H
+#ifndef SERIALBOX_CORE_COMPILER_H
+#define SERIALBOX_CORE_COMPILER_H
 
-#include "serialbox/Support/Config.h"
-
+#include "serialbox/Core/Config.h"
+ 
 #ifndef __has_feature
 #define __has_feature(x) 0
 #endif

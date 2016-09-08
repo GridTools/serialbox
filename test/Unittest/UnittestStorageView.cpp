@@ -13,9 +13,9 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "Storage.h"
-#include "serialbox/Support/STLExtras.h"
-#include "serialbox/Support/StorageView.h"
-#include "serialbox/Support/Type.h"
+#include "serialbox/Core/StorageView.h"
+#include "serialbox/Core/STLExtras.h"
+#include "serialbox/Core/Type.h"
 #include <cstring>
 #include <gtest/gtest.h>
 
@@ -26,14 +26,18 @@ namespace {
 
 class StorageViewTest : public testing::Test {
 public:
+  // -----------------------------------------------------------------------------------------------
   // Dimensions
+  // -----------------------------------------------------------------------------------------------
   int dim1;
   int dim2;
   int dim3;
   int dim4;
   int dim5;
 
+  // -----------------------------------------------------------------------------------------------
   // Padding
+  // -----------------------------------------------------------------------------------------------
   int pad1_left;
   int pad1_right;
 
@@ -49,25 +53,33 @@ public:
   int pad5_left;
   int pad5_right;
   
-  // --- 1D ---
+  // -----------------------------------------------------------------------------------------------
+  // 1D
+  // -----------------------------------------------------------------------------------------------
   std::shared_ptr<Storage<double>> storage_1d;
   std::shared_ptr<Storage<double>> storage_1d_padded;
 
-  // --- 2D ---
+  // -----------------------------------------------------------------------------------------------
+  // 2D
+  // -----------------------------------------------------------------------------------------------
   std::shared_ptr<Storage<double>> storage_2d_col_major;
   std::shared_ptr<Storage<double>> storage_2d_col_major_padded;
 
   std::shared_ptr<Storage<double>> storage_2d_row_major;
   std::shared_ptr<Storage<double>> storage_2d_row_major_padded;
 
-  // --- 3D ---
+  // -----------------------------------------------------------------------------------------------
+  // 3D
+  // -----------------------------------------------------------------------------------------------
   std::shared_ptr<Storage<double>> storage_3d_col_major;
   std::shared_ptr<Storage<double>> storage_3d_col_major_padded;
 
   std::shared_ptr<Storage<double>> storage_3d_row_major;
   std::shared_ptr<Storage<double>> storage_3d_row_major_padded;
 
-  // --- 5D ---
+  // -----------------------------------------------------------------------------------------------
+  // 5D
+  // -----------------------------------------------------------------------------------------------
   std::shared_ptr<Storage<double>> storage_5d_col_major_padded;
   std::shared_ptr<Storage<double>> storage_5d_row_major_padded;
 
@@ -76,14 +88,12 @@ protected:
     using il = std::initializer_list<int>;
     using ipl = std::initializer_list<std::pair<int, int>>;
 
-    // Dimensions
     dim1 = 2;
     dim2 = 3;
     dim3 = 4;
     dim4 = 2;
     dim5 = 2;
 
-    // Padding
     pad1_left = 1;
     pad1_right = 2;
 
@@ -102,12 +112,10 @@ protected:
     auto colMajor = Storage<double>::ColMajor;
     auto rowMajor = Storage<double>::RowMajor;
 
-    // --- 1D ---
     storage_1d = std::make_shared<Storage<double>>(colMajor, il{dim1});
     storage_1d_padded = std::make_shared<Storage<double>>(
         colMajor, il{dim1}, ipl{std::pair<int, int>(pad1_left, pad1_right)});
 
-    // --- 2D ---
     storage_2d_col_major = std::make_shared<Storage<double>>(colMajor, il{dim1, dim2});
     storage_2d_col_major_padded = std::make_shared<Storage<double>>(
         colMajor, il{dim1, dim2}, ipl{std::pair<int, int>(pad1_left, pad1_right),
@@ -118,7 +126,6 @@ protected:
         rowMajor, il{dim1, dim2}, ipl{std::pair<int, int>(pad1_left, pad1_right),
                                       std::pair<int, int>(pad2_left, pad2_right)});
 
-    // --- 3D ---
     storage_3d_col_major = std::make_shared<Storage<double>>(colMajor, il{dim1, dim2, dim3});
     storage_3d_col_major_padded = std::make_shared<Storage<double>>(
         colMajor, il{dim1, dim2, dim3},
@@ -131,7 +138,6 @@ protected:
         ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
             std::pair<int, int>(pad3_left, pad3_right)});
 
-    // --- 5D ---
     storage_5d_col_major_padded = std::make_shared<Storage<double>>(
         colMajor, il{dim1, dim2, dim3, dim4, dim5},
         ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
@@ -206,13 +212,17 @@ TEST_F(StorageViewTest, IteratorConstruction) {
 
   // Check if begin() points to the beginning of the data i.e skips any padding
 
-  // --- 1D ---
+  // -----------------------------------------------------------------------------------------------
+  // 1D
+  // -----------------------------------------------------------------------------------------------
   EXPECT_EQ(static_cast<void*>(sv_1d.begin().ptr()), static_cast<void*>(sv_1d.data()));
   EXPECT_EQ(static_cast<void*>(sv_1d.begin().ptr()), static_cast<void*>(&storage_1d->at({0})));
   EXPECT_EQ(static_cast<void*>(sv_1d_pad.begin().ptr()),
             static_cast<void*>(&storage_1d_padded->at({0})));
 
-  // --- 2D ---
+  // -----------------------------------------------------------------------------------------------
+  // 2D
+  // -----------------------------------------------------------------------------------------------
   EXPECT_EQ(static_cast<void*>(sv_2d_col_major.begin().ptr()),
             static_cast<void*>(sv_2d_col_major.data()));
   EXPECT_EQ(static_cast<void*>(sv_2d_col_major.begin().ptr()),
@@ -227,7 +237,9 @@ TEST_F(StorageViewTest, IteratorConstruction) {
   EXPECT_EQ(static_cast<void*>(sv_2d_row_major_pad.begin().ptr()),
             static_cast<void*>(&storage_2d_row_major_padded->at({0, 0})));
 
-  // --- 3D ---
+  // -----------------------------------------------------------------------------------------------
+  // 3D
+  // -----------------------------------------------------------------------------------------------
   EXPECT_EQ(static_cast<void*>(sv_3d_col_major.begin().ptr()),
             static_cast<void*>(sv_3d_col_major.data()));
   EXPECT_EQ(static_cast<void*>(sv_3d_col_major.begin().ptr()),
@@ -242,7 +254,9 @@ TEST_F(StorageViewTest, IteratorConstruction) {
   EXPECT_EQ(static_cast<void*>(sv_3d_row_major_pad.begin().ptr()),
             static_cast<void*>(&storage_3d_row_major_padded->at({0, 0, 0})));
   
-  // --- 5D ---
+  // -----------------------------------------------------------------------------------------------
+  // 5D
+  // -----------------------------------------------------------------------------------------------
   EXPECT_EQ(static_cast<void*>(sv_5d_col_major_pad.begin().ptr()),
             static_cast<void*>(&storage_5d_col_major_padded->at({0, 0, 0, 0, 0})));
   EXPECT_EQ(static_cast<void*>(sv_5d_row_major_pad.begin().ptr()),

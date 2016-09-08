@@ -1,4 +1,4 @@
-//===-- Support/StorageView.cpp -----------------------------------------------------*- C++ -*-===//
+//===-- Core/StorageView.cpp --------------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -13,9 +13,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Support/Logging.h"
-#include "serialbox/Support/StorageView.h"
-#include "serialbox/Support/StorageViewIterator.h"
+#include "serialbox/Core/Logging.h"
+#include "serialbox/Core/StorageView.h"
+#include "serialbox/Core/StorageViewIterator.h"
 #include <algorithm>
 
 namespace serialbox {
@@ -23,6 +23,14 @@ namespace serialbox {
 StorageView::StorageView(void* data, TypeID type, const std::vector<int>& dims,
                          const std::vector<int>& strides,
                          const std::vector<std::pair<int, int>>& padding)
+    : data_(reinterpret_cast<Byte*>(data)), type_(type), dims_(dims), strides_(strides),
+      padding_(padding) {
+  CHECK(!dims_.empty()) << "empty dimension";
+  CHECK(dims_.size() == strides_.size() && dims_.size() == padding_.size()) << "dimension mismatch";
+}
+
+StorageView::StorageView(void* data, TypeID type, std::vector<int>&& dims,
+                         std::vector<int>&& strides, std::vector<std::pair<int, int>>&& padding)
     : data_(reinterpret_cast<Byte*>(data)), type_(type), dims_(dims), strides_(strides),
       padding_(padding) {
   CHECK(!dims_.empty()) << "empty dimension";
@@ -46,19 +54,19 @@ std::ostream& operator<<(std::ostream& stream, const StorageView& s) {
   stream << "StorageView [\n";
   stream << "  data = " << static_cast<void*>(s.data_) << "\n";
   stream << "  type = " << TypeUtil::toString(s.type_) << "\n";
-  
+
   stream << "  dims = {";
   for(auto i : s.dims_)
     stream << " " << i;
-  
+
   stream << " }\n  strides = {";
   for(auto i : s.strides_)
     stream << " " << i;
-  
+
   stream << " }\n  padding = {";
   for(auto i : s.padding_)
     stream << " [" << i.first << "," << i.second << "]";
-  
+
   stream << " }\n]\n";
   return stream;
 }

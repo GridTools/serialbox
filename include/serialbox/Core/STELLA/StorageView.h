@@ -1,4 +1,4 @@
-//===-- serialbox/Archive/Archive.h -------------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/STELLA/StorageView.h -----------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,18 +8,20 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// Abstract interface for Archives.
+/// This file contains helper functions to create StorageViews of STELLA storages.
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_ARCHIVE_ARCHIVE_H
-#define SERIALBOX_ARCHIVE_ARCHIVE_H
+#ifndef SERIALBOX_CORE_STELLA_STORAGEVIEW_H
+#define SERIALBOX_CORE_STELLA_STORAGEVIEW_H
+
+#include "serialbox/Core/StorageView.h"
 
 namespace serialbox {
 
-class Archive {
-  
-};
+namespace stella {
+
+} // namespace stella
 
 } // namespace serialbox
 

@@ -30,6 +30,7 @@ find_package_handle_standard_args(GRIDTOOLS DEFAULT_MSG GRIDTOOLS_INCLUDE_DIRS)
 
 if(GRIDTOOLS_FOUND)
     mark_as_advanced(GRIDTOOLS_INCLUDE_DIRS)
+    message(STATUS "GridTools found at ${GRIDTOOLS_ROOT}")
 else()
     # If the package was required we abort the process
     if(${GridTools_FIND_REQUIRED})

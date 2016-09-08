@@ -1,4 +1,4 @@
-//===-- serialbox/Support/STLExtras.h -----------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/STLExtras.h --------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_SUPPORT_STLEXTRAS_H
-#define SERIALBOX_SUPPORT_STLEXTRAS_H
+#ifndef SERIALBOX_CORE_STLEXTRAS_H
+#define SERIALBOX_CORE_STLEXTRAS_H
 
 #include <cstddef>
 #include <memory>

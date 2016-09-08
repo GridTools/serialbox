@@ -50,9 +50,9 @@ option(SERIALBOX_TESTING "Build unit-test executables" ON)
 option(SERIALBOX_LOGGING "Enable logging" ON)
 option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" ON)
 
-option(SERIALBOX_ENABLE_GRIDTOOLS "Build GridTools Serializer" OFF)
-option(SERIALBOX_ENABLE_STELLA "Build STELLA Serializer" OFF)
-option(SERIALBOX_ENABLE_FORTRAN "Build Fortran Serializer" OFF)
+option(SERIALBOX_ENABLE_GRIDTOOLS "Build GridTools Unitests" OFF)
+option(SERIALBOX_ENABLE_STELLA "Build STELLA Unitests" OFF)
+option(SERIALBOX_ENABLE_FORTRAN "Build Fortran Unitests" OFF)
   
 #---------------------------------------- CMake options --------------------------------------------
  
@@ -175,6 +175,11 @@ endif(NOT(${Boost_FOUND}))
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
+
+#---------------------------------------- JSON -----------------------------------------------------
+message(STATUS "Using json from: ${CMAKE_CURRENT_SOURCE_DIR}/external/json")
+include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/external/json/include)
+
 #---------------------------------------- GridTools ------------------------------------------------
 if(SERIALBOX_ENABLE_GRIDTOOLS)
 
@@ -189,22 +194,61 @@ if(SERIALBOX_ENABLE_GRIDTOOLS)
   find_package(GridTools QUIET REQUIRED)
   include_directories(SYSTEM ${GRIDTOOLS_INCLUDE_DIRS})
   set(SERIALBOX_HAS_GRIDTOOLS 1)
-
+  
 endif(SERIALBOX_ENABLE_GRIDTOOLS)
 
 #---------------------------------------- STELLA ---------------------------------------------------
 if(SERIALBOX_ENABLE_STELLA)
 
-  #TODO
-  set(SERIALBOX_HAS_STELLA ON)
+  # If STELLA_ROOT is not provided, we try to find it in external/
+  set(STELLA_ROOT_ENV "$ENV{STELLA_ROOT}")
+  if(NOT(STELLA_ROOT) AND NOT(STELLA_ROOT_ENV) AND 
+     EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/stella/CMakeLists.txt")
+   
+    set(STELLA_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/external/stella")
+    
+    set(BUILD_STELLA "ON" BOOL)
+    set(STELLA_INSTALL_DIR "${CMAKE_BINARY_DIR}/external/stella/install")
+    
+    # Forward toolchain
+    set(CMAKE_EXTERNAL_ARGS -Wno-dev
+      -DSTELLA_ENABLE_BENCHMARK=OFF
+      -DSTELLA_ENABLE_COMMUNICATION=OFF
+      -DSTELLA_ENABLE_SERIALIZATION=OFF
+      -DSTELLA_ENABLE_TESTING=OFF
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
+      -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+      -DCMAKE_INSTALL_PREFIX=${STELLA_INSTALL_DIR}
+    )
+
+    # Build STELLA
+    ExternalProject_Add(
+        stella
+        URL        "${CMAKE_CURRENT_SOURCE_DIR}/external/stella"
+        PREFIX     "external/stella"
+        CMAKE_ARGS ${CMAKE_EXTERNAL_ARGS}
+    )
+    message(STATUS "Building STELLA from: ${CMAKE_CURRENT_SOURCE_DIR}/external/stella")
+
+    set(STELLA_INCLUDE_DIRS "${STELLA_INSTALL_DIR}/include/STELLA")
+    set(STELLA_LIBRARIES "${STELLA_INSTALL_DIR}/lib/libSharedInfrastructure.a"
+                         "${STELLA_INSTALL_DIR}/lib/libStella.a"
+                         "${STELLA_INSTALL_DIR}/lib/libStellaUtils.a")
+  else()
+    find_package(STELLA QUIET REQUIRED)
+  endif()
+  
+  include_directories(SYSTEM ${STELLA_INCLUDE_DIRS})
+  set(SERIALBOX_HAS_STELLA 1)
 
 endif(SERIALBOX_ENABLE_STELLA)
 
-#---------------------------------------- Fortran ---------------------------------------------------
+#--------------------------------------- Fortran ---------------------------------------------------
 if(SERIALBOX_ENABLE_FORTRAN)
 
-  #TODO
-  set(SERIALBOX_HAS_FORTRAN ON)
+  set(SERIALBOX_HAS_FORTRAN 1)
 
 endif(SERIALBOX_ENABLE_FORTRAN)
 
@@ -270,10 +314,11 @@ endif()
 #---------------------------------------- Compilation ----------------------------------------------
 
 # Generate serialbox/Support/Config.h
-set(SERIALBOX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/include/serialbox/Support/Config.h.cmake)
-set(SERIALBOX_CONFIG_FILE ${PROJECT_SOURCE_DIR}/include/serialbox/Support/Config.h)
+set(SERIALBOX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/include/serialbox/Core/Config.h.cmake)
+set(SERIALBOX_CONFIG_FILE ${CMAKE_BINARY_DIR}/include/serialbox/Core/Config.h)
 set(SERIALBOX_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
 configure_file(${SERIALBOX_CONFIG_FILE_IN} ${SERIALBOX_CONFIG_FILE})
+include_directories(${CMAKE_BINARY_DIR}/include)
 
 enable_testing()
 
@@ -287,6 +332,10 @@ file(GLOB_RECURSE SERIALBOX_HEADERS
      
 # Setup external libraries
 set(SERIALBOX_EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${GTEST_LIBRARIES} ${GLOG_LIBRARIES})
+
+if(SERIALBOX_HAS_STELLA)
+  set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${STELLA_LIBRARIES})
+endif(SERIALBOX_HAS_STELLA)
 
 # Build Serialbox
 add_subdirectory(src)

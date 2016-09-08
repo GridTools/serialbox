@@ -1,4 +1,4 @@
-//===-- Unittest/STELLA.h -----------------------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/Archive/Archive.h --------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,19 +8,19 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file includes all the necessary STELLA headers.
+/// Abstract interface for Archives.
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_UNITTEST_STELLA_H
-#define SERIALBOX_UNITTEST_STELLA_H
+#ifndef SERIALBOX_CORE_ARCHIVE_ARCHIVE_H
+#define SERIALBOX_CORE_ARCHIVE_ARCHIVE_H
 
-#include "serialbox/Core/Compiler.h"
+namespace serialbox {
 
-#ifdef SERIALBOX_HAS_STELLA
+class Archive {
+  
+};
 
-#include "SharedInfrastructure.h"
-
-#endif
+} // namespace serialbox
 
 #endif

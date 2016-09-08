@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Support/Type.h"
+#include "serialbox/Core/Type.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

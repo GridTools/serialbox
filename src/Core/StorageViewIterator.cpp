@@ -1,4 +1,4 @@
-//===-- Support/StorageViewIterator.cpp ---------------------------------------------*- C++ -*-===//
+//===-- Core/StorageViewIterator.cpp ------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,9 +12,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Support/Compiler.h"
-#include "serialbox/Support/StorageView.h"
-#include "serialbox/Support/StorageViewIterator.h"
+#include "serialbox/Core/Compiler.h"
+#include "serialbox/Core/StorageView.h"
+#include "serialbox/Core/StorageViewIterator.h"
 
 namespace serialbox {
 

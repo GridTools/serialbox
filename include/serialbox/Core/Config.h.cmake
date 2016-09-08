@@ -1,4 +1,4 @@
-//===-- serialbox/Support/Config.h --------------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/Config.h -----------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -14,8 +14,8 @@
 //
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_SUPPORT_CONFIG_H
-#define SERIALBOX_SUPPORT_CONFIG_H
+#ifndef SERIALBOX_CORE_CONFIG_H
+#define SERIALBOX_CORE_CONFIG_H
 
 /* Define if this is Unixish platform */
 #cmakedefine SERIALBOX_ON_UNIX ${SERIALBOX_ON_UNIX}
@@ -35,13 +35,13 @@
 /* SERIALBOX version string */
 #define SERIALBOX_VERSION_STRING "${SERIALBOX_VERSION_MAJOR}.${SERIALBOX_VERSION_MINOR}.${SERIALBOX_VERSION_PATCH}"
 
-/* Define if GridTools Serializer is built */
+/* Define if GridTools Unittests are built */
 #cmakedefine SERIALBOX_HAS_GRIDTOOLS ${SERIALBOX_HAS_GRIDTOOLS}
 
-/* Define if STELLA Serializer is built */
+/* Define if STELLA Unittests are built */
 #cmakedefine SERIALBOX_HAS_STELLA ${SERIALBOX_HAS_STELLA}
 
-/* Define if Fortran Serializer is built */
+/* Define if Fortran Unittests are built */
 #cmakedefine SERIALBOX_HAS_FORTRAN ${SERIALBOX_HAS_FORTRAN}
 
 #endif

@@ -1,4 +1,4 @@
-//===-- Unittest/STELLA.h -----------------------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/Archive/Binary/BinaryArchive.h -------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,19 +8,22 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file includes all the necessary STELLA headers.
+/// This file implements a non-portable binary archive.
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_UNITTEST_STELLA_H
-#define SERIALBOX_UNITTEST_STELLA_H
+#ifndef SERIALBOX_CORE_ARCHIVE_BINARY_ARCHIVE_H
+#define SERIALBOX_CORE_ARCHIVE_BINARY_ARCHIVE_H
 
-#include "serialbox/Core/Compiler.h"
+#include "serialbox/Core/Archive/Archive.h"
 
-#ifdef SERIALBOX_HAS_STELLA
+namespace serialbox {
 
-#include "SharedInfrastructure.h"
+class BinaryArchive : public Archive {
+  
+};
 
-#endif
+
+} // namespace serialbox
 
 #endif
