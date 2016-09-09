@@ -35,7 +35,7 @@ using gpu_ijk_boundary = DataFieldIJBoundary<-cNumBoundaryLines, cNumBoundaryLin
 //===------------------------------------------------------------------------------------------===//
 //     CPU Storage
 //===------------------------------------------------------------------------------------------===//
-using cpu_ijk_storage =
+using cpu_jik_storage =
     DataFieldOpenMP<Real,
                     DataFieldStorageFormat<cpu_ijk_boundary, StorageOrder::JIK, cpu_alignment>>;
 
@@ -56,25 +56,22 @@ using cpu_j_storage =
 using cpu_k_storage =
     DataFieldOpenMP<Real, DataFieldStorageFormat<cpu_ijk_boundary, StorageOrder::K, cpu_alignment>>;
 
-static_assert(std::is_same<cpu_ijk_storage, IJKRealField>::value,
-              "Storage definitions inconsistent");
-
 //===------------------------------------------------------------------------------------------===//
 //     GPU Storage
 //===------------------------------------------------------------------------------------------===//
-using gpu_ijk_storage =
+using gpu_kji_storage =
     DataFieldOpenMP<Real,
-                    DataFieldStorageFormat<gpu_ijk_boundary, StorageOrder::JIK, gpu_alignment>>;
+                    DataFieldStorageFormat<gpu_ijk_boundary, StorageOrder::KJI, gpu_alignment>>;
 
 using gpu_ji_storage =
     DataFieldOpenMP<Real,
                     DataFieldStorageFormat<gpu_ijk_boundary, StorageOrder::JI, gpu_alignment>>;
-using gpu_ik_storage =
+using gpu_ki_storage =
     DataFieldOpenMP<Real,
-                    DataFieldStorageFormat<gpu_ijk_boundary, StorageOrder::IK, gpu_alignment>>;
-using gpu_jk_storage =
+                    DataFieldStorageFormat<gpu_ijk_boundary, StorageOrder::KI, gpu_alignment>>;
+using gpu_kj_storage =
     DataFieldOpenMP<Real,
-                    DataFieldStorageFormat<gpu_ijk_boundary, StorageOrder::JK, gpu_alignment>>;
+                    DataFieldStorageFormat<gpu_ijk_boundary, StorageOrder::KJ, gpu_alignment>>;
 
 using gpu_i_storage =
     DataFieldOpenMP<Real, DataFieldStorageFormat<gpu_ijk_boundary, StorageOrder::I, gpu_alignment>>;

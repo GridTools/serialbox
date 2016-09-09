@@ -1,4 +1,4 @@
-//===-- serialbox/Core/gridtools/StorageView.h --------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/Frontend/gridtools/StorageViewHelper.h -----------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,11 +12,12 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_GRIDTOOLS_STORAGEVIEW_H
-#define SERIALBOX_CORE_GRIDTOOLS_STORAGEVIEW_H
+#ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_STORAGEVIEWHELPER_H
+#define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_STORAGEVIEWHELPER_H
 
-#include "serialbox/Core/StorageView.h"
 #include <boost/mpl/max_element.hpp>
+#include <utility>
+#include <vector>
 
 namespace serialbox {
 
@@ -29,7 +30,7 @@ namespace internal {
 //===------------------------------------------------------------------------------------------===//
 
 template <typename LayoutMap, typename Container>
-int get_stride_helper(int coord, const Container& container) {
+int get_stride_helper(int coord, const Container& container) noexcept {
   int max_value = boost::mpl::deref<
       typename boost::mpl::max_element<typename LayoutMap::layout_vector_t>::type>::type::value;
 
@@ -55,7 +56,7 @@ std::vector<int> get_strides(const Storage& storage) {
 //===------------------------------------------------------------------------------------------===//
 
 template <typename Storage>
-std::vector<int> get_dims(const Storage& storage) {
+std::vector<int> get_dims(const Storage& storage) noexcept {
   auto unaligned_dims_array = storage.meta_data().m_unaligned_dims;
   const int n_dimensions = storage.meta_data().dims().n_dimensions;
 
@@ -71,20 +72,20 @@ std::vector<int> get_dims(const Storage& storage) {
 //===------------------------------------------------------------------------------------------===//
 
 template <typename LayoutMap>
-bool has_stride_one(unsigned int coord) {
+bool has_stride_one(unsigned int coord) noexcept {
   int max_value = boost::mpl::deref<
       typename boost::mpl::max_element<typename LayoutMap::layout_vector_t>::type>::type::value;
   return (LayoutMap::layout_vector[coord] == max_value);
 }
 
 template <typename LayoutMap, unsigned int Alignment, typename Halo>
-int left_padding_helper(unsigned int coord) {
+int left_padding_helper(unsigned int coord) noexcept {
   unsigned int lpad = Halo::get_halo_vector()[coord];
   return (Alignment && has_stride_one<LayoutMap>(coord)) ? (Alignment - lpad) % Alignment : 0;
 }
 
 template <typename LayoutMap, unsigned int Alignment, typename Padding>
-int right_padding_helper(unsigned int coord, unsigned int unaligned_dimension) {
+int right_padding_helper(unsigned int coord, unsigned int unaligned_dimension) noexcept {
   unsigned int rpad = Padding::get_halo_vector()[coord];
   return (Alignment && has_stride_one<LayoutMap>(coord))
              ? (Alignment - (unaligned_dimension + rpad) % Alignment)
@@ -92,7 +93,7 @@ int right_padding_helper(unsigned int coord, unsigned int unaligned_dimension) {
 }
 
 template <typename Storage>
-std::vector<std::pair<int, int>> get_padding(const Storage& storage) {
+std::vector<std::pair<int, int>> get_padding(const Storage& storage) noexcept {
   const int n_dimensions = storage.meta_data().dims().n_dimensions;
   auto unaligned_dims = storage.meta_data().m_unaligned_dims;
 
@@ -117,7 +118,7 @@ std::vector<std::pair<int, int>> get_padding(const Storage& storage) {
 //===------------------------------------------------------------------------------------------===//
 
 template <typename Storage>
-void* get_data_pointer(const Storage& storage, unsigned int field_idx) {
+void* get_data_pointer(const Storage& storage, unsigned int field_idx) noexcept {
   return static_cast<void*>(storage.fields()[field_idx].get());
 }
 

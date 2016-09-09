@@ -34,13 +34,18 @@ static constexpr int gpu_alignment = 32;
 //===------------------------------------------------------------------------------------------===//
 //     Halos
 //===------------------------------------------------------------------------------------------===//
-static constexpr std::array<int, 4> halo_left{{1, 2, 3, 4}};
+static constexpr int halo1_left = 1;
+static constexpr int halo2_left = 2;
+static constexpr int halo3_left = 3;
+static constexpr int halo4_left = 4;
+
+static constexpr std::array<int, 4> halo_left{{halo1_left, halo2_left, halo3_left, halo4_left}};
 static constexpr std::array<int, 4> halo_right{{3, 4, 5, 6}};
 
 // Alignment for left halo boundaries
-using halo_2d_type = gridtools::halo<halo_left[0], halo_left[1]>;
-using halo_3d_type = gridtools::halo<halo_left[0], halo_left[1], halo_left[2]>;
-using halo_4d_type = gridtools::halo<halo_left[0], halo_left[1], halo_left[2], halo_left[3]>;
+using halo_2d_type = gridtools::halo<halo1_left, halo2_left>;
+using halo_3d_type = gridtools::halo<halo1_left, halo2_left, halo3_left>;
+using halo_4d_type = gridtools::halo<halo1_left, halo2_left, halo3_left, halo4_left>;
 
 //===------------------------------------------------------------------------------------------===//
 //     Layouts

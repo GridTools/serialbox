@@ -13,97 +13,15 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "GridTools.h"
-#include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/STLExtras.h"
-#include "serialbox/Core/gridtools/StorageView.h"
+#include "serialbox/Core/StorageView.h"
+#include "serialbox/Core/Frontend/gridtools/StorageViewHelper.h"
 #include <gtest/gtest.h>
 #include <memory>
 
 #ifdef SERIALBOX_HAS_GRIDTOOLS
 
 namespace {
-
-using storage_traits_type = gridtools::storage_traits<gridtools::enumtype::Host>;
-
-static constexpr int cpu_alignment = 0;
-static constexpr int gpu_alignment = 32;
-
-//===------------------------------------------------------------------------------------------===//
-//     Halos
-//===------------------------------------------------------------------------------------------===//
-static constexpr int halo1_left = 1;
-static constexpr int halo2_left = 2;
-static constexpr int halo3_left = 3;
-static constexpr int halo4_left = 4;
-
-static constexpr std::array<int, 4> halo_left{{halo1_left, halo2_left, halo3_left, halo4_left}};
-static constexpr std::array<int, 4> halo_right{{3, 4, 5, 6}};
-
-// Alignment for left halo boundaries
-using halo_2d_type = gridtools::halo<halo1_left, halo2_left>;
-using halo_3d_type = gridtools::halo<halo1_left, halo2_left, halo3_left>;
-using halo_4d_type = gridtools::halo<halo1_left, halo2_left, halo3_left, halo4_left>;
-
-//===------------------------------------------------------------------------------------------===//
-//     Layouts
-//===------------------------------------------------------------------------------------------===//
-using cpu_2d_real_layout_type = gridtools::layout_map<0, 1>; // stride 1 on j (row-major)
-using gpu_2d_real_layout_type = gridtools::layout_map<1, 0>; // stride 1 on i (col-major)
-using cpu_2d_layout_type = gridtools::layout_map<0, 1, -1>;  // stride 1 on j (row-major)
-using gpu_2d_layout_type = gridtools::layout_map<1, 0, -1>;  // stride 1 on i (col-major)
-
-using cpu_3d_layout_type = gridtools::layout_map<0, 1, 2>; // stride 1 on k (row-major)
-using gpu_3d_layout_type = gridtools::layout_map<2, 1, 0>; // stride 1 on i (col-major)
-
-using cpu_4d_layout_type = gridtools::layout_map<0, 1, 2, 3>; // stride 1 on l (row-major)
-using gpu_4d_layout_type = gridtools::layout_map<3, 2, 1, 0>; // stride 1 on i (col-major)
-
-//===------------------------------------------------------------------------------------------===//
-//     Meta Data
-//===------------------------------------------------------------------------------------------===//
-using cpu_2d_real_meta_data_type =
-    storage_traits_type::meta_storage_type<1, cpu_2d_real_layout_type, halo_2d_type,
-                                           gridtools::aligned<cpu_alignment>>;
-using gpu_2d_real_meta_data_type =
-    storage_traits_type::meta_storage_type<2, gpu_2d_real_layout_type, halo_2d_type,
-                                           gridtools::aligned<gpu_alignment>>;
-
-using cpu_2d_meta_data_type =
-    storage_traits_type::meta_storage_type<3, cpu_2d_layout_type, halo_3d_type,
-                                           gridtools::aligned<cpu_alignment>>;
-using gpu_2d_meta_data_type =
-    storage_traits_type::meta_storage_type<4, gpu_2d_layout_type, halo_3d_type,
-                                           gridtools::aligned<gpu_alignment>>;
-
-using cpu_3d_meta_data_type =
-    storage_traits_type::meta_storage_type<5, cpu_3d_layout_type, halo_3d_type,
-                                           gridtools::aligned<cpu_alignment>>;
-using gpu_3d_meta_data_type =
-    storage_traits_type::meta_storage_type<6, gpu_3d_layout_type, halo_3d_type,
-                                           gridtools::aligned<gpu_alignment>>;
-
-using cpu_4d_meta_data_type =
-    storage_traits_type::meta_storage_type<7, cpu_4d_layout_type, halo_4d_type,
-                                           gridtools::aligned<cpu_alignment>>;
-using gpu_4d_meta_data_type =
-    storage_traits_type::meta_storage_type<8, gpu_4d_layout_type, halo_4d_type,
-                                           gridtools::aligned<gpu_alignment>>;
-
-//===------------------------------------------------------------------------------------------===//
-//     Storage
-//===------------------------------------------------------------------------------------------===//
-using cpu_2d_real_storage_type =
-    storage_traits_type::storage_type<double, cpu_2d_real_meta_data_type>;
-using gpu_2d_real_storage_type =
-    storage_traits_type::storage_type<double, gpu_2d_real_meta_data_type>;
-using cpu_2d_storage_type = storage_traits_type::storage_type<double, cpu_2d_meta_data_type>;
-using gpu_2d_storage_type = storage_traits_type::storage_type<double, gpu_2d_meta_data_type>;
-
-using cpu_3d_storage_type = storage_traits_type::storage_type<double, cpu_3d_meta_data_type>;
-using gpu_3d_storage_type = storage_traits_type::storage_type<double, gpu_3d_meta_data_type>;
-
-using cpu_4d_storage_type = storage_traits_type::storage_type<double, cpu_4d_meta_data_type>;
-using gpu_4d_storage_type = storage_traits_type::storage_type<double, gpu_4d_meta_data_type>;
 
 using serialbox::make_unique;
 
@@ -147,7 +65,7 @@ protected:
     dim2 = 3 + halo_left[1] + halo_right[1];
     dim3 = 4 + halo_left[2] + halo_right[2];
     dim4 = 5 + halo_left[3] + halo_right[3];
-    
+
     cpu_2d_real_meta_data_ptr = make_unique<cpu_2d_real_meta_data_type>(dim1, dim2);
     gpu_2d_real_meta_data_ptr = make_unique<gpu_2d_real_meta_data_type>(dim1, dim2);
     cpu_2d_meta_data_ptr = make_unique<cpu_2d_meta_data_type>(dim1, dim2, 0);
