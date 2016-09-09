@@ -12,14 +12,15 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "STELLA.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/StorageView.h"
-#include "serialbox/Core/Frontend/STELLA/StorageViewHelper.h"
 #include <gtest/gtest.h>
 #include <memory>
-#include "STELLA.h"
 
 #ifdef SERIALBOX_HAS_STELLA
+
+#include "serialbox/Core/Frontend/STELLA/StorageViewHelper.h"
 
 namespace {
 

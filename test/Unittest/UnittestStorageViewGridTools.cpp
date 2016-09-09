@@ -15,11 +15,12 @@
 #include "GridTools.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/StorageView.h"
-#include "serialbox/Core/Frontend/gridtools/StorageViewHelper.h"
 #include <gtest/gtest.h>
 #include <memory>
 
 #ifdef SERIALBOX_HAS_GRIDTOOLS
+
+#include "serialbox/Core/Frontend/gridtools/StorageViewHelper.h"
 
 namespace {
 
