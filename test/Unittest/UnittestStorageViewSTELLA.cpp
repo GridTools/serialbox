@@ -13,8 +13,8 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "STELLA.h"
-#include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/STELLA/StorageView.h"
+#include "serialbox/Core/StorageView.h"
 #include <gtest/gtest.h>
 #include <memory>
 
@@ -30,11 +30,33 @@ public:
   int dim1;
   int dim2;
   int dim3;
-  int dim4;
+
+  // -----------------------------------------------------------------------------------------------
+  // Boundaries
+  // -----------------------------------------------------------------------------------------------
+  std::unique_ptr<IJBoundary> ij_boundary;
+  std::unique_ptr<KBoundary> k_boundary;
+
+  // -----------------------------------------------------------------------------------------------
+  // Calculation Domain
+  // -----------------------------------------------------------------------------------------------
+  std::unique_ptr<IJKSize> ijk_calculationDomain;
+
+  // -----------------------------------------------------------------------------------------------
+  // Fields
+  // -----------------------------------------------------------------------------------------------
+  std::unique_ptr<IJKRealField> ijk_field;
+
+  std::unique_ptr<IJRealField> ij_field;
+  std::unique_ptr<IKRealField> ik_field;
+  std::unique_ptr<JKRealField> jk_field;
+
+  std::unique_ptr<IRealField> i_field;
+  std::unique_ptr<JRealField> j_field;
+  std::unique_ptr<KRealField> k_field;
 
 protected:
-  virtual void SetUp() override {
-  }
+  virtual void SetUp() override {}
 
   virtual void TearDown() override {}
 };

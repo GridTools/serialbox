@@ -56,32 +56,32 @@ public:
   // -----------------------------------------------------------------------------------------------
   // 1D
   // -----------------------------------------------------------------------------------------------
-  std::shared_ptr<Storage<double>> storage_1d;
-  std::shared_ptr<Storage<double>> storage_1d_padded;
+  std::unique_ptr<Storage<double>> storage_1d;
+  std::unique_ptr<Storage<double>> storage_1d_padded;
 
   // -----------------------------------------------------------------------------------------------
   // 2D
   // -----------------------------------------------------------------------------------------------
-  std::shared_ptr<Storage<double>> storage_2d_col_major;
-  std::shared_ptr<Storage<double>> storage_2d_col_major_padded;
+  std::unique_ptr<Storage<double>> storage_2d_col_major;
+  std::unique_ptr<Storage<double>> storage_2d_col_major_padded;
 
-  std::shared_ptr<Storage<double>> storage_2d_row_major;
-  std::shared_ptr<Storage<double>> storage_2d_row_major_padded;
+  std::unique_ptr<Storage<double>> storage_2d_row_major;
+  std::unique_ptr<Storage<double>> storage_2d_row_major_padded;
 
-  // -----------------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------r------------------------
   // 3D
   // -----------------------------------------------------------------------------------------------
-  std::shared_ptr<Storage<double>> storage_3d_col_major;
-  std::shared_ptr<Storage<double>> storage_3d_col_major_padded;
+  std::unique_ptr<Storage<double>> storage_3d_col_major;
+  std::unique_ptr<Storage<double>> storage_3d_col_major_padded;
 
-  std::shared_ptr<Storage<double>> storage_3d_row_major;
-  std::shared_ptr<Storage<double>> storage_3d_row_major_padded;
+  std::unique_ptr<Storage<double>> storage_3d_row_major;
+  std::unique_ptr<Storage<double>> storage_3d_row_major_padded;
 
   // -----------------------------------------------------------------------------------------------
   // 5D
   // -----------------------------------------------------------------------------------------------
-  std::shared_ptr<Storage<double>> storage_5d_col_major_padded;
-  std::shared_ptr<Storage<double>> storage_5d_row_major_padded;
+  std::unique_ptr<Storage<double>> storage_5d_col_major_padded;
+  std::unique_ptr<Storage<double>> storage_5d_row_major_padded;
 
 protected:
   virtual void SetUp() override {
@@ -112,39 +112,39 @@ protected:
     auto colMajor = Storage<double>::ColMajor;
     auto rowMajor = Storage<double>::RowMajor;
 
-    storage_1d = std::make_shared<Storage<double>>(colMajor, il{dim1});
-    storage_1d_padded = std::make_shared<Storage<double>>(
+    storage_1d = make_unique<Storage<double>>(colMajor, il{dim1});
+    storage_1d_padded = make_unique<Storage<double>>(
         colMajor, il{dim1}, ipl{std::pair<int, int>(pad1_left, pad1_right)});
 
-    storage_2d_col_major = std::make_shared<Storage<double>>(colMajor, il{dim1, dim2});
-    storage_2d_col_major_padded = std::make_shared<Storage<double>>(
+    storage_2d_col_major = make_unique<Storage<double>>(colMajor, il{dim1, dim2});
+    storage_2d_col_major_padded = make_unique<Storage<double>>(
         colMajor, il{dim1, dim2}, ipl{std::pair<int, int>(pad1_left, pad1_right),
                                       std::pair<int, int>(pad2_left, pad2_right)});
 
-    storage_2d_row_major = std::make_shared<Storage<double>>(rowMajor, il{dim1, dim2});
-    storage_2d_row_major_padded = std::make_shared<Storage<double>>(
+    storage_2d_row_major = make_unique<Storage<double>>(rowMajor, il{dim1, dim2});
+    storage_2d_row_major_padded = make_unique<Storage<double>>(
         rowMajor, il{dim1, dim2}, ipl{std::pair<int, int>(pad1_left, pad1_right),
                                       std::pair<int, int>(pad2_left, pad2_right)});
 
-    storage_3d_col_major = std::make_shared<Storage<double>>(colMajor, il{dim1, dim2, dim3});
-    storage_3d_col_major_padded = std::make_shared<Storage<double>>(
+    storage_3d_col_major = make_unique<Storage<double>>(colMajor, il{dim1, dim2, dim3});
+    storage_3d_col_major_padded = make_unique<Storage<double>>(
         colMajor, il{dim1, dim2, dim3},
         ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
             std::pair<int, int>(pad3_left, pad3_right)});
 
-    storage_3d_row_major = std::make_shared<Storage<double>>(rowMajor, il{dim1, dim2, dim3});
-    storage_3d_row_major_padded = std::make_shared<Storage<double>>(
+    storage_3d_row_major = make_unique<Storage<double>>(rowMajor, il{dim1, dim2, dim3});
+    storage_3d_row_major_padded = make_unique<Storage<double>>(
         rowMajor, il{dim1, dim2, dim3},
         ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
             std::pair<int, int>(pad3_left, pad3_right)});
 
-    storage_5d_col_major_padded = std::make_shared<Storage<double>>(
+    storage_5d_col_major_padded = make_unique<Storage<double>>(
         colMajor, il{dim1, dim2, dim3, dim4, dim5},
         ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
             std::pair<int, int>(pad3_left, pad3_right), std::pair<int, int>(pad4_left, pad4_right),
             std::pair<int, int>(pad5_left, pad5_right)});
 
-    storage_5d_row_major_padded = std::make_shared<Storage<double>>(
+    storage_5d_row_major_padded = make_unique<Storage<double>>(
         rowMajor, il{dim1, dim2, dim3, dim4, dim5},
         ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
             std::pair<int, int>(pad3_left, pad3_right), std::pair<int, int>(pad4_left, pad4_right),
@@ -157,9 +157,9 @@ protected:
 } // anonymous namespace
 
 template <class T>
-static std::shared_ptr<StorageView> toStorageView(std::shared_ptr<Storage<T>>& storage) {
+static std::unique_ptr<StorageView> toStorageView(std::unique_ptr<Storage<T>>& storage) {
   auto type = ToTypeID<T>::value;
-  return std::make_shared<StorageView>(storage->data.data(), type, storage->dims, storage->strides,
+  return make_unique<StorageView>(storage->data.data(), type, storage->dims, storage->strides,
                                        storage->padding);
 }
 

@@ -28,7 +28,7 @@ class StorageView;
 /// The data is accessed in column-major order.
 class StorageViewIterator {
 public:
-  /// \name Typedef
+  /// \name Typedefs
   /// @{
   /// 
   using value_type = Byte;
@@ -39,7 +39,7 @@ public:
   using iterator_category = std::forward_iterator_tag;
   
   /// @}
-  /// \name Constructor
+  /// \name Constructors
   /// @{
 
   /// \brief Copy constructor
@@ -103,9 +103,9 @@ private:
 private:
   // Position in the data
   Byte* ptr_;
-  bool end_;  
   std::vector<int> index_;
-
+  bool end_;
+  
   // Associated StorageView
   int bytesPerElement_;
   StorageView* storageView_;

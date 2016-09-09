@@ -92,6 +92,9 @@ public:
 
   /// \brief Copy assignment
   StorageView& operator=(StorageView other) noexcept;
+  
+  /// \brief Move assignment
+  StorageView& operator=(StorageView&& other) noexcept;
 
   /// \brief Swap with \c other
   void swap(StorageView& other) noexcept;

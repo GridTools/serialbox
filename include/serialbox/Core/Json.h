@@ -8,7 +8,7 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file includes the headers of the json library
+/// This file includes the headers of the json library.
 /// See: https://github.com/nlohmann/json/tree/master
 ///
 //===------------------------------------------------------------------------------------------===//
@@ -17,5 +17,7 @@
 #define SERIALBOX_CORE_JSON_H
 
 #include <json/json.hpp>
+
+using json = nlohmann::json;
 
 #endif

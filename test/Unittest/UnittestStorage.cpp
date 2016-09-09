@@ -13,6 +13,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "Storage.h"
+#include "serialbox/Core/STLExtras.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;
@@ -44,26 +45,26 @@ public:
   // -----------------------------------------------------------------------------------------------
   // 1D
   // -----------------------------------------------------------------------------------------------
-  std::shared_ptr<Storage<double>> storage_1d;
-  std::shared_ptr<Storage<double>> storage_1d_padded;
+  std::unique_ptr<Storage<double>> storage_1d;
+  std::unique_ptr<Storage<double>> storage_1d_padded;
 
   // -----------------------------------------------------------------------------------------------
   // 2D
   // -----------------------------------------------------------------------------------------------
-  std::shared_ptr<Storage<double>> storage_2d_col_major;
-  std::shared_ptr<Storage<double>> storage_2d_col_major_padded;
+  std::unique_ptr<Storage<double>> storage_2d_col_major;
+  std::unique_ptr<Storage<double>> storage_2d_col_major_padded;
 
-  std::shared_ptr<Storage<double>> storage_2d_row_major;
-  std::shared_ptr<Storage<double>> storage_2d_row_major_padded;
+  std::unique_ptr<Storage<double>> storage_2d_row_major;
+  std::unique_ptr<Storage<double>> storage_2d_row_major_padded;
 
   // -----------------------------------------------------------------------------------------------
   // 3D
   // -----------------------------------------------------------------------------------------------
-  std::shared_ptr<Storage<double>> storage_3d_col_major;
-  std::shared_ptr<Storage<double>> storage_3d_col_major_padded;
+  std::unique_ptr<Storage<double>> storage_3d_col_major;
+  std::unique_ptr<Storage<double>> storage_3d_col_major_padded;
 
-  std::shared_ptr<Storage<double>> storage_3d_row_major;
-  std::shared_ptr<Storage<double>> storage_3d_row_major_padded;
+  std::unique_ptr<Storage<double>> storage_3d_row_major;
+  std::unique_ptr<Storage<double>> storage_3d_row_major_padded;
 
 protected:
   virtual void SetUp() override {
@@ -82,32 +83,32 @@ protected:
 
     pad3_left = 0;
     pad3_right = 1;
-    
+
     auto colMajor = Storage<double>::ColMajor;
     auto rowMajor = Storage<double>::RowMajor;
 
-    storage_1d = std::make_shared<Storage<double>>(colMajor, il{dim1});
-    storage_1d_padded = std::make_shared<Storage<double>>(
+    storage_1d = make_unique<Storage<double>>(colMajor, il{dim1});
+    storage_1d_padded = make_unique<Storage<double>>(
         colMajor, il{dim1}, ipl{std::pair<int, int>(pad1_left, pad1_right)});
 
-    storage_2d_col_major = std::make_shared<Storage<double>>(colMajor, il{dim1, dim2});
-    storage_2d_col_major_padded = std::make_shared<Storage<double>>(
+    storage_2d_col_major = make_unique<Storage<double>>(colMajor, il{dim1, dim2});
+    storage_2d_col_major_padded = make_unique<Storage<double>>(
         colMajor, il{dim1, dim2}, ipl{std::pair<int, int>(pad1_left, pad1_right),
                                       std::pair<int, int>(pad2_left, pad2_right)});
 
-    storage_2d_row_major = std::make_shared<Storage<double>>(rowMajor, il{dim1, dim2});
-    storage_2d_row_major_padded = std::make_shared<Storage<double>>(
+    storage_2d_row_major = make_unique<Storage<double>>(rowMajor, il{dim1, dim2});
+    storage_2d_row_major_padded = make_unique<Storage<double>>(
         rowMajor, il{dim1, dim2}, ipl{std::pair<int, int>(pad1_left, pad1_right),
                                       std::pair<int, int>(pad2_left, pad2_right)});
 
-    storage_3d_col_major = std::make_shared<Storage<double>>(colMajor, il{dim1, dim2, dim3});
-    storage_3d_col_major_padded = std::make_shared<Storage<double>>(
+    storage_3d_col_major = make_unique<Storage<double>>(colMajor, il{dim1, dim2, dim3});
+    storage_3d_col_major_padded = make_unique<Storage<double>>(
         colMajor, il{dim1, dim2, dim3},
         ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
             std::pair<int, int>(pad3_left, pad3_right)});
 
-    storage_3d_row_major = std::make_shared<Storage<double>>(rowMajor, il{dim1, dim2, dim3});
-    storage_3d_row_major_padded = std::make_shared<Storage<double>>(
+    storage_3d_row_major = make_unique<Storage<double>>(rowMajor, il{dim1, dim2, dim3});
+    storage_3d_row_major_padded = make_unique<Storage<double>>(
         rowMajor, il{dim1, dim2, dim3},
         ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
             std::pair<int, int>(pad3_left, pad3_right)});
@@ -206,7 +207,7 @@ TEST_F(StorageTest, Strides) {
 }
 
 TEST_F(StorageTest, Access) {
-  
+
   // -----------------------------------------------------------------------------------------------
   // 1D
   // -----------------------------------------------------------------------------------------------

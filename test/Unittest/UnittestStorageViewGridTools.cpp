@@ -14,6 +14,7 @@
 
 #include "GridTools.h"
 #include "serialbox/Core/StorageView.h"
+#include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/gridtools/StorageView.h"
 #include <gtest/gtest.h>
 #include <memory>
@@ -99,6 +100,8 @@ using gpu_3d_storage_type = storage_traits_type::storage_type<double, gpu_3d_met
 using cpu_4d_storage_type = storage_traits_type::storage_type<double, cpu_4d_meta_data_type>;
 using gpu_4d_storage_type = storage_traits_type::storage_type<double, gpu_4d_meta_data_type>;
 
+using serialbox::make_unique;
+
 class StorageViewGridToolsTest : public testing::Test {
 public:
   // -----------------------------------------------------------------------------------------------
@@ -112,26 +115,26 @@ public:
   // -----------------------------------------------------------------------------------------------
   // Meta Data
   // -----------------------------------------------------------------------------------------------
-  std::shared_ptr<cpu_2d_real_meta_data_type> cpu_2d_real_meta_data_ptr;
-  std::shared_ptr<gpu_2d_real_meta_data_type> gpu_2d_real_meta_data_ptr;
-  std::shared_ptr<cpu_2d_meta_data_type> cpu_2d_meta_data_ptr;
-  std::shared_ptr<gpu_2d_meta_data_type> gpu_2d_meta_data_ptr;
-  std::shared_ptr<cpu_3d_meta_data_type> cpu_3d_meta_data_ptr;
-  std::shared_ptr<gpu_3d_meta_data_type> gpu_3d_meta_data_ptr;
-  std::shared_ptr<cpu_4d_meta_data_type> cpu_4d_meta_data_ptr;
-  std::shared_ptr<gpu_4d_meta_data_type> gpu_4d_meta_data_ptr;
+  std::unique_ptr<cpu_2d_real_meta_data_type> cpu_2d_real_meta_data_ptr;
+  std::unique_ptr<gpu_2d_real_meta_data_type> gpu_2d_real_meta_data_ptr;
+  std::unique_ptr<cpu_2d_meta_data_type> cpu_2d_meta_data_ptr;
+  std::unique_ptr<gpu_2d_meta_data_type> gpu_2d_meta_data_ptr;
+  std::unique_ptr<cpu_3d_meta_data_type> cpu_3d_meta_data_ptr;
+  std::unique_ptr<gpu_3d_meta_data_type> gpu_3d_meta_data_ptr;
+  std::unique_ptr<cpu_4d_meta_data_type> cpu_4d_meta_data_ptr;
+  std::unique_ptr<gpu_4d_meta_data_type> gpu_4d_meta_data_ptr;
 
   // -----------------------------------------------------------------------------------------------
   // Storages
   // -----------------------------------------------------------------------------------------------
-  std::shared_ptr<cpu_2d_real_storage_type> cpu_2d_real_storage_ptr;
-  std::shared_ptr<gpu_2d_real_storage_type> gpu_2d_real_storage_ptr;
-  std::shared_ptr<cpu_2d_storage_type> cpu_2d_storage_ptr;
-  std::shared_ptr<gpu_2d_storage_type> gpu_2d_storage_ptr;
-  std::shared_ptr<cpu_3d_storage_type> cpu_3d_storage_ptr;
-  std::shared_ptr<gpu_3d_storage_type> gpu_3d_storage_ptr;
-  std::shared_ptr<cpu_4d_storage_type> cpu_4d_storage_ptr;
-  std::shared_ptr<gpu_4d_storage_type> gpu_4d_storage_ptr;
+  std::unique_ptr<cpu_2d_real_storage_type> cpu_2d_real_storage_ptr;
+  std::unique_ptr<gpu_2d_real_storage_type> gpu_2d_real_storage_ptr;
+  std::unique_ptr<cpu_2d_storage_type> cpu_2d_storage_ptr;
+  std::unique_ptr<gpu_2d_storage_type> gpu_2d_storage_ptr;
+  std::unique_ptr<cpu_3d_storage_type> cpu_3d_storage_ptr;
+  std::unique_ptr<gpu_3d_storage_type> gpu_3d_storage_ptr;
+  std::unique_ptr<cpu_4d_storage_type> cpu_4d_storage_ptr;
+  std::unique_ptr<gpu_4d_storage_type> gpu_4d_storage_ptr;
 
 protected:
   virtual void SetUp() override {
@@ -139,35 +142,35 @@ protected:
     dim2 = 3 + halo_left[1] + halo_right[1];
     dim3 = 4 + halo_left[2] + halo_right[2];
     dim4 = 5 + halo_left[3] + halo_right[3];
+    
+    cpu_2d_real_meta_data_ptr = make_unique<cpu_2d_real_meta_data_type>(dim1, dim2);
+    gpu_2d_real_meta_data_ptr = make_unique<gpu_2d_real_meta_data_type>(dim1, dim2);
+    cpu_2d_meta_data_ptr = make_unique<cpu_2d_meta_data_type>(dim1, dim2, 0);
+    gpu_2d_meta_data_ptr = make_unique<gpu_2d_meta_data_type>(dim1, dim2, 0);
+    cpu_3d_meta_data_ptr = make_unique<cpu_3d_meta_data_type>(dim1, dim2, dim3);
+    gpu_3d_meta_data_ptr = make_unique<gpu_3d_meta_data_type>(dim1, dim2, dim3);
+    cpu_4d_meta_data_ptr = make_unique<cpu_4d_meta_data_type>(dim1, dim2, dim3, dim4);
+    gpu_4d_meta_data_ptr = make_unique<gpu_4d_meta_data_type>(dim1, dim2, dim3, dim4);
 
-    cpu_2d_real_meta_data_ptr = std::make_shared<cpu_2d_real_meta_data_type>(dim1, dim2);
-    gpu_2d_real_meta_data_ptr = std::make_shared<gpu_2d_real_meta_data_type>(dim1, dim2);
-    cpu_2d_meta_data_ptr = std::make_shared<cpu_2d_meta_data_type>(dim1, dim2, 0);
-    gpu_2d_meta_data_ptr = std::make_shared<gpu_2d_meta_data_type>(dim1, dim2, 0);
-    cpu_3d_meta_data_ptr = std::make_shared<cpu_3d_meta_data_type>(dim1, dim2, dim3);
-    gpu_3d_meta_data_ptr = std::make_shared<gpu_3d_meta_data_type>(dim1, dim2, dim3);
-    cpu_4d_meta_data_ptr = std::make_shared<cpu_4d_meta_data_type>(dim1, dim2, dim3, dim4);
-    gpu_4d_meta_data_ptr = std::make_shared<gpu_4d_meta_data_type>(dim1, dim2, dim3, dim4);
-
-    cpu_2d_real_storage_ptr = std::make_shared<cpu_2d_real_storage_type>(
-        *cpu_2d_real_meta_data_ptr, "cpu_2d_real_storage", -1.0);
-    gpu_2d_real_storage_ptr = std::make_shared<gpu_2d_real_storage_type>(
-        *gpu_2d_real_meta_data_ptr, "gpu_2d_real_storage", -1.0);
+    cpu_2d_real_storage_ptr = make_unique<cpu_2d_real_storage_type>(*cpu_2d_real_meta_data_ptr,
+                                                                    "cpu_2d_real_storage", -1.0);
+    gpu_2d_real_storage_ptr = make_unique<gpu_2d_real_storage_type>(*gpu_2d_real_meta_data_ptr,
+                                                                    "gpu_2d_real_storage", -1.0);
 
     cpu_2d_storage_ptr =
-        std::make_shared<cpu_2d_storage_type>(*cpu_2d_meta_data_ptr, "cpu_2d_storage", -1.0);
+        make_unique<cpu_2d_storage_type>(*cpu_2d_meta_data_ptr, "cpu_2d_storage", -1.0);
     gpu_2d_storage_ptr =
-        std::make_shared<gpu_2d_storage_type>(*gpu_2d_meta_data_ptr, "gpu_2d_storage", -1.0);
+        make_unique<gpu_2d_storage_type>(*gpu_2d_meta_data_ptr, "gpu_2d_storage", -1.0);
 
     cpu_3d_storage_ptr =
-        std::make_shared<cpu_3d_storage_type>(*cpu_3d_meta_data_ptr, "cpu_3d_storage", -1.0);
+        make_unique<cpu_3d_storage_type>(*cpu_3d_meta_data_ptr, "cpu_3d_storage", -1.0);
     gpu_3d_storage_ptr =
-        std::make_shared<gpu_3d_storage_type>(*gpu_3d_meta_data_ptr, "gpu_3d_storage", -1.0);
+        make_unique<gpu_3d_storage_type>(*gpu_3d_meta_data_ptr, "gpu_3d_storage", -1.0);
 
     cpu_4d_storage_ptr =
-        std::make_shared<cpu_4d_storage_type>(*cpu_4d_meta_data_ptr, "cpu_4d_storage", -1.0);
+        make_unique<cpu_4d_storage_type>(*cpu_4d_meta_data_ptr, "cpu_4d_storage", -1.0);
     gpu_4d_storage_ptr =
-        std::make_shared<gpu_4d_storage_type>(*gpu_4d_meta_data_ptr, "gpu_4d_storage", -1.0);
+        make_unique<gpu_4d_storage_type>(*gpu_4d_meta_data_ptr, "gpu_4d_storage", -1.0);
 
     // 2D
     double val_2d = 0.0;
@@ -622,7 +625,7 @@ TEST_F(StorageViewGridToolsTest, Iterator) {
         for(int i = 0; i < dim1; ++i, ++cpu_4d_it) {
           ASSERT_DOUBLE_EQ(cpu_4d_it.as<double>(), cpu_4d_storage(i, j, k, l));
         }
-  
+
   // -----------------------------------------------------------------------------------------------
   // 2D Real GPU Storage
   // -----------------------------------------------------------------------------------------------
@@ -635,7 +638,7 @@ TEST_F(StorageViewGridToolsTest, Iterator) {
     for(int i = 0; i < dim1; ++i, ++gpu_2d_real_it) {
       ASSERT_DOUBLE_EQ(gpu_2d_real_it.as<double>(), gpu_2d_real_storage(i, j));
     }
-  
+
   // -----------------------------------------------------------------------------------------------
   // 2D GPU Storage
   // -----------------------------------------------------------------------------------------------

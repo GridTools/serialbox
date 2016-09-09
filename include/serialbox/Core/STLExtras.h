@@ -30,7 +30,7 @@ namespace serialbox {
 // Implement make_unique according to N3656.
 
 /// \brief Constructs a `new T()` with the given args and returns a `unique_ptr<T>` which owns the
-/// object.
+/// object
 ///
 /// \b Example:
 /// \code
@@ -44,7 +44,7 @@ make_unique(Args&&... args) {
 }
 
 /// \brief Constructs a `new T[n]` with the given args and returns a `unique_ptr<T[]>` which owns
-/// the object.
+/// the object
 ///
 /// \param n size of the new array.
 ///
@@ -59,7 +59,7 @@ make_unique(std::size_t n) {
   return std::unique_ptr<T>(new typename std::remove_extent<T>::type[n]());
 }
 
-/// \brief This function isn't used and is only here to provide better compile errors.
+/// \brief This function isn't used and is only here to provide better compile errors
 template <class T, class... Args>
 typename std::enable_if<std::extent<T>::value != 0>::type make_unique(Args&&...) = delete;
 
@@ -72,18 +72,18 @@ namespace internal {
 // ADL for user defined to_string
 using std::to_string;
 
-std::string concat() { return ""; }
+inline std::string concat() { return ""; }
 
 template <typename Head, typename... Tail>
-decltype(to_string(std::declval<Head>())) concat(Head&& h, Tail&&... t);
+inline decltype(to_string(std::declval<Head>())) concat(Head&& h, Tail&&... t);
 
 template <typename Head, typename... Tail>
-decltype(std::string() + std::declval<Head>()) concat(Head&& h, Tail&&... t) {
+inline decltype(std::string() + std::declval<Head>()) concat(Head&& h, Tail&&... t) {
   return std::forward<Head>(h) + concat(std::forward<Tail>(t)...);
 }
 
 template <typename Head, typename... Tail>
-decltype(to_string(std::declval<Head>())) concat(Head&& h, Tail&&... t) {
+inline decltype(to_string(std::declval<Head>())) concat(Head&& h, Tail&&... t) {
   return to_string(std::forward<Head>(h)) + concat(std::forward<Tail>(t)...);
 }
 
