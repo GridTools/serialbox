@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Archive/Binary/BinaryArchive.h -------------------------------*- C++ -*-===//
+//===-- Unittest/UnittestBinaryArchive.cpp ------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,22 +8,22 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file implements a non-portable binary archive.
+/// This file contains the unittests for the Binary Archive.
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_ARCHIVE_BINARY_ARCHIVE_H
-#define SERIALBOX_CORE_ARCHIVE_BINARY_ARCHIVE_H
+#include "Storage.h"
+#include "serialbox/Core/Archive/BinaryArchive.h"
+#include <gtest/gtest.h>
 
-#include "serialbox/Core/Archive/Archive.h"
+using namespace serialbox;
+using namespace unittest;
 
-namespace serialbox {
+namespace {
 
-class BinaryArchive : public Archive {
+class BinaryArchiveTest : public testing::Test {
+
   
 };
 
-
-} // namespace serialbox
-
-#endif
+}

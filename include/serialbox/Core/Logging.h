@@ -52,6 +52,9 @@ public:
 
   /// \brief Log messages at or above this level [default: SeverityKind::Info]
   static void setMinLogLevel(SeverityKind value) noexcept;
+  
+  /// \brief Log messages at or above this level [default: SeverityKind::Info]
+  static SeverityKind getMinLogLevel() noexcept;
 
   /// \brief Use colored output when logging messages to stderr [default: false]
   static void setColorLogToStdErr(bool value) noexcept;

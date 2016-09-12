@@ -15,6 +15,8 @@ set(SOURCES
   StorageViewIterator.cpp
   Type.cpp
   Unreachable.cpp
+  
+  Archive/BinaryArchive.cpp
 )
 
 set(EXTERNAL_LIBRARIES ${BOOST_LIBRARIES} ${GLOG_LIBRARIES})

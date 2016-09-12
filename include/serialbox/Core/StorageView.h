@@ -113,7 +113,10 @@ public:
   /// \brief Return true if the storage is contiguous in memory (i.e no padding) and is column-major
   /// ordered
   bool isMemCopyable() const noexcept;
-
+  
+  /// \brief Size of the allocated data (without padding)
+  std::size_t size() const noexcept;
+  
 private:
   Byte* data_;
   TypeID type_;

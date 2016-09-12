@@ -15,10 +15,21 @@
 #ifndef SERIALBOX_CORE_ARCHIVE_ARCHIVE_H
 #define SERIALBOX_CORE_ARCHIVE_ARCHIVE_H
 
+#include "serialbox/Core/Exception.h"
+#include "serialbox/Core/FieldID.h"
+#include "serialbox/Core/StorageView.h"
+
 namespace serialbox {
 
+///
 class Archive {
+public:
   
+  ///
+  virtual void write(StorageView& storageView, const FieldID& fieldID) throw(Exception) = 0;
+
+  ///
+  virtual void read(StorageView& storageView, const FieldID& fieldID) throw(Exception) = 0;
 };
 
 } // namespace serialbox

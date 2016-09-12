@@ -37,6 +37,10 @@ void Logging::setMinLogLevel(SeverityKind value) noexcept {
   FLAGS_minloglevel = static_cast<int>(value);
 }
 
+Logging::SeverityKind Logging::getMinLogLevel() noexcept {
+  return static_cast<SeverityKind>(FLAGS_minloglevel);
+}
+
 void Logging::setColorLogToStdErr(bool value) noexcept { FLAGS_colorlogtostderr = value; }
 
 void Logging::setLogDir(const char* value) noexcept { FLAGS_log_dir = value; }
@@ -56,6 +60,8 @@ void Logging::setMinLogLevel(SeverityKind value) noexcept {}
 void Logging::setColorLogToStdErr(bool value) noexcept {}
 
 void Logging::setLogDir(const char* value) noexcept {}
+
+Logging::SeverityKind Logging::getMinLogLevel(SeverityKind value) noexcept { return 0; }
 
 namespace internal {
 

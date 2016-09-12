@@ -53,7 +53,7 @@ bool StorageView::operator==(const StorageView& right) const noexcept {
 std::ostream& operator<<(std::ostream& stream, const StorageView& s) {
   stream << "StorageView [\n";
   stream << "  data = " << static_cast<void*>(s.data_) << "\n";
-  stream << "  type = " << TypeUtil::toString(s.type_) << "\n";
+  stream << "  type = " << s.type_ << "\n";
 
   stream << "  dims = {";
   for(auto i : s.dims_)
@@ -97,6 +97,13 @@ bool StorageView::isMemCopyable() const noexcept {
   }
 
   return true;
+}
+
+std::size_t StorageView::size() const noexcept {
+  std::size_t size = 1;
+  for(std::size_t i = 1; i < dims_.size(); ++i)
+    size *= (i == 0 ? 1 : i);
+  return size;
 }
 
 } // namespace serialbox

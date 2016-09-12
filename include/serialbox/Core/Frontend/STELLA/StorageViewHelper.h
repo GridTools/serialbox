@@ -25,7 +25,6 @@ namespace stella {
 
 namespace internal {
 
-
 //===------------------------------------------------------------------------------------------===//
 //     Strides
 //===------------------------------------------------------------------------------------------===//
@@ -65,8 +64,10 @@ std::vector<int> getDims(const TFieldType& dataField) {
 template <typename TFieldType>
 std::vector<std::pair<int, int>> getPadding(const TFieldType& dataField) {
 
+  // If we set the storage pointer to the first data location i.e (-3, -3, -3) we have already
+  // skipped the initial padding.
   std::vector<std::pair<int, int>> padding;
-  // TODO
+  padding.resize(3, std::pair<int, int>(0, 0));
   return padding;
 }
 
@@ -77,8 +78,8 @@ std::vector<std::pair<int, int>> getPadding(const TFieldType& dataField) {
 template <typename TFieldType>
 void* getDataPointer(const TFieldType& dataField) {
   const IJKIndex& originOffset = dataField.storage().originOffset();
-  return static_cast<void*>(
-      &dataField(-originOffset.iIndex(), -originOffset.jIndex(), -originOffset.kIndex()));
+  return const_cast<void*>(static_cast<const void*>(
+      &dataField(-originOffset.iIndex(), -originOffset.jIndex(), -originOffset.kIndex())));
 }
 
 } // namespace internal
