@@ -36,6 +36,17 @@ std::string TypeUtil::toString(TypeID id) {
   }
 }
 
+std::ostream& operator<<(std::ostream& stream, const OpenModeKind& mode) {
+  switch(mode) {
+    case OpenModeKind::Write:
+      return (stream << std::string("Write"));
+    case OpenModeKind::Read:
+      return (stream << std::string("Read"));
+    case OpenModeKind::Append:
+      return (stream << std::string("Append"));
+  }
+}
+
 std::ostream& operator<<(std::ostream& stream, const TypeID& t) {
   return (stream << TypeUtil::toString(t));
 }

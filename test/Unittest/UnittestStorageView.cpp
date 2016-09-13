@@ -13,11 +13,11 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "Storage.h"
-#include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/STLExtras.h"
+#include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/Type.h"
-#include <cstring>
 #include <gtest/gtest.h>
+#include <cstring>
 
 using namespace serialbox;
 using namespace unittest;
@@ -52,7 +52,7 @@ public:
 
   int pad5_left;
   int pad5_right;
-  
+
   // -----------------------------------------------------------------------------------------------
   // 1D
   // -----------------------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ public:
   std::unique_ptr<Storage<double>> storage_2d_row_major;
   std::unique_ptr<Storage<double>> storage_2d_row_major_padded;
 
-  // -----------------------------------------------------------------------r------------------------
+  // -----------------------------------------------------------------------------------------------
   // 3D
   // -----------------------------------------------------------------------------------------------
   std::unique_ptr<Storage<double>> storage_3d_col_major;
@@ -160,20 +160,23 @@ template <class T>
 static std::unique_ptr<StorageView> toStorageView(std::unique_ptr<Storage<T>>& storage) {
   auto type = ToTypeID<T>::value;
   return make_unique<StorageView>(storage->data.data(), type, storage->dims, storage->strides,
-                                       storage->padding);
+                                  storage->padding);
 }
 
 TEST_F(StorageViewTest, Construction) {
 
   // Constructor
-  auto sv_1d = *toStorageView(storage_1d);
+  auto sv_1d = storage_1d->toStorageView();
   EXPECT_EQ(static_cast<void*>(storage_1d->data.data()), static_cast<void*>(sv_1d.data()));
   EXPECT_EQ(storage_1d->strides, sv_1d.strides());
   EXPECT_EQ(storage_1d->dims, sv_1d.dims());
   EXPECT_EQ(storage_1d->padding, sv_1d.padding());
-
+  EXPECT_EQ(sv_1d.bytesPerElement(), sizeof(Storage<double>::value_type));      
+  EXPECT_EQ(sv_1d.size(), dim1);
+  EXPECT_EQ(sv_1d.sizeInBytes(), sv_1d.bytesPerElement() * dim1);    
+  
   // Copy constructor
-  auto sv_2d_col_major = *toStorageView(storage_2d_col_major);
+  auto sv_2d_col_major = storage_2d_col_major->toStorageView();
 
   StorageView copy_sv_1d(sv_1d);
   ASSERT_EQ(copy_sv_1d, sv_1d);
@@ -181,6 +184,9 @@ TEST_F(StorageViewTest, Construction) {
   StorageView copy_sv_2d(sv_2d_col_major);
   ASSERT_EQ(copy_sv_2d, sv_2d_col_major);
 
+  EXPECT_EQ(sv_2d_col_major.size(), dim1 * dim2);  
+  EXPECT_EQ(sv_2d_col_major.sizeInBytes(), sv_2d_col_major.bytesPerElement() * (dim1 * dim2));  
+  
   // Swap
   sv_1d.swap(sv_2d_col_major);
   EXPECT_EQ(sv_1d, copy_sv_2d);
@@ -192,18 +198,18 @@ TEST_F(StorageViewTest, Construction) {
 }
 
 TEST_F(StorageViewTest, IteratorConstruction) {
-  auto sv_1d = *toStorageView(storage_1d);
-  auto sv_1d_pad = *toStorageView(storage_1d_padded);
-  auto sv_2d_col_major = *toStorageView(storage_2d_col_major);
-  auto sv_2d_col_major_pad = *toStorageView(storage_2d_col_major_padded);
-  auto sv_2d_row_major = *toStorageView(storage_2d_row_major);
-  auto sv_2d_row_major_pad = *toStorageView(storage_2d_row_major_padded);
-  auto sv_3d_col_major = *toStorageView(storage_3d_col_major);
-  auto sv_3d_col_major_pad = *toStorageView(storage_3d_col_major_padded);
-  auto sv_3d_row_major = *toStorageView(storage_3d_row_major);
-  auto sv_3d_row_major_pad = *toStorageView(storage_3d_row_major_padded);
-  auto sv_5d_col_major_pad = *toStorageView(storage_5d_col_major_padded);
-  auto sv_5d_row_major_pad = *toStorageView(storage_5d_row_major_padded);
+  auto sv_1d = storage_1d->toStorageView();
+  auto sv_1d_pad = storage_1d_padded->toStorageView();
+  auto sv_2d_col_major = storage_2d_col_major->toStorageView();
+  auto sv_2d_col_major_pad = storage_2d_col_major_padded->toStorageView();
+  auto sv_2d_row_major = storage_2d_row_major->toStorageView();
+  auto sv_2d_row_major_pad = storage_2d_row_major_padded->toStorageView();
+  auto sv_3d_col_major = storage_3d_col_major->toStorageView();
+  auto sv_3d_col_major_pad = storage_3d_col_major_padded->toStorageView();
+  auto sv_3d_row_major = storage_3d_row_major->toStorageView();
+  auto sv_3d_row_major_pad = storage_3d_row_major_padded->toStorageView();
+  auto sv_5d_col_major_pad = storage_5d_col_major_padded->toStorageView();
+  auto sv_5d_row_major_pad = storage_5d_row_major_padded->toStorageView();
 
   EXPECT_NE(sv_1d.begin(), sv_1d.end());
   EXPECT_EQ(sv_1d.begin(), sv_1d.begin());
@@ -253,7 +259,7 @@ TEST_F(StorageViewTest, IteratorConstruction) {
             static_cast<void*>(&storage_3d_row_major->at({0, 0, 0})));
   EXPECT_EQ(static_cast<void*>(sv_3d_row_major_pad.begin().ptr()),
             static_cast<void*>(&storage_3d_row_major_padded->at({0, 0, 0})));
-  
+
   // -----------------------------------------------------------------------------------------------
   // 5D
   // -----------------------------------------------------------------------------------------------
@@ -297,9 +303,9 @@ TEST_F(StorageViewTest, IteratorCopy) {
   const int bytesPerElement = sizeof(double);
 
 #define COPY_INTO_STORAGE(name)                                                                    \
-  auto sv_##name = toStorageView(name);                                                            \
+  auto sv_##name = name->toStorageView();                                                          \
   dataPtr = reinterpret_cast<char*>(data.data());                                                  \
-  for(auto it = sv_##name->begin(), end = sv_##name->end(); it != end;                             \
+  for(auto it = sv_##name.begin(), end = sv_##name.end(); it != end;                               \
       ++it, dataPtr += bytesPerElement)                                                            \
     std::memcpy(it.ptr(), dataPtr, bytesPerElement);
 
@@ -366,10 +372,10 @@ TEST_F(StorageViewTest, IteratorCopy) {
 }
 
 TEST_F(StorageViewTest, isMemCopyable) {
-  EXPECT_TRUE(toStorageView(storage_1d)->isMemCopyable());
-  EXPECT_FALSE(toStorageView(storage_1d_padded)->isMemCopyable());
-  EXPECT_TRUE(toStorageView(storage_2d_col_major)->isMemCopyable());
-  EXPECT_FALSE(toStorageView(storage_2d_col_major_padded)->isMemCopyable());
-  EXPECT_FALSE(toStorageView(storage_2d_row_major)->isMemCopyable());
-  EXPECT_FALSE(toStorageView(storage_2d_row_major_padded)->isMemCopyable());
+  EXPECT_TRUE(storage_1d->toStorageView().isMemCopyable());
+  EXPECT_FALSE(storage_1d_padded->toStorageView().isMemCopyable());
+  EXPECT_TRUE(storage_2d_col_major->toStorageView().isMemCopyable());
+  EXPECT_FALSE(storage_2d_col_major_padded->toStorageView().isMemCopyable());
+  EXPECT_FALSE(storage_2d_row_major->toStorageView().isMemCopyable());
+  EXPECT_FALSE(storage_2d_row_major_padded->toStorageView().isMemCopyable());
 }

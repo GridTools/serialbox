@@ -26,6 +26,7 @@ namespace serialbox {
 /// \typedef Byte
 /// \brief Represent a byte i.e sizeof(Byte) == 1
 using Byte = char;
+static_assert(sizeof(Byte) == 1, "invalid size of Byte");
 
 /// \typedef OpenMode
 /// \brief Policy of opening files for Serializer and Archive
@@ -34,6 +35,9 @@ enum OpenModeKind : std::uint8_t {
   Write,
   Append
 };
+
+/// \brief Convert TypeID to stream
+std::ostream& operator<<(std::ostream& stream, const OpenModeKind& mode);
 
 /// \enum TypeID
 /// \brief Type id of types recognized by serialbox
@@ -51,7 +55,7 @@ enum class TypeID : std::uint8_t {
 /// \brief Types recognized by serialbox
 using SupportedTypes = boost::mpl::set<bool, int, std::int64_t, float, double, std::string>;
 
-/// \brief Convert to stream
+/// \brief Convert TypeID to stream
 std::ostream& operator<<(std::ostream& stream, const TypeID& t);
 
 /// \brief Utilites for TypeID

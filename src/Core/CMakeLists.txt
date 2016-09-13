@@ -15,10 +15,11 @@ set(SOURCES
   StorageViewIterator.cpp
   Type.cpp
   Unreachable.cpp
+  SHA256.cpp
   
   Archive/BinaryArchive.cpp
 )
 
-set(EXTERNAL_LIBRARIES ${BOOST_LIBRARIES} ${GLOG_LIBRARIES})
+set(EXTERNAL_LIBRARIES ${BOOST_LIBRARIES} ${GLOG_LIBRARIES} ${SHA256_LIBRARIES})
 
 serialbox_add_library(SerialboxCore "${SOURCES}" "${EXTERNAL_LIBRARIES}")

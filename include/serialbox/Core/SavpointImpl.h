@@ -15,13 +15,13 @@
 #ifndef SERIALBOX_CORE_SAVEPOINTIMPL_H
 #define SERIALBOX_CORE_SAVEPOINTIMPL_H
 
+#include "serialbox/Core/FieldID.h"
 #include <iosfwd>
 #include <memory>
 #include <string>
 
-namespace serialbox {
 
-class Field;
+namespace serialbox {
 
 /// \brief Implementation of the Savepoint
 ///
@@ -32,9 +32,7 @@ public:
   friend std::ostream& operator<<(std::ostream& stream, const SavepointImpl& s);
 
 private:
-  std::string name_;
-  int id_;
-  std::weak_ptr<Field> field_;
+  std::shared_ptr<FieldID> fieldID_;
 };
 
 } // namespace serialbox

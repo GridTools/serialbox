@@ -87,6 +87,30 @@ find_package(Threads REQUIRED)
 # Set script directory
 set(SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
 
+#---------------------------------------- sha256 ---------------------------------------------------
+set(SHA256_INSTALL_DIR "${CMAKE_BINARY_DIR}/external/sha256/install")
+    
+# Forward toolchain
+set(CMAKE_EXTERNAL_ARGS -Wno-dev
+  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
+  -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+  -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+  -DCMAKE_INSTALL_PREFIX=${SHA256_INSTALL_DIR}
+)
+
+# Build libsha256
+ExternalProject_Add(
+  sha256
+  URL        "${CMAKE_CURRENT_SOURCE_DIR}/external/sha256"
+  PREFIX     "external/sha256"
+  CMAKE_ARGS ${CMAKE_EXTERNAL_ARGS}
+)
+message(STATUS "Building sh256 from: ${CMAKE_CURRENT_SOURCE_DIR}/external/sh256")
+    
+set(SHA256_INCLUDE_DIRS "${SHA256_INSTALL_DIR}/include")
+set(SHA256_LIBRARIES "${SHA256_INSTALL_DIR}/lib/libsha256.a")
+include_directories(${SHA256_INCLUDE_DIRS})
+
 #---------------------------------------- GTest ----------------------------------------------------
 if(SERIALBOX_TESTING)
   if(APPLE AND NOT(CMAKE_CXX_COMPILER_ID MATCHES "GNU"))
@@ -331,7 +355,10 @@ file(GLOB_RECURSE SERIALBOX_HEADERS
      
      
 # Setup external libraries
-set(SERIALBOX_EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${GTEST_LIBRARIES} ${GLOG_LIBRARIES})
+set(SERIALBOX_EXTERNAL_LIBRARIES ${Boost_LIBRARIES} 
+                                 ${GTEST_LIBRARIES} 
+                                 ${GLOG_LIBRARIES} 
+                                 ${SHA256_LIBRARIES})
 
 if(SERIALBOX_HAS_STELLA)
   set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${STELLA_LIBRARIES})

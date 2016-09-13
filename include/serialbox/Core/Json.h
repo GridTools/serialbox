@@ -18,6 +18,6 @@
 
 #include <json/json.hpp>
 
-using json = nlohmann::json;
+namespace json = nlohmann;
 
 #endif

@@ -18,18 +18,37 @@
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/FieldID.h"
 #include "serialbox/Core/StorageView.h"
+#include <iosfwd>
 
 namespace serialbox {
 
 ///
 class Archive {
 public:
+  ///
+  static constexpr const char* ArchiveName = "ArchiveMetaData.json";
   
   ///
   virtual void write(StorageView& storageView, const FieldID& fieldID) throw(Exception) = 0;
 
   ///
   virtual void read(StorageView& storageView, const FieldID& fieldID) throw(Exception) = 0;
+  
+  ///
+  virtual void updateMetaData() = 0;
+
+  ///
+  virtual const std::string& directory() const = 0;
+  
+  ///
+  virtual std::ostream& toStream(std::ostream& stream) const = 0;
+  
+  /// \brief Convert to stream
+  friend std::ostream& operator<<(std::ostream& stream, const Archive& archive) {
+    return archive.toStream(stream);
+  }
+  
+  virtual ~Archive() {}
 };
 
 } // namespace serialbox

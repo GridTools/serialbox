@@ -9,7 +9,8 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-set(UNITTEST_SOURCES UnittestMain.cpp
+set(UNITTEST_SOURCES 
+                     # Unittests
                      UnittestBinaryArchive.cpp
                      UnittestStorage.cpp
                      UnittestStorageView.cpp
@@ -18,6 +19,11 @@ set(UNITTEST_SOURCES UnittestMain.cpp
                      UnittestType.cpp
                      UnittestTree.cpp
 
+                     # Utility
+                     UnittestEnvironment.cpp
+                     UnittestMain.cpp
+                     FileUtility.h
+                     UnittestEnvironment.h
                      GridTools.h
                      Storage.h
                      STELLA.h)

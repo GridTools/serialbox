@@ -91,10 +91,10 @@ public:
   /// @{
 
   /// \brief Copy assignment
-  StorageView& operator=(StorageView other) noexcept;
+  StorageView& operator=(const StorageView& other) = default;
   
   /// \brief Move assignment
-  StorageView& operator=(StorageView&& other) noexcept;
+  StorageView& operator=(StorageView&& other) = default;
 
   /// \brief Swap with \c other
   void swap(StorageView& other) noexcept;
@@ -116,6 +116,9 @@ public:
   
   /// \brief Size of the allocated data (without padding)
   std::size_t size() const noexcept;
+  
+  /// \brief Size of the allocated data (without padding) in Bytes
+  std::size_t sizeInBytes() const noexcept;
   
 private:
   Byte* data_;

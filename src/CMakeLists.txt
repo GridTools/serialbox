@@ -27,6 +27,8 @@ function(serialbox_add_library name sources libraries)
     set_target_properties(${name} PROPERTIES COMPILE_FLAGS -Wall)
   endif(SERIALBOX_VERBOSE_WARNINGS)
 
+  add_dependencies(${name} sha256)
+  
   # Depend on GTest?
   if(BUILD_GTEST)
     add_dependencies(${name} gtest)

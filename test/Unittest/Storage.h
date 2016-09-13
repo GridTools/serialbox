@@ -16,6 +16,8 @@
 #define SERIALBOX_UNITTEST_STORAGE_H
 
 #include "serialbox/Core/Logging.h"
+#include "serialbox/Core/StorageView.h"
+#include "serialbox/Core/STLExtras.h"
 #include <cstring>
 #include <initializer_list>
 #include <iostream>
@@ -33,6 +35,8 @@ namespace unittest {
 /// \brief Represent a dummy storage to test the StorageView in absence of gridtools or STELLA
 template <class T>
 struct Storage {
+  using value_type = T;
+  
   /// \brief Storage order
   enum StorageOrderKind {
     RowMajor, ///< Stride 1 in last dimension
@@ -119,6 +123,12 @@ struct Storage {
 
     stream << " }\n]\n";
     return stream;
+  }
+
+  /// \brief Convert to StorageView
+  StorageView toStorageView() {
+    auto type = ToTypeID<T>::value;
+    return StorageView(data.data(), type, dims, strides, padding);
   }
 
 private:

@@ -28,7 +28,6 @@ public:
   friend std::ostream& operator<<(std::ostream& stream, const SavepointCollectionImpl& s);
 
 private:
-  std::string name_;
 };
 
 } // namespace serialbox

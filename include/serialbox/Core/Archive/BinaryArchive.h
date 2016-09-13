@@ -15,6 +15,7 @@
 #ifndef SERIALBOX_CORE_ARCHIVE_BINARYARCHIVE_H
 #define SERIALBOX_CORE_ARCHIVE_BINARYARCHIVE_H
 
+#include "serialbox/Core/Json.h"
 #include "serialbox/Core/Archive/Archive.h"
 #include <boost/filesystem.hpp>
 #include <boost/noncopyable.hpp>
@@ -25,6 +26,11 @@ namespace serialbox {
 /// \brief Non-portable binary archive
 class BinaryArchive : public Archive, boost::noncopyable {
 public:
+  /// \brief Revision of the binary archive
+  static const int Version;
+  
+  virtual ~BinaryArchive();
+  
   /// \brief Offset
   struct FileOffsetType {
     std::streamoff offset; ///< Binary offset within the file
@@ -38,15 +44,30 @@ public:
   using FieldTable = std::unordered_map<std::string, FieldOffsetTable>;
 
   /// \brief Initialize the archive with a directory and open file policy
-  BinaryArchive(boost::filesystem::path directory, OpenModeKind mode);
-
+  BinaryArchive(const boost::filesystem::path& directory, OpenModeKind mode);
+  
+  /// \brief Load meta-data from JSON file
+  void readMetaDataFromJson();
+  
+  /// \brief Convert meta-data to JSON and serialize to file
+  void writeMetaDataToJson(); 
+  
+  /// \brief Set meta data to be out-of-data
+  void setMetaDataDirty() noexcept { metaDataDirty_ = true; }
+  
   virtual void write(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;
   virtual void read(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;
-
+  virtual void updateMetaData() override;
+  virtual const std::string& directory() const override { return directory_.string(); }
+  virtual std::ostream& toStream(std::ostream& stream) const override; 
+  
 private:
   OpenModeKind mode_;
   boost::filesystem::path directory_;
+  
+  json::json json_;
   FieldTable fieldTable_;
+  bool metaDataDirty_;
 };
 
 } // namespace serialbox

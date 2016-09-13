@@ -71,11 +71,6 @@ std::ostream& operator<<(std::ostream& stream, const StorageView& s) {
   return stream;
 }
 
-StorageView& StorageView::operator=(StorageView other) noexcept {
-  swap(other);
-  return *this;
-}
-
 void swap(StorageView& a, StorageView& b) noexcept { a.swap(b); }
 
 bool StorageView::isMemCopyable() const noexcept {
@@ -101,9 +96,13 @@ bool StorageView::isMemCopyable() const noexcept {
 
 std::size_t StorageView::size() const noexcept {
   std::size_t size = 1;
-  for(std::size_t i = 1; i < dims_.size(); ++i)
-    size *= (i == 0 ? 1 : i);
+  for(std::size_t i = 0; i < dims_.size(); ++i)
+    size *= (dims_[i] == 0 ? 1 : dims_[i]);
   return size;
+}
+
+std::size_t StorageView::sizeInBytes() const noexcept {
+  return size() * bytesPerElement();
 }
 
 } // namespace serialbox

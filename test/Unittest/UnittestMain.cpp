@@ -12,6 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "UnittestEnvironment.h"
 #include "serialbox/Core/Logging.h"
 #include <gtest/gtest.h>
 
@@ -25,6 +26,9 @@ int main(int argc, char *argv[]) {
   serialbox::Logging::setLogToStderr(true);
   serialbox::Logging::setMinLogLevel(serialbox::Logging::Info);
   serialbox::Logging::setColorLogToStdErr(true);
+  
+  // Register test environment
+  testing::AddGlobalTestEnvironment(&serialbox::unittest::UnittestEnvironment::getInstance());
 
   return RUN_ALL_TESTS();
 }

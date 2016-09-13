@@ -8,19 +8,18 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file defines the Field type.
+/// This file defines a unique identification for a Savepoint within a field.
 ///
 //===------------------------------------------------------------------------------------------===//
 
 #ifndef SERIALBOX_CORE_FIELD_H
 #define SERIALBOX_CORE_FIELD_H
 
-#include <iosfwd>
 #include <string>
 
 namespace serialbox {
 
-/// \brief Unique identification of a field
+/// \brief Unique identification of a Savepoint within a field
 struct FieldID {
   std::string name; ///< Name of the field
   unsigned int id;  ///< ID within the field

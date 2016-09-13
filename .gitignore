@@ -17,6 +17,7 @@ external/*
 !external/gtest
 !external/glog
 !external/json
+!external/sha256
 
 # Generated files
 include/serialbox/Support/Config.h
