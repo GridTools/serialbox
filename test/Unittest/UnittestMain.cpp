@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
   // Initialize glog
   serialbox::Logging::init(argv[0], true);
   serialbox::Logging::setLogToStderr(true);
-  serialbox::Logging::setMinLogLevel(serialbox::Logging::Info);
+  serialbox::Logging::setMinLogLevel(serialbox::Logging::Warning);
   serialbox::Logging::setColorLogToStdErr(true);
   
   // Register test environment
