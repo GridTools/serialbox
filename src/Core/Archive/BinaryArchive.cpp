@@ -74,9 +74,9 @@ void BinaryArchive::readMetaDataFromJson() {
 
 void BinaryArchive::writeMetaDataToJson() {
   boost::filesystem::path filename = directory_ / Archive::ArchiveName;
-  LOG(INFO) << "Writing MetaData for BinaryArchive ... ";
+  LOG(INFO) << "Update MetaData for BinaryArchive ";
 
-  json_.clear(); // TODO: needed?
+  json_.clear();
 
   // Tag versions
   json_["serialbox_version"] =
@@ -228,11 +228,11 @@ void BinaryArchive::write(StorageView& storageView, const FieldID& fieldID) thro
   fs.write(binaryData_.data(), binaryData_.size());
   fs.close();
 
-  LOG(INFO) << "Successfully wrote field \"" << fieldID.name << "\" (id = " << fieldID.id << ") to "
-            << filename.filename();
-
   metaDataDirty_ = true;
   updateMetaData();
+  
+  LOG(INFO) << "Successfully wrote field \"" << fieldID.name << "\" (id = " << fieldID.id << ") to "
+            << filename.filename();
 }
 
 //===------------------------------------------------------------------------------------------===//
