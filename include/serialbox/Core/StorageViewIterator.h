@@ -24,20 +24,20 @@ namespace serialbox {
 class StorageView;
 
 /// \brief Mutable forward iterator to access the data of a StorageView
-/// 
+///
 /// The data is accessed in column-major order.
 class StorageViewIterator {
 public:
   /// \name Typedefs
   /// @{
-  /// 
+  ///
   using value_type = Byte;
   using diffrence_type = std::ptrdiff_t;
   using pointer = Byte*;
   using refrence = Byte&;
   using iterator = StorageViewIterator;
   using iterator_category = std::forward_iterator_tag;
-  
+
   /// @}
   /// \name Constructors
   /// @{
@@ -46,10 +46,10 @@ public:
   StorageViewIterator(const StorageViewIterator&) = default;
 
   /// \brief Construct iterator at specific location in the data
-  /// 
+  ///
   /// \param storageView  Associated StorageView
-  /// \param beginning    Create a pointer to the beginning of the data or the end 
-  StorageViewIterator(StorageView* storageView, bool beginning);
+  /// \param beginning    Create a pointer to the beginning of the data or the end
+  StorageViewIterator(const StorageView* storageView, bool beginning);
 
   /// @}
   /// \name Operators
@@ -69,15 +69,15 @@ public:
 
   /// \brief Post-increment
   iterator operator++(int)noexcept;
-  
+
   /// \brief Derefrence
-  refrence operator*() noexcept { return *ptr_; }
-  
+  refrence operator*() noexcept { return *curPtr_; }
+
   /// \brief Swap with other
   void swap(StorageViewIterator& other) noexcept;
-  
+
   /// \brief Convert to stream
-  friend std::ostream& operator<<(std::ostream& stream, const StorageViewIterator& it); 
+  friend std::ostream& operator<<(std::ostream& stream, const StorageViewIterator& it);
 
   /// @}
 
@@ -85,32 +85,40 @@ public:
   int bytesPerElement() noexcept { return bytesPerElement_; }
 
   /// \brief Get current data pointer
-  Byte* ptr() noexcept { return ptr_; }
-  
+  Byte* ptr() noexcept { return curPtr_; }
+
   /// \brief Interpret current data pointer as type T
   /// @{
-  template<class T>
-  T& as() noexcept { return *(reinterpret_cast<T*>(ptr_)); }
+  template <class T>
+  T& as() noexcept {
+    return *(reinterpret_cast<T*>(curPtr_));
+  }
 
-  template<class T>
-  const T& as() const noexcept { return *(reinterpret_cast<T*>(ptr_)); }
+  template <class T>
+  const T& as() const noexcept {
+    return *(reinterpret_cast<T*>(curPtr_));
+  }
   /// @}
+
+  /// \brief Get current index position in the data
+  const std::vector<int>& index() const noexcept { return index_; }
 
 private:
   /// \brief Compute the current linear index in the data according to the \c index vector
   int computeCurrentIndex() const noexcept;
-  
+
 private:
   // Position in the data
-  Byte* ptr_;
+  Byte* orignPtr_;
+  Byte* curPtr_;
   std::vector<int> index_;
   bool end_;
-  
+
   // Associated StorageView
   int bytesPerElement_;
-  StorageView* storageView_;
+  const StorageView* storageView_;
 };
 
 } // namespace serialbox
 
-#endif 
+#endif

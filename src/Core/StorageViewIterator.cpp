@@ -18,12 +18,13 @@
 
 namespace serialbox {
 
-StorageViewIterator::StorageViewIterator(StorageView* storageView, bool beginning)
+StorageViewIterator::StorageViewIterator(const StorageView* storageView, bool beginning)
     : bytesPerElement_(storageView->bytesPerElement()), storageView_(storageView) {
 
   if(!(end_ = !beginning)) {
     index_.resize(storageView_->dims().size(), 0);
-    ptr_ = storageView_->data() + computeCurrentIndex();
+    orignPtr_ = const_cast<StorageView*>(storageView_)->data();  // TODO: fix this const cast
+    curPtr_ = orignPtr_ + computeCurrentIndex();
   }
 }
 
@@ -42,13 +43,13 @@ StorageViewIterator::iterator& StorageViewIterator::operator++() noexcept {
       }
 
     // Compute the current data pointer
-    ptr_ = storageView_->data() + computeCurrentIndex();
+    curPtr_ = orignPtr_ + computeCurrentIndex();
   }
   return (*this);
 }
 
 bool StorageViewIterator::operator==(const iterator& right) const noexcept { 
-  return (ptr_ == right.ptr_ || (end_ == true && end_ == right.end_)); 
+  return (curPtr_ == right.curPtr_ || (end_ == true && end_ == right.end_)); 
 }
 
 StorageViewIterator::iterator StorageViewIterator::operator++(int)noexcept {
@@ -59,7 +60,7 @@ StorageViewIterator::iterator StorageViewIterator::operator++(int)noexcept {
 }
 
 void StorageViewIterator::swap(StorageViewIterator& other) noexcept {
-  std::swap(ptr_, other.ptr_);
+  std::swap(curPtr_, other.curPtr_);
   index_.swap(other.index_);
   std::swap(bytesPerElement_, other.bytesPerElement_);
   std::swap(storageView_, other.storageView_);
@@ -67,7 +68,7 @@ void StorageViewIterator::swap(StorageViewIterator& other) noexcept {
 
 std::ostream& operator<<(std::ostream& stream, const StorageViewIterator& it) {
   stream << "StorageViewIterator [\n";
-  stream << "  ptr = " << static_cast<void*>(it.ptr_) << "\n";
+  stream << "  ptr = " << static_cast<void*>(it.curPtr_) << "\n";
   stream << "  end = " << it.end_ << "\n";  
   stream << "  index = {";
   for(auto i : it.index_)

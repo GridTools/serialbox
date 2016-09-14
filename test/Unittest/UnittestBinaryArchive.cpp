@@ -55,43 +55,27 @@ TEST_F(BinaryArchiveTest, Construction) {
 
 TEST_F(BinaryArchiveTest, WriteAndRead) {
 
-// -------------------------------------------------------------------------------------------------
-// Preparation
-// -------------------------------------------------------------------------------------------------
-
-#define FILL_RANDOM(field)                                                                         \
-  for(int i = 0; i < field.dims()[0]; ++i)                                                         \
-    for(int j = 0; j < field.dims()[1]; ++j)                                                       \
-      for(int k = 0; k < field.dims()[2]; ++k)                                                     \
-        field.at(i, j, k) = double(std::rand()) / RAND_MAX;
+  // -------------------------------------------------------------------------------------------------
+  // Preparation
+  // -------------------------------------------------------------------------------------------------
 
   // Prepare input data
-  Storage<double> u_0_input(Storage<double>::RowMajor, {5, 6, 7});
-  Storage<double> u_1_input(Storage<double>::RowMajor, {5, 6, 7});
-  Storage<double> u_2_input(Storage<double>::RowMajor, {5, 6, 7});
+  Storage<double> u_0_input(Storage<double>::RowMajor, {5, 6, 7}, Storage<double>::random);
+  Storage<double> u_1_input(Storage<double>::RowMajor, {5, 6, 7}, Storage<double>::random);
+  Storage<double> u_2_input(Storage<double>::RowMajor, {5, 6, 7}, Storage<double>::random);
 
-  FILL_RANDOM(u_0_input);
-  FILL_RANDOM(u_1_input);
-  FILL_RANDOM(u_2_input);
-
-  Storage<double> v_0_input(Storage<double>::ColMajor, {5, 1, 1});
-  Storage<double> v_1_input(Storage<double>::ColMajor, {5, 1, 1});
-  Storage<double> v_2_input(Storage<double>::ColMajor, {5, 1, 1});
-
-  FILL_RANDOM(v_0_input);
-  FILL_RANDOM(v_1_input);
-  FILL_RANDOM(v_2_input);
+  Storage<double> v_0_input(Storage<double>::ColMajor, {5, 1, 1}, Storage<double>::random);
+  Storage<double> v_1_input(Storage<double>::ColMajor, {5, 1, 1}, Storage<double>::random);
+  Storage<double> v_2_input(Storage<double>::ColMajor, {5, 1, 1}, Storage<double>::random);
 
   // Prepare output
-  Storage<double> u_0_output(Storage<double>::RowMajor, {5, 6, 7}, false);
-  Storage<double> u_1_output(Storage<double>::RowMajor, {5, 6, 7}, false);
-  Storage<double> u_2_output(Storage<double>::RowMajor, {5, 6, 7}, false);
+  Storage<double> u_0_output(Storage<double>::RowMajor, {5, 6, 7});
+  Storage<double> u_1_output(Storage<double>::RowMajor, {5, 6, 7});
+  Storage<double> u_2_output(Storage<double>::RowMajor, {5, 6, 7});
 
-  Storage<double> v_0_output(Storage<double>::RowMajor, {5, 1, 1}, false);
-  Storage<double> v_1_output(Storage<double>::RowMajor, {5, 1, 1}, false);
-  Storage<double> v_2_output(Storage<double>::RowMajor, {5, 1, 1}, false);
-
-#undef FILL_RANDOM
+  Storage<double> v_0_output(Storage<double>::RowMajor, {5, 1, 1});
+  Storage<double> v_1_output(Storage<double>::RowMajor, {5, 1, 1});
+  Storage<double> v_2_output(Storage<double>::RowMajor, {5, 1, 1});
 
   // -----------------------------------------------------------------------------------------------
   // Writing
@@ -178,25 +162,13 @@ TEST_F(BinaryArchiveTest, WriteAndRead) {
     ASSERT_THROW(archiveRead.read(sv, FieldID{"u", 0}), Exception);
   }
 
-// -----------------------------------------------------------------------------------------------
-// Validation
-// -----------------------------------------------------------------------------------------------
-#define CHECK_FIELD(field1, field2)                                                                \
-  ASSERT_TRUE(field1.dims() == field2.dims());                                                     \
-  for(int i = 0; i < field1.dims()[0]; ++i)                                                        \
-    for(int j = 0; j < field1.dims()[1]; ++j)                                                      \
-      for(int k = 0; k < field1.dims()[2]; ++k) {                                                  \
-        std::string pos("pos: (" + std::to_string(i) + "," + std::to_string(i) + "," +             \
-                        std::to_string(j) + ")");                                                  \
-        ASSERT_DOUBLE_EQ(field1.at(i, j, k), field2.at(i, j, k)) << pos;                           \
-      }
-
-  CHECK_FIELD(u_0_output, u_0_input);
-  CHECK_FIELD(u_1_output, u_1_input);
-  CHECK_FIELD(u_2_output, u_2_input);
-  CHECK_FIELD(v_0_output, v_1_input); // Data was replaced
-  CHECK_FIELD(v_1_output, v_0_input); // Data was replaced
-  CHECK_FIELD(v_2_output, v_2_input);
-
-#undef CHECK_FIELD
+  // -----------------------------------------------------------------------------------------------
+  // Validation
+  // -----------------------------------------------------------------------------------------------
+  Storage<double>::verify(u_0_output, u_0_input);
+  Storage<double>::verify(u_1_output, u_1_input);
+  Storage<double>::verify(u_2_output, u_2_input);
+  Storage<double>::verify(v_0_output, v_1_input); // Data was replaced
+  Storage<double>::verify(v_1_output, v_0_input); // Data was replaced
+  Storage<double>::verify(v_2_output, v_2_input);
 }

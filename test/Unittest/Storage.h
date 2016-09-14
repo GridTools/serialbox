@@ -16,14 +16,17 @@
 #define SERIALBOX_UNITTEST_STORAGE_H
 
 #include "serialbox/Core/Logging.h"
-#include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/STLExtras.h"
+#include "serialbox/Core/StorageView.h"
+#include <array>
+#include <cstdlib>
+#include <functional>
+#include <gtest/gtest.h>
 #include <initializer_list>
 #include <iosfwd>
 #include <memory>
-#include <vector>
-#include <functional>
 #include <type_traits>
+#include <vector>
 
 namespace serialbox {
 
@@ -41,17 +44,26 @@ struct Padding {
   std::initializer_list<std::pair<int, int>> padding;
 };
 
-/// \brief Return idx as type T
-template<class T>
-T sequential(int idx) {
-  return T(idx);
-}
-
 /// \brief Represent a dummy storage to test the StorageView in absence of gridtools or STELLA
 template <class T>
 struct Storage {
   using value_type = T;
-  
+
+  /// \brief Return idx as type T
+  ///
+  /// This function can be used in Storage<T>::forEach.
+  static T sequential(int idx) noexcept { return T(idx); }
+
+  /// \brief Return a random number
+  ///
+  /// This function can be used in Storage<T>::forEach.
+  static T random(int idx) noexcept {
+    if(std::is_integral<T>::value)
+      return T(std::rand());
+    else
+      return T(std::rand()) / RAND_MAX;
+  }
+
   /// \brief Storage order
   enum StorageOrderKind {
     RowMajor, ///< Stride 1 in last dimension
@@ -66,53 +78,48 @@ struct Storage {
   Storage& operator=(const Storage&) = default;
   Storage& operator=(Storage&&) = default;
 
-//  Storage(StorageOrderKind ordering, std::initializer_list<int> dims, std::function<T(int)> init = sequential<T>)
-//      : ordering_(ordering), dims_(dims) {
-//    padding_.resize(dims_.size(), std::make_pair<int, int>(0, 0));
-//    data_.resize(size(), T());
-//    computeStrides();
-//    forEach(init);
-//  }
-  
-    Storage(StorageOrderKind ordering, std::initializer_list<int> dims, bool init)
-        : ordering_(ordering), dims_(dims) {
-      padding_.resize(dims_.size(), std::make_pair<int, int>(0, 0));
-      data_.resize(size(), T());
-      computeStrides();
-      if(init)
-        initData();
-    }
-  
-  Storage(StorageOrderKind ordering, Dims dims, bool init = true)
+  Storage(StorageOrderKind ordering, std::initializer_list<int> dims,
+          std::function<T(int)> init = Storage<T>::sequential)
+      : ordering_(ordering), dims_(dims) {
+    padding_.resize(dims_.size(), std::make_pair<int, int>(0, 0));
+    data_.resize(size(), T());
+    computeStrides();
+    forEach(init);
+  }
+
+  Storage(StorageOrderKind ordering, Dims dims, std::function<T(int)> init = Storage<T>::sequential)
       : ordering_(ordering), dims_(dims.dims) {
     padding_.resize(dims_.size(), std::make_pair<int, int>(0, 0));
     data_.resize(size(), T());
     computeStrides();
-
-    if(init)
-      initData();
+    forEach(init);
   }
 
   Storage(StorageOrderKind ordering, std::initializer_list<int> dims,
-          std::initializer_list<std::pair<int, int>> padding, bool init = true)
+          std::initializer_list<std::pair<int, int>> padding,
+          std::function<T(int)> init = Storage<T>::sequential)
       : ordering_(ordering), dims_(dims), padding_(padding) {
     data_.resize(size(), T());
     computeStrides();
-
-    if(init)
-      initData();
+    forEach(init);
   }
-  
-  Storage(StorageOrderKind ordering, Dims dims, Padding padding, bool init = true)
+
+  Storage(StorageOrderKind ordering, Dims dims, Padding padding,
+          std::function<T(int)> init = Storage<T>::sequential)
       : ordering_(ordering), dims_(dims.dims), padding_(padding.padding) {
     data_.resize(size(), T());
     computeStrides();
-
-    if(init)
-      initData();
+    forEach(init);
   }
-  
-  /// @}  
+
+  /// @}
+
+  /// \brief Apply the function f (of type std::function<T(int)>) to each element
+  template <class Function>
+  void forEach(Function&& f) {
+    for(std::size_t i = 0; i < data_.size(); ++i)
+      data_[i] = f(i);
+  }
 
   /// \brief Get total allocated size
   int size() const noexcept {
@@ -121,7 +128,7 @@ struct Storage {
       size *= (padding_[i].first + dims_[i] + padding_[i].second);
     return size;
   }
-  
+
   /// \brief Get origin pointer
   T* originPtr() noexcept {
     T* ptr = data_.data();
@@ -138,26 +145,26 @@ struct Storage {
 
   /// \brief Access data
   /// @{
-  template<class... Indices>
+  template <class... Indices>
   T& at(const Indices&... indices) noexcept {
     return *(data_.data() + computeIndex(indices...));
   }
-  
-  template<class... Indices>
+
+  template <class... Indices>
   const T& at(const Indices&... indices) const noexcept {
     return *(data_.data() + computeIndex(indices...));
   }
-  
-  template<class... Indices>
+
+  template <class... Indices>
   T& operator()(const Indices&... indices) noexcept {
     return *(data_.data() + computeIndex(indices...));
   }
-  
-  template<class... Indices>
+
+  template <class... Indices>
   const T& operator()(const Indices&... indices) const noexcept {
     return *(data_.data() + computeIndex(indices...));
   }
-  
+
   /// @}
 
   /// \brief Convert to stream
@@ -185,38 +192,83 @@ struct Storage {
   }
 
   /// \brief Convert to StorageView
-  StorageView toStorageView() {
+  StorageView toStorageView() const {
     auto type = ToTypeID<T>::value;
-    return StorageView(data_.data(), type, dims_, strides_, padding_);
+    return StorageView((void*)data_.data(), type, dims_, strides_, padding_);
   }
-  
+
+  /// \brief Verify that the two Storages are equal
+  static testing::AssertionResult verify(const Storage<T>& storage, const Storage<T>& refrence) {
+    std::stringstream ss;
+
+    if(storage.dims() != refrence.dims()) {
+      ss << "\nInconsistent dimensions:\n";
+      ss << " storage: { ";
+      for(const auto& d : storage.dims())
+        ss << d << " ";
+      ss << "}\n refrence: {";
+      for(const auto& d : refrence.dims())
+        ss << d << " ";
+      ss << "\n";
+      return testing::AssertionFailure() << ss.str().c_str();
+    }
+
+    const auto SVstorage = storage.toStorageView();
+    const auto SVrefrence = refrence.toStorageView();
+
+    auto itStorage = SVstorage.cbegin(), endStorage = SVstorage.cend();
+    auto itRefrence = SVrefrence.cbegin(), endRefrence = SVrefrence.cend();
+
+    while(itStorage != endStorage && itRefrence != endRefrence) {
+
+      // We always check for bit-wise equality
+      if(itStorage.template as<T>() != itRefrence.template as<T>()) {
+        ss << "\nStorage mismatch:\n";
+        ss << " storage at ( ";
+        for(const auto& d : itStorage.index())
+          ss << d << "  ";
+        ss << ") = " << itStorage.template as<T>() << "\n";
+        ss << " refrence at (  ";
+        for(const auto& d : itRefrence.index())
+          ss << d << "  ";
+        ss << ") = " << itRefrence.template as<T>() << "\n";
+        return testing::AssertionFailure() << ss.str().c_str();
+      }
+
+      ++itStorage;
+      ++itRefrence;
+    }
+    return testing::AssertionSuccess();
+  }
+
   /// \brief Getter
   /// @{
   StorageOrderKind ordering() const noexcept { return ordering_; }
-  
+
   std::vector<T>& data() noexcept { return data_; }
   const std::vector<T>& data() const noexcept { return data_; }
-  
+
   std::vector<int>& dims() noexcept { return dims_; }
   const std::vector<int>& dims() const noexcept { return dims_; }
-  
+
   std::vector<int>& strides() noexcept { return strides_; }
   const std::vector<int>& strides() const noexcept { return strides_; }
-  
+
   std::vector<std::pair<int, int>>& padding() noexcept { return padding_; }
   const std::vector<std::pair<int, int>>& padding() const noexcept { return padding_; }
   /// @}
 
 private:
-  template<class... Indices>
+  template <class... Indices>
   int computeIndex(const Indices&... indices) const noexcept {
     std::array<int, sizeof...(Indices)> index{{indices...}};
+    CHECK(index.size() == strides_.size()) << "incorrect number of dimensions";
     int pos = 0;
-    for(int i = 0; i < index.size(); ++i)
+    for(unsigned int i = 0; i < index.size(); ++i)
       pos += (padding_[i].first + index[i]) * strides_[i];
     return pos;
   }
-  
+
   void computeStrides() noexcept {
     int numDim = dims_.size();
 
@@ -245,12 +297,7 @@ private:
     for(std::size_t i = 0; i < data_.size(); ++i)
       data_[i] = i;
   }
-  
-  void forEach(std::function<T(int)>& f) {
-    for(std::size_t i = 0; i < data_.size(); ++i)
-      data_[i] = f(i);    
-  }
-  
+
 private:
   StorageOrderKind ordering_;
   std::vector<T> data_;
@@ -258,9 +305,6 @@ private:
   std::vector<int> strides_;
   std::vector<std::pair<int, int>> padding_;
 };
-
-/// \brief Verify that the two Storages are equal 
-
 
 } // namespace unittest
 
