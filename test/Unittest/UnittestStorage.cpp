@@ -68,9 +68,6 @@ public:
 
 protected:
   virtual void SetUp() override {
-    using il = std::initializer_list<int>;
-    using ipl = std::initializer_list<std::pair<int, int>>;
-
     dim1 = 2;
     dim2 = 3;
     dim3 = 4;
@@ -87,31 +84,27 @@ protected:
     auto colMajor = Storage<double>::ColMajor;
     auto rowMajor = Storage<double>::RowMajor;
 
-    storage_1d = make_unique<Storage<double>>(colMajor, il{dim1});
+    storage_1d = make_unique<Storage<double>>(colMajor, Dims{dim1});
     storage_1d_padded = make_unique<Storage<double>>(
-        colMajor, il{dim1}, ipl{std::pair<int, int>(pad1_left, pad1_right)});
+        colMajor, Dims{dim1}, Padding{{pad1_left, pad1_right}});
 
-    storage_2d_col_major = make_unique<Storage<double>>(colMajor, il{dim1, dim2});
+    storage_2d_col_major = make_unique<Storage<double>>(colMajor, Dims{dim1, dim2});
     storage_2d_col_major_padded = make_unique<Storage<double>>(
-        colMajor, il{dim1, dim2}, ipl{std::pair<int, int>(pad1_left, pad1_right),
-                                      std::pair<int, int>(pad2_left, pad2_right)});
+        colMajor, Dims{dim1, dim2}, Padding{{pad1_left, pad1_right}, {pad2_left, pad2_right}});
 
-    storage_2d_row_major = make_unique<Storage<double>>(rowMajor, il{dim1, dim2});
+    storage_2d_row_major = make_unique<Storage<double>>(rowMajor, Dims{dim1, dim2});
     storage_2d_row_major_padded = make_unique<Storage<double>>(
-        rowMajor, il{dim1, dim2}, ipl{std::pair<int, int>(pad1_left, pad1_right),
-                                      std::pair<int, int>(pad2_left, pad2_right)});
+        rowMajor, Dims{dim1, dim2}, Padding{{pad1_left, pad1_right}, {pad2_left, pad2_right}});
 
-    storage_3d_col_major = make_unique<Storage<double>>(colMajor, il{dim1, dim2, dim3});
+    storage_3d_col_major = make_unique<Storage<double>>(colMajor, Dims{dim1, dim2, dim3});
     storage_3d_col_major_padded = make_unique<Storage<double>>(
-        colMajor, il{dim1, dim2, dim3},
-        ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
-            std::pair<int, int>(pad3_left, pad3_right)});
+        colMajor, Dims{dim1, dim2, dim3},
+        Padding{{pad1_left, pad1_right}, {pad2_left, pad2_right}, {pad3_left, pad3_right}});
 
-    storage_3d_row_major = make_unique<Storage<double>>(rowMajor, il{dim1, dim2, dim3});
+    storage_3d_row_major = make_unique<Storage<double>>(rowMajor, Dims{dim1, dim2, dim3});
     storage_3d_row_major_padded = make_unique<Storage<double>>(
-        rowMajor, il{dim1, dim2, dim3},
-        ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
-            std::pair<int, int>(pad3_left, pad3_right)});
+        rowMajor, Dims{dim1, dim2, dim3},
+        Padding{{pad1_left, pad1_right}, {pad2_left, pad2_right}, {pad3_left, pad3_right}});
   }
 
   virtual void TearDown() override {}
@@ -124,85 +117,85 @@ TEST_F(StorageTest, Dimension) {
   // -----------------------------------------------------------------------------------------------
   // 1D
   // -----------------------------------------------------------------------------------------------
-  EXPECT_EQ(storage_1d->dims[0], dim1);
-  EXPECT_EQ(storage_1d_padded->dims[0], dim1);
+  EXPECT_EQ(storage_1d->dims()[0], dim1);
+  EXPECT_EQ(storage_1d_padded->dims()[0], dim1);
 
   // -----------------------------------------------------------------------------------------------
   // 2D
   // -----------------------------------------------------------------------------------------------
-  EXPECT_EQ(storage_2d_row_major->dims[0], dim1);
-  EXPECT_EQ(storage_2d_row_major->dims[1], dim2);
+  EXPECT_EQ(storage_2d_row_major->dims()[0], dim1);
+  EXPECT_EQ(storage_2d_row_major->dims()[1], dim2);
 
-  EXPECT_EQ(storage_2d_col_major->dims[0], dim1);
-  EXPECT_EQ(storage_2d_col_major->dims[1], dim2);
+  EXPECT_EQ(storage_2d_col_major->dims()[0], dim1);
+  EXPECT_EQ(storage_2d_col_major->dims()[1], dim2);
 
-  EXPECT_EQ(storage_2d_col_major_padded->dims[0], dim1);
-  EXPECT_EQ(storage_2d_col_major_padded->dims[1], dim2);
+  EXPECT_EQ(storage_2d_col_major_padded->dims()[0], dim1);
+  EXPECT_EQ(storage_2d_col_major_padded->dims()[1], dim2);
 
-  EXPECT_EQ(storage_2d_row_major_padded->dims[0], dim1);
-  EXPECT_EQ(storage_2d_row_major_padded->dims[1], dim2);
+  EXPECT_EQ(storage_2d_row_major_padded->dims()[0], dim1);
+  EXPECT_EQ(storage_2d_row_major_padded->dims()[1], dim2);
 
   // -----------------------------------------------------------------------------------------------
   // 3D
   // -----------------------------------------------------------------------------------------------
-  EXPECT_EQ(storage_3d_row_major->dims[0], dim1);
-  EXPECT_EQ(storage_3d_row_major->dims[1], dim2);
-  EXPECT_EQ(storage_3d_row_major->dims[2], dim3);
+  EXPECT_EQ(storage_3d_row_major->dims()[0], dim1);
+  EXPECT_EQ(storage_3d_row_major->dims()[1], dim2);
+  EXPECT_EQ(storage_3d_row_major->dims()[2], dim3);
 
-  EXPECT_EQ(storage_3d_col_major->dims[0], dim1);
-  EXPECT_EQ(storage_3d_col_major->dims[1], dim2);
-  EXPECT_EQ(storage_3d_col_major->dims[2], dim3);
+  EXPECT_EQ(storage_3d_col_major->dims()[0], dim1);
+  EXPECT_EQ(storage_3d_col_major->dims()[1], dim2);
+  EXPECT_EQ(storage_3d_col_major->dims()[2], dim3);
 
-  EXPECT_EQ(storage_3d_col_major_padded->dims[0], dim1);
-  EXPECT_EQ(storage_3d_col_major_padded->dims[1], dim2);
-  EXPECT_EQ(storage_3d_col_major_padded->dims[2], dim3);
+  EXPECT_EQ(storage_3d_col_major_padded->dims()[0], dim1);
+  EXPECT_EQ(storage_3d_col_major_padded->dims()[1], dim2);
+  EXPECT_EQ(storage_3d_col_major_padded->dims()[2], dim3);
 
-  EXPECT_EQ(storage_3d_row_major_padded->dims[0], dim1);
-  EXPECT_EQ(storage_3d_row_major_padded->dims[1], dim2);
-  EXPECT_EQ(storage_3d_row_major_padded->dims[2], dim3);
+  EXPECT_EQ(storage_3d_row_major_padded->dims()[0], dim1);
+  EXPECT_EQ(storage_3d_row_major_padded->dims()[1], dim2);
+  EXPECT_EQ(storage_3d_row_major_padded->dims()[2], dim3);
 }
 
 TEST_F(StorageTest, Strides) {
   // -----------------------------------------------------------------------------------------------
   // 1D
   // ------------------------------------------------------------------------------------------------
-  EXPECT_EQ(storage_1d->strides[0], 1);
-  EXPECT_EQ(storage_1d_padded->strides[0], 1);
+  EXPECT_EQ(storage_1d->strides()[0], 1);
+  EXPECT_EQ(storage_1d_padded->strides()[0], 1);
 
   // -----------------------------------------------------------------------------------------------
   // 2D
   // -----------------------------------------------------------------------------------------------
-  EXPECT_EQ(storage_2d_row_major->strides[0], dim2);
-  EXPECT_EQ(storage_2d_row_major->strides[1], 1);
+  EXPECT_EQ(storage_2d_row_major->strides()[0], dim2);
+  EXPECT_EQ(storage_2d_row_major->strides()[1], 1);
 
-  EXPECT_EQ(storage_2d_row_major_padded->strides[0], dim2 + pad2_left + pad2_right);
-  EXPECT_EQ(storage_2d_row_major_padded->strides[1], 1);
+  EXPECT_EQ(storage_2d_row_major_padded->strides()[0], dim2 + pad2_left + pad2_right);
+  EXPECT_EQ(storage_2d_row_major_padded->strides()[1], 1);
 
-  EXPECT_EQ(storage_2d_col_major->strides[0], 1);
-  EXPECT_EQ(storage_2d_col_major->strides[1], dim1);
+  EXPECT_EQ(storage_2d_col_major->strides()[0], 1);
+  EXPECT_EQ(storage_2d_col_major->strides()[1], dim1);
 
-  EXPECT_EQ(storage_2d_col_major_padded->strides[0], 1);
-  EXPECT_EQ(storage_2d_col_major_padded->strides[1], dim1 + pad1_left + pad1_right);
+  EXPECT_EQ(storage_2d_col_major_padded->strides()[0], 1);
+  EXPECT_EQ(storage_2d_col_major_padded->strides()[1], dim1 + pad1_left + pad1_right);
 
   // -----------------------------------------------------------------------------------------------
   // 3D
   // -----------------------------------------------------------------------------------------------
-  EXPECT_EQ(storage_3d_row_major->strides[0], dim3 * dim2);
-  EXPECT_EQ(storage_3d_row_major->strides[1], dim3);
-  EXPECT_EQ(storage_3d_row_major->strides[2], 1);
+  EXPECT_EQ(storage_3d_row_major->strides()[0], dim3 * dim2);
+  EXPECT_EQ(storage_3d_row_major->strides()[1], dim3);
+  EXPECT_EQ(storage_3d_row_major->strides()[2], 1);
 
-  EXPECT_EQ(storage_3d_row_major_padded->strides[0],
+  EXPECT_EQ(storage_3d_row_major_padded->strides()[0],
             (dim3 + pad3_left + pad3_right) * (dim2 + pad2_left + pad2_right));
-  EXPECT_EQ(storage_3d_row_major_padded->strides[1], (dim3 + pad3_left + pad3_right));
-  EXPECT_EQ(storage_3d_row_major_padded->strides[2], 1);
+  EXPECT_EQ(storage_3d_row_major_padded->strides()[1], (dim3 + pad3_left + pad3_right));
+  EXPECT_EQ(storage_3d_row_major_padded->strides()[2], 1);
 
-  EXPECT_EQ(storage_3d_col_major->strides[0], 1);
-  EXPECT_EQ(storage_3d_col_major->strides[1], dim1);
-  EXPECT_EQ(storage_3d_col_major->strides[2], dim1 * dim2);
+  EXPECT_EQ(storage_3d_col_major->strides()[0], 1);
+  EXPECT_EQ(storage_3d_col_major->strides()[1], dim1);
+  EXPECT_EQ(storage_3d_col_major->strides()[2], dim1 * dim2);
 
-  EXPECT_EQ(storage_3d_col_major_padded->strides[0], 1);
-  EXPECT_EQ(storage_3d_col_major_padded->strides[1], (dim1 + pad1_left + pad1_right));
-  EXPECT_EQ(storage_3d_col_major_padded->strides[2],
+  EXPECT_EQ(storage_3d_col_major_padded->strides()[0], 1);
+  EXPECT_EQ(storage_3d_col_major_padded->strides()[1], (dim1 + pad1_left + pad1_right));
+  EXPECT_EQ(storage_3d_col_major_padded->strides()[2],
             (dim1 + pad1_left + pad1_right) * (dim2 + pad2_left + pad2_right));
 }
 
@@ -211,42 +204,42 @@ TEST_F(StorageTest, Access) {
   // -----------------------------------------------------------------------------------------------
   // 1D
   // -----------------------------------------------------------------------------------------------
-  EXPECT_DOUBLE_EQ(storage_1d->at({0}), 0);
-  EXPECT_DOUBLE_EQ(storage_1d->at({dim1 - 1}), dim1 - 1);
+  EXPECT_DOUBLE_EQ(storage_1d->at(0), 0);  
+  EXPECT_DOUBLE_EQ(storage_1d->at(dim1 - 1), dim1 - 1);
 
-  EXPECT_DOUBLE_EQ(storage_1d_padded->at({0}), pad1_left);
-  EXPECT_DOUBLE_EQ(storage_1d_padded->at({dim1 - 1}), pad1_left + dim1 - 1);
+  EXPECT_DOUBLE_EQ(storage_1d_padded->at(0), pad1_left);
+  EXPECT_DOUBLE_EQ(storage_1d_padded->at(dim1 - 1), pad1_left + dim1 - 1);
 
   // -----------------------------------------------------------------------------------------------
   // 2D
   // -----------------------------------------------------------------------------------------------
-  EXPECT_DOUBLE_EQ(storage_2d_col_major->at({0, 0}), 0);
-  EXPECT_DOUBLE_EQ(storage_2d_col_major->at({1, 0}), 1);
-  EXPECT_DOUBLE_EQ(storage_2d_col_major->at({dim1 - 1, dim2 - 1}), dim1 * dim2 - 1);
-  EXPECT_DOUBLE_EQ(storage_2d_row_major->at({0, 0}), 0);
-  EXPECT_DOUBLE_EQ(storage_2d_row_major->at({0, 1}), 1);
-  EXPECT_DOUBLE_EQ(storage_2d_row_major->at({dim1 - 1, dim2 - 1}), dim1 * dim2 - 1);
+  EXPECT_DOUBLE_EQ(storage_2d_col_major->at(0, 0), 0);
+  EXPECT_DOUBLE_EQ(storage_2d_col_major->at(1, 0), 1);
+  EXPECT_DOUBLE_EQ(storage_2d_col_major->at(dim1 - 1, dim2 - 1), dim1 * dim2 - 1);
+  EXPECT_DOUBLE_EQ(storage_2d_row_major->at(0, 0), 0);
+  EXPECT_DOUBLE_EQ(storage_2d_row_major->at(0, 1), 1);
+  EXPECT_DOUBLE_EQ(storage_2d_row_major->at(dim1 - 1, dim2 - 1), dim1 * dim2 - 1);
 
-  EXPECT_DOUBLE_EQ(storage_2d_col_major_padded->at({0, 0}),
+  EXPECT_DOUBLE_EQ(storage_2d_col_major_padded->at(0, 0),
                    (pad1_left + dim1 + pad1_right) * pad2_left + pad1_left);
-  EXPECT_DOUBLE_EQ(storage_2d_row_major_padded->at({0, 0}),
+  EXPECT_DOUBLE_EQ(storage_2d_row_major_padded->at(0, 0),
                    (pad2_left + dim2 + pad2_right) * pad1_left + pad2_left);
 
   // -----------------------------------------------------------------------------------------------
   // 3D
   // -----------------------------------------------------------------------------------------------
-  EXPECT_DOUBLE_EQ(storage_3d_col_major->at({0, 0, 0}), 0);
-  EXPECT_DOUBLE_EQ(storage_3d_col_major->at({dim1 - 1, dim2 - 1, dim3 - 1}),
+  EXPECT_DOUBLE_EQ(storage_3d_col_major->at(0, 0, 0), 0);
+  EXPECT_DOUBLE_EQ(storage_3d_col_major->at(dim1 - 1, dim2 - 1, dim3 - 1),
                    dim1 * dim2 * dim3 - 1);
-  EXPECT_DOUBLE_EQ(storage_3d_row_major->at({0, 0, 0}), 0);
-  EXPECT_DOUBLE_EQ(storage_3d_row_major->at({dim1 - 1, dim2 - 1, dim3 - 1}),
+  EXPECT_DOUBLE_EQ(storage_3d_row_major->at(0, 0, 0), 0);
+  EXPECT_DOUBLE_EQ(storage_3d_row_major->at(dim1 - 1, dim2 - 1, dim3 - 1),
                    dim1 * dim2 * dim3 - 1);
 
-  EXPECT_DOUBLE_EQ(storage_3d_col_major_padded->at({0, 0, 0}),
+  EXPECT_DOUBLE_EQ(storage_3d_col_major_padded->at(0, 0, 0),
                    (pad1_left + dim1 + pad1_right) * (pad2_left + dim2 + pad2_right) * pad3_left +
                        ((pad1_left + dim1 + pad1_right) * pad2_left) + pad1_left);
 
-  EXPECT_DOUBLE_EQ(storage_3d_row_major_padded->at({0, 0, 0}),
+  EXPECT_DOUBLE_EQ(storage_3d_row_major_padded->at(0, 0, 0),
                    ((pad2_left + dim2 + pad2_right) * (pad3_left + dim3 + pad3_right) * pad1_left) +
                        (pad3_left + dim3 + pad3_right) * pad2_left + pad3_left);
 }

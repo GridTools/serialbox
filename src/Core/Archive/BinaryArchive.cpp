@@ -50,7 +50,7 @@ void BinaryArchive::readMetaDataFromJson() {
 
   // Check versions
   if(Version::equals(serialboxVersion))
-    throw Exception("serialbox version of binary archive meta data (%s) does not match the version "
+    throw Exception("serialbox version of binary archive (%s) does not match the version "
                     "of the library (%s)",
                     Version::toString(serialboxVersion), SERIALBOX_VERSION_STRING);
 
@@ -71,7 +71,7 @@ void BinaryArchive::readMetaDataFromJson() {
 }
 
 void BinaryArchive::writeMetaDataToJson() {
-  json_.clear();
+  json_.clear(); //TODO: needed?
   
   // Tag versions
   json_["serialbox_version"] =
@@ -86,7 +86,7 @@ void BinaryArchive::writeMetaDataToJson() {
    
   // Write metaData to disk (just overwrite the file, we assume that there is never more than one
   // Archive per data set and thus our in-memory copy is always the up-to-date one)
-  std::ofstream fs((directory_ / Archive::ArchiveName).string(), std::ofstream::trunc);
+  std::ofstream fs((directory_ / Archive::ArchiveName).string(), std::ios::out | std::ios::trunc);
   fs << json_.dump(4) << std::endl;
   fs.close();
 }
@@ -164,24 +164,26 @@ void BinaryArchive::write(StorageView& storageView, const FieldID& fieldID) thro
     
     // Do we append at the end?
     if(fieldID.id >= fieldOffsetTable.size()) { 
-      fs.open(filename, std::ofstream::binary | std::ofstream::app);          
+      fs.open(filename, std::ofstream::out | std::ofstream::binary | std::ofstream::app);          
       auto offset = fs.tellp();   
-      
       fieldOffsetTable.push_back(FileOffsetType{offset, checksum});
     }
     // Replace data
     else {
-      fs.open(filename, std::ofstream::binary);          
+      // It is absolutely *crucial* to open the file in read-write mode as otherwise all the content
+      // prior to the current position is discarded
+      fs.open(filename, std::ofstream::out | std::ofstream::in | std::ofstream::binary);          
       auto offset = fieldOffsetTable[fieldID.id].offset; 
-//      std::cout << offset << std::endl;
-      fs.seekp(offset);
+      fs.seekp(offset, std::ios::beg);
+      
+      // Is the data still the same?
       
       fieldOffsetTable[fieldID.id] = FileOffsetType{offset, checksum};
     }
   }
   // Field does not exist, create new file and append data
   else {
-    fs.open(filename, std::ofstream::binary | std::ofstream::trunc);
+    fs.open(filename, std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
     
     fieldTable_.insert(FieldTable::value_type(
         fieldID.name, FieldOffsetTable(1, FileOffsetType{0, checksum})));
@@ -189,7 +191,7 @@ void BinaryArchive::write(StorageView& storageView, const FieldID& fieldID) thro
 
   if(!fs.is_open())
     throw Exception("cannot open file: '%s'", filename);
-
+  
   // Write binaryData to disk
   fs.write(binaryData.data(), binaryData.size());
   fs.close();
@@ -245,11 +247,6 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) throw
   
   // Compute hash and compare
   std::string checksum(SHA256::hash(binaryData.data(), binaryData.size()));
-
-  
-  //  std::cout << checksum << std::endl;
-  //  std::cout << *this << std::endl;
-  //  std::cout << fieldOffsetTable[fieldID.id].checksum << std::endl;
   
   if(checksum != fieldOffsetTable[fieldID.id].checksum)
     throw Exception("hashsum mismatch for field '%s' at id '%i'", fieldID.name, fieldID.id);

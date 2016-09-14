@@ -8,7 +8,7 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// Implementation of the SHA-1 (Secure Hash Algorithm 1) cryptographic hash function.
+/// Implementation of the SHA-1 cryptographic hash function.
 ///
 //===------------------------------------------------------------------------------------------===//
 

@@ -16,8 +16,8 @@
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/Type.h"
-#include <gtest/gtest.h>
 #include <cstring>
+#include <gtest/gtest.h>
 
 using namespace serialbox;
 using namespace unittest;
@@ -85,9 +85,6 @@ public:
 
 protected:
   virtual void SetUp() override {
-    using il = std::initializer_list<int>;
-    using ipl = std::initializer_list<std::pair<int, int>>;
-
     dim1 = 2;
     dim2 = 3;
     dim3 = 4;
@@ -112,43 +109,42 @@ protected:
     auto colMajor = Storage<double>::ColMajor;
     auto rowMajor = Storage<double>::RowMajor;
 
-    storage_1d = make_unique<Storage<double>>(colMajor, il{dim1});
-    storage_1d_padded = make_unique<Storage<double>>(
-        colMajor, il{dim1}, ipl{std::pair<int, int>(pad1_left, pad1_right)});
+    storage_1d = make_unique<Storage<double>>(colMajor, Dims{dim1});
+    storage_1d_padded =
+        make_unique<Storage<double>>(colMajor, Dims{dim1}, Padding{{pad1_left, pad1_right}});
 
-    storage_2d_col_major = make_unique<Storage<double>>(colMajor, il{dim1, dim2});
+    storage_2d_col_major = make_unique<Storage<double>>(colMajor, Dims{dim1, dim2});
     storage_2d_col_major_padded = make_unique<Storage<double>>(
-        colMajor, il{dim1, dim2}, ipl{std::pair<int, int>(pad1_left, pad1_right),
-                                      std::pair<int, int>(pad2_left, pad2_right)});
+        colMajor, Dims{dim1, dim2}, Padding{{pad1_left, pad1_right}, {pad2_left, pad2_right}});
+    ;
 
-    storage_2d_row_major = make_unique<Storage<double>>(rowMajor, il{dim1, dim2});
+    storage_2d_row_major = make_unique<Storage<double>>(rowMajor, Dims{dim1, dim2});
     storage_2d_row_major_padded = make_unique<Storage<double>>(
-        rowMajor, il{dim1, dim2}, ipl{std::pair<int, int>(pad1_left, pad1_right),
-                                      std::pair<int, int>(pad2_left, pad2_right)});
+        rowMajor, Dims{dim1, dim2}, Padding{{pad1_left, pad1_right}, {pad2_left, pad2_right}});
 
-    storage_3d_col_major = make_unique<Storage<double>>(colMajor, il{dim1, dim2, dim3});
+    storage_3d_col_major = make_unique<Storage<double>>(colMajor, Dims{dim1, dim2, dim3});
     storage_3d_col_major_padded = make_unique<Storage<double>>(
-        colMajor, il{dim1, dim2, dim3},
-        ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
-            std::pair<int, int>(pad3_left, pad3_right)});
+        colMajor, Dims{dim1, dim2, dim3},
+        Padding{{pad1_left, pad1_right}, {pad2_left, pad2_right}, {pad3_left, pad3_right}});
 
-    storage_3d_row_major = make_unique<Storage<double>>(rowMajor, il{dim1, dim2, dim3});
+    storage_3d_row_major = make_unique<Storage<double>>(rowMajor, Dims{dim1, dim2, dim3});
     storage_3d_row_major_padded = make_unique<Storage<double>>(
-        rowMajor, il{dim1, dim2, dim3},
-        ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
-            std::pair<int, int>(pad3_left, pad3_right)});
+        rowMajor, Dims{dim1, dim2, dim3},
+        Padding{{pad1_left, pad1_right}, {pad2_left, pad2_right}, {pad3_left, pad3_right}});
 
     storage_5d_col_major_padded = make_unique<Storage<double>>(
-        colMajor, il{dim1, dim2, dim3, dim4, dim5},
-        ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
-            std::pair<int, int>(pad3_left, pad3_right), std::pair<int, int>(pad4_left, pad4_right),
-            std::pair<int, int>(pad5_left, pad5_right)});
+        colMajor, Dims{dim1, dim2, dim3, dim4, dim5}, Padding{{pad1_left, pad1_right},
+                                                              {pad2_left, pad2_right},
+                                                              {pad3_left, pad3_right},
+                                                              {pad4_left, pad4_right},
+                                                              {pad5_left, pad5_right}});
 
     storage_5d_row_major_padded = make_unique<Storage<double>>(
-        rowMajor, il{dim1, dim2, dim3, dim4, dim5},
-        ipl{std::pair<int, int>(pad1_left, pad1_right), std::pair<int, int>(pad2_left, pad2_right),
-            std::pair<int, int>(pad3_left, pad3_right), std::pair<int, int>(pad4_left, pad4_right),
-            std::pair<int, int>(pad5_left, pad5_right)});
+        rowMajor, Dims{dim1, dim2, dim3, dim4, dim5}, Padding{{pad1_left, pad1_right},
+                                                              {pad2_left, pad2_right},
+                                                              {pad3_left, pad3_right},
+                                                              {pad4_left, pad4_right},
+                                                              {pad5_left, pad5_right}});
   }
 
   virtual void TearDown() override {}
@@ -167,14 +163,14 @@ TEST_F(StorageViewTest, Construction) {
 
   // Constructor
   auto sv_1d = storage_1d->toStorageView();
-  EXPECT_EQ(static_cast<void*>(storage_1d->data.data()), static_cast<void*>(sv_1d.data()));
-  EXPECT_EQ(storage_1d->strides, sv_1d.strides());
-  EXPECT_EQ(storage_1d->dims, sv_1d.dims());
-  EXPECT_EQ(storage_1d->padding, sv_1d.padding());
-  EXPECT_EQ(sv_1d.bytesPerElement(), sizeof(Storage<double>::value_type));      
+  EXPECT_EQ(static_cast<void*>(storage_1d->data().data()), static_cast<void*>(sv_1d.data()));
+  EXPECT_EQ(storage_1d->strides(), sv_1d.strides());
+  EXPECT_EQ(storage_1d->dims(), sv_1d.dims());
+  EXPECT_EQ(storage_1d->padding(), sv_1d.padding());
+  EXPECT_EQ(sv_1d.bytesPerElement(), sizeof(Storage<double>::value_type));
   EXPECT_EQ(sv_1d.size(), dim1);
-  EXPECT_EQ(sv_1d.sizeInBytes(), sv_1d.bytesPerElement() * dim1);    
-  
+  EXPECT_EQ(sv_1d.sizeInBytes(), sv_1d.bytesPerElement() * dim1);
+
   // Copy constructor
   auto sv_2d_col_major = storage_2d_col_major->toStorageView();
 
@@ -184,9 +180,9 @@ TEST_F(StorageViewTest, Construction) {
   StorageView copy_sv_2d(sv_2d_col_major);
   ASSERT_EQ(copy_sv_2d, sv_2d_col_major);
 
-  EXPECT_EQ(sv_2d_col_major.size(), dim1 * dim2);  
-  EXPECT_EQ(sv_2d_col_major.sizeInBytes(), sv_2d_col_major.bytesPerElement() * (dim1 * dim2));  
-  
+  EXPECT_EQ(sv_2d_col_major.size(), dim1 * dim2);
+  EXPECT_EQ(sv_2d_col_major.sizeInBytes(), sv_2d_col_major.bytesPerElement() * (dim1 * dim2));
+
   // Swap
   sv_1d.swap(sv_2d_col_major);
   EXPECT_EQ(sv_1d, copy_sv_2d);
@@ -222,9 +218,9 @@ TEST_F(StorageViewTest, IteratorConstruction) {
   // 1D
   // -----------------------------------------------------------------------------------------------
   EXPECT_EQ(static_cast<void*>(sv_1d.begin().ptr()), static_cast<void*>(sv_1d.data()));
-  EXPECT_EQ(static_cast<void*>(sv_1d.begin().ptr()), static_cast<void*>(&storage_1d->at({0})));
+  EXPECT_EQ(static_cast<void*>(sv_1d.begin().ptr()), static_cast<void*>(storage_1d->originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_1d_pad.begin().ptr()),
-            static_cast<void*>(&storage_1d_padded->at({0})));
+            static_cast<void*>(storage_1d_padded->originPtr()));
 
   // -----------------------------------------------------------------------------------------------
   // 2D
@@ -232,16 +228,16 @@ TEST_F(StorageViewTest, IteratorConstruction) {
   EXPECT_EQ(static_cast<void*>(sv_2d_col_major.begin().ptr()),
             static_cast<void*>(sv_2d_col_major.data()));
   EXPECT_EQ(static_cast<void*>(sv_2d_col_major.begin().ptr()),
-            static_cast<void*>(&storage_2d_col_major->at({0, 0})));
+            static_cast<void*>(storage_2d_col_major->originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_2d_col_major_pad.begin().ptr()),
-            static_cast<void*>(&storage_2d_col_major_padded->at({0, 0})));
+            static_cast<void*>(storage_2d_col_major_padded->originPtr()));
 
   EXPECT_EQ(static_cast<void*>(sv_2d_row_major.begin().ptr()),
             static_cast<void*>(sv_2d_row_major.data()));
   EXPECT_EQ(static_cast<void*>(sv_2d_row_major.begin().ptr()),
-            static_cast<void*>(&storage_2d_row_major->at({0, 0})));
+            static_cast<void*>(storage_2d_row_major->originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_2d_row_major_pad.begin().ptr()),
-            static_cast<void*>(&storage_2d_row_major_padded->at({0, 0})));
+            static_cast<void*>(storage_2d_row_major_padded->originPtr()));
 
   // -----------------------------------------------------------------------------------------------
   // 3D
@@ -249,24 +245,24 @@ TEST_F(StorageViewTest, IteratorConstruction) {
   EXPECT_EQ(static_cast<void*>(sv_3d_col_major.begin().ptr()),
             static_cast<void*>(sv_3d_col_major.data()));
   EXPECT_EQ(static_cast<void*>(sv_3d_col_major.begin().ptr()),
-            static_cast<void*>(&storage_3d_col_major->at({0, 0, 0})));
+            static_cast<void*>(storage_3d_col_major->originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_3d_col_major_pad.begin().ptr()),
-            static_cast<void*>(&storage_3d_col_major_padded->at({0, 0, 0})));
+            static_cast<void*>(storage_3d_col_major_padded->originPtr()));
 
   EXPECT_EQ(static_cast<void*>(sv_3d_row_major.begin().ptr()),
             static_cast<void*>(sv_3d_row_major.data()));
   EXPECT_EQ(static_cast<void*>(sv_3d_row_major.begin().ptr()),
-            static_cast<void*>(&storage_3d_row_major->at({0, 0, 0})));
+            static_cast<void*>(storage_3d_row_major->originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_3d_row_major_pad.begin().ptr()),
-            static_cast<void*>(&storage_3d_row_major_padded->at({0, 0, 0})));
+            static_cast<void*>(storage_3d_row_major_padded->originPtr()));
 
   // -----------------------------------------------------------------------------------------------
   // 5D
   // -----------------------------------------------------------------------------------------------
   EXPECT_EQ(static_cast<void*>(sv_5d_col_major_pad.begin().ptr()),
-            static_cast<void*>(&storage_5d_col_major_padded->at({0, 0, 0, 0, 0})));
+            static_cast<void*>(storage_5d_col_major_padded->originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_5d_row_major_pad.begin().ptr()),
-            static_cast<void*>(&storage_5d_row_major_padded->at({0, 0, 0, 0, 0})));
+            static_cast<void*>(storage_5d_row_major_padded->originPtr()));
 
   // Copy constructor
   auto it_sv_1d(sv_1d.begin());
@@ -316,8 +312,8 @@ TEST_F(StorageViewTest, IteratorCopy) {
 
   // Check data was copied correctly
   for(int i = 0; i < dim1; ++i) {
-    ASSERT_DOUBLE_EQ(data[i], storage_1d->at({i}));
-    ASSERT_DOUBLE_EQ(data[i], storage_1d_padded->at({i}));
+    ASSERT_DOUBLE_EQ(data[i], storage_1d->at(i));
+    ASSERT_DOUBLE_EQ(data[i], storage_1d_padded->at(i));
   }
 
   // --- 2D ---
@@ -331,10 +327,10 @@ TEST_F(StorageViewTest, IteratorCopy) {
   for(int j = 0; j < dim2; ++j)
     for(int i = 0; i < dim1; ++i) {
       double val = data[j * dim1 + i];
-      ASSERT_DOUBLE_EQ(val, storage_2d_col_major->at({i, j}));
-      ASSERT_DOUBLE_EQ(val, storage_2d_row_major->at({i, j}));
-      ASSERT_DOUBLE_EQ(val, storage_2d_col_major_padded->at({i, j}));
-      ASSERT_DOUBLE_EQ(val, storage_2d_row_major_padded->at({i, j}));
+      ASSERT_DOUBLE_EQ(val, storage_2d_col_major->at(i, j));
+      ASSERT_DOUBLE_EQ(val, storage_2d_row_major->at(i, j));
+      ASSERT_DOUBLE_EQ(val, storage_2d_col_major_padded->at(i, j));
+      ASSERT_DOUBLE_EQ(val, storage_2d_row_major_padded->at(i, j));
     }
 
   // --- 3D ---
@@ -348,10 +344,10 @@ TEST_F(StorageViewTest, IteratorCopy) {
     for(int j = 0; j < dim2; ++j)
       for(int i = 0; i < dim1; ++i) {
         double val = data[k * dim1 * dim2 + j * dim1 + i];
-        ASSERT_DOUBLE_EQ(val, storage_3d_col_major->at({i, j, k}));
-        ASSERT_DOUBLE_EQ(val, storage_3d_row_major->at({i, j, k}));
-        ASSERT_DOUBLE_EQ(val, storage_3d_col_major_padded->at({i, j, k}));
-        ASSERT_DOUBLE_EQ(val, storage_3d_row_major_padded->at({i, j, k}));
+        ASSERT_DOUBLE_EQ(val, storage_3d_col_major->at(i, j, k));
+        ASSERT_DOUBLE_EQ(val, storage_3d_row_major->at(i, j, k));
+        ASSERT_DOUBLE_EQ(val, storage_3d_col_major_padded->at(i, j, k));
+        ASSERT_DOUBLE_EQ(val, storage_3d_row_major_padded->at(i, j, k));
       }
 
   // --- 5D ---
@@ -366,8 +362,8 @@ TEST_F(StorageViewTest, IteratorCopy) {
           for(int i = 0; i < dim1; ++i) {
             double val = data[m * dim1 * dim2 * dim3 * dim4 + l * dim1 * dim2 * dim3 +
                               k * dim1 * dim2 + j * dim1 + i];
-            ASSERT_DOUBLE_EQ(val, storage_5d_col_major_padded->at({i, j, k, l, m}));
-            ASSERT_DOUBLE_EQ(val, storage_5d_row_major_padded->at({i, j, k, l, m}));
+            ASSERT_DOUBLE_EQ(val, storage_5d_col_major_padded->at(i, j, k, l, m));
+            ASSERT_DOUBLE_EQ(val, storage_5d_row_major_padded->at(i, j, k, l, m));
           }
 }
 

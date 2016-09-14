@@ -37,7 +37,7 @@ struct Version {
   }
   /// @}
 
-  /// \brief Check for equality
+  /// \brief Check if given version equals the current library version
   /// @{
   static bool equals(int version) noexcept {
     int major = version % 100;
