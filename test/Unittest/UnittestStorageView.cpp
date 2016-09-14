@@ -16,8 +16,9 @@
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/Type.h"
-#include <cstring>
 #include <gtest/gtest.h>
+#include <cstring>
+#include <numeric>
 
 using namespace serialbox;
 using namespace unittest;
@@ -162,10 +163,9 @@ TYPED_TEST(StorageViewTest, Construction) {
 
   // Constructor
   auto sv_1d = this->storage_1d->toStorageView();
-  EXPECT_EQ(static_cast<void*>(this->storage_1d->data().data()), static_cast<void*>(sv_1d.data()));
+  EXPECT_EQ(static_cast<void*>(this->storage_1d->originPtr()), static_cast<void*>(sv_1d.originPtr()));
   EXPECT_EQ(this->storage_1d->strides(), sv_1d.strides());
   EXPECT_EQ(this->storage_1d->dims(), sv_1d.dims());
-  EXPECT_EQ(this->storage_1d->padding(), sv_1d.padding());
   EXPECT_EQ(sv_1d.bytesPerElement(), sizeof(typename Storage<TypeParam>::value_type));
   EXPECT_EQ(sv_1d.size(), dim1);
   EXPECT_EQ(sv_1d.sizeInBytes(), sv_1d.bytesPerElement() * dim1);
@@ -216,7 +216,7 @@ TYPED_TEST(StorageViewTest, IteratorConstruction) {
   // -----------------------------------------------------------------------------------------------
   // 1D
   // -----------------------------------------------------------------------------------------------
-  EXPECT_EQ(static_cast<void*>(sv_1d.begin().ptr()), static_cast<void*>(sv_1d.data()));
+  EXPECT_EQ(static_cast<void*>(sv_1d.begin().ptr()), static_cast<void*>(sv_1d.originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_1d.begin().ptr()),
             static_cast<void*>(this->storage_1d->originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_1d_pad.begin().ptr()),
@@ -226,14 +226,14 @@ TYPED_TEST(StorageViewTest, IteratorConstruction) {
   // 2D
   // -----------------------------------------------------------------------------------------------
   EXPECT_EQ(static_cast<void*>(sv_2d_col_major.begin().ptr()),
-            static_cast<void*>(sv_2d_col_major.data()));
+            static_cast<void*>(sv_2d_col_major.originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_2d_col_major.begin().ptr()),
             static_cast<void*>(this->storage_2d_col_major->originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_2d_col_major_pad.begin().ptr()),
             static_cast<void*>(this->storage_2d_col_major_padded->originPtr()));
 
   EXPECT_EQ(static_cast<void*>(sv_2d_row_major.begin().ptr()),
-            static_cast<void*>(sv_2d_row_major.data()));
+            static_cast<void*>(sv_2d_row_major.originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_2d_row_major.begin().ptr()),
             static_cast<void*>(this->storage_2d_row_major->originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_2d_row_major_pad.begin().ptr()),
@@ -243,14 +243,14 @@ TYPED_TEST(StorageViewTest, IteratorConstruction) {
   // 3D
   // -----------------------------------------------------------------------------------------------
   EXPECT_EQ(static_cast<void*>(sv_3d_col_major.begin().ptr()),
-            static_cast<void*>(sv_3d_col_major.data()));
+            static_cast<void*>(sv_3d_col_major.originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_3d_col_major.begin().ptr()),
             static_cast<void*>(this->storage_3d_col_major->originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_3d_col_major_pad.begin().ptr()),
             static_cast<void*>(this->storage_3d_col_major_padded->originPtr()));
 
   EXPECT_EQ(static_cast<void*>(sv_3d_row_major.begin().ptr()),
-            static_cast<void*>(sv_3d_row_major.data()));
+            static_cast<void*>(sv_3d_row_major.originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_3d_row_major.begin().ptr()),
             static_cast<void*>(this->storage_3d_row_major->originPtr()));
   EXPECT_EQ(static_cast<void*>(sv_3d_row_major_pad.begin().ptr()),
@@ -369,8 +369,11 @@ TYPED_TEST(StorageViewTest, IteratorCopy) {
 }
 
 TYPED_TEST(StorageViewTest, isMemCopyable) {
+  // 1D storages are always memcopyable
   EXPECT_TRUE(this->storage_1d->toStorageView().isMemCopyable());
-  EXPECT_FALSE(this->storage_1d_padded->toStorageView().isMemCopyable());
+  EXPECT_TRUE(this->storage_1d_padded->toStorageView().isMemCopyable());
+  
+  // Multi dimensional storages are only memcopyable if they are ColMajor and have no padding 
   EXPECT_TRUE(this->storage_2d_col_major->toStorageView().isMemCopyable());
   EXPECT_FALSE(this->storage_2d_col_major_padded->toStorageView().isMemCopyable());
   EXPECT_FALSE(this->storage_2d_row_major->toStorageView().isMemCopyable());

@@ -23,7 +23,7 @@ StorageViewIterator::StorageViewIterator(const StorageView* storageView, bool be
 
   if(!(end_ = !beginning)) {
     index_.resize(storageView_->dims().size(), 0);
-    orignPtr_ = const_cast<StorageView*>(storageView_)->data();  // TODO: fix this const cast
+    orignPtr_ = const_cast<StorageView*>(storageView_)->originPtr();  // TODO: fix this const cast
     curPtr_ = orignPtr_ + computeCurrentIndex();
   }
 }
@@ -83,8 +83,7 @@ int StorageViewIterator::computeCurrentIndex() const noexcept {
   int pos = 0;
   const int size = index_.size();
   for(int i = 0; i < size; ++i)
-    pos += bytesPerElement_ *
-           (storageView_->strides()[i] * (storageView_->padding()[i].first + index_[i]));
+    pos += bytesPerElement_ * (storageView_->strides()[i] * index_[i]);
   return pos;
 }
 

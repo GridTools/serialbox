@@ -40,7 +40,7 @@ int get_stride_helper(int coord, const Container& container) noexcept {
 
 template <typename Storage>
 std::vector<int> get_strides(const Storage& storage) {
-  auto strides_array = storage.meta_data().m_strides;
+  const auto& strides_array = storage.meta_data().m_strides;
   const int n_dimensions = storage.meta_data().dims().n_dimensions;
 
   std::vector<int> strides_vec;
@@ -57,7 +57,7 @@ std::vector<int> get_strides(const Storage& storage) {
 
 template <typename Storage>
 std::vector<int> get_dims(const Storage& storage) noexcept {
-  auto unaligned_dims_array = storage.meta_data().m_unaligned_dims;
+  const auto& unaligned_dims_array = storage.meta_data().m_unaligned_dims;
   const int n_dimensions = storage.meta_data().dims().n_dimensions;
 
   std::vector<int> dims_vec;
@@ -67,8 +67,9 @@ std::vector<int> get_dims(const Storage& storage) noexcept {
   return dims_vec;
 }
 
+
 //===------------------------------------------------------------------------------------------===//
-//     Padding
+//     OriginPtr
 //===------------------------------------------------------------------------------------------===//
 
 template <typename LayoutMap>
@@ -84,42 +85,23 @@ int left_padding_helper(unsigned int coord) noexcept {
   return (Alignment && has_stride_one<LayoutMap>(coord)) ? (Alignment - lpad) % Alignment : 0;
 }
 
-template <typename LayoutMap, unsigned int Alignment, typename Padding>
-int right_padding_helper(unsigned int coord, unsigned int unaligned_dimension) noexcept {
-  unsigned int rpad = Padding::get_halo_vector()[coord];
-  return (Alignment && has_stride_one<LayoutMap>(coord))
-             ? (Alignment - (unaligned_dimension + rpad) % Alignment)
-             : 0;
-}
-
 template <typename Storage>
-std::vector<std::pair<int, int>> get_padding(const Storage& storage) noexcept {
+void* get_origin_ptr(const Storage& storage, unsigned int field_idx) noexcept {
   const int n_dimensions = storage.meta_data().dims().n_dimensions;
-  auto unaligned_dims = storage.meta_data().m_unaligned_dims;
+  const auto& strides_array = storage.meta_data().m_strides;
 
-  std::vector<std::pair<int, int>> padding_vec;
+  auto* data_ptr = storage.fields()[field_idx].get();
 
   for(int i = 0; i < n_dimensions; ++i) {
     int lpad = left_padding_helper<typename Storage::storage_info_type::layout,
                                    Storage::storage_info_type::s_alignment,
                                    typename Storage::storage_info_type::halo_t>(i);
-    int rpad =
-        right_padding_helper<typename Storage::storage_info_type::layout,
-                             Storage::storage_info_type::s_alignment,
-                             typename Storage::storage_info_type::padding_t>(i, unaligned_dims[i]);
-    padding_vec.emplace_back(std::pair<int, int>(lpad, rpad));
+    int stride =
+        internal::get_stride_helper<typename Storage::storage_info_type::layout>(i, strides_array);
+    data_ptr += lpad * stride;
   }
 
-  return padding_vec;
-}
-
-//===------------------------------------------------------------------------------------------===//
-//     Data
-//===------------------------------------------------------------------------------------------===//
-
-template <typename Storage>
-void* get_data_pointer(const Storage& storage, unsigned int field_idx) noexcept {
-  return static_cast<void*>(storage.fields()[field_idx].get());
+  return static_cast<void*>(data_ptr);
 }
 
 } // namespace internal

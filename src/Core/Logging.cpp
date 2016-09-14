@@ -61,7 +61,7 @@ void Logging::setColorLogToStdErr(bool value) noexcept {}
 
 void Logging::setLogDir(const char* value) noexcept {}
 
-Logging::SeverityKind Logging::getMinLogLevel(SeverityKind value) noexcept { return 0; }
+Logging::SeverityKind Logging::getMinLogLevel() noexcept { return Logging::SeverityKind::Fatal; }
 
 namespace internal {
 

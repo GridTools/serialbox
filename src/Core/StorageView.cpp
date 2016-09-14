@@ -20,39 +20,34 @@
 
 namespace serialbox {
 
-StorageView::StorageView(void* data, TypeID type, const std::vector<int>& dims,
-                         const std::vector<int>& strides,
-                         const std::vector<std::pair<int, int>>& padding)
-    : data_(reinterpret_cast<Byte*>(data)), type_(type), dims_(dims), strides_(strides),
-      padding_(padding) {
+StorageView::StorageView(void* originPtr, TypeID type, const std::vector<int>& dims,
+                         const std::vector<int>& strides)
+    : originPtr_(reinterpret_cast<Byte*>(originPtr)), type_(type), dims_(dims), strides_(strides) {
   CHECK(!dims_.empty()) << "empty dimension";
-  CHECK(dims_.size() == strides_.size() && dims_.size() == padding_.size()) << "dimension mismatch";
+  CHECK(dims_.size() == strides_.size()) << "dimension mismatch";
 }
 
-StorageView::StorageView(void* data, TypeID type, std::vector<int>&& dims,
-                         std::vector<int>&& strides, std::vector<std::pair<int, int>>&& padding)
-    : data_(reinterpret_cast<Byte*>(data)), type_(type), dims_(dims), strides_(strides),
-      padding_(padding) {
+StorageView::StorageView(void* originPtr, TypeID type, std::vector<int>&& dims,
+                         std::vector<int>&& strides)
+    : originPtr_(reinterpret_cast<Byte*>(originPtr)), type_(type), dims_(dims), strides_(strides) {
   CHECK(!dims_.empty()) << "empty dimension";
-  CHECK(dims_.size() == strides_.size() && dims_.size() == padding_.size()) << "dimension mismatch";
+  CHECK(dims_.size() == strides_.size()) << "dimension mismatch";
 }
 
 void StorageView::swap(StorageView& other) noexcept {
-  std::swap(data_, other.data_);
+  std::swap(originPtr_, other.originPtr_);
   std::swap(type_, other.type_);
   dims_.swap(other.dims_);
   strides_.swap(other.strides_);
-  padding_.swap(other.padding_);
 }
 
 bool StorageView::operator==(const StorageView& right) const noexcept {
-  return (data_ == right.data_ && type_ == right.type_ && dims_ == right.dims_ &&
-          strides_ == right.strides_ && padding_ == right.padding_);
+  return (originPtr_ == right.originPtr_ && type_ == right.type_ && dims_ == right.dims_);
 }
 
 std::ostream& operator<<(std::ostream& stream, const StorageView& s) {
   stream << "StorageView [\n";
-  stream << "  data = " << static_cast<void*>(s.data_) << "\n";
+  stream << "  originPtr = " << static_cast<void*>(s.originPtr_) << "\n";
   stream << "  type = " << s.type_ << "\n";
 
   stream << "  dims = {";
@@ -63,10 +58,6 @@ std::ostream& operator<<(std::ostream& stream, const StorageView& s) {
   for(auto i : s.strides_)
     stream << " " << i;
 
-  stream << " }\n  padding = {";
-  for(auto i : s.padding_)
-    stream << " [" << i.first << "," << i.second << "]";
-
   stream << " }\n]\n";
   return stream;
 }
@@ -74,23 +65,17 @@ std::ostream& operator<<(std::ostream& stream, const StorageView& s) {
 void swap(StorageView& a, StorageView& b) noexcept { a.swap(b); }
 
 bool StorageView::isMemCopyable() const noexcept {
-
-  // Check if data is contiguous in memory
-  for(const auto& padPair : padding_)
-    if(!(padPair.first == 0 && padPair.second == 0))
-      return false;
-
   // Check if data is col-major
   int stride = 1;
   if(strides_[0] != 1)
     return false;
 
+  // Check that there is no padding
   for(std::size_t i = 1; i < dims_.size(); ++i) {
     stride *= dims_[i - 1];
     if(strides_[i] != stride)
       return false;
   }
-
   return true;
 }
 
@@ -101,8 +86,6 @@ std::size_t StorageView::size() const noexcept {
   return size;
 }
 
-std::size_t StorageView::sizeInBytes() const noexcept {
-  return size() * bytesPerElement();
-}
+std::size_t StorageView::sizeInBytes() const noexcept { return size() * bytesPerElement(); }
 
 } // namespace serialbox

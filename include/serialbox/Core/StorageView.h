@@ -19,8 +19,8 @@
 #include "serialbox/Core/Logging.h"
 #include "serialbox/Core/StorageViewIterator.h"
 #include "serialbox/Core/Type.h"
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace serialbox {
 
@@ -31,12 +31,11 @@ public:
   /// @{
 
   /// \brief Construct StorageView
-  StorageView(void* data, TypeID type, const std::vector<int>& dims,
-              const std::vector<int>& strides, const std::vector<std::pair<int, int>>& padding);
+  StorageView(void* originPtr, TypeID type, const std::vector<int>& dims,
+              const std::vector<int>& strides);
 
   /// \brief Construct StorageView (move version)
-  StorageView(void* data, TypeID type, std::vector<int>&& dims, std::vector<int>&& strides,
-              std::vector<std::pair<int, int>>&& padding);
+  StorageView(void* originPtr, TypeID type, std::vector<int>&& dims, std::vector<int>&& strides);
 
   /// \brief Copy constructor
   StorageView(const StorageView& other) = default;
@@ -53,7 +52,7 @@ public:
 
   /// \brief Iterator to the end of the data
   StorageViewIterator end() noexcept { return StorageViewIterator(this, false); }
-  
+
   /// \brief Iterator to the beginning of the data
   StorageViewIterator cbegin() const noexcept { return StorageViewIterator(this, true); }
 
@@ -64,21 +63,21 @@ public:
   /// \name Getter
   /// @{
 
-  /// \brief Get data pointer as type T
+  /// \brief Get data pointer as type T of the origin of the data
   template <class T>
-  T* data() noexcept {
+  T* originPtr() noexcept {
     CHECK(ToTypeID<T>::value == type_);
-    return static_cast<T>(data_);
+    return static_cast<T>(originPtr_);
   }
   template <class T>
-  const T* data() const noexcept {
-    CHECK(ToTypeID<T>::value == type_);
-    return static_cast<T>(data_);
+  const T* originPtr() const noexcept {
+    CHECK(ToTypeID<T>::value == originPtr_);
+    return static_cast<T>(originPtr_);
   }
 
   /// \brief Get raw data pointer
-  Byte* data() noexcept { return data_; }
-  const Byte* data() const noexcept { return data_; }
+  Byte* originPtr() noexcept { return originPtr_; }
+  const Byte* originPtr() const noexcept { return originPtr_; }
 
   /// \brief Get bytes per element
   int bytesPerElement() const noexcept { return TypeUtil::sizeOf(type_); }
@@ -89,16 +88,13 @@ public:
   /// \brief Get strides
   const std::vector<int>& strides() const noexcept { return strides_; }
 
-  /// \brief Get strides
-  const std::vector<std::pair<int, int>>& padding() const noexcept { return padding_; }
-
   /// @}
   /// \name Operators
   /// @{
 
   /// \brief Copy assignment
   StorageView& operator=(const StorageView& other) = default;
-  
+
   /// \brief Move assignment
   StorageView& operator=(StorageView&& other) = default;
 
@@ -119,20 +115,18 @@ public:
   /// \brief Return true if the storage is contiguous in memory (i.e no padding) and is column-major
   /// ordered
   bool isMemCopyable() const noexcept;
-  
+
   /// \brief Size of the allocated data (without padding)
   std::size_t size() const noexcept;
-  
+
   /// \brief Size of the allocated data (without padding) in Bytes
   std::size_t sizeInBytes() const noexcept;
-  
-private:
-  Byte* data_;
-  TypeID type_;
 
-  std::vector<int> dims_;                    ///< Unaligned dimensions (including the halos)
-  std::vector<int> strides_;                 ///< Total strides including all padding
-  std::vector<std::pair<int, int>> padding_; ///< Left and right padding in each dimension
+private:
+  Byte* originPtr_;          ///< Pointer to the origin of the data (i.e skipping initial padding)
+  TypeID type_;              ///< TypeID of the storage
+  std::vector<int> dims_;    ///< Unaligned dimensions (including the halos)
+  std::vector<int> strides_; ///< Total strides including all padding
 };
 
 /// \fn swap

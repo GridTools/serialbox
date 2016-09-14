@@ -32,18 +32,20 @@ std::string TypeUtil::toString(TypeID id) {
   case TypeID::String:
     return std::string("std::string");
   default:
-      serialbox_unreachable("invalid TypeID for TypeUtil::toString");
+    serialbox_unreachable("invalid TypeID for TypeUtil::toString");
   }
 }
 
 std::ostream& operator<<(std::ostream& stream, const OpenModeKind& mode) {
   switch(mode) {
-    case OpenModeKind::Write:
-      return (stream << std::string("Write"));
-    case OpenModeKind::Read:
-      return (stream << std::string("Read"));
-    case OpenModeKind::Append:
-      return (stream << std::string("Append"));
+  case OpenModeKind::Write:
+    return (stream << std::string("Write"));
+  case OpenModeKind::Read:
+    return (stream << std::string("Read"));
+  case OpenModeKind::Append:
+    return (stream << std::string("Append"));
+  default:
+    serialbox_unreachable("invalid OpenModeKind");
   }
 }
 
@@ -56,14 +58,14 @@ int TypeUtil::sizeOf(TypeID id) noexcept {
   case TypeID::Boolean:
     return 1;
   case TypeID::Float32:
-  case TypeID::Int32: 
+  case TypeID::Int32:
     return 4;
   case TypeID::Int64:
   case TypeID::Float64:
     return 8;
   default:
     serialbox_unreachable("invalid TypeID for TypeUtil::sizeOf");
-  } 
+  }
 }
 
 } // namespace serialbox

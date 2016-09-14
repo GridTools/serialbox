@@ -24,10 +24,11 @@
 
 namespace {
 
-using serialbox::make_unique;
-
+template <class T>
 class StorageViewSTELLATest : public testing::Test {
 public:
+  using StorageType = STELLAStorageTypes<T>;
+
   // -----------------------------------------------------------------------------------------------
   // Dimensions
   // -----------------------------------------------------------------------------------------------
@@ -62,24 +63,26 @@ public:
   // -----------------------------------------------------------------------------------------------
   // Fields
   // -----------------------------------------------------------------------------------------------
-  std::unique_ptr<cpu_jik_storage> cpu_jik_field_ptr;
-  std::unique_ptr<cpu_ji_storage> cpu_ji_field_ptr;
-  std::unique_ptr<cpu_ik_storage> cpu_ik_field_ptr;
-  std::unique_ptr<cpu_jk_storage> cpu_jk_field_ptr;
-  std::unique_ptr<cpu_i_storage> cpu_i_field_ptr;
-  std::unique_ptr<cpu_j_storage> cpu_j_field_ptr;
-  std::unique_ptr<cpu_k_storage> cpu_k_field_ptr;
+  std::unique_ptr<typename StorageType::cpu_jik_storage> cpu_jik_field_ptr;
+  std::unique_ptr<typename StorageType::cpu_ji_storage> cpu_ji_field_ptr;
+  std::unique_ptr<typename StorageType::cpu_ik_storage> cpu_ik_field_ptr;
+  std::unique_ptr<typename StorageType::cpu_jk_storage> cpu_jk_field_ptr;
+  std::unique_ptr<typename StorageType::cpu_i_storage> cpu_i_field_ptr;
+  std::unique_ptr<typename StorageType::cpu_j_storage> cpu_j_field_ptr;
+  std::unique_ptr<typename StorageType::cpu_k_storage> cpu_k_field_ptr;
 
-  std::unique_ptr<gpu_kji_storage> gpu_kji_field_ptr;
-  std::unique_ptr<gpu_ji_storage> gpu_ji_field_ptr;
-  std::unique_ptr<gpu_ki_storage> gpu_ki_field_ptr;
-  std::unique_ptr<gpu_kj_storage> gpu_kj_field_ptr;
-  std::unique_ptr<gpu_i_storage> gpu_i_field_ptr;
-  std::unique_ptr<gpu_j_storage> gpu_j_field_ptr;
-  std::unique_ptr<gpu_k_storage> gpu_k_field_ptr;
+  std::unique_ptr<typename StorageType::gpu_kji_storage> gpu_kji_field_ptr;
+  std::unique_ptr<typename StorageType::gpu_ji_storage> gpu_ji_field_ptr;
+  std::unique_ptr<typename StorageType::gpu_ki_storage> gpu_ki_field_ptr;
+  std::unique_ptr<typename StorageType::gpu_kj_storage> gpu_kj_field_ptr;
+  std::unique_ptr<typename StorageType::gpu_i_storage> gpu_i_field_ptr;
+  std::unique_ptr<typename StorageType::gpu_j_storage> gpu_j_field_ptr;
+  std::unique_ptr<typename StorageType::gpu_k_storage> gpu_k_field_ptr;
 
 protected:
   virtual void SetUp() override {
+    using serialbox::make_unique;
+
     dim1 = 2;
     dim2 = 3;
     dim3 = 4;
@@ -132,50 +135,50 @@ protected:
     gpu_k_size->Init(1, 1, dim3);
 
     // CPU Storages
-    cpu_jik_field_ptr = make_unique<cpu_jik_storage>();
+    cpu_jik_field_ptr = make_unique<typename StorageType::cpu_jik_storage>();
     cpu_jik_field_ptr->Init("cpu_jik_field", *cpu_jik_size, *k_boundary);
 
-    cpu_ji_field_ptr = make_unique<cpu_ji_storage>();
+    cpu_ji_field_ptr = make_unique<typename StorageType::cpu_ji_storage>();
     cpu_ji_field_ptr->Init("cpu_ji_field", *cpu_ji_size, *k_boundary);
 
-    cpu_ik_field_ptr = make_unique<cpu_ik_storage>();
+    cpu_ik_field_ptr = make_unique<typename StorageType::cpu_ik_storage>();
     cpu_ik_field_ptr->Init("cpu_ik_field", *cpu_ik_size, *k_boundary);
 
-    cpu_jk_field_ptr = make_unique<cpu_jk_storage>();
+    cpu_jk_field_ptr = make_unique<typename StorageType::cpu_jk_storage>();
     cpu_jk_field_ptr->Init("cpu_jk_field", *cpu_jk_size, *k_boundary);
 
-    cpu_i_field_ptr = make_unique<cpu_i_storage>();
+    cpu_i_field_ptr = make_unique<typename StorageType::cpu_i_storage>();
     cpu_i_field_ptr->Init("cpu_i_field", *cpu_i_size, *k_boundary);
 
-    cpu_j_field_ptr = make_unique<cpu_j_storage>();
+    cpu_j_field_ptr = make_unique<typename StorageType::cpu_j_storage>();
     cpu_j_field_ptr->Init("cpu_j_field", *cpu_j_size, *k_boundary);
 
-    cpu_k_field_ptr = make_unique<cpu_k_storage>();
+    cpu_k_field_ptr = make_unique<typename StorageType::cpu_k_storage>();
     cpu_k_field_ptr->Init("cpu_k_field", *cpu_k_size, *k_boundary);
 
     // GPU Storages
-    gpu_kji_field_ptr = make_unique<gpu_kji_storage>();
+    gpu_kji_field_ptr = make_unique<typename StorageType::gpu_kji_storage>();
     gpu_kji_field_ptr->Init("gpu_kji_field", *gpu_kji_size, *k_boundary);
 
-    gpu_ji_field_ptr = make_unique<gpu_ji_storage>();
+    gpu_ji_field_ptr = make_unique<typename StorageType::gpu_ji_storage>();
     gpu_ji_field_ptr->Init("gpu_ji_field", *gpu_ji_size, *k_boundary);
 
-    gpu_ki_field_ptr = make_unique<gpu_ki_storage>();
+    gpu_ki_field_ptr = make_unique<typename StorageType::gpu_ki_storage>();
     gpu_ki_field_ptr->Init("gpu_ki_field", *gpu_ki_size, *k_boundary);
 
-    gpu_kj_field_ptr = make_unique<gpu_kj_storage>();
+    gpu_kj_field_ptr = make_unique<typename StorageType::gpu_kj_storage>();
     gpu_kj_field_ptr->Init("gpu_kj_field", *gpu_kj_size, *k_boundary);
 
-    gpu_i_field_ptr = make_unique<gpu_i_storage>();
+    gpu_i_field_ptr = make_unique<typename StorageType::gpu_i_storage>();
     gpu_i_field_ptr->Init("gpu_i_field", *gpu_i_size, *k_boundary);
 
-    gpu_j_field_ptr = make_unique<gpu_j_storage>();
+    gpu_j_field_ptr = make_unique<typename StorageType::gpu_j_storage>();
     gpu_j_field_ptr->Init("gpu_j_field", *gpu_j_size, *k_boundary);
 
-    gpu_k_field_ptr = make_unique<gpu_k_storage>();
+    gpu_k_field_ptr = make_unique<typename StorageType::gpu_k_storage>();
     gpu_k_field_ptr->Init("gpu_k_field", *gpu_k_size, *k_boundary);
 
-    Real val = 0.0;
+    T val = 0.0;
     const IJKBoundary& boundary = cpu_jik_field_ptr->boundary();
     for(int i = boundary.iMinusOffset(); i < (dim1 + boundary.iPlusOffset()); ++i)
       for(int j = boundary.jMinusOffset(); j < (dim2 + boundary.jPlusOffset()); ++j)
@@ -209,28 +212,32 @@ serialbox::StorageView makeStorageView(const TFieldType& field) {
 
   std::vector<int> dims(internal::getDims(field));
   std::vector<int> strides(internal::getStrides(field));
-  std::vector<std::pair<int, int>> padding(internal::getPadding(field));
-  void* data = internal::getDataPointer(field);
+  void* orignPtr = internal::getOriginPtr(field);
 
-  return serialbox::StorageView(data, serialbox::ToTypeID<double>::value, std::move(dims),
-                                std::move(strides), std::move(padding));
+  return serialbox::StorageView(orignPtr,
+                                serialbox::ToTypeID<typename TFieldType::ValueType>::value,
+                                std::move(dims), std::move(strides));
 }
+
+using TestTypes = testing::Types<double, float, int>;
 
 } // anonymous namespace
 
-TEST_F(StorageViewSTELLATest, Construction) {
+TYPED_TEST_CASE(StorageViewSTELLATest, TestTypes);
+
+TYPED_TEST(StorageViewSTELLATest, Construction) {
   using namespace serialbox::stella;
 
 #define CHECK_FIELD(field_ptr)                                                                     \
   {                                                                                                \
-    auto field = *field_ptr;                                                                       \
+    auto field = *this->field_ptr;                                                                 \
     const IJKSize& size = field.storage().allocatedSize();                                         \
     std::vector<int> dims(internal::getDims(field));                                               \
     EXPECT_EQ(dims[0], size.iSize()) << field.name();                                              \
     EXPECT_EQ(dims[1], size.jSize()) << field.name();                                              \
     EXPECT_EQ(dims[2], size.kSize()) << field.name();                                              \
-    const void* data = internal::getDataPointer(field);                                            \
-    EXPECT_EQ(data, field.storage().pStorageBase()) << field.name();                               \
+    const void* originPtr = internal::getOriginPtr(field);                                         \
+    EXPECT_EQ(originPtr, field.storage().pStorageBase()) << field.name();                          \
   }
 
   CHECK_FIELD(cpu_jik_field_ptr);
@@ -240,7 +247,7 @@ TEST_F(StorageViewSTELLATest, Construction) {
   CHECK_FIELD(cpu_i_field_ptr);
   CHECK_FIELD(cpu_j_field_ptr);
   CHECK_FIELD(cpu_k_field_ptr);
-  
+
   CHECK_FIELD(gpu_kji_field_ptr);
   CHECK_FIELD(gpu_ji_field_ptr);
   CHECK_FIELD(gpu_ki_field_ptr);
@@ -252,8 +259,9 @@ TEST_F(StorageViewSTELLATest, Construction) {
 #undef CHECK_FIELD
 }
 
-TEST_F(StorageViewSTELLATest, Iterator) {
+TYPED_TEST(StorageViewSTELLATest, Iterator) {
   using namespace serialbox::stella;
+  int dim1 = this->dim1, dim2 = this->dim2, dim3 = this->dim3;
 
 // -------------------------------------------------------------------------------------------------
 // 1D I
@@ -261,12 +269,12 @@ TEST_F(StorageViewSTELLATest, Iterator) {
 
 #define CHECK_1D_I(field_ptr)                                                                      \
   {                                                                                                \
-    auto field = *field_ptr;                                                                       \
+    auto field = *this->field_ptr;                                                                 \
     serialbox::StorageView storage_view = makeStorageView(field);                                  \
     auto field_it = storage_view.begin();                                                          \
     const IJKBoundary& boundary = field.boundary();                                                \
     for(int i = boundary.iMinusOffset(); i < (dim1 + boundary.iPlusOffset()); ++i, ++field_it)     \
-      ASSERT_DOUBLE_EQ(field_it.as<double>(), field(i, 0, 0)) << field.name();                     \
+      ASSERT_EQ(field_it.as<TypeParam>(), field(i, 0, 0)) << field.name();                         \
   }
 
   CHECK_1D_I(cpu_i_field_ptr);
@@ -280,12 +288,12 @@ TEST_F(StorageViewSTELLATest, Iterator) {
 
 #define CHECK_1D_J(field_ptr)                                                                      \
   {                                                                                                \
-    auto field = *field_ptr;                                                                       \
+    auto field = *this->field_ptr;                                                                 \
     serialbox::StorageView storage_view = makeStorageView(field);                                  \
     auto field_it = storage_view.begin();                                                          \
     const IJKBoundary& boundary = field.boundary();                                                \
     for(int j = boundary.jMinusOffset(); j < (dim2 + boundary.jPlusOffset()); ++j, ++field_it)     \
-      ASSERT_DOUBLE_EQ(field_it.as<double>(), field(0, j, 0)) << field.name();                     \
+      ASSERT_EQ(field_it.as<TypeParam>(), field(0, j, 0)) << field.name();                         \
   }
 
   CHECK_1D_J(cpu_j_field_ptr);
@@ -299,12 +307,12 @@ TEST_F(StorageViewSTELLATest, Iterator) {
 
 #define CHECK_1D_K(field_ptr)                                                                      \
   {                                                                                                \
-    auto field = *field_ptr;                                                                       \
+    auto field = *this->field_ptr;                                                                 \
     serialbox::StorageView storage_view = makeStorageView(field);                                  \
     auto field_it = storage_view.begin();                                                          \
     const IJKBoundary& boundary = field.boundary();                                                \
     for(int k = boundary.kMinusOffset(); k < (dim3 + boundary.kPlusOffset()); ++k, ++field_it)     \
-      ASSERT_DOUBLE_EQ(field_it.as<double>(), field(0, 0, k)) << field.name();                     \
+      ASSERT_EQ(field_it.as<TypeParam>(), field(0, 0, k)) << field.name();                         \
   }
 
   CHECK_1D_K(cpu_k_field_ptr);
@@ -318,13 +326,13 @@ TEST_F(StorageViewSTELLATest, Iterator) {
 
 #define CHECK_2D_KJ(field_ptr)                                                                     \
   {                                                                                                \
-    auto field = *field_ptr;                                                                       \
+    auto field = *this->field_ptr;                                                                 \
     serialbox::StorageView storage_view = makeStorageView(field);                                  \
     auto field_it = storage_view.begin();                                                          \
     const IJKBoundary& boundary = field.boundary();                                                \
     for(int k = boundary.kMinusOffset(); k < (dim3 + +boundary.kPlusOffset()); ++k)                \
       for(int j = boundary.jMinusOffset(); j < (dim2 + boundary.jPlusOffset()); ++j, ++field_it)   \
-        ASSERT_DOUBLE_EQ(field_it.as<double>(), field(0, j, k)) << field.name();                   \
+        ASSERT_EQ(field_it.as<TypeParam>(), field(0, j, k)) << field.name();                       \
   }
 
   CHECK_2D_KJ(cpu_jk_field_ptr);
@@ -338,13 +346,13 @@ TEST_F(StorageViewSTELLATest, Iterator) {
 
 #define CHECK_2D_IK(field_ptr)                                                                     \
   {                                                                                                \
-    auto field = *field_ptr;                                                                       \
+    auto field = *this->field_ptr;                                                                 \
     serialbox::StorageView storage_view = makeStorageView(field);                                  \
     auto field_it = storage_view.begin();                                                          \
     const IJKBoundary& boundary = field.boundary();                                                \
     for(int k = boundary.kMinusOffset(); k < (dim3 + +boundary.kPlusOffset()); ++k)                \
       for(int i = boundary.iMinusOffset(); i < (dim1 + boundary.iPlusOffset()); ++i, ++field_it)   \
-        ASSERT_DOUBLE_EQ(field_it.as<double>(), field(i, 0, k)) << field.name();                   \
+        ASSERT_EQ(field_it.as<TypeParam>(), field(i, 0, k)) << field.name();                       \
   }
 
   CHECK_2D_IK(cpu_ik_field_ptr);
@@ -358,13 +366,13 @@ TEST_F(StorageViewSTELLATest, Iterator) {
 
 #define CHECK_2D_IJ(field_ptr)                                                                     \
   {                                                                                                \
-    auto field = *field_ptr;                                                                       \
+    auto field = *this->field_ptr;                                                                 \
     serialbox::StorageView storage_view = makeStorageView(field);                                  \
     auto field_it = storage_view.begin();                                                          \
     const IJKBoundary& boundary = field.boundary();                                                \
     for(int j = boundary.jMinusOffset(); j < (dim2 + boundary.jPlusOffset()); ++j)                 \
       for(int i = boundary.iMinusOffset(); i < (dim1 + boundary.iPlusOffset()); ++i, ++field_it)   \
-        ASSERT_DOUBLE_EQ(field_it.as<double>(), field(i, j, 0)) << field.name();                   \
+        ASSERT_EQ(field_it.as<TypeParam>(), field(i, j, 0)) << field.name();                       \
   }
 
   CHECK_2D_IJ(cpu_ji_field_ptr);
@@ -378,14 +386,14 @@ TEST_F(StorageViewSTELLATest, Iterator) {
 
 #define CHECK_3D(field_ptr)                                                                        \
   {                                                                                                \
-    auto field = *field_ptr;                                                                       \
+    auto field = *this->field_ptr;                                                                 \
     serialbox::StorageView storage_view = makeStorageView(field);                                  \
     auto field_it = storage_view.begin();                                                          \
     const IJKBoundary& boundary = field.boundary();                                                \
     for(int k = boundary.kMinusOffset(); k < (dim3 + +boundary.kPlusOffset()); ++k)                \
       for(int j = boundary.jMinusOffset(); j < (dim2 + boundary.jPlusOffset()); ++j)               \
         for(int i = boundary.iMinusOffset(); i < (dim1 + boundary.iPlusOffset()); ++i, ++field_it) \
-          ASSERT_DOUBLE_EQ(field_it.as<double>(), field(i, j, k)) << field.name();                 \
+          ASSERT_EQ(field_it.as<TypeParam>(), field(i, j, k)) << field.name();                     \
   }
 
   CHECK_3D(cpu_jik_field_ptr);

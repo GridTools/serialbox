@@ -20,7 +20,7 @@ namespace serialbox {
 
 namespace unittest {
 
-#define SERIALBOX_UNITTEST_NO_CLEANUP 1
+//#define SERIALBOX_UNITTEST_NO_CLEANUP 1
 
 UnittestEnvironment* UnittestEnvironment::instance_ = nullptr;
 

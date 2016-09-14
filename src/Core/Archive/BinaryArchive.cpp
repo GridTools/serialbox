@@ -22,26 +22,28 @@ namespace serialbox {
 
 const int BinaryArchive::Version = 0;
 
-BinaryArchive::~BinaryArchive() {
-  updateMetaData();
-}
+BinaryArchive::~BinaryArchive() { updateMetaData(); }
 
 void BinaryArchive::readMetaDataFromJson() {
+
+  boost::filesystem::path filename = directory_ / Archive::ArchiveName;
+  LOG(INFO) << "Reading MetaData for BinaryArchive ... ";
+
   fieldTable_.clear();
   json_.clear();
 
   // Writing always operates on fresh directories
   if(mode_ == OpenModeKind::Write)
     return;
-  
+
   // Check if metaData file exists
-  if(!boost::filesystem::exists(directory_ / Archive::ArchiveName)) {
+  if(!boost::filesystem::exists(filename)) {
     if(mode_ == OpenModeKind::Append)
       return;
-    throw Exception("archive meta data not found in directory '%s'", directory_.string());    
+    throw Exception("archive meta data not found in directory '%s'", directory_.string());
   }
 
-  std::ifstream fs((directory_ / Archive::ArchiveName).string(), std::ios::in);
+  std::ifstream fs(filename.string(), std::ios::in);
   fs >> json_;
   fs.close();
 
@@ -58,21 +60,24 @@ void BinaryArchive::readMetaDataFromJson() {
     throw Exception("binary archive version (%s) does not match the version of the library (%s)",
                     binaryArchiveVersion, BinaryArchive::Version);
 
-  // Deserialize FieldsTable  
+  // Deserialize FieldsTable
   for(auto it = json_["fields_table"].begin(); it != json_["fields_table"].end(); ++it) {
     FieldOffsetTable fieldOffsetTable;
-    
+
     // Iterate over savepoint of this field
     for(auto fileOffsetIt = it->begin(); fileOffsetIt != it->end(); ++fileOffsetIt)
-      fieldOffsetTable.push_back(FileOffsetType{fileOffsetIt->at(0), fileOffsetIt->at(1)});    
-    
+      fieldOffsetTable.push_back(FileOffsetType{fileOffsetIt->at(0), fileOffsetIt->at(1)});
+
     fieldTable_[it.key()] = fieldOffsetTable;
   }
 }
 
 void BinaryArchive::writeMetaDataToJson() {
-  json_.clear(); //TODO: needed?
-  
+  boost::filesystem::path filename = directory_ / Archive::ArchiveName;
+  LOG(INFO) << "Writing MetaData for BinaryArchive ... ";
+
+  json_.clear(); // TODO: needed?
+
   // Tag versions
   json_["serialbox_version"] =
       100 * SERIALBOX_VERSION_MAJOR + 10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
@@ -80,19 +85,22 @@ void BinaryArchive::writeMetaDataToJson() {
 
   // FieldsTable
   for(auto it = fieldTable_.begin(), end = fieldTable_.end(); it != end; ++it) {
-    for(int id = 0; id < it->second.size(); ++id)
+    for(unsigned int id = 0; id < it->second.size(); ++id)
       json_["fields_table"][it->first].push_back({it->second[id].offset, it->second[id].checksum});
   }
-   
+
   // Write metaData to disk (just overwrite the file, we assume that there is never more than one
   // Archive per data set and thus our in-memory copy is always the up-to-date one)
-  std::ofstream fs((directory_ / Archive::ArchiveName).string(), std::ios::out | std::ios::trunc);
+  std::ofstream fs(filename.string(), std::ios::out | std::ios::trunc);
   fs << json_.dump(4) << std::endl;
   fs.close();
 }
 
 BinaryArchive::BinaryArchive(const boost::filesystem::path& directory, OpenModeKind mode)
     : mode_(mode), directory_(directory), json_(), metaDataDirty_(false) {
+
+  LOG(INFO) << "Creating BinaryArchive (mode = " << mode_ << ") from directory " << directory_;
+
   try {
     bool isDir = boost::filesystem::is_directory(directory_);
 
@@ -120,7 +128,7 @@ BinaryArchive::BinaryArchive(const boost::filesystem::path& directory, OpenModeK
 }
 
 void BinaryArchive::updateMetaData() {
-  if(metaDataDirty_) 
+  if(metaDataDirty_)
     writeMetaDataToJson();
   metaDataDirty_ = false;
 }
@@ -133,69 +141,96 @@ void BinaryArchive::write(StorageView& storageView, const FieldID& fieldID) thro
   if(mode_ == OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Write' or 'Append'");
 
+  LOG(INFO) << "Attempting to write field \"" << fieldID.name << "\" (id = " << fieldID.id
+            << ") to BinaryArchive ...";
+
   // Check if a field with given id and name already exists
   auto it = fieldTable_.find(fieldID.name);
 
-  std::string filename((directory_ / (fieldID.name + ".dat")).string());
+  boost::filesystem::path filename(directory_ / (fieldID.name + ".dat"));
   std::ofstream fs;
-  
+
   // Create binary data buffer
-  std::vector<Byte> binaryData;
   try {
-    binaryData.resize(storageView.sizeInBytes());
+    std::size_t sizeInBytes = storageView.sizeInBytes();
+    LOG(INFO) << "Resizing binary buffer to " << sizeInBytes << " bytes from " << binaryData_.size()
+              << " bytes";
+
+    binaryData_.resize(sizeInBytes);
   } catch(std::bad_alloc&) {
     throw Exception("out of memory");
   }
 
-  Byte* dataPtr = binaryData.data();
+  Byte* dataPtr = binaryData_.data();
   const int bytesPerElement = storageView.bytesPerElement();
 
   // Copy field into contiguous memory
-  for(auto it = storageView.begin(), end = storageView.end(); it != end;
-      ++it, dataPtr += bytesPerElement)
-    std::memcpy(dataPtr, it.ptr(), bytesPerElement);
-  
+  if(storageView.isMemCopyable()) {
+    std::memcpy(dataPtr, storageView.originPtr(), binaryData_.size());
+  } else {
+    for(auto it = storageView.begin(), end = storageView.end(); it != end;
+        ++it, dataPtr += bytesPerElement)
+      std::memcpy(dataPtr, it.ptr(), bytesPerElement);
+  }
+
   // Compute hash
-  std::string checksum(SHA256::hash(binaryData.data(), binaryData.size()));
+  std::string checksum(SHA256::hash(binaryData_.data(), binaryData_.size()));
 
   // Field does exists
   if(it != fieldTable_.end()) {
     FieldOffsetTable& fieldOffsetTable = it->second;
-    
+
     // Do we append at the end?
-    if(fieldID.id >= fieldOffsetTable.size()) { 
-      fs.open(filename, std::ofstream::out | std::ofstream::binary | std::ofstream::app);          
-      auto offset = fs.tellp();   
+    if(fieldID.id >= fieldOffsetTable.size()) {
+      fs.open(filename.string(), std::ofstream::out | std::ofstream::binary | std::ofstream::app);
+      auto offset = fs.tellp();
       fieldOffsetTable.push_back(FileOffsetType{offset, checksum});
+
+      LOG(INFO) << "Appending field \"" << fieldID.name << "\" (id = " << fieldID.id << ") to "
+                << filename.filename();
     }
     // Replace data
     else {
+      // Is the data still the same?
+      if(checksum == fieldOffsetTable[fieldID.id].checksum) {
+        LOG(INFO) << "Checksum of field \"" << fieldID.name << "\" (id = " << fieldID.id
+                  << ") is still the same. Stopping.";
+        return;
+      }
+
       // It is absolutely *crucial* to open the file in read-write mode as otherwise all the content
       // prior to the current position is discarded
-      fs.open(filename, std::ofstream::out | std::ofstream::in | std::ofstream::binary);          
-      auto offset = fieldOffsetTable[fieldID.id].offset; 
+      fs.open(filename.string(), std::ofstream::out | std::ofstream::in | std::ofstream::binary);
+      auto offset = fieldOffsetTable[fieldID.id].offset;
       fs.seekp(offset, std::ios::beg);
-      
-      // Is the data still the same?
-      
+
+      LOG(INFO) << "Replacing field \"" << fieldID.name << "\" (id = " << fieldID.id
+                << ") at byte offset = " << offset << " in " << filename.filename();
+
       fieldOffsetTable[fieldID.id] = FileOffsetType{offset, checksum};
     }
   }
   // Field does not exist, create new file and append data
   else {
-    fs.open(filename, std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
-    
-    fieldTable_.insert(FieldTable::value_type(
-        fieldID.name, FieldOffsetTable(1, FileOffsetType{0, checksum})));
+    fs.open(filename.string(), std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
+
+    fieldTable_.insert(
+        FieldTable::value_type(fieldID.name, FieldOffsetTable(1, FileOffsetType{0, checksum})));
+
+    LOG(INFO) << "Creating new file " << filename.filename() << " for field \"" << fieldID.name
+              << "\" (id = " << fieldID.id << ")";
   }
 
   if(!fs.is_open())
-    throw Exception("cannot open file: '%s'", filename);
-  
+    throw Exception("cannot open file: '%s'", filename.string());
+
   // Write binaryData to disk
-  fs.write(binaryData.data(), binaryData.size());
+  fs.write(binaryData_.data(), binaryData_.size());
   fs.close();
-  
+
+  LOG(INFO) << "Successfully wrote field \"" << fieldID.name << "\" (id = " << fieldID.id << ") to "
+            << filename.filename();
+
   metaDataDirty_ = true;
   updateMetaData();
 }
@@ -208,6 +243,9 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) throw
   if(mode_ != OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Read'");
 
+  LOG(INFO) << "Attempting to read field \"" << fieldID.name << "\" (id = " << fieldID.id
+            << ") via BinaryArchive ... ";
+
   // Check if field exists
   auto it = fieldTable_.find(fieldID.name);
   if(it == fieldTable_.end())
@@ -219,10 +257,13 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) throw
   if(fieldID.id >= fieldOffsetTable.size())
     throw Exception("invalid id '%i' of field '%s'", fieldID.id, fieldID.name);
 
-  // Allocate binary data
-  std::vector<Byte> binaryData;
+  // Create binary data buffer
   try {
-    binaryData.resize(storageView.sizeInBytes());
+    std::size_t sizeInBytes = storageView.sizeInBytes();
+    LOG(INFO) << "Resizing binary buffer to " << sizeInBytes << " bytes from " << binaryData_.size()
+              << " bytes";
+
+    binaryData_.resize(sizeInBytes);
   } catch(std::bad_alloc&) {
     throw Exception("out of memory");
   }
@@ -239,32 +280,37 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) throw
   fs.seekg(offset);
 
   // Read data into contiguous memory
-  fs.read(binaryData.data(), binaryData.size());
+  fs.read(binaryData_.data(), binaryData_.size());
   fs.close();
 
-  Byte* dataPtr = binaryData.data();
+  Byte* dataPtr = binaryData_.data();
   const int bytesPerElement = storageView.bytesPerElement();
-  
+
   // Compute hash and compare
-  std::string checksum(SHA256::hash(binaryData.data(), binaryData.size()));
-  
+  std::string checksum(SHA256::hash(binaryData_.data(), binaryData_.size()));
+
   if(checksum != fieldOffsetTable[fieldID.id].checksum)
     throw Exception("hashsum mismatch for field '%s' at id '%i'", fieldID.name, fieldID.id);
 
   // Copy contiguous memory into field
-  for(auto it = storageView.begin(), end = storageView.end(); it != end;
-      ++it, dataPtr += bytesPerElement)
-    std::memcpy(it.ptr(), dataPtr, bytesPerElement);
+  if(storageView.isMemCopyable()) {
+    std::memcpy(storageView.originPtr(), dataPtr, binaryData_.size());
+  } else {
+    for(auto it = storageView.begin(), end = storageView.end(); it != end;
+        ++it, dataPtr += bytesPerElement)
+      std::memcpy(it.ptr(), dataPtr, bytesPerElement);
+  }
+  LOG(INFO) << "Successfully read field \"" << fieldID.name << "\" (id = " << fieldID.id << ")";
 }
 
-std::ostream&  BinaryArchive::toStream(std::ostream& stream) const {
+std::ostream& BinaryArchive::toStream(std::ostream& stream) const {
   stream << "BinaryArchive [\n";
   stream << "  directory = " << directory_.string() << "\n";
   stream << "  mode = " << mode_ << "\n";
   stream << "  fieldsTable = [\n";
   for(auto it = fieldTable_.begin(), end = fieldTable_.end(); it != end; ++it) {
     stream << "    " << it->first << " = {\n";
-    for(int id = 0; id < it->second.size(); ++id) {
+    for(std::size_t id = 0; id < it->second.size(); ++id) {
       stream << "      [ " << it->second[id].offset << ",\n";
       stream << "        " << it->second[id].checksum << " ]\n";
     }

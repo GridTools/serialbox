@@ -28,4 +28,4 @@ set(UNITTEST_SOURCES
                      Storage.h
                      STELLA.h)
   
-serialbox_add_unittest_executable(SerialboxUnittest "${UNITTEST_SOURCES}")
+serialbox_add_unittest_executable(SerialboxUnittestCpp "${UNITTEST_SOURCES}")

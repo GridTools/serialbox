@@ -132,13 +132,13 @@ struct Storage {
   /// \brief Get origin pointer
   T* originPtr() noexcept {
     T* ptr = data_.data();
-    for(int i = 0; i < padding_.size(); ++i)
+    for(unsigned int i = 0; i < padding_.size(); ++i)
       ptr += (padding_[i].first * strides_[i]);
     return ptr;
   }
   const T* originPtr() const noexcept {
-    T* ptr = data_.data();
-    for(int i = 0; i < padding_.size(); ++i)
+    const T* ptr = data_.data();
+    for(unsigned int i = 0; i < padding_.size(); ++i)
       ptr += (padding_[i].first * strides_[i]);
     return ptr;
   }
@@ -194,7 +194,7 @@ struct Storage {
   /// \brief Convert to StorageView
   StorageView toStorageView() const {
     auto type = ToTypeID<T>::value;
-    return StorageView((void*)data_.data(), type, dims_, strides_, padding_);
+    return StorageView((void*) originPtr(), type, dims_, strides_);
   }
 
   /// \brief Verify that the two Storages are equal

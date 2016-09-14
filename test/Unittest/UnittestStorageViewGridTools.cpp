@@ -24,10 +24,11 @@
 
 namespace {
 
-using serialbox::make_unique;
-
+template <class T>
 class StorageViewGridToolsTest : public testing::Test {
 public:
+  using storage_types = gridtools_storage_types<T>;
+
   // -----------------------------------------------------------------------------------------------
   // Dimensions
   // -----------------------------------------------------------------------------------------------
@@ -39,65 +40,81 @@ public:
   // -----------------------------------------------------------------------------------------------
   // Meta Data
   // -----------------------------------------------------------------------------------------------
-  std::unique_ptr<cpu_2d_real_meta_data_type> cpu_2d_real_meta_data_ptr;
-  std::unique_ptr<gpu_2d_real_meta_data_type> gpu_2d_real_meta_data_ptr;
-  std::unique_ptr<cpu_2d_meta_data_type> cpu_2d_meta_data_ptr;
-  std::unique_ptr<gpu_2d_meta_data_type> gpu_2d_meta_data_ptr;
-  std::unique_ptr<cpu_3d_meta_data_type> cpu_3d_meta_data_ptr;
-  std::unique_ptr<gpu_3d_meta_data_type> gpu_3d_meta_data_ptr;
-  std::unique_ptr<cpu_4d_meta_data_type> cpu_4d_meta_data_ptr;
-  std::unique_ptr<gpu_4d_meta_data_type> gpu_4d_meta_data_ptr;
+  std::unique_ptr<typename storage_types::cpu_2d_real_meta_data_type> cpu_2d_real_meta_data_ptr;
+  std::unique_ptr<typename storage_types::gpu_2d_real_meta_data_type> gpu_2d_real_meta_data_ptr;
+  std::unique_ptr<typename storage_types::cpu_2d_meta_data_type> cpu_2d_meta_data_ptr;
+  std::unique_ptr<typename storage_types::gpu_2d_meta_data_type> gpu_2d_meta_data_ptr;
+  std::unique_ptr<typename storage_types::cpu_3d_meta_data_type> cpu_3d_meta_data_ptr;
+  std::unique_ptr<typename storage_types::gpu_3d_meta_data_type> gpu_3d_meta_data_ptr;
+  std::unique_ptr<typename storage_types::cpu_4d_meta_data_type> cpu_4d_meta_data_ptr;
+  std::unique_ptr<typename storage_types::gpu_4d_meta_data_type> gpu_4d_meta_data_ptr;
 
   // -----------------------------------------------------------------------------------------------
   // Storages
   // -----------------------------------------------------------------------------------------------
-  std::unique_ptr<cpu_2d_real_storage_type> cpu_2d_real_storage_ptr;
-  std::unique_ptr<gpu_2d_real_storage_type> gpu_2d_real_storage_ptr;
-  std::unique_ptr<cpu_2d_storage_type> cpu_2d_storage_ptr;
-  std::unique_ptr<gpu_2d_storage_type> gpu_2d_storage_ptr;
-  std::unique_ptr<cpu_3d_storage_type> cpu_3d_storage_ptr;
-  std::unique_ptr<gpu_3d_storage_type> gpu_3d_storage_ptr;
-  std::unique_ptr<cpu_4d_storage_type> cpu_4d_storage_ptr;
-  std::unique_ptr<gpu_4d_storage_type> gpu_4d_storage_ptr;
+  std::unique_ptr<typename storage_types::cpu_2d_real_storage_type> cpu_2d_real_storage_ptr;
+  std::unique_ptr<typename storage_types::gpu_2d_real_storage_type> gpu_2d_real_storage_ptr;
+  std::unique_ptr<typename storage_types::cpu_2d_storage_type> cpu_2d_storage_ptr;
+  std::unique_ptr<typename storage_types::gpu_2d_storage_type> gpu_2d_storage_ptr;
+  std::unique_ptr<typename storage_types::cpu_3d_storage_type> cpu_3d_storage_ptr;
+  std::unique_ptr<typename storage_types::gpu_3d_storage_type> gpu_3d_storage_ptr;
+  std::unique_ptr<typename storage_types::cpu_4d_storage_type> cpu_4d_storage_ptr;
+  std::unique_ptr<typename storage_types::gpu_4d_storage_type> gpu_4d_storage_ptr;
 
 protected:
   virtual void SetUp() override {
-    dim1 = 2 + halo_left[0] + halo_right[0];
-    dim2 = 3 + halo_left[1] + halo_right[1];
-    dim3 = 4 + halo_left[2] + halo_right[2];
-    dim4 = 5 + halo_left[3] + halo_right[3];
+    using serialbox::make_unique;
 
-    cpu_2d_real_meta_data_ptr = make_unique<cpu_2d_real_meta_data_type>(dim1, dim2);
-    gpu_2d_real_meta_data_ptr = make_unique<gpu_2d_real_meta_data_type>(dim1, dim2);
-    cpu_2d_meta_data_ptr = make_unique<cpu_2d_meta_data_type>(dim1, dim2, 0);
-    gpu_2d_meta_data_ptr = make_unique<gpu_2d_meta_data_type>(dim1, dim2, 0);
-    cpu_3d_meta_data_ptr = make_unique<cpu_3d_meta_data_type>(dim1, dim2, dim3);
-    gpu_3d_meta_data_ptr = make_unique<gpu_3d_meta_data_type>(dim1, dim2, dim3);
-    cpu_4d_meta_data_ptr = make_unique<cpu_4d_meta_data_type>(dim1, dim2, dim3, dim4);
-    gpu_4d_meta_data_ptr = make_unique<gpu_4d_meta_data_type>(dim1, dim2, dim3, dim4);
+    dim1 = 2 + storage_types::halo1_left + storage_types::halo1_right;
+    dim2 = 3 + storage_types::halo2_left + storage_types::halo2_right;
+    dim3 = 4 + storage_types::halo3_left + storage_types::halo3_right;
+    dim4 = 5 + storage_types::halo4_left + storage_types::halo4_right;
 
-    cpu_2d_real_storage_ptr = make_unique<cpu_2d_real_storage_type>(*cpu_2d_real_meta_data_ptr,
-                                                                    "cpu_2d_real_storage", -1.0);
-    gpu_2d_real_storage_ptr = make_unique<gpu_2d_real_storage_type>(*gpu_2d_real_meta_data_ptr,
-                                                                    "gpu_2d_real_storage", -1.0);
+    // ---------------------------------------------------------------------------------------------
+    // Meta Data
+    // ---------------------------------------------------------------------------------------------
+    cpu_2d_real_meta_data_ptr =
+        make_unique<typename storage_types::cpu_2d_real_meta_data_type>(dim1, dim2);
+    gpu_2d_real_meta_data_ptr =
+        make_unique<typename storage_types::gpu_2d_real_meta_data_type>(dim1, dim2);
+    cpu_2d_meta_data_ptr =
+        make_unique<typename storage_types::cpu_2d_meta_data_type>(dim1, dim2, 0);
+    gpu_2d_meta_data_ptr =
+        make_unique<typename storage_types::gpu_2d_meta_data_type>(dim1, dim2, 0);
+    cpu_3d_meta_data_ptr =
+        make_unique<typename storage_types::cpu_3d_meta_data_type>(dim1, dim2, dim3);
+    gpu_3d_meta_data_ptr =
+        make_unique<typename storage_types::gpu_3d_meta_data_type>(dim1, dim2, dim3);
+    cpu_4d_meta_data_ptr =
+        make_unique<typename storage_types::cpu_4d_meta_data_type>(dim1, dim2, dim3, dim4);
+    gpu_4d_meta_data_ptr =
+        make_unique<typename storage_types::gpu_4d_meta_data_type>(dim1, dim2, dim3, dim4);
 
-    cpu_2d_storage_ptr =
-        make_unique<cpu_2d_storage_type>(*cpu_2d_meta_data_ptr, "cpu_2d_storage", -1.0);
-    gpu_2d_storage_ptr =
-        make_unique<gpu_2d_storage_type>(*gpu_2d_meta_data_ptr, "gpu_2d_storage", -1.0);
+    // ---------------------------------------------------------------------------------------------
+    // Storages
+    // ---------------------------------------------------------------------------------------------
+    cpu_2d_real_storage_ptr = make_unique<typename storage_types::cpu_2d_real_storage_type>(
+        *cpu_2d_real_meta_data_ptr, "cpu_2d_real_storage", -1.0);
+    gpu_2d_real_storage_ptr = make_unique<typename storage_types::gpu_2d_real_storage_type>(
+        *gpu_2d_real_meta_data_ptr, "gpu_2d_real_storage", -1.0);
 
-    cpu_3d_storage_ptr =
-        make_unique<cpu_3d_storage_type>(*cpu_3d_meta_data_ptr, "cpu_3d_storage", -1.0);
-    gpu_3d_storage_ptr =
-        make_unique<gpu_3d_storage_type>(*gpu_3d_meta_data_ptr, "gpu_3d_storage", -1.0);
+    cpu_2d_storage_ptr = make_unique<typename storage_types::cpu_2d_storage_type>(
+        *cpu_2d_meta_data_ptr, "cpu_2d_storage", -1.0);
+    gpu_2d_storage_ptr = make_unique<typename storage_types::gpu_2d_storage_type>(
+        *gpu_2d_meta_data_ptr, "gpu_2d_storage", -1.0);
 
-    cpu_4d_storage_ptr =
-        make_unique<cpu_4d_storage_type>(*cpu_4d_meta_data_ptr, "cpu_4d_storage", -1.0);
-    gpu_4d_storage_ptr =
-        make_unique<gpu_4d_storage_type>(*gpu_4d_meta_data_ptr, "gpu_4d_storage", -1.0);
+    cpu_3d_storage_ptr = make_unique<typename storage_types::cpu_3d_storage_type>(
+        *cpu_3d_meta_data_ptr, "cpu_3d_storage", -1.0);
+    gpu_3d_storage_ptr = make_unique<typename storage_types::gpu_3d_storage_type>(
+        *gpu_3d_meta_data_ptr, "gpu_3d_storage", -1.0);
+
+    cpu_4d_storage_ptr = make_unique<typename storage_types::cpu_4d_storage_type>(
+        *cpu_4d_meta_data_ptr, "cpu_4d_storage", -1.0);
+    gpu_4d_storage_ptr = make_unique<typename storage_types::gpu_4d_storage_type>(
+        *gpu_4d_meta_data_ptr, "gpu_4d_storage", -1.0);
 
     // 2D
-    double val_2d = 0.0;
+    T val_2d = 0.0;
     for(int j = 0; j < dim2; ++j)
       for(int i = 0; i < dim1; ++i, val_2d += 1.0) {
         (*cpu_2d_real_storage_ptr)(i, j) = val_2d;
@@ -107,7 +124,7 @@ protected:
       }
 
     // 3D
-    double val_3d = 0.0;
+    T val_3d = 0.0;
     for(int k = 0; k < dim3; ++k)
       for(int j = 0; j < dim2; ++j)
         for(int i = 0; i < dim1; ++i, val_3d += 1.0) {
@@ -116,7 +133,7 @@ protected:
         }
 
     // 4D
-    double val_4d = 0.0;
+    T val_4d = 0.0;
     for(int l = 0; l < dim4; ++l)
       for(int k = 0; k < dim3; ++k)
         for(int j = 0; j < dim2; ++j)
@@ -129,7 +146,11 @@ protected:
   virtual void TearDown() override {}
 };
 
+using TestTypes = testing::Types<double, float, int>;
+
 } // anonymous namespace
+
+TYPED_TEST_CASE(StorageViewGridToolsTest, TestTypes);
 
 template <typename Storage>
 serialbox::StorageView make_storage_view(const Storage& storage) {
@@ -137,27 +158,25 @@ serialbox::StorageView make_storage_view(const Storage& storage) {
 
   std::vector<int> dims(internal::get_dims(storage));
   std::vector<int> strides(internal::get_strides(storage));
-  std::vector<std::pair<int, int>> padding(internal::get_padding(storage));
-  void* data = internal::get_data_pointer(storage, 0);
+  void* originPtr = internal::get_origin_ptr(storage, 0);
 
-  return serialbox::StorageView(data, serialbox::ToTypeID<double>::value, std::move(dims),
-                                std::move(strides), std::move(padding));
+  return serialbox::StorageView(originPtr, serialbox::ToTypeID<typename Storage::value_type>::value,
+                                std::move(dims), std::move(strides));
 }
 
-TEST_F(StorageViewGridToolsTest, Construction) {
+TYPED_TEST(StorageViewGridToolsTest, Construction) {
   using namespace serialbox::gridtools;
 
   // -----------------------------------------------------------------------------------------------
   // 2D Real CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_2d_real_storage = *cpu_2d_real_storage_ptr;
-  auto& cpu_2d_real_meta_data = *cpu_2d_real_meta_data_ptr;
+  auto& cpu_2d_real_storage = *this->cpu_2d_real_storage_ptr;
+  auto& cpu_2d_real_meta_data = *this->cpu_2d_real_meta_data_ptr;
 
   std::vector<int> cpu_2d_real_dims(internal::get_dims(cpu_2d_real_storage));
   std::vector<int> cpu_2d_real_strides(internal::get_strides(cpu_2d_real_storage));
-  std::vector<std::pair<int, int>> cpu_2d_real_padding(internal::get_padding(cpu_2d_real_storage));
-  void* cpu_2d_real_data = internal::get_data_pointer(cpu_2d_real_storage, 0);
+  void* cpu_2d_real_origin_ptr = internal::get_origin_ptr(cpu_2d_real_storage, 0);
 
   // Dimensions
   EXPECT_EQ(cpu_2d_real_dims[0], cpu_2d_real_meta_data.template unaligned_dim<0>());
@@ -167,26 +186,19 @@ TEST_F(StorageViewGridToolsTest, Construction) {
   EXPECT_EQ(cpu_2d_real_strides[0], cpu_2d_real_meta_data.template strides<0>());
   EXPECT_EQ(cpu_2d_real_strides[1], cpu_2d_real_meta_data.template strides<1>());
 
-  // Padding
-  EXPECT_EQ(cpu_2d_real_padding[0].first, 0);
-  EXPECT_EQ(cpu_2d_real_padding[1].first, 0);
-  EXPECT_EQ(cpu_2d_real_padding[0].second, 0);
-  EXPECT_EQ(cpu_2d_real_padding[1].second, 0);
-
   // Data
-  EXPECT_NE(cpu_2d_real_data, nullptr);
+  EXPECT_EQ(cpu_2d_real_origin_ptr, static_cast<void*>(&cpu_2d_real_storage(0, 0)));
 
   // -----------------------------------------------------------------------------------------------
   // 2D CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_2d_storage = *cpu_2d_storage_ptr;
-  auto& cpu_2d_meta_data = *cpu_2d_meta_data_ptr;
+  auto& cpu_2d_storage = *this->cpu_2d_storage_ptr;
+  auto& cpu_2d_meta_data = *this->cpu_2d_meta_data_ptr;
 
   std::vector<int> cpu_2d_dims(internal::get_dims(cpu_2d_storage));
   std::vector<int> cpu_2d_strides(internal::get_strides(cpu_2d_storage));
-  std::vector<std::pair<int, int>> cpu_2d_padding(internal::get_padding(cpu_2d_storage));
-  void* cpu_2d_data = internal::get_data_pointer(cpu_2d_storage, 0);
+  void* cpu_2d_origin_ptr = internal::get_origin_ptr(cpu_2d_storage, 0);
 
   // Dimensions
   EXPECT_EQ(cpu_2d_dims[0], cpu_2d_meta_data.template unaligned_dim<0>());
@@ -198,28 +210,19 @@ TEST_F(StorageViewGridToolsTest, Construction) {
   EXPECT_EQ(cpu_2d_strides[1], cpu_2d_meta_data.template strides<1>());
   EXPECT_EQ(cpu_2d_strides[2], cpu_2d_meta_data.template strides<2>());
 
-  // Padding
-  EXPECT_EQ(cpu_2d_padding[0].first, 0);
-  EXPECT_EQ(cpu_2d_padding[1].first, 0);
-  EXPECT_EQ(cpu_2d_padding[2].first, 0);
-  EXPECT_EQ(cpu_2d_padding[0].second, 0);
-  EXPECT_EQ(cpu_2d_padding[1].second, 0);
-  EXPECT_EQ(cpu_2d_padding[2].second, 0);
-
   // Data
-  EXPECT_NE(cpu_2d_data, nullptr);
+  EXPECT_EQ(cpu_2d_origin_ptr, static_cast<void*>(&cpu_2d_storage(0, 0, 0)));
 
   // -----------------------------------------------------------------------------------------------
   // 3D CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_3d_storage = *cpu_3d_storage_ptr;
-  auto& cpu_3d_meta_data = *cpu_3d_meta_data_ptr;
+  auto& cpu_3d_storage = *this->cpu_3d_storage_ptr;
+  auto& cpu_3d_meta_data = *this->cpu_3d_meta_data_ptr;
 
   std::vector<int> cpu_3d_dims(internal::get_dims(cpu_3d_storage));
   std::vector<int> cpu_3d_strides(internal::get_strides(cpu_3d_storage));
-  std::vector<std::pair<int, int>> cpu_3d_padding(internal::get_padding(cpu_3d_storage));
-  void* cpu_3d_data = internal::get_data_pointer(cpu_3d_storage, 0);
+  void* cpu_3d_origin_ptr = internal::get_origin_ptr(cpu_3d_storage, 0);
 
   // Dimensions
   EXPECT_EQ(cpu_3d_dims[0], cpu_3d_meta_data.template unaligned_dim<0>());
@@ -231,28 +234,19 @@ TEST_F(StorageViewGridToolsTest, Construction) {
   EXPECT_EQ(cpu_3d_strides[1], cpu_3d_meta_data.template strides<1>());
   EXPECT_EQ(cpu_3d_strides[2], cpu_3d_meta_data.template strides<2>());
 
-  // Padding
-  EXPECT_EQ(cpu_3d_padding[0].first, 0);
-  EXPECT_EQ(cpu_3d_padding[1].first, 0);
-  EXPECT_EQ(cpu_3d_padding[2].first, 0);
-  EXPECT_EQ(cpu_3d_padding[0].second, 0);
-  EXPECT_EQ(cpu_3d_padding[1].second, 0);
-  EXPECT_EQ(cpu_3d_padding[2].second, 0);
-
   // Data
-  EXPECT_NE(cpu_3d_data, nullptr);
+  EXPECT_EQ(cpu_3d_origin_ptr, static_cast<void*>(&cpu_3d_storage(0, 0, 0)));
 
   // -----------------------------------------------------------------------------------------------
   // 4D CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_4d_storage = *cpu_4d_storage_ptr;
-  auto& cpu_4d_meta_data = *cpu_4d_meta_data_ptr;
+  auto& cpu_4d_storage = *this->cpu_4d_storage_ptr;
+  auto& cpu_4d_meta_data = *this->cpu_4d_meta_data_ptr;
 
   std::vector<int> cpu_4d_dims(internal::get_dims(cpu_4d_storage));
   std::vector<int> cpu_4d_strides(internal::get_strides(cpu_4d_storage));
-  std::vector<std::pair<int, int>> cpu_4d_padding(internal::get_padding(cpu_4d_storage));
-  void* cpu_4d_data = internal::get_data_pointer(cpu_4d_storage, 0);
+  void* cpu_4d_origin_ptr = internal::get_origin_ptr(cpu_4d_storage, 0);
 
   // Dimensions
   EXPECT_EQ(cpu_4d_dims[0], cpu_4d_meta_data.template unaligned_dim<0>());
@@ -266,31 +260,19 @@ TEST_F(StorageViewGridToolsTest, Construction) {
   EXPECT_EQ(cpu_4d_strides[2], cpu_4d_meta_data.template strides<2>());
   EXPECT_EQ(cpu_4d_strides[3], cpu_4d_meta_data.template strides<3>());
 
-  // Padding
-  EXPECT_EQ(cpu_4d_padding[0].first, 0);
-  EXPECT_EQ(cpu_4d_padding[1].first, 0);
-  EXPECT_EQ(cpu_4d_padding[2].first, 0);
-  EXPECT_EQ(cpu_4d_padding[3].first, 0);
-
-  EXPECT_EQ(cpu_4d_padding[0].second, 0);
-  EXPECT_EQ(cpu_4d_padding[1].second, 0);
-  EXPECT_EQ(cpu_4d_padding[2].second, 0);
-  EXPECT_EQ(cpu_4d_padding[3].second, 0);
-
   // Data
-  EXPECT_NE(cpu_4d_data, nullptr);
+  EXPECT_EQ(cpu_4d_origin_ptr, static_cast<void*>(&cpu_4d_storage(0, 0, 0, 0)));
 
   // -----------------------------------------------------------------------------------------------
   // 2D GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_2d_real_storage = *gpu_2d_real_storage_ptr;
-  auto& gpu_2d_real_meta_data = *gpu_2d_real_meta_data_ptr;
+  auto& gpu_2d_real_storage = *this->gpu_2d_real_storage_ptr;
+  auto& gpu_2d_real_meta_data = *this->gpu_2d_real_meta_data_ptr;
 
   std::vector<int> gpu_2d_real_dims(internal::get_dims(gpu_2d_real_storage));
   std::vector<int> gpu_2d_real_strides(internal::get_strides(gpu_2d_real_storage));
-  std::vector<std::pair<int, int>> gpu_2d_real_padding(internal::get_padding(gpu_2d_real_storage));
-  void* gpu_2d_real_data = internal::get_data_pointer(gpu_2d_real_storage, 0);
+  void* gpu_2d_real_origin_ptr = internal::get_origin_ptr(gpu_2d_real_storage, 0);
 
   // Dimensions
   EXPECT_EQ(gpu_2d_real_dims[0], gpu_2d_real_meta_data.template unaligned_dim<0>());
@@ -300,43 +282,19 @@ TEST_F(StorageViewGridToolsTest, Construction) {
   EXPECT_EQ(gpu_2d_real_strides[0], gpu_2d_real_meta_data.template strides<0>());
   EXPECT_EQ(gpu_2d_real_strides[1], gpu_2d_real_meta_data.template strides<1>());
 
-  // Padding
-  EXPECT_EQ(gpu_2d_real_padding[0].first,
-            (internal::has_stride_one<gpu_2d_real_meta_data_type::layout>(0)
-                 ? (gpu_alignment - halo_left[0]) % gpu_alignment
-                 : 0));
-  EXPECT_EQ(gpu_2d_real_padding[1].first,
-            (internal::has_stride_one<gpu_2d_real_meta_data_type::layout>(1)
-                 ? (gpu_alignment - halo_left[1]) % gpu_alignment
-                 : 0));
-
-  EXPECT_EQ(
-      gpu_2d_real_padding[0].second,
-      (internal::has_stride_one<gpu_2d_real_meta_data_type::layout>(0)
-           ? (gpu_2d_real_meta_data.template dim<0>() -
-              gpu_2d_real_meta_data.template unaligned_dim<0>() - gpu_2d_real_padding[0].first)
-           : 0));
-  EXPECT_EQ(
-      gpu_2d_real_padding[1].second,
-      (internal::has_stride_one<gpu_2d_real_meta_data_type::layout>(1)
-           ? (gpu_2d_real_meta_data.template dim<1>() -
-              gpu_2d_real_meta_data.template unaligned_dim<1>() - gpu_2d_real_padding[1].first)
-           : 0));
-
   // Data
-  EXPECT_NE(gpu_2d_real_data, nullptr);
+  EXPECT_EQ(gpu_2d_real_origin_ptr, static_cast<void*>(&gpu_2d_real_storage(0, 0)));
 
   // -----------------------------------------------------------------------------------------------
   // 2D GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_2d_storage = *gpu_2d_storage_ptr;
-  auto& gpu_2d_meta_data = *gpu_2d_meta_data_ptr;
+  auto& gpu_2d_storage = *this->gpu_2d_storage_ptr;
+  auto& gpu_2d_meta_data = *this->gpu_2d_meta_data_ptr;
 
   std::vector<int> gpu_2d_dims(internal::get_dims(gpu_2d_storage));
   std::vector<int> gpu_2d_strides(internal::get_strides(gpu_2d_storage));
-  std::vector<std::pair<int, int>> gpu_2d_padding(internal::get_padding(gpu_2d_storage));
-  void* gpu_2d_data = internal::get_data_pointer(gpu_2d_storage, 0);
+  void* gpu_2d_origin_ptr = internal::get_origin_ptr(gpu_2d_storage, 0);
 
   // Dimensions
   EXPECT_EQ(gpu_2d_dims[0], gpu_2d_meta_data.template unaligned_dim<0>());
@@ -348,47 +306,19 @@ TEST_F(StorageViewGridToolsTest, Construction) {
   EXPECT_EQ(gpu_2d_strides[1], gpu_2d_meta_data.template strides<1>());
   EXPECT_EQ(gpu_2d_strides[2], gpu_2d_meta_data.template strides<2>());
 
-  // Padding
-  EXPECT_EQ(gpu_2d_padding[0].first, (internal::has_stride_one<gpu_2d_meta_data_type::layout>(0)
-                                          ? (gpu_alignment - halo_left[0]) % gpu_alignment
-                                          : 0));
-  EXPECT_EQ(gpu_2d_padding[1].first, (internal::has_stride_one<gpu_2d_meta_data_type::layout>(1)
-                                          ? (gpu_alignment - halo_left[1]) % gpu_alignment
-                                          : 0));
-  EXPECT_EQ(gpu_2d_padding[2].first, (internal::has_stride_one<gpu_2d_meta_data_type::layout>(2)
-                                          ? (gpu_alignment - halo_left[2]) % gpu_alignment
-                                          : 0));
-
-  EXPECT_EQ(gpu_2d_padding[0].second,
-            (internal::has_stride_one<gpu_2d_meta_data_type::layout>(0)
-                 ? (gpu_2d_meta_data.template dim<0>() -
-                    gpu_2d_meta_data.template unaligned_dim<0>() - gpu_2d_padding[0].first)
-                 : 0));
-  EXPECT_EQ(gpu_2d_padding[1].second,
-            (internal::has_stride_one<gpu_2d_meta_data_type::layout>(1)
-                 ? (gpu_2d_meta_data.template dim<1>() -
-                    gpu_2d_meta_data.template unaligned_dim<1>() - gpu_2d_padding[1].first)
-                 : 0));
-  EXPECT_EQ(gpu_2d_padding[2].second,
-            (internal::has_stride_one<gpu_2d_meta_data_type::layout>(2)
-                 ? (gpu_2d_meta_data.template dim<2>() -
-                    gpu_2d_meta_data.template unaligned_dim<2>() - gpu_2d_padding[2].first)
-                 : 0));
-
   // Data
-  EXPECT_NE(gpu_2d_data, nullptr);
+  EXPECT_EQ(gpu_2d_origin_ptr, static_cast<void*>(&gpu_2d_storage(0, 0, 0)));
 
   // -----------------------------------------------------------------------------------------------
   // 3D GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_3d_storage = *gpu_3d_storage_ptr;
-  auto& gpu_3d_meta_data = *gpu_3d_meta_data_ptr;
+  auto& gpu_3d_storage = *this->gpu_3d_storage_ptr;
+  auto& gpu_3d_meta_data = *this->gpu_3d_meta_data_ptr;
 
   std::vector<int> gpu_3d_dims(internal::get_dims(gpu_3d_storage));
   std::vector<int> gpu_3d_strides(internal::get_strides(gpu_3d_storage));
-  std::vector<std::pair<int, int>> gpu_3d_padding(internal::get_padding(gpu_3d_storage));
-  void* gpu_3d_data = internal::get_data_pointer(gpu_3d_storage, 0);
+  void* gpu_3d_origin_ptr = internal::get_origin_ptr(gpu_3d_storage, 0);
 
   // Dimensions
   EXPECT_EQ(gpu_3d_dims[0], gpu_3d_meta_data.template unaligned_dim<0>());
@@ -400,47 +330,19 @@ TEST_F(StorageViewGridToolsTest, Construction) {
   EXPECT_EQ(gpu_3d_strides[1], gpu_3d_meta_data.template strides<1>());
   EXPECT_EQ(gpu_3d_strides[2], gpu_3d_meta_data.template strides<2>());
 
-  // Padding
-  EXPECT_EQ(gpu_3d_padding[0].first, (internal::has_stride_one<gpu_3d_meta_data_type::layout>(0)
-                                          ? (gpu_alignment - halo_left[0]) % gpu_alignment
-                                          : 0));
-  EXPECT_EQ(gpu_3d_padding[1].first, (internal::has_stride_one<gpu_3d_meta_data_type::layout>(1)
-                                          ? (gpu_alignment - halo_left[1]) % gpu_alignment
-                                          : 0));
-  EXPECT_EQ(gpu_3d_padding[2].first, (internal::has_stride_one<gpu_3d_meta_data_type::layout>(2)
-                                          ? (gpu_alignment - halo_left[2]) % gpu_alignment
-                                          : 0));
-
-  EXPECT_EQ(gpu_3d_padding[0].second,
-            (internal::has_stride_one<gpu_3d_meta_data_type::layout>(0)
-                 ? (gpu_3d_meta_data.template dim<0>() -
-                    gpu_3d_meta_data.template unaligned_dim<0>() - gpu_3d_padding[0].first)
-                 : 0));
-  EXPECT_EQ(gpu_3d_padding[1].second,
-            (internal::has_stride_one<gpu_3d_meta_data_type::layout>(1)
-                 ? (gpu_3d_meta_data.template dim<1>() -
-                    gpu_3d_meta_data.template unaligned_dim<1>() - gpu_3d_padding[1].first)
-                 : 0));
-  EXPECT_EQ(gpu_3d_padding[2].second,
-            (internal::has_stride_one<gpu_3d_meta_data_type::layout>(2)
-                 ? (gpu_3d_meta_data.template dim<2>() -
-                    gpu_3d_meta_data.template unaligned_dim<2>() - gpu_3d_padding[2].first)
-                 : 0));
-
   // Data
-  EXPECT_NE(gpu_3d_data, nullptr);
+  EXPECT_EQ(gpu_3d_origin_ptr, static_cast<void*>(&gpu_3d_storage(0, 0, 0)));
 
   // -----------------------------------------------------------------------------------------------
   // 4D GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_4d_storage = *gpu_4d_storage_ptr;
-  auto& gpu_4d_meta_data = *gpu_4d_meta_data_ptr;
+  auto& gpu_4d_storage = *this->gpu_4d_storage_ptr;
+  auto& gpu_4d_meta_data = *this->gpu_4d_meta_data_ptr;
 
   std::vector<int> gpu_4d_dims(internal::get_dims(gpu_4d_storage));
   std::vector<int> gpu_4d_strides(internal::get_strides(gpu_4d_storage));
-  std::vector<std::pair<int, int>> gpu_4d_padding(internal::get_padding(gpu_4d_storage));
-  void* gpu_4d_data = internal::get_data_pointer(gpu_4d_storage, 0);
+  void* gpu_4d_origin_ptr = internal::get_origin_ptr(gpu_4d_storage, 0);
 
   // Dimensions
   EXPECT_EQ(gpu_4d_dims[0], gpu_4d_meta_data.template unaligned_dim<0>());
@@ -454,92 +356,58 @@ TEST_F(StorageViewGridToolsTest, Construction) {
   EXPECT_EQ(gpu_4d_strides[2], gpu_4d_meta_data.template strides<2>());
   EXPECT_EQ(gpu_4d_strides[3], gpu_4d_meta_data.template strides<3>());
 
-  // Padding
-  EXPECT_EQ(gpu_4d_padding[0].first, (internal::has_stride_one<gpu_4d_meta_data_type::layout>(0)
-                                          ? (gpu_alignment - halo_left[0]) % gpu_alignment
-                                          : 0));
-  EXPECT_EQ(gpu_4d_padding[1].first, (internal::has_stride_one<gpu_4d_meta_data_type::layout>(1)
-                                          ? (gpu_alignment - halo_left[1]) % gpu_alignment
-                                          : 0));
-  EXPECT_EQ(gpu_4d_padding[2].first, (internal::has_stride_one<gpu_4d_meta_data_type::layout>(2)
-                                          ? (gpu_alignment - halo_left[2]) % gpu_alignment
-                                          : 0));
-  EXPECT_EQ(gpu_4d_padding[3].first, (internal::has_stride_one<gpu_4d_meta_data_type::layout>(3)
-                                          ? (gpu_alignment - halo_left[3]) % gpu_alignment
-                                          : 0));
-
-  EXPECT_EQ(gpu_4d_padding[0].second,
-            (internal::has_stride_one<gpu_4d_meta_data_type::layout>(0)
-                 ? (gpu_4d_meta_data.template dim<0>() -
-                    gpu_4d_meta_data.template unaligned_dim<0>() - gpu_4d_padding[0].first)
-                 : 0));
-  EXPECT_EQ(gpu_4d_padding[1].second,
-            (internal::has_stride_one<gpu_4d_meta_data_type::layout>(1)
-                 ? (gpu_4d_meta_data.template dim<1>() -
-                    gpu_4d_meta_data.template unaligned_dim<1>() - gpu_4d_padding[1].first)
-                 : 0));
-  EXPECT_EQ(gpu_4d_padding[2].second,
-            (internal::has_stride_one<gpu_4d_meta_data_type::layout>(2)
-                 ? (gpu_4d_meta_data.template dim<2>() -
-                    gpu_4d_meta_data.template unaligned_dim<2>() - gpu_4d_padding[2].first)
-                 : 0));
-  EXPECT_EQ(gpu_4d_padding[3].second,
-            (internal::has_stride_one<gpu_4d_meta_data_type::layout>(3)
-                 ? (gpu_4d_meta_data.template dim<3>() -
-                    gpu_4d_meta_data.template unaligned_dim<3>() - gpu_4d_padding[3].first)
-                 : 0));
-
   // Data
-  EXPECT_NE(gpu_4d_data, nullptr);
+  EXPECT_EQ(gpu_4d_origin_ptr, static_cast<void*>(&gpu_4d_storage(0, 0, 0, 0)));
 }
 
-TEST_F(StorageViewGridToolsTest, Iterator) {
+TYPED_TEST(StorageViewGridToolsTest, Iterator) {
+  int dim1 = this->dim1, dim2 = this->dim2, dim3 = this->dim3, dim4 = this->dim4;
 
   // -----------------------------------------------------------------------------------------------
   // 2D Real CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_2d_real_storage = *cpu_2d_real_storage_ptr;
+  auto& cpu_2d_real_storage = *this->cpu_2d_real_storage_ptr;
   serialbox::StorageView cpu_2d_real_storage_view = make_storage_view(cpu_2d_real_storage);
 
   auto cpu_2d_real_it = cpu_2d_real_storage_view.begin();
   for(int j = 0; j < dim2; ++j)
     for(int i = 0; i < dim1; ++i, ++cpu_2d_real_it) {
-      ASSERT_DOUBLE_EQ(cpu_2d_real_it.as<double>(), cpu_2d_real_storage(i, j));
+      ASSERT_EQ(cpu_2d_real_it.as<TypeParam>(), cpu_2d_real_storage(i, j));
     }
 
   // -----------------------------------------------------------------------------------------------
   // 2D CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_2d_storage = *cpu_2d_storage_ptr;
+  auto& cpu_2d_storage = *this->cpu_2d_storage_ptr;
   serialbox::StorageView cpu_2d_storage_view = make_storage_view(cpu_2d_storage);
 
   auto cpu_2d_it = cpu_2d_storage_view.begin();
   for(int j = 0; j < dim2; ++j)
     for(int i = 0; i < dim1; ++i, ++cpu_2d_it) {
-      ASSERT_DOUBLE_EQ(cpu_2d_it.as<double>(), cpu_2d_storage(i, j, 0));
+      ASSERT_EQ(cpu_2d_it.as<TypeParam>(), cpu_2d_storage(i, j, 0));
     }
 
   // -----------------------------------------------------------------------------------------------
   // 3D CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_3d_storage = *cpu_3d_storage_ptr;
+  auto& cpu_3d_storage = *this->cpu_3d_storage_ptr;
   serialbox::StorageView cpu_3d_storage_view = make_storage_view(cpu_3d_storage);
 
   auto cpu_3d_it = cpu_3d_storage_view.begin();
   for(int k = 0; k < dim3; ++k)
     for(int j = 0; j < dim2; ++j)
       for(int i = 0; i < dim1; ++i, ++cpu_3d_it) {
-        ASSERT_DOUBLE_EQ(cpu_3d_it.as<double>(), cpu_3d_storage(i, j, k));
+        ASSERT_EQ(cpu_3d_it.as<TypeParam>(), cpu_3d_storage(i, j, k));
       }
 
   // -----------------------------------------------------------------------------------------------
   // 4D CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_4d_storage = *cpu_4d_storage_ptr;
+  auto& cpu_4d_storage = *this->cpu_4d_storage_ptr;
   serialbox::StorageView cpu_4d_storage_view = make_storage_view(cpu_4d_storage);
 
   auto cpu_4d_it = cpu_4d_storage_view.begin();
@@ -547,54 +415,54 @@ TEST_F(StorageViewGridToolsTest, Iterator) {
     for(int k = 0; k < dim3; ++k)
       for(int j = 0; j < dim2; ++j)
         for(int i = 0; i < dim1; ++i, ++cpu_4d_it) {
-          ASSERT_DOUBLE_EQ(cpu_4d_it.as<double>(), cpu_4d_storage(i, j, k, l));
+          ASSERT_EQ(cpu_4d_it.as<TypeParam>(), cpu_4d_storage(i, j, k, l));
         }
 
   // -----------------------------------------------------------------------------------------------
   // 2D Real GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_2d_real_storage = *gpu_2d_real_storage_ptr;
+  auto& gpu_2d_real_storage = *this->gpu_2d_real_storage_ptr;
   serialbox::StorageView gpu_2d_real_storage_view = make_storage_view(gpu_2d_real_storage);
 
   auto gpu_2d_real_it = gpu_2d_real_storage_view.begin();
   for(int j = 0; j < dim2; ++j)
     for(int i = 0; i < dim1; ++i, ++gpu_2d_real_it) {
-      ASSERT_DOUBLE_EQ(gpu_2d_real_it.as<double>(), gpu_2d_real_storage(i, j));
+      ASSERT_EQ(gpu_2d_real_it.as<TypeParam>(), gpu_2d_real_storage(i, j));
     }
 
   // -----------------------------------------------------------------------------------------------
   // 2D GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_2d_storage = *gpu_2d_storage_ptr;
+  auto& gpu_2d_storage = *this->gpu_2d_storage_ptr;
   serialbox::StorageView gpu_2d_storage_view = make_storage_view(gpu_2d_storage);
 
   auto gpu_2d_it = gpu_2d_storage_view.begin();
   for(int j = 0; j < dim2; ++j)
     for(int i = 0; i < dim1; ++i, ++gpu_2d_it) {
-      ASSERT_DOUBLE_EQ(gpu_2d_it.as<double>(), gpu_2d_storage(i, j, 0));
+      ASSERT_EQ(gpu_2d_it.as<TypeParam>(), gpu_2d_storage(i, j, 0));
     }
 
   // -----------------------------------------------------------------------------------------------
   // 3D GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_3d_storage = *gpu_3d_storage_ptr;
+  auto& gpu_3d_storage = *this->gpu_3d_storage_ptr;
   serialbox::StorageView gpu_3d_storage_view = make_storage_view(gpu_3d_storage);
 
   auto gpu_3d_it = gpu_3d_storage_view.begin();
   for(int k = 0; k < dim3; ++k)
     for(int j = 0; j < dim2; ++j)
       for(int i = 0; i < dim1; ++i, ++gpu_3d_it) {
-        ASSERT_DOUBLE_EQ(gpu_3d_it.as<double>(), gpu_3d_storage(i, j, k));
+        ASSERT_EQ(gpu_3d_it.as<TypeParam>(), gpu_3d_storage(i, j, k));
       }
 
   // -----------------------------------------------------------------------------------------------
   // 4D GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_4d_storage = *gpu_4d_storage_ptr;
+  auto& gpu_4d_storage = *this->gpu_4d_storage_ptr;
   serialbox::StorageView gpu_4d_storage_view = make_storage_view(gpu_4d_storage);
 
   auto gpu_4d_it = gpu_4d_storage_view.begin();
@@ -602,26 +470,28 @@ TEST_F(StorageViewGridToolsTest, Iterator) {
     for(int k = 0; k < dim3; ++k)
       for(int j = 0; j < dim2; ++j)
         for(int i = 0; i < dim1; ++i, ++gpu_4d_it) {
-          ASSERT_DOUBLE_EQ(gpu_4d_it.as<double>(), gpu_4d_storage(i, j, k, l));
+          ASSERT_EQ(gpu_4d_it.as<TypeParam>(), gpu_4d_storage(i, j, k, l));
         }
 }
 
-TEST_F(StorageViewGridToolsTest, isMemCopyable) {
-  EXPECT_FALSE(make_storage_view(*cpu_2d_real_storage_ptr).isMemCopyable());
-  EXPECT_FALSE(make_storage_view(*gpu_2d_real_storage_ptr).isMemCopyable());
-  EXPECT_FALSE(make_storage_view(*cpu_2d_storage_ptr).isMemCopyable());
-  EXPECT_FALSE(make_storage_view(*gpu_2d_storage_ptr).isMemCopyable());
-  EXPECT_FALSE(make_storage_view(*cpu_3d_storage_ptr).isMemCopyable());
-  EXPECT_FALSE(make_storage_view(*gpu_3d_storage_ptr).isMemCopyable());
-  EXPECT_FALSE(make_storage_view(*cpu_4d_storage_ptr).isMemCopyable());
-  EXPECT_FALSE(make_storage_view(*gpu_4d_storage_ptr).isMemCopyable());
+TYPED_TEST(StorageViewGridToolsTest, isMemCopyable) {
+  EXPECT_FALSE(make_storage_view(*this->cpu_2d_real_storage_ptr).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(*this->gpu_2d_real_storage_ptr).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(*this->cpu_2d_storage_ptr).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(*this->gpu_2d_storage_ptr).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(*this->cpu_3d_storage_ptr).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(*this->gpu_3d_storage_ptr).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(*this->cpu_4d_storage_ptr).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(*this->gpu_4d_storage_ptr).isMemCopyable());
 
   // Create a memcopyable stroage
   using layout_type = gridtools::layout_map<2, 1, 0>; // stride 1 on i (col-major)
-  using meta_data_type = storage_traits_type::meta_storage_type<9, layout_type>;
-  using storage_type = storage_traits_type::storage_type<double, meta_data_type>;
+  using meta_data_type = typename StorageViewGridToolsTest<
+      TypeParam>::storage_types::storage_traits_type::template meta_storage_type<9, layout_type>;
+  using storage_type = typename StorageViewGridToolsTest<
+      TypeParam>::storage_types::storage_traits_type::template storage_type<TypeParam, meta_data_type>;
 
-  meta_data_type meta_data(dim1, dim2, dim3);
+  meta_data_type meta_data(this->dim1, this->dim2, this->dim3);
   storage_type storage(meta_data, "storage", -1.0);
   EXPECT_TRUE(make_storage_view(storage).isMemCopyable());
 }

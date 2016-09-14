@@ -20,6 +20,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/noncopyable.hpp>
 #include <unordered_map>
+#include <vector>
 
 namespace serialbox {
 
@@ -64,6 +65,7 @@ public:
 private:
   OpenModeKind mode_;
   boost::filesystem::path directory_;
+  std::vector<Byte> binaryData_;
   
   json::json json_;
   FieldTable fieldTable_;
