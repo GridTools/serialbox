@@ -20,15 +20,16 @@ namespace serialbox {
 
 SERIALBOX_ATTRIBUTE_NORETURN void serialbox_unreachable_internal(const char* msg, const char* file,
                                                                  unsigned line) {
+  std::cerr << "FATAL ERROR: UNREACHABLE executed : ";
   if(msg)
-    std::cerr << msg << "\n";
-  std::cerr << "UNREACHABLE executed";
+    std::cerr << "\"" << msg << "\"";
   if(file)
     std::cerr << " at " << file << ":" << line;
-  std::cerr << "!" << std::endl;
+  std::cerr << std::endl;
   std::abort();
-#ifdef LLVM_BUILTIN_UNREACHABLE
-  LLVM_BUILTIN_UNREACHABLE;
+  
+#ifdef SERIALBOX_BUILTIN_UNREACHABLE
+  SERIALBOX_BUILTIN_UNREACHABLE;
 #endif
 }
 

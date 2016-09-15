@@ -53,6 +53,8 @@ option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" ON)
 option(SERIALBOX_ENABLE_GRIDTOOLS "Build GridTools Unitests" OFF)
 option(SERIALBOX_ENABLE_STELLA "Build STELLA Unitests" OFF)
 option(SERIALBOX_ENABLE_FORTRAN "Build Fortran Unitests" OFF)
+
+option(SERIALBOX_CODE_COVERAGE "Generate code coverage" OFF)
   
 #---------------------------------------- CMake options --------------------------------------------
  
@@ -144,7 +146,9 @@ if(SERIALBOX_TESTING)
     set(GTEST_INCLUDE_DIRS "${GTEST_INSTALL_DIR}/include")
     set(GTEST_LIBRARIES "${GTEST_INSTALL_DIR}/lib/libgtest.a"
                         "${GTEST_INSTALL_DIR}/lib/libgmock.a"
-                        "${CMAKE_THREAD_LIBS_INIT}")
+                        "${CMAKE_THREAD_LIBS_INIT}")                    
+    set(GTEST_MAIN_LIBRARIES "${GTEST_INSTALL_DIR}/lib/libgtest_main.a" "${CMAKE_THREAD_LIBS_INIT}")                    
+                        
   else()
     find_package(GTest REQUIRED)
   endif()
@@ -335,6 +339,12 @@ if(${CLANG_TIDY_FOUND})
                           -name \*.h -print -o -name \*.cpp -print`)
 endif()
 
+# --------------------------------------- Code Coverage --------------------------------------------
+if(SERIALBOX_CODE_COVERAGE)
+  include(coverage)
+  enable_coverage(${CMAKE_BINARY_DIR}/test)
+endif(SERIALBOX_CODE_COVERAGE)
+
 #---------------------------------------- Compilation ----------------------------------------------
 
 # Generate serialbox/Support/Config.h
@@ -347,7 +357,8 @@ include_directories(${CMAKE_BINARY_DIR}/include)
 enable_testing()
 
 # Setup include directories and glob the headers (for IDEs)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(SERIALBOX_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${SERIALBOX_INCLUDE_DIRS})
 
 file(GLOB_RECURSE SERIALBOX_HEADERS 
      ${CMAKE_CURRENT_SOURCE_DIR}/include

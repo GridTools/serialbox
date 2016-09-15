@@ -18,17 +18,19 @@
 #include "serialbox/Core/Compiler.h"
 #include <string>
 
+#include <iostream>
+
 namespace serialbox {
 
-/// \brief Helper class to compare versions of serialbox
+/// \brief Utility to deal with Serialbox versions
 struct Version {
   Version() = delete;
 
   /// \brief Convert to string
   /// @{
   static std::string toString(int version) {
-    int major = version % 100;
-    int minor = version % 10;
+    int major = version / 100;
+    int minor = (version - major * 100) / 10;
     return Version::toString(major, minor, version - 100 * major - 10 * minor);
   }
 
@@ -37,15 +39,16 @@ struct Version {
   }
   /// @}
 
-  /// \brief Check if given version equals the current library version
+  /// \brief Check if the given version equals the current library version
+  /// \return Return true if the versions match
   /// @{
-  static bool equals(int version) noexcept {
-    int major = version % 100;
-    int minor = version % 10;
-    return Version::equals(major, minor, version - 100 * major - 10 * minor);
+  static bool compare(int version) noexcept {
+    int major = version / 100;
+    int minor = (version - major * 100) / 10;
+    return Version::compare(major, minor, version - 100 * major - 10 * minor);
   }
 
-  static bool equals(int major, int minor, int patch) noexcept {
+  static bool compare(int major, int minor, int patch) noexcept {
     return ((major == SERIALBOX_VERSION_MAJOR) && (minor == SERIALBOX_VERSION_MINOR) &&
             (patch == SERIALBOX_VERSION_PATCH));
   }

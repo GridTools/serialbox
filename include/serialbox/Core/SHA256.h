@@ -20,7 +20,7 @@
 namespace serialbox {
 
 /// \brief Implementation of the SHA-1 (Secure Hash Algorithm 1) cryptographic hash function
-/// \see https://en.wikipedia.org/wiki/SHA-2
+/// \see https://en.wikipedia.org/wiki/SHA-1
 struct SHA256 {
   SHA256() = delete;
 

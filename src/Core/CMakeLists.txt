@@ -11,6 +11,7 @@ cmake_minimum_required(VERSION 3.1)
 
 set(SOURCES 
   Logging.cpp
+  MetaInfoMap.cpp
   StorageView.cpp
   StorageViewIterator.cpp
   Type.cpp

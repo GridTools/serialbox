@@ -51,7 +51,7 @@ void BinaryArchive::readMetaDataFromJson() {
   int binaryArchiveVersion = json_["binary_archive_version"];
 
   // Check versions
-  if(Version::equals(serialboxVersion))
+  if(!Version::compare(serialboxVersion))
     throw Exception("serialbox version of binary archive (%s) does not match the version "
                     "of the library (%s)",
                     Version::toString(serialboxVersion), SERIALBOX_VERSION_STRING);

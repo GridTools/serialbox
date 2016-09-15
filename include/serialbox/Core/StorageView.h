@@ -98,7 +98,7 @@ public:
   /// \brief Move assignment
   StorageView& operator=(StorageView&& other) = default;
 
-  /// \brief Swap with \c other
+  /// \brief Swap with other
   void swap(StorageView& other) noexcept;
 
   /// \brief Test for equality

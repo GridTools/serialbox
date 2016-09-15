@@ -15,11 +15,11 @@
 #ifndef SERIALBOX_CORE_TYPE_H
 #define SERIALBOX_CORE_TYPE_H
 
-#include <cstdint>
-#include <string>
-#include <iosfwd>
-#include <boost/mpl/set.hpp>
 #include <boost/mpl/assert.hpp>
+#include <boost/mpl/set.hpp>
+#include <cstdint>
+#include <iosfwd>
+#include <string>
 
 namespace serialbox {
 
@@ -29,27 +29,15 @@ using Byte = char;
 static_assert(sizeof(Byte) == 1, "invalid size of Byte");
 
 /// \typedef OpenMode
-/// \brief Policy of opening files for Serializer and Archive
-enum OpenModeKind : std::uint8_t {
-  Read = 0,
-  Write,
-  Append
-};
+/// \brief Policy for opening files for Serializer and Archive
+enum OpenModeKind : std::uint8_t { Read = 0, Write, Append };
 
 /// \brief Convert TypeID to stream
 std::ostream& operator<<(std::ostream& stream, const OpenModeKind& mode);
 
 /// \enum TypeID
 /// \brief Type id of types recognized by serialbox
-enum class TypeID : std::uint8_t {
-  Invalid = 0,
-  Boolean,
-  Int32,
-  Int64,
-  Float32,
-  Float64,
-  String
-};
+enum class TypeID : std::uint8_t { Invalid = 0, Boolean, Int32, Int64, Float32, Float64, String };
 
 /// \typedef SupportedTypes
 /// \brief Types recognized by serialbox

@@ -16,23 +16,23 @@
 #define SERIALBOX_CORE_SAVEPOINTIMPL_H
 
 #include "serialbox/Core/FieldID.h"
+#include "serialbox/Core/MetaInfoMap.h"
 #include <iosfwd>
-#include <memory>
-#include <string>
-
 
 namespace serialbox {
 
-/// \brief Implementation of the Savepoint
+/// \brief Shared implementation of the Savepoint
 ///
+/// Direct usage of this class is discouraged, use the Savepoint classes provided by the Frontends
+/// instead.
 class SavepointImpl {
 public:
-  
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const SavepointImpl& s);
 
 private:
-  std::shared_ptr<FieldID> fieldID_;
+  MetaInfoMap metaInfo_;
+  std::vector<FieldID> fields_;
 };
 
 } // namespace serialbox
