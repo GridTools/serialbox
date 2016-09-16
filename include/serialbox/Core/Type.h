@@ -15,7 +15,6 @@
 #ifndef SERIALBOX_CORE_TYPE_H
 #define SERIALBOX_CORE_TYPE_H
 
-#include <boost/mpl/assert.hpp>
 #include <boost/mpl/set.hpp>
 #include <cstdint>
 #include <iosfwd>
@@ -32,16 +31,38 @@ static_assert(sizeof(Byte) == 1, "invalid size of Byte");
 /// \brief Policy for opening files for Serializer and Archive
 enum OpenModeKind : std::uint8_t { Read = 0, Write, Append };
 
+//===------------------------------------------------------------------------------------------===//
+//     Type-id
+//===------------------------------------------------------------------------------------------===//
+
 /// \brief Convert TypeID to stream
 std::ostream& operator<<(std::ostream& stream, const OpenModeKind& mode);
 
 /// \enum TypeID
-/// \brief Type id of types recognized by serialbox
+/// \brief Type-id of types recognized by serialbox
+/// 
+/// \see isSupported
 enum class TypeID : std::uint8_t { Invalid = 0, Boolean, Int32, Int64, Float32, Float64, String };
 
-/// \typedef SupportedTypes
-/// \brief Types recognized by serialbox
-using SupportedTypes = boost::mpl::set<bool, int, std::int64_t, float, double, std::string>;
+/// \brief Check if the Type is recognized by serialbox i.e maps to a type-id in \ref TypeID
+/// 
+/// \b Supported Types:
+///  - bool 
+///  - int (32-bit)
+///  - int (64-bit)
+///  - float
+///  - double
+///  - string (std::string)
+/// 
+/// \see TypeID
+template<class T>
+struct isSupported {
+  /// \brief Set of supported types
+  using SupportedTypesSet = boost::mpl::set<bool, int, std::int64_t, float, double, std::string>;  
+
+  /// \brief True iff the type is supported
+  constexpr static bool value = boost::mpl::has_key<SupportedTypesSet, T>::type::value; 
+};
 
 /// \brief Convert TypeID to stream
 std::ostream& operator<<(std::ostream& stream, const TypeID& t);
@@ -63,7 +84,7 @@ struct TypeUtil {
 /// \brief Convert C++ type \c T to \ref serialbox::TypeID "TypeID"
 template <class T>
 struct ToTypeID {
-  BOOST_MPL_ASSERT((boost::mpl::has_key<SupportedTypes, T>)); // Unsupported type
+  static_assert(isSupported<T>::value, "type is not supported (cannot be mapped to TypeID)");
 };
 
 template <>

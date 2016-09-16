@@ -21,6 +21,8 @@ TEST(MetaInfoMap, Value) {
   // Boolean
   MetaInfoMap::Value bool_value(bool(true));
   EXPECT_EQ(bool_value.as<bool>(), true);
+  bool b_val = bool_value;
+  EXPECT_EQ(b_val, true);
 
   // int
   MetaInfoMap::Value int32_value0(int(32));
@@ -51,11 +53,14 @@ TEST(MetaInfoMap, Value) {
   // string
   MetaInfoMap::Value std_string_value0(std::string("str"));
   EXPECT_EQ(std_string_value0.as<std::string>(), "str");
+  
+  std::string std_string_value_implicit = std_string_value0;
+  EXPECT_EQ(std_string_value_implicit, "str");  
 
-  auto getStr = []() -> std::string { return std::string("str"); };
+  auto getStr = []() -> std::string { return std::string("rts"); };
   std::string&& str_rvalue_ref = getStr();
   MetaInfoMap::Value std_string_value1(str_rvalue_ref);
-  EXPECT_EQ(std_string_value1.as<std::string>(), "str");
+  EXPECT_EQ(std_string_value1.as<std::string>(), "rts");
 
   // Comparison
   EXPECT_TRUE(int32_value0 == int32_value0);

@@ -31,8 +31,8 @@ public:
   friend std::ostream& operator<<(std::ostream& stream, const SavepointImpl& s);
 
 private:
-  MetaInfoMap metaInfo_;
-  std::vector<FieldID> fields_;
+  MetaInfoMap metaInfo_;        ///< Meta-information of this savepoint
+  std::vector<FieldID> fields_; ///< Fields captured by this savepoint
 };
 
 } // namespace serialbox

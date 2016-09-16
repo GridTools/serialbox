@@ -47,29 +47,33 @@ public:
 
   /// \brief Represent a value of the MetaInfoMap given as a type-id and type-erased data
   struct Value {
-    /// \name Constructor
+    /// \name Constructors
     /// @{
-
-    /// \brief Construct with given value
-    template <class ValueType>
-    Value(ValueType&& value) {
-      using T = typename std::decay<ValueType>::type;
-      BOOST_MPL_ASSERT((boost::mpl::has_key<SupportedTypes, T>));
-      type_ = ToTypeID<T>::value;
-      any_ = boost::any(T(value));
-    }
 
     Value() = default;
     Value(const Value&) = default;
     Value(Value&&) = default;
+
+    /// \brief Construct with given value
+    ///
+    /// \tparam ValueType  Type of the captured value (needs to be supported)
+    /// \param  value      Value to caputre
+    template <class ValueType,
+              class = typename std::enable_if<!std::is_same<ValueType, Value>::value>::type>
+    explicit Value(ValueType&& value) {
+      using T = typename std::decay<ValueType>::type;
+      static_assert(isSupported<T>::value, "type is not supported (cannot be mapped to TypeID)");
+      type_ = ToTypeID<T>::value;
+      any_ = boost::any(T(value));
+    }
 
     Value& operator=(const Value&) = default;
     Value& operator=(Value&&) = default;
     /// @}
 
     /// \brief Convert value to type T
-    /// \throws Exception  TypeIDs do not match
-    /// @{
+    /// 
+    /// \throws Exception  TypeID of type T does not match TypeID of the captured value
     template <class T>
     T& as() {
       if(ToTypeID<T>::value != type_)
@@ -85,7 +89,19 @@ public:
                         TypeUtil::toString(type_), TypeUtil::toString(ToTypeID<T>::value));
       return (*boost::any_cast<T>(&any_));
     }
-    /// @}
+
+    /// \brief Implicitly convert value to type T
+    /// 
+    /// \throws Exception  TypeID of type T does not match TypeID of the captured value
+    template <class T>
+    operator T() const {
+      return as<T>();
+    }
+    
+    template <class T>
+    operator T() {
+      return as<T>();
+    }
 
     /// \brief Swap with other
     void swap(Value& other) noexcept {
@@ -107,7 +123,7 @@ public:
 
   private:
     TypeID type_;    ///< Type of the data
-    boost::any any_; ///< Type-erased value of the type
+    boost::any any_; ///< Type-erased value of the data
   };
 
   using map_type = std::unordered_map<std::string, Value>;
@@ -139,7 +155,7 @@ public:
     return (map_.insert({key, Value(std::forward<ValueType>(value))}).second);
   }
 
-  /// \brief Removes from the MetaInfoMap either a single element or a range of 
+  /// \brief Removes from the MetaInfoMap either a single element or a range of
   /// elements [first,last)
   iterator erase(const_iterator position) { return map_.erase(position); }
   size_type erase(const key_type& key) { return map_.erase(key); }
@@ -192,9 +208,8 @@ public:
   /// \brief Convert to JSON
   json::json toJSON() const;
 
-  /// \brief Construct MetaInfoMap from JSON node which only contains primtive JSON types (string,
-  /// number, boolean or null)
-  ///
+  /// \brief Construct from JSON node
+  /// 
   /// \throw Exception  JSON node is ill-formed
   void fromJSON(const json::json& jsonNode);
 

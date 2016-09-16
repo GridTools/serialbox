@@ -157,7 +157,12 @@ void MetaInfoMap::fromJSON(const json::json& jsonNode) {
 }
 
 std::ostream& operator<<(std::ostream& stream, const MetaInfoMap& s) {
-  return (stream << s.toJSON().dump(4) << std::endl);
+  json::json j(s.toJSON());
+  json::json jDump;
+  for(auto it = j.begin(), end = j.end(); it != end; ++it)
+    jDump[it.key()] = it.value()["value"]; 
+  stream << "MetaInfoMap = " << jDump.dump(4);
+  return stream;
 }
 
 } // namespace serialbox
