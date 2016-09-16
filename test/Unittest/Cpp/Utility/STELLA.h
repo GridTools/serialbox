@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/STELLA.h -------------------------------------------------------*- C++ -*-===//
+//===-- Unittest/Cpp/Utility/STELLA.h -----------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,14 +12,18 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_UNITTEST_STELLA_H
-#define SERIALBOX_UNITTEST_STELLA_H
+#ifndef SERIALBOX_UNITTEST_CPP_UTILITY_STELLA_H
+#define SERIALBOX_UNITTEST_CPP_UTILITY_STELLA_H
 
-#include "serialbox/Core/Compiler.h"
+#include "Utility/CppConfig.h"
 
 #ifdef SERIALBOX_HAS_STELLA
 
 #include "SharedInfrastructure.h"
+
+namespace serialbox {
+
+namespace unittest {
 
 /// \brief Define CPU and GPU storage types parametrized on the value type T
 template <class T>
@@ -79,6 +83,10 @@ struct STELLAStorageTypes {
   using gpu_k_storage =
       DataFieldOpenMP<T, DataFieldStorageFormat<gpu_ijk_boundary, StorageOrder::K, gpu_alignment>>;
 };
+
+} // namespace unittest
+
+} // namespace serialbox
 
 #endif
 

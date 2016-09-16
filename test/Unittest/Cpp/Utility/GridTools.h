@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/Unittest/GridTools.h -------------------------------------------*- C++ -*-===//
+//===-- Unittest/Cpp/Utility/GridTools.h --------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,10 +12,10 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_UNITTEST_GRIDTOOLS_H
-#define SERIALBOX_UNITTEST_GRIDTOOLS_H
+#ifndef SERIALBOX_UNITTEST_CPP_UTILITY_GRIDTOOLS_H
+#define SERIALBOX_UNITTEST_CPP_UTILITY_GRIDTOOLS_H
 
-#include "serialbox/Core/Compiler.h"
+#include "Utility/CppConfig.h"
 
 #ifdef SERIALBOX_HAS_GRIDTOOLS
 
@@ -25,6 +25,10 @@
 
 #include "gridtools.hpp"
 #include "storage/storage-facility.hpp"
+
+namespace serialbox {
+
+namespace unittest {
 
 /// \brief Define CPU and GPU storage types parametrized on the value type T
 template <class T>
@@ -114,6 +118,10 @@ struct gridtools_storage_types {
   using cpu_4d_storage_type = storage_traits_type::storage_type<T, cpu_4d_meta_data_type>;
   using gpu_4d_storage_type = storage_traits_type::storage_type<T, gpu_4d_meta_data_type>;
 };
+
+} // namespace unittest
+
+} // namespace serialbox
 
 #endif
 

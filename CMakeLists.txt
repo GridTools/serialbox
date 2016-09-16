@@ -380,6 +380,18 @@ add_subdirectory(src)
 
 # Build unittests
 if(SERIALBOX_TESTING)
+  
+  # ------------------ C++ ------------------
+  
+  # Cpp Unittest Utility library
+  include_directories(${PROJECT_SOURCE_DIR}/test/Unittest/Cpp)
+  
+  # Generate Cpp/Utility/CppConfig.h
+  set(SERIALBOX_CPP_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/test/Unittest/Cpp/Utility/CppConfig.h.cmake)
+  set(SERIALBOX_CPP_CONFIG_FILE ${CMAKE_BINARY_DIR}/test/Unittest/Cpp/Utility/CppConfig.h)
+  configure_file(${SERIALBOX_CPP_CONFIG_FILE_IN} ${SERIALBOX_CPP_CONFIG_FILE})
+  include_directories(${CMAKE_BINARY_DIR}/test/Unittest/Cpp/)
+  
   add_subdirectory(test)
 endif(SERIALBOX_TESTING)
 

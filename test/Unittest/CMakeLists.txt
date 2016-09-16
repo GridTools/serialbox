@@ -9,7 +9,7 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-## \brief Add a C++ unittest executable
+## \brief Add a C++ unittest executable and register it within CMake
 ##
 ## The exectuable will be linked against SerialboxCore and SerialboxCppUnittestUtility.
 ##
@@ -23,7 +23,7 @@ cmake_minimum_required(VERSION 3.1)
 function(serialbox_add_cpp_unittest_executable name libraries)
   add_executable(${name} ${ARGN} ${SERIALBOX_HEADERS})
 
-  target_link_libraries(${name} SerialboxCore ${libraries})
+  target_link_libraries(${name} SerialboxCore SerialboxCppUnittestUtility ${libraries})
   
   if(SERIALBOX_VERBOSE_WARNINGS)
     set_target_properties(${name} PROPERTIES COMPILE_FLAGS -Wall)
@@ -40,10 +40,10 @@ function(serialbox_add_cpp_unittest_executable name libraries)
   add_test(NAME test_${name} COMMAND $<TARGET_FILE:${name}> --gtest_color=yes)
 endfunction(serialbox_add_cpp_unittest_executable)
 
-## \brief Add a C++ coverage executable
+## \brief Add a C++ coverage executable and register it within CMake
 ##
-## For each source file an executable will be generated and linked SerialboxCore and 
-## SerialboxCppUnittestUtility as well as gtest-main.
+## For each source file an executable will be generated and linked against SerialboxCore, 
+## SerialboxCppUnittestUtility as well as gtest-main library.
 ##
 ## \param libraries     Libraries to link against
 ## \param ARGN          List of source files
@@ -54,7 +54,6 @@ function(serialbox_add_cpp_coverage_executable libraries)
       string(REPLACE ".cpp" ".coverage" test ${file})
 
       list(APPEND libraries ${GTEST_MAIN_LIBRARIES})
-      message("${libraries}")
       serialbox_add_cpp_unittest_executable(${test} "${file}" "${libraries}")
 
       set_property(TARGET ${test} PROPERTY COMPILE_FLAGS ${CMAKE_CXX_FLAGS_COVERAGE})

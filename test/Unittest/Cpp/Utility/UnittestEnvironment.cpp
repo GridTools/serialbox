@@ -1,4 +1,4 @@
-//===-- Unittest/UnittestEnvironment.cpp --------------------------------------------*- C++ -*-===//
+//===-- Unittest/Cpp/Utility/UnittestEnvironment.cpp --------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,11 +8,11 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// Setup the global test environment
+/// Setup the global test environment.
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "UnittestEnvironment.h"
+#include "Utility/UnittestEnvironment.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Logging.h"
 

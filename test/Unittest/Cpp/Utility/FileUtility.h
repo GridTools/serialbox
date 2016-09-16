@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/FileUtility.h --------------------------------------------------*- C++ -*-===//
+//===-- Unittest/Cpp/Utility/FileUtility.h ------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -15,7 +15,7 @@
 #ifndef SERIALBOX_UNITTEST_FILEUTILITY_H
 #define SERIALBOX_UNITTEST_FILEUTILITY_H
 
-#include "UnittestEnvironment.h"
+#include "Utility/UnittestEnvironment.h"
 #include <boost/filesystem.hpp>
 #include <fstream>
 

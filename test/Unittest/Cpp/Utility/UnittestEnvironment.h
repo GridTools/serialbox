@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/UnittestEnvironment.h ------------------------------------------*- C++ -*-===//
+//===-- Unittest/Cpp/Utility/UnittestEnvironment.h ----------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,12 +8,12 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// Setup the global test environment
+/// Setup the global test environment.
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_UNITTEST_UNITTESTENVIRONMENT_H
-#define SERIALBOX_UNITTEST_UNITTESTENVIRONMENT_H
+#ifndef SERIALBOX_UNITTEST_CPP_UTILITY_UNITTESTENVIRONMENT_H
+#define SERIALBOX_UNITTEST_CPP_UTILITY_UNITTESTENVIRONMENT_H
 
 #include <boost/filesystem.hpp>
 #include <gtest/gtest.h>

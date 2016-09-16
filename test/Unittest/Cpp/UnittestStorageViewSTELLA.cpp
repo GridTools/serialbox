@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/UnittestStorageViewGridTools.cpp -------------------------------*- C++ -*-===//
+//===-- Unittest/Cpp/UnittestStorageViewSTELLA.cpp ----------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,9 +12,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "STELLA.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/StorageView.h"
+#include "Utility/STELLA.h"
 #include <gtest/gtest.h>
 #include <memory>
 
@@ -27,7 +27,7 @@ namespace {
 template <class T>
 class StorageViewSTELLATest : public testing::Test {
 public:
-  using StorageType = STELLAStorageTypes<T>;
+  using StorageType = serialbox::unittest::STELLAStorageTypes<T>;
 
   // -----------------------------------------------------------------------------------------------
   // Dimensions

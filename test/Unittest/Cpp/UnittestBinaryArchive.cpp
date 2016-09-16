@@ -12,9 +12,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "FileUtility.h"
-#include "Storage.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
+#include "Utility/FileUtility.h"
+#include "Utility/Storage.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

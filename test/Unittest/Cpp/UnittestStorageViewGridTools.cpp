@@ -12,9 +12,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "GridTools.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/StorageView.h"
+#include "Utility/GridTools.h"
 #include <gtest/gtest.h>
 #include <memory>
 
@@ -27,7 +27,7 @@ namespace {
 template <class T>
 class StorageViewGridToolsTest : public testing::Test {
 public:
-  using storage_types = gridtools_storage_types<T>;
+  using storage_types = serialbox::unittest::gridtools_storage_types<T>;
 
   // -----------------------------------------------------------------------------------------------
   // Dimensions

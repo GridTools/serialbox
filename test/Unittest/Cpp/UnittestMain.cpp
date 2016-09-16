@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "UnittestEnvironment.h"
 #include "serialbox/Core/Logging.h"
+#include "Utility/UnittestEnvironment.h"
 #include <gtest/gtest.h>
 
 int main(int argc, char *argv[]) {

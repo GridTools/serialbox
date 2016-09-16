@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/Storage.h ------------------------------------------------------*- C++ -*-===//
+//===-- Unittest/Cpp/Utility/Storage.h ----------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_UNITTEST_STORAGE_H
-#define SERIALBOX_UNITTEST_STORAGE_H
+#ifndef SERIALBOX_UNITTEST_CPP_UTILITY_STORAGE_H
+#define SERIALBOX_UNITTEST_CPP_UTILITY_STORAGE_H
 
 #include "serialbox/Core/Logging.h"
 #include "serialbox/Core/STLExtras.h"

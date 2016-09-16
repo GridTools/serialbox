@@ -1,0 +1,23 @@
+##===------------------------------------------------------------------------------*- CMake -*-===##
+##
+##                                   S E R I A L B O X
+##
+## This file is distributed under terms of BSD license. 
+## See LICENSE.txt for more information.
+##
+##===------------------------------------------------------------------------------------------===##
+
+cmake_minimum_required(VERSION 3.1)
+
+set(CPP_UNITTEST_UTILITY_SOURCES 
+  UnittestEnvironment.cpp
+  FileUtility.h
+  UnittestEnvironment.h
+  GridTools.h
+  Storage.h
+  STELLA.h
+)
+
+add_library(SerialboxCppUnittestUtility ${CPP_UNITTEST_UTILITY_SOURCES})
+target_link_libraries(SerialboxCppUnittestUtility SerialboxCore ${SERIALBOX_EXTERNAL_LIBRARIES})
+
