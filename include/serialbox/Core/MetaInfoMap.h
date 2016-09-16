@@ -29,9 +29,9 @@ namespace serialbox {
 
 /// \brief A map of meta-information
 ///
-/// The objects are stored in a hash-map (std::unordered_map) in form of key = value pair. They keys
-/// are strings, while the values can be booleans, integers (32 and 64 bit), floating point numbers
-/// (32 and 64 bit) or strings.
+/// The objects are stored in a hash-map (std::unordered_map) in form of key = value pair. 
+/// They keys are strings (std::string), while the values can be booleans, integers (32 and 64 bit),
+/// floating point numbers (32 and 64 bit) or strings.
 class MetaInfoMap {
 public:
   /// \brief Constructor
@@ -136,6 +136,7 @@ public:
   /// \brief Check if key exists in the set
   ///
   /// \param key  Key to be searched for
+  /// \return True iff the key is present
   template <class StringType>
   bool hasKey(StringType&& key) const noexcept {
     return (map_.find(key) != map_.end());
@@ -144,7 +145,7 @@ public:
   /// \brief Inserts a new element in the map
   ///
   /// The element is inserted only if its key is not equivalent to the key of any other element
-  /// already in the set (keys in a MetaInfoSet are unique).
+  /// already in the set (keys in a MetaInfoMap are unique).
   ///
   /// \param key    Key of the new element
   /// \param value  Object to be copied to (or moved as) the value of the new element
