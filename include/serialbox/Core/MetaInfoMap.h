@@ -59,12 +59,11 @@ public:
     /// \tparam ValueType  Type of the captured value (needs to be supported)
     /// \param  value      Value to caputre
     template <class ValueType,
-              class = typename std::enable_if<!std::is_same<ValueType, Value>::value>::type>
+              class DecayedValueType = typename std::decay<ValueType>::type,
+              class = typename std::enable_if<isSupported<DecayedValueType>::value>::type>
     explicit Value(ValueType&& value) {
-      using T = typename std::decay<ValueType>::type;
-      static_assert(isSupported<T>::value, "type is not supported (cannot be mapped to TypeID)");
-      type_ = ToTypeID<T>::value;
-      any_ = boost::any(T(value));
+      type_ = ToTypeID<DecayedValueType>::value;
+      any_ = boost::any(DecayedValueType(value));
     }
 
     Value& operator=(const Value&) = default;
@@ -127,6 +126,7 @@ public:
   };
 
   using map_type = std::unordered_map<std::string, Value>;
+  using value_type = map_type::value_type;
   using key_type = map_type::key_type;
   using size_type = map_type::size_type;
   using mapped_type = map_type::mapped_type;

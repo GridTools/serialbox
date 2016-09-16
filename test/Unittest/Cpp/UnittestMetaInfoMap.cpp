@@ -147,6 +147,7 @@ TEST(MetaInfoMap, Construction) {
 
   // Erase value by iterator
   auto map_element_pair = *map.begin();
+
   map.erase(map.begin());
   ASSERT_FALSE(map.hasKey(map_element_pair.first));
 
