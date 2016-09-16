@@ -35,13 +35,4 @@
 /* SERIALBOX version string */
 #define SERIALBOX_VERSION_STRING "${SERIALBOX_VERSION_MAJOR}.${SERIALBOX_VERSION_MINOR}.${SERIALBOX_VERSION_PATCH}"
 
-/* Define if GridTools Unittests are built */
-#cmakedefine SERIALBOX_HAS_GRIDTOOLS ${SERIALBOX_HAS_GRIDTOOLS}
-
-/* Define if STELLA Unittests are built */
-#cmakedefine SERIALBOX_HAS_STELLA ${SERIALBOX_HAS_STELLA}
-
-/* Define if Fortran Unittests are built */
-#cmakedefine SERIALBOX_HAS_FORTRAN ${SERIALBOX_HAS_FORTRAN}
-
 #endif
