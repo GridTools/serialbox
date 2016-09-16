@@ -22,7 +22,9 @@ cmake_minimum_required(VERSION 3.1)
 ##
 function(serialbox_add_cpp_unittest_executable name libraries)
   add_executable(${name} ${ARGN} ${SERIALBOX_HEADERS})
-  target_link_libraries(${name} ${libraries} SerialboxCppUnittestUtility SerialboxCore)
+  target_link_libraries(${name} ${libraries} 
+                                SerialboxCppUnittestUtility 
+                                SerialboxCore)
   
   if(SERIALBOX_VERBOSE_WARNINGS)
     set_target_properties(${name} PROPERTIES COMPILE_FLAGS -Wall)
@@ -50,14 +52,14 @@ endfunction(serialbox_add_cpp_unittest_executable)
 ##
 function(serialbox_add_cpp_coverage_executable libraries main_executable)
   if(DEFINED COVERAGE_SUPPORTED)
-    add_library(SerialboxCppUnittestCoverageMain ${main_executable})
-    target_link_libraries(SerialboxCppUnittestCoverageMain ${libraries} SerialboxCppUnittestUtility)
-    list(APPEND libraries SerialboxCppUnittestCoverageMain)
+    add_library(SerialboxCoverageMain OBJECT ${main_executable})
 
     foreach(file ${ARGN})
       string(REPLACE ".cpp" ".coverage" test ${file})
+      set(test SerialboxCpp${test})
 
-      serialbox_add_cpp_unittest_executable(${test} "${libraries}" ${file})
+      serialbox_add_cpp_unittest_executable(${test} "${libraries}" 
+                                            $<TARGET_OBJECTS:SerialboxCoverageMain> ${file})
 
       set_property(TARGET ${test} PROPERTY COMPILE_FLAGS ${CMAKE_CXX_FLAGS_COVERAGE})
       set_property(TARGET ${test} PROPERTY LINK_FLAGS ${CMAKE_EXE_LINKER_FLAGS_COVERAGE})

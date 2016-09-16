@@ -19,19 +19,28 @@ cmake_minimum_required(VERSION 3.1)
 ##    serialbox_add_library(Library "${ExternalLibs}" SourceA.cpp SourceB.cpp)
 ##
 function(serialbox_add_library name libraries)
-  add_library(${name} ${ARGN} ${SERIALBOX_HEADERS})
+  add_library(${name}Objects OBJECT ${ARGN} ${SERIALBOX_HEADERS})
+
+  # Build static library
+  add_library(${name} STATIC $<TARGET_OBJECTS:${name}Objects>)
+  set_target_properties(${name} PROPERTIES OUTPUT_NAME ${name})
   target_link_libraries(${name} ${libraries})
+
+  # Build shared library
+#  add_library(${name}Shared SHARED $<TARGET_OBJECTS:${name}Objects>)
+#  set_target_properties(${name}Shared PROPERTIES OUTPUT_NAME ${name})
+#  target_link_libraries(${name}Shared ${libraries})
   
   if(SERIALBOX_VERBOSE_WARNINGS)
-    set_target_properties(${name} PROPERTIES COMPILE_FLAGS -Wall)
+    set_target_properties(${name}Objects PROPERTIES COMPILE_FLAGS -Wall)
   endif(SERIALBOX_VERBOSE_WARNINGS)
 
-  add_dependencies(${name} sha256)
+  add_dependencies(${name}Objects sha256)
 
   if(BUILD_GLOG)
-    add_dependencies(${name} glog)
+    add_dependencies(${name}Objects glog)
   endif(BUILD_GLOG)
-    
+
 endfunction(serialbox_add_library)
 
 ## Add subdirectories
