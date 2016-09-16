@@ -20,6 +20,7 @@ set(CPP_UNITTEST_SOURCES
   UnittestException.cpp
   UnittestUnreachable.cpp
   UnittestMetaInfoMap.cpp
+  UnittestMetaInfoValue.cpp
  
   # Utility
   UnittestEnvironment.cpp

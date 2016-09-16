@@ -28,7 +28,7 @@ using Byte = char;
 static_assert(sizeof(Byte) == 1, "invalid size of Byte");
 
 /// \typedef OpenMode
-/// \brief Policy for opening files for Serializer and Archive
+/// \brief Policy for opening files in the Serializer and Archive
 enum OpenModeKind : std::uint8_t { Read = 0, Write, Append };
 
 //===------------------------------------------------------------------------------------------===//

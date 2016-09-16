@@ -8,7 +8,7 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file defines a unique identification for a Savepoint within a field.
+/// This file defines a unique identification of a savepoint within a field.
 ///
 //===------------------------------------------------------------------------------------------===//
 
@@ -19,7 +19,7 @@
 
 namespace serialbox {
 
-/// \brief Unique identification of a Savepoint within a field
+/// \brief Unique identification of a savepoint within a field
 struct FieldID {
   std::string name; ///< Name of the field
   unsigned int id;  ///< ID within the field

@@ -22,7 +22,7 @@ using namespace unittest;
 
 namespace {
 
-template<class T>
+template <class T>
 class BinaryArchiveTest : public testing::Test {
 public:
   using value_type = T;
@@ -73,22 +73,22 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
   // Preparation
   // -------------------------------------------------------------------------------------------------
   using Storage = Storage<TypeParam>;
-  
+
   // Prepare input data
-  Storage u_0_input(Storage::RowMajor, {5, 6, 7}, {{2,2}, {4,2}, {4,5}}, Storage::random);
-  Storage u_1_input(Storage::RowMajor, {5, 6, 7}, {{2,2}, {4,2}, {4,5}}, Storage::random);
-  Storage u_2_input(Storage::RowMajor, {5, 6, 7}, {{2,2}, {4,2}, {4,5}}, Storage::random);
+  Storage u_0_input(Storage::RowMajor, {5, 6, 7}, {{2, 2}, {4, 2}, {4, 5}}, Storage::random);
+  Storage u_1_input(Storage::RowMajor, {5, 6, 7}, {{2, 2}, {4, 2}, {4, 5}}, Storage::random);
+  Storage u_2_input(Storage::RowMajor, {5, 6, 7}, {{2, 2}, {4, 2}, {4, 5}}, Storage::random);
 
   Storage v_0_input(Storage::ColMajor, {5, 1, 1}, Storage::random);
   Storage v_1_input(Storage::ColMajor, {5, 1, 1}, Storage::random);
   Storage v_2_input(Storage::ColMajor, {5, 1, 1}, Storage::random);
-  
-  Storage storage_2d_0_input(Storage::ColMajor, {26, 23}, {{2,2}, {4,2}}, Storage::random);
-  Storage storage_2d_1_input(Storage::ColMajor, {26, 23}, {{2,2}, {4,2}}, Storage::random);
-  
+
+  Storage storage_2d_0_input(Storage::ColMajor, {26, 23}, {{2, 2}, {4, 2}}, Storage::random);
+  Storage storage_2d_1_input(Storage::ColMajor, {26, 23}, {{2, 2}, {4, 2}}, Storage::random);
+
   Storage storage_7d_0_input(Storage::ColMajor, {2, 2, 2, 2, 2, 2, 2}, Storage::random);
   Storage storage_7d_1_input(Storage::ColMajor, {2, 2, 2, 2, 2, 2, 2}, Storage::random);
-  
+
   // Prepare output
   Storage u_0_output(Storage::RowMajor, {5, 6, 7});
   Storage u_1_output(Storage::RowMajor, {5, 6, 7});
@@ -98,12 +98,12 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
   Storage v_1_output(Storage::RowMajor, {5, 1, 1});
   Storage v_2_output(Storage::RowMajor, {5, 1, 1});
 
-  Storage storage_2d_0_output(Storage::ColMajor, {26, 23}, {{2,2}, {4,2}});
-  Storage storage_2d_1_output(Storage::ColMajor, {26, 23}, {{2,2}, {4,2}});
-  
+  Storage storage_2d_0_output(Storage::ColMajor, {26, 23}, {{2, 2}, {4, 2}});
+  Storage storage_2d_1_output(Storage::ColMajor, {26, 23}, {{2, 2}, {4, 2}});
+
   Storage storage_7d_0_output(Storage::ColMajor, {2, 2, 2, 2, 2, 2, 2});
   Storage storage_7d_1_output(Storage::ColMajor, {2, 2, 2, 2, 2, 2, 2});
-  
+
   // -----------------------------------------------------------------------------------------------
   // Writing
   // -----------------------------------------------------------------------------------------------
@@ -124,7 +124,7 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
     // v
     auto sv_v_0_input = v_0_input.toStorageView();
     archiveWrite.write(sv_v_0_input, FieldID{"v", 0});
-    archiveWrite.write(sv_v_0_input, FieldID{"v", 0});    
+    archiveWrite.write(sv_v_0_input, FieldID{"v", 0});
 
     auto sv_v_1_input = v_1_input.toStorageView();
     archiveWrite.write(sv_v_1_input, FieldID{"v", 1});
@@ -137,18 +137,18 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
 
     // Replace data at v_0 with v_1
     archiveWrite.write(sv_v_1_input, FieldID{"v", 0});
-    
+
     // storage 2d
     auto sv_2d_0_input = storage_2d_0_input.toStorageView();
     archiveWrite.write(sv_2d_0_input, FieldID{"storage_2d", 0});
-    
+
     auto sv_2d_1_input = storage_2d_1_input.toStorageView();
     archiveWrite.write(sv_2d_1_input, FieldID{"storage_2d", 1});
-    
+
     // storage 7d
     auto sv_7d_0_input = storage_7d_0_input.toStorageView();
     archiveWrite.write(sv_7d_0_input, FieldID{"storage_7d", 0});
-    
+
     auto sv_7d_1_input = storage_7d_1_input.toStorageView();
     archiveWrite.write(sv_7d_1_input, FieldID{"storage_7d", 1});
 
@@ -186,30 +186,31 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
     // Check all exceptional cases
     ASSERT_THROW(archiveRead.write(sv_u_2_output, FieldID{"u", 2}), Exception);
     ASSERT_THROW(archiveRead.read(sv_u_2_output, FieldID{"u", 1024}), Exception);
-    
+
     // storage 2d
     auto sv_2d_0_output = storage_2d_0_output.toStorageView();
     ASSERT_NO_THROW(archiveRead.read(sv_2d_0_output, FieldID{"storage_2d", 0}));
-    
+
     auto sv_2d_1_output = storage_2d_1_output.toStorageView();
     ASSERT_NO_THROW(archiveRead.read(sv_2d_1_output, FieldID{"storage_2d", 1}));
-    
+
     // storage 7d
     auto sv_7d_0_output = storage_7d_0_output.toStorageView();
     ASSERT_NO_THROW(archiveRead.read(sv_7d_0_output, FieldID{"storage_7d", 0}));
-    
+
     auto sv_7d_1_output = storage_7d_1_output.toStorageView();
     ASSERT_NO_THROW(archiveRead.read(sv_7d_1_output, FieldID{"storage_7d", 1}));
   }
 
   {
     // Corrupt the JSON file
-    std::ifstream ifs((this->directory->path() / Archive::ArchiveName).string());
+    std::ifstream ifs((this->directory->path() / Archive::ArchiveNameDataFilename).string());
     json::json j;
     ifs >> j;
     j["fields_table"]["u"][0][1] = "LOOKS_LIKE_THIS_HASH_IS_CORRUPTED";
     ifs.close();
-    std::ofstream ofs((this->directory->path() / Archive::ArchiveName).string(), std::ios::trunc);
+    std::ofstream ofs((this->directory->path() / Archive::ArchiveNameDataFilename).string(),
+                      std::ios::out | std::ios::trunc);
     ofs << j.dump(4) << std::endl;
 
     BinaryArchive archiveRead(this->directory->path().string(), OpenModeKind::Read);
@@ -225,11 +226,11 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
   Storage::verify(u_0_output, u_0_input);
   Storage::verify(u_1_output, u_1_input);
   Storage::verify(u_2_output, u_2_input);
-  
+
   Storage::verify(v_0_output, v_1_input); // Data was replaced
   Storage::verify(v_1_output, v_0_input); // Data was replaced
   Storage::verify(v_2_output, v_2_input);
-  
+
   Storage::verify(storage_2d_0_output, storage_2d_0_input);
   Storage::verify(storage_2d_1_output, storage_2d_1_input);
 

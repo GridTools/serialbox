@@ -17,120 +17,57 @@
 
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Json.h"
-#include "serialbox/Core/Logging.h"
+#include "serialbox/Core/MetaInfoValue.h"
 #include "serialbox/Core/Type.h"
-#include "serialbox/Core/Unreachable.h"
-#include <boost/any.hpp>
 #include <iosfwd>
 #include <string>
 #include <unordered_map>
 
 namespace serialbox {
 
-/// \brief A map of meta-information
+/// \brief Has-map of meta-information of the form key = value pair
 ///
-/// The objects are stored in a hash-map (std::unordered_map) in form of key = value pair. 
 /// They keys are strings (std::string), while the values can be booleans, integers (32 and 64 bit),
 /// floating point numbers (32 and 64 bit) or strings.
 class MetaInfoMap {
 public:
-  /// \brief Constructor
-  /// @{
-  MetaInfoMap(const json::json jsonNode) { fromJSON(jsonNode); }
+  /// \brief Default constructor
   MetaInfoMap() = default;
+
+  /// \brief Construct from json
+  MetaInfoMap(const json::json jsonNode) { fromJSON(jsonNode); }
+
+  /// \brief Copy constructor
   MetaInfoMap(const MetaInfoMap&) = default;
+
+  /// \brief Move constructor
   MetaInfoMap(MetaInfoMap&&) = default;
 
+  /// \brief Copy assignment
   MetaInfoMap& operator=(const MetaInfoMap&) = default;
+
+  /// \brief Move assignment
   MetaInfoMap& operator=(MetaInfoMap&&) = default;
-  /// @}
 
-  /// \brief Represent a value of the MetaInfoMap given as a type-id and type-erased data
-  struct Value {
-    /// \name Constructors
-    /// @{
+  /// \brief Type of the underlying hash-map
+  using map_type = std::unordered_map<std::string, MetaInfoValue>;
 
-    Value() = default;
-    Value(const Value&) = default;
-    Value(Value&&) = default;
-
-    /// \brief Construct with given value
-    ///
-    /// \tparam ValueType  Type of the captured value (needs to be supported)
-    /// \param  value      Value to caputre
-    template <class ValueType,
-              class DecayedValueType = typename std::decay<ValueType>::type,
-              class = typename std::enable_if<isSupported<DecayedValueType>::value>::type>
-    explicit Value(ValueType&& value) {
-      type_ = ToTypeID<DecayedValueType>::value;
-      any_ = boost::any(DecayedValueType(value));
-    }
-
-    Value& operator=(const Value&) = default;
-    Value& operator=(Value&&) = default;
-    /// @}
-
-    /// \brief Convert value to type T
-    /// 
-    /// \throws Exception  TypeID of type T does not match TypeID of the captured value
-    template <class T>
-    T& as() {
-      if(ToTypeID<T>::value != type_)
-        throw Exception("conversion error: cannot convert [type = %s] to [T = %s]",
-                        TypeUtil::toString(type_), TypeUtil::toString(ToTypeID<T>::value));
-      return (*boost::any_cast<T>(&any_));
-    }
-
-    template <class T>
-    const T& as() const {
-      if(ToTypeID<T>::value != type_)
-        throw Exception("conversion error: cannot convert [type = %s] to [T = %s]",
-                        TypeUtil::toString(type_), TypeUtil::toString(ToTypeID<T>::value));
-      return (*boost::any_cast<T>(&any_));
-    }
-
-    /// \brief Implicitly convert value to type T
-    /// 
-    /// \throws Exception  TypeID of type T does not match TypeID of the captured value
-    template <class T>
-    operator T() const {
-      return as<T>();
-    }
-    
-    template <class T>
-    operator T() {
-      return as<T>();
-    }
-
-    /// \brief Swap with other
-    void swap(Value& other) noexcept {
-      any_.swap(other.any_);
-      std::swap(type_, other.type_);
-    }
-
-    /// \brief Test for equality
-    bool operator==(const Value& right) const noexcept;
-
-    /// \brief Test for inequality
-    bool operator!=(const Value& right) const noexcept { return (!(*this == right)); }
-
-    /// \brief Get TypeID
-    TypeID type() const noexcept { return type_; }
-
-    /// \brief Get boost::any
-    boost::any any() const noexcept { return any_; }
-
-  private:
-    TypeID type_;    ///< Type of the data
-    boost::any any_; ///< Type-erased value of the data
-  };
-
-  using map_type = std::unordered_map<std::string, Value>;
+  /// \brief Type of an entry of the MetaInfoMap (`std::pair<std::string, MetaInfoMap::Value>`)
   using value_type = map_type::value_type;
+
+  /// \brief Type of the key (`std::string`)
   using key_type = map_type::key_type;
-  using size_type = map_type::size_type;
+
+  /// \brief Type of the value (`MetaInfoMap::Value`)
   using mapped_type = map_type::mapped_type;
+
+  /// \brief An unsigned integral type (`std::size_t`)
+  using size_type = map_type::size_type;
+
+  /// \brief A forward iterator to `value_type`
   using iterator = map_type::iterator;
+
+  /// \brief A forward iterator to `const value_type`
   using const_iterator = map_type::const_iterator;
 
   /// \brief Check if key exists in the set
@@ -153,7 +90,7 @@ public:
   /// \return Value indicating whether the element was successfully inserted or not
   template <class KeyType, class ValueType>
   bool insert(KeyType&& key, ValueType&& value) noexcept {
-    return (map_.insert({key, Value(std::forward<ValueType>(value))}).second);
+    return (map_.insert({key, MetaInfoValue(std::forward<ValueType>(value))}).second);
   }
 
   /// \brief Removes from the MetaInfoMap either a single element or a range of
@@ -203,18 +140,13 @@ public:
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const MetaInfoMap& s);
 
-  /// \name Serialization
-  /// @{
-
   /// \brief Convert to JSON
   json::json toJSON() const;
 
   /// \brief Construct from JSON node
-  /// 
+  ///
   /// \throw Exception  JSON node is ill-formed
   void fromJSON(const json::json& jsonNode);
-
-  /// @}
 
 private:
   map_type map_;

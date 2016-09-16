@@ -8,7 +8,7 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains the implementation of the Savepoint.
+/// This file contains the shared implementation of all Savepoints.
 ///
 //===------------------------------------------------------------------------------------------===//
 
@@ -21,16 +21,29 @@
 
 namespace serialbox {
 
-/// \brief Shared implementation of the Savepoint
+/// \brief Shared implementation of the Savepoints
 ///
 /// Direct usage of this class is discouraged, use the Savepoint classes provided by the Frontends
 /// instead.
 class SavepointImpl {
 public:
+  /// \brief Copy constructor [deleted]
+  SavepointImpl(const SavepointImpl&) = delete;
+
+  /// \brief Move constructor
+  SavepointImpl(SavepointImpl&&) = default;
+
+  /// \brief Copy assignment [deleted]
+  SavepointImpl& operator=(const SavepointImpl&) = delete;
+
+  /// \brief Move assignment
+  SavepointImpl& operator=(SavepointImpl&&) = default;
+
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const SavepointImpl& s);
 
 private:
+  std::string name_;            ///< Name of this savepoint
   MetaInfoMap metaInfo_;        ///< Meta-information of this savepoint
   std::vector<FieldID> fields_; ///< Fields captured by this savepoint
 };

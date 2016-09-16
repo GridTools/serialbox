@@ -25,10 +25,13 @@ struct SHA256 {
   SHA256() = delete;
 
   /// \brief Compute 256 bit hash using SHA-1
-  /// 
+  ///
+  /// The computed hash will be converted to a string in which each Byte is converted to its hex
+  /// representation.
+  ///
   /// \param data     Binary data
   /// \param length   Lenght of the binary data
-  /// \return SHA-1 hash as string of length 32
+  /// \return SHA-1 hash as string
   static std::string hash(const void* data, int length) noexcept;
 };
 

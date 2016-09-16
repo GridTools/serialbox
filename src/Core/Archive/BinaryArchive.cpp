@@ -20,13 +20,15 @@
 
 namespace serialbox {
 
+const std::string BinaryArchive::Name = "BinaryArchive";
+
 const int BinaryArchive::Version = 0;
 
 BinaryArchive::~BinaryArchive() { updateMetaData(); }
 
 void BinaryArchive::readMetaDataFromJson() {
 
-  boost::filesystem::path filename = directory_ / Archive::ArchiveName;
+  boost::filesystem::path filename = directory_ / Archive::ArchiveNameDataFilename;
   LOG(INFO) << "Reading MetaData for BinaryArchive ... ";
 
   fieldTable_.clear();
@@ -48,17 +50,21 @@ void BinaryArchive::readMetaDataFromJson() {
   fs.close();
 
   int serialboxVersion = json_["serialbox_version"];
-  int binaryArchiveVersion = json_["binary_archive_version"];
+  std::string archiveName = json_["archive_name"];
+  int archiveVersion = json_["archive_version"];
 
-  // Check versions
+  // Check consistency
   if(!Version::compare(serialboxVersion))
     throw Exception("serialbox version of binary archive (%s) does not match the version "
                     "of the library (%s)",
                     Version::toString(serialboxVersion), SERIALBOX_VERSION_STRING);
 
-  if(binaryArchiveVersion != BinaryArchive::Version)
+  if(archiveName != BinaryArchive::Name)
+    throw Exception("archive is not a binary archive");
+
+  if(archiveVersion != BinaryArchive::Version)
     throw Exception("binary archive version (%s) does not match the version of the library (%s)",
-                    binaryArchiveVersion, BinaryArchive::Version);
+                    archiveVersion, BinaryArchive::Version);
 
   // Deserialize FieldsTable
   for(auto it = json_["fields_table"].begin(); it != json_["fields_table"].end(); ++it) {
@@ -73,7 +79,7 @@ void BinaryArchive::readMetaDataFromJson() {
 }
 
 void BinaryArchive::writeMetaDataToJson() {
-  boost::filesystem::path filename = directory_ / Archive::ArchiveName;
+  boost::filesystem::path filename = directory_ / Archive::ArchiveNameDataFilename;
   LOG(INFO) << "Update MetaData for BinaryArchive ";
 
   json_.clear();
@@ -81,7 +87,8 @@ void BinaryArchive::writeMetaDataToJson() {
   // Tag versions
   json_["serialbox_version"] =
       100 * SERIALBOX_VERSION_MAJOR + 10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
-  json_["binary_archive_version"] = BinaryArchive::Version;
+  json_["archive_name"] = BinaryArchive::Name;
+  json_["archive_version"] = BinaryArchive::Version;
 
   // FieldsTable
   for(auto it = fieldTable_.begin(), end = fieldTable_.end(); it != end; ++it) {
@@ -230,7 +237,7 @@ void BinaryArchive::write(StorageView& storageView, const FieldID& fieldID) thro
 
   metaDataDirty_ = true;
   updateMetaData();
-  
+
   LOG(INFO) << "Successfully wrote field \"" << fieldID.name << "\" (id = " << fieldID.id << ") to "
             << filename.filename();
 }

@@ -25,13 +25,14 @@
 namespace serialbox {
 
 /// \brief Non-portable binary archive
-class BinaryArchive : public Archive, boost::noncopyable {
+class BinaryArchive : public Archive {
 public:
+  /// \brief Name of the binary archive
+  static const std::string Name;
+  
   /// \brief Revision of the binary archive
   static const int Version;
-  
-  virtual ~BinaryArchive();
-  
+    
   /// \brief Offset
   struct FileOffsetType {
     std::streamoff offset; ///< Binary offset within the file
@@ -47,6 +48,15 @@ public:
   /// \brief Initialize the archive with a directory and open file policy
   BinaryArchive(const boost::filesystem::path& directory, OpenModeKind mode);
   
+  /// \brief Copy constructor [deleted]
+  BinaryArchive(const BinaryArchive&) = delete;
+  
+  /// \brief Copy assignment [deleted
+  BinaryArchive& operator=(const BinaryArchive&) = delete;
+  
+  /// \brief Destructor
+  virtual ~BinaryArchive();  
+
   /// \brief Load meta-data from JSON file
   void readMetaDataFromJson();
   
@@ -60,6 +70,7 @@ public:
   virtual void read(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;
   virtual void updateMetaData() override;
   virtual const std::string& directory() const override { return directory_.string(); }
+  virtual const std::string& name() const override { return BinaryArchive::Name; }
   virtual std::ostream& toStream(std::ostream& stream) const override; 
   
 private:
