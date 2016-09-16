@@ -31,6 +31,8 @@ std::string TypeUtil::toString(TypeID id) {
     return std::string("double");
   case TypeID::String:
     return std::string("std::string");
+  case TypeID::Invalid:
+    return std::string("<invalid>");
   default:
     serialbox_unreachable("invalid TypeID for TypeUtil::toString");
   }

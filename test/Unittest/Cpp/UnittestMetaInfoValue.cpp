@@ -18,6 +18,10 @@
 using namespace serialbox;
 
 TEST(MetaInfoValue, Construction) {
+  // Default construct
+  MetaInfoValue m;
+  EXPECT_EQ(m.type(), TypeID::Invalid);
+
   // Boolean
   MetaInfoValue bool_value(bool(true));
   EXPECT_EQ(bool_value.as<bool>(), true);

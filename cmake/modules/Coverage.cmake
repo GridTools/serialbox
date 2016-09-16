@@ -7,9 +7,9 @@ function(enable_coverage root)
   add_custom_target( coverage
     COMMAND ${CMAKE_COMMAND} -E remove coverage.info coverage.info.cleaned
     COMMAND ${LCOV_PATH} --directory . --zerocounters
-    COMMAND ctest -R *.coverage
+    COMMAND ctest -R "coverage_"
     COMMAND ${LCOV_PATH} --directory . --capture --output-file coverage.info
-    COMMAND ${LCOV_PATH} --remove coverage.info '*tests/*' '*usr/*' '*deps/*' ${SERIALBOX_FILTER} --output-file coverage.info.cleaned
+    COMMAND ${LCOV_PATH} --remove coverage.info '*test/*' '*usr/*' '*external/*' --output-file coverage.info.cleaned
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Processing code coverage counters."
   )

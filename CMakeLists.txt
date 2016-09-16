@@ -341,7 +341,7 @@ endif()
 
 # --------------------------------------- Code Coverage --------------------------------------------
 if(SERIALBOX_CODE_COVERAGE)
-  include(coverage)
+  include(Coverage)
   enable_coverage(${CMAKE_BINARY_DIR}/test)
 endif(SERIALBOX_CODE_COVERAGE)
 

@@ -25,6 +25,7 @@ enum AnimalKind {
 
 } // anonymous namespace
 
+#ifndef NDEBUG
 static const char* petName(AnimalKind animal) {
   switch(animal) {
   case AnimalKind::Dog:
@@ -35,6 +36,7 @@ static const char* petName(AnimalKind animal) {
     serialbox_unreachable("Not a pet!");
   }
 }
+#endif
 
 TEST(UnreachableTest, Unreachable) {
 #ifndef NDEBUG
