@@ -14,6 +14,7 @@
 
 #include "serialbox/Core/Type.h"
 #include <gtest/gtest.h>
+#include <sstream>
 
 using namespace serialbox;
 
@@ -31,6 +32,11 @@ TEST(TypeTest, toString) {
   EXPECT_STREQ(TypeUtil::toString(TypeID::Int64).c_str(), "int64");
   EXPECT_STREQ(TypeUtil::toString(TypeID::Float32).c_str(), "float");
   EXPECT_STREQ(TypeUtil::toString(TypeID::Float64).c_str(), "double");
+  EXPECT_STREQ(TypeUtil::toString(TypeID::Invalid).c_str(), "<invalid>");
+
+  std::stringstream ss;
+  ss << TypeID::Boolean;
+  EXPECT_STREQ(ss.str().c_str(), "bool");
 }
 
 TEST(TypeTest, ToTypeID) {

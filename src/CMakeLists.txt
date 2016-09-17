@@ -20,16 +20,6 @@ cmake_minimum_required(VERSION 3.1)
 ##
 function(serialbox_add_library name libraries)
   add_library(${name}Objects OBJECT ${ARGN} ${SERIALBOX_HEADERS})
-
-  # Build static library
-  add_library(${name} STATIC $<TARGET_OBJECTS:${name}Objects>)
-  set_target_properties(${name} PROPERTIES OUTPUT_NAME ${name})
-  target_link_libraries(${name} ${libraries})
-
-  # Build shared library
-#  add_library(${name}Shared SHARED $<TARGET_OBJECTS:${name}Objects>)
-#  set_target_properties(${name}Shared PROPERTIES OUTPUT_NAME ${name})
-#  target_link_libraries(${name}Shared ${libraries})
   
   if(SERIALBOX_VERBOSE_WARNINGS)
     set_target_properties(${name}Objects PROPERTIES COMPILE_FLAGS -Wall)
@@ -40,6 +30,21 @@ function(serialbox_add_library name libraries)
   if(BUILD_GLOG)
     add_dependencies(${name}Objects glog)
   endif(BUILD_GLOG)
+
+  if(DEFINED COVERAGE_SUPPORTED)
+    set_property(TARGET ${name}Objects PROPERTY COMPILE_FLAGS ${CMAKE_CXX_FLAGS_COVERAGE})
+    set_property(TARGET ${name}Objects PROPERTY LINK_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})
+    set_property(TARGET ${name}Objects PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+  endif()
+
+  # Build static library
+  add_library(${name} STATIC $<TARGET_OBJECTS:${name}Objects>)
+  target_link_libraries(${name} ${libraries})
+
+  # Build shared library
+#  add_library(${name}Shared SHARED $<TARGET_OBJECTS:${name}Objects>)
+#  set_target_properties(${name}Shared PROPERTIES OUTPUT_NAME ${name})
+#  target_link_libraries(${name}Shared ${libraries})
 
 endfunction(serialbox_add_library)
 

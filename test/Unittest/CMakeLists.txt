@@ -37,42 +37,16 @@ function(serialbox_add_cpp_unittest_executable name libraries)
   if(BUILD_GLOG)
     add_dependencies(${name} glog)
   endif(BUILD_GLOG)
-  
-  add_test(NAME test_${name} COMMAND $<TARGET_FILE:${name}> --gtest_color=yes)
-endfunction(serialbox_add_cpp_unittest_executable)
 
-## \brief Add a C++ coverage executable and register it within CMake
-##
-## For each source file an executable will be generated and linked against SerialboxCore
-## and SerialboxCppUnittestUtility.
-##
-## \param libraries       Libraries to link against
-## \param main_executable Main exectuble to link against
-## \param ARGN            List of source files
-##
-function(serialbox_add_cpp_coverage_executable libraries main_executable)
   if(DEFINED COVERAGE_SUPPORTED)
-    add_library(SerialboxCoverageMain OBJECT ${main_executable})
-
-    foreach(file ${ARGN})
-      string(REPLACE ".cpp" ".coverage" test ${file})
-      set(test SerialboxCpp${test})
-
-      serialbox_add_cpp_unittest_executable(${test} "${libraries}" 
-                                            $<TARGET_OBJECTS:SerialboxCoverageMain> ${file})
-
-      set_property(TARGET ${test} PROPERTY COMPILE_FLAGS ${CMAKE_CXX_FLAGS_COVERAGE})
-      set_property(TARGET ${test} PROPERTY LINK_FLAGS ${CMAKE_EXE_LINKER_FLAGS_COVERAGE})
-      set_property(TARGET ${test} PROPERTY RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/test")
-
-      add_test(NAME coverage_${test} 
-               WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/test" 
-               COMMAND $<TARGET_FILE:${test}>)
-      add_dependencies(coverage ${test})
-
-    endforeach()
+    set_property(TARGET ${name} PROPERTY COMPILE_FLAGS ${CMAKE_CXX_FLAGS_COVERAGE})
+    set_property(TARGET ${name} PROPERTY LINK_FLAGS ${CMAKE_EXE_LINKER_FLAGS_COVERAGE})
+    set_property(TARGET ${name} PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+    add_dependencies(coverage ${name})
   endif()
-endfunction()
+
+  add_test(NAME ${name} COMMAND $<TARGET_FILE:${name}> --gtest_color=yes)
+endfunction(serialbox_add_cpp_unittest_executable)
 
 ## Add subdirectories
 add_subdirectory(Cpp)

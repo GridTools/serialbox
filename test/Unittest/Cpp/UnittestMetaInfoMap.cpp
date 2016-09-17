@@ -39,6 +39,9 @@ TEST(MetaInfoMap, Construction) {
   EXPECT_EQ(map.at("key1").as<std::string>(), "value2");
   EXPECT_THROW(map.at("key2").as<std::string>(), Exception);
 
+  const MetaInfoMap constMap;
+  EXPECT_THROW(constMap.at("key2").as<std::string>(), Exception);
+
   // Clear map
   map.clear();
   EXPECT_TRUE(map.empty());

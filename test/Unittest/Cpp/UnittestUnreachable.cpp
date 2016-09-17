@@ -12,34 +12,14 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/Core/Type.h"
 #include "serialbox/Core/Unreachable.h"
 #include <gtest/gtest.h>
 
-namespace {
-
-enum AnimalKind {
-  Dog,
-  Cat,
-  Lion,
-};
-
-} // anonymous namespace
-
-#ifndef NDEBUG
-static const char* petName(AnimalKind animal) {
-  switch(animal) {
-  case AnimalKind::Dog:
-    return "Dog";
-  case AnimalKind::Cat:
-    return "Cat";
-  default:
-    serialbox_unreachable("Not a pet!");
-  }
-}
-#endif
+using namespace serialbox;
 
 TEST(UnreachableTest, Unreachable) {
 #ifndef NDEBUG
-  ASSERT_DEATH_IF_SUPPORTED(petName(AnimalKind::Lion), "");
+  ASSERT_DEATH_IF_SUPPORTED(TypeUtil::sizeOf(TypeID::String), "^FATAL ERROR: UNREACHABLE executed");
 #endif
 }

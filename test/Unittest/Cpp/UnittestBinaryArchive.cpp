@@ -65,6 +65,9 @@ TYPED_TEST(BinaryArchiveTest, Construction) {
   EXPECT_NO_THROW(
       BinaryArchive(this->directory->path() / "this-dir-is-created-2", OpenModeKind::Append));
   EXPECT_TRUE(boost::filesystem::exists(this->directory->path() / "this-dir-is-created-2"));
+
+  // Name
+  EXPECT_EQ(BinaryArchive(this->directory->path(), OpenModeKind::Append).name(), "BinaryArchive");
 }
 
 TYPED_TEST(BinaryArchiveTest, WriteAndRead) {

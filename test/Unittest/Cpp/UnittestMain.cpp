@@ -14,7 +14,10 @@
 
 #include "serialbox/Core/Logging.h"
 #include "Utility/UnittestEnvironment.h"
+#include <boost/filesystem.hpp>
 #include <gtest/gtest.h>
+
+using namespace serialbox;
 
 int main(int argc, char *argv[]) {
 
@@ -22,13 +25,14 @@ int main(int argc, char *argv[]) {
   testing::InitGoogleTest(&argc, argv);
 
   // Initialize glog
-  serialbox::Logging::init(argv[0], true);
-  serialbox::Logging::setLogToStderr(true);
-  serialbox::Logging::setMinLogLevel(serialbox::Logging::Warning);
-  serialbox::Logging::setColorLogToStdErr(true);
-  
+  Logging::init(argv[0], true);
+  Logging::setLogToStderr(true);
+  Logging::setMinLogLevel(serialbox::Logging::Warning);
+  Logging::setColorLogToStdErr(true);
+  Logging::setStdErrThreshold(Logging::Error);
+
   // Register test environment
-  testing::AddGlobalTestEnvironment(&serialbox::unittest::UnittestEnvironment::getInstance());
+  testing::AddGlobalTestEnvironment(&unittest::UnittestEnvironment::getInstance());
 
   return RUN_ALL_TESTS();
 }

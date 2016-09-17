@@ -81,7 +81,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 # Clear all cmake generated files
 add_custom_target(clean-all
                   COMMAND ${CMAKE_MAKE_PROGRAM} clean
-                  COMMAND ${CMAKE_COMMAND} -P  "${CMAKE_SOURCE_DIR}/cmake/modules/clean-all.cmake")
+                  COMMAND ${CMAKE_COMMAND} -P  "${CMAKE_SOURCE_DIR}/cmake/modules/CleanAll.cmake")
                   
 # We need thread support
 find_package(Threads REQUIRED)
@@ -342,7 +342,7 @@ endif()
 # --------------------------------------- Code Coverage --------------------------------------------
 if(SERIALBOX_CODE_COVERAGE)
   include(Coverage)
-  enable_coverage(${CMAKE_BINARY_DIR}/test)
+  enable_coverage(${CMAKE_BINARY_DIR})
 endif(SERIALBOX_CODE_COVERAGE)
 
 #---------------------------------------- Compilation ----------------------------------------------

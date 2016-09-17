@@ -27,11 +27,6 @@ serialbox_add_cpp_unittest_executable(SerialboxCppUnittest
                                       "${SERIALBOX_EXTERNAL_LIBRARIES}"
                                       ${CPP_UNITTEST_SOURCES} UnittestMain.cpp)
 
-
-serialbox_add_cpp_coverage_executable("${SERIALBOX_EXTERNAL_LIBRARIES}"
-                                      UnittestMain.cpp
-                                      ${CPP_UNITTEST_SOURCES})
-
 ## Add subdirectories
 add_subdirectory(Utility)
 

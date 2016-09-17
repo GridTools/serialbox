@@ -33,8 +33,6 @@ std::string TypeUtil::toString(TypeID id) {
     return std::string("std::string");
   case TypeID::Invalid:
     return std::string("<invalid>");
-  default:
-    serialbox_unreachable("invalid TypeID for TypeUtil::toString");
   }
 }
 
@@ -46,8 +44,6 @@ std::ostream& operator<<(std::ostream& stream, const OpenModeKind& mode) {
     return (stream << std::string("Read"));
   case OpenModeKind::Append:
     return (stream << std::string("Append"));
-  default:
-    serialbox_unreachable("invalid OpenModeKind");
   }
 }
 
