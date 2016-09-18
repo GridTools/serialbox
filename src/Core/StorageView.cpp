@@ -46,19 +46,19 @@ bool StorageView::operator==(const StorageView& right) const noexcept {
 }
 
 std::ostream& operator<<(std::ostream& stream, const StorageView& s) {
-  stream << "StorageView [\n";
-  stream << "  originPtr = " << static_cast<void*>(s.originPtr_) << "\n";
-  stream << "  type = " << s.type_ << "\n";
+  stream << "StorageView = {\n";
+  stream << "  originPtr: " << static_cast<void*>(s.originPtr_) << "\n";
+  stream << "  type: " << s.type_ << "\n";
 
-  stream << "  dims = {";
+  stream << "  dims: [";
   for(auto i : s.dims_)
     stream << " " << i;
 
-  stream << " }\n  strides = {";
+  stream << " ]\n  strides: [";
   for(auto i : s.strides_)
     stream << " " << i;
 
-  stream << " }\n]\n";
+  stream << " ]\n}\n";
   return stream;
 }
 

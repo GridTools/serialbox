@@ -49,15 +49,11 @@ public:
 
   /// \brief Iterator to the beginning of the data
   StorageViewIterator begin() noexcept { return StorageViewIterator(this, true); }
+  StorageViewIterator begin() const noexcept { return StorageViewIterator(this, true); }
 
   /// \brief Iterator to the end of the data
   StorageViewIterator end() noexcept { return StorageViewIterator(this, false); }
-
-  /// \brief Iterator to the beginning of the data
-  StorageViewIterator cbegin() const noexcept { return StorageViewIterator(this, true); }
-
-  /// \brief Iterator to the end of the data
-  StorageViewIterator cend() const noexcept { return StorageViewIterator(this, false); }
+  StorageViewIterator end() const noexcept { return StorageViewIterator(this, false); }
 
   /// @}
   /// \name Getter

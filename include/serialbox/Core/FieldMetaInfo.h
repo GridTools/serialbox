@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_FIELDMAPINFO_H
-#define SERIALBOX_CORE_FIELDMAPINFO_H
+#ifndef SERIALBOX_CORE_FIELDMAPMETAINFO_H
+#define SERIALBOX_CORE_FIELDMAPMETAINFO_H
 
 #include "serialbox/Core/MetaInfoMap.h"
 #include <unordered_map>

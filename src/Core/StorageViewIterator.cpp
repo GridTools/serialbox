@@ -52,13 +52,6 @@ bool StorageViewIterator::operator==(const iterator& right) const noexcept {
   return (curPtr_ == right.curPtr_ || (end_ == true && end_ == right.end_)); 
 }
 
-StorageViewIterator::iterator StorageViewIterator::operator++(int)noexcept {
-  LOG(INFO) << "usage of this operator is discouraged, user pre-increment instead";
-  iterator tmp = *this;
-  ++*this;
-  return (tmp);
-}
-
 void StorageViewIterator::swap(StorageViewIterator& other) noexcept {
   std::swap(curPtr_, other.curPtr_);
   index_.swap(other.index_);
@@ -67,15 +60,16 @@ void StorageViewIterator::swap(StorageViewIterator& other) noexcept {
 }
 
 std::ostream& operator<<(std::ostream& stream, const StorageViewIterator& it) {
-  stream << "StorageViewIterator [\n";
-  stream << "  ptr = " << static_cast<void*>(it.curPtr_) << "\n";
-  stream << "  end = " << it.end_ << "\n";  
-  stream << "  index = {";
+  stream << "StorageViewIterator = {\n";
+  stream << "  originPtr: " << static_cast<void*>(it.curPtr_) << "\n";
+  stream << "  curPtr: " << it.end_ << "\n";
+  stream << "  index: [";
   for(auto i : it.index_)
     stream << " " << i;
-  stream << " }\n  bytesPerElement = " << it.bytesPerElement_ << "\n";
-  stream << "  storageView = " << std::hex << it.storageView_ << "\n";
-  stream << "]\n";
+  stream << " ]\n  end: " << std::boolalpha << it.end_ << "\n";
+  stream << "  bytesPerElement: " << it.bytesPerElement_ << "\n";
+  stream << "  storageView: " << std::hex << it.storageView_ << "\n";
+  stream << "}\n";
   return stream;
 }
 

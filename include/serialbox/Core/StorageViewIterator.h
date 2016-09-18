@@ -67,9 +67,6 @@ public:
   /// \brief Pre-increment
   iterator& operator++() noexcept;
 
-  /// \brief Post-increment
-  iterator operator++(int)noexcept;
-
   /// \brief Derefrence
   refrence operator*() noexcept { return *curPtr_; }
 
@@ -88,7 +85,6 @@ public:
   Byte* ptr() noexcept { return curPtr_; }
 
   /// \brief Interpret current data pointer as type T
-  /// @{
   template <class T>
   T& as() noexcept {
     return *(reinterpret_cast<T*>(curPtr_));
@@ -98,13 +94,12 @@ public:
   const T& as() const noexcept {
     return *(reinterpret_cast<T*>(curPtr_));
   }
-  /// @}
 
   /// \brief Get current index position in the data
   const std::vector<int>& index() const noexcept { return index_; }
 
 private:
-  /// \brief Compute the current linear index in the data according to the \c index vector
+  /// \brief Compute the current linear index in the data according to the index vector
   int computeCurrentIndex() const noexcept;
 
 private:

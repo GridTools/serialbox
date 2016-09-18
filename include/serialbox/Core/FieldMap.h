@@ -24,7 +24,7 @@ namespace serialbox {
 class FieldMap {
 public:
   /// \brief Default constructor (empty table)
-  FieldMap() = default;
+  FieldMap() : map_() {};
 
   /// \brief Copy constructor [deleted]
   FieldMap(const FieldMap&) = delete;

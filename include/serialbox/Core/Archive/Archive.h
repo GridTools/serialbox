@@ -26,7 +26,7 @@ namespace serialbox {
 class Archive {
 public:
   ///
-  static constexpr const char* ArchiveNameDataFilename = "ArchiveMetaData.json";
+  static constexpr const char* ArchiveMetaDataFile = "ArchiveMetaData.json";
   
   ///
   virtual void write(StorageView& storageView, const FieldID& fieldID) throw(Exception) = 0;

@@ -31,8 +31,8 @@ namespace serialbox {
 /// floating point numbers (32 and 64 bit) or strings.
 class MetaInfoMap {
 public:
-  /// \brief Default constructor
-  MetaInfoMap() = default;
+  /// \brief Default constructor (empty map)
+  MetaInfoMap() : map_() {};
 
   /// \brief Construct from json
   MetaInfoMap(const json::json jsonNode) { fromJSON(jsonNode); }

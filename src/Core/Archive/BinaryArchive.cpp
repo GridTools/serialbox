@@ -28,7 +28,7 @@ BinaryArchive::~BinaryArchive() { updateMetaData(); }
 
 void BinaryArchive::readMetaDataFromJson() {
 
-  boost::filesystem::path filename = directory_ / Archive::ArchiveNameDataFilename;
+  boost::filesystem::path filename = directory_ / Archive::ArchiveMetaDataFile;
   LOG(INFO) << "Reading MetaData for BinaryArchive ... ";
 
   fieldTable_.clear();
@@ -79,7 +79,7 @@ void BinaryArchive::readMetaDataFromJson() {
 }
 
 void BinaryArchive::writeMetaDataToJson() {
-  boost::filesystem::path filename = directory_ / Archive::ArchiveNameDataFilename;
+  boost::filesystem::path filename = directory_ / Archive::ArchiveMetaDataFile;
   LOG(INFO) << "Update MetaData for BinaryArchive ";
 
   json_.clear();
@@ -121,10 +121,10 @@ BinaryArchive::BinaryArchive(const boost::filesystem::path& directory, OpenModeK
     case OpenModeKind::Write:
       if(isDir && !boost::filesystem::is_empty(directory_))
         throw Exception("directory '%s' is not empty", directory_.string());
-    // We are appending, create directory if it does not exist
+    // We are appending, create directories if it they don't exist
     case OpenModeKind::Append:
       if(!isDir)
-        boost::filesystem::create_directory(directory_);
+        boost::filesystem::create_directories(directory_);
       break;
     }
   } catch(boost::filesystem::filesystem_error& e) {

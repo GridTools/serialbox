@@ -16,6 +16,7 @@
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/Type.h"
+#include <boost/algorithm/string/predicate.hpp>
 #include <gtest/gtest.h>
 #include <cstring>
 #include <numeric>
@@ -378,4 +379,29 @@ TYPED_TEST(StorageViewTest, isMemCopyable) {
   EXPECT_FALSE(this->storage_2d_col_major_padded->toStorageView().isMemCopyable());
   EXPECT_FALSE(this->storage_2d_row_major->toStorageView().isMemCopyable());
   EXPECT_FALSE(this->storage_2d_row_major_padded->toStorageView().isMemCopyable());
+}
+
+TYPED_TEST(StorageViewTest, toString) {
+  auto sv_1d = this->storage_1d->toStorageView();
+  std::stringstream ss;
+
+  // StorageView
+  ss << sv_1d;
+  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "StorageView"));
+  EXPECT_NE(ss.str().find("originPtr"), std::string::npos);
+  EXPECT_NE(ss.str().find("type"), std::string::npos);
+  EXPECT_NE(ss.str().find("dims"), std::string::npos);
+  EXPECT_NE(ss.str().find("strides"), std::string::npos);
+  ss.str("");
+  ss.clear();
+
+  // StorageViewIterator
+  ss << sv_1d.begin();
+  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "StorageViewIterator"));
+  EXPECT_NE(ss.str().find("originPtr"), std::string::npos);
+  EXPECT_NE(ss.str().find("curPtr"), std::string::npos);
+  EXPECT_NE(ss.str().find("index"), std::string::npos);
+  EXPECT_NE(ss.str().find("end"), std::string::npos);
+  EXPECT_NE(ss.str().find("bytesPerElement"), std::string::npos);
+  EXPECT_NE(ss.str().find("storageView"), std::string::npos);
 }

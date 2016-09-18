@@ -216,3 +216,8 @@ TEST(MetaInfoMap, fromJSON) {
     EXPECT_THROW(map.fromJSON(ill_formed), Exception);
   }
 }
+
+TEST(MetaInfoMap, toString) {
+  std::cout << "Implement this" << std::endl;
+}
+

@@ -12,9 +12,10 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Archive/BinaryArchive.h"
 #include "Utility/FileUtility.h"
 #include "Utility/Storage.h"
+#include "serialbox/Core/Archive/BinaryArchive.h"
+#include "serialbox/Core/Version.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;
@@ -45,26 +46,49 @@ using TestTypes = testing::Types<double, float, int, std::int64_t>;
 TYPED_TEST_CASE(BinaryArchiveTest, TestTypes);
 
 TYPED_TEST(BinaryArchiveTest, Construction) {
-  // Try to open archives for writing. This will also create the ArchiveMetaData.json when invoking
-  // the destrutor as we set the meta-data to be dirty (needed by the reading archives below).
+
+  // -----------------------------------------------------------------------------------------------
+  // Writing
+  // -----------------------------------------------------------------------------------------------
   {
-    EXPECT_NO_THROW(BinaryArchive(this->directory->path(), OpenModeKind::Write).setMetaDataDirty());
+    // Open fresh archive and write meta data to disk
+    {
+      EXPECT_NO_THROW(
+          BinaryArchive(this->directory->path(), OpenModeKind::Write).setMetaDataDirty());
+    }
+
+    // Throw Exception: Directory is not empty
+    EXPECT_THROW(BinaryArchive(this->directory->path(), OpenModeKind::Write), Exception);
+
+    // Create directory if not already existent
+    EXPECT_NO_THROW(
+        BinaryArchive(this->directory->path() / "this-dir-is-created", OpenModeKind::Write));
+    EXPECT_TRUE(boost::filesystem::exists(this->directory->path() / "this-dir-is-created"));
   }
-  EXPECT_NO_THROW(
-      BinaryArchive(this->directory->path() / "this-dir-is-created", OpenModeKind::Write));
-  EXPECT_TRUE(boost::filesystem::exists(this->directory->path() / "this-dir-is-created"));
 
+  // -----------------------------------------------------------------------------------------------
   // Reading
-  EXPECT_NO_THROW(BinaryArchive(this->directory->path(), OpenModeKind::Read));
-  EXPECT_THROW(BinaryArchive(this->directory->path() / "not-a-dir", OpenModeKind::Read), Exception);
+  // -----------------------------------------------------------------------------------------------
+  {
+    EXPECT_NO_THROW(BinaryArchive(this->directory->path(), OpenModeKind::Read));
 
+    // Throw Exception: Directory does not exist
+    EXPECT_THROW(BinaryArchive(this->directory->path() / "not-a-dir", OpenModeKind::Read),
+                 Exception);
+  }
+
+  // -----------------------------------------------------------------------------------------------
   // Appending
+  // -----------------------------------------------------------------------------------------------
   EXPECT_NO_THROW(BinaryArchive(this->directory->path(), OpenModeKind::Append));
+
+  // Create directory if not already existent
   EXPECT_NO_THROW(
       BinaryArchive(this->directory->path() / "this-dir-is-created", OpenModeKind::Append));
-  EXPECT_NO_THROW(
-      BinaryArchive(this->directory->path() / "this-dir-is-created-2", OpenModeKind::Append));
-  EXPECT_TRUE(boost::filesystem::exists(this->directory->path() / "this-dir-is-created-2"));
+
+  // Create directories if not already existent
+  EXPECT_NO_THROW(BinaryArchive(this->directory->path() / "nest1" / "nest2", OpenModeKind::Append));
+  EXPECT_TRUE(boost::filesystem::exists(this->directory->path() / "nest1" / "nest2"));
 
   // Name
   EXPECT_EQ(BinaryArchive(this->directory->path(), OpenModeKind::Append).name(), "BinaryArchive");
@@ -72,9 +96,9 @@ TYPED_TEST(BinaryArchiveTest, Construction) {
 
 TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
 
-  // -------------------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
   // Preparation
-  // -------------------------------------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
   using Storage = Storage<TypeParam>;
 
   // Prepare input data
@@ -108,7 +132,7 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
   Storage storage_7d_1_output(Storage::ColMajor, {2, 2, 2, 2, 2, 2, 2});
 
   // -----------------------------------------------------------------------------------------------
-  // Writing
+  // Writing (data and meta-data)
   // -----------------------------------------------------------------------------------------------
   {
     BinaryArchive archiveWrite(this->directory->path().string(), OpenModeKind::Write);
@@ -205,22 +229,69 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
     ASSERT_NO_THROW(archiveRead.read(sv_7d_1_output, FieldID{"storage_7d", 1}));
   }
 
+  // -----------------------------------------------------------------------------------------------
+  // Invalid meta data
+  // -----------------------------------------------------------------------------------------------
   {
-    // Corrupt the JSON file
-    std::ifstream ifs((this->directory->path() / Archive::ArchiveNameDataFilename).string());
+    // Read JSON meta file (from the Writing part)
+    std::ifstream ifs((this->directory->path() / Archive::ArchiveMetaDataFile).string());
     json::json j;
     ifs >> j;
-    j["fields_table"]["u"][0][1] = "LOOKS_LIKE_THIS_HASH_IS_CORRUPTED";
     ifs.close();
-    std::ofstream ofs((this->directory->path() / Archive::ArchiveNameDataFilename).string(),
-                      std::ios::out | std::ios::trunc);
-    ofs << j.dump(4) << std::endl;
 
-    BinaryArchive archiveRead(this->directory->path().string(), OpenModeKind::Read);
+    // Write meta file to disk
+    auto toFile = [this](const json::json& jsonNode) -> void {
+      std::ofstream ofs((this->directory->path() / Archive::ArchiveMetaDataFile).string(),
+                        std::ios::out | std::ios::trunc);
+      ofs << jsonNode.dump(4);
+    };
 
-    // The data of u_0_output should NOT be modified
-    auto sv = u_0_output.toStorageView();
-    ASSERT_THROW(archiveRead.read(sv, FieldID{"u", 0}), Exception);
+    // Invalid hash
+    {
+      json::json corrupted = j;
+      corrupted["fields_table"]["u"][0][1] = "LOOKS_LIKE_THIS_HASH_IS_CORRUPTED";
+      toFile(corrupted);
+
+      BinaryArchive archiveRead(this->directory->path().string(), OpenModeKind::Read);
+
+      // The data of u_0_output should NOT be modified
+      auto sv = u_0_output.toStorageView();
+      ASSERT_THROW(archiveRead.read(sv, FieldID{"u", 0}), Exception);
+    }
+
+    // Invlaid serialbox version
+    {
+      json::json corrupted = j;
+      corrupted["serialbox_version"] = 100 * (SERIALBOX_VERSION_MAJOR - 1) +
+                                       10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
+      toFile(corrupted);
+
+      ASSERT_THROW(BinaryArchive(this->directory->path().string(), OpenModeKind::Read), Exception);
+    }
+
+    // Not a binary archive
+    {
+      json::json corrupted = j;
+      corrupted["archive_name"] = "not-BinaryArchive";
+      toFile(corrupted);
+
+      ASSERT_THROW(BinaryArchive(this->directory->path().string(), OpenModeKind::Read), Exception);
+    }
+
+    // Invalid binary archive version
+    {
+      json::json corrupted = j;
+      corrupted["archive_version"] = -1;
+      toFile(corrupted);
+
+      ASSERT_THROW(BinaryArchive(this->directory->path().string(), OpenModeKind::Read), Exception);
+    }
+
+    // MetaData not found
+    {
+      boost::filesystem::remove(this->directory->path() / Archive::ArchiveMetaDataFile);
+      ASSERT_THROW(BinaryArchive(this->directory->path().string(), OpenModeKind::Read), Exception);
+    }
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -239,4 +310,8 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
 
   Storage::verify(storage_7d_0_output, storage_7d_0_input);
   Storage::verify(storage_7d_1_output, storage_7d_1_input);
+}
+
+TYPED_TEST(BinaryArchiveTest, toString) {
+  std::cout << "Implement this" << std::endl;
 }
