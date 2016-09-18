@@ -25,7 +25,7 @@ struct InsertHelper {
   const std::string& key;
   const json::json& node;
 
-  // Read value from JSON node (and check if the types match) and insert it into the MetaInfoMap 
+  // Read value from JSON node (and check if the types match) and insert it into the MetaInfoMap
   // (this is just a fancy way to avoid ugly macros)
   template <class T, class CheckFunction>
   void insert(CheckFunction&& checkFunction, const char* valueStr) {
@@ -56,36 +56,36 @@ const MetaInfoMap::mapped_type& MetaInfoMap::at(const MetaInfoMap::key_type& key
 
 json::json MetaInfoMap::toJSON() const {
   json::json j;
-  
-  if(map_.empty())  
+
+  if(map_.empty())
     return j;
-  
+
   for(auto it = map_.cbegin(), end = map_.cend(); it != end; ++it) {
     const MetaInfoValue& value = it->second;
     const std::string& key = it->first;
-    
+
     j[key]["type_id"] = static_cast<int>(value.type());
     switch(value.type()) {
-      case TypeID::Boolean:
-        j[key]["value"] = value.as<bool>();
-        break;
-      case TypeID::Int32:
-        j[key]["value"] = value.as<int>(); 
-        break;        
-      case TypeID::Int64:
-        j[key]["value"] = value.as<std::int64_t>();   
-        break;       
-      case TypeID::Float32:
-        j[key]["value"] = value.as<float>();   
-        break;        
-      case TypeID::Float64:
-        j[key]["value"] = value.as<double>();
-        break;        
-      case TypeID::String:
-        j[key]["value"] = value.as<std::string>();  
-        break;        
-      default:
-        serialbox_unreachable("Invalid TypeID");
+    case TypeID::Boolean:
+      j[key]["value"] = value.as<bool>();
+      break;
+    case TypeID::Int32:
+      j[key]["value"] = value.as<int>();
+      break;
+    case TypeID::Int64:
+      j[key]["value"] = value.as<std::int64_t>();
+      break;
+    case TypeID::Float32:
+      j[key]["value"] = value.as<float>();
+      break;
+    case TypeID::Float64:
+      j[key]["value"] = value.as<double>();
+      break;
+    case TypeID::String:
+      j[key]["value"] = value.as<std::string>();
+      break;
+    default:
+      serialbox_unreachable("Invalid TypeID");
     }
   }
   return j;
@@ -138,7 +138,7 @@ std::ostream& operator<<(std::ostream& stream, const MetaInfoMap& s) {
   json::json j(s.toJSON());
   json::json jDump;
   for(auto it = j.begin(), end = j.end(); it != end; ++it)
-    jDump[it.key()] = it.value()["value"]; 
+    jDump[it.key()] = it.value()["value"];
   stream << "MetaInfoMap = " << jDump.dump(4);
   return stream;
 }

@@ -34,7 +34,7 @@ int get_stride_helper(int coord, const Container& container) noexcept {
   int max_value = boost::mpl::deref<
       typename boost::mpl::max_element<typename LayoutMap::layout_vector_t>::type>::type::value;
 
-  const int value = coord < (int) LayoutMap::length ? LayoutMap::layout_vector[coord] : -1;
+  const int value = coord < (int)LayoutMap::length ? LayoutMap::layout_vector[coord] : -1;
   return (max_value < 0) ? 0 : (value == max_value ? 1 : container[value + 1]);
 }
 
@@ -66,7 +66,6 @@ std::vector<int> get_dims(const Storage& storage) noexcept {
 
   return dims_vec;
 }
-
 
 //===------------------------------------------------------------------------------------------===//
 //     OriginPtr

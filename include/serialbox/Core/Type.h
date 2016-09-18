@@ -40,28 +40,28 @@ std::ostream& operator<<(std::ostream& stream, const OpenModeKind& mode);
 
 /// \enum TypeID
 /// \brief Type-id of types recognized by serialbox
-/// 
+///
 /// \see isSupported
 enum class TypeID : std::uint8_t { Invalid = 0, Boolean, Int32, Int64, Float32, Float64, String };
 
 /// \brief Check if the Type is recognized by serialbox i.e maps to a type-id in \ref TypeID
-/// 
+///
 /// \b Supported Types:
-///  - bool 
+///  - bool
 ///  - int (32-bit)
 ///  - int (64-bit)
 ///  - float
 ///  - double
 ///  - string (std::string)
-/// 
+///
 /// \see TypeID
-template<class T>
+template <class T>
 struct isSupported {
   /// \brief Set of supported types
-  using SupportedTypesSet = boost::mpl::set<bool, int, std::int64_t, float, double, std::string>;  
+  using SupportedTypesSet = boost::mpl::set<bool, int, std::int64_t, float, double, std::string>;
 
   /// \brief True iff the type is supported
-  constexpr static bool value = boost::mpl::has_key<SupportedTypesSet, T>::type::value; 
+  constexpr static bool value = boost::mpl::has_key<SupportedTypesSet, T>::type::value;
 };
 
 /// \brief Convert TypeID to stream

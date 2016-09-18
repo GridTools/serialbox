@@ -67,6 +67,7 @@ TEST(MetaInfoValue, Construction) {
   EXPECT_EQ(std_string_value1.as<std::string>(), "rts");
 
   // Comparison
+  // int32_value0 == 32 and int32_value1 == 12012091
   EXPECT_TRUE(int32_value0 == int32_value0);
   EXPECT_FALSE(int32_value0 != int32_value0);
   EXPECT_TRUE(int32_value0 == int32_value1);

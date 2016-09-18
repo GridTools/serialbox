@@ -29,9 +29,9 @@ namespace serialbox {
 /// instead.
 class SerializerImpl {
 public:
-  /// \brief 
+  /// \brief
   static constexpr const char* ArchiveNameDataFilename = "MetaData.json";
-  
+
   /// \brief Copy constructor [deleted]
   SerializerImpl(const SerializerImpl&) = delete;
 
@@ -56,15 +56,14 @@ public:
   SerializerImpl(OpenModeKind mode, std::string directory);
 
   /// \brief Construct members externally and \b move them in
-  /// 
+  ///
   /// \param mode
   /// \param savepoints
   /// \param fieldMap
   /// \param globalMetaInfo
   /// \param archive
-  SerializerImpl(OpenModeKind mode, std::vector<SavepointImpl>& savepoints,
-                 FieldMap& fieldMap, MetaInfoMap& globalMetaInfo,
-                 std::unique_ptr<Archive>& archive);
+  SerializerImpl(OpenModeKind mode, std::vector<SavepointImpl>& savepoints, FieldMap& fieldMap,
+                 MetaInfoMap& globalMetaInfo, std::unique_ptr<Archive>& archive);
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s);

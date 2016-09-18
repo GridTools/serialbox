@@ -20,7 +20,7 @@
 
 /// \namespace json
 /// \brief Namespace of the JSON library
-/// 
+///
 /// \see https://github.com/nlohmann/json/tree/master
 namespace json = nlohmann;
 

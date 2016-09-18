@@ -32,7 +32,7 @@ namespace serialbox {
 class MetaInfoMap {
 public:
   /// \brief Default constructor (empty map)
-  MetaInfoMap() : map_() {};
+  MetaInfoMap() : map_(){};
 
   /// \brief Construct from json
   MetaInfoMap(const json::json jsonNode) { fromJSON(jsonNode); }

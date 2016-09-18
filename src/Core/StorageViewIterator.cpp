@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/StorageView.h"
+#include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/StorageViewIterator.h"
 
 namespace serialbox {
@@ -23,7 +23,7 @@ StorageViewIterator::StorageViewIterator(const StorageView* storageView, bool be
 
   if(!(end_ = !beginning)) {
     index_.resize(storageView_->dims().size(), 0);
-    orignPtr_ = const_cast<StorageView*>(storageView_)->originPtr();  // TODO: fix this const cast
+    orignPtr_ = const_cast<StorageView*>(storageView_)->originPtr(); // TODO: fix this const cast
     curPtr_ = orignPtr_ + computeCurrentIndex();
   }
 }
@@ -48,8 +48,8 @@ StorageViewIterator::iterator& StorageViewIterator::operator++() noexcept {
   return (*this);
 }
 
-bool StorageViewIterator::operator==(const iterator& right) const noexcept { 
-  return (curPtr_ == right.curPtr_ || (end_ == true && end_ == right.end_)); 
+bool StorageViewIterator::operator==(const iterator& right) const noexcept {
+  return (curPtr_ == right.curPtr_ || (end_ == true && end_ == right.end_));
 }
 
 void StorageViewIterator::swap(StorageViewIterator& other) noexcept {

@@ -17,7 +17,7 @@
 #define SERIALBOX_CORE_COMPILER_H
 
 #include "serialbox/Core/Config.h"
- 
+
 #ifndef __has_feature
 #define __has_feature(x) 0
 #endif
@@ -82,7 +82,7 @@
 #endif
 
 /// \macro SERIALBOX_BUILTIN_LIKELY
-/// \brief Mark this expression as being likely evaluated to "true"  
+/// \brief Mark this expression as being likely evaluated to "true"
 #if __has_builtin(__builtin_expect) || SERIALBOX_GNUC_PREREQ(4, 5, 0)
 #define SERIALBOX_BUILTIN_LIKELY(x) __builtin_expect(!!(x), 1)
 #else
@@ -90,7 +90,7 @@
 #endif
 
 /// \macro SERIALBOX_BUILTIN_UNLIKELY
-/// \brief Mark this expression as being likely evaluated to "false"  
+/// \brief Mark this expression as being likely evaluated to "false"
 #if __has_builtin(__builtin_expect) || SERIALBOX_GNUC_PREREQ(4, 5, 0)
 #define SERIALBOX_BUILTIN_UNLIKELY(x) __builtin_expect(!!(x), 0)
 #else

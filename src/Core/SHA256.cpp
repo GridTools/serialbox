@@ -23,7 +23,7 @@ std::string SHA256::hash(const void* data, int length) noexcept {
   sha256(data, length, hash);
 
   std::ostringstream ss;
-  for (int i = 0; i < 32; ++i)
+  for(int i = 0; i < 32; ++i)
     ss << std::hex << std::uppercase << static_cast<int>(hash[i]);
 
   return ss.str();

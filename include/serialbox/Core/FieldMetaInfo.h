@@ -25,7 +25,7 @@ class FieldMetaInfo {
 public:
   /// \brief Construct from JSON
   FieldMetaInfo(const json::json& jsonNode);
-  
+
   /// \brief Copy constructor
   FieldMetaInfo(const FieldMetaInfo&) = default;
 
@@ -52,7 +52,7 @@ public:
   ///
   /// \throw Exception  JSON node is ill-formed
   void fromJSON(const json::json& jsonNode);
-  
+
 private:
   TypeID type_;
   std::vector<int> dims_;

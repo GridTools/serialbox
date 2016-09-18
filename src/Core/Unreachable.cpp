@@ -27,7 +27,7 @@ SERIALBOX_ATTRIBUTE_NORETURN void serialbox_unreachable_internal(const char* msg
     std::cerr << " at " << file << ":" << line;
   std::cerr << std::endl;
   std::abort();
-  
+
 #ifdef SERIALBOX_BUILTIN_UNREACHABLE
   SERIALBOX_BUILTIN_UNREACHABLE;
 #endif
