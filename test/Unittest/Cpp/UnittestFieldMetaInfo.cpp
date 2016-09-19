@@ -18,6 +18,22 @@
 
 using namespace serialbox;
 
+template<class MetaInfoMapType1, class MetaInfoMapType2>
+static bool mapEqual(const MetaInfoMapType1& map1, const MetaInfoMapType2& map2) {
+  if(map1.size() != map2.size())
+    return false;
+
+  for(const auto& map_element : map1) {
+    const std::string key = map_element.first;
+    if(!map2.hasKey(key))
+      return false;
+
+    if(map_element.second != map2.at(key))
+      return false;
+  }
+  return true;
+}
+
 TEST(FieldMetaInfoTest, Construction) {
   TypeID type(TypeID::Float64);
   std::vector<int> dims{20, 15, 20};
@@ -62,17 +78,16 @@ TEST(FieldMetaInfoTest, Construction) {
   // -----------------------------------------------------------------------------------------------
   {
     FieldMetaInfo f(type, dims, metaInfo);
-
     FieldMetaInfo f_copy(f);
+
     EXPECT_EQ(f.type(), f_copy.type());
     EXPECT_TRUE(std::equal(f.dims().begin(), f.dims().end(), f_copy.dims().begin()));
-    EXPECT_TRUE(std::equal(f.metaInfo().begin(), f.metaInfo().end(), f_copy.metaInfo().begin()));
+    EXPECT_TRUE(mapEqual(f.metaInfo(), f_copy.metaInfo()));
 
     FieldMetaInfo f_move(std::move(f));
     EXPECT_EQ(f_move.type(), f_copy.type());
     EXPECT_TRUE(std::equal(f_move.dims().begin(), f_move.dims().end(), f_copy.dims().begin()));
-    EXPECT_TRUE(
-        std::equal(f_move.metaInfo().begin(), f_move.metaInfo().end(), f_copy.metaInfo().begin()));
+    EXPECT_TRUE(mapEqual(f_move.metaInfo(), f_copy.metaInfo()));
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -85,14 +100,13 @@ TEST(FieldMetaInfoTest, Construction) {
     f_copy = f;
     EXPECT_EQ(f.type(), f_copy.type());
     EXPECT_TRUE(std::equal(f.dims().begin(), f.dims().end(), f_copy.dims().begin()));
-    EXPECT_TRUE(std::equal(f.metaInfo().begin(), f.metaInfo().end(), f_copy.metaInfo().begin()));
+    EXPECT_TRUE(mapEqual(f.metaInfo(), f_copy.metaInfo()));
 
     FieldMetaInfo f_move;
     f_move = std::move(f);
     EXPECT_EQ(f_move.type(), f_copy.type());
     EXPECT_TRUE(std::equal(f_move.dims().begin(), f_move.dims().end(), f_copy.dims().begin()));
-    EXPECT_TRUE(
-        std::equal(f_move.metaInfo().begin(), f_move.metaInfo().end(), f_copy.metaInfo().begin()));
+    EXPECT_TRUE(mapEqual(f_move.metaInfo(), f_move.metaInfo()));
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -218,7 +232,7 @@ TEST(FieldMetaInfoTest, fromJSON) {
     FieldMetaInfo f;
     ASSERT_THROW(f.fromJSON(j);, Exception);
   }
-  
+
   // -----------------------------------------------------------------------------------------------
   // Failure (missing dims)
   // -----------------------------------------------------------------------------------------------
@@ -238,11 +252,11 @@ TEST(FieldMetaInfoTest, fromJSON) {
          "type_id": 5
      }
     )"_json;
-    
+
     FieldMetaInfo f;
     ASSERT_THROW(f.fromJSON(j);, Exception);
   }
-  
+
   // -----------------------------------------------------------------------------------------------
   // Failure (missing type)
   // -----------------------------------------------------------------------------------------------
@@ -265,11 +279,11 @@ TEST(FieldMetaInfoTest, fromJSON) {
          }
      }
     )"_json;
-    
+
     FieldMetaInfo f;
     ASSERT_THROW(f.fromJSON(j);, Exception);
   }
-  
+
   // -----------------------------------------------------------------------------------------------
   // Failure (missing meta info)
   // -----------------------------------------------------------------------------------------------
@@ -283,7 +297,7 @@ TEST(FieldMetaInfoTest, fromJSON) {
          "type_id": 5
      }
     )"_json;
-    
+
     FieldMetaInfo f;
     ASSERT_THROW(f.fromJSON(j);, Exception);
   }
