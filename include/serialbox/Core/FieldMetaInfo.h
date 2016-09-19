@@ -16,6 +16,7 @@
 #define SERIALBOX_CORE_FIELDMAPMETAINFO_H
 
 #include "serialbox/Core/MetaInfoMap.h"
+#include "serialbox/Core/Json.h"
 #include <unordered_map>
 
 namespace serialbox {

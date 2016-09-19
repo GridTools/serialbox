@@ -15,12 +15,13 @@ set(SOURCES
   Logging.cpp
   MetaInfoMap.cpp
   MetaInfoValue.cpp
+  SavepointImpl.cpp
   SerializerImpl.cpp
   StorageView.cpp
   StorageViewIterator.cpp
+  SHA256.cpp
   Type.cpp
   Unreachable.cpp
-  SHA256.cpp
   
   Archive/BinaryArchive.cpp
 )

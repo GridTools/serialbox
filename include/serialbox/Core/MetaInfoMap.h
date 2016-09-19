@@ -140,9 +140,6 @@ public:
   /// \brief Test for inequality
   bool operator!=(const MetaInfoMap& right) const noexcept { return (!(*this == right)); }
 
-  /// \brief Convert to stream
-  friend std::ostream& operator<<(std::ostream& stream, const MetaInfoMap& s);
-
   /// \brief Convert to JSON
   json::json toJSON() const;
 
@@ -150,6 +147,9 @@ public:
   ///
   /// \throw Exception  JSON node is ill-formed
   void fromJSON(const json::json& jsonNode);
+  
+  /// \brief Convert to stream
+  friend std::ostream& operator<<(std::ostream& stream, const MetaInfoMap& s);
 
 private:
   map_type map_;
