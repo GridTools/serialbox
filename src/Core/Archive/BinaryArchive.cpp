@@ -140,6 +140,12 @@ void BinaryArchive::updateMetaData() {
   metaDataDirty_ = false;
 }
 
+
+void BinaryArchive::forceUpdateMetaData() {
+  writeMetaDataToJson();
+  metaDataDirty_ = false;
+}
+
 //===------------------------------------------------------------------------------------------===//
 //     Writing
 //===------------------------------------------------------------------------------------------===//
@@ -311,20 +317,18 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) throw
 }
 
 std::ostream& BinaryArchive::toStream(std::ostream& stream) const {
-  stream << "BinaryArchive [\n";
-  stream << "  directory = " << directory_.string() << "\n";
-  stream << "  mode = " << mode_ << "\n";
-  stream << "  fieldsTable = [\n";
+  stream << "BinaryArchive = {\n";
+  stream << "  directory: " << directory_.string() << "\n";
+  stream << "  mode: " << mode_ << "\n";
+  stream << "  fieldsTable = {\n";
   for(auto it = fieldTable_.begin(), end = fieldTable_.end(); it != end; ++it) {
     stream << "    " << it->first << " = {\n";
-    for(std::size_t id = 0; id < it->second.size(); ++id) {
-      stream << "      [ " << it->second[id].offset << ",\n";
-      stream << "        " << it->second[id].checksum << " ]\n";
-    }
+    for(std::size_t id = 0; id < it->second.size(); ++id) 
+      stream << "      [ " << it->second[id].offset << ", " << it->second[id].checksum << " ]\n";
     stream << "    }\n";
   }
-  stream << "  ]\n";
-  stream << "]\n";
+  stream << "  }\n";
+  stream << "}\n";
   return stream;
 }
 

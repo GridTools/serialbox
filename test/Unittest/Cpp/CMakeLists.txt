@@ -11,16 +11,20 @@ cmake_minimum_required(VERSION 3.1)
 
 set(CPP_UNITTEST_SOURCES 
   UnittestBinaryArchive.cpp
+  UnittestFieldMap.cpp
+  UnittestFieldMetaInfo.cpp
   UnittestStorage.cpp
   UnittestStorageView.cpp
-  UnittestStorageViewGridTools.cpp
-  UnittestStorageViewSTELLA.cpp
   UnittestType.cpp
   UnittestVersion.cpp
   UnittestException.cpp
   UnittestUnreachable.cpp
   UnittestMetaInfoMap.cpp
   UnittestMetaInfoValue.cpp
+  
+  UnittestGridToolsStorageView.cpp
+ 
+  UnittestSTELLAStorageView.cpp
 )
   
 serialbox_add_cpp_unittest_executable(SerialboxCppUnittest 

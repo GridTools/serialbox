@@ -16,6 +16,7 @@
 #include "Utility/Storage.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Version.h"
+#include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 
 using namespace serialbox;
@@ -54,7 +55,7 @@ TYPED_TEST(BinaryArchiveTest, Construction) {
     // Open fresh archive and write meta data to disk
     {
       EXPECT_NO_THROW(
-          BinaryArchive(this->directory->path(), OpenModeKind::Write).setMetaDataDirty());
+          BinaryArchive(this->directory->path(), OpenModeKind::Write).forceUpdateMetaData(););
     }
 
     // Throw Exception: Directory is not empty
@@ -213,6 +214,7 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
     // Check all exceptional cases
     ASSERT_THROW(archiveRead.write(sv_u_2_output, FieldID{"u", 2}), Exception);
     ASSERT_THROW(archiveRead.read(sv_u_2_output, FieldID{"u", 1024}), Exception);
+    ASSERT_THROW(archiveRead.read(sv_u_2_output, FieldID{"not-a-field", 0}), Exception);
 
     // storage 2d
     auto sv_2d_0_output = storage_2d_0_output.toStorageView();
@@ -313,5 +315,12 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
 }
 
 TYPED_TEST(BinaryArchiveTest, toString) {
-  std::cout << "Implement this" << std::endl;
+  std::stringstream ss;
+  BinaryArchive archive(this->directory->path(), OpenModeKind::Write);
+
+  ss << archive;
+  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "BinaryArchive"));
+  EXPECT_NE(ss.str().find("directory"), std::string::npos);
+  EXPECT_NE(ss.str().find("mode"), std::string::npos);
+  EXPECT_NE(ss.str().find("fieldsTable"), std::string::npos);
 }

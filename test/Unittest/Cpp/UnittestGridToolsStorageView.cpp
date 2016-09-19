@@ -25,7 +25,7 @@
 namespace {
 
 template <class T>
-class StorageViewGridToolsTest : public testing::Test {
+class GridToolsStorageViewTest : public testing::Test {
 public:
   using storage_types = serialbox::unittest::gridtools_storage_types<T>;
 
@@ -150,7 +150,7 @@ using TestTypes = testing::Types<double, float, int>;
 
 } // anonymous namespace
 
-TYPED_TEST_CASE(StorageViewGridToolsTest, TestTypes);
+TYPED_TEST_CASE(GridToolsStorageViewTest, TestTypes);
 
 template <typename Storage>
 serialbox::StorageView make_storage_view(const Storage& storage) {
@@ -164,7 +164,7 @@ serialbox::StorageView make_storage_view(const Storage& storage) {
                                 std::move(dims), std::move(strides));
 }
 
-TYPED_TEST(StorageViewGridToolsTest, Construction) {
+TYPED_TEST(GridToolsStorageViewTest, Construction) {
   using namespace serialbox::gridtools;
 
   // -----------------------------------------------------------------------------------------------
@@ -360,7 +360,7 @@ TYPED_TEST(StorageViewGridToolsTest, Construction) {
   EXPECT_EQ(gpu_4d_origin_ptr, static_cast<void*>(&gpu_4d_storage(0, 0, 0, 0)));
 }
 
-TYPED_TEST(StorageViewGridToolsTest, Iterator) {
+TYPED_TEST(GridToolsStorageViewTest, Iterator) {
   int dim1 = this->dim1, dim2 = this->dim2, dim3 = this->dim3, dim4 = this->dim4;
 
   // -----------------------------------------------------------------------------------------------
@@ -474,7 +474,7 @@ TYPED_TEST(StorageViewGridToolsTest, Iterator) {
         }
 }
 
-TYPED_TEST(StorageViewGridToolsTest, isMemCopyable) {
+TYPED_TEST(GridToolsStorageViewTest, isMemCopyable) {
   EXPECT_FALSE(make_storage_view(*this->cpu_2d_real_storage_ptr).isMemCopyable());
   EXPECT_FALSE(make_storage_view(*this->gpu_2d_real_storage_ptr).isMemCopyable());
   EXPECT_FALSE(make_storage_view(*this->cpu_2d_storage_ptr).isMemCopyable());
@@ -486,9 +486,9 @@ TYPED_TEST(StorageViewGridToolsTest, isMemCopyable) {
 
   // Create a memcopyable stroage
   using layout_type = gridtools::layout_map<2, 1, 0>; // stride 1 on i (col-major)
-  using meta_data_type = typename StorageViewGridToolsTest<
+  using meta_data_type = typename GridToolsStorageViewTest<
       TypeParam>::storage_types::storage_traits_type::template meta_storage_type<9, layout_type>;
-  using storage_type = typename StorageViewGridToolsTest<
+  using storage_type = typename GridToolsStorageViewTest<
       TypeParam>::storage_types::storage_traits_type::template storage_type<TypeParam, meta_data_type>;
 
   meta_data_type meta_data(this->dim1, this->dim2, this->dim3);

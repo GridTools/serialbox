@@ -13,6 +13,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/Core/MetaInfoMap.h"
+#include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 
 using namespace serialbox;
@@ -218,6 +219,15 @@ TEST(MetaInfoMap, fromJSON) {
 }
 
 TEST(MetaInfoMap, toString) {
-  std::cout << "Implement this" << std::endl;
+  std::stringstream ss;
+
+  MetaInfoMap map;
+  map.insert("key1", std::string("value2"));
+  map.insert("key2", double(5.1));
+  
+  ss << map;
+  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "MetaInfoMap"));
+  EXPECT_NE(ss.str().find("key1"), std::string::npos);
+  EXPECT_NE(ss.str().find("key2"), std::string::npos);
 }
 

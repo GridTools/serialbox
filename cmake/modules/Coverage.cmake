@@ -20,7 +20,7 @@ function(enable_coverage root)
     COMMAND ${LCOV_PATH} --directory . --capture --output-file coverage.info
     COMMAND ${LCOV_PATH} --remove coverage.info ${EXCLUDE_PATTERN} -o coverage.info.cleaned
     WORKING_DIRECTORY ${root}
-    COMMENT "Processing code coverage counters."
+    COMMENT "Processing code coverage counters"
   )
 
   if(DEFINED GENHTML_PATH)

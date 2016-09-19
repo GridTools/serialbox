@@ -30,7 +30,7 @@ namespace serialbox {
 class SerializerImpl {
 public:
   /// \brief
-  static constexpr const char* ArchiveNameDataFilename = "MetaData.json";
+  static constexpr const char* SerializerMetaDataFile = "MetaData.json";
 
   /// \brief Copy constructor [deleted]
   SerializerImpl(const SerializerImpl&) = delete;

@@ -31,24 +31,6 @@ namespace serialbox {
 /// floating point numbers (32 and 64 bit) or strings.
 class MetaInfoMap {
 public:
-  /// \brief Default constructor (empty map)
-  MetaInfoMap() : map_(){};
-
-  /// \brief Construct from json
-  MetaInfoMap(const json::json jsonNode) { fromJSON(jsonNode); }
-
-  /// \brief Copy constructor
-  MetaInfoMap(const MetaInfoMap&) = default;
-
-  /// \brief Move constructor
-  MetaInfoMap(MetaInfoMap&&) = default;
-
-  /// \brief Copy assignment
-  MetaInfoMap& operator=(const MetaInfoMap&) = default;
-
-  /// \brief Move assignment
-  MetaInfoMap& operator=(MetaInfoMap&&) = default;
-
   /// \brief Type of the underlying hash-map
   using map_type = std::unordered_map<std::string, MetaInfoValue>;
 
@@ -69,6 +51,27 @@ public:
 
   /// \brief A forward iterator to `const value_type`
   using const_iterator = map_type::const_iterator;
+  
+  /// \brief Default constructor (empty map)
+  MetaInfoMap() : map_(){};
+
+  /// \brief Construct from json
+  MetaInfoMap(const json::json jsonNode) { fromJSON(jsonNode); }
+  
+  /// \brief Construct from initalizer-list
+  MetaInfoMap(std::initializer_list<value_type> list) : map_(list) {};
+
+  /// \brief Copy constructor
+  MetaInfoMap(const MetaInfoMap&) = default;
+
+  /// \brief Move constructor
+  MetaInfoMap(MetaInfoMap&&) = default;
+
+  /// \brief Copy assignment
+  MetaInfoMap& operator=(const MetaInfoMap&) = default;
+
+  /// \brief Move assignment
+  MetaInfoMap& operator=(MetaInfoMap&&) = default;
 
   /// \brief Check if key exists in the set
   ///

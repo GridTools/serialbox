@@ -30,7 +30,7 @@ struct InsertHelper {
   template <class T, class CheckFunction>
   void insert(CheckFunction&& checkFunction, const char* valueStr) {
     if(!(node["value"].*checkFunction)())
-      throw Exception("JSON node ill-formed: sub-node '%s' not regconized as %s", key, valueStr);
+      throw Exception("sub-node '%s' not regconized as %s", key, valueStr);
     T value = node["value"];
     map.insert(key, value);
   }
@@ -92,18 +92,18 @@ json::json MetaInfoMap::toJSON() const {
 }
 
 void MetaInfoMap::fromJSON(const json::json& jsonNode) {
-  if(jsonNode.is_null()) {
-    map_.clear();
+  map_.clear();
+
+  if(jsonNode.is_null() || jsonNode.empty())
     return;
-  }
 
   for(auto it = jsonNode.begin(), end = jsonNode.end(); it != end; ++it) {
 
     if(!it->count("type_id"))
-      throw Exception("JSON node ill-formed: sub-node '%s' has no node 'type_id'", it.key());
+      throw Exception("sub-node '%s' has no node 'type_id'", it.key());
 
     if(!it->count("value"))
-      throw Exception("JSON node ill-formed: sub-node '%s' has no node 'value'", it.key());
+      throw Exception("sub-node '%s' has no node 'value'", it.key());
 
     const json::json& node = it.value();
     int typeAsInt = node["type_id"];

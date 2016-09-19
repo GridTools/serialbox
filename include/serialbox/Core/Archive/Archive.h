@@ -28,6 +28,9 @@ public:
   ///
   static constexpr const char* ArchiveMetaDataFile = "ArchiveMetaData.json";
 
+  /// \brief Vritual destructor
+  virtual ~Archive() {}
+
   ///
   virtual void write(StorageView& storageView, const FieldID& fieldID) throw(Exception) = 0;
 
@@ -36,6 +39,9 @@ public:
 
   ///
   virtual void updateMetaData() = 0;
+
+  ///
+  virtual void forceUpdateMetaData() { updateMetaData(); }
 
   ///
   virtual const std::string& directory() const = 0;
@@ -50,8 +56,6 @@ public:
   friend std::ostream& operator<<(std::ostream& stream, const Archive& archive) {
     return archive.toStream(stream);
   }
-
-  virtual ~Archive() {}
 };
 
 } // namespace serialbox

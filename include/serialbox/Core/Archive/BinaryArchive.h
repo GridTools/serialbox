@@ -51,7 +51,7 @@ public:
   /// \brief Copy constructor [deleted]
   BinaryArchive(const BinaryArchive&) = delete;
 
-  /// \brief Copy assignment [deleted
+  /// \brief Copy assignment [deleted]
   BinaryArchive& operator=(const BinaryArchive&) = delete;
 
   /// \brief Destructor
@@ -63,16 +63,17 @@ public:
   /// \brief Convert meta-data to JSON and serialize to file
   void writeMetaDataToJson();
 
-  /// \brief Set meta data to be out-of-data
-  void setMetaDataDirty() noexcept { metaDataDirty_ = true; }
-
+  /// \name Virtual archive implementation
+  /// @{
   virtual void write(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;
   virtual void read(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;
   virtual void updateMetaData() override;
+  virtual void forceUpdateMetaData() override;
   virtual const std::string& directory() const override { return directory_.string(); }
   virtual const std::string& name() const override { return BinaryArchive::Name; }
   virtual std::ostream& toStream(std::ostream& stream) const override;
-
+  /// @}
+  
 private:
   OpenModeKind mode_;
   boost::filesystem::path directory_;

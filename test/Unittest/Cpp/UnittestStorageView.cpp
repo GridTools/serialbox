@@ -16,7 +16,7 @@
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/Type.h"
-#include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 #include <cstring>
 #include <numeric>

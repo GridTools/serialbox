@@ -25,7 +25,7 @@
 namespace {
 
 template <class T>
-class StorageViewSTELLATest : public testing::Test {
+class STELLAStorageViewTest : public testing::Test {
 public:
   using StorageType = serialbox::unittest::STELLAStorageTypes<T>;
 
@@ -223,9 +223,9 @@ using TestTypes = testing::Types<double, float, int>;
 
 } // anonymous namespace
 
-TYPED_TEST_CASE(StorageViewSTELLATest, TestTypes);
+TYPED_TEST_CASE(STELLAStorageViewTest, TestTypes);
 
-TYPED_TEST(StorageViewSTELLATest, Construction) {
+TYPED_TEST(STELLAStorageViewTest, Construction) {
   using namespace serialbox::stella;
 
 #define CHECK_FIELD(field_ptr)                                                                     \
@@ -259,7 +259,7 @@ TYPED_TEST(StorageViewSTELLATest, Construction) {
 #undef CHECK_FIELD
 }
 
-TYPED_TEST(StorageViewSTELLATest, Iterator) {
+TYPED_TEST(STELLAStorageViewTest, Iterator) {
   using namespace serialbox::stella;
   int dim1 = this->dim1, dim2 = this->dim2, dim3 = this->dim3;
 

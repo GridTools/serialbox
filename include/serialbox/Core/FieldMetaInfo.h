@@ -23,8 +23,15 @@ namespace serialbox {
 /// \brief Meta-infomration of a data field
 class FieldMetaInfo {
 public:
+  /// \brief Default constructor
+  FieldMetaInfo() : type_(TypeID::Invalid), dims_(), metaInfo_() {}
+
+  /// \brief Construct members externally
+  FieldMetaInfo(TypeID type, const std::vector<int>& dims, const MetaInfoMap& metaInfo)
+      : type_(type), dims_(dims), metaInfo_(metaInfo) {}
+
   /// \brief Construct from JSON
-  FieldMetaInfo(const json::json& jsonNode);
+  FieldMetaInfo(const json::json& jsonNode) { fromJSON(jsonNode); }
 
   /// \brief Copy constructor
   FieldMetaInfo(const FieldMetaInfo&) = default;
@@ -39,11 +46,25 @@ public:
   FieldMetaInfo& operator=(FieldMetaInfo&&) = default;
 
   /// \brief Swap with other
-  void swap(FieldMetaInfo& other) noexcept {
-    std::swap(type_, other.type_);
-    dims_.swap(other.dims_);
-    metaInfo_.swap(other.metaInfo_);
-  }
+  void swap(FieldMetaInfo& other) noexcept;
+
+  /// \brief Test for equality
+  bool operator==(const FieldMetaInfo& right) const noexcept;
+
+  /// \brief Test for inequality
+  bool operator!=(const FieldMetaInfo& right) const noexcept { return (!(*this == right)); }
+
+  /// \brief Access TypeID
+  TypeID& type() noexcept { return type_; }
+  const TypeID& type() const noexcept { return type_; }  
+
+  /// \brief Access dimensions
+  std::vector<int>& dims() noexcept { return dims_; }  
+  const std::vector<int>& dims() const noexcept { return dims_; }  
+
+  /// \brief Access meta-info map
+  MetaInfoMap& metaInfo() noexcept { return metaInfo_; }  
+  const MetaInfoMap& metaInfo() const noexcept { return metaInfo_; }
 
   /// \brief Convert to JSON
   json::json toJSON() const;
@@ -52,6 +73,9 @@ public:
   ///
   /// \throw Exception  JSON node is ill-formed
   void fromJSON(const json::json& jsonNode);
+  
+  /// \brief Convert to stream
+  friend std::ostream& operator<<(std::ostream& stream, const FieldMetaInfo& f);
 
 private:
   TypeID type_;
