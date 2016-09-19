@@ -24,7 +24,7 @@ static bool mapEqual(const MetaInfoMapType1& map1, const MetaInfoMapType2& map2)
     return false;
 
   for(const auto& map_element : map1) {
-    const std::string key = map_element.first;
+    const std::string& key = map_element.first;
     if(!map2.hasKey(key))
       return false;
 
@@ -41,7 +41,7 @@ TEST(FieldMetaInfoTest, Construction) {
       {"key1", MetaInfoValue(std::string("str"))}, {"key2", MetaInfoValue(double(5))}});
 
   // -----------------------------------------------------------------------------------------------
-  // Default constrcutor
+  // Default constructor
   // -----------------------------------------------------------------------------------------------
   {
     FieldMetaInfo f;
@@ -110,7 +110,7 @@ TEST(FieldMetaInfoTest, Construction) {
   }
 
   // -----------------------------------------------------------------------------------------------
-  // Comparison operator
+  // Comparison operators
   // -----------------------------------------------------------------------------------------------
   {
     FieldMetaInfo f(type, dims, metaInfo);

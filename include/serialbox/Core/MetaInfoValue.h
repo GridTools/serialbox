@@ -18,7 +18,6 @@
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Type.h"
 #include <boost/any.hpp>
-#include <iosfwd>
 #include <type_traits>
 
 namespace serialbox {

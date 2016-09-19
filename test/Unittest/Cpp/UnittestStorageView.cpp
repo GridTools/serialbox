@@ -187,6 +187,10 @@ TYPED_TEST(StorageViewTest, Construction) {
   sv_1d.swap(sv_2d_col_major);
   EXPECT_EQ(sv_1d, copy_sv_2d);
   EXPECT_EQ(sv_2d_col_major, copy_sv_1d);
+  
+  swap(sv_1d, sv_2d_col_major);
+  EXPECT_EQ(sv_1d, copy_sv_1d);
+  EXPECT_EQ(sv_2d_col_major, copy_sv_2d);
 
   // Copy assignment
   sv_1d = sv_2d_col_major;

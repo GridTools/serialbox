@@ -10,7 +10,10 @@ function(enable_coverage root)
                       # Unittests and external libraries
                       '*test/*'
                       '*external/*' 
+                      
+                      # Not fully testable
                       '*/Unreachable.cpp'
+                      '*/Logging.cpp'
   )
 
   add_custom_target(coverage

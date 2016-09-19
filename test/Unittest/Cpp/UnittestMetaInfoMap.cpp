@@ -18,7 +18,7 @@
 
 using namespace serialbox;
 
-TEST(MetaInfoMap, Construction) {
+TEST(MetaInfoMapTest, Construction) {
   MetaInfoMap map;
 
   EXPECT_TRUE(map.empty());
@@ -99,7 +99,7 @@ TEST(MetaInfoMap, Construction) {
   EXPECT_EQ(map.size(), 0);
 }
 
-TEST(MetaInfoMap, toJSON) {
+TEST(MetaInfoMapTest, toJSON) {
   MetaInfoMap map;
   EXPECT_TRUE(map.toJSON().empty());
 
@@ -144,7 +144,7 @@ TEST(MetaInfoMap, toJSON) {
   ASSERT_STREQ(str.c_str(), "string");
 }
 
-TEST(MetaInfoMap, fromJSON) {
+TEST(MetaInfoMapTest, fromJSON) {
   // -----------------------------------------------------------------------------------------------
   // Success
   // -----------------------------------------------------------------------------------------------
@@ -218,7 +218,7 @@ TEST(MetaInfoMap, fromJSON) {
   }
 }
 
-TEST(MetaInfoMap, toString) {
+TEST(MetaInfoMapTest, toString) {
   std::stringstream ss;
 
   MetaInfoMap map;

@@ -8,22 +8,32 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file defines a unique identification of a savepoint within a field.
+/// This file defines the FielID to uniquely identifiy a field.
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_FIELD_H
-#define SERIALBOX_CORE_FIELD_H
+#ifndef SERIALBOX_CORE_FIELDID_H
+#define SERIALBOX_CORE_FIELDID_H
 
 #include <string>
+#include <iosfwd>
 
 namespace serialbox {
 
-/// \brief Unique identification of a savepoint within a field
+/// \brief Uniquely identifiy a field
 struct FieldID {
   std::string name; ///< Name of the field
   unsigned int id;  ///< ID within the field
 };
+
+/// \brief Check for equality of FieldIDs
+bool operator==(const FieldID& left, const FieldID& right);
+
+/// \brief Check for inequality of FieldIDs
+bool operator!=(const FieldID& left, const FieldID& right);
+
+/// \brief Convert FieldID to stream
+std::ostream& operator<<(std::ostream& stream, const FieldID& f);
 
 } // namespace serialbox
 

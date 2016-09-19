@@ -19,6 +19,8 @@
 #include "serialbox/Core/Json.h"
 #include "serialbox/Core/MetaInfoMap.h"
 #include <iosfwd>
+#include <string>
+#include <vector>
 
 namespace serialbox {
 
@@ -28,11 +30,19 @@ namespace serialbox {
 /// instead.
 class SavepointImpl {
 public:
+  /// \brief Construct an empty savepoint (i.e this->empty() == true)
+  template <class StringType,
+            class = typename std::enable_if<!std::is_same<StringType, json::json>::value>::type>
+  explicit SavepointImpl(const StringType& name) : name_(name), metaInfo_(), fields_(){};
+
   /// \brief Copy constructor [deleted]
   SavepointImpl(const SavepointImpl&) = delete;
 
   /// \brief Move constructor
   SavepointImpl(SavepointImpl&&) = default;
+
+  /// \brief Construct from JSON
+  explicit SavepointImpl(const json::json& jsonNode) { fromJSON(jsonNode); }
 
   /// \brief Construct members externally
   SavepointImpl(const std::string name, const MetaInfoMap& metaInfo,
@@ -44,6 +54,17 @@ public:
 
   /// \brief Move assignment
   SavepointImpl& operator=(SavepointImpl&&) = default;
+
+  /// \brief Test for equality
+  bool operator==(const SavepointImpl& right) const {
+    return (name_ == right.name_) && (metaInfo_ == right.metaInfo_) && (fields_ == right.fields_);
+  }
+
+  /// \brief Test for inequality
+  bool operator!=(const SavepointImpl& right) const { return (!(*this == right)); }
+
+  /// \brief Swap with other
+  void swap(SavepointImpl& other) noexcept;
 
   /// \brief Access name
   std::string& name() noexcept { return name_; }
@@ -59,9 +80,14 @@ public:
 
   /// \brief Register field within savepoint
   ///
+  /// This function provides strong exception safety.
+  ///
   /// \param name       Name of the newly registered field
   /// \throw Exception  Field with given name already exists
   void registerField(FieldID fieldID);
+
+  /// \brief Return number of registered fields
+  std::size_t numFields() const noexcept { return fields_.size(); }
 
   /// \brief Check if field exists
   ///
@@ -75,6 +101,9 @@ public:
   /// \throw Exception  Field with given name does not exist
   const FieldID& getFieldID(const std::string& name) const;
 
+  /// \brief Returns a bool value indicating whether the savepoint is empty
+  bool empty() const noexcept { return metaInfo_.empty() && fields_.empty(); }
+
   /// \brief Convert to JSON
   json::json toJSON() const;
 
@@ -86,7 +115,7 @@ public:
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const SavepointImpl& s);
 
-private:
+protected:
   inline bool hasFieldImpl(const std::string& name) const noexcept {
     for(const auto& field : fields_)
       if(field.name == name)
@@ -94,7 +123,7 @@ private:
     return false;
   }
 
-private:
+protected:
   std::string name_;            ///< Name of this savepoint
   MetaInfoMap metaInfo_;        ///< Meta-information of this savepoint
   std::vector<FieldID> fields_; ///< Fields captured by this savepoint

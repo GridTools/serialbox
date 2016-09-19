@@ -48,18 +48,18 @@ void FieldMetaInfo::fromJSON(const json::json& jsonNode) {
   metaInfo_.clear();
 
   if(jsonNode.is_null() || jsonNode.empty())
-    throw Exception("node is empty'");
+    throw Exception("node is empty");
 
-  if(jsonNode.count("type_id") == 0)
+  if(!jsonNode.count("type_id"))
     throw Exception("no node 'type_id'");
   type_ = static_cast<TypeID>(int(jsonNode["type_id"]));
 
-  if(jsonNode.count("dims") == 0)
+  if(!jsonNode.count("dims"))
     throw Exception("no node 'value'");
   for(auto it = jsonNode["dims"].begin(), end = jsonNode["dims"].end(); it != end; ++it)
     dims_.push_back(int(*it));
 
-  if(jsonNode.count("meta_info") == 0)
+  if(!jsonNode.count("meta_info"))
     throw Exception("no node 'meta_info'");
   metaInfo_.fromJSON(jsonNode["meta_info"]);
 }

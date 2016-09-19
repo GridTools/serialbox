@@ -74,14 +74,14 @@ public:
   /// vector, fieldsTable and globalMetaInfo.
   void writeMetaDataToJson();
 
-private:
+protected:
   /// \brief Construct serializer from JSON
   ///
   /// This will read MetaData.json to initialize the savepoint vector as well as the fieldsTable and
   /// globalMetaInfo. Further, it will construct the Archive by reading ArchiveMetaData.json.
   void constructFromJsonMetaData();
 
-private:
+protected:
   OpenModeKind mode_;
 
   std::vector<SavepointImpl> savepoints_;

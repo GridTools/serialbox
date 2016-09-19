@@ -12,6 +12,7 @@ cmake_minimum_required(VERSION 3.1)
 set(SOURCES 
   FieldMap.cpp
   FieldMetaInfo.cpp
+  FieldID.cpp
   Logging.cpp
   MetaInfoMap.cpp
   MetaInfoValue.cpp

@@ -56,7 +56,7 @@ public:
   MetaInfoMap() : map_(){};
 
   /// \brief Construct from json
-  MetaInfoMap(const json::json jsonNode) { fromJSON(jsonNode); }
+  explicit MetaInfoMap(const json::json jsonNode) { fromJSON(jsonNode); }
   
   /// \brief Construct from initalizer-list
   MetaInfoMap(std::initializer_list<value_type> list) : map_(list) {};

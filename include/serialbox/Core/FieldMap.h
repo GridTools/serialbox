@@ -49,7 +49,7 @@ public:
   FieldMap() : map_(){};
 
   /// \brief Construct from json
-  FieldMap(const json::json jsonNode) { fromJSON(jsonNode); }
+  explicit FieldMap(const json::json jsonNode) { fromJSON(jsonNode); }
 
   /// \brief Copy constructor [deleted]
   FieldMap(const FieldMap&) = delete;

@@ -32,7 +32,7 @@ public:
       : type_(type), dims_(dims), metaInfo_(metaInfo) {}
 
   /// \brief Construct from JSON
-  FieldMetaInfo(const json::json& jsonNode) { fromJSON(jsonNode); }
+  explicit FieldMetaInfo(const json::json& jsonNode) { fromJSON(jsonNode); }
 
   /// \brief Copy constructor
   FieldMetaInfo(const FieldMetaInfo&) = default;

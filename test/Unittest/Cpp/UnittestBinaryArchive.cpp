@@ -232,71 +232,6 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
   }
 
   // -----------------------------------------------------------------------------------------------
-  // Invalid meta data
-  // -----------------------------------------------------------------------------------------------
-  {
-    // Read JSON meta file (from the Writing part)
-    std::ifstream ifs((this->directory->path() / Archive::ArchiveMetaDataFile).string());
-    json::json j;
-    ifs >> j;
-    ifs.close();
-
-    // Write meta file to disk
-    auto toFile = [this](const json::json& jsonNode) -> void {
-      std::ofstream ofs((this->directory->path() / Archive::ArchiveMetaDataFile).string(),
-                        std::ios::out | std::ios::trunc);
-      ofs << jsonNode.dump(4);
-    };
-
-    // Invalid hash
-    {
-      json::json corrupted = j;
-      corrupted["fields_table"]["u"][0][1] = "LOOKS_LIKE_THIS_HASH_IS_CORRUPTED";
-      toFile(corrupted);
-
-      BinaryArchive archiveRead(this->directory->path().string(), OpenModeKind::Read);
-
-      // The data of u_0_output should NOT be modified
-      auto sv = u_0_output.toStorageView();
-      ASSERT_THROW(archiveRead.read(sv, FieldID{"u", 0}), Exception);
-    }
-
-    // Invlaid serialbox version
-    {
-      json::json corrupted = j;
-      corrupted["serialbox_version"] = 100 * (SERIALBOX_VERSION_MAJOR - 1) +
-                                       10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
-      toFile(corrupted);
-
-      ASSERT_THROW(BinaryArchive(this->directory->path().string(), OpenModeKind::Read), Exception);
-    }
-
-    // Not a binary archive
-    {
-      json::json corrupted = j;
-      corrupted["archive_name"] = "not-BinaryArchive";
-      toFile(corrupted);
-
-      ASSERT_THROW(BinaryArchive(this->directory->path().string(), OpenModeKind::Read), Exception);
-    }
-
-    // Invalid binary archive version
-    {
-      json::json corrupted = j;
-      corrupted["archive_version"] = -1;
-      toFile(corrupted);
-
-      ASSERT_THROW(BinaryArchive(this->directory->path().string(), OpenModeKind::Read), Exception);
-    }
-
-    // MetaData not found
-    {
-      boost::filesystem::remove(this->directory->path() / Archive::ArchiveMetaDataFile);
-      ASSERT_THROW(BinaryArchive(this->directory->path().string(), OpenModeKind::Read), Exception);
-    }
-  }
-
-  // -----------------------------------------------------------------------------------------------
   // Validation
   // -----------------------------------------------------------------------------------------------
   Storage::verify(u_0_output, u_0_input);
@@ -312,6 +247,90 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
 
   Storage::verify(storage_7d_0_output, storage_7d_0_input);
   Storage::verify(storage_7d_1_output, storage_7d_1_input);
+}
+
+TYPED_TEST(BinaryArchiveTest, MetaData)
+{
+  using Storage = Storage<TypeParam>;
+  
+  Storage u_0_input(Storage::RowMajor, {5, 6, 7}, {{2, 2}, {4, 2}, {4, 5}}, Storage::random);
+  Storage u_0_output(Storage::RowMajor, {5, 6, 7});
+
+  BinaryArchive archiveWrite(this->directory->path().string(), OpenModeKind::Write);
+  
+  auto sv_u_0_input = u_0_input.toStorageView();
+  archiveWrite.write(sv_u_0_input, FieldID{"u", 0});
+  archiveWrite.updateMetaData();
+  
+  // Read meta data file to get in memory copy
+  std::ifstream ifs((this->directory->path() / Archive::ArchiveMetaDataFile).string());
+  json::json j;
+  ifs >> j;
+  ifs.close();
+  
+  // Write meta file to disk (to corrupt it)
+  auto toFile = [this](const json::json& jsonNode) -> void {
+    std::ofstream ofs((this->directory->path() / Archive::ArchiveMetaDataFile).string(),
+                      std::ios::out | std::ios::trunc);
+    ofs << jsonNode.dump(4);
+  };
+
+  // -----------------------------------------------------------------------------------------------
+  // Invalid hash
+  // -----------------------------------------------------------------------------------------------
+  {
+    json::json corrupted = j;
+    corrupted["fields_table"]["u"][0][1] = "LOOKS_LIKE_THIS_HASH_IS_CORRUPTED";
+    toFile(corrupted);
+    
+    BinaryArchive archiveRead(this->directory->path().string(), OpenModeKind::Read);
+
+    // The data of u_0_output should NOT be modified
+    auto sv = u_0_output.toStorageView();
+    ASSERT_THROW(archiveRead.read(sv, FieldID{"u", 0}), Exception);
+  }
+
+  // -----------------------------------------------------------------------------------------------
+  // Invlaid serialbox version
+  // -----------------------------------------------------------------------------------------------
+  {
+    json::json corrupted = j;
+    corrupted["serialbox_version"] = 100 * (SERIALBOX_VERSION_MAJOR - 1) +
+                                     10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
+    toFile(corrupted);
+
+    ASSERT_THROW(BinaryArchive(this->directory->path().string(), OpenModeKind::Read), Exception);
+  }
+
+  // -----------------------------------------------------------------------------------------------
+  // Not a binary archive
+  // -----------------------------------------------------------------------------------------------
+  {
+    json::json corrupted = j;
+    corrupted["archive_name"] = "not-BinaryArchive";
+    toFile(corrupted);
+
+    ASSERT_THROW(BinaryArchive(this->directory->path().string(), OpenModeKind::Read), Exception);
+  }
+
+  // -----------------------------------------------------------------------------------------------
+  // Invalid binary archive version
+  // -----------------------------------------------------------------------------------------------
+  {
+    json::json corrupted = j;
+    corrupted["archive_version"] = -1;
+    toFile(corrupted);
+
+    ASSERT_THROW(BinaryArchive(this->directory->path().string(), OpenModeKind::Read), Exception);
+  }
+
+  // -----------------------------------------------------------------------------------------------
+  // MetaData not found
+  // -----------------------------------------------------------------------------------------------
+  {
+    boost::filesystem::remove(this->directory->path() / Archive::ArchiveMetaDataFile);
+    ASSERT_THROW(BinaryArchive(this->directory->path().string(), OpenModeKind::Read), Exception);
+  }
 }
 
 TYPED_TEST(BinaryArchiveTest, toString) {

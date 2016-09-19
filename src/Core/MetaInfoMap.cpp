@@ -21,6 +21,7 @@ namespace serialbox {
 namespace {
 
 struct InsertHelper {
+  // Capture environment
   MetaInfoMap& map;
   const std::string& key;
   const json::json& node;
@@ -120,10 +121,10 @@ void MetaInfoMap::fromJSON(const json::json& jsonNode) {
       insertHelper.insert<std::int64_t>(&json::json::is_number_integer, "integer");
       break;
     case TypeID::Float32:
-      insertHelper.insert<float>(&json::json::is_number_float, "floating pointer number");
+      insertHelper.insert<float>(&json::json::is_number, "floating pointer number");
       break;
     case TypeID::Float64:
-      insertHelper.insert<double>(&json::json::is_number_float, "floating pointer number");
+      insertHelper.insert<double>(&json::json::is_number, "floating pointer number");
       break;
     case TypeID::String:
       insertHelper.insert<std::string>(&json::json::is_string, "string");
