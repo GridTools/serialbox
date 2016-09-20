@@ -56,16 +56,16 @@ struct MetaInfoValue {
   template <class T>
   T& as() {
     if(ToTypeID<T>::value != type_)
-      throw Exception("conversion error: cannot convert [type = %s] to [T = %s]",
-                      TypeUtil::toString(type_), TypeUtil::toString(ToTypeID<T>::value));
+      throw Exception("cannot convert [type = %s] to [T = %s]", TypeUtil::toString(type_),
+                      TypeUtil::toString(ToTypeID<T>::value));
     return (*boost::any_cast<T>(&any_));
   }
 
   template <class T>
   const T& as() const {
     if(ToTypeID<T>::value != type_)
-      throw Exception("conversion error: cannot convert [type = %s] to [T = %s]",
-                      TypeUtil::toString(type_), TypeUtil::toString(ToTypeID<T>::value));
+      throw Exception("cannot convert [type = %s] to [T = %s]", TypeUtil::toString(type_),
+                      TypeUtil::toString(ToTypeID<T>::value));
     return (*boost::any_cast<T>(&any_));
   }
 

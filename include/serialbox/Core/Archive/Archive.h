@@ -41,9 +41,6 @@ public:
   virtual void updateMetaData() = 0;
 
   ///
-  virtual void forceUpdateMetaData() = 0;
-
-  ///
   virtual const std::string& directory() const = 0;
 
   ///

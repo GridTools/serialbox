@@ -24,7 +24,7 @@ const std::string BinaryArchive::Name = "BinaryArchive";
 
 const int BinaryArchive::Version = 0;
 
-BinaryArchive::~BinaryArchive() { updateMetaData(); }
+BinaryArchive::~BinaryArchive() { updateMetaData(); } // TODO: this is dangerous as it might throw
 
 void BinaryArchive::readMetaDataFromJson() {
 
@@ -80,7 +80,7 @@ void BinaryArchive::readMetaDataFromJson() {
 
 void BinaryArchive::writeMetaDataToJson() {
   boost::filesystem::path filename = directory_ / Archive::ArchiveMetaDataFile;
-  LOG(INFO) << "Update MetaData for BinaryArchive ";
+  LOG(INFO) << "Update MetaData for BinaryArchive";
 
   json_.clear();
 
@@ -104,7 +104,7 @@ void BinaryArchive::writeMetaDataToJson() {
 }
 
 BinaryArchive::BinaryArchive(const boost::filesystem::path& directory, OpenModeKind mode)
-    : mode_(mode), directory_(directory), json_(), metaDataDirty_(false) {
+    : mode_(mode), directory_(directory), json_() {
 
   LOG(INFO) << "Creating BinaryArchive (mode = " << mode_ << ") from directory " << directory_;
 
@@ -134,17 +134,7 @@ BinaryArchive::BinaryArchive(const boost::filesystem::path& directory, OpenModeK
   readMetaDataFromJson();
 }
 
-void BinaryArchive::updateMetaData() {
-  if(metaDataDirty_)
-    writeMetaDataToJson();
-  metaDataDirty_ = false;
-}
-
-
-void BinaryArchive::forceUpdateMetaData() {
-  writeMetaDataToJson();
-  metaDataDirty_ = false;
-}
+void BinaryArchive::updateMetaData() { writeMetaDataToJson(); }
 
 //===------------------------------------------------------------------------------------------===//
 //     Writing
@@ -241,7 +231,6 @@ void BinaryArchive::write(StorageView& storageView, const FieldID& fieldID) thro
   fs.write(binaryData_.data(), binaryData_.size());
   fs.close();
 
-  metaDataDirty_ = true;
   updateMetaData();
 
   LOG(INFO) << "Successfully wrote field \"" << fieldID.name << "\" (id = " << fieldID.id << ") to "
@@ -323,7 +312,7 @@ std::ostream& BinaryArchive::toStream(std::ostream& stream) const {
   stream << "  fieldsTable = {\n";
   for(auto it = fieldTable_.begin(), end = fieldTable_.end(); it != end; ++it) {
     stream << "    " << it->first << " = {\n";
-    for(std::size_t id = 0; id < it->second.size(); ++id) 
+    for(std::size_t id = 0; id < it->second.size(); ++id)
       stream << "      [ " << it->second[id].offset << ", " << it->second[id].checksum << " ]\n";
     stream << "    }\n";
   }

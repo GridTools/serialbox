@@ -35,6 +35,11 @@ public:
             class = typename std::enable_if<!std::is_same<StringType, json::json>::value>::type>
   explicit SavepointImpl(const StringType& name) : name_(name), metaInfo_(), fields_(){};
 
+  /// \brief Construct a field-less savepoint with ´name´ and ´metaInfo´
+  template <class StringType, class MetaInfoType>
+  SavepointImpl(StringType&& name, MetaInfoType&& metaInfo)
+      : name_(name), metaInfo_(metaInfo), fields_(){};
+
   /// \brief Copy constructor [deleted]
   SavepointImpl(const SavepointImpl&) = delete;
 

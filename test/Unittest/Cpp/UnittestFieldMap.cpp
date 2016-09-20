@@ -131,9 +131,8 @@ TEST(FieldMapTest, toJSON) {
   json::json j = map.toJSON();
 
   // The correct serialization of the FieldMetaInfo is tested elsewhere
-  ASSERT_TRUE(j.count("field_map"));
-  EXPECT_TRUE(j["field_map"].count("field1"));
-  EXPECT_TRUE(j["field_map"].count("field2"));
+  ASSERT_TRUE(j.count("field1"));
+  ASSERT_TRUE(j.count("field2"));
 }
 
 TEST(FieldMapTest, fromJSON) {
@@ -143,42 +142,40 @@ TEST(FieldMapTest, fromJSON) {
   {
     auto j = R"(
     {
-        "field_map": {
-            "field1": {
-                "dims": [
-                    32,
-                    16
-                ],
-                "meta_info": {
-                    "key1": {
-                        "type_id": 6,
-                        "value": "field1_meta_info_str"
-                    },
-                    "key2": {
-                        "type_id": 5,
-                        "value": 1
-                    }
+        "field1": {
+            "dims": [
+                32,
+                16
+            ],
+            "meta_info": {
+                "key1": {
+                    "type_id": 6,
+                    "value": "field1_meta_info_str"
                 },
-                "type_id": 4
+                "key2": {
+                    "type_id": 5,
+                    "value": 1
+                }
             },
-            "field2": {
-                "dims": [
-                    20,
-                    55,
-                    1992
-                ],
-                "meta_info": {
-                    "key1": {
-                        "type_id": 6,
-                        "value": "field2_meta_info_str"
-                    },
-                    "key2": {
-                        "type_id": 5,
-                        "value": 2
-                    }
+            "type_id": 4
+        },
+        "field2": {
+            "dims": [
+                20,
+                55,
+                1992
+            ],
+            "meta_info": {
+                "key1": {
+                    "type_id": 6,
+                    "value": "field2_meta_info_str"
                 },
-                "type_id": 5
-            }
+                "key2": {
+                    "type_id": 5,
+                    "value": 2
+                }
+            },
+            "type_id": 5
         }
     }
     )"_json;
@@ -213,37 +210,26 @@ TEST(FieldMapTest, fromJSON) {
   }
   
   // -----------------------------------------------------------------------------------------------
-  // Failure (no field_map)
-  // -----------------------------------------------------------------------------------------------
-  {
-    auto j = R"({ "not_a_field_map": {} })"_json;
-    FieldMap map;
-    ASSERT_THROW(map.fromJSON(j), Exception);
-  }
-  
-  // -----------------------------------------------------------------------------------------------
   // Failure (corrupted meta_info of field1; key1 is missing the type-id)
   // -----------------------------------------------------------------------------------------------
   {
     auto j = R"(
     {
-        "field_map": {
-            "field1": {
-                "dims": [
-                    32,
-                    16
-                ],
-                "meta_info": {
-                    "key1": {
-                        "value": "field1_meta_info_str"
-                    },
-                    "key2": {
-                        "type_id": 5,
-                        "value": 1
-                    }
+        "field1": {
+            "dims": [
+                32,
+                16
+            ],
+            "meta_info": {
+                "key1": {
+                    "value": "field1_meta_info_str"
                 },
-                "type_id": 4
-            }
+                "key2": {
+                    "type_id": 5,
+                    "value": 1
+                }
+            },
+            "type_id": 4
         }
     }
     )"_json;
@@ -257,40 +243,38 @@ TEST(FieldMapTest, fromJSON) {
   {
     auto j = R"(
     {
-        "field_map": {
-            "field1": {
-                "dims": [
-                    32,
-                    16
-                ],
-                "meta_info": {
-                    "key1": {
-                        "value": "field1_meta_info_str"
-                    },
-                    "key2": {
-                        "type_id": 5,
-                        "value": 1
-                    }
+        "field1": {
+            "dims": [
+                32,
+                16
+            ],
+            "meta_info": {
+                "key1": {
+                    "value": "field1_meta_info_str"
                 },
-                "type_id": 4
+                "key2": {
+                    "type_id": 5,
+                    "value": 1
+                }
             },
-            "field1": {
-                 "dims": [
-                     32,
-                     16
-                 ],
-                 "meta_info": {
-                     "key1": {
-                         "value": "field1_meta_info_str"
-                     },
-                     "key2": {
-                         "type_id": 5,
-                         "value": 1
-                     }
+            "type_id": 4
+        },
+        "field1": {
+             "dims": [
+                 32,
+                 16
+             ],
+             "meta_info": {
+                 "key1": {
+                     "value": "field1_meta_info_str"
                  },
-                 "type_id": 4
-             }
-        }
+                 "key2": {
+                     "type_id": 5,
+                     "value": 1
+                 }
+             },
+             "type_id": 4
+         }
     }
     )"_json;
     FieldMap map;

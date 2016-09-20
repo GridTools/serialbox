@@ -68,7 +68,6 @@ public:
   virtual void write(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;
   virtual void read(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;
   virtual void updateMetaData() override;
-  virtual void forceUpdateMetaData() override;
   virtual const std::string& directory() const override { return directory_.string(); }
   virtual const std::string& name() const override { return BinaryArchive::Name; }
   virtual std::ostream& toStream(std::ostream& stream) const override;
@@ -81,7 +80,6 @@ private:
 
   json::json json_;
   FieldTable fieldTable_;
-  bool metaDataDirty_;
 };
 
 } // namespace serialbox

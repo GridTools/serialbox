@@ -213,11 +213,11 @@ struct Storage {
       return testing::AssertionFailure() << ss.str().c_str();
     }
 
-    const auto SVstorage = storage.toStorageView();
-    const auto SVrefrence = refrence.toStorageView();
+    const StorageView SVstorage = storage.toStorageView();
+    const StorageView SVrefrence = refrence.toStorageView();
 
-    auto itStorage = SVstorage.begin(), endStorage = SVstorage.end();
-    auto itRefrence = SVrefrence.begin(), endRefrence = SVrefrence.end();
+    StorageViewIterator itStorage = SVstorage.begin(), endStorage = SVstorage.end();
+    StorageViewIterator itRefrence = SVrefrence.begin(), endRefrence = SVrefrence.end();
 
     while(itStorage != endStorage && itRefrence != endRefrence) {
 

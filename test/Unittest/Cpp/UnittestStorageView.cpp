@@ -307,7 +307,7 @@ TYPED_TEST(StorageViewTest, IteratorCopy) {
 #define COPY_INTO_STORAGE(name)                                                                    \
   auto sv_##name = this->name->toStorageView();                                                    \
   dataPtr = reinterpret_cast<char*>(data.data());                                                  \
-  for(auto it = sv_##name.begin(), end = sv_##name.end(); it != end;                               \
+  for(StorageViewIterator it = sv_##name.begin(), end = sv_##name.end(); it != end;                               \
       ++it, dataPtr += bytesPerElement)                                                            \
     std::memcpy(it.ptr(), dataPtr, bytesPerElement);
 

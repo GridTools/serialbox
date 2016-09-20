@@ -23,21 +23,18 @@ json::json FieldMap::toJSON() const {
     return jsonNode;
 
   for(const_iterator it = this->begin(), end = this->end(); it != end; ++it)
-    jsonNode["field_map"][it->first] = it->second.toJSON();
+    jsonNode[it->first] = it->second.toJSON();
 
   return jsonNode;
 }
 
 void FieldMap::fromJSON(const json::json& jsonNode) {
-  clear();
+  this->clear();
 
   if(jsonNode.is_null() || jsonNode.empty())
     return;
   
-  if(!jsonNode.count("field_map"))
-    throw Exception("cannot create FieldMap: no node 'field_map'");
-
-  for(auto it = jsonNode["field_map"].begin(), end = jsonNode["field_map"].end(); it != end; ++it) {
+  for(auto it = jsonNode.begin(), end = jsonNode.end(); it != end; ++it) {
     bool insertSuccess = false;
     
     try {

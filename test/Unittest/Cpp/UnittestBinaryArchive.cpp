@@ -55,7 +55,7 @@ TYPED_TEST(BinaryArchiveTest, Construction) {
     // Open fresh archive and write meta data to disk
     {
       EXPECT_NO_THROW(
-          BinaryArchive(this->directory->path(), OpenModeKind::Write).forceUpdateMetaData(););
+          BinaryArchive(this->directory->path(), OpenModeKind::Write).updateMetaData());
     }
 
     // Throw Exception: Directory is not empty
