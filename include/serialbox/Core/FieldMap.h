@@ -30,7 +30,7 @@ public:
   /// \brief Type of an entry of the MetaInfoMap (`std::pair<std::string, FieldMetaInfo>`)
   using value_type = map_type::value_type;
 
-  /// \brief Type of the key (`std::string`)
+  /// \brief Type of the key (`std::string`) i.e name of the fields
   using key_type = map_type::key_type;
 
   /// \brief Type of the value (`FieldMetaInfo`)
@@ -52,16 +52,119 @@ public:
   explicit FieldMap(const json::json jsonNode) { fromJSON(jsonNode); }
 
   /// \brief Copy constructor [deleted]
-  FieldMap(const FieldMap&) = delete;
+  FieldMap(const FieldMap&) = default;
 
   /// \brief Move constructor
   FieldMap(FieldMap&&) = default;
 
-  /// \brief Copy assignment [deleted]
-  FieldMap& operator=(const FieldMap&) = delete;
+  /// \brief Copy assignment
+  FieldMap& operator=(const FieldMap&) = default;
 
   /// \brief Move assignment
   FieldMap& operator=(FieldMap&&) = default;
+
+  /// \brief Check if field with name `name` exists in the FieldMap
+  ///
+  /// \param name  Name of the field
+  /// \return True iff the field is present
+  template <class StringType>
+  bool hasField(StringType&& name) const noexcept {
+    return (map_.find(name) != map_.end());
+  }
+
+  /// \brief Search the FieldMap for a field with name `name` and returns an iterator to it if
+  /// found, otherwise returns an iterator to FieldMap::end
+  ///
+  /// \param name  Name of the field
+  /// \return  Iterator to field if found, otherwise an iterator to `FieldMap::end`
+  template <class StringType>
+  iterator findField(StringType&& name) noexcept {
+    return (map_.find(name));
+  }
+
+  template <class StringType>
+  const_iterator findField(StringType&& name) const noexcept {
+    return (map_.find(name));
+  }
+
+  /// \brief Get FieldMetaInfo of field with name `name`
+  ///
+  /// \param name  Name of the field
+  /// \throw Exception Field with name `name` does not exist in FieldMap
+  template <class StringType>
+  FieldMetaInfo& getFieldMetaInfoOf(StringType&& name) {
+    iterator fieldIt = map_.find(name);
+    if(fieldIt != map_.end())
+      return fieldIt->second;
+    throw Exception("field '%s' does not exist in FieldMap", name);
+  }
+
+  template <class StringType>
+  const FieldMetaInfo& getFieldMetaInfoOf(StringType&& name) const {
+    const_iterator fieldIt = map_.find(name);
+    if(fieldIt != map_.end())
+      return fieldIt->second;
+    throw Exception("field '%s' does not exist in FieldMap", name);
+  }
+
+  /// \brief Get MetaInfo of field with name `name`
+  ///
+  /// \param name  Name of the field
+  /// \throw Exception Field with name `name` does not exist in FieldMap
+  template <class StringType>
+  MetaInfoMap& getMetaInfoOf(StringType&& name) {
+    return getFieldMetaInfoOf(name).metaInfo();
+  }
+
+  template <class StringType>
+  const MetaInfoMap& getMetaInfoOf(StringType&& name) const {
+    return getFieldMetaInfoOf(name).metaInfo();
+  }
+  
+  /// \brief Get Dimensions of field with name `name`
+  ///
+  /// \param name  Name of the field
+  /// \throw Exception Field with name `name` does not exist in FieldMap
+  template <class StringType>
+  std::vector<int>& getDimsOf(StringType&& name) {
+    iterator fieldIt = map_.find(name);
+    if(fieldIt != map_.end())
+      return fieldIt->second.dims();
+    throw Exception("field '%s' does not exist in FieldMap", name);
+  }
+
+  template <class StringType>
+  const std::vector<int>& getDimsOf(StringType&& name) const {
+    const_iterator fieldIt = map_.find(name);
+    if(fieldIt != map_.end())
+      return fieldIt->second.dims();
+    throw Exception("field '%s' does not exist in FieldMap", name);
+  }
+  
+  /// \brief Get Type of field with name `name`
+  ///
+  /// \param name  Name of the field
+  /// \throw Exception Field with name `name` does not exist in FieldMap
+  template <class StringType>
+  TypeID getTypeOf(StringType&& name) const {
+    const_iterator fieldIt = map_.find(name);
+    if(fieldIt != map_.end())
+      return fieldIt->second.type();
+    throw Exception("field '%s' does not exist in FieldMap", name);
+  }
+
+  /// \brief Insert a new field in the map
+  ///
+  /// The field is inserted only if its name is not equivalent to the name of any other field
+  /// already in the map (fields in a FieldMap are unique).
+  ///
+  /// \param name  Name of the the new field
+  /// \param Args  Arguments forwarded to the constructor of FieldMetaInfo
+  /// \return Value indicating whether the field was successfully inserted or not
+  template <class StringType, typename... Args>
+  bool insert(StringType&& key, Args&&... args) {
+    return (map_.insert({key, FieldMetaInfo(std::forward<Args>(args)...)}).second);
+  }
 
   /// \brief Returns the number of elements in the FieldMap
   std::size_t size() const noexcept { return map_.size(); }

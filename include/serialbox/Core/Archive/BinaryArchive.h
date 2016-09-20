@@ -18,9 +18,9 @@
 #include "serialbox/Core/Archive/Archive.h"
 #include "serialbox/Core/Json.h"
 #include <boost/filesystem.hpp>
-#include <boost/noncopyable.hpp>
 #include <unordered_map>
 #include <vector>
+#include <string>
 
 namespace serialbox {
 
@@ -63,7 +63,7 @@ public:
   /// \brief Convert meta-data to JSON and serialize to file
   void writeMetaDataToJson();
 
-  /// \name Virtual archive implementation
+  /// \name Archive implementation
   /// @{
   virtual void write(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;
   virtual void read(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;

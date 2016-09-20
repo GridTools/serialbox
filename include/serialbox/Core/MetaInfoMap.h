@@ -56,10 +56,10 @@ public:
   MetaInfoMap() : map_(){};
 
   /// \brief Construct from json
-  explicit MetaInfoMap(const json::json jsonNode) { fromJSON(jsonNode); }
+  explicit MetaInfoMap(const json::json& jsonNode) { fromJSON(jsonNode); }
   
   /// \brief Construct from initalizer-list
-  MetaInfoMap(std::initializer_list<value_type> list) : map_(list) {};
+  explicit MetaInfoMap(std::initializer_list<value_type> list) : map_(list) {};
 
   /// \brief Copy constructor
   MetaInfoMap(const MetaInfoMap&) = default;
@@ -73,7 +73,7 @@ public:
   /// \brief Move assignment
   MetaInfoMap& operator=(MetaInfoMap&&) = default;
 
-  /// \brief Check if key exists in the set
+  /// \brief Check if key exists in the map
   ///
   /// \param key  Key to be searched for
   /// \return True iff the key is present
@@ -82,10 +82,10 @@ public:
     return (map_.find(key) != map_.end());
   }
 
-  /// \brief Inserts a new element in the map
+  /// \brief Insert a new element in the map
   ///
   /// The element is inserted only if its key is not equivalent to the key of any other element
-  /// already in the set (keys in a MetaInfoMap are unique).
+  /// already in the map (keys in a MetaInfoMap are unique).
   ///
   /// \param key    Key of the new element
   /// \param value  Object to be copied to (or moved as) the value of the new element

@@ -32,6 +32,7 @@ bool FieldMetaInfo::operator==(const FieldMetaInfo& right) const noexcept {
      !std::equal(dims_.begin(), dims_.end(), right.dims_.begin()))
     return false;
 
+  // This is really expensive
   return (metaInfo_ == right.metaInfo_);
 }
 
@@ -61,7 +62,11 @@ void FieldMetaInfo::fromJSON(const json::json& jsonNode) {
 
   if(!jsonNode.count("meta_info"))
     throw Exception("no node 'meta_info'");
-  metaInfo_.fromJSON(jsonNode["meta_info"]);
+  try {
+    metaInfo_.fromJSON(jsonNode["meta_info"]);
+  } catch(Exception& e) {
+    throw Exception("in node 'meta_info': %s", e.what());
+  }
 }
 
 std::ostream& operator<<(std::ostream& stream, const FieldMetaInfo& f) {

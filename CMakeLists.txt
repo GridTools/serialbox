@@ -87,7 +87,7 @@ add_custom_target(clean-all
 find_package(Threads REQUIRED)
 
 # Set script directory
-set(SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
+set(SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tools)
 
 #---------------------------------------- sha256 ---------------------------------------------------
 set(SHA256_INSTALL_DIR "${CMAKE_BINARY_DIR}/external/sha256/install")

@@ -17,7 +17,6 @@
 
 #include "serialbox/Core/MetaInfoMap.h"
 #include "serialbox/Core/Json.h"
-#include <unordered_map>
 
 namespace serialbox {
 
