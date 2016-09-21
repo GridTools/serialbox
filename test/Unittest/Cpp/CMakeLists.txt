@@ -20,6 +20,7 @@ set(CPP_UNITTEST_SOURCES
   UnittestStorage.cpp
   UnittestStorageView.cpp
   UnittestSavepointImpl.cpp
+  UnittestSavepoint.cpp
   UnittestSerializerImpl.cpp
   UnittestType.cpp
   UnittestUnreachable.cpp

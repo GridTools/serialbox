@@ -64,7 +64,6 @@ TEST(MetaInfoMapTest, Construction) {
   ASSERT_EQ(map["float64"].as<double>(), 64.0);
   ASSERT_EQ(map["string"].as<std::string>(), "string");
 
-  // Comparison
   MetaInfoMap map2(map);
   ASSERT_TRUE(map == map2);
 
@@ -97,6 +96,28 @@ TEST(MetaInfoMapTest, Construction) {
   map.erase(map.begin(), map.end());
   EXPECT_TRUE(map.empty());
   EXPECT_EQ(map.size(), 0);
+}
+
+TEST(MetaInfoMapTest, Comparison) {
+  MetaInfoMap map1;
+  MetaInfoMap map2;
+  
+  // Empty maps compare equal
+  EXPECT_TRUE(map1 == map2);
+  EXPECT_FALSE(map1 != map2);  
+
+  // Maps of diffrent sizes are never equal
+  ASSERT_TRUE(map1.insert("bool", bool(true)));  
+  EXPECT_FALSE(map1 == map2);
+
+  // Maps are equal again
+  ASSERT_TRUE(map2.insert("bool", bool(true)));  
+  EXPECT_TRUE(map1 == map2);
+  
+  // Maps have equal sizes and keys but one of their values differs
+  ASSERT_TRUE(map1.insert("double", double(1)));  
+  ASSERT_TRUE(map2.insert("double", double(2)));  
+  EXPECT_TRUE(map1 != map2);
 }
 
 TEST(MetaInfoMapTest, toJSON) {

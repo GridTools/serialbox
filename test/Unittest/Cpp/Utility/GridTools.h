@@ -8,7 +8,7 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file includes all the necessary gridtools headers.
+/// This file includes all the necessary gridtools headers and defines storage types.
 ///
 //===------------------------------------------------------------------------------------------===//
 

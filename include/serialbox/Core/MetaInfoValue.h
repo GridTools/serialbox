@@ -100,6 +100,9 @@ struct MetaInfoValue {
   /// \brief Get boost::any
   boost::any& any() noexcept { return any_; }
   const boost::any& any() const noexcept { return any_; }
+  
+  /// \brief Convert to string
+  std::string toString() const noexcept;
 
 private:
   TypeID type_;    ///< Type of the data

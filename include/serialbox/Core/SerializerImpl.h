@@ -51,7 +51,7 @@ public:
   /// \param directory    Directory of the Archive and meta-data
   /// \param archiveName  String passed to the ArchiveFactory to construct the Archive
   ///
-  /// This will read MetaData.json to initialize the savepoint vector, the fieldsTable and
+  /// This will read MetaData.json to initialize the savepointVector, the fieldsTable and
   /// globalMetaInfo. Further, it will construct the Archive by reading the ArchiveMetaData.json.
   ///
   /// \throw Exception  Invalid directory or corrupted meta-data files
@@ -68,13 +68,14 @@ public:
                  std::vector<SavepointImpl>& savepoints, FieldMap& fieldMap,
                  MetaInfoMap& globalMetaInfo, std::unique_ptr<Archive>& archive);
 
-  /// \brief Add a new key-value pair to the global meta-info of the Serializer
+  /// \brief Add a new key-value pair to the global meta-information of the Serializer
   ///
   /// \param key    Key of the new element
   /// \param value  Object to be copied to (or moved as) the value of the new element
+  /// 
   /// \throw Exception  Value cannot be inserted as it already exists
   template <class StringType, class ValueType>
-  void addGlobalMetainfo(StringType&& key, ValueType&& value) {
+  void addGlobalMetaInfo(StringType&& key, ValueType&& value) {
     if(!globalMetaInfo_.insert(std::forward<StringType>(key), std::forward<ValueType>(value)))
       throw Exception("cannot add element with key '%s' to globalMetaInfo: element already exists",
                       key);
@@ -82,7 +83,8 @@ public:
 
   /// \brief Query globalMetaInfo map for key ´key´ and retrieve value as type ´T´
   ///
-  /// \param key    Key of the new element
+  /// \param key    Key of the requested element
+  /// 
   /// \throw Exception  Key ´key´ does not exist in the globalMetaInfo map or value cannot be 
   ///                   converted to type ´T´
   template <class T, class StringType>
@@ -109,6 +111,7 @@ public:
   /// \brief Query FieldMap for field with name ´name´ and return refrence to FieldMetaInfo
   ///
   /// \param name  Name of the field
+  /// 
   /// \throw Exception  Field with name `name` does not exist in FieldMap
   template <class StringType>
   const FieldMetaInfo& getFieldMetaInfoOf(StringType&& name) const {
@@ -118,11 +121,12 @@ public:
   /// \brief Register a savepoint given by ´name´ with empty meta-information
   ///
   /// \param name   Name of the savepoint
+  /// 
   /// \throw Exception  Savepoint is already registered
   template <class StringType>
   void registerSavepoint(StringType&& name) {
-    // TODO check...
-    // Maybe build an index data strucutre to speed up the check
+    // TODO:
+    // Maybe we do not throw here as old serialbox allows to override the savepoints
     savepoints_.emplace_back(name);
   }
   
@@ -130,10 +134,11 @@ public:
   ///
   /// \param name       Name of the savepoint
   /// \param metaInfo   MetaInformation of the Savepoint
+  /// 
   /// \throw Exception  Savepoint is already registered
   template <class StringType, class MetaInfoType>
   void registerSavepoint(StringType&& name, MetaInfoType&& metaInfo) {
-    //TODO check...
+    //TODO see above
     savepoints_.emplace_back(name, metaInfo);    
   }
 
@@ -142,8 +147,8 @@ public:
 
   /// \brief Convert meta-data to JSON and serialize to MetaData.json and ArchiveMetaData.json
   ///
-  /// This will ensure MetaData.json is up-to-date with the in-memory versions of the savepoint
-  /// vector, fieldsTable and globalMetaInfo as well as the meta-data of the Archive.
+  /// This will ensure MetaData.json is up-to-date with the in-memory versions of the 
+  /// savepointVector, fieldsTable and globalMetaInfo as well as the meta-data of the Archive.
   void updateMetaData();
 
   /// \brief Get refrence to savepoint vector

@@ -8,7 +8,7 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file includes all the necessary STELLA headers.
+/// This file includes all the necessary STELLA headers and defines storage types.
 ///
 //===------------------------------------------------------------------------------------------===//
 

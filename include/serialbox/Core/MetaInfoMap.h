@@ -22,6 +22,7 @@
 #include <iosfwd>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 namespace serialbox {
 
@@ -89,7 +90,7 @@ public:
   ///
   /// \param key    Key of the new element
   /// \param value  Object to be copied to (or moved as) the value of the new element
-  ///
+  /// 
   /// \return Value indicating whether the element was successfully inserted or not
   template <class KeyType, class ValueType>
   bool insert(KeyType&& key, ValueType&& value) noexcept {

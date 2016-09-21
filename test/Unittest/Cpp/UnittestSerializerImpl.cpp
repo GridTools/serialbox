@@ -144,12 +144,12 @@ TEST_F(SerializerImplTest, Empty) {
 TEST_F(SerializerImplTest, AddMetaInfo) {
   SerializerImpl s(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
 
-  s.addGlobalMetainfo("bool", bool(true));
-  s.addGlobalMetainfo("int32", int(32));
-  s.addGlobalMetainfo("int64", std::int64_t(64));
-  s.addGlobalMetainfo("float32", float(32.0f));
-  s.addGlobalMetainfo("float64", double(64.0f));
-  s.addGlobalMetainfo("string", std::string("string"));
+  s.addGlobalMetaInfo("bool", bool(true));
+  s.addGlobalMetaInfo("int32", int(32));
+  s.addGlobalMetaInfo("int64", std::int64_t(64));
+  s.addGlobalMetaInfo("float32", float(32.0f));
+  s.addGlobalMetaInfo("float64", double(64.0f));
+  s.addGlobalMetaInfo("string", std::string("string"));
 
   EXPECT_EQ(s.getGlobalMetainfoAs<bool>("bool"), bool(true));
   ASSERT_THROW(s.getGlobalMetainfoAs<double>("bool"), Exception);

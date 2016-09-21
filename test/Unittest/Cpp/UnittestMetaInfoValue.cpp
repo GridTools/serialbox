@@ -14,73 +14,145 @@
 
 #include "serialbox/Core/MetaInfoValue.h"
 #include <gtest/gtest.h>
+#include <utility>
 
 using namespace serialbox;
 
-TEST(MetaInfoValue, Construction) {
+namespace {
+template <class T>
+class MetaInfoValueTypedTest : public testing::Test {};
+
+// Generate a pair of values v1 and v2 of type T wiht v1 != v2
+template <class T>
+std::pair<T, T> getValuePair() {
+  static_assert(isSupported<T>::value, "type is not supported (cannot be mapped to TypeID)");
+  return std::make_pair<T, T>(T(), T());
+}
+
+template <>
+std::pair<bool, bool> getValuePair<bool>() {
+  return std::make_pair<bool, bool>(true, false);
+}
+
+template <>
+std::pair<int, int> getValuePair<int>() {
+  return std::make_pair<int, int>(1, 2);
+}
+
+template <>
+std::pair<std::int64_t, std::int64_t> getValuePair<std::int64_t>() {
+  return std::make_pair<std::int64_t, std::int64_t>(1, 2);
+}
+
+template <>
+std::pair<float, float> getValuePair<float>() {
+  return std::make_pair<float, float>(1.0f, 2.0f);
+}
+
+template <>
+std::pair<double, double> getValuePair<double>() {
+  return std::make_pair<double, double>(1.0, 2.0);
+}
+
+template <>
+std::pair<std::string, std::string> getValuePair<std::string>() {
+  return std::make_pair<std::string, std::string>("str1", "str2");
+}
+
+// Convert value to string
+template <class T>
+std::string toString(const T& v) {
+  return std::to_string(v);
+}
+
+template <>
+std::string toString<std::string>(const std::string& v) {
+  return v;
+}
+
+using TestTypes = testing::Types<bool, double, float, int, std::int64_t, std::string>;
+
+} // namespace anonymous
+
+TYPED_TEST_CASE(MetaInfoValueTypedTest, TestTypes);
+
+TYPED_TEST(MetaInfoValueTypedTest, Constrcution) {
   // Default construct
   MetaInfoValue m;
   EXPECT_EQ(m.type(), TypeID::Invalid);
 
-  // Boolean
-  MetaInfoValue bool_value(bool(true));
-  EXPECT_EQ(bool_value.as<bool>(), true);
-  bool b_val = bool_value;
-  EXPECT_EQ(b_val, true);
+  // Construct with value
+  auto pair = getValuePair<TypeParam>();
+  MetaInfoValue value1(TypeParam(pair.first));
+  MetaInfoValue value2(TypeParam(pair.second));
+  TypeID typeID = ToTypeID<TypeParam>::value;
+  EXPECT_EQ(value1.type(), typeID);
 
-  // int
-  MetaInfoValue int32_value0(int(32));
-  EXPECT_EQ(int32_value0.as<int>(), 32);
+  // Construct with l-value refrence
+  const TypeParam& v1_lref = pair.first;
+  MetaInfoValue value1_lref(v1_lref);
+  EXPECT_EQ(value1_lref.as<TypeParam>(), pair.first);
 
-  int int32 = 32;
-  int& int32_ref = int32;
-  MetaInfoValue int32_value1(int32_ref);
-  EXPECT_EQ(int32_value1.as<int>(), int32);
+  // Construct with r-value refrence
+  auto getValue1 = [&]() -> TypeParam { return pair.first; };
+  TypeParam&& v1_rref = getValue1();
+  MetaInfoValue value1_rref(v1_rref);
+  EXPECT_EQ(value1_rref.as<TypeParam>(), pair.first);
 
-  const int const_int32 = 12012091;
-  const int& const_int32_ref = const_int32;
-  MetaInfoValue int32_value2(const_int32_ref);
-  EXPECT_EQ(int32_value2.as<int>(), const_int32);
+  // Explicit conversion
+  EXPECT_EQ(value1.as<TypeParam>(), pair.first);
+  EXPECT_EQ(value2.as<TypeParam>(), pair.second);
 
-  // int64
-  MetaInfoValue int64_value(std::int64_t(64));
-  EXPECT_EQ(int64_value.as<std::int64_t>(), 64);
+  // Implicit conversion
+  TypeParam v1 = value1;
+  TypeParam v2 = value2;
+  EXPECT_TRUE(v1 == pair.first);
+  EXPECT_TRUE(v2 == pair.second);
 
-  // float
-  MetaInfoValue float32_value(float(32.f));
-  EXPECT_EQ(float32_value.as<float>(), 32.f);
-
-  // double
-  MetaInfoValue float64_value(double(64.0));
-  EXPECT_EQ(float64_value.as<double>(), 64.0);
-
-  // string
-  MetaInfoValue std_string_value0(std::string("str"));
-  EXPECT_EQ(std_string_value0.as<std::string>(), "str");
-  
-  std::string std_string_value_implicit = std_string_value0;
-  EXPECT_EQ(std_string_value_implicit, "str");  
-
-  auto getStr = []() -> std::string { return std::string("rts"); };
-  std::string&& str_rvalue_ref = getStr();
-  MetaInfoValue std_string_value1(str_rvalue_ref);
-  EXPECT_EQ(std_string_value1.as<std::string>(), "rts");
-
-  // Comparison
-  // int32_value0 == 32 and int32_value1 == 12012091
-  EXPECT_TRUE(int32_value0 == int32_value0);
-  EXPECT_FALSE(int32_value0 != int32_value0);
-  EXPECT_TRUE(int32_value0 == int32_value1);
-  EXPECT_FALSE(int32_value0 == int32_value2);
-  EXPECT_FALSE(int32_value0 == float32_value);
+  // Conversion with wrong type
+  if(std::is_same<TypeParam, std::string>::value)
+    ASSERT_THROW(value1.as<bool>(), Exception);
+  else
+    ASSERT_THROW(value1.as<std::string>(), Exception);
 
   // Swap
-  int32_value0.swap(int32_value2);
-  EXPECT_EQ(int32_value0.as<int>(), 12012091);
-  EXPECT_EQ(int32_value2.as<int>(), 32);
-
-  // Failures
-  EXPECT_THROW(std_string_value0.as<int>(), Exception);
-  EXPECT_THROW(float32_value.as<int>(), Exception);
+  value1.swap(value2);
+  EXPECT_EQ(value1.as<TypeParam>(), pair.second);
+  EXPECT_EQ(value2.as<TypeParam>(), pair.first);
 }
 
+TYPED_TEST(MetaInfoValueTypedTest, Comparison) {
+  auto pair = getValuePair<TypeParam>();
+  MetaInfoValue value1(TypeParam(pair.first));
+  MetaInfoValue value2(TypeParam(pair.second));
+
+  // Equality
+  EXPECT_TRUE(value1 == value1);
+  EXPECT_TRUE(value2 == value2);
+  EXPECT_FALSE(value1 == value2);
+  EXPECT_FALSE(value2 == value1);
+
+  // Inequality
+  EXPECT_TRUE(value1 != value2);
+  EXPECT_TRUE(value2 != value1);
+  EXPECT_FALSE(value1 != value1);
+  EXPECT_FALSE(value2 != value2);
+
+  // Comparison with wrong type
+  if(std::is_same<TypeParam, std::string>::value) {
+    MetaInfoValue bool_value(bool(true));
+    EXPECT_FALSE(value1 == bool_value);
+  } else {
+    MetaInfoValue string_value(std::string("str"));
+    EXPECT_FALSE(value1 == string_value);
+  }
+}
+
+TYPED_TEST(MetaInfoValueTypedTest, toString) {
+  auto pair = getValuePair<TypeParam>();
+  MetaInfoValue value1(TypeParam(pair.first));
+  MetaInfoValue value2(TypeParam(pair.second));
+
+  EXPECT_STREQ(value1.toString().c_str(), toString(pair.first).c_str());
+  EXPECT_STREQ(value2.toString().c_str(), toString(pair.second).c_str());
+}
