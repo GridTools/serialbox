@@ -359,4 +359,5 @@ TEST(SavepointTest, toString) {
   EXPECT_NE(ss.str().find(name), std::string::npos);
   EXPECT_NE(ss.str().find("key1"), std::string::npos);
   EXPECT_NE(ss.str().find("key2"), std::string::npos);
+  EXPECT_EQ(ss.str(), savepoint.toString());
 }

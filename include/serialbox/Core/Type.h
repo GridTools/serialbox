@@ -57,6 +57,7 @@ enum class TypeID : std::uint8_t { Invalid = 0, Boolean, Int32, Int64, Float32, 
 /// \see TypeID
 template <class T>
 struct isSupported {
+  
   /// \brief Set of supported types
   using SupportedTypesSet = boost::mpl::set<bool, int, std::int64_t, float, double, std::string>;
 
@@ -69,7 +70,7 @@ std::ostream& operator<<(std::ostream& stream, const TypeID& t);
 
 /// \brief Utilites for TypeID
 struct TypeUtil {
-
+  
   /// \brief Convert to string
   static std::string toString(TypeID id);
 

@@ -43,12 +43,15 @@ struct MetaInfoValue {
   ///
   /// \tparam ValueType  Type of the captured value (needs to be supported)
   /// \param  value      Value to caputre
-  template <class ValueType, class DecayedValueType = typename std::decay<ValueType>::type,
-            class = typename std::enable_if<isSupported<DecayedValueType>::value>::type>
+  template <class ValueType>
   explicit MetaInfoValue(ValueType&& value) {
+    using DecayedValueType = typename std::decay<ValueType>::type;
+    static_assert(isSupported<DecayedValueType>::value, "ValueType is not supported");
+    
     type_ = ToTypeID<DecayedValueType>::value;
     any_ = boost::any(DecayedValueType(value));
   }
+  explicit MetaInfoValue(const char* value) : MetaInfoValue(std::string(value)) {}
 
   /// \brief Convert value to type T
   ///

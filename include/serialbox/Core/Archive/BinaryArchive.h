@@ -67,6 +67,7 @@ public:
   /// @{
   virtual void write(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;
   virtual void read(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;
+  virtual FieldID getNextFieldID(const std::string& field) const noexcept override; 
   virtual void updateMetaData() override;
   virtual const std::string& directory() const override { return directory_.string(); }
   virtual const std::string& name() const override { return BinaryArchive::Name; }

@@ -36,6 +36,9 @@ public:
 
   ///
   virtual void read(StorageView& storageView, const FieldID& fieldID) throw(Exception) = 0;
+  
+  /// 
+  virtual FieldID getNextFieldID(const std::string& field) const noexcept = 0; 
 
   ///
   virtual void updateMetaData() = 0;

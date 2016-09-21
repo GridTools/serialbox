@@ -96,6 +96,10 @@ public:
   bool insert(KeyType&& key, ValueType&& value) noexcept {
     return (map_.insert({key, MetaInfoValue(std::forward<ValueType>(value))}).second);
   }
+  template <class KeyType>
+  bool insert(KeyType&& key, const char* value) noexcept {
+    return insert(std::forward<KeyType>(key), std::string(value));
+  }
 
   /// \brief Removes from the MetaInfoMap either a single element or a range of
   /// elements [first,last)

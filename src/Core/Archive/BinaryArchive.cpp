@@ -183,8 +183,10 @@ void BinaryArchive::write(StorageView& storageView, const FieldID& fieldID) thro
   if(it != fieldTable_.end()) {
     FieldOffsetTable& fieldOffsetTable = it->second;
 
+    CHECK(fieldID.id <= fieldOffsetTable.size()) << "inconsistent fieldID";
+
     // Do we append at the end?
-    if(fieldID.id >= fieldOffsetTable.size()) {
+    if(fieldID.id == fieldOffsetTable.size()) {
       fs.open(filename.string(), std::ofstream::out | std::ofstream::binary | std::ofstream::app);
       auto offset = fs.tellp();
       fieldOffsetTable.push_back(FileOffsetType{offset, checksum});
@@ -215,6 +217,8 @@ void BinaryArchive::write(StorageView& storageView, const FieldID& fieldID) thro
   }
   // Field does not exist, create new file and append data
   else {
+    CHECK(fieldID.id == 0) << "inconsistent fieldID";
+
     fs.open(filename.string(), std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
 
     fieldTable_.insert(
@@ -303,6 +307,14 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) throw
       std::memcpy(it.ptr(), dataPtr, bytesPerElement);
   }
   LOG(INFO) << "Successfully read field \"" << fieldID.name << "\" (id = " << fieldID.id << ")";
+}
+
+FieldID BinaryArchive::getNextFieldID(const std::string& field) const noexcept {
+  auto it = fieldTable_.find(field);
+  if(it != fieldTable_.end())
+    return FieldID{field, static_cast<unsigned int>(it->second.size())};
+  else
+    return FieldID{field, 0};
 }
 
 std::ostream& BinaryArchive::toStream(std::ostream& stream) const {

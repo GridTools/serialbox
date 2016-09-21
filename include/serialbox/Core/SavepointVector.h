@@ -1,4 +1,4 @@
-//===-- serialbox/Core/SavepointImpl.h ----------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/SavepointVector.h --------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,106 +8,133 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains the shared implementation of all Savepoints.
+/// This file provides the SavepointVector which manages the registered savepoints and their mapping
+/// to the stored fields.
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_SAVEPOINTIMPL_H
-#define SERIALBOX_CORE_SAVEPOINTIMPL_H
+#ifndef SERIALBOX_CORE_SAVEPOINTVECTOR_H
+#define SERIALBOX_CORE_SAVEPOINTVECTOR_H
 
 #include "serialbox/Core/FieldID.h"
 #include "serialbox/Core/Json.h"
 #include "serialbox/Core/Savepoint.h"
 #include <iosfwd>
-#include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace serialbox {
 
-/// \brief Shared implementation of the Savepoints
+namespace internal {
+
+template <class StringType>
+inline int fieldExists(const std::vector<FieldID>& vector, StringType&& field) noexcept {
+  for(std::size_t i = 0; i < vector.size(); ++i)
+    if(vector[i].name == field)
+      return i;
+  return -1;
+}
+}
+
+/// \brief The SavepointVector manages the registered savepoints and their mapping to the stored
+/// fields
 ///
-/// Direct usage of this class is discouraged, use the Savepoint classes provided by the Frontends
-/// instead.
-class SavepointImpl {
+/// The savepoints are ordered in the sequence they were registred.
+class SavepointVector {
+  using index_type = std::unordered_map<Savepoint, int>;
+
 public:
-  /// \brief Construct an empty savepoint (i.e this->empty() == true)
-  template <class StringType,
-            class = typename std::enable_if<!std::is_same<StringType, json::json>::value>::type>
-  explicit SavepointImpl(const StringType& name) : name_(name), metaInfo_(), fields_(){};
+  /// \brief A random access iterator to `Savepoint`
+  using iterator = std::vector<Savepoint>::iterator;
 
-  /// \brief Construct a field-less savepoint with ´name´ and ´metaInfo´
-  template <class StringType, class MetaInfoType>
-  SavepointImpl(StringType&& name, MetaInfoType&& metaInfo)
-      : name_(name), metaInfo_(metaInfo), fields_(){};
+  /// \brief A random access iterator to `const Savepoint`
+  using const_iterator = std::vector<Savepoint>::const_iterator;
 
-  /// \brief Copy constructor [deleted]
-  SavepointImpl(const SavepointImpl&) = delete;
+  /// \brief Default constructor (empty)
+  SavepointVector() : index_(), savepoints_(), fields_(){};
+
+  /// \brief Copy constructor
+  SavepointVector(const SavepointVector&) = default;
 
   /// \brief Move constructor
-  SavepointImpl(SavepointImpl&&) = default;
+  SavepointVector(SavepointVector&&) = default;
 
   /// \brief Construct from JSON
-  explicit SavepointImpl(const json::json& jsonNode) { fromJSON(jsonNode); }
+  explicit SavepointVector(const json::json& jsonNode) { fromJSON(jsonNode); }
 
-  /// \brief Construct members externally
-  SavepointImpl(const std::string name, const MetaInfoMap& metaInfo,
-                const std::vector<FieldID>& fields)
-      : name_(name), metaInfo_(metaInfo), fields_(fields) {}
-
-  /// \brief Copy assignment [deleted]
-  SavepointImpl& operator=(const SavepointImpl&) = delete;
+  /// \brief Copy assignment
+  SavepointVector& operator=(const SavepointVector&) = default;
 
   /// \brief Move assignment
-  SavepointImpl& operator=(SavepointImpl&&) = default;
-
-  /// \brief Test for equality
-  bool operator==(const SavepointImpl& right) const {
-    return (name_ == right.name_) && (metaInfo_ == right.metaInfo_) && (fields_ == right.fields_);
-  }
-
-  /// \brief Test for inequality
-  bool operator!=(const SavepointImpl& right) const { return (!(*this == right)); }
+  SavepointVector& operator=(SavepointVector&&) = default;
 
   /// \brief Swap with other
-  void swap(SavepointImpl& other) noexcept;
+  void swap(SavepointVector& other) noexcept;
 
-  /// \brief Access name
-  std::string& name() noexcept { return name_; }
-  const std::string& name() const noexcept { return name_; }
+  /// \brief Insert savepoint in savepoint vector
+  /// \return True iff the savepoint was successfully inserted
+  bool insert(const Savepoint& savepoint) noexcept;
 
-  /// \brief Access meta-info
-  MetaInfoMap& metaInfo() noexcept { return metaInfo_; }
-  const MetaInfoMap& metaInfo() const noexcept { return metaInfo_; }
+  /// \brief Add a field to the savepoint
+  /// \return True iff the field was successfully addeed to the savepoint
+  bool addField(const Savepoint& savepoint, const FieldID& fieldID) noexcept;
 
-  /// \brief Access fields
-  std::vector<FieldID>& fields() noexcept { return fields_; }
-  const std::vector<FieldID>& fields() const noexcept { return fields_; }
+  /// \brief Add a field to the savepoint given an iterator to the savepoint
+  /// \return True iff the field was successfully addeed to the savepoint
+  bool addField(const iterator& savepointIterator, const FieldID& fieldID) noexcept;
 
-  /// \brief Register field within savepoint
+  /// \brief Get the FielID of field ´field´ at savepoint ´savepoint´
   ///
-  /// This function provides strong exception safety.
-  ///
-  /// \param name       Name of the newly registered field
-  /// \throw Exception  Field with given name already exists
-  void registerField(FieldID fieldID);
+  /// \throw Exception  Savepoint or field at savepoint do not exist
+  FieldID getFieldID(const Savepoint& savepoint, const std::string& field) const;
 
-  /// \brief Return number of registered fields
-  std::size_t numFields() const noexcept { return fields_.size(); }
-
-  /// \brief Check if field exists
+  /// \brief Get the FielID of field ´field´ given an iterator to the savepoint
   ///
-  /// \param name  Name of the field to check
-  inline bool hasField(const std::string& name) const noexcept { return hasFieldImpl(name); }
-  inline bool hasField(const std::string& name) noexcept { return hasFieldImpl(name); }
+  /// \throw Exception  Field does not exist at savepoint
+  template <class Iterator, class = typename std::enable_if<!std::is_same<
+                                typename std::decay<Iterator>::type, Savepoint>::value>::type>
+  FieldID getFieldID(Iterator&& savepointIterator, const std::string& field) const {
+    int spIdx = savepointIterator - savepoints_.begin();
+    auto& fields = fields_[spIdx];
+    int fieldIdx = internal::fieldExists(fields, field);
 
-  /// \brief Get field ID of field given by name
+    if(fieldIdx != -1)
+      return fields[fieldIdx];
+
+    throw Exception("field '%' does not exist at savepoint '%s'", field,
+                    savepointIterator->toString());
+  }
+
+  /// \brief Check if savepoint exists
+  /// \return True iff the savepoint exists
+  bool exists(const Savepoint& savepoint) const noexcept;
+
+  /// \brief Find savepoint
+  /// \return Iterator to the found savepoint or SavepointVector::end() if savepoint does not exist
+  iterator find(const Savepoint& savepoint) noexcept;
+  const_iterator find(const Savepoint& savepoint) const noexcept;
+
+  /// \brief Access fields of savepoint
   ///
-  /// \param name       Name of the field newly registered
-  /// \throw Exception  Field with given name does not exist
-  const FieldID& getFieldID(const std::string& name) const;
+  /// \throw Exception  Savepoint does not exists
+  const std::vector<FieldID>& fieldsOf(const Savepoint& savepoint) const;
 
   /// \brief Returns a bool value indicating whether the savepoint is empty
-  bool empty() const noexcept { return metaInfo_.empty() && fields_.empty(); }
+  bool empty() const noexcept { return index_.empty(); }
+
+  /// \brief Returns the number of savepoints in the vector
+  std::size_t size() const noexcept { return savepoints_.size(); }
+
+  /// \brief Returns an iterator pointing to the first savepoint in the vector
+  iterator begin() noexcept { return savepoints_.begin(); }
+  const_iterator begin() const noexcept { return savepoints_.begin(); }
+
+  /// \brief Returns an iterator pointing to the past-the-end savepoint in the vector
+  iterator end() noexcept { return savepoints_.end(); }
+  const_iterator end() const noexcept { return savepoints_.end(); }
+
+  /// \brief Access the savepoints
+  const std::vector<Savepoint>& savepoints() const noexcept { return savepoints_; }
 
   /// \brief Convert to JSON
   json::json toJSON() const;
@@ -118,20 +145,12 @@ public:
   void fromJSON(const json::json& jsonNode);
 
   /// \brief Convert to stream
-  friend std::ostream& operator<<(std::ostream& stream, const SavepointImpl& s);
+  friend std::ostream& operator<<(std::ostream& stream, const SavepointVector& s);
 
-protected:
-  inline bool hasFieldImpl(const std::string& name) const noexcept {
-    for(const auto& field : fields_)
-      if(field.name == name)
-        return true;
-    return false;
-  }
-
-protected:
-  std::string name_;            ///< Name of this savepoint
-  MetaInfoMap metaInfo_;        ///< Meta-information of this savepoint
-  std::vector<FieldID> fields_; ///< Fields captured by this savepoint
+private:
+  std::unordered_map<Savepoint, int> index_; ///< Hash-map for fast lookup
+  std::vector<Savepoint> savepoints_;        ///< Vector of stored savepoints
+  std::vector<std::vector<FieldID>> fields_; ///< Fields of each savepoint
 };
 
 } // namespace serialbox

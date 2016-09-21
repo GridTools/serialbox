@@ -14,6 +14,7 @@
 
 #include "serialbox/Core/Logging.h"
 #include "serialbox/Core/Savepoint.h"
+#include <sstream>
 
 namespace serialbox {
 
@@ -39,11 +40,17 @@ void Savepoint::fromJSON(const json::json& jsonNode) {
     metaInfo_.fromJSON(jsonNode["meta_info"]);
 }
 
+std::string Savepoint::toString() const {
+  std::stringstream ss;
+  ss << *this;
+  return ss.str();
+}
+
 std::ostream& operator<<(std::ostream& stream, const Savepoint& s) {
   stream << s.name_ << " [ ";
   for(auto it = s.metaInfo_.begin(), end = s.metaInfo_.end(); it != end; ++it)
     stream << it->first << " = " << it->second.toString() << " ";
-  stream << "]\n";
+  stream << "]";
   return stream;
 }
 

@@ -8,7 +8,7 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains the implementation the Savepoint.
+/// This file contains the implementation of the Savepoint.
 ///
 //===------------------------------------------------------------------------------------------===//
 
@@ -114,6 +114,9 @@ public:
   ///
   /// \throw Exception  JSON node is ill-formed
   void fromJSON(const json::json& jsonNode);
+  
+  /// \brief Convert savepoint to string
+  std::string toString() const;
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const Savepoint& s);

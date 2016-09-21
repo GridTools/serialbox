@@ -51,29 +51,31 @@ TYPED_TEST(BinaryArchiveTest, Construction) {
   // -----------------------------------------------------------------------------------------------
   // Writing
   // -----------------------------------------------------------------------------------------------
+
+  // Open fresh archive and write meta data to disk
   {
-    // Open fresh archive and write meta data to disk
-    {
-      EXPECT_NO_THROW(
-          BinaryArchive(this->directory->path(), OpenModeKind::Write).updateMetaData());
-    }
+    BinaryArchive b(this->directory->path(), OpenModeKind::Write);
+    b.updateMetaData();
+    EXPECT_EQ(b.getNextFieldID("field1").id, 0);
+    EXPECT_EQ(b.getNextFieldID("XXX").id, 0);
+  }
 
-    // Throw Exception: Directory is not empty
-    EXPECT_THROW(BinaryArchive(this->directory->path(), OpenModeKind::Write), Exception);
+  // Throw Exception: Directory is not empty
+  { EXPECT_THROW(BinaryArchive(this->directory->path(), OpenModeKind::Write), Exception); }
 
-    // Create directory if not already existent
-    EXPECT_NO_THROW(
-        BinaryArchive(this->directory->path() / "this-dir-is-created", OpenModeKind::Write));
+  // Create directory if not already existent
+  {
+    BinaryArchive b(this->directory->path() / "this-dir-is-created", OpenModeKind::Write);
     EXPECT_TRUE(boost::filesystem::exists(this->directory->path() / "this-dir-is-created"));
   }
 
   // -----------------------------------------------------------------------------------------------
   // Reading
   // -----------------------------------------------------------------------------------------------
-  {
-    EXPECT_NO_THROW(BinaryArchive(this->directory->path(), OpenModeKind::Read));
+  { BinaryArchive b(this->directory->path(), OpenModeKind::Read); }
 
-    // Throw Exception: Directory does not exist
+  // Throw Exception: Directory does not exist
+  {
     EXPECT_THROW(BinaryArchive(this->directory->path() / "not-a-dir", OpenModeKind::Read),
                  Exception);
   }
@@ -81,18 +83,22 @@ TYPED_TEST(BinaryArchiveTest, Construction) {
   // -----------------------------------------------------------------------------------------------
   // Appending
   // -----------------------------------------------------------------------------------------------
-  EXPECT_NO_THROW(BinaryArchive(this->directory->path(), OpenModeKind::Append));
+
+  { EXPECT_NO_THROW(BinaryArchive(this->directory->path(), OpenModeKind::Append)); }
 
   // Create directory if not already existent
-  EXPECT_NO_THROW(
-      BinaryArchive(this->directory->path() / "this-dir-is-created", OpenModeKind::Append));
+  { BinaryArchive b(this->directory->path() / "this-dir-is-created", OpenModeKind::Append); }
 
   // Create directories if not already existent
-  EXPECT_NO_THROW(BinaryArchive(this->directory->path() / "nest1" / "nest2", OpenModeKind::Append));
-  EXPECT_TRUE(boost::filesystem::exists(this->directory->path() / "nest1" / "nest2"));
+  {
+    BinaryArchive b(this->directory->path() / "nest1" / "nest2", OpenModeKind::Append);
+    EXPECT_TRUE(boost::filesystem::exists(this->directory->path() / "nest1" / "nest2"));
+  }
 
   // Name
-  EXPECT_EQ(BinaryArchive(this->directory->path(), OpenModeKind::Append).name(), "BinaryArchive");
+  {
+    EXPECT_EQ(BinaryArchive(this->directory->path(), OpenModeKind::Append).name(), "BinaryArchive");
+  }
 }
 
 TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
@@ -139,48 +145,97 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
     BinaryArchive archiveWrite(this->directory->path().string(), OpenModeKind::Write);
     EXPECT_STREQ(archiveWrite.directory().c_str(), this->directory->path().string().c_str());
 
-    // u
-    auto sv_u_0_input = u_0_input.toStorageView();
-    archiveWrite.write(sv_u_0_input, FieldID{"u", 0});
+    // u: id = 0
+    {
+      auto sv = u_0_input.toStorageView();
 
-    auto sv_u_1_input = u_1_input.toStorageView();
-    archiveWrite.write(sv_u_1_input, FieldID{"u", 1});
+      FieldID fieldID = archiveWrite.getNextFieldID("u");
+      ASSERT_EQ(fieldID.name, "u");
+      ASSERT_EQ(fieldID.id, 0);
 
-    auto sv_u_2_input = u_2_input.toStorageView();
-    archiveWrite.write(sv_u_2_input, FieldID{"u", 2});
+      archiveWrite.write(sv, fieldID);
+    }
 
-    // v
-    auto sv_v_0_input = v_0_input.toStorageView();
-    archiveWrite.write(sv_v_0_input, FieldID{"v", 0});
-    archiveWrite.write(sv_v_0_input, FieldID{"v", 0});
+    // u:  id = 1    
+    {
+      auto sv = u_1_input.toStorageView();
 
-    auto sv_v_1_input = v_1_input.toStorageView();
-    archiveWrite.write(sv_v_1_input, FieldID{"v", 1});
+      FieldID fieldID = archiveWrite.getNextFieldID("u");
+      ASSERT_EQ(fieldID.name, "u");
+      ASSERT_EQ(fieldID.id, 1);
 
-    auto sv_v_2_input = v_2_input.toStorageView();
-    archiveWrite.write(sv_v_2_input, FieldID{"v", 2});
+      archiveWrite.write(sv, fieldID);
+    }
+    
+    // u:  id = 2    
+    {
+      auto sv = u_2_input.toStorageView();
+
+      FieldID fieldID = archiveWrite.getNextFieldID("u");
+      ASSERT_EQ(fieldID.name, "u");
+      ASSERT_EQ(fieldID.id, 2);
+
+      archiveWrite.write(sv, fieldID);
+    }
+    
+    // v:  id = 0    
+    {
+      auto sv = v_0_input.toStorageView();
+
+      FieldID fieldID = archiveWrite.getNextFieldID("v");
+      ASSERT_EQ(fieldID.name, "v");
+      ASSERT_EQ(fieldID.id, 0);
+
+      archiveWrite.write(sv, fieldID);
+      archiveWrite.write(sv, fieldID); // Should not perform a write
+    }
+        
+    // v:  id = 1    
+    {
+      auto sv = v_1_input.toStorageView();
+
+      FieldID fieldID = archiveWrite.getNextFieldID("v");
+      ASSERT_EQ(fieldID.name, "v");
+      ASSERT_EQ(fieldID.id, 1);
+
+      archiveWrite.write(sv, fieldID);
+    }
+    
+    // v:  id = 2   
+    {
+      auto sv = v_2_input.toStorageView();
+
+      FieldID fieldID = archiveWrite.getNextFieldID("v");
+      ASSERT_EQ(fieldID.name, "v");
+      ASSERT_EQ(fieldID.id, 2);
+
+      archiveWrite.write(sv, fieldID);
+    }
 
     // Replace data at v_1 with v_0
+    auto sv_v_0_input = v_0_input.toStorageView();    
     archiveWrite.write(sv_v_0_input, FieldID{"v", 1});
 
     // Replace data at v_0 with v_1
+    auto sv_v_1_input = v_1_input.toStorageView();        
     archiveWrite.write(sv_v_1_input, FieldID{"v", 0});
 
     // storage 2d
     auto sv_2d_0_input = storage_2d_0_input.toStorageView();
-    archiveWrite.write(sv_2d_0_input, FieldID{"storage_2d", 0});
+    archiveWrite.write(sv_2d_0_input, archiveWrite.getNextFieldID("storage_2d"));
 
     auto sv_2d_1_input = storage_2d_1_input.toStorageView();
-    archiveWrite.write(sv_2d_1_input, FieldID{"storage_2d", 1});
+    archiveWrite.write(sv_2d_1_input, archiveWrite.getNextFieldID("storage_2d"));
 
     // storage 7d
     auto sv_7d_0_input = storage_7d_0_input.toStorageView();
-    archiveWrite.write(sv_7d_0_input, FieldID{"storage_7d", 0});
+    archiveWrite.write(sv_7d_0_input, archiveWrite.getNextFieldID("storage_7d"));
 
     auto sv_7d_1_input = storage_7d_1_input.toStorageView();
-    archiveWrite.write(sv_7d_1_input, FieldID{"storage_7d", 1});
+    archiveWrite.write(sv_7d_1_input, archiveWrite.getNextFieldID("storage_7d"));
 
     // Check all exceptional cases
+    auto sv_u_2_input = u_2_input.toStorageView();        
     ASSERT_THROW(archiveWrite.read(sv_u_2_input, FieldID{"u", 2}), Exception);
   }
 
@@ -249,25 +304,24 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
   Storage::verify(storage_7d_1_output, storage_7d_1_input);
 }
 
-TYPED_TEST(BinaryArchiveTest, MetaData)
-{
+TYPED_TEST(BinaryArchiveTest, MetaData) {
   using Storage = Storage<TypeParam>;
-  
+
   Storage u_0_input(Storage::RowMajor, {5, 6, 7}, {{2, 2}, {4, 2}, {4, 5}}, Storage::random);
   Storage u_0_output(Storage::RowMajor, {5, 6, 7});
 
   BinaryArchive archiveWrite(this->directory->path().string(), OpenModeKind::Write);
-  
+
   auto sv_u_0_input = u_0_input.toStorageView();
   archiveWrite.write(sv_u_0_input, FieldID{"u", 0});
   archiveWrite.updateMetaData();
-  
+
   // Read meta data file to get in memory copy
   std::ifstream ifs((this->directory->path() / Archive::ArchiveMetaDataFile).string());
   json::json j;
   ifs >> j;
   ifs.close();
-  
+
   // Write meta file to disk (to corrupt it)
   auto toFile = [this](const json::json& jsonNode) -> void {
     std::ofstream ofs((this->directory->path() / Archive::ArchiveMetaDataFile).string(),
@@ -282,7 +336,7 @@ TYPED_TEST(BinaryArchiveTest, MetaData)
     json::json corrupted = j;
     corrupted["fields_table"]["u"][0][1] = "LOOKS_LIKE_THIS_HASH_IS_CORRUPTED";
     toFile(corrupted);
-    
+
     BinaryArchive archiveRead(this->directory->path().string(), OpenModeKind::Read);
 
     // The data of u_0_output should NOT be modified

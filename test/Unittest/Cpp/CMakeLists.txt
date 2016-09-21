@@ -19,8 +19,8 @@ set(CPP_UNITTEST_SOURCES
   UnittestMetaInfoValue.cpp
   UnittestStorage.cpp
   UnittestStorageView.cpp
-  UnittestSavepointImpl.cpp
   UnittestSavepoint.cpp
+  UnittestSavepointVector.cpp
   UnittestSerializerImpl.cpp
   UnittestType.cpp
   UnittestUnreachable.cpp

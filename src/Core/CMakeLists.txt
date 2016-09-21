@@ -18,6 +18,7 @@ set(SOURCES
   MetaInfoValue.cpp
   SavepointImpl.cpp
   Savepoint.cpp
+  SavepointVector.cpp
   SerializerImpl.cpp
   StorageView.cpp
   StorageViewIterator.cpp

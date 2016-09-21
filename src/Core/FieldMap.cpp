@@ -33,19 +33,14 @@ void FieldMap::fromJSON(const json::json& jsonNode) {
 
   if(jsonNode.is_null() || jsonNode.empty())
     return;
-  
+
   for(auto it = jsonNode.begin(), end = jsonNode.end(); it != end; ++it) {
-    bool insertSuccess = false;
-    
     try {
-      insertSuccess = insert(it.key(), it.value());      
+      insert(it.key(), it.value());
     } catch(Exception& e) {
       throw Exception("cannot insert node '%s' in FieldMap: JSON node ill-formed: %s", it.key(),
                       e.what());
     }
-
-    if(!insertSuccess)
-      throw Exception("cannot insert node '%s' in FieldMap: node already exists", it.key());
   }
 }
 
