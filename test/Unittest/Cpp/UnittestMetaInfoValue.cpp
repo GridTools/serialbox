@@ -20,7 +20,7 @@ using namespace serialbox;
 
 namespace {
 template <class T>
-class MetaInfoValueTypedTest : public testing::Test {};
+class MetaInfoValueTest : public testing::Test {};
 
 // Generate a pair of values v1 and v2 of type T wiht v1 != v2
 template <class T>
@@ -74,9 +74,9 @@ using TestTypes = testing::Types<bool, double, float, int, std::int64_t, std::st
 
 } // namespace anonymous
 
-TYPED_TEST_CASE(MetaInfoValueTypedTest, TestTypes);
+TYPED_TEST_CASE(MetaInfoValueTest, TestTypes);
 
-TYPED_TEST(MetaInfoValueTypedTest, Constrcution) {
+TYPED_TEST(MetaInfoValueTest, Constrcution) {
   // Default construct
   MetaInfoValue m;
   EXPECT_EQ(m.type(), TypeID::Invalid);
@@ -121,7 +121,7 @@ TYPED_TEST(MetaInfoValueTypedTest, Constrcution) {
   EXPECT_EQ(value2.as<TypeParam>(), pair.first);
 }
 
-TYPED_TEST(MetaInfoValueTypedTest, Comparison) {
+TYPED_TEST(MetaInfoValueTest, Comparison) {
   auto pair = getValuePair<TypeParam>();
   MetaInfoValue value1(TypeParam(pair.first));
   MetaInfoValue value2(TypeParam(pair.second));
@@ -148,7 +148,7 @@ TYPED_TEST(MetaInfoValueTypedTest, Comparison) {
   }
 }
 
-TYPED_TEST(MetaInfoValueTypedTest, toString) {
+TYPED_TEST(MetaInfoValueTest, toString) {
   auto pair = getValuePair<TypeParam>();
   MetaInfoValue value1(TypeParam(pair.first));
   MetaInfoValue value2(TypeParam(pair.second));

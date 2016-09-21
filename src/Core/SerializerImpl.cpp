@@ -28,7 +28,7 @@ SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
                                const std::string& archiveName)
     : mode_(mode), directory_(directory) {
 
-  // Validate integrity of directory
+  // Validate integrity of directory (non-existent directories are created by the archive)
   try {
     bool directoryExists = boost::filesystem::exists(directory_);
 
