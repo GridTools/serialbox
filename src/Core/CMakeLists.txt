@@ -16,7 +16,6 @@ set(SOURCES
   Logging.cpp
   MetaInfoMap.cpp
   MetaInfoValue.cpp
-  SavepointImpl.cpp
   Savepoint.cpp
   SavepointVector.cpp
   SerializerImpl.cpp

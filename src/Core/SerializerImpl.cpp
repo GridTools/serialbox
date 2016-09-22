@@ -55,15 +55,16 @@ SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
   constructArchive(archiveName);
 }
 
-SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
-                               std::vector<SavepointImpl>& savepoints, FieldMap& fieldMap,
-                               MetaInfoMap& globalMetaInfo, std::unique_ptr<Archive>& archive)
-    : mode_(mode), directory_(directory), savepoints_(std::move(savepoints)),
-      fieldMap_(std::move(fieldMap)), globalMetaInfo_(std::move(globalMetaInfo)),
-      archive_(std::move(archive)) {}
+std::vector<std::string> SerializerImpl::fieldnames() const {
+  std::vector<std::string> fields;
+  fields.reserve(fieldMap_.size());
+  for(auto it = fieldMap_.begin(), end = fieldMap_.end(); it != end; ++it)
+    fields.push_back(it->first);
+  return fields;
+}
 
 void SerializerImpl::constructMetaDataFromJson() {
-  savepoints_.clear();
+  savepointVector_.clear();
   fieldMap_.clear();
   globalMetaInfo_.clear();
 
@@ -89,11 +90,7 @@ void SerializerImpl::constructMetaDataFromJson() {
     throw Exception("JSON parser error: %s", e.what());
   }
 
-  if(jsonNode.empty())
-    return;
-
   try {
-
     // Check consistency
     if(!jsonNode.count("serialbox_version"))
       throw Exception("node 'serialbox_version' not found");
@@ -110,31 +107,33 @@ void SerializerImpl::constructMetaDataFromJson() {
       globalMetaInfo_.fromJSON(jsonNode["global_meta_info"]);
 
     // Construct Savepoints
-    if(jsonNode.count("savepoints"))
-      for(auto it = jsonNode["savepoints"].begin(), end = jsonNode["savepoints"].end(); it != end;
-          ++it)
-        savepoints_.emplace_back(*it);
-
+    if(jsonNode.count("savepoint_vector"))
+      savepointVector_.fromJSON(jsonNode["savepoint_vector"]);
+      
     // Construct FieldMap
     if(jsonNode.count("field_map"))
       fieldMap_.fromJSON(jsonNode["field_map"]);
 
   } catch(Exception& e) {
-    throw Exception("error while parsing '%s': %s", directory_, e.what());
+    throw Exception("error while parsing %s: %s", filename, e.what());
   }
 }
 
-void SerializerImpl::constructArchive(const std::string& archiveName) {
-  archive_ = make_unique<BinaryArchive>(directory_, mode_);
+
+std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s) {
+  stream << "Serializer = {\n";
+  stream << "  mode: " << s.mode_ << "\n";
+  stream << "  directory: " << s.directory_ << "\n";
+  stream << "  " << s.savepointVector_ << "\n";
+  stream << "  " << s.fieldMap_ << "\n";
+  stream << "  " << s.globalMetaInfo_ << "\n";
+  stream << "}\n";
+  return stream;
 }
 
-void SerializerImpl::updateMetaData() {
-  if(mode_ == OpenModeKind::Read)
-    return;
-
+json::json SerializerImpl::toJSON() const {
   json::json jsonNode;
-  boost::filesystem::path filename = directory_ / SerializerImpl::SerializerMetaDataFile;
-
+      
   // Tag version
   jsonNode["serialbox_version"] =
       100 * SERIALBOX_VERSION_MAJOR + 10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
@@ -142,13 +141,22 @@ void SerializerImpl::updateMetaData() {
   // Serialize globalMetaInfo
   jsonNode["global_meta_info"] = globalMetaInfo_.toJSON();
 
-  // Serialize Savepoints
-  for(auto it = savepoints_.cbegin(), end = savepoints_.cend(); it != end; ++it)
-    jsonNode["savepoints"].push_back(it->toJSON());
+  // Serialize SavepointVector
+  jsonNode["savepoint_vector"] = savepointVector_.toJSON();
 
   // Serialize FieldMap
   jsonNode["field_map"] = fieldMap_.toJSON();
+  
+  return jsonNode;
+}
 
+void SerializerImpl::updateMetaData() {
+  if(mode_ == OpenModeKind::Read)
+    return;
+
+  json::json jsonNode = toJSON();
+  boost::filesystem::path filename = directory_ / SerializerImpl::SerializerMetaDataFile;
+  
   // Write metaData to disk (just overwrite the file, we assume that there is never more than one
   // Serializer per data set and thus our in-memory copy is always the up-to-date one)
   std::ofstream fs(filename.string(), std::ios::out | std::ios::trunc);
@@ -157,6 +165,11 @@ void SerializerImpl::updateMetaData() {
 
   // Update archive meta-data if necessary
   archive_->updateMetaData();
+}
+
+void SerializerImpl::constructArchive(const std::string& archiveName) {
+  // TODO: here we should call an ArchiveFactory
+  archive_ = make_unique<BinaryArchive>(directory_, mode_);
 }
 
 } // namespace serialbox

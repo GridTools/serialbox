@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/Compiler.h"
+#include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/StorageViewIterator.h"
 
 namespace serialbox {

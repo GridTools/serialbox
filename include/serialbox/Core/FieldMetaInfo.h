@@ -15,8 +15,8 @@
 #ifndef SERIALBOX_CORE_FIELDMAPMETAINFO_H
 #define SERIALBOX_CORE_FIELDMAPMETAINFO_H
 
-#include "serialbox/Core/MetaInfoMap.h"
 #include "serialbox/Core/Json.h"
+#include "serialbox/Core/MetaInfoMap.h"
 
 namespace serialbox {
 
@@ -29,6 +29,10 @@ public:
   /// \brief Construct members externally
   FieldMetaInfo(TypeID type, const std::vector<int>& dims, const MetaInfoMap& metaInfo)
       : type_(type), dims_(dims), metaInfo_(metaInfo) {}
+
+  /// \brief Construct members externally
+  FieldMetaInfo(TypeID type, const std::vector<int>& dims)
+      : type_(type), dims_(dims), metaInfo_() {}
 
   /// \brief Construct from JSON
   explicit FieldMetaInfo(const json::json& jsonNode) { fromJSON(jsonNode); }
@@ -56,14 +60,14 @@ public:
 
   /// \brief Access TypeID
   TypeID& type() noexcept { return type_; }
-  const TypeID& type() const noexcept { return type_; }  
+  const TypeID& type() const noexcept { return type_; }
 
   /// \brief Access dimensions
-  std::vector<int>& dims() noexcept { return dims_; }  
-  const std::vector<int>& dims() const noexcept { return dims_; }  
+  std::vector<int>& dims() noexcept { return dims_; }
+  const std::vector<int>& dims() const noexcept { return dims_; }
 
   /// \brief Access meta-info map
-  MetaInfoMap& metaInfo() noexcept { return metaInfo_; }  
+  MetaInfoMap& metaInfo() noexcept { return metaInfo_; }
   const MetaInfoMap& metaInfo() const noexcept { return metaInfo_; }
 
   /// \brief Convert to JSON
@@ -73,7 +77,7 @@ public:
   ///
   /// \throw Exception  JSON node is ill-formed
   void fromJSON(const json::json& jsonNode);
-  
+
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const FieldMetaInfo& f);
 

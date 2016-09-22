@@ -19,10 +19,10 @@
 using namespace serialbox;
 
 TEST(SavepointVectorTest, Construction) {
-  // s1 and s2 have same name but diffrent meta-info, s3 has a diffrent name and no meta-info
+  // s1 and s2 have same name but different meta-info, s3 has a different name and no meta-info
   Savepoint savepoint1("savepoint");
   Savepoint savepoint2("savepoint");
-  Savepoint savepoint3("diffrent-savepoint");
+  Savepoint savepoint3("different-savepoint");
 
   ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
   ASSERT_NO_THROW(savepoint2.addMetaInfo("key1", "s2"));
@@ -42,68 +42,81 @@ TEST(SavepointVectorTest, Construction) {
   //  Register savepoints
   //------------------------------------------------------------------------------------------------
   {
-    SavepointVector s;    
-    
+    SavepointVector s;
+
     // Insert savepoint into empty vector
     ASSERT_TRUE(s.insert(savepoint1));
     EXPECT_TRUE(s.exists(savepoint1));
     EXPECT_EQ(s.size(), 1);
-    
-    // Insert savepoint with already existing name but diffrent meta-data
+
+    // Insert savepoint with already existing name but different meta-data
     ASSERT_TRUE(s.insert(savepoint2));
-    EXPECT_TRUE(s.exists(savepoint2));    
+    EXPECT_TRUE(s.exists(savepoint2));
     EXPECT_EQ(s.size(), 2);
-    
+
     // Insert savepoint with already existing name and meta-data -> Fail
     ASSERT_FALSE(s.insert(savepoint1));
-    EXPECT_TRUE(s.exists(savepoint1));    
+    EXPECT_TRUE(s.exists(savepoint1));
     EXPECT_EQ(s.size(), 2);
-    
-    // Insert savepoint with diffrent name
+
+    // Insert savepoint with different name
     ASSERT_TRUE(s.insert(savepoint3));
-    EXPECT_TRUE(s.exists(savepoint3));    
+    EXPECT_TRUE(s.exists(savepoint3));
     EXPECT_EQ(s.size(), 3);
+    
+    // Clear it
+    s.clear();
+    EXPECT_EQ(s.size(), 0);
+    EXPECT_TRUE(s.empty());
   }
-  
+
   //------------------------------------------------------------------------------------------------
   //  Register fields
   //------------------------------------------------------------------------------------------------
   {
-    SavepointVector s;    
+    SavepointVector s;
     ASSERT_TRUE(s.insert(savepoint1));
     ASSERT_TRUE(s.insert(savepoint2));
-    
+
     // Add field u (id = 0) to savepoint1
     ASSERT_TRUE(s.addField(savepoint1, FieldID{"u", 0}));
     ASSERT_EQ(s.fieldsOf(savepoint1).size(), 1);
-    EXPECT_EQ(s.fieldsOf(savepoint1)[0], (FieldID{"u", 0})); 
-    
+    EXPECT_EQ(s.fieldsOf(savepoint1)[0], (FieldID{"u", 0}));
+
     // Query fieldIDs
     EXPECT_EQ(s.getFieldID(savepoint1, "u"), (FieldID{"u", 0}));
-    EXPECT_THROW(s.getFieldID(savepoint3, "XXX"), Exception); // Savepoint does not exists        
-    
-    // Add already existing field to savepoint1
+
+    // Add already existing field to savepoint1 -> Fail
     ASSERT_FALSE(s.addField(savepoint1, FieldID{"u", 0}));
-    ASSERT_EQ(s.fieldsOf(savepoint1).size(), 1);    
-    
-    // Add already existing field with diffrent id to savepoint1
+    ASSERT_EQ(s.fieldsOf(savepoint1).size(), 1);
+
+    // Add already existing field with different id to savepoint1 -> Fail
     ASSERT_FALSE(s.addField(savepoint1, FieldID{"u", 1}));
-    ASSERT_EQ(s.fieldsOf(savepoint1).size(), 1); 
+    ASSERT_EQ(s.fieldsOf(savepoint1).size(), 1);
+
+    // Add fields to non-existing savepoint -> Exception
+    ASSERT_FALSE(s.addField(savepoint3, FieldID{"u", 1}));    
+    ASSERT_THROW(s.fieldsOf(savepoint3), Exception);
+    EXPECT_THROW(s.getFieldID(savepoint3, "u"), Exception);
     
     // Add field via iterator
     SavepointVector::iterator it = s.find(savepoint2);
     ASSERT_NE(it, s.end());
-    ASSERT_TRUE(s.addField(it, FieldID{"v", 1}));   
-    EXPECT_EQ(s.getFieldID(it, "v"), (FieldID{"v", 1}));    
-    
+    ASSERT_TRUE(s.addField(it, FieldID{"v", 1}));
+    EXPECT_EQ(s.getFieldID(it, "v"), (FieldID{"v", 1}));
+
     ASSERT_FALSE(s.addField(it, FieldID{"v", 1}));
     ASSERT_FALSE(s.addField(it, FieldID{"v", 0}));
     ASSERT_EQ(s.fieldsOf(savepoint2).size(), 1);
     
+    // Look for non-existing savepoint
+    SavepointVector::iterator itToEnd = s.find(savepoint3);
+    EXPECT_EQ(itToEnd, s.end());    
+
     // Query nonexistent field of savepoint2
-    EXPECT_THROW(s.getFieldID(it, "XXX"), Exception);    
+    EXPECT_THROW(s.getFieldID(it, "XXX"), Exception);
   }
-  
+
   //------------------------------------------------------------------------------------------------
   //  Copy construct
   //------------------------------------------------------------------------------------------------
@@ -111,14 +124,14 @@ TEST(SavepointVectorTest, Construction) {
     SavepointVector s1;
     ASSERT_TRUE(s1.insert(savepoint1));
     ASSERT_TRUE(s1.insert(savepoint2));
-    
+
     SavepointVector s2(s1);
-    EXPECT_TRUE(s2.exists(savepoint1));    
-    EXPECT_TRUE(s2.exists(savepoint2));    
-    EXPECT_TRUE(s1.exists(savepoint1));    
-    EXPECT_TRUE(s1.exists(savepoint2));  
+    EXPECT_TRUE(s2.exists(savepoint1));
+    EXPECT_TRUE(s2.exists(savepoint2));
+    EXPECT_TRUE(s1.exists(savepoint1));
+    EXPECT_TRUE(s1.exists(savepoint2));
   }
-  
+
   //------------------------------------------------------------------------------------------------
   //  Move construct
   //------------------------------------------------------------------------------------------------
@@ -126,12 +139,12 @@ TEST(SavepointVectorTest, Construction) {
     SavepointVector s1;
     ASSERT_TRUE(s1.insert(savepoint1));
     ASSERT_TRUE(s1.insert(savepoint2));
-    
+
     SavepointVector s2(std::move(s1));
-    EXPECT_TRUE(s2.exists(savepoint1));    
-    EXPECT_TRUE(s2.exists(savepoint2));    
+    EXPECT_TRUE(s2.exists(savepoint1));
+    EXPECT_TRUE(s2.exists(savepoint2));
   }
-  
+
   //------------------------------------------------------------------------------------------------
   //  Copy assign
   //------------------------------------------------------------------------------------------------
@@ -139,15 +152,15 @@ TEST(SavepointVectorTest, Construction) {
     SavepointVector s1;
     ASSERT_TRUE(s1.insert(savepoint1));
     ASSERT_TRUE(s1.insert(savepoint2));
-    
+
     SavepointVector s2;
     s2 = s1;
-    EXPECT_TRUE(s2.exists(savepoint1));    
-    EXPECT_TRUE(s2.exists(savepoint2));    
-    EXPECT_TRUE(s1.exists(savepoint1));    
-    EXPECT_TRUE(s1.exists(savepoint2));  
+    EXPECT_TRUE(s2.exists(savepoint1));
+    EXPECT_TRUE(s2.exists(savepoint2));
+    EXPECT_TRUE(s1.exists(savepoint1));
+    EXPECT_TRUE(s1.exists(savepoint2));
   }
-  
+
   //------------------------------------------------------------------------------------------------
   //  Move assign
   //------------------------------------------------------------------------------------------------
@@ -155,230 +168,220 @@ TEST(SavepointVectorTest, Construction) {
     SavepointVector s1;
     ASSERT_TRUE(s1.insert(savepoint1));
     ASSERT_TRUE(s1.insert(savepoint2));
-    
+
     SavepointVector s2;
     s2 = std::move(s1);
-    EXPECT_TRUE(s2.exists(savepoint1));    
-    EXPECT_TRUE(s2.exists(savepoint2));    
+    EXPECT_TRUE(s2.exists(savepoint1));
+    EXPECT_TRUE(s2.exists(savepoint2));
   }
 
-  //----------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------
   //  Swap
-  //----------------------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------------------------
   {
     SavepointVector s1;
     ASSERT_TRUE(s1.insert(savepoint1));
     ASSERT_TRUE(s1.insert(savepoint2));
-    
+
     SavepointVector s2;
     ASSERT_TRUE(s2.insert(savepoint3));
-    
+
     s1.swap(s2);
-    
-    EXPECT_TRUE(s1.exists(savepoint3));    
-    EXPECT_TRUE(s2.exists(savepoint1)); 
-    EXPECT_TRUE(s2.exists(savepoint2)); 
+
+    EXPECT_TRUE(s1.exists(savepoint3));
+    EXPECT_TRUE(s2.exists(savepoint1));
+    EXPECT_TRUE(s2.exists(savepoint2));
   }
 }
 
-//TEST(SavepointImplTest, QueryFields) {
-//  SavepointImpl s("TestSavepoint");
+TEST(SavepointVectorTest, toJSON) {
+  // s1 and s2 have same name but different meta-info, s3 has a different name and no meta-info
+  Savepoint savepoint1("savepoint");
+  Savepoint savepoint2("savepoint");
+  Savepoint savepoint3("different-savepoint");
 
-//  // Register new field
-//  ASSERT_NO_THROW(s.registerField(FieldID{"field1", 0}));
-//  EXPECT_EQ(s.numFields(), 1);
-//  ASSERT_NO_THROW(s.registerField(FieldID{"field2", 5}));
-//  EXPECT_EQ(s.numFields(), 2);
+  ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
+  ASSERT_NO_THROW(savepoint2.addMetaInfo("key1", "s2"));
 
-//  // Register already existing field -> Exception
-//  ASSERT_THROW(s.registerField(FieldID{"field1", 0}), Exception);
-//  EXPECT_EQ(s.numFields(), 2);
-//  ASSERT_THROW(s.registerField(FieldID{"field1", 1}), Exception);
-//  EXPECT_EQ(s.numFields(), 2);
+  SavepointVector s;
+  ASSERT_TRUE(s.insert(savepoint1));
+  ASSERT_TRUE(s.insert(savepoint2));
+  ASSERT_TRUE(s.insert(savepoint3));
 
-//  // Check if field exists
-//  EXPECT_TRUE(s.hasField("field1"));
-//  EXPECT_TRUE(s.hasField("field2"));
-//  EXPECT_FALSE(s.hasField("fieldXXX"));
+  ASSERT_TRUE(s.addField(savepoint1, FieldID{"u", 0}));
+  ASSERT_TRUE(s.addField(savepoint1, FieldID{"v", 0}));
+  ASSERT_TRUE(s.addField(savepoint2, FieldID{"u", 1}));
 
-//  // Get fieldID
-//  EXPECT_EQ(s.getFieldID("field1"), (FieldID{"field1", 0}));
-//  EXPECT_EQ(s.getFieldID("field2"), (FieldID{"field2", 5}));
-//  ASSERT_THROW(s.getFieldID("fieldXX"), Exception);
-//}
+  json::json j = s.toJSON();
 
-//TEST(SavepointImplTest, toJSON) {
-//  std::string name("TestSavepoint");
-//  std::vector<FieldID> fields{{"field1", 0}, {"field2", 5}};
-//  MetaInfoMap metaInfo(std::initializer_list<MetaInfoMap::value_type>{
-//      {"key1", MetaInfoValue(std::string("str"))}, {"key2", MetaInfoValue(double(5))}});
+  // Savepoints
+  ASSERT_TRUE(j.count("savepoints"));  
+  EXPECT_EQ(j["savepoints"][0]["name"], "savepoint");
+  EXPECT_EQ(j["savepoints"][0]["meta_info"]["key1"]["value"], "s1");
 
-//  SavepointImpl s(name, metaInfo, fields);
-//  json::json j = s.toJSON();
+  EXPECT_EQ(j["savepoints"][1]["name"], "savepoint");
+  EXPECT_EQ(j["savepoints"][1]["meta_info"]["key1"]["value"], "s2");
 
-//  // Type
-//  ASSERT_TRUE(j.count("name"));
-//  EXPECT_EQ(name, j["name"]);
+  EXPECT_EQ(j["savepoints"][2]["name"], "different-savepoint");
+  EXPECT_TRUE(j["savepoints"][2]["meta_info"].is_null());
 
-//  // Fields
-//  ASSERT_TRUE(j.count("fields"));
-//  EXPECT_EQ(int(j["fields"]["field1"]), 0);
-//  EXPECT_EQ(int(j["fields"]["field2"]), 5);
+  // Fields
+  ASSERT_TRUE(j.count("fields_per_savepoint"));
+  EXPECT_EQ(int(j["fields_per_savepoint"][0]["savepoint"]["u"]), 0);
+  EXPECT_EQ(int(j["fields_per_savepoint"][0]["savepoint"]["v"]), 0);
 
-//  // Meta-info (this is properly tested in the MetaInfoMap unittests)
-//  ASSERT_TRUE(j.count("meta_info"));
+  EXPECT_EQ(int(j["fields_per_savepoint"][1]["savepoint"]["u"]), 1);
 
-//  ASSERT_TRUE(j["meta_info"].count("key1"));
-//  EXPECT_EQ(int(j["meta_info"]["key1"]["type_id"]), static_cast<int>(TypeID::String));
-//  std::string key1_value = j["meta_info"]["key1"]["value"];
-//  EXPECT_EQ(key1_value, "str");
+  EXPECT_TRUE(j["fields_per_savepoint"][2]["different-savepoint"].is_null());
+}
 
-//  ASSERT_TRUE(j["meta_info"].count("key2"));
-//  EXPECT_EQ(int(j["meta_info"]["key2"]["type_id"]), static_cast<int>(TypeID::Float64));
-//  EXPECT_EQ(double(j["meta_info"]["key2"]["value"]), double(5));
-//}
+TEST(SavepointVectorTest, fromJSON) {
+  Savepoint savepoint1("savepoint");
+  Savepoint savepoint2("savepoint");
+  Savepoint savepoint3("different-savepoint");
 
-//TEST(SavepointImplTest, fromJSON) {
-//  std::string name("TestSavepoint");
-//  std::vector<FieldID> fields{{"field1", 0}, {"field2", 5}};
-//  MetaInfoMap metaInfo(std::initializer_list<MetaInfoMap::value_type>{
-//      {"key1", MetaInfoValue(std::string("str"))}, {"key2", MetaInfoValue(double(5))}});
+  ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
+  ASSERT_NO_THROW(savepoint2.addMetaInfo("key1", "s2"));
 
-//  // -----------------------------------------------------------------------------------------------
-//  // Success
-//  // -----------------------------------------------------------------------------------------------
-//  {
-//    auto j = R"(
-//     {
-//         "fields": {
-//             "field1": 0,
-//             "field2": 5
-//         },
-//         "meta_info": {
-//             "key1": {
-//                 "type_id": 6,
-//                 "value": "str"
-//             },
-//             "key2": {
-//                 "type_id": 5,
-//                 "value": 5
-//             }
-//         },
-//         "name": "TestSavepoint"
-//     }
-//    )"_json;
+  // -----------------------------------------------------------------------------------------------
+  // Success
+  // -----------------------------------------------------------------------------------------------
+  {
+    auto j = R"(
+     {
+         "fields_per_savepoint": [
+             {
+                 "savepoint": {
+                     "u": 0,
+                     "v": 0
+                 }
+             },
+             {
+                 "savepoint": {
+                     "u": 1
+                 }
+             },
+             {
+                 "different-savepoint": null
+             }
+         ],
+         "savepoints": [
+             {
+                 "meta_info": {
+                     "key1": {
+                         "type_id": 6,
+                         "value": "s1"
+                     }
+                 },
+                 "name": "savepoint"
+             },
+             {
+                 "meta_info": {
+                     "key1": {
+                         "type_id": 6,
+                         "value": "s2"
+                     }
+                 },
+                 "name": "savepoint"
+             },
+             {
+                 "meta_info": null,
+                 "name": "different-savepoint"
+             }
+         ]
+     }
+    )"_json;
 
-//    SavepointImpl s(j);
-//    EXPECT_EQ(s.name(), name);
-//    EXPECT_EQ(s.fields(), fields);
-
-//    ASSERT_TRUE(s.metaInfo().hasKey("key1"));
-//    EXPECT_EQ(s.metaInfo().at("key1").as<std::string>(), "str");
-
-//    ASSERT_TRUE(s.metaInfo().hasKey("key2"));
-//    EXPECT_EQ(s.metaInfo().at("key2").as<double>(), double(5));
-//  }
-
-//  // -----------------------------------------------------------------------------------------------
-//  // Success (empty meta-info)
-//  // -----------------------------------------------------------------------------------------------
-//  {
-//    auto j = R"(
-//     {
-//         "fields": {
-//             "field1": 0,
-//             "field2": 5
-//         },
-//         "meta_info": null,
-//         "name": "TestSavepoint"
-//     }
-//    )"_json;
-
-//    SavepointImpl s(j);
-//    EXPECT_EQ(s.name(), name);
-//    EXPECT_EQ(s.fields(), fields);
-//    EXPECT_TRUE(s.metaInfo().empty());
-//  }
+    SavepointVector s(j);
+    EXPECT_EQ(s.savepoints().size(), 3);
+    
+    // Check order of savepoints is correct
+    EXPECT_EQ(s.savepoints()[0], savepoint1);
+    EXPECT_EQ(s.savepoints()[1], savepoint2);
+    EXPECT_EQ(s.savepoints()[2], savepoint3);
+    
+    // Check fields
+    EXPECT_EQ(s.fieldsOf(savepoint1).size(), 2);
+    EXPECT_EQ(s.fieldsOf(savepoint2).size(), 1);
+    EXPECT_EQ(s.fieldsOf(savepoint3).size(), 0);
+    
+    EXPECT_EQ(s.getFieldID(savepoint1, "u"), (FieldID{"u", 0}));
+    EXPECT_EQ(s.getFieldID(savepoint1, "v"), (FieldID{"v", 0}));
+    EXPECT_EQ(s.getFieldID(savepoint2, "u"), (FieldID{"u", 1}));
+  }
   
-//  // -----------------------------------------------------------------------------------------------
-//  // Failure (missing name)
-//  // -----------------------------------------------------------------------------------------------
-//  {
-//    auto j = R"(
-//      {
-//          "fields": {
-//              "field1": 0,
-//              "field2": 5
-//          },
-//          "meta_info": {
-//              "key1": {
-//                  "type_id": 6,
-//                  "value": "str"
-//              },
-//              "key2": {
-//                  "type_id": 5,
-//                  "value": 5
-//              }
-//          }
-//      }
-//    )"_json;
+  // -----------------------------------------------------------------------------------------------
+  // Success (empty)
+  // -----------------------------------------------------------------------------------------------
+  {
+    auto j = R"({})"_json;
 
-//    ASSERT_THROW((SavepointImpl(j)), Exception);
-//  }
+    SavepointVector s(j);
+    EXPECT_TRUE(s.empty());
+  }
   
-//  // -----------------------------------------------------------------------------------------------
-//  // Failure (missing meta_info)
-//  // -----------------------------------------------------------------------------------------------
-//  {
-//    auto j = R"(
-//     {
-//         "fields": {
-//             "field1": 0,
-//             "field2": 5
-//         },
-//         "name": "TestSavepoint"
-//     }
-//    )"_json;
+  // -----------------------------------------------------------------------------------------------
+  // Failure (entry in "fields_per_savepoint" for "different-savepoint" is missing)
+  // -----------------------------------------------------------------------------------------------
+  {
+    auto j = R"(
+     {
+         "fields_per_savepoint": [
+             {
+                 "savepoint": {
+                     "u": 0,
+                     "v": 0
+                 }
+             },
+             {
+                 "savepoint": {
+                     "u": 1
+                 }
+             }
+         ],
+         "savepoints": [
+             {
+                 "meta_info": {
+                     "key1": {
+                         "type_id": 6,
+                         "value": "s1"
+                     }
+                 },
+                 "name": "savepoint"
+             },
+             {
+                 "meta_info": {
+                     "key1": {
+                         "type_id": 6,
+                         "value": "s2"
+                     }
+                 },
+                 "name": "savepoint"
+             },
+             {
+                 "meta_info": null,
+                 "name": "different-savepoint"
+             }
+         ]
+     }
+    )"_json;
+    
+    SavepointVector s;
+    ASSERT_THROW(s.fromJSON(j), Exception);
+  }
+}
 
-//    ASSERT_THROW((SavepointImpl(j)), Exception);
-//  }
+TEST(SavepointVectorTest, toString) {
+  Savepoint savepoint1("savepoint");
+  ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
   
-//  // -----------------------------------------------------------------------------------------------
-//  // Failure (missing fields)
-//  // -----------------------------------------------------------------------------------------------
-//  {
-//    auto j = R"(
-//     {
+  std::stringstream ss;
+  SavepointVector s;
+  ASSERT_TRUE(s.insert(savepoint1));
+  ASSERT_TRUE(s.addField(savepoint1, FieldID{"u", 0}));
 
-//         "meta_info": {
-//             "key1": {
-//                 "type_id": 6,
-//                 "value": "str"
-//             },
-//             "key2": {
-//                 "type_id": 5,
-//                 "value": 5
-//             }
-//         },
-//         "name": "TestSavepoint"
-//     }
-//    )"_json;
-
-//    ASSERT_THROW((SavepointImpl(j)), Exception);
-//  }
-//}
-
-//TEST(SavepointImplTest, toString) {
-//  std::string name("TestSavepoint");
-//  std::vector<FieldID> fields{{"field1", 0}, {"field2", 5}};
-//  MetaInfoMap metaInfo(std::initializer_list<MetaInfoMap::value_type>{
-//      {"key1", MetaInfoValue(std::string("str"))}, {"key2", MetaInfoValue(double(5))}});
-
-//  std::stringstream ss;
-//  SavepointImpl savepoint(name, metaInfo, fields);
-
-//  ss << savepoint;
-//  EXPECT_NE(ss.str().find("name"), std::string::npos);
-//  EXPECT_NE(ss.str().find("meta_info"), std::string::npos);
-//  EXPECT_NE(ss.str().find("fields"), std::string::npos);
-//}
+  ss << s;
+  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "SavepointVector"));  
+  EXPECT_NE(ss.str().find("savepoint"), std::string::npos);
+  EXPECT_NE(ss.str().find("key1"), std::string::npos);
+}

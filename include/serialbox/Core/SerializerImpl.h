@@ -17,8 +17,10 @@
 
 #include "serialbox/Core/Archive/Archive.h"
 #include "serialbox/Core/FieldMap.h"
+#include "serialbox/Core/Json.h"
 #include "serialbox/Core/MetaInfoMap.h"
-#include "serialbox/Core/SavepointImpl.h"
+#include "serialbox/Core/SavepointVector.h"
+#include "serialbox/Core/StorageView.h"
 #include <boost/filesystem.hpp>
 #include <iosfwd>
 
@@ -48,31 +50,30 @@ public:
   /// \brief Construct from JSON meta-data
   ///
   /// \param mode         Mode of the Serializer
-  /// \param directory    Directory of the Archive and meta-data
+  /// \param directory    Directory of the Archive and Serializer meta-data
   /// \param archiveName  String passed to the ArchiveFactory to construct the Archive
   ///
-  /// This will read MetaData.json to initialize the savepointVector, the fieldsTable and
+  /// This will read MetaData.json to initialize the savepoint vector, the fieldMap and
   /// globalMetaInfo. Further, it will construct the Archive by reading the ArchiveMetaData.json.
   ///
   /// \throw Exception  Invalid directory or corrupted meta-data files
   SerializerImpl(OpenModeKind mode, const std::string& directory, const std::string& archiveName);
 
-  /// \brief Construct members externally and \b move them in
-  ///
-  /// \param mode
-  /// \param savepoints
-  /// \param fieldMap
-  /// \param globalMetaInfo
-  /// \param archive
-  SerializerImpl(OpenModeKind mode, const std::string& directory,
-                 std::vector<SavepointImpl>& savepoints, FieldMap& fieldMap,
-                 MetaInfoMap& globalMetaInfo, std::unique_ptr<Archive>& archive);
+  /// \brief Access the mode of the serializer
+  OpenModeKind mode() const noexcept { return mode_; }
+
+  /// \brief Access the directory in which the Serializer and Archive are opened
+  const boost::filesystem::path& directory() const noexcept { return directory_; }
+
+  //===----------------------------------------------------------------------------------------===//
+  //     Global meta-information
+  //===----------------------------------------------------------------------------------------===//
 
   /// \brief Add a new key-value pair to the global meta-information of the Serializer
   ///
   /// \param key    Key of the new element
   /// \param value  Object to be copied to (or moved as) the value of the new element
-  /// 
+  ///
   /// \throw Exception  Value cannot be inserted as it already exists
   template <class StringType, class ValueType>
   void addGlobalMetaInfo(StringType&& key, ValueType&& value) {
@@ -84,8 +85,8 @@ public:
   /// \brief Query globalMetaInfo map for key ´key´ and retrieve value as type ´T´
   ///
   /// \param key    Key of the requested element
-  /// 
-  /// \throw Exception  Key ´key´ does not exist in the globalMetaInfo map or value cannot be 
+  ///
+  /// \throw Exception  Key ´key´ does not exist in the globalMetaInfo map or value cannot be
   ///                   converted to type ´T´
   template <class T, class StringType>
   const T& getGlobalMetainfoAs(StringType&& key) const {
@@ -95,82 +96,167 @@ public:
       throw Exception("cannot get element with key '%s' from globalMetaInfo: %s", key, e.what());
     }
   }
-  
+
+  /// \brief Get a refrence to the global meta information
+  MetaInfoMap& globalMetaInfo() noexcept { return globalMetaInfo_; }
+  const MetaInfoMap& globalMetaInfo() const noexcept { return globalMetaInfo_; }
+
+  //===----------------------------------------------------------------------------------------===//
+  //     FieldMap
+  //===----------------------------------------------------------------------------------------===//
+
   /// \brief Register a new field within the Serializer
   ///
   /// \param name  Name of the the new field
   /// \param Args  Arguments forwarded to the constructor of FieldMetaInfo
-  /// 
+  ///
   /// \throw Exception  Field with same name already exists
   template <class StringType, typename... Args>
-  void registerField(StringType&& key, Args&&... args) {
-    if(!fieldMap_.insert(std::forward<StringType>(key), std::forward<Args>(args)...))
+  void registerField(StringType&& name, Args&&... args) {
+    if(!fieldMap_.insert(std::forward<StringType>(name), std::forward<Args>(args)...))
       throw Exception("cannot register field '%s': field already exists");
   }
-  
+
+  /// \brief Check if field ´name´ has been registred within the Serializer
+  ///
+  /// \param name  Name of the the new field
+  /// \return True iff the field is present
+  template <class StringType>
+  bool hasField(StringType&& name) const noexcept {
+    return fieldMap_.hasField(std::forward<StringType>(name));
+  }
+
+  /// \brief Add key-value meta-information to field ´name´
+  ///
+  /// \param name   Name of the field
+  /// \param key    Key of the new element
+  /// \param value  Object to be copied to (or moved as) the value of the new element
+  /// \return Value indicating whether the element was successfully inserted or not
+  ///
+  /// \throw Exception  Field with name `name` does not exist in FieldMap
+  template <class StringType, class KeyType, class ValueType>
+  bool addFieldMetaInfo(StringType&& name, KeyType&& key, ValueType&& value) {
+    return fieldMap_.getMetaInfoOf(name).insert(std::forward<KeyType>(key),
+                                                std::forward<ValueType>(value));
+  }
+
   /// \brief Query FieldMap for field with name ´name´ and return refrence to FieldMetaInfo
   ///
   /// \param name  Name of the field
-  /// 
+  ///
   /// \throw Exception  Field with name `name` does not exist in FieldMap
   template <class StringType>
   const FieldMetaInfo& getFieldMetaInfoOf(StringType&& name) const {
     return fieldMap_.getFieldMetaInfoOf(std::forward<StringType>(name));
   }
-  
-  /// \brief Register a savepoint given by ´name´ with empty meta-information
+
+  /// \brief Get a vector of all registered fields
+  /// \return Vector with the names of the registered fields
+  std::vector<std::string> fieldnames() const;
+
+  /// \brief Get refrence to the field map
+  FieldMap& fieldMap() noexcept { return fieldMap_; }
+  const FieldMap& fieldMap() const noexcept { return fieldMap_; }
+
+  //===----------------------------------------------------------------------------------------===//
+  //     SavepointVector
+  //===----------------------------------------------------------------------------------------===//
+
+  /// \brief Register a savepoint
   ///
-  /// \param name   Name of the savepoint
-  /// 
-  /// \throw Exception  Savepoint is already registered
-  template <class StringType>
-  void registerSavepoint(StringType&& name) {
-    // TODO:
-    // Maybe we do not throw here as old serialbox allows to override the savepoints
-    savepoints_.emplace_back(name);
+  /// \param Args  Arguments forwarded to the constructor of Savepoint
+  /// \return True iff the savepoint was successfully inserted
+  template <typename... Args>
+  bool registerSavepoint(Args&&... args) noexcept {
+    return savepointVector_.insert(Savepoint(std::forward<Args>(args)...));
   }
-  
-  /// \brief Register a savepoint given by ´name´ with meta-information ´metaInfo´
+
+  /// \brief Add a field to the savepoint
+  /// \return True iff the field was successfully addeed to the savepoint
+  bool addFieldToSavepoint(const Savepoint& savepoint, const FieldID& fieldID) noexcept {
+    return savepointVector_.addField(savepoint, fieldID);
+  }
+
+  /// \brief Get the FielID of field ´field´ at savepoint ´savepoint´
   ///
-  /// \param name       Name of the savepoint
-  /// \param metaInfo   MetaInformation of the Savepoint
-  /// 
-  /// \throw Exception  Savepoint is already registered
-  template <class StringType, class MetaInfoType>
-  void registerSavepoint(StringType&& name, MetaInfoType&& metaInfo) {
-    //TODO see above
-    savepoints_.emplace_back(name, metaInfo);    
+  /// \throw Exception  Savepoint or field at savepoint do not exist
+  FieldID getFieldOfSavepoint(const Savepoint& savepoint, const std::string& field) const {
+    return savepointVector_.getFieldID(savepoint, field);
   }
+
+  /// \brief Get refrence to savepoint vector
+  const std::vector<Savepoint>& savepoints() const noexcept {
+    return savepointVector_.savepoints();
+  }
+
+  /// \brief Get refrence to SavepointVector
+  const SavepointVector& savepointVector() const noexcept { return savepointVector_; }
+  SavepointVector& savepointVector() noexcept { return savepointVector_; }
+  
+  //===----------------------------------------------------------------------------------------===//
+  //     Writing
+  //===----------------------------------------------------------------------------------------===//
+  
+  /// \brief Serialize field ´name´ at savepoint ´savepoint´ to disk
+  /// 
+  /// The method perfoms the following steps:
+  /// 
+  /// 1) Check if field ´name´ is registred within the Serializer and perform a consistency check 
+  ///    concering the data-type and dimensions of the StorageView compared to to the registered 
+  ///    field.
+  /// 
+  /// 2) Locate the ´savepoint´ in the savepoint vector and, if the ´savepoint´ does not exist, 
+  ///    register it within the Serializer.
+  /// 
+  /// 3) Add the field ´name´ to the Savepoint.
+  /// 
+  /// 4) Compute FieldID of the field and register it within the FieldMap.
+  /// 
+  /// 5) Pass the StorageView to the backend Archive and perform actual data-serialization.
+  /// 
+  /// 6) Update meta-data on disk via SerializerImpl::updateMetaData()
+  /// 
+  /// \param name           Name of the field
+  /// \param savepoint      Savepoint to at which the field will be serialized
+  /// \param storageView    StorageView of the field
+  /// 
+  /// \throw Exception
+  /// 
+  /// \see serialbox::Archive::write "Archive::write"
+  void write(const std::string& name, const Savepoint& savepoint, StorageView& storageView);
+
+  //===----------------------------------------------------------------------------------------===//
+  //     Reading
+  //===----------------------------------------------------------------------------------------===//
+
+  
+  
+  //===----------------------------------------------------------------------------------------===//
+  //     JSON Serialization
+  //===----------------------------------------------------------------------------------------===//
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s);
 
   /// \brief Convert meta-data to JSON and serialize to MetaData.json and ArchiveMetaData.json
   ///
-  /// This will ensure MetaData.json is up-to-date with the in-memory versions of the 
-  /// savepointVector, fieldsTable and globalMetaInfo as well as the meta-data of the Archive.
+  /// This will ensure MetaData.json is up-to-date with the in-memory versions of the
+  /// savepointVector, fieldMap and globalMetaInfo as well as the meta-data of the Archive.
   void updateMetaData();
 
-  /// \brief Get refrence to savepoint vector
-  std::vector<SavepointImpl>& savepoints() noexcept { return savepoints_; }
-  const std::vector<SavepointImpl>& savepoints() const noexcept { return savepoints_; }
-
-  /// \brief Get refrence to the field map
-  FieldMap& fieldMap() noexcept { return fieldMap_; }
-  const FieldMap& fieldMap() const noexcept { return fieldMap_; }
-
-  /// \brief Get refrence to global meta information
-  MetaInfoMap& globalMetaInfo() noexcept { return globalMetaInfo_; }
-  const MetaInfoMap& globalMetaInfo() const noexcept { return globalMetaInfo_; }
+  /// \brief Convert all members of the serializer to JSON
+  json::json toJSON() const;
 
 protected:
   /// \brief Construct meta-data from JSON
   ///
-  /// This will read MetaData.json to initialize the savepoint vector as well as the fieldsTable and
-  /// globalMetaInfo. Further, it will construct the Archive by reading ArchiveMetaData.json.
+  /// This will read MetaData.json to initialize the savepoint vector, the fieldMap and
+  /// globalMetaInfo.
   void constructMetaDataFromJson();
 
   /// \brief Construct Archive from JSON
+  ///
+  /// This will read ArchiveMetaData.json and initialize the archive.
   ///
   /// \param archiveName  String passed to the ArchiveFactory to construct the Archive
   void constructArchive(const std::string& archiveName);
@@ -179,13 +265,13 @@ protected:
   OpenModeKind mode_;
   boost::filesystem::path directory_;
 
-  std::vector<SavepointImpl> savepoints_;
+  SavepointVector savepointVector_;
   FieldMap fieldMap_;
   MetaInfoMap globalMetaInfo_;
 
   std::unique_ptr<Archive> archive_;
 };
 
-} // namespace serialbox
+} // namespace serialboxsavepointVector
 
 #endif

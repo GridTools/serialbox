@@ -114,7 +114,7 @@ public:
   ///
   /// \throw Exception  JSON node is ill-formed
   void fromJSON(const json::json& jsonNode);
-  
+
   /// \brief Convert savepoint to string
   std::string toString() const;
 
@@ -130,7 +130,11 @@ protected:
 
 namespace std {
 
-/// \brief Specialization of std::hash<T> for [T = serialbox::Savepoint]
+/// \brief Specialization of ´std::hash<T>´ for [T = serialbox::Savepoint]
+///
+/// Savepoints are hashed on their name (std::string). Although, the name of a savepoint is not
+/// unique, it is a reasoanble compromise as we assume there are only O(1) savepoints sharing the
+/// same name.
 template <>
 struct hash<serialbox::Savepoint> {
   std::size_t operator()(const serialbox::Savepoint& s) const noexcept {

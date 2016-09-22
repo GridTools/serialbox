@@ -84,8 +84,32 @@ const std::vector<FieldID>& SavepointVector::fieldsOf(const Savepoint& savepoint
   throw Exception("savepoint '%' does not exist", savepoint.toString());
 }
 
+void SavepointVector::clear() noexcept {
+  savepoints_.clear();
+  index_.clear();
+  fields_.clear();
+}
+
 json::json SavepointVector::toJSON() const {
   json::json jsonNode;
+  CHECK(savepoints_.size() == fields_.size());
+
+  for(std::size_t i = 0; i < savepoints_.size(); ++i)
+    jsonNode["savepoints"].push_back(savepoints_[i].toJSON());
+
+  for(std::size_t i = 0; i < fields_.size(); ++i) {
+    const std::string& savepoint = savepoints_[i].name();
+    json::json fieldNode;
+
+    if(fields_[i].empty())
+      fieldNode[savepoint] = nullptr;
+      
+    for(const auto& field : fields_[i])
+      fieldNode[savepoint][field.name] = field.id;
+
+    jsonNode["fields_per_savepoint"].push_back(fieldNode);
+  }
+
   return jsonNode;
 }
 
@@ -93,8 +117,40 @@ void SavepointVector::fromJSON(const json::json& jsonNode) {
   index_.clear();
   savepoints_.clear();
   fields_.clear();
+
+  if(jsonNode.is_null() || jsonNode.empty())
+    return;
+
+  // Add savepoints
+  if(jsonNode.count("savepoints")) {
+    for(auto it = jsonNode["savepoints"].begin(), end = jsonNode["savepoints"].end(); it != end;
+        ++it) {
+      Savepoint sp(*it);
+      insert(sp);
+    }
+  }
+
+  // Eeach savepoint needs an entry in the fields array (it can be null though)
+  if(jsonNode.count("fields_per_savepoint") &&
+     jsonNode["fields_per_savepoint"].size() != fields_.size())
+    throw Exception("inconsistent number of 'fields_per_savepoint' and 'savepoints'");
+
+  for(std::size_t i = 0; i < fields_.size(); ++i) {
+    const json::json& fieldNode = jsonNode["fields_per_savepoint"][i][savepoints_[i].name()];
+    
+    // Savepoint has no fields
+    if(fieldNode.is_null() || fieldNode.empty())
+      break;
+
+    // Add fields
+    for(auto it = fieldNode.begin(), end = fieldNode.end(); it != end; ++it)
+      fields_[i].push_back(FieldID{it.key(), static_cast<unsigned int>(it.value())});
+  }
 }
 
-std::ostream& operator<<(std::ostream& stream, const SavepointVector& s) { return stream; }
+std::ostream& operator<<(std::ostream& stream, const SavepointVector& s) {
+  stream << "SavepointVector = " << s.toJSON().dump(4); 
+  return stream;
+}
 
 } // namespace serialbox

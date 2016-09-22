@@ -125,6 +125,10 @@ public:
   /// \brief Returns the number of savepoints in the vector
   std::size_t size() const noexcept { return savepoints_.size(); }
 
+  /// \brief All the elements Savepoints are dropped: their destructors are called, and they
+  /// are removed from the container, leaving it with a size of 0
+  void clear() noexcept;
+
   /// \brief Returns an iterator pointing to the first savepoint in the vector
   iterator begin() noexcept { return savepoints_.begin(); }
   const_iterator begin() const noexcept { return savepoints_.begin(); }
