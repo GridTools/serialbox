@@ -169,7 +169,7 @@ void SerializerImpl::updateMetaData() {
 
 void SerializerImpl::constructArchive(const std::string& archiveName) {
   // TODO: here we should call an ArchiveFactory
-  archive_ = make_unique<BinaryArchive>(directory_, mode_);
+  archive_ = make_unique<BinaryArchive>(mode_, directory_.string(), "field");
 }
 
 } // namespace serialbox

@@ -18,9 +18,9 @@
 #include "serialbox/Core/Archive/Archive.h"
 #include "serialbox/Core/Json.h"
 #include <boost/filesystem.hpp>
+#include <string>
 #include <unordered_map>
 #include <vector>
-#include <string>
 
 namespace serialbox {
 
@@ -46,7 +46,16 @@ public:
   using FieldTable = std::unordered_map<std::string, FieldOffsetTable>;
 
   /// \brief Initialize the archive with a directory and open file policy
-  BinaryArchive(const boost::filesystem::path& directory, OpenModeKind mode);
+  ///
+  /// \param mode       Policy to open files in the archive
+  /// \param directory  Directory to write/read files. If the archive is opened in ´Read´ mode, the
+  ///                   directory is expected to supply a ´ArchiveMetaData.json´. In case the
+  ///                   archive is opened in ´Write´ mode, the directory needs to be empty or
+  ///                   non-existent, in the latter case the directory will be cretaed.
+  ///                   The ´Append´ mode will try to open ´ArchiveMetaData.json´ if the directory
+  ///                   exists otherwise created the directory.
+  /// \param prefix     Prefix of all files followed by an underscore ´_´
+  BinaryArchive(OpenModeKind mode, const std::string& directory, const std::string& prefix);
 
   /// \brief Copy constructor [deleted]
   BinaryArchive(const BinaryArchive&) = delete;
@@ -64,19 +73,22 @@ public:
   void writeMetaDataToJson();
 
   /// \name Archive implementation
+  /// \see serialbox::Archive "Archive"
   /// @{
-  virtual void write(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;
+  virtual FieldID write(StorageView& storageView,
+                        const std::string& fieldID) throw(Exception) override;
   virtual void read(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;
-  virtual FieldID getNextFieldID(const std::string& field) const noexcept override; 
   virtual void updateMetaData() override;
   virtual const std::string& directory() const override { return directory_.string(); }
   virtual const std::string& name() const override { return BinaryArchive::Name; }
   virtual std::ostream& toStream(std::ostream& stream) const override;
   /// @}
-  
+
 private:
   OpenModeKind mode_;
   boost::filesystem::path directory_;
+  std::string prefix_;
+
   std::vector<Byte> binaryData_;
 
   json::json json_;

@@ -24,7 +24,7 @@ const std::string BinaryArchive::Name = "BinaryArchive";
 
 const int BinaryArchive::Version = 0;
 
-BinaryArchive::~BinaryArchive() { updateMetaData(); } // TODO: this is dangerous as it might throw
+BinaryArchive::~BinaryArchive() {}
 
 void BinaryArchive::readMetaDataFromJson() {
 
@@ -66,7 +66,7 @@ void BinaryArchive::readMetaDataFromJson() {
     throw Exception("binary archive version (%s) does not match the version of the library (%s)",
                     archiveVersion, BinaryArchive::Version);
 
-  // Deserialize FieldsTable
+  // Deserialize FieldTable
   for(auto it = json_["fields_table"].begin(); it != json_["fields_table"].end(); ++it) {
     FieldOffsetTable fieldOffsetTable;
 
@@ -78,7 +78,11 @@ void BinaryArchive::readMetaDataFromJson() {
   }
 }
 
-void BinaryArchive::writeMetaDataToJson() {
+void BinaryArchive::writeMetaDataToJson() 
+{
+  if(mode_ == OpenModeKind::Read)
+    return;
+  
   boost::filesystem::path filename = directory_ / Archive::ArchiveMetaDataFile;
   LOG(INFO) << "Update MetaData for BinaryArchive";
 
@@ -103,8 +107,9 @@ void BinaryArchive::writeMetaDataToJson() {
   fs.close();
 }
 
-BinaryArchive::BinaryArchive(const boost::filesystem::path& directory, OpenModeKind mode)
-    : mode_(mode), directory_(directory), json_() {
+BinaryArchive::BinaryArchive(OpenModeKind mode, const std::string& directory,
+                             const std::string& prefix)
+    : mode_(mode), directory_(directory), prefix_(prefix), json_() {
 
   LOG(INFO) << "Creating BinaryArchive (mode = " << mode_ << ") from directory " << directory_;
 
@@ -140,17 +145,13 @@ void BinaryArchive::updateMetaData() { writeMetaDataToJson(); }
 //     Writing
 //===------------------------------------------------------------------------------------------===//
 
-void BinaryArchive::write(StorageView& storageView, const FieldID& fieldID) throw(Exception) {
+FieldID BinaryArchive::write(StorageView& storageView, const std::string& field) throw(Exception) {
   if(mode_ == OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Write' or 'Append'");
 
-  LOG(INFO) << "Attempting to write field \"" << fieldID.name << "\" (id = " << fieldID.id
-            << ") to BinaryArchive ...";
+  LOG(INFO) << "Attempting to write field \"" << field << "\" to BinaryArchive ...";
 
-  // Check if a field with given id and name already exists
-  auto it = fieldTable_.find(fieldID.name);
-
-  boost::filesystem::path filename(directory_ / (fieldID.name + ".dat"));
+  boost::filesystem::path filename(directory_ / (prefix_ + "_" + field + ".dat"));
   std::ofstream fs;
 
   // Create binary data buffer
@@ -179,47 +180,35 @@ void BinaryArchive::write(StorageView& storageView, const FieldID& fieldID) thro
   // Compute hash
   std::string checksum(SHA256::hash(binaryData_.data(), binaryData_.size()));
 
+  // Check if field already exists
+  auto it = fieldTable_.find(field);
+  FieldID fieldID{field, 0};
+
   // Field does exists
   if(it != fieldTable_.end()) {
     FieldOffsetTable& fieldOffsetTable = it->second;
 
-    CHECK(fieldID.id <= fieldOffsetTable.size()) << "inconsistent fieldID";
-
-    // Do we append at the end?
-    if(fieldID.id == fieldOffsetTable.size()) {
-      fs.open(filename.string(), std::ofstream::out | std::ofstream::binary | std::ofstream::app);
-      auto offset = fs.tellp();
-      fieldOffsetTable.push_back(FileOffsetType{offset, checksum});
-
-      LOG(INFO) << "Appending field \"" << fieldID.name << "\" (id = " << fieldID.id << ") to "
-                << filename.filename();
-    }
-    // Replace data
-    else {
-      // Is the data still the same?
-      if(checksum == fieldOffsetTable[fieldID.id].checksum) {
-        LOG(INFO) << "Checksum of field \"" << fieldID.name << "\" (id = " << fieldID.id
-                  << ") is still the same. Stopping.";
-        return;
+    // Check if field has already been serialized by comparing the checksum
+    for(std::size_t i = 0; i < fieldOffsetTable.size(); ++i)
+      if(checksum == fieldOffsetTable[i].checksum) {
+        LOG(INFO) << "Field \"" << field << "\" already serialized (id = " << i << "). Stopping";
+        fieldID.id = i;
+        return fieldID;
       }
 
-      // It is absolutely *crucial* to open the file in read-write mode as otherwise all the content
-      // prior to the current position is discarded
-      fs.open(filename.string(), std::ofstream::out | std::ofstream::in | std::ofstream::binary);
-      auto offset = fieldOffsetTable[fieldID.id].offset;
-      fs.seekp(offset, std::ios::beg);
+    // Append field at the end
+    fs.open(filename.string(), std::ofstream::out | std::ofstream::binary | std::ofstream::app);
+    auto offset = fs.tellp();
+    fieldID.id = fieldOffsetTable.size();
+    fieldOffsetTable.push_back(FileOffsetType{offset, checksum});
 
-      LOG(INFO) << "Replacing field \"" << fieldID.name << "\" (id = " << fieldID.id
-                << ") at byte offset = " << offset << " in " << filename.filename();
-
-      fieldOffsetTable[fieldID.id] = FileOffsetType{offset, checksum};
-    }
+    LOG(INFO) << "Appending field \"" << fieldID.name << "\" (id = " << fieldID.id << ") to "
+              << filename.filename();
   }
   // Field does not exist, create new file and append data
   else {
-    CHECK(fieldID.id == 0) << "inconsistent fieldID";
-
     fs.open(filename.string(), std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
+    fieldID.id = 0;
 
     fieldTable_.insert(
         FieldTable::value_type(fieldID.name, FieldOffsetTable(1, FileOffsetType{0, checksum})));
@@ -239,6 +228,7 @@ void BinaryArchive::write(StorageView& storageView, const FieldID& fieldID) thro
 
   LOG(INFO) << "Successfully wrote field \"" << fieldID.name << "\" (id = " << fieldID.id << ") to "
             << filename.filename();
+  return fieldID;
 }
 
 //===------------------------------------------------------------------------------------------===//
@@ -275,7 +265,7 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) throw
   }
 
   // Open file & read into binary buffer
-  std::string filename((directory_ / (fieldID.name + ".dat")).string());
+  std::string filename((directory_ / (prefix_ + "_" + fieldID.name + ".dat")).string());
   std::ifstream fs(filename, std::ios::binary);
 
   if(!fs.is_open())
@@ -309,18 +299,11 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) throw
   LOG(INFO) << "Successfully read field \"" << fieldID.name << "\" (id = " << fieldID.id << ")";
 }
 
-FieldID BinaryArchive::getNextFieldID(const std::string& field) const noexcept {
-  auto it = fieldTable_.find(field);
-  if(it != fieldTable_.end())
-    return FieldID{field, static_cast<unsigned int>(it->second.size())};
-  else
-    return FieldID{field, 0};
-}
-
 std::ostream& BinaryArchive::toStream(std::ostream& stream) const {
   stream << "BinaryArchive = {\n";
   stream << "  directory: " << directory_.string() << "\n";
   stream << "  mode: " << mode_ << "\n";
+  stream << "  prefix: " << prefix_ << "\n";
   stream << "  fieldsTable = {\n";
   for(auto it = fieldTable_.begin(), end = fieldTable_.end(); it != end; ++it) {
     stream << "    " << it->first << " = {\n";
