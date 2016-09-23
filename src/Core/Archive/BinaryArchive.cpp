@@ -199,6 +199,9 @@ FieldID BinaryArchive::write(StorageView& storageView, const std::string& field)
 
     // Append field at the end
     fs.open(filename.string(), std::ofstream::out | std::ofstream::binary | std::ofstream::app);
+#ifdef SERIALBOX_COMPILER_MSVC
+    fs.seekp(0, fs.end);
+#endif
     auto offset = fs.tellp();
     fieldID.id = fieldOffsetTable.size();
     fieldOffsetTable.push_back(FileOffsetType{offset, checksum});

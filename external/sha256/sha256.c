@@ -12,6 +12,7 @@
               This implementation uses little endian byte order.
 *********************************************************************/
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <memory.h>
 #include "sha256.h"

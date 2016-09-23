@@ -34,6 +34,22 @@
 #define __has_builtin(x) 0
 #endif
 
+#if defined(__clang__)
+#define SERIALBOX_COMPILER_CLANG 1
+#endif
+
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+#define SERIALBOX_COMPILER_INTEL 1
+#endif
+
+#if defined(__GNUC__) || defined(__GNUG__)
+#define SERIALBOX_COMPILER_GNU 1
+#endif
+
+#if defined(_MSC_VER)
+#define SERIALBOX_COMPILER_MSVC 1
+#endif
+
 /// \macro SERIALBOX_GNUC_PREREQ
 /// \brief Extend the default __GNUC_PREREQ even if glibc's features.h isn't
 /// available
@@ -86,7 +102,7 @@
 #if __has_builtin(__builtin_expect) || SERIALBOX_GNUC_PREREQ(4, 5, 0)
 #define SERIALBOX_BUILTIN_LIKELY(x) __builtin_expect(!!(x), 1)
 #else
-#define SERIALBOX_BUILTIN_LIKELY(x)
+#define SERIALBOX_BUILTIN_LIKELY(x) (x)
 #endif
 
 /// \macro SERIALBOX_BUILTIN_UNLIKELY
@@ -94,7 +110,7 @@
 #if __has_builtin(__builtin_expect) || SERIALBOX_GNUC_PREREQ(4, 5, 0)
 #define SERIALBOX_BUILTIN_UNLIKELY(x) __builtin_expect(!!(x), 0)
 #else
-#define SERIALBOX_BUILTIN_UNLIKELY(x)
+#define SERIALBOX_BUILTIN_UNLIKELY(x) (x)
 #endif
 
 #endif

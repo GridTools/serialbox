@@ -31,6 +31,8 @@ if(WIN32)
   set(SERIALBOX_ON_WIN32 1)
 endif(WIN32)
 
+set(COMPILER_IS_MSVC "${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
+
 # Serialbox version
 set(SERIALBOX_VERSION_MAJOR 2)
 set(SERIALBOX_VERSION_MINOR 0)
@@ -59,18 +61,20 @@ option(SERIALBOX_CODE_COVERAGE "Generate code coverage" OFF)
   
 #---------------------------------------- CMake options --------------------------------------------
  
-# Set C++ standard
+# Set C++ standard to C++11
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Cray")
   set(CXX11_FLAG "-h std=c++11")
 else()
   set(CXX11_FLAG "-std=c++11")
 endif()
 
-CHECK_CXX_COMPILER_FLAG("${CXX11_FLAG}" COMPILER_SUPPORTS_CXX11)
-if(NOT(COMPILER_SUPPORTS_CXX11))
-  message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
-endif(NOT(COMPILER_SUPPORTS_CXX11))
-set(CMAKE_CXX_FLAGS "${CXX11_FLAG} ${CMAKE_CXX_FLAGS}")
+if(NOT(COMPILER_IS_MSVC))
+  CHECK_CXX_COMPILER_FLAG("${CXX11_FLAG}" COMPILER_SUPPORTS_CXX11)
+  if(NOT(COMPILER_SUPPORTS_CXX11))
+    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
+  endif(NOT(COMPILER_SUPPORTS_CXX11))
+  set(CMAKE_CXX_FLAGS "${CXX11_FLAG} ${CMAKE_CXX_FLAGS}")
+endif()
 
 # Set build type to RelWithDebInfo if nothing was specified (instead of Debug)
 if(NOT CMAKE_BUILD_TYPE)
@@ -111,7 +115,11 @@ ExternalProject_Add(
 message(STATUS "Building sh256 from: ${CMAKE_CURRENT_SOURCE_DIR}/external/sh256")
     
 set(SHA256_INCLUDE_DIRS "${SHA256_INSTALL_DIR}/include")
-set(SHA256_LIBRARIES "${SHA256_INSTALL_DIR}/lib/libsha256.a")
+if(COMPILER_IS_MSVC)
+  set(SHA256_LIBRARIES "${SHA256_INSTALL_DIR}/lib/sha256.lib")
+else()
+  set(SHA256_LIBRARIES "${SHA256_INSTALL_DIR}/lib/libsha256.a")
+endif()
 include_directories(${SHA256_INCLUDE_DIRS})
 
 #---------------------------------------- GTest ----------------------------------------------------
@@ -145,11 +153,15 @@ if(SERIALBOX_TESTING)
     message(STATUS "Building Gtest from: ${CMAKE_CURRENT_SOURCE_DIR}/external/gtest")
 
     set(GTEST_INCLUDE_DIRS "${GTEST_INSTALL_DIR}/include")
-    set(GTEST_LIBRARIES "${GTEST_INSTALL_DIR}/lib/libgtest.a"
-                        "${GTEST_INSTALL_DIR}/lib/libgmock.a"
-                        "${CMAKE_THREAD_LIBS_INIT}")                    
-    set(GTEST_MAIN_LIBRARIES "${GTEST_INSTALL_DIR}/lib/libgtest_main.a" "${CMAKE_THREAD_LIBS_INIT}")                    
-                        
+    if(COMPILER_IS_MSVC)
+      set(GTEST_LIBRARIES "${GTEST_INSTALL_DIR}/lib/gtest.lib"
+                          "${GTEST_INSTALL_DIR}/lib/gmock.lib"
+                          "${CMAKE_THREAD_LIBS_INIT}")
+    else()
+      set(GTEST_LIBRARIES "${GTEST_INSTALL_DIR}/lib/libgtest.a"
+                          "${GTEST_INSTALL_DIR}/lib/libgmock.a"
+                          "${CMAKE_THREAD_LIBS_INIT}")
+    endif()      
   else()
     find_package(GTest REQUIRED)
   endif()
@@ -184,8 +196,13 @@ if(SERIALBOX_LOGGING)
     message(STATUS "Building Glog from: ${CMAKE_CURRENT_SOURCE_DIR}/external/glog")
 
     set(GLOG_INCLUDE_DIRS "${GLOG_INSTALL_DIR}/include")
-    set(GLOG_LIBRARIES "${GLOG_INSTALL_DIR}/lib/libglog.a" 
-                       "${CMAKE_THREAD_LIBS_INIT}")
+    if(COMPILER_IS_MSVC)
+      set(GLOG_LIBRARIES "${GLOG_INSTALL_DIR}/lib/glog.lib" 
+                         "${CMAKE_THREAD_LIBS_INIT}")
+    else()
+      set(GLOG_LIBRARIES "${GLOG_INSTALL_DIR}/lib/libglog.a" 
+                         "${CMAKE_THREAD_LIBS_INIT}")
+    endif()
   else()
     find_package(GLog REQUIRED)
   endif()
