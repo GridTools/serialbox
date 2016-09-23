@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Archive/BinaryArchive.h"
+#include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/SerializerImpl.h"
@@ -109,7 +109,7 @@ void SerializerImpl::constructMetaDataFromJson() {
     // Construct Savepoints
     if(jsonNode.count("savepoint_vector"))
       savepointVector_.fromJSON(jsonNode["savepoint_vector"]);
-      
+
     // Construct FieldMap
     if(jsonNode.count("field_map"))
       fieldMap_.fromJSON(jsonNode["field_map"]);
@@ -118,7 +118,6 @@ void SerializerImpl::constructMetaDataFromJson() {
     throw Exception("error while parsing %s: %s", filename, e.what());
   }
 }
-
 
 std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s) {
   stream << "Serializer = {\n";
@@ -133,7 +132,7 @@ std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s) {
 
 json::json SerializerImpl::toJSON() const {
   json::json jsonNode;
-      
+
   // Tag version
   jsonNode["serialbox_version"] =
       100 * SERIALBOX_VERSION_MAJOR + 10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
@@ -146,7 +145,7 @@ json::json SerializerImpl::toJSON() const {
 
   // Serialize FieldMap
   jsonNode["field_map"] = fieldMap_.toJSON();
-  
+
   return jsonNode;
 }
 
@@ -156,7 +155,7 @@ void SerializerImpl::updateMetaData() {
 
   json::json jsonNode = toJSON();
   boost::filesystem::path filename = directory_ / SerializerImpl::SerializerMetaDataFile;
-  
+
   // Write metaData to disk (just overwrite the file, we assume that there is never more than one
   // Serializer per data set and thus our in-memory copy is always the up-to-date one)
   std::ofstream fs(filename.string(), std::ios::out | std::ios::trunc);
@@ -168,8 +167,7 @@ void SerializerImpl::updateMetaData() {
 }
 
 void SerializerImpl::constructArchive(const std::string& archiveName) {
-  // TODO: here we should call an ArchiveFactory
-  archive_ = make_unique<BinaryArchive>(mode_, directory_.string(), "field");
+  archive_ = ArchiveFactory::getInstance().create(archiveName, mode_, directory_.string(), "field");
 }
 
 } // namespace serialbox

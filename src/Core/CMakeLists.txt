@@ -25,6 +25,7 @@ set(SOURCES
   Type.cpp
   Unreachable.cpp
   
+  Archive/ArchiveFactory.cpp
   Archive/BinaryArchive.cpp
 )
 

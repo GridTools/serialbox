@@ -18,6 +18,7 @@
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/FieldID.h"
 #include "serialbox/Core/StorageView.h"
+#include "serialbox/Core/Type.h"
 #include <iosfwd>
 
 namespace serialbox {
@@ -41,10 +42,16 @@ public:
   virtual void updateMetaData() = 0;
 
   ///
-  virtual const std::string& directory() const = 0;
-
-  ///
   virtual const std::string& name() const = 0;
+  
+  ///
+  virtual OpenModeKind mode() const = 0;
+  
+  ///
+  virtual const std::string& directory() const = 0;
+  
+  ///
+  virtual const std::string& prefix() const = 0;
 
   ///
   virtual std::ostream& toStream(std::ostream& stream) const = 0;

@@ -79,10 +79,16 @@ public:
                         const std::string& fieldID) throw(Exception) override;
   virtual void read(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;
   virtual void updateMetaData() override;
+  virtual OpenModeKind mode() const override { return mode_; }
   virtual const std::string& directory() const override { return directory_.string(); }
+  virtual const std::string& prefix() const override { return prefix_; }
   virtual const std::string& name() const override { return BinaryArchive::Name; }
   virtual std::ostream& toStream(std::ostream& stream) const override;
   /// @}
+
+  /// \brief Create a BinaryArchive
+  static std::unique_ptr<Archive> create(OpenModeKind mode, const std::string& directory,
+                                         const std::string& prefix);
 
 private:
   OpenModeKind mode_;

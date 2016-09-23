@@ -53,6 +53,7 @@ option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" ON)
 option(SERIALBOX_ENABLE_GRIDTOOLS "Build GridTools Unitests" OFF)
 option(SERIALBOX_ENABLE_STELLA "Build STELLA Unitests" OFF)
 option(SERIALBOX_ENABLE_FORTRAN "Build Fortran Unitests" OFF)
+option(SERIALBOX_ENABLE_DEATH_TESTS "Run death-tests" OFF)
 
 option(SERIALBOX_CODE_COVERAGE "Generate code coverage" OFF)
   
@@ -380,6 +381,10 @@ add_subdirectory(src)
 
 # Build unittests
 if(SERIALBOX_TESTING)
+  
+  if(SERIALBOX_ENABLE_DEATH_TESTS)
+    add_definitions(-DSERIALBOX_RUN_DEATH_TESTS)
+  endif()
   
   # ------------------ C++ ------------------
   

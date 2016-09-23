@@ -9,7 +9,8 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-set(CPP_UNITTEST_SOURCES 
+set(CPP_UNITTEST_SOURCES
+  UnittestArchiveFactory.cpp 
   UnittestBinaryArchive.cpp
   UnittestException.cpp
   UnittestFieldMap.cpp

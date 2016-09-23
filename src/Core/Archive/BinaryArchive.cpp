@@ -12,8 +12,10 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/SHA256.h"
+#include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/Version.h"
 #include <fstream>
 #include <iostream>
@@ -78,11 +80,10 @@ void BinaryArchive::readMetaDataFromJson() {
   }
 }
 
-void BinaryArchive::writeMetaDataToJson() 
-{
+void BinaryArchive::writeMetaDataToJson() {
   if(mode_ == OpenModeKind::Read)
     return;
-  
+
   boost::filesystem::path filename = directory_ / Archive::ArchiveMetaDataFile;
   LOG(INFO) << "Update MetaData for BinaryArchive";
 
@@ -315,5 +316,12 @@ std::ostream& BinaryArchive::toStream(std::ostream& stream) const {
   stream << "}\n";
   return stream;
 }
+
+std::unique_ptr<Archive> BinaryArchive::create(OpenModeKind mode, const std::string& directory,
+                                               const std::string& prefix) {
+  return make_unique<BinaryArchive>(mode, directory, prefix);
+}
+
+SERIALBOX_REGISTER_ARCHIVE(BinaryArchive, BinaryArchive::create)
 
 } // namespace serialbox

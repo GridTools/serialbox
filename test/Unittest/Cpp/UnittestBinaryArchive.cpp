@@ -56,12 +56,16 @@ TYPED_TEST(BinaryArchiveTest, Construction) {
   {
     BinaryArchive b(OpenModeKind::Write, this->directory->path().string(), "field");
     b.updateMetaData();
+
+    EXPECT_EQ(b.name(), "BinaryArchive");
+    EXPECT_EQ(b.mode(), OpenModeKind::Write);
+    EXPECT_EQ(b.prefix(), "field");
   }
 
   // Throw Exception: Directory is not empty
   {
-    EXPECT_THROW(BinaryArchive(OpenModeKind::Write, this->directory->path().string(), "field");
-                 , Exception);
+    EXPECT_THROW(BinaryArchive(OpenModeKind::Write, this->directory->path().string(), "field"),
+                 Exception);
   }
 
   // Create directory if not already existent
@@ -105,12 +109,6 @@ TYPED_TEST(BinaryArchiveTest, Construction) {
     BinaryArchive b(OpenModeKind::Append, (this->directory->path() / "nest1" / "nest2").string(),
                     "field");
     EXPECT_TRUE(boost::filesystem::exists(this->directory->path() / "nest1" / "nest2"));
-  }
-
-  // Name
-  {
-    EXPECT_EQ(BinaryArchive(OpenModeKind::Append, this->directory->path().string(), "field").name(),
-              "BinaryArchive");
   }
 }
 
@@ -205,7 +203,7 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
       ASSERT_EQ(fieldID.name, "v");
       ASSERT_EQ(fieldID.id, 2);
     }
-    
+
     // Try to write already existing data
     auto sv_v_1 = v_1_input.toStorageView();
     ASSERT_EQ(archiveWrite.write(sv_v_1, "v"), (FieldID{"v", 1}));
@@ -213,17 +211,17 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
     // storage 2d
     auto sv_2d_0_input = storage_2d_0_input.toStorageView();
     archiveWrite.write(sv_2d_0_input, "storage_2d");
-  
+
     auto sv_2d_1_input = storage_2d_1_input.toStorageView();
     archiveWrite.write(sv_2d_1_input, "storage_2d");
-  
+
     // storage 7d
     auto sv_7d_0_input = storage_7d_0_input.toStorageView();
     archiveWrite.write(sv_7d_0_input, "storage_7d");
-  
+
     auto sv_7d_1_input = storage_7d_1_input.toStorageView();
     archiveWrite.write(sv_7d_1_input, "storage_7d");
-  
+
     // Check all exceptional cases
     auto sv_u_2_input = u_2_input.toStorageView();
     ASSERT_THROW(archiveWrite.read(sv_u_2_input, FieldID{"u", 2}), Exception);
@@ -235,6 +233,7 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
   {
     BinaryArchive archiveRead(OpenModeKind::Read, this->directory->path().string(), "field");
     EXPECT_STREQ(archiveRead.directory().c_str(), this->directory->path().string().c_str());
+    archiveRead.updateMetaData(); // should do nothing
 
     // u
     auto sv_u_0_output = u_0_output.toStorageView();
@@ -249,10 +248,10 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
     // v
     auto sv_v_0_output = v_0_output.toStorageView();
     ASSERT_NO_THROW(archiveRead.read(sv_v_0_output, FieldID{"v", 0}));
-  
+
     auto sv_v_1_output = v_1_output.toStorageView();
     ASSERT_NO_THROW(archiveRead.read(sv_v_1_output, FieldID{"v", 1}));
-  
+
     auto sv_v_2_output = v_2_output.toStorageView();
     ASSERT_NO_THROW(archiveRead.read(sv_v_2_output, FieldID{"v", 2}));
 
@@ -287,11 +286,11 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
   ASSERT_TRUE(Storage::verify(v_1_output, v_1_input));
   ASSERT_TRUE(Storage::verify(v_2_output, v_2_input));
 
-    ASSERT_TRUE(Storage::verify(storage_2d_0_output, storage_2d_0_input));
-    ASSERT_TRUE(Storage::verify(storage_2d_1_output, storage_2d_1_input));
+  ASSERT_TRUE(Storage::verify(storage_2d_0_output, storage_2d_0_input));
+  ASSERT_TRUE(Storage::verify(storage_2d_1_output, storage_2d_1_input));
 
-    ASSERT_TRUE(Storage::verify(storage_7d_0_output, storage_7d_0_input));
-    ASSERT_TRUE(Storage::verify(storage_7d_1_output, storage_7d_1_input));
+  ASSERT_TRUE(Storage::verify(storage_7d_0_output, storage_7d_0_input));
+  ASSERT_TRUE(Storage::verify(storage_7d_1_output, storage_7d_1_input));
 }
 
 TYPED_TEST(BinaryArchiveTest, MetaData) {
