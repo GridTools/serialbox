@@ -25,17 +25,6 @@
 
 namespace serialbox {
 
-namespace internal {
-
-template <class StringType>
-inline int fieldExists(const std::vector<FieldID>& vector, StringType&& field) noexcept {
-  for(std::size_t i = 0; i < vector.size(); ++i)
-    if(vector[i].name == field)
-      return i;
-  return -1;
-}
-}
-
 /// \brief The SavepointVector manages the registered savepoints and their mapping to the stored
 /// fields
 ///
@@ -44,6 +33,9 @@ class SavepointVector {
   using index_type = std::unordered_map<Savepoint, int>;
 
 public:
+  /// \brief Map of fields per savepoint
+  using FieldsPerSavepointMap = std::unordered_map<std::string, unsigned int>;
+
   /// \brief A random access iterator to `Savepoint`
   using iterator = std::vector<Savepoint>::iterator;
 
@@ -68,8 +60,13 @@ public:
   /// \brief Move assignment
   SavepointVector& operator=(SavepointVector&&) = default;
 
-  /// \brief Swap with other
-  void swap(SavepointVector& other) noexcept;
+  /// \brief Check if savepoint exists
+  /// \return True iff the savepoint exists
+  bool exists(const Savepoint& savepoint) const noexcept;
+
+  /// \brief Find savepoint
+  /// \return Return index to savepoint in savepoint-vector or -1 if savepoint does not exist
+  int find(const Savepoint& savepoint) const noexcept;
 
   /// \brief Insert savepoint in savepoint vector
   /// \return True iff the savepoint was successfully inserted
@@ -79,45 +76,27 @@ public:
   /// \return True iff the field was successfully addeed to the savepoint
   bool addField(const Savepoint& savepoint, const FieldID& fieldID) noexcept;
 
-  /// \brief Add a field to the savepoint given an iterator to the savepoint
+  /// \brief Add a field to the savepoint given a valid savepoint index ´idx´
   /// \return True iff the field was successfully addeed to the savepoint
-  bool addField(const iterator& savepointIterator, const FieldID& fieldID) noexcept;
+  bool addField(int idx, const FieldID& fieldID) noexcept;
 
   /// \brief Get the FielID of field ´field´ at savepoint ´savepoint´
   ///
   /// \throw Exception  Savepoint or field at savepoint do not exist
   FieldID getFieldID(const Savepoint& savepoint, const std::string& field) const;
 
-  /// \brief Get the FielID of field ´field´ given an iterator to the savepoint
+  /// \brief Get the FielID of field ´field´ given a valid savepoint index ´idx´
   ///
-  /// \throw Exception  Field does not exist at savepoint
-  template <class Iterator, class = typename std::enable_if<!std::is_same<
-                                typename std::decay<Iterator>::type, Savepoint>::value>::type>
-  FieldID getFieldID(Iterator&& savepointIterator, const std::string& field) const {
-    int spIdx = savepointIterator - savepoints_.begin();
-    auto& fields = fields_[spIdx];
-    int fieldIdx = internal::fieldExists(fields, field);
-
-    if(fieldIdx != -1)
-      return fields[fieldIdx];
-
-    throw Exception("field '%' does not exist at savepoint '%s'", field,
-                    savepointIterator->toString());
-  }
-
-  /// \brief Check if savepoint exists
-  /// \return True iff the savepoint exists
-  bool exists(const Savepoint& savepoint) const noexcept;
-
-  /// \brief Find savepoint
-  /// \return Iterator to the found savepoint or SavepointVector::end() if savepoint does not exist
-  iterator find(const Savepoint& savepoint) noexcept;
-  const_iterator find(const Savepoint& savepoint) const noexcept;
+  /// \throw Exception  Savepoint or field at savepoint do not exist
+  FieldID getFieldID(int idx, const std::string& field) const;
 
   /// \brief Access fields of savepoint
   ///
   /// \throw Exception  Savepoint does not exists
-  const std::vector<FieldID>& fieldsOf(const Savepoint& savepoint) const;
+  const FieldsPerSavepointMap& fieldsOf(const Savepoint& savepoint) const;
+
+  /// \brief Access fields of savepoint
+  const FieldsPerSavepointMap& fieldsOf(int idx) const noexcept;
 
   /// \brief Returns a bool value indicating whether the savepoint is empty
   bool empty() const noexcept { return index_.empty(); }
@@ -128,6 +107,9 @@ public:
   /// \brief All the elements Savepoints are dropped: their destructors are called, and they
   /// are removed from the container, leaving it with a size of 0
   void clear() noexcept;
+
+  /// \brief Swap with other
+  void swap(SavepointVector& other) noexcept;
 
   /// \brief Returns an iterator pointing to the first savepoint in the vector
   iterator begin() noexcept { return savepoints_.begin(); }
@@ -152,9 +134,9 @@ public:
   friend std::ostream& operator<<(std::ostream& stream, const SavepointVector& s);
 
 private:
-  std::unordered_map<Savepoint, int> index_; ///< Hash-map for fast lookup
-  std::vector<Savepoint> savepoints_;        ///< Vector of stored savepoints
-  std::vector<std::vector<FieldID>> fields_; ///< Fields of each savepoint
+  std::unordered_map<Savepoint, int> index_;  ///< Hash-map for fast lookup
+  std::vector<Savepoint> savepoints_;         ///< Vector of stored savepoints
+  std::vector<FieldsPerSavepointMap> fields_; ///< Fields of each savepoint
 };
 
 } // namespace serialbox

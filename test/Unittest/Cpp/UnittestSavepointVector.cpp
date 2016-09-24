@@ -81,7 +81,7 @@ TEST(SavepointVectorTest, Construction) {
     // Add field u (id = 0) to savepoint1
     ASSERT_TRUE(s.addField(savepoint1, FieldID{"u", 0}));
     ASSERT_EQ(s.fieldsOf(savepoint1).size(), 1);
-    EXPECT_EQ(s.fieldsOf(savepoint1)[0], (FieldID{"u", 0}));
+    EXPECT_EQ(s.fieldsOf(savepoint1).find("u")->second, 0);
 
     // Query fieldIDs
     EXPECT_EQ(s.getFieldID(savepoint1, "u"), (FieldID{"u", 0}));
@@ -100,21 +100,21 @@ TEST(SavepointVectorTest, Construction) {
     EXPECT_THROW(s.getFieldID(savepoint3, "u"), Exception);
     
     // Add field via iterator
-    SavepointVector::iterator it = s.find(savepoint2);
-    ASSERT_NE(it, s.end());
-    ASSERT_TRUE(s.addField(it, FieldID{"v", 1}));
-    EXPECT_EQ(s.getFieldID(it, "v"), (FieldID{"v", 1}));
+    int idx = s.find(savepoint2);
+    ASSERT_NE(idx, -1);
+    ASSERT_TRUE(s.addField(idx, FieldID{"v", 1}));
+    EXPECT_EQ(s.getFieldID(idx, "v"), (FieldID{"v", 1}));
 
-    ASSERT_FALSE(s.addField(it, FieldID{"v", 1}));
-    ASSERT_FALSE(s.addField(it, FieldID{"v", 0}));
+    ASSERT_FALSE(s.addField(idx, FieldID{"v", 1}));
+    ASSERT_FALSE(s.addField(idx, FieldID{"v", 0}));
     ASSERT_EQ(s.fieldsOf(savepoint2).size(), 1);
     
     // Look for non-existing savepoint
-    SavepointVector::iterator itToEnd = s.find(savepoint3);
-    EXPECT_EQ(itToEnd, s.end());    
+    int idxToEnd = s.find(savepoint3);
+    EXPECT_EQ(idxToEnd, -1);
 
     // Query nonexistent field of savepoint2
-    EXPECT_THROW(s.getFieldID(it, "XXX"), Exception);
+    EXPECT_THROW(s.getFieldID(idx, "XXX"), Exception);
   }
 
   //------------------------------------------------------------------------------------------------

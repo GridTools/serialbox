@@ -22,34 +22,34 @@ bool SavepointVector::insert(const Savepoint& savepoint) noexcept {
   int idx = savepoints_.size();
   if(index_.insert(typename index_type::value_type{savepoint, idx}).second) {
     savepoints_.push_back(savepoint);
-    fields_.push_back(std::vector<FieldID>());
+    fields_.push_back(FieldsPerSavepointMap());
     return true;
   }
   return false;
 }
 
 bool SavepointVector::addField(const Savepoint& savepoint, const FieldID& fieldID) noexcept {
-  auto it = find(savepoint);
-  if(it != end())
-    return addField(it, fieldID);
+  int idx = find(savepoint);
+  if(idx != -1)
+    return addField(idx, fieldID);
   return false;
 }
 
-bool SavepointVector::addField(const iterator& savepointIterator, const FieldID& fieldID) noexcept {
-  int idx = savepointIterator - savepoints_.begin();
-  auto& fields = fields_[idx];
+bool SavepointVector::addField(int idx, const FieldID& fieldID) noexcept {
+  return fields_[idx].insert({fieldID.name, fieldID.id}).second;
+}
 
-  if(internal::fieldExists(fields, fieldID.name) != -1)
-    return false;
-
-  fields.push_back(fieldID);
-  return true;
+FieldID SavepointVector::getFieldID(int idx, const std::string& field) const {
+  auto it = fields_[idx].find(field);
+  if(it != fields_[idx].end())
+    return FieldID{it->first, it->second};
+  throw Exception("field '%s' does not exists at savepoint '%s'", field, savepoints_[idx].name());
 }
 
 FieldID SavepointVector::getFieldID(const Savepoint& savepoint, const std::string& field) const {
-  auto it = find(savepoint);
-  if(it != end())
-    return getFieldID(it, field);
+  int idx = find(savepoint);
+  if(idx != -1)
+    return getFieldID(idx, field);
   throw Exception("savepoint '%' does not exist", savepoint.toString());
 }
 
@@ -60,27 +60,23 @@ void SavepointVector::swap(SavepointVector& other) noexcept {
 }
 
 bool SavepointVector::exists(const Savepoint& savepoint) const noexcept {
-  return (index_.find(savepoint) != index_.end());
+  return (find(savepoint) != -1);
 }
 
-SavepointVector::iterator SavepointVector::find(const Savepoint& savepoint) noexcept {
+int SavepointVector::find(const Savepoint& savepoint) const noexcept {
   auto it = index_.find(savepoint);
-  if(it != index_.end())
-    return (savepoints_.begin() + it->second);
-  return savepoints_.end();
+  return ((it != index_.end()) ? it->second : -1);
 }
 
-SavepointVector::const_iterator SavepointVector::find(const Savepoint& savepoint) const noexcept {
-  auto it = index_.find(savepoint);
-  if(it != index_.end())
-    return (savepoints_.begin() + it->second);
-  return savepoints_.end();
+const SavepointVector::FieldsPerSavepointMap& SavepointVector::fieldsOf(int idx) const noexcept {
+ return fields_[idx];
 }
 
-const std::vector<FieldID>& SavepointVector::fieldsOf(const Savepoint& savepoint) const {
+const SavepointVector::FieldsPerSavepointMap&
+SavepointVector::fieldsOf(const Savepoint& savepoint) const {
   auto it = index_.find(savepoint);
   if(it != index_.end())
-    return fields_[it->second];
+    return fieldsOf(it->second);
   throw Exception("savepoint '%' does not exist", savepoint.toString());
 }
 
@@ -103,9 +99,9 @@ json::json SavepointVector::toJSON() const {
 
     if(fields_[i].empty())
       fieldNode[savepoint] = nullptr;
-      
-    for(const auto& field : fields_[i])
-      fieldNode[savepoint][field.name] = field.id;
+
+    for(auto it = fields_[i].begin(), end = fields_[i].end(); it != end; ++it)
+      fieldNode[savepoint][it->first] = it->second;
 
     jsonNode["fields_per_savepoint"].push_back(fieldNode);
   }
@@ -137,19 +133,19 @@ void SavepointVector::fromJSON(const json::json& jsonNode) {
 
   for(std::size_t i = 0; i < fields_.size(); ++i) {
     const json::json& fieldNode = jsonNode["fields_per_savepoint"][i][savepoints_[i].name()];
-    
+
     // Savepoint has no fields
     if(fieldNode.is_null() || fieldNode.empty())
       break;
 
     // Add fields
     for(auto it = fieldNode.begin(), end = fieldNode.end(); it != end; ++it)
-      fields_[i].push_back(FieldID{it.key(), static_cast<unsigned int>(it.value())});
+      fields_[i].insert({it.key(), static_cast<unsigned int>(it.value())});
   }
 }
 
 std::ostream& operator<<(std::ostream& stream, const SavepointVector& s) {
-  stream << "SavepointVector = " << s.toJSON().dump(4); 
+  stream << "SavepointVector = " << s.toJSON().dump(4);
   return stream;
 }
 

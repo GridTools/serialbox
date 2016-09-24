@@ -141,6 +141,7 @@ struct hash<serialbox::Savepoint> {
     return std::hash<std::string>()(s.name());
   }
 };
-}
+
+} // namespace std
 
 #endif

@@ -107,9 +107,10 @@ void MetaInfoMap::fromJSON(const json::json& jsonNode) {
       throw Exception("sub-node '%s' has no node 'value'", it.key());
 
     const json::json& node = it.value();
+    const std::string& key = it.key();
     int typeAsInt = node["type_id"];
 
-    InsertHelper insertHelper{*this, it.key(), node};
+    InsertHelper insertHelper{*this, key, node};
     switch(static_cast<TypeID>(typeAsInt)) {
     case TypeID::Boolean:
       insertHelper.insert<bool>(&json::json::is_boolean, "boolean");

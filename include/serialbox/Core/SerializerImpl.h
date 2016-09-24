@@ -197,7 +197,7 @@ public:
   //     Writing
   //===----------------------------------------------------------------------------------------===//
   
-  /// \brief Serialize field ´name´ at savepoint ´savepoint´ to disk
+  /// \brief Serialize field ´name´ (given as ´storageView´) at ´savepoint´ to disk
   /// 
   /// The method perfoms the following steps:
   /// 
@@ -210,10 +210,10 @@ public:
   /// 
   /// 3) Add the field ´name´ to the Savepoint.
   /// 
-  /// 4) Compute FieldID of the field and register it within the FieldMap.
-  /// 
   /// 5) Pass the StorageView to the backend Archive and perform actual data-serialization.
   /// 
+  /// 4) Register FieldID within the FieldMap.
+  ///
   /// 6) Update meta-data on disk via SerializerImpl::updateMetaData()
   /// 
   /// \param name           Name of the field
@@ -235,9 +235,6 @@ public:
   //     JSON Serialization
   //===----------------------------------------------------------------------------------------===//
 
-  /// \brief Convert to stream
-  friend std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s);
-
   /// \brief Convert meta-data to JSON and serialize to MetaData.json and ArchiveMetaData.json
   ///
   /// This will ensure MetaData.json is up-to-date with the in-memory versions of the
@@ -247,6 +244,8 @@ public:
   /// \brief Convert all members of the serializer to JSON
   json::json toJSON() const;
 
+  /// \brief Convert to stream
+  friend std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s);
 protected:
   /// \brief Construct meta-data from JSON
   ///
@@ -272,6 +271,6 @@ protected:
   std::unique_ptr<Archive> archive_;
 };
 
-} // namespace serialboxsavepointVector
+} // namespace serialbox
 
 #endif
