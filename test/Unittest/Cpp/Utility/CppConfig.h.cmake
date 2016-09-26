@@ -20,6 +20,9 @@
 /* Define if STELLA Unittests are built */
 #cmakedefine SERIALBOX_HAS_STELLA ${SERIALBOX_HAS_STELLA}
 
+/* Define if compatibility Unittests with old serialbox are built */
+#cmakedefine SERIALBOX_HAS_SERIALBOX_OLD ${SERIALBOX_HAS_SERIALBOX_OLD}
+
 /* Define if Fortran Unittests are built */
 #cmakedefine SERIALBOX_HAS_FORTRAN ${SERIALBOX_HAS_FORTRAN}
 

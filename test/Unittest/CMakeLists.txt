@@ -26,17 +26,25 @@ function(serialbox_add_cpp_unittest_executable name libraries)
                                 SerialboxCppUnittestUtility 
                                 SerialboxCore)
   
-  if(SERIALBOX_VERBOSE_WARNINGS)
+  if(DEFINED SERIALBOX_VERBOSE_WARNINGS)
     set_target_properties(${name} PROPERTIES COMPILE_FLAGS -Wall)
-  endif(SERIALBOX_VERBOSE_WARNINGS)
+  endif()
 
-  if(BUILD_GTEST)
+  if(DEFINED BUILD_GTEST)
     add_dependencies(${name} gtest)
-  endif(BUILD_GTEST)
+  endif()
 
-  if(BUILD_GLOG)
+  if(DEFINED BUILD_GLOG)
     add_dependencies(${name} glog)
-  endif(BUILD_GLOG)
+  endif()
+  
+  if(DEFINED BUILD_SERIALBOX_OLD)
+    add_dependencies(${name} serialbox-old)
+  endif()
+  
+  if(DEFINED BUILD_STELLA)
+    add_dependencies(${name} stella)
+  endif()
 
   if(DEFINED COVERAGE_SUPPORTED)
     set_property(TARGET ${name} PROPERTY COMPILE_FLAGS ${CMAKE_CXX_FLAGS_COVERAGE})

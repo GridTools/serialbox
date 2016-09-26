@@ -56,6 +56,7 @@ option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" ON)
 
 option(SERIALBOX_ENABLE_GRIDTOOLS "Build GridTools Unitests" OFF)
 option(SERIALBOX_ENABLE_STELLA "Build STELLA Unitests" OFF)
+option(SERIALBOX_ENABLE_OLD_SERIALBOX "Build compatiblity unitests against old serialbox" OFF)
 option(SERIALBOX_ENABLE_FORTRAN "Build Fortran Unitests" OFF)
 option(SERIALBOX_ENABLE_DEATH_TESTS "Run death-tests" OFF)
 
@@ -293,6 +294,57 @@ if(SERIALBOX_ENABLE_STELLA)
 
 endif(SERIALBOX_ENABLE_STELLA)
 
+#---------------------------------------- Serialbox (old) ------------------------------------------
+if(SERIALBOX_ENABLE_OLD_SERIALBOX)
+
+  # If SERIALBOX_OLD_ROOT is not provided, we try to find it in external/
+  set(SERIALBOX_OLD_ROOT_ENV "$ENV{SERIALBOX_OLD_ROOT}")
+  if(NOT(SERIALBOX_OLD_ROOT) AND NOT(SERIALBOX_OLD_ROOT_ENV) AND 
+     EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/serialbox/CMakeLists.txt")
+   
+    set(SERIALBOX_OLD_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/external/serialbox")
+    
+    set(BUILD_SERIALBOX_OLD "ON" BOOL)
+    set(SERIALBOX_OLD_INSTALL_DIR "${CMAKE_BINARY_DIR}/external/serialbox/install")
+    
+    # Forward toolchain
+    set(CMAKE_EXTERNAL_ARGS -Wno-dev
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
+      -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+      -DCMAKE_INSTALL_PREFIX=${SERIALBOX_OLD_INSTALL_DIR}
+    )
+    
+    # Propagate Boost if it was set via BOOST_ROOT
+    if(BOOST_ROOT)
+        list(APPEND CMAKE_EXTERNAL_ARGUMENTS "-DBOOST_ROOT=${BOOST_ROOT}")
+    endif(BOOST_ROOT)
+
+    # Build old serialbox
+    ExternalProject_Add(
+        serialbox-old
+        URL        "${CMAKE_CURRENT_SOURCE_DIR}/external/serialbox"
+        PREFIX     "external/serialbox"
+        CMAKE_ARGS ${CMAKE_EXTERNAL_ARGS}
+    )
+    message(STATUS 
+            "Building old SERIALBOX (0.1.1) from: ${CMAKE_CURRENT_SOURCE_DIR}/external/serialbox")
+
+    set(SERIALBOX_OLD_INCLUDE_DIRS "${SERIALBOX_OLD_INSTALL_DIR}/include")
+    set(SERIALBOX_OLD_LIBRARIES "${SERIALBOX_OLD_INSTALL_DIR}/lib/libSerialbox.a"
+                                "${SERIALBOX_OLD_INSTALL_DIR}/lib/libUtils.a"
+                                "${SERIALBOX_OLD_INSTALL_DIR}/lib/libjson.a"
+                                "${SERIALBOX_OLD_INSTALL_DIR}/lib/libsha256.a")
+  else()
+    find_package(SerialboxOld QUIET REQUIRED)
+  endif()
+  
+  include_directories(SYSTEM ${SERIALBOX_OLD_INCLUDE_DIRS})
+  set(SERIALBOX_HAS_SERIALBOX_OLD 1)
+  
+endif(SERIALBOX_ENABLE_OLD_SERIALBOX)
+
 #--------------------------------------- Fortran ---------------------------------------------------
 if(SERIALBOX_ENABLE_FORTRAN)
 
@@ -385,20 +437,10 @@ file(GLOB_RECURSE SERIALBOX_HEADERS
      ${CMAKE_CURRENT_SOURCE_DIR}/include/serialbox/*.h)
      
      
-# Setup external libraries
-set(SERIALBOX_EXTERNAL_LIBRARIES ${Boost_LIBRARIES} 
-                                 ${GTEST_LIBRARIES} 
-                                 ${GLOG_LIBRARIES} 
-                                 ${SHA256_LIBRARIES})
-
-if(SERIALBOX_HAS_STELLA)
-  set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${STELLA_LIBRARIES})
-endif(SERIALBOX_HAS_STELLA)
-
-# Build Serialbox
+## Build Serialbox
 add_subdirectory(src)
 
-# Build unittests
+## Build unittests
 if(SERIALBOX_TESTING)
   
   if(SERIALBOX_ENABLE_DEATH_TESTS)

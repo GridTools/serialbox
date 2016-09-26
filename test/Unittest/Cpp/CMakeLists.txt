@@ -25,15 +25,26 @@ set(CPP_UNITTEST_SOURCES
   UnittestSerializerImpl.cpp
   UnittestType.cpp
   UnittestUnreachable.cpp
+  UnittestUpgradeArchive.cpp
   UnittestVersion.cpp
   
+  # STELLA
   UnittestGridToolsStorageView.cpp
  
+  # gridtools
   UnittestSTELLAStorageView.cpp
 )
+
+# Setup external libraries
+set(CPP_EXTERNAL_LIBRARIES ${Boost_LIBRARIES} 
+                           ${GTEST_LIBRARIES} 
+                           ${GLOG_LIBRARIES} 
+                           ${SHA256_LIBRARIES}
+                           ${SERIALBOX_OLD_LIBRARIES}
+                           ${STELLA_LIBRARIES})
   
 serialbox_add_cpp_unittest_executable(SerialboxCppUnittest 
-                                      "${SERIALBOX_EXTERNAL_LIBRARIES}"
+                                      "${CPP_EXTERNAL_LIBRARIES}"
                                       ${CPP_UNITTEST_SOURCES} UnittestMain.cpp)
 
 ## Add subdirectories

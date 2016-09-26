@@ -52,18 +52,26 @@ public:
   /// \param mode         Mode of the Serializer
   /// \param directory    Directory of the Archive and Serializer meta-data
   /// \param archiveName  String passed to the ArchiveFactory to construct the Archive
+  /// \param prefix       Prefix of all filenames
   ///
   /// This will read MetaData.json to initialize the savepoint vector, the fieldMap and
   /// globalMetaInfo. Further, it will construct the Archive by reading the ArchiveMetaData.json.
   ///
   /// \throw Exception  Invalid directory or corrupted meta-data files
-  SerializerImpl(OpenModeKind mode, const std::string& directory, const std::string& archiveName);
+  SerializerImpl(OpenModeKind mode, const std::string& directory, const std::string& archiveName,
+                 std::string prefix = "Field");
 
   /// \brief Access the mode of the serializer
   OpenModeKind mode() const noexcept { return mode_; }
 
   /// \brief Access the directory in which the Serializer and Archive are opened
   const boost::filesystem::path& directory() const noexcept { return directory_; }
+
+  /// \brief Access prefix of all filenames
+  const std::string& prefix() const noexcept { return prefix_; }
+
+  /// \brief Drop all field and savepoint meta-data.
+  void clear() noexcept;
 
   //===----------------------------------------------------------------------------------------===//
   //     Global meta-information
@@ -279,16 +287,28 @@ protected:
   ///
   /// \param archiveName  String passed to the ArchiveFactory to construct the Archive
   void constructArchive(const std::string& archiveName);
-  
-  
+
   /// \brief Check if ´storageView´ is consistent with the field ´name´
   ///
   /// If an inconsistency is detected, an Exception is thrown.
   void checkStorageView(const std::string& name, const StorageView& storageView) const;
 
+  /// \brief Check if the current directory contains meta-information of older version of serialbox
+  /// and upgrade it if necessary
+  ///
+  /// The function will check if there is a ´prefix.json´ file which is newer than ´MetaData.json´
+  /// and, if ture, convert ´prefix.json´ to ´MetaData.json´ and ´ArchiveMetaData.json´.
+  ///
+  /// The process will use the infrastructure of the current serializer but will eventually call
+  /// SerialzerImpl::clear().
+  ///
+  /// \throw Exception
+  void upgradeMetaData();
+
 protected:
   OpenModeKind mode_;
   boost::filesystem::path directory_;
+  std::string prefix_;
 
   SavepointVector savepointVector_;
   FieldMap fieldMap_;

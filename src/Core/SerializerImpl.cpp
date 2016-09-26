@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/UpgradeArchive.h"
 #include "serialbox/Core/Archive/ArchiveFactory.h"
+#include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/SerializerImpl.h"
@@ -39,11 +39,11 @@ static std::string vecToString(VecType&& vec) {
 }
 
 SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
-                               const std::string& archiveName)
-    : mode_(mode), directory_(directory) {
+                               const std::string& archiveName, std::string prefix)
+    : mode_(mode), directory_(directory), prefix_(prefix) {
 
   LOG(INFO) << "Creating Serializer (mode = " << mode_ << ") from directory " << directory_;
-  
+
   // Validate integrity of directory (non-existent directories are created by the archive)
   try {
     bool directoryExists = boost::filesystem::exists(directory_);
@@ -69,6 +69,13 @@ SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
   // Construct Archive and meta-data
   constructMetaDataFromJson();
   constructArchive(archiveName);
+}
+
+void SerializerImpl::clear() noexcept {
+  savepointVector_.clear();
+  fieldMap_.clear();
+  globalMetaInfo_.clear();
+  archive_.release();
 }
 
 std::vector<std::string> SerializerImpl::fieldnames() const {
@@ -110,11 +117,11 @@ void SerializerImpl::checkStorageView(const std::string& name,
 
 void SerializerImpl::write(const std::string& name, const Savepoint& savepoint,
                            StorageView& storageView) {
-  LOG(INFO) << "Serializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";  
-  
+  LOG(INFO) << "Serializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";
+
   if(mode_ == OpenModeKind::Read)
     throw Exception("serializer not open in write mode, but write operation requested");
-  
+
   //
   // 1) Check if field is registred within the Serializer and perform some consistency checks
   //
@@ -126,10 +133,10 @@ void SerializerImpl::write(const std::string& name, const Savepoint& savepoint,
   int savepointIdx = savepointVector_.find(savepoint);
 
   if(savepointIdx == -1) {
-    LOG(INFO) << "Registering new savepoint \"" << savepoint << "\"";  
+    LOG(INFO) << "Registering new savepoint \"" << savepoint << "\"";
     savepointIdx = savepointVector_.insert(savepoint);
   }
-  
+
   //
   // 3) Check if field can be added to Savepoint
   //
@@ -151,8 +158,8 @@ void SerializerImpl::write(const std::string& name, const Savepoint& savepoint,
   // 6) Update meta-data on disk
   //
   updateMetaData();
-  
-  LOG(INFO) << "Successfully serialized field \"" << name << "\"";      
+
+  LOG(INFO) << "Successfully serialized field \"" << name << "\"";
 }
 
 //===------------------------------------------------------------------------------------------===//
@@ -161,8 +168,8 @@ void SerializerImpl::write(const std::string& name, const Savepoint& savepoint,
 
 void SerializerImpl::read(const std::string& name, const Savepoint& savepoint,
                           StorageView& storageView) {
-  LOG(INFO) << "Deserializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";    
-  
+  LOG(INFO) << "Deserializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";
+
   if(mode_ != OpenModeKind::Read)
     throw Exception("serializer not open in read mode, but read operation requested");
 
@@ -185,8 +192,8 @@ void SerializerImpl::read(const std::string& name, const Savepoint& savepoint,
   // 3) Pass the StorageView to the backend Archive and perform actual data-deserialization.
   //
   archive_->read(storageView, fieldID);
-  
-  LOG(INFO) << "Successfully deserialized field \"" << name << "\"";    
+
+  LOG(INFO) << "Successfully deserialized field \"" << name << "\"";
 }
 
 //===------------------------------------------------------------------------------------------===//
@@ -194,21 +201,19 @@ void SerializerImpl::read(const std::string& name, const Savepoint& savepoint,
 //===------------------------------------------------------------------------------------------===//
 
 void SerializerImpl::constructMetaDataFromJson() {
-  LOG(INFO) << "Constructing Serializer from MetaData ... ";  
-  
-  savepointVector_.clear();
-  fieldMap_.clear();
-  globalMetaInfo_.clear();
+  LOG(INFO) << "Constructing Serializer from MetaData ... ";
+
+  clear();
 
   if(mode_ == OpenModeKind::Write)
     return;
-      
-  // Check if we deal with an older version of serialbox
-  UpgradeArchive::upgrade(directory_);
+
+  // Check if we deal with an older version of serialbox and perform necessary upgrades
+  upgradeMetaData();
 
   // Try open MetaData.json file
   boost::filesystem::path filename = directory_ / SerializerImpl::SerializerMetaDataFile;
-  
+
   if(!boost::filesystem::exists(filename)) {
     if(mode_ == OpenModeKind::Append)
       return;
@@ -236,6 +241,13 @@ void SerializerImpl::constructMetaDataFromJson() {
       throw Exception(
           "serialbox version of MetaData (%s) does not match the version of the library (%s)",
           Version::toString(serialboxVersion), SERIALBOX_VERSION_STRING);
+
+    // Check if prefix match
+    if(!jsonNode.count("prefix"))
+      throw Exception("node 'prefix' not found");
+
+    if(jsonNode["prefix"] != prefix_)
+      throw Exception("inconsistent prefixes: expected '%s' got '%s'", jsonNode["prefix"], prefix_);
 
     // Construct globalMetaInfo
     if(jsonNode.count("global_meta_info"))
@@ -266,13 +278,16 @@ std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s) {
 }
 
 json::json SerializerImpl::toJSON() const {
-  LOG(INFO) << "Converting Serializer MetaData to JSON";  
-  
+  LOG(INFO) << "Converting Serializer MetaData to JSON";
+
   json::json jsonNode;
 
   // Tag version
   jsonNode["serialbox_version"] =
       100 * SERIALBOX_VERSION_MAJOR + 10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
+
+  // Serialize prefix
+  jsonNode["prefix"] = prefix_;
 
   // Serialize globalMetaInfo
   jsonNode["global_meta_info"] = globalMetaInfo_.toJSON();
@@ -287,10 +302,6 @@ json::json SerializerImpl::toJSON() const {
 }
 
 void SerializerImpl::updateMetaData() {
-  
-  if(mode_ == OpenModeKind::Read)
-    return;
-  
   LOG(INFO) << "Update MetaData of Serializer";
 
   json::json jsonNode = toJSON();
@@ -307,7 +318,61 @@ void SerializerImpl::updateMetaData() {
 }
 
 void SerializerImpl::constructArchive(const std::string& archiveName) {
-  archive_ = ArchiveFactory::getInstance().create(archiveName, mode_, directory_.string(), "field");
+  archive_ = ArchiveFactory::getInstance().create(archiveName, mode_, directory_.string(), prefix_);
+}
+
+void SerializerImpl::upgradeMetaData() {
+  boost::filesystem::path oldMetaDataFile = directory_ / (prefix_ + ".json");
+  boost::filesystem::path newMetaDataFile = SerializerImpl::SerializerMetaDataFile;
+
+  try {
+    // Check if prefix.json exists
+    if(!boost::filesystem::exists(oldMetaDataFile))
+      return;
+
+    LOG(INFO) << "Detected old meta-data file " << oldMetaDataFile;
+    
+    // Check if we already upgraded this archive
+    if(boost::filesystem::exists(newMetaDataFile) &&
+       (boost::filesystem::last_write_time(oldMetaDataFile) <
+        boost::filesystem::last_write_time(newMetaDataFile)))
+      return;
+
+  } catch(boost::filesystem::filesystem_error& e) {
+    throw Exception("filesystem error: %s", e.what());
+  }
+
+  LOG(INFO) << "Upgrading MetaData to serialbox version (" << SERIALBOX_VERSION_STRING << ") ...";
+
+  // Read Fields.json
+  json::json oldJson;
+  std::ifstream ifs(oldMetaDataFile.string());
+  ifs >> oldJson;
+
+  // Upgrade MetaInfo
+  if(oldJson.count("GlobalMetainfo")) {
+    //    for(auto it = oldJson["GlobalMetainfo"].begin(), end = oldJson["GlobalMetainfo"].end();
+    //        it != end; ++it) {
+
+    //    }
+  }
+
+  // Upgrade FieldsTable
+
+  // Upgrade SavepointVector
+
+  // Upgrade ArchiveMetaData
+  std::unique_ptr<Archive> archive(
+      new BinaryArchive(OpenModeKind::Append, directory_.string(), prefix_));
+
+  archive->updateMetaData();
+  archive_ = std::move(archive);
+
+  // Write new serializer meta-data and archive meta-data to disk
+  updateMetaData();
+
+  // Clear all objects and release the archive
+  clear();
 }
 
 } // namespace serialbox

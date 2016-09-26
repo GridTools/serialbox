@@ -16,6 +16,7 @@ set(CPP_UNITTEST_UTILITY_SOURCES
   GridTools.h
   Storage.h
   STELLA.h
+  Serialbox.h
 )
 
 add_library(SerialboxCppUnittestUtility ${CPP_UNITTEST_UTILITY_SOURCES})

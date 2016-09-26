@@ -24,6 +24,8 @@ using namespace unittest;
 //     Utility tests
 //===------------------------------------------------------------------------------------------===//
 
+namespace {
+
 class SerializerImplUtilityTest : public testing::Test {
 public:
   std::shared_ptr<Directory> directory;
@@ -37,6 +39,8 @@ protected:
 
   virtual void TearDown() override { directory.reset(); }
 };
+
+} // anonymous namespace
 
 TEST_F(SerializerImplUtilityTest, ConstructionOfEmptySerializer) {
   // -----------------------------------------------------------------------------------------------
@@ -416,6 +420,15 @@ TEST_F(SerializerImplUtilityTest, JSONFailCorruputedVersion) {
                Exception);
 }
 
+TEST_F(SerializerImplUtilityTest, JSONFailWrongPrefix) {
+  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+  s_write.updateMetaData();
+
+  // Open with corruputed MetaData.json
+  ASSERT_THROW(SerializerImpl(OpenModeKind::Read, directory->path().string(), "BinaryArchive", "X"),
+               Exception);
+}
+
 TEST_F(SerializerImplUtilityTest, JSONFailNoVersion) {
   SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
   s_write.updateMetaData();
@@ -428,6 +441,30 @@ TEST_F(SerializerImplUtilityTest, JSONFailNoVersion) {
 
   // Remove version
   j.erase("serialbox_version");
+
+  // Write MetaData.json
+  std::ofstream ofs((directory->path() / SerializerImpl::SerializerMetaDataFile).string(),
+                    std::ios::trunc);
+  ofs << j.dump(4) << std::endl;
+  ofs.close();
+
+  // Open with corruputed MetaData.json
+  ASSERT_THROW(SerializerImpl(OpenModeKind::Read, directory->path().string(), "BinaryArchive"),
+               Exception);
+}
+
+TEST_F(SerializerImplUtilityTest, JSONFailNoPrefix) {
+  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+  s_write.updateMetaData();
+
+  // Read MetaData.json
+  json::json j;
+  std::ifstream ifs((directory->path() / SerializerImpl::SerializerMetaDataFile).string());
+  ifs >> j;
+  ifs.close();
+
+  // Remove prefix
+  j.erase("prefix");
 
   // Write MetaData.json
   std::ofstream ofs((directory->path() / SerializerImpl::SerializerMetaDataFile).string(),
@@ -500,9 +537,9 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
 
   Storage v_0_output(Storage::RowMajor, {5, 1, 1});
   Storage v_1_output(Storage::RowMajor, {5, 1, 1});
-  
+
   Storage field_6d_output(Storage::RowMajor, {2, 2, 1, 2, 1, 2});
-  
+
   // Savepoints
   Savepoint savepoint1_t_1("savepoint1");
   savepoint1_t_1.addMetaInfo("time", int(1));
@@ -569,7 +606,7 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
     auto sv_v_0 = v_0_output.toStorageView();
     auto sv_v_1 = v_1_output.toStorageView();
     auto sv_field_6d = field_6d_output.toStorageView();
-    
+
     // Check fields exists
     ASSERT_TRUE(s_read.hasField("u"));
     ASSERT_EQ(s_read.getFieldMetaInfoOf("u").dims(), (std::vector<int>{5, 6, 7}));
@@ -603,7 +640,7 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
 
     s_read.read("v", savepoint_v_1, sv_v_1);
     ASSERT_TRUE(Storage::verify(v_1_output, v_1_input));
-    
+
     s_read.read("field_6d", savepoint_6d, sv_field_6d);
     ASSERT_TRUE(Storage::verify(field_6d_output, field_6d_input));
   }
