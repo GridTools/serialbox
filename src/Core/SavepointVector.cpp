@@ -18,14 +18,14 @@
 
 namespace serialbox {
 
-bool SavepointVector::insert(const Savepoint& savepoint) noexcept {
+int SavepointVector::insert(const Savepoint& savepoint) noexcept {
   int idx = savepoints_.size();
   if(index_.insert(typename index_type::value_type{savepoint, idx}).second) {
     savepoints_.push_back(savepoint);
     fields_.push_back(FieldsPerSavepointMap());
-    return true;
+    return idx;
   }
-  return false;
+  return -1;
 }
 
 bool SavepointVector::addField(const Savepoint& savepoint, const FieldID& fieldID) noexcept {
@@ -37,6 +37,17 @@ bool SavepointVector::addField(const Savepoint& savepoint, const FieldID& fieldI
 
 bool SavepointVector::addField(int idx, const FieldID& fieldID) noexcept {
   return fields_[idx].insert({fieldID.name, fieldID.id}).second;
+}
+
+bool SavepointVector::hasField(const Savepoint& savepoint, const std::string& field) noexcept {
+  int idx = find(savepoint);
+  if(idx != -1)
+    return hasField(idx, field);
+  return false;
+}
+
+bool SavepointVector::hasField(int idx, const std::string& field) noexcept {
+  return (fields_[idx].find(field) != fields_[idx].end());
 }
 
 FieldID SavepointVector::getFieldID(int idx, const std::string& field) const {

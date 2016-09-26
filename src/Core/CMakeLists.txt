@@ -23,6 +23,7 @@ set(SOURCES
   SHA256.cpp
   Type.cpp
   Unreachable.cpp
+  UpgradeArchive.cpp
   
   Archive/ArchiveFactory.cpp
   Archive/BinaryArchive.cpp

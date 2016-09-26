@@ -168,7 +168,7 @@ public:
   /// \return True iff the savepoint was successfully inserted
   template <typename... Args>
   bool registerSavepoint(Args&&... args) noexcept {
-    return savepointVector_.insert(Savepoint(std::forward<Args>(args)...));
+    return (savepointVector_.insert(Savepoint(std::forward<Args>(args)...)) != -1);
   }
 
   /// \brief Add a field to the savepoint
@@ -192,36 +192,36 @@ public:
   /// \brief Get refrence to SavepointVector
   const SavepointVector& savepointVector() const noexcept { return savepointVector_; }
   SavepointVector& savepointVector() noexcept { return savepointVector_; }
-  
+
   //===----------------------------------------------------------------------------------------===//
   //     Writing
   //===----------------------------------------------------------------------------------------===//
-  
+
   /// \brief Serialize field ´name´ (given as ´storageView´) at ´savepoint´ to disk
-  /// 
+  ///
   /// The method perfoms the following steps:
-  /// 
-  /// 1) Check if field ´name´ is registred within the Serializer and perform a consistency check 
-  ///    concering the data-type and dimensions of the StorageView compared to to the registered 
+  ///
+  /// 1) Check if field ´name´ is registred within the Serializer and perform a consistency check
+  ///    concering the data-type and dimensions of the StorageView compared to to the registered
   ///    field.
-  /// 
-  /// 2) Locate the ´savepoint´ in the savepoint vector and, if the ´savepoint´ does not exist, 
+  ///
+  /// 2) Locate the ´savepoint´ in the savepoint vector and, if the ´savepoint´ does not exist,
   ///    register it within the Serializer.
-  /// 
-  /// 3) Add the field ´name´ to the Savepoint.
-  /// 
-  /// 5) Pass the StorageView to the backend Archive and perform actual data-serialization.
-  /// 
-  /// 4) Register FieldID within the FieldMap.
+  ///
+  /// 3) Check if field ´name´ can be added to Savepoint.
+  ///
+  /// 4) Pass the StorageView to the backend Archive and perform actual data-serialization.
+  ///
+  /// 5) Register field ´name´ within the Savepoint.
   ///
   /// 6) Update meta-data on disk via SerializerImpl::updateMetaData()
-  /// 
+  ///
   /// \param name           Name of the field
   /// \param savepoint      Savepoint to at which the field will be serialized
   /// \param storageView    StorageView of the field
-  /// 
+  ///
   /// \throw Exception
-  /// 
+  ///
   /// \see serialbox::Archive::write "Archive::write"
   void write(const std::string& name, const Savepoint& savepoint, StorageView& storageView);
 
@@ -229,8 +229,27 @@ public:
   //     Reading
   //===----------------------------------------------------------------------------------------===//
 
-  
-  
+  /// \brief Deserialize field ´name´ (given as ´storageView´) at ´savepoint´ from disk
+  ///
+  /// The method perfoms the following steps:
+  ///
+  /// 1) Check if field ´name´ is registred within the Serializer and perform a consistency check
+  ///    concering the data-type and dimensions of the StorageView compared to to the registered
+  ///    field.
+  ///
+  /// 2) Check if savepoint exists and has a field ´name´.
+  ///
+  /// 3) Pass the StorageView to the backend Archive and perform actual data-deserialization.
+  ///
+  /// \param name           Name of the field
+  /// \param savepoint      Savepoint to at which the field will be serialized
+  /// \param storageView    StorageView of the field
+  ///
+  /// \throw Exception
+  ///
+  /// \see serialbox::Archive::write "Archive::read"
+  void read(const std::string& name, const Savepoint& savepoint, StorageView& storageView);
+
   //===----------------------------------------------------------------------------------------===//
   //     JSON Serialization
   //===----------------------------------------------------------------------------------------===//
@@ -241,11 +260,12 @@ public:
   /// savepointVector, fieldMap and globalMetaInfo as well as the meta-data of the Archive.
   void updateMetaData();
 
-  /// \brief Convert all members of the serializer to JSON
+  /// \brief Convert all members of the Serializer to JSON
   json::json toJSON() const;
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s);
+
 protected:
   /// \brief Construct meta-data from JSON
   ///
@@ -259,6 +279,12 @@ protected:
   ///
   /// \param archiveName  String passed to the ArchiveFactory to construct the Archive
   void constructArchive(const std::string& archiveName);
+  
+  
+  /// \brief Check if ´storageView´ is consistent with the field ´name´
+  ///
+  /// If an inconsistency is detected, an Exception is thrown.
+  void checkStorageView(const std::string& name, const StorageView& storageView) const;
 
 protected:
   OpenModeKind mode_;

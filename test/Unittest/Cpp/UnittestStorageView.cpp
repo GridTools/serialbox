@@ -395,7 +395,6 @@ TYPED_TEST(StorageViewTest, toString) {
 
   // StorageViewIterator
   ss << sv_1d.begin();
-  std::cout << sv_1d.begin() << std::endl;
   EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "StorageViewIterator"));
   EXPECT_NE(ss.str().find("originPtr"), std::string::npos);
   EXPECT_NE(ss.str().find("index"), std::string::npos);

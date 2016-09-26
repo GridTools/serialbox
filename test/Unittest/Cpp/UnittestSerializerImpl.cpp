@@ -212,6 +212,71 @@ TEST_F(SerializerImplUtilityTest, RegisterFields) {
   EXPECT_TRUE(std::find(fields.begin(), fields.end(), std::string("field2")) != fields.end());
 }
 
+TEST_F(SerializerImplUtilityTest, WriteExceptions) {
+  Storage<double> storage(Storage<double>::ColMajor, {5, 1, 1});
+  Storage<float> storage_wrong_type(Storage<float>::ColMajor, {5, 1, 1});
+  Storage<double> storage_wrong_dims1(Storage<double>::ColMajor, {5, 1});
+  Storage<double> storage_wrong_dims2(Storage<double>::ColMajor, {3, 3, 3});
+
+  StorageView sv = storage.toStorageView();
+  StorageView sv_wrong_type = storage_wrong_type.toStorageView();
+  StorageView sv_wrong_dims1 = storage_wrong_dims1.toStorageView();
+  StorageView sv_wrong_dims2 = storage_wrong_dims2.toStorageView();
+
+  Savepoint savepoint("savepoint");
+
+  SerializerImpl s(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+  s.updateMetaData();
+
+  // Regsister field
+  s.registerField("field", sv.type(), sv.dims());
+
+  // Field is not registered -> Exception
+  ASSERT_THROW(s.write("field-not-registered", savepoint, sv), Exception);
+
+  // Field has wrong type -> Exception
+  ASSERT_THROW(s.write("field", savepoint, sv_wrong_type), Exception);
+
+  // Field has wrong dimensions -> Exception
+  ASSERT_THROW(s.write("field", savepoint, sv_wrong_dims1), Exception);
+  ASSERT_THROW(s.write("field", savepoint, sv_wrong_dims2), Exception);
+
+  // Field has does already exist at savepoint -> Exception
+  ASSERT_TRUE(s.registerSavepoint(savepoint));
+  ASSERT_TRUE(s.savepointVector().addField(savepoint, FieldID{"field", 0}));
+  ASSERT_THROW(s.write("field", savepoint, sv), Exception);
+
+  {
+    // Wrong mode -> Exception
+    SerializerImpl s_read(OpenModeKind::Read, directory->path().string(), "BinaryArchive");
+    ASSERT_THROW(s_read.write("field", savepoint, sv), Exception);
+  }
+}
+
+TEST_F(SerializerImplUtilityTest, ReadExceptions) {
+  Storage<double> storage(Storage<double>::ColMajor, {5, 1, 1});
+  StorageView sv = storage.toStorageView();
+
+  {
+    SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+    s_write.registerField("field", sv.type(), sv.dims());
+    s_write.updateMetaData();
+  }
+
+  SerializerImpl s(OpenModeKind::Read, directory->path().string(), "BinaryArchive");
+  Savepoint savepoint("savepoint");
+
+  // Wrong mode -> Exception
+  ASSERT_THROW(s.write("field", savepoint, sv), Exception);
+
+  // Savepoint does no exist -> Exception
+  ASSERT_THROW(s.read("field", savepoint, sv), Exception);
+}
+
+//===------------------------------------------------------------------------------------------===//
+//     JSON Serialization
+//===------------------------------------------------------------------------------------------===//
+
 TEST_F(SerializerImplUtilityTest, JSONSuccess) {
   // -----------------------------------------------------------------------------------------------
   // Writing
@@ -390,6 +455,9 @@ TEST_F(SerializerImplUtilityTest, toString) {
 //     Read/Write tests
 //===------------------------------------------------------------------------------------------===//
 
+namespace {
+
+template <class T>
 class SerializerImplReadWriteTest : public testing::Test {
 public:
   std::shared_ptr<Directory> directory;
@@ -404,12 +472,18 @@ protected:
   virtual void TearDown() override { directory.reset(); }
 };
 
-TEST_F(SerializerImplReadWriteTest, WriteAndRead) {
+using TestTypes = testing::Types<double, float, int, std::int64_t>;
+
+} // anonymous namespace
+
+TYPED_TEST_CASE(SerializerImplReadWriteTest, TestTypes);
+
+TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
 
   // -----------------------------------------------------------------------------------------------
   // Preparation
   // -----------------------------------------------------------------------------------------------
-  using Storage = Storage<double>;
+  using Storage = Storage<TypeParam>;
 
   // Prepare input data
   Storage u_0_input(Storage::RowMajor, {5, 6, 7}, {{2, 2}, {4, 2}, {4, 5}}, Storage::random);
@@ -418,24 +492,119 @@ TEST_F(SerializerImplReadWriteTest, WriteAndRead) {
   Storage v_0_input(Storage::ColMajor, {5, 1, 1}, Storage::random);
   Storage v_1_input(Storage::ColMajor, {5, 1, 1}, Storage::random);
 
+  Storage field_6d_input(Storage::RowMajor, {2, 2, 1, 2, 1, 2}, Storage::random);
+
   // Prepare output
   Storage u_0_output(Storage::RowMajor, {5, 6, 7});
   Storage u_1_output(Storage::RowMajor, {5, 6, 7});
 
   Storage v_0_output(Storage::RowMajor, {5, 1, 1});
   Storage v_1_output(Storage::RowMajor, {5, 1, 1});
+  
+  Storage field_6d_output(Storage::RowMajor, {2, 2, 1, 2, 1, 2});
+  
+  // Savepoints
+  Savepoint savepoint1_t_1("savepoint1");
+  savepoint1_t_1.addMetaInfo("time", int(1));
+  Savepoint savepoint1_t_2("savepoint1");
+  savepoint1_t_2.addMetaInfo("time", int(2));
+  Savepoint savepoint_u_1("savepoint_u_1");
+  Savepoint savepoint_v_1("savepoint_v_1");
+  Savepoint savepoint_6d("savepoint_6d");
 
   // -----------------------------------------------------------------------------------------------
-  // Writing
+  // Writing / Appending
   // -----------------------------------------------------------------------------------------------
   //
   //  Savepoint     | MetaData   | Fields
   //  -------------------------------------
   //  savepoint1    | time: 1    | u_0, v_0
   //  savepoint1    | time: 2    | u_1, v_1
-  //  savepoint_u_1 | -          | v_1
-  //  savepoint_v_1 | -          | u_1
+  //  savepoint_u_1 | -          | u_1
+  //  savepoint_v_1 | -          | v_1
+  //  savepoint_6d  | -          | field_6d
   //
+  {
+    SerializerImpl s_write(OpenModeKind::Write, this->directory->path().string(), "BinaryArchive");
 
-  { SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "BinaryArchive"); }
+    // StorageViews
+    auto sv_u_0 = u_0_input.toStorageView();
+    auto sv_u_1 = u_1_input.toStorageView();
+    auto sv_v_0 = v_0_input.toStorageView();
+    auto sv_v_1 = v_1_input.toStorageView();
+
+    // Register fields
+    s_write.registerField("u", sv_u_0.type(), sv_u_0.dims());
+    s_write.registerField("v", sv_v_0.type(), sv_v_0.dims());
+
+    // Writing (implicitly register the savepoints)
+    s_write.write("u", savepoint1_t_1, sv_u_0);
+    s_write.write("v", savepoint1_t_1, sv_v_0);
+    s_write.write("u", savepoint1_t_2, sv_u_1);
+    s_write.write("v", savepoint1_t_2, sv_v_1);
+    s_write.write("u", savepoint_u_1, sv_u_1);
+    s_write.write("v", savepoint_v_1, sv_v_1);
+  }
+
+  // Reopen serializer and append a data field
+  {
+    SerializerImpl s_app(OpenModeKind::Append, this->directory->path().string(), "BinaryArchive");
+
+    auto sv_field_6d = field_6d_input.toStorageView();
+    s_app.registerField("field_6d", sv_field_6d.type(), sv_field_6d.dims());
+
+    // Writing (implicitly register the savepoint)
+    s_app.write("field_6d", savepoint_6d, sv_field_6d);
+  }
+
+  // -----------------------------------------------------------------------------------------------
+  // Reading
+  // -----------------------------------------------------------------------------------------------
+  {
+    SerializerImpl s_read(OpenModeKind::Read, this->directory->path().string(), "BinaryArchive");
+
+    // StorageViews
+    auto sv_u_0 = u_0_output.toStorageView();
+    auto sv_u_1 = u_1_output.toStorageView();
+    auto sv_v_0 = v_0_output.toStorageView();
+    auto sv_v_1 = v_1_output.toStorageView();
+    auto sv_field_6d = field_6d_output.toStorageView();
+    
+    // Check fields exists
+    ASSERT_TRUE(s_read.hasField("u"));
+    ASSERT_EQ(s_read.getFieldMetaInfoOf("u").dims(), (std::vector<int>{5, 6, 7}));
+
+    ASSERT_TRUE(s_read.hasField("v"));
+    ASSERT_EQ(s_read.getFieldMetaInfoOf("v").dims(), (std::vector<int>{5, 1, 1}));
+
+    ASSERT_TRUE(s_read.hasField("field_6d"));
+    ASSERT_EQ(s_read.getFieldMetaInfoOf("field_6d").dims(), (std::vector<int>{2, 2, 1, 2, 1, 2}));
+
+    // Check order of savepoints is correct
+    ASSERT_EQ(s_read.savepoints().size(), 5);
+    EXPECT_EQ(s_read.savepoints(),
+              (std::vector<Savepoint>{savepoint1_t_1, savepoint1_t_2, savepoint_u_1, savepoint_v_1,
+                                      savepoint_6d}));
+    // Read
+    s_read.read("u", savepoint1_t_1, sv_u_0);
+    ASSERT_TRUE(Storage::verify(u_0_output, u_0_input));
+
+    s_read.read("v", savepoint1_t_1, sv_v_0);
+    ASSERT_TRUE(Storage::verify(v_0_output, v_0_input));
+
+    s_read.read("u", savepoint1_t_2, sv_u_1);
+    ASSERT_TRUE(Storage::verify(u_1_output, u_1_input));
+
+    s_read.read("v", savepoint1_t_2, sv_v_1);
+    ASSERT_TRUE(Storage::verify(v_1_output, v_1_input));
+
+    s_read.read("u", savepoint_u_1, sv_u_1);
+    ASSERT_TRUE(Storage::verify(u_1_output, u_1_input));
+
+    s_read.read("v", savepoint_v_1, sv_v_1);
+    ASSERT_TRUE(Storage::verify(v_1_output, v_1_input));
+    
+    s_read.read("field_6d", savepoint_6d, sv_field_6d);
+    ASSERT_TRUE(Storage::verify(field_6d_output, field_6d_input));
+  }
 }

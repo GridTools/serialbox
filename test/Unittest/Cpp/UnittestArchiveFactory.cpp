@@ -18,6 +18,7 @@
 
 namespace serialbox {
 
+// Dummy archive to register
 class DummyArchive : public Archive {
 public:
   static const std::string Name;
@@ -51,6 +52,7 @@ private:
 const std::string DummyArchive::Name = "DummyArchive";
 
 SERIALBOX_REGISTER_ARCHIVE(DummyArchive, DummyArchive::create)
+
 }
 
 using namespace serialbox;

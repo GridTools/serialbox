@@ -29,8 +29,6 @@ const int BinaryArchive::Version = 0;
 BinaryArchive::~BinaryArchive() {}
 
 void BinaryArchive::readMetaDataFromJson() {
-
-  boost::filesystem::path filename = directory_ / Archive::ArchiveMetaDataFile;
   LOG(INFO) << "Reading MetaData for BinaryArchive ... ";
 
   fieldTable_.clear();
@@ -40,6 +38,8 @@ void BinaryArchive::readMetaDataFromJson() {
   if(mode_ == OpenModeKind::Write)
     return;
 
+  boost::filesystem::path filename = directory_ / Archive::ArchiveMetaDataFile;
+  
   // Check if metaData file exists
   if(!boost::filesystem::exists(filename)) {
     if(mode_ == OpenModeKind::Append)
@@ -85,7 +85,7 @@ void BinaryArchive::writeMetaDataToJson() {
     return;
 
   boost::filesystem::path filename = directory_ / Archive::ArchiveMetaDataFile;
-  LOG(INFO) << "Update MetaData for BinaryArchive";
+  LOG(INFO) << "Update MetaData of BinaryArchive";
 
   json_.clear();
 

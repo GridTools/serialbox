@@ -45,22 +45,23 @@ TEST(SavepointVectorTest, Construction) {
     SavepointVector s;
 
     // Insert savepoint into empty vector
-    ASSERT_TRUE(s.insert(savepoint1));
+    ASSERT_EQ(s.insert(savepoint1), 0);
+    ASSERT_EQ(s[0], savepoint1);
     EXPECT_TRUE(s.exists(savepoint1));
     EXPECT_EQ(s.size(), 1);
 
     // Insert savepoint with already existing name but different meta-data
-    ASSERT_TRUE(s.insert(savepoint2));
+    ASSERT_EQ(s.insert(savepoint2), 1);
     EXPECT_TRUE(s.exists(savepoint2));
     EXPECT_EQ(s.size(), 2);
 
     // Insert savepoint with already existing name and meta-data -> Fail
-    ASSERT_FALSE(s.insert(savepoint1));
+    ASSERT_EQ(s.insert(savepoint1), -1);
     EXPECT_TRUE(s.exists(savepoint1));
     EXPECT_EQ(s.size(), 2);
 
     // Insert savepoint with different name
-    ASSERT_TRUE(s.insert(savepoint3));
+    ASSERT_EQ(s.insert(savepoint3), 2);
     EXPECT_TRUE(s.exists(savepoint3));
     EXPECT_EQ(s.size(), 3);
     
@@ -75,11 +76,13 @@ TEST(SavepointVectorTest, Construction) {
   //------------------------------------------------------------------------------------------------
   {
     SavepointVector s;
-    ASSERT_TRUE(s.insert(savepoint1));
-    ASSERT_TRUE(s.insert(savepoint2));
+    ASSERT_EQ(s.insert(savepoint1), 0);
+    ASSERT_EQ(s.insert(savepoint2), 1);
 
     // Add field u (id = 0) to savepoint1
     ASSERT_TRUE(s.addField(savepoint1, FieldID{"u", 0}));
+    ASSERT_TRUE(s.hasField(savepoint1, "u"));    
+    ASSERT_TRUE(s.hasField(0, "u"));        
     ASSERT_EQ(s.fieldsOf(savepoint1).size(), 1);
     EXPECT_EQ(s.fieldsOf(savepoint1).find("u")->second, 0);
 
@@ -99,10 +102,11 @@ TEST(SavepointVectorTest, Construction) {
     ASSERT_THROW(s.fieldsOf(savepoint3), Exception);
     EXPECT_THROW(s.getFieldID(savepoint3, "u"), Exception);
     
-    // Add field via iterator
+    // Add field via index
     int idx = s.find(savepoint2);
     ASSERT_NE(idx, -1);
     ASSERT_TRUE(s.addField(idx, FieldID{"v", 1}));
+    ASSERT_TRUE(s.hasField(idx, "v"));        
     EXPECT_EQ(s.getFieldID(idx, "v"), (FieldID{"v", 1}));
 
     ASSERT_FALSE(s.addField(idx, FieldID{"v", 1}));
@@ -122,8 +126,8 @@ TEST(SavepointVectorTest, Construction) {
   //------------------------------------------------------------------------------------------------
   {
     SavepointVector s1;
-    ASSERT_TRUE(s1.insert(savepoint1));
-    ASSERT_TRUE(s1.insert(savepoint2));
+    ASSERT_EQ(s1.insert(savepoint1), 0);
+    ASSERT_EQ(s1.insert(savepoint2), 1);
 
     SavepointVector s2(s1);
     EXPECT_TRUE(s2.exists(savepoint1));
@@ -137,8 +141,8 @@ TEST(SavepointVectorTest, Construction) {
   //------------------------------------------------------------------------------------------------
   {
     SavepointVector s1;
-    ASSERT_TRUE(s1.insert(savepoint1));
-    ASSERT_TRUE(s1.insert(savepoint2));
+    ASSERT_EQ(s1.insert(savepoint1), 0);
+    ASSERT_EQ(s1.insert(savepoint2), 1);
 
     SavepointVector s2(std::move(s1));
     EXPECT_TRUE(s2.exists(savepoint1));
@@ -150,8 +154,8 @@ TEST(SavepointVectorTest, Construction) {
   //------------------------------------------------------------------------------------------------
   {
     SavepointVector s1;
-    ASSERT_TRUE(s1.insert(savepoint1));
-    ASSERT_TRUE(s1.insert(savepoint2));
+    ASSERT_EQ(s1.insert(savepoint1), 0);
+    ASSERT_EQ(s1.insert(savepoint2), 1);
 
     SavepointVector s2;
     s2 = s1;
@@ -166,9 +170,9 @@ TEST(SavepointVectorTest, Construction) {
   //------------------------------------------------------------------------------------------------
   {
     SavepointVector s1;
-    ASSERT_TRUE(s1.insert(savepoint1));
-    ASSERT_TRUE(s1.insert(savepoint2));
-
+    ASSERT_EQ(s1.insert(savepoint1), 0);
+    ASSERT_EQ(s1.insert(savepoint2), 1);
+    
     SavepointVector s2;
     s2 = std::move(s1);
     EXPECT_TRUE(s2.exists(savepoint1));
@@ -180,11 +184,11 @@ TEST(SavepointVectorTest, Construction) {
   //------------------------------------------------------------------------------------------------
   {
     SavepointVector s1;
-    ASSERT_TRUE(s1.insert(savepoint1));
-    ASSERT_TRUE(s1.insert(savepoint2));
+    ASSERT_EQ(s1.insert(savepoint1), 0);
+    ASSERT_EQ(s1.insert(savepoint2), 1);
 
     SavepointVector s2;
-    ASSERT_TRUE(s2.insert(savepoint3));
+    ASSERT_EQ(s2.insert(savepoint3), 0);
 
     s1.swap(s2);
 
@@ -204,9 +208,9 @@ TEST(SavepointVectorTest, toJSON) {
   ASSERT_NO_THROW(savepoint2.addMetaInfo("key1", "s2"));
 
   SavepointVector s;
-  ASSERT_TRUE(s.insert(savepoint1));
-  ASSERT_TRUE(s.insert(savepoint2));
-  ASSERT_TRUE(s.insert(savepoint3));
+  ASSERT_EQ(s.insert(savepoint1), 0);
+  ASSERT_EQ(s.insert(savepoint2), 1);
+  ASSERT_EQ(s.insert(savepoint3), 2);
 
   ASSERT_TRUE(s.addField(savepoint1, FieldID{"u", 0}));
   ASSERT_TRUE(s.addField(savepoint1, FieldID{"v", 0}));
@@ -377,7 +381,7 @@ TEST(SavepointVectorTest, toString) {
   
   std::stringstream ss;
   SavepointVector s;
-  ASSERT_TRUE(s.insert(savepoint1));
+  ASSERT_NE(s.insert(savepoint1), -1);
   ASSERT_TRUE(s.addField(savepoint1, FieldID{"u", 0}));
 
   ss << s;

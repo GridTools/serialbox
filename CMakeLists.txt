@@ -214,7 +214,7 @@ else()
 endif()
 
 #---------------------------------------- Boost ----------------------------------------------------
-find_package(Boost 1.54 REQUIRED system chrono filesystem)
+find_package(Boost 1.54 REQUIRED system chrono filesystem) # TODO: we don't always need all of them
 
 if(NOT(${Boost_FOUND}))
   message(FATAL_ERROR "Boost not found or insufficient version.")

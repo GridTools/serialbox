@@ -82,6 +82,9 @@ public:
   /// \brief Get raw data pointer
   Byte* originPtr() noexcept { return originPtr_; }
   const Byte* originPtr() const noexcept { return originPtr_; }
+  
+  /// \brief Get type
+  TypeID type() const noexcept { return type_; }
 
   /// \brief Get bytes per element
   int bytesPerElement() const noexcept { return TypeUtil::sizeOf(type_); }

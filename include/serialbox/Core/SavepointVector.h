@@ -65,12 +65,12 @@ public:
   bool exists(const Savepoint& savepoint) const noexcept;
 
   /// \brief Find savepoint
-  /// \return Return index to savepoint in savepoint-vector or -1 if savepoint does not exist
+  /// \return Index of ´savepoint´ in the savepoint-vector or -1 if savepoint does not exist
   int find(const Savepoint& savepoint) const noexcept;
 
   /// \brief Insert savepoint in savepoint vector
-  /// \return True iff the savepoint was successfully inserted
-  bool insert(const Savepoint& savepoint) noexcept;
+  /// \return Index of the newly inserted savepoint or -1 if savepoint already exists
+  int insert(const Savepoint& savepoint) noexcept;
 
   /// \brief Add a field to the savepoint
   /// \return True iff the field was successfully addeed to the savepoint
@@ -79,6 +79,14 @@ public:
   /// \brief Add a field to the savepoint given a valid savepoint index ´idx´
   /// \return True iff the field was successfully addeed to the savepoint
   bool addField(int idx, const FieldID& fieldID) noexcept;
+  
+  /// \brief Check if savepoint has field ´field´
+  /// \return True iff the field ´field´ exists at savepoint
+  bool hasField(const Savepoint& savepoint, const std::string& field) noexcept;
+
+  /// \brief Check if savepoint has field ´field´ given a valid savepoint index ´idx´
+  /// \return True iff the field ´field´ exists at savepoint
+  bool hasField(int idx, const std::string& field) noexcept;
 
   /// \brief Get the FielID of field ´field´ at savepoint ´savepoint´
   ///
@@ -119,6 +127,10 @@ public:
   iterator end() noexcept { return savepoints_.end(); }
   const_iterator end() const noexcept { return savepoints_.end(); }
 
+  /// \brief Get savepoint
+  Savepoint& operator[](int idx) noexcept { return savepoints_[idx]; }
+  const Savepoint& operator[](int idx) const noexcept { return savepoints_[idx]; }
+  
   /// \brief Access the savepoints
   const std::vector<Savepoint>& savepoints() const noexcept { return savepoints_; }
 

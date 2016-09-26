@@ -47,10 +47,13 @@ std::string Savepoint::toString() const {
 }
 
 std::ostream& operator<<(std::ostream& stream, const Savepoint& s) {
-  stream << s.name_ << " [ ";
-  for(auto it = s.metaInfo_.begin(), end = s.metaInfo_.end(); it != end; ++it)
-    stream << it->first << " = " << it->second.toString() << " ";
-  stream << "]";
+  stream << s.name_;
+  if(!s.metaInfo().empty()) {
+    stream << " [ ";
+    for(auto it = s.metaInfo_.begin(), end = s.metaInfo_.end(); it != end; ++it)
+      stream << it->first << " = " << it->second.toString() << " ";
+    stream << "]";
+  }
   return stream;
 }
 
