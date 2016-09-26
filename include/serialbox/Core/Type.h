@@ -57,7 +57,7 @@ enum class TypeID : std::uint8_t { Invalid = 0, Boolean, Int32, Int64, Float32, 
 /// \see TypeID
 template <class T>
 struct isSupported {
-  
+
   /// \brief Set of supported types
   using SupportedTypesSet = boost::mpl::set<bool, int, std::int64_t, float, double, std::string>;
 
@@ -70,7 +70,7 @@ std::ostream& operator<<(std::ostream& stream, const TypeID& t);
 
 /// \brief Utilites for TypeID
 struct TypeUtil {
-  
+
   /// \brief Convert to string
   static std::string toString(TypeID id);
 
@@ -150,6 +150,52 @@ struct ToType<TypeID::Float64> {
 template <>
 struct ToType<TypeID::String> {
   using type = std::string;
+};
+
+//===------------------------------------------------------------------------------------------===//
+//     Meta-functions
+//===------------------------------------------------------------------------------------------===//
+
+namespace internal {
+
+template <typename UnqualifiedType, bool IsConst, bool IsVolatile>
+struct cv_selector;
+
+template <typename UnqualifiedType>
+struct cv_selector<UnqualifiedType, false, false> {
+  using type = UnqualifiedType;
+};
+
+template <typename UnqualifiedType>
+struct cv_selector<UnqualifiedType, false, true> {
+  using type = volatile UnqualifiedType;
+};
+
+template <typename UnqualifiedType>
+struct cv_selector<UnqualifiedType, true, false> {
+  using type = const UnqualifiedType;
+};
+
+template <typename UnqualifiedType>
+struct cv_selector<UnqualifiedType, true, true> {
+  using type = const volatile UnqualifiedType;
+};
+}
+
+/// \brief Utility for constructing identically cv-qualified types
+///
+/// \b Example
+/// \code
+///   static_assert(std::is_same<match_cv_qualifier<const int, float>::type, const float>::value);
+/// \endcode
+template <typename QualifiedType, typename UnqualifiedType,
+          bool IsConst = std::is_const<QualifiedType>::value,
+          bool IsVolatile = std::is_volatile<QualifiedType>::value>
+class match_cv_qualifier {
+  using match = internal::cv_selector<UnqualifiedType, IsConst, IsVolatile>;
+
+public:
+  using type = typename match::type;
 };
 
 } // namespace serialbox

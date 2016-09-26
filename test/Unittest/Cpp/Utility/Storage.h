@@ -216,8 +216,8 @@ struct Storage {
     const StorageView SVstorage = storage.toStorageView();
     const StorageView SVrefrence = refrence.toStorageView();
 
-    StorageViewIterator itStorage = SVstorage.begin(), endStorage = SVstorage.end();
-    StorageViewIterator itRefrence = SVrefrence.begin(), endRefrence = SVrefrence.end();
+    ConstStorageViewIterator itStorage = SVstorage.begin(), endStorage = SVstorage.end();
+    ConstStorageViewIterator itRefrence = SVrefrence.begin(), endRefrence = SVrefrence.end();
 
     while(itStorage != endStorage && itRefrence != endRefrence) {
 

@@ -17,8 +17,8 @@
 #include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/Type.h"
 #include <boost/algorithm/string.hpp>
-#include <gtest/gtest.h>
 #include <cstring>
+#include <gtest/gtest.h>
 #include <numeric>
 
 using namespace serialbox;
@@ -164,7 +164,8 @@ TYPED_TEST(StorageViewTest, Construction) {
 
   // Constructor
   auto sv_1d = this->storage_1d->toStorageView();
-  EXPECT_EQ(static_cast<void*>(this->storage_1d->originPtr()), static_cast<void*>(sv_1d.originPtr()));
+  EXPECT_EQ(static_cast<void*>(this->storage_1d->originPtr()),
+            static_cast<void*>(sv_1d.originPtr()));
   EXPECT_EQ(this->storage_1d->strides(), sv_1d.strides());
   EXPECT_EQ(this->storage_1d->dims(), sv_1d.dims());
   EXPECT_EQ(sv_1d.bytesPerElement(), sizeof(typename Storage<TypeParam>::value_type));
@@ -187,7 +188,7 @@ TYPED_TEST(StorageViewTest, Construction) {
   sv_1d.swap(sv_2d_col_major);
   EXPECT_EQ(sv_1d, copy_sv_2d);
   EXPECT_EQ(sv_2d_col_major, copy_sv_1d);
-  
+
   swap(sv_1d, sv_2d_col_major);
   EXPECT_EQ(sv_1d, copy_sv_1d);
   EXPECT_EQ(sv_2d_col_major, copy_sv_2d);
@@ -288,97 +289,90 @@ TYPED_TEST(StorageViewTest, IteratorConstruction) {
   EXPECT_EQ(it_sv_2d, copy_it_sv_1d);
 }
 
-TYPED_TEST(StorageViewTest, IteratorCopy) {
+TYPED_TEST(StorageViewTest, IteratorAdvance) {
   int dim1 = this->dim1, dim2 = this->dim2, dim3 = this->dim3, dim4 = this->dim4, dim5 = this->dim5;
 
-  // ----------------------------------------------------------------------------------------------
-  // The idea of this test is to copy a contiguous piece of data into the storages using the
-  // StorageView and StorageViewIterator interfaces.
-  //
-  // This will make sure the operator++ as well as end() of StoraViewIterator are working correclty.
-  // ----------------------------------------------------------------------------------------------
-
-  // Setup data (5D)
-  std::vector<TypeParam> data(dim1 * dim2 * dim3 * dim4 * dim5);
-  std::iota(data.begin(), data.end(), 1);
-  char* dataPtr;
-  const int bytesPerElement = sizeof(TypeParam);
-
-#define COPY_INTO_STORAGE(name)                                                                    \
-  auto sv_##name = this->name->toStorageView();                                                    \
-  dataPtr = reinterpret_cast<char*>(data.data());                                                  \
-  for(StorageViewIterator it = sv_##name.begin(), end = sv_##name.end(); it != end;                               \
-      ++it, dataPtr += bytesPerElement)                                                            \
-    std::memcpy(it.ptr(), dataPtr, bytesPerElement);
-
-  // --- 1D ---
-
-  COPY_INTO_STORAGE(storage_1d);
-  COPY_INTO_STORAGE(storage_1d_padded);
-
-  // Check data was copied correctly
-  for(int i = 0; i < dim1; ++i) {
-    ASSERT_EQ(data[i], this->storage_1d->at(i));
-    ASSERT_EQ(data[i], this->storage_1d_padded->at(i));
+// -------------------------------------------------------------------------------------------------
+// 1D
+// -------------------------------------------------------------------------------------------------
+#define CHECK_1D(name)                                                                             \
+  {                                                                                                \
+    auto sv = this->name->toStorageView();                                                         \
+    auto it = sv.begin();                                                                          \
+    for(int i = 0; i < dim1; ++i, ++it)                                                            \
+      ASSERT_EQ(it.template as<TypeParam>(), this->name->at(i));                                   \
   }
 
-  // --- 2D ---
+  CHECK_1D(storage_1d);
+  CHECK_1D(storage_1d_padded);
 
-  COPY_INTO_STORAGE(storage_2d_col_major);
-  COPY_INTO_STORAGE(storage_2d_row_major);
-  COPY_INTO_STORAGE(storage_2d_col_major_padded);
-  COPY_INTO_STORAGE(storage_2d_row_major_padded);
+#undef CHECK_1D
 
-  // Check data was copied correctly
-  for(int j = 0; j < dim2; ++j)
-    for(int i = 0; i < dim1; ++i) {
-      TypeParam val = data[j * dim1 + i];
-      ASSERT_EQ(val, this->storage_2d_col_major->at(i, j));
-      ASSERT_EQ(val, this->storage_2d_row_major->at(i, j));
-      ASSERT_EQ(val, this->storage_2d_col_major_padded->at(i, j));
-      ASSERT_EQ(val, this->storage_2d_row_major_padded->at(i, j));
-    }
+// -------------------------------------------------------------------------------------------------
+// 2D
+// -------------------------------------------------------------------------------------------------
+#define CHECK_2D(name)                                                                             \
+  {                                                                                                \
+    auto sv = this->name->toStorageView();                                                         \
+    auto it = sv.begin();                                                                          \
+    for(int j = 0; j < dim2; ++j)                                                                  \
+      for(int i = 0; i < dim1; ++i, ++it)                                                          \
+        ASSERT_EQ(it.template as<TypeParam>(), this->name->at(i, j));                              \
+  }
 
-  // --- 3D ---
-  COPY_INTO_STORAGE(storage_3d_col_major);
-  COPY_INTO_STORAGE(storage_3d_row_major);
-  COPY_INTO_STORAGE(storage_3d_col_major_padded);
-  COPY_INTO_STORAGE(storage_3d_row_major_padded);
+  CHECK_2D(storage_2d_col_major);
+  CHECK_2D(storage_2d_row_major);
+  CHECK_2D(storage_2d_col_major_padded);
+  CHECK_2D(storage_2d_row_major_padded);
 
-  // Check data was copied correctly
-  for(int k = 0; k < dim3; ++k)
-    for(int j = 0; j < dim2; ++j)
-      for(int i = 0; i < dim1; ++i) {
-        TypeParam val = data[k * dim1 * dim2 + j * dim1 + i];
-        ASSERT_EQ(val, this->storage_3d_col_major->at(i, j, k));
-        ASSERT_EQ(val, this->storage_3d_row_major->at(i, j, k));
-        ASSERT_EQ(val, this->storage_3d_col_major_padded->at(i, j, k));
-        ASSERT_EQ(val, this->storage_3d_row_major_padded->at(i, j, k));
-      }
+#undef CHECK_2D
 
-  // --- 5D ---
-  COPY_INTO_STORAGE(storage_5d_col_major_padded);
-  COPY_INTO_STORAGE(storage_5d_row_major_padded);
+// -------------------------------------------------------------------------------------------------
+// 3D
+// -------------------------------------------------------------------------------------------------
+#define CHECK_3D(name)                                                                             \
+  {                                                                                                \
+    auto sv = this->name->toStorageView();                                                         \
+    auto it = sv.begin();                                                                          \
+    for(int k = 0; k < dim3; ++k)                                                                  \
+      for(int j = 0; j < dim2; ++j)                                                                \
+        for(int i = 0; i < dim1; ++i, ++it)                                                        \
+          ASSERT_EQ(it.template as<TypeParam>(), this->name->at(i, j, k));                         \
+  }
 
-  // Check data was copied correctly
-  for(int m = 0; m < dim5; ++m)
-    for(int l = 0; l < dim4; ++l)
-      for(int k = 0; k < dim3; ++k)
-        for(int j = 0; j < dim2; ++j)
-          for(int i = 0; i < dim1; ++i) {
-            TypeParam val = data[m * dim1 * dim2 * dim3 * dim4 + l * dim1 * dim2 * dim3 +
-                                 k * dim1 * dim2 + j * dim1 + i];
-            ASSERT_EQ(val, this->storage_5d_col_major_padded->at(i, j, k, l, m));
-            ASSERT_EQ(val, this->storage_5d_row_major_padded->at(i, j, k, l, m));
-          }
+  CHECK_3D(storage_3d_col_major);
+  CHECK_3D(storage_3d_row_major);
+  CHECK_3D(storage_3d_col_major_padded);
+  CHECK_3D(storage_3d_row_major_padded);
+
+#undef CHECK_3D
+
+// -------------------------------------------------------------------------------------------------
+// 5D
+// -------------------------------------------------------------------------------------------------
+#define CHECK_5D(name)                                                                             \
+  {                                                                                                \
+    auto sv = this->name->toStorageView();                                                         \
+    auto it = sv.begin();                                                                          \
+    for(int m = 0; m < dim5; ++m)                                                                  \
+      for(int l = 0; l < dim4; ++l)                                                                \
+        for(int k = 0; k < dim3; ++k)                                                              \
+          for(int j = 0; j < dim2; ++j)                                                            \
+            for(int i = 0; i < dim1; ++i, ++it)                                                    \
+              ASSERT_EQ(it.template as<TypeParam>(), this->name->at(i, j, k, l, m));               \
+  }
+
+  CHECK_5D(storage_5d_col_major_padded);
+  CHECK_5D(storage_5d_row_major_padded);
+#undef CHECK_5D
 }
 
 TYPED_TEST(StorageViewTest, isMemCopyable) {
   // 1D storages are always memcopyable
   EXPECT_TRUE(this->storage_1d->toStorageView().isMemCopyable());
   EXPECT_TRUE(this->storage_1d_padded->toStorageView().isMemCopyable());
-  
-  // Multi dimensional storages are only memcopyable if they are ColMajor and have no padding 
+
+  // Multi dimensional storages are only memcopyable if they are ColMajor and have no padding
   EXPECT_TRUE(this->storage_2d_col_major->toStorageView().isMemCopyable());
   EXPECT_FALSE(this->storage_2d_col_major_padded->toStorageView().isMemCopyable());
   EXPECT_FALSE(this->storage_2d_row_major->toStorageView().isMemCopyable());
@@ -401,11 +395,13 @@ TYPED_TEST(StorageViewTest, toString) {
 
   // StorageViewIterator
   ss << sv_1d.begin();
+  std::cout << sv_1d.begin() << std::endl;
   EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "StorageViewIterator"));
   EXPECT_NE(ss.str().find("originPtr"), std::string::npos);
-  EXPECT_NE(ss.str().find("curPtr"), std::string::npos);
   EXPECT_NE(ss.str().find("index"), std::string::npos);
   EXPECT_NE(ss.str().find("end"), std::string::npos);
+  EXPECT_NE(ss.str().find("curPtr"), std::string::npos);
+  EXPECT_NE(ss.str().find("dims"), std::string::npos);
+  EXPECT_NE(ss.str().find("strides"), std::string::npos);
   EXPECT_NE(ss.str().find("bytesPerElement"), std::string::npos);
-  EXPECT_NE(ss.str().find("storageView"), std::string::npos);
 }

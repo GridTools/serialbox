@@ -20,7 +20,6 @@ set(SOURCES
   SavepointVector.cpp
   SerializerImpl.cpp
   StorageView.cpp
-  StorageViewIterator.cpp
   SHA256.cpp
   Type.cpp
   Unreachable.cpp

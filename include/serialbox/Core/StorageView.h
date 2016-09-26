@@ -48,25 +48,33 @@ public:
   /// @{
 
   /// \brief Iterator to the beginning of the data
-  StorageViewIterator begin() noexcept { return StorageViewIterator(this, true); }
-  StorageViewIterator begin() const noexcept { return StorageViewIterator(this, true); }
+  StorageViewIterator begin() noexcept {
+    return StorageViewIterator(originPtr_, bytesPerElement(), dims_, strides_, true);
+  }
+  ConstStorageViewIterator begin() const noexcept {
+    return ConstStorageViewIterator(originPtr_, bytesPerElement(), dims_, strides_, true);
+  }
 
   /// \brief Iterator to the end of the data
-  StorageViewIterator end() noexcept { return StorageViewIterator(this, false); }
-  StorageViewIterator end() const noexcept { return StorageViewIterator(this, false); }
+  StorageViewIterator end() noexcept {
+    return StorageViewIterator(originPtr_, bytesPerElement(), dims_, strides_, false);
+  }
+  ConstStorageViewIterator end() const noexcept {
+    return ConstStorageViewIterator(originPtr_, bytesPerElement(), dims_, strides_, false);
+  }
 
   /// @}
   /// \name Getter
   /// @{
 
-  /// \brief Get data pointer as type T of the origin of the data
+  /// \brief Get data pointer as type ´T´ of the origin of the data
   template <class T>
-  T* originPtr() noexcept {
+  T* originPtrAs() noexcept {
     CHECK(ToTypeID<T>::value == type_);
     return static_cast<T>(originPtr_);
   }
   template <class T>
-  const T* originPtr() const noexcept {
+  const T* originPtrAs() const noexcept {
     CHECK(ToTypeID<T>::value == originPtr_);
     return static_cast<T>(originPtr_);
   }

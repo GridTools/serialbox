@@ -54,3 +54,8 @@ TEST(TypeTest, ToType) {
   testing::StaticAssertTypeEq<ToType<TypeID::Float32>::type, float>();
   testing::StaticAssertTypeEq<ToType<TypeID::Float64>::type, double>();
 }
+
+TEST(TypeTest, MatchCVQualifier) {
+  testing::StaticAssertTypeEq<match_cv_qualifier<const int, float>::type, const float>();
+  testing::StaticAssertTypeEq<match_cv_qualifier<int, float>::type, float>();
+}
