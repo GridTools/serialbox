@@ -25,6 +25,7 @@ using namespace unittest;
 
 namespace {
 
+template <class T>
 class UpgradeArchiveTest : public testing::Test {
 public:
   std::shared_ptr<Directory> directory;
@@ -39,14 +40,18 @@ protected:
   virtual void TearDown() override { directory.reset(); }
 };
 
+using TestTypes = testing::Types<double, float, int>;
+
 } // anonymous namespace
 
-TEST_F(UpgradeArchiveTest, upgrade) {
+TYPED_TEST_CASE(UpgradeArchiveTest, TestTypes);
+
+TYPED_TEST(UpgradeArchiveTest, upgrade) {
 
   // -----------------------------------------------------------------------------------------------
   // Preparation
   // -----------------------------------------------------------------------------------------------
-  using Storage = Storage<double>;
+  using Storage = Storage<TypeParam>;
 
   // Prepare input data
   Storage u_0_input(Storage::RowMajor, {5, 6, 7}, {{2, 2}, {4, 2}, {4, 5}}, Storage::random);
@@ -66,21 +71,22 @@ TEST_F(UpgradeArchiveTest, upgrade) {
   // Write (with old serialbox)
   // -----------------------------------------------------------------------------------------------
   //
-  //  Savepoint     | MetaData            | Fields
-  //  ----------------------------------------------
-  //  savepoint1    | time: 1, dt: 5.1    | u_0, v_0
-  //  savepoint1    | time: 2, dt: 9.1    | u_1, v_1
-  //  savepoint_u_1 | -                   | u_1
-  //  savepoint_v_1 | -                   | v_1
+  //  Savepoint     | MetaData                               | Fields
+  //  -----------------------------------------------------------------
+  //  savepoint1    | time: 1, dt: 5.1,  b: true, s: "str1"  | u_0, v_0
+  //  savepoint1    | time: 2, dt: 9.1, b: false, s: "str2"  | u_1, v_1
+  //  savepoint_u_1 | -                                      | u_1
+  //  savepoint_v_1 | -                                      | v_1
   //
   {
     ser::Serializer ser_write;
-    ser_write.Init(directory->path().string(), "UpgradeArchiveTest", ser::SerializerOpenModeWrite);
+    ser_write.Init(this->directory->path().string(), "UpgradeArchiveTest",
+                   ser::SerializerOpenModeWrite);
 
     // Add some global metainfo
     ser_write.AddMetainfo("Day", int(29));
     ser_write.AddMetainfo("Month", std::string("March"));
-    ser_write.AddMetainfo("Year", double(2016.10));
+    ser_write.AddMetainfo("Year", TypeParam(2016.10));
     ser_write.AddMetainfo("boolean", true);
 
     // Add savepoints
@@ -91,46 +97,52 @@ TEST_F(UpgradeArchiveTest, upgrade) {
 
     savepoint1_t_1.Init("savepoint1");
     savepoint1_t_1.AddMetainfo("time", int(1));
-    savepoint1_t_1.AddMetainfo("dt", double(5.1));
+    savepoint1_t_1.AddMetainfo("dt", TypeParam(5.1));
+    savepoint1_t_1.AddMetainfo("b", bool(true));
+    savepoint1_t_1.AddMetainfo("s", std::string("str1"));
 
     savepoint1_t_2.Init("savepoint1");
     savepoint1_t_2.AddMetainfo("time", int(2));
-    savepoint1_t_2.AddMetainfo("dt", double(9.1));
+    savepoint1_t_2.AddMetainfo("dt", TypeParam(9.1));
+    savepoint1_t_2.AddMetainfo("b", bool(false));
+    savepoint1_t_2.AddMetainfo("s", std::string("str2"));
 
     savepoint_u_1.Init("savepoint_u_1");
     savepoint_v_1.Init("savepoint_v_1");
 
     // Register fields
-    ser_write.RegisterField("u", "double", sizeof(double), 5, 6, 7, 1, 0, 0, 0, 0, 0, 0, 0, 0);
-    ser_write.RegisterField("v", "double", sizeof(double), 5, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+    ser_write.RegisterField("u", ser::type_name<TypeParam>(), sizeof(TypeParam), 5, 6, 7, 1, 0, 0,
+                            0, 0, 0, 0, 0, 0);
+    ser_write.RegisterField("v", ser::type_name<TypeParam>(), sizeof(TypeParam), 5, 1, 1, 1, 0, 0,
+                            0, 0, 0, 0, 0, 0);
 
     // Add some field meta-info
     ser_write.AddFieldMetainfo("u", "Day", int(29));
     ser_write.AddFieldMetainfo("u", "Month", "March");
-    ser_write.AddFieldMetainfo("u", "Year", 2016.10);
+    ser_write.AddFieldMetainfo("u", "Year", TypeParam(2016.10));
     ser_write.AddFieldMetainfo("v", "boolean", true);
 
     // Writing (implicitly register the savepoints)
-    int sizeDouble = sizeof(double);
+    int bytesPerElement = sizeof(TypeParam);
 
-    ser_write.WriteField("u", savepoint1_t_1, (void*)u_0_input.originPtr(),
-                         sizeDouble * u_0_input.strides()[0], sizeDouble * u_0_input.strides()[1],
-                         sizeDouble * u_0_input.strides()[2], 0);
-    ser_write.WriteField("v", savepoint1_t_1, (void*)v_0_input.originPtr(),
-                         sizeDouble * v_0_input.strides()[0], sizeDouble * v_0_input.strides()[1],
-                         sizeDouble * v_0_input.strides()[2], 0);
-    ser_write.WriteField("u", savepoint1_t_2, (void*)u_1_input.originPtr(),
-                         sizeDouble * u_1_input.strides()[0], sizeDouble * u_1_input.strides()[1],
-                         sizeDouble * u_1_input.strides()[2], 0);
-    ser_write.WriteField("v", savepoint1_t_2, (void*)v_1_input.originPtr(),
-                         sizeDouble * v_1_input.strides()[0], sizeDouble * v_1_input.strides()[1],
-                         sizeDouble * v_1_input.strides()[2], 0);
-    ser_write.WriteField("u", savepoint_u_1, (void*)u_1_input.originPtr(),
-                         sizeDouble * u_1_input.strides()[0], sizeDouble * u_1_input.strides()[1],
-                         sizeDouble * u_1_input.strides()[2], 0);
-    ser_write.WriteField("v", savepoint_v_1, (void*)v_1_input.originPtr(),
-                         sizeDouble * v_1_input.strides()[0], sizeDouble * v_1_input.strides()[1],
-                         sizeDouble * v_1_input.strides()[2], 0);
+    ser_write.WriteField(
+        "u", savepoint1_t_1, (void*)u_0_input.originPtr(), bytesPerElement * u_0_input.strides()[0],
+        bytesPerElement * u_0_input.strides()[1], bytesPerElement * u_0_input.strides()[2], 0);
+    ser_write.WriteField(
+        "v", savepoint1_t_1, (void*)v_0_input.originPtr(), bytesPerElement * v_0_input.strides()[0],
+        bytesPerElement * v_0_input.strides()[1], bytesPerElement * v_0_input.strides()[2], 0);
+    ser_write.WriteField(
+        "u", savepoint1_t_2, (void*)u_1_input.originPtr(), bytesPerElement * u_1_input.strides()[0],
+        bytesPerElement * u_1_input.strides()[1], bytesPerElement * u_1_input.strides()[2], 0);
+    ser_write.WriteField(
+        "v", savepoint1_t_2, (void*)v_1_input.originPtr(), bytesPerElement * v_1_input.strides()[0],
+        bytesPerElement * v_1_input.strides()[1], bytesPerElement * v_1_input.strides()[2], 0);
+    ser_write.WriteField(
+        "u", savepoint_u_1, (void*)u_1_input.originPtr(), bytesPerElement * u_1_input.strides()[0],
+        bytesPerElement * u_1_input.strides()[1], bytesPerElement * u_1_input.strides()[2], 0);
+    ser_write.WriteField(
+        "v", savepoint_v_1, (void*)v_1_input.originPtr(), bytesPerElement * v_1_input.strides()[0],
+        bytesPerElement * v_1_input.strides()[1], bytesPerElement * v_1_input.strides()[2], 0);
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -138,31 +150,32 @@ TEST_F(UpgradeArchiveTest, upgrade) {
   // -----------------------------------------------------------------------------------------------
   {
     // Implicitly upgrade the archive
-    SerializerImpl ser_read(OpenModeKind::Read, directory->path().string(), "BinaryArchive",
+    SerializerImpl ser_read(OpenModeKind::Read, this->directory->path().string(), "BinaryArchive",
                             "UpgradeArchiveTest");
 
     // Check metaInfo
     EXPECT_EQ(ser_read.getGlobalMetainfoAs<int>("Day"), 29);
     EXPECT_EQ(ser_read.getGlobalMetainfoAs<std::string>("Month"), "March");
-    EXPECT_EQ(ser_read.getGlobalMetainfoAs<double>("Year"), 2016.10);
     EXPECT_EQ(ser_read.getGlobalMetainfoAs<bool>("boolean"), true);
 
     // Check FieldMap
     ASSERT_TRUE(ser_read.hasField("u"));
     ASSERT_TRUE(ser_read.hasField("v"));
 
-    EXPECT_EQ(ser_read.getFieldMetaInfoOf("u").type(), TypeID::Float64);
-    EXPECT_EQ(ser_read.getFieldMetaInfoOf("v").type(), TypeID::Float64);
+    TypeID type = ToTypeID<TypeParam>::value;
+    EXPECT_EQ(ser_read.getFieldMetaInfoOf("u").type(), type);
+    EXPECT_EQ(ser_read.getFieldMetaInfoOf("v").type(), type);
 
     EXPECT_EQ(ser_read.getFieldMetaInfoOf("u").dims(), (std::vector<int>{5, 6, 7}));
     EXPECT_EQ(ser_read.getFieldMetaInfoOf("v").dims(), (std::vector<int>{5, 1, 1}));
 
     EXPECT_EQ(ser_read.getFieldMetaInfoOf("u").metaInfo().at("Day").as<int>(), 29);
     EXPECT_EQ(ser_read.getFieldMetaInfoOf("u").metaInfo().at("Month").as<std::string>(), "March");
-    EXPECT_EQ(ser_read.getFieldMetaInfoOf("u").metaInfo().at("Year").as<double>(), 2016.10);
+    EXPECT_EQ(ser_read.getFieldMetaInfoOf("u").metaInfo().at("Year").as<TypeParam>(),
+              TypeParam(2016.10));
     EXPECT_EQ(ser_read.getFieldMetaInfoOf("v").metaInfo().at("boolean").as<bool>(), true);
 
-    // Check order of savepoints is correct
+    // Check order and meto-info of savepoints is correct
     ASSERT_EQ(ser_read.savepoints().size(), 4);
 
     const Savepoint& savepoint1_t_1 = ser_read.savepoints()[0];
@@ -172,11 +185,15 @@ TEST_F(UpgradeArchiveTest, upgrade) {
 
     EXPECT_EQ(savepoint1_t_1.name(), "savepoint1");
     EXPECT_EQ(savepoint1_t_1.metaInfo().at("time").as<int>(), 1);
-    EXPECT_EQ(savepoint1_t_1.metaInfo().at("dt").as<double>(), 5.1);
+    EXPECT_EQ(savepoint1_t_1.metaInfo().at("dt").as<TypeParam>(), TypeParam(5.1));
+    EXPECT_EQ(savepoint1_t_1.metaInfo().at("b").as<bool>(), true);
+    EXPECT_EQ(savepoint1_t_1.metaInfo().at("s").as<std::string>(), "str1");
 
     EXPECT_EQ(savepoint1_t_2.name(), "savepoint1");
     EXPECT_EQ(savepoint1_t_2.metaInfo().at("time").as<int>(), 2);
-    EXPECT_EQ(savepoint1_t_2.metaInfo().at("dt").as<double>(), 9.1);
+    EXPECT_EQ(savepoint1_t_2.metaInfo().at("dt").as<TypeParam>(), TypeParam(9.1));
+    EXPECT_EQ(savepoint1_t_2.metaInfo().at("b").as<bool>(), false);
+    EXPECT_EQ(savepoint1_t_2.metaInfo().at("s").as<std::string>(), "str2");
 
     EXPECT_EQ(savepoint_u_1.name(), "savepoint_u_1");
     EXPECT_EQ(savepoint_v_1.name(), "savepoint_v_1");
@@ -208,25 +225,25 @@ TEST_F(UpgradeArchiveTest, upgrade) {
 
   // Old meta data is possibly not out-dated -> upgrade again
   {
-    ASSERT_NO_THROW(SerializerImpl(OpenModeKind::Read, directory->path().string(), "BinaryArchive",
-                                   "UpgradeArchiveTest"));
+    ASSERT_NO_THROW(SerializerImpl(OpenModeKind::Read, this->directory->path().string(),
+                                   "BinaryArchive", "UpgradeArchiveTest"));
   }
 
   // Old meta data is outdated -> no upgrade
   {
     auto timeStampBeforeConstruction = boost::filesystem::last_write_time(
-        directory->path() / SerializerImpl::SerializerMetaDataFile);
+        this->directory->path() / SerializerImpl::SerializerMetaDataFile);
 
     // Set old-meta data to be out-dated
-    boost::filesystem::last_write_time(directory->path() / "UpgradeArchiveTest.json",
+    boost::filesystem::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
                                        timeStampBeforeConstruction - 1);
 
     // Should perform no upgrade
-    SerializerImpl ser_read(OpenModeKind::Read, directory->path().string(), "BinaryArchive",
+    SerializerImpl ser_read(OpenModeKind::Read, this->directory->path().string(), "BinaryArchive",
                             "UpgradeArchiveTest");
 
     auto timeStampAfterConstruction = boost::filesystem::last_write_time(
-        directory->path() / SerializerImpl::SerializerMetaDataFile);
+        this->directory->path() / SerializerImpl::SerializerMetaDataFile);
 
     ASSERT_EQ(timeStampBeforeConstruction, timeStampAfterConstruction);
   }

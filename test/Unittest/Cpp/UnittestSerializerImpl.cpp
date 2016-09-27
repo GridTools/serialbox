@@ -249,11 +249,14 @@ TEST_F(SerializerImplUtilityTest, WriteExceptions) {
   ASSERT_TRUE(s.registerSavepoint(savepoint));
   ASSERT_TRUE(s.savepointVector().addField(savepoint, FieldID{"field", 0}));
   ASSERT_THROW(s.write("field", savepoint, sv), Exception);
+  
+  // Wrong mode -> Exception  
+  ASSERT_THROW(s.read("field", savepoint, sv), Exception);  
 
   {
     // Wrong mode -> Exception
     SerializerImpl s_read(OpenModeKind::Read, directory->path().string(), "BinaryArchive");
-    ASSERT_THROW(s_read.read("field", savepoint, sv), Exception);
+    ASSERT_THROW(s_read.write("field", savepoint, sv), Exception);
   }
 }
 
@@ -265,13 +268,11 @@ TEST_F(SerializerImplUtilityTest, ReadExceptions) {
     SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
     s_write.registerField("field", sv.type(), sv.dims());
     s_write.updateMetaData();
+    
   }
 
   SerializerImpl s(OpenModeKind::Read, directory->path().string(), "BinaryArchive");
   Savepoint savepoint("savepoint");
-
-  // Wrong mode -> Exception
-  ASSERT_THROW(s.write("field", savepoint, sv), Exception);
 
   // Savepoint does no exist -> Exception
   ASSERT_THROW(s.read("field", savepoint, sv), Exception);

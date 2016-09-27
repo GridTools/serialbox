@@ -35,8 +35,7 @@ static std::string vecToString(VecType&& vec) {
     for(std::size_t i = 0; i < vec.size() - 1; ++i)
       ss << vec[i] << ", ";
     ss << vec.back();
-  } else
-    ss << "<empty>";
+  }
   return ss.str();
 }
 
@@ -312,6 +311,8 @@ void SerializerImpl::updateMetaData() {
   // Write metaData to disk (just overwrite the file, we assume that there is never more than one
   // Serializer per data set and thus our in-memory copy is always the up-to-date one)
   std::ofstream fs(filename.string(), std::ios::out | std::ios::trunc);
+  if(!fs.is_open())
+    throw Exception("cannot open file: %s", filename);
   fs << jsonNode.dump(1) << std::endl;
   fs.close();
 
@@ -331,18 +332,17 @@ void SerializerImpl::upgradeMetaData() {
   boost::filesystem::path oldMetaDataFile = directory_ / (prefix_ + ".json");
   boost::filesystem::path newMetaDataFile = directory_ / SerializerImpl::SerializerMetaDataFile;
   boost::filesystem::path newArchiveMetaDataFile = directory_ / Archive::ArchiveMetaDataFile;
-  
 
   //
-  // Check if update is necessary
+  // Check if upgrade is necessary
   //
 
   try {
     // Check if prefix.json exists
     if(!boost::filesystem::exists(oldMetaDataFile))
       return;
-    
-    LOG(INFO) << "Detected old serialbox meta-data " << oldMetaDataFile;    
+
+    LOG(INFO) << "Detected old serialbox meta-data " << oldMetaDataFile;
 
     // Check if we already upgraded this archive
     if(boost::filesystem::exists(newMetaDataFile) &&
@@ -350,27 +350,27 @@ void SerializerImpl::upgradeMetaData() {
         boost::filesystem::last_write_time(newMetaDataFile))) {
       return;
     }
-      
+
     // Remove the new-meta data (if it exists)
     if(boost::filesystem::exists(newMetaDataFile))
       boost::filesystem::remove(newMetaDataFile);
 
-    if(boost::filesystem::exists(newArchiveMetaDataFile)) 
+    if(boost::filesystem::exists(newArchiveMetaDataFile))
       boost::filesystem::remove(newArchiveMetaDataFile);
-  
+
   } catch(boost::filesystem::filesystem_error& e) {
     throw Exception("filesystem error: %s", e.what());
   }
 
   LOG(INFO) << "Upgrading meta-data to serialbox version (" << SERIALBOX_VERSION_STRING << ") ...";
-  
+
   json::json oldJson;
   std::ifstream ifs(oldMetaDataFile.string());
   if(!ifs.is_open())
     throw Exception("upgrade failed: cannot open %s", oldMetaDataFile);
   ifs >> oldJson;
   ifs.close();
-  
+
   //
   // Upgrade MetaInfo
   //
@@ -460,9 +460,9 @@ void SerializerImpl::upgradeMetaData() {
       // Add name as meta-info
       std::string name = fieldInfo["__name"];
       metaInfo.insert("__name", name);
-      
+
       // Add rank as meta-info
-      metaInfo.insert("__rank", int(fieldInfo["__rank"]));      
+      metaInfo.insert("__rank", int(fieldInfo["__rank"]));
 
       // Iterate field meta-info
       for(auto it = fieldInfo.begin(), end = fieldInfo.end(); it != end; ++it) {
@@ -552,8 +552,6 @@ void SerializerImpl::upgradeMetaData() {
         // Binary archive)
         auto fieldTableIt = fieldTable.find(fieldname);
         if(fieldTableIt != fieldTable.end()) {
-          CHECK_NE(fileOffset.offset, 0);
-
           BinaryArchive::FieldOffsetTable& fieldOffsetTable = fieldTableIt->second;
           bool fieldAlreadySerialized = false;
 
@@ -562,10 +560,12 @@ void SerializerImpl::upgradeMetaData() {
             if(fileOffset.checksum == fieldOffsetTable[i].checksum) {
               fieldAlreadySerialized = true;
               fieldID.id = i;
+              break;
             }
 
           // Append field at the end
           if(!fieldAlreadySerialized) {
+            CHECK_NE(fileOffset.offset, 0);
             fieldID.id = fieldOffsetTable.size();
             fieldOffsetTable.push_back(fileOffset);
           }

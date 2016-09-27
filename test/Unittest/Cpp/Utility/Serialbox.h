@@ -20,6 +20,7 @@
 #ifdef SERIALBOX_HAS_SERIALBOX_OLD
 
 #include "Serialbox/Serializer.h"
+#include "Serialbox/TypeName.h"
 
 #endif
 

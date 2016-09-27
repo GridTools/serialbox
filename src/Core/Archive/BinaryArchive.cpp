@@ -104,7 +104,7 @@ void BinaryArchive::writeMetaDataToJson() {
   // Write metaData to disk (just overwrite the file, we assume that there is never more than one
   // Archive per data set and thus our in-memory copy is always the up-to-date one)
   std::ofstream fs(filename.string(), std::ios::out | std::ios::trunc);
-  fs << json_.dump(4) << std::endl;
+  fs << json_.dump(2) << std::endl;
   fs.close();
 }
 
