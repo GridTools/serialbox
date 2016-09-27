@@ -26,6 +26,8 @@ set(SOURCES
   
   Archive/ArchiveFactory.cpp
   Archive/BinaryArchive.cpp
+  
+  Frontend/STELLA/MetainfoSet.cpp
 )
 
 set(EXTERNAL_LIBRARIES ${BOOST_LIBRARIES} ${GLOG_LIBRARIES} ${SHA256_LIBRARIES})

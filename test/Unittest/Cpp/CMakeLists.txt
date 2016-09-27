@@ -28,11 +28,12 @@ set(CPP_UNITTEST_SOURCES
   UnittestUpgradeArchive.cpp
   UnittestVersion.cpp
   
-  # STELLA
+  # gridtools
   UnittestGridToolsStorageView.cpp
  
-  # gridtools
+  # STELLA
   UnittestSTELLAStorageView.cpp
+  UnittestSTELLAMetainfoSet.cpp
 )
 
 # Setup external libraries

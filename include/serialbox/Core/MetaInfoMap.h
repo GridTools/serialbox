@@ -52,15 +52,15 @@ public:
 
   /// \brief A forward iterator to `const value_type`
   using const_iterator = map_type::const_iterator;
-  
+
   /// \brief Default constructor (empty map)
   MetaInfoMap() : map_(){};
 
   /// \brief Construct from json
   explicit MetaInfoMap(const json::json& jsonNode) { fromJSON(jsonNode); }
-  
+
   /// \brief Construct from initalizer-list
-  explicit MetaInfoMap(std::initializer_list<value_type> list) : map_(list) {};
+  explicit MetaInfoMap(std::initializer_list<value_type> list) : map_(list){};
 
   /// \brief Copy constructor
   MetaInfoMap(const MetaInfoMap&) = default;
@@ -83,6 +83,21 @@ public:
     return (map_.find(key) != map_.end());
   }
 
+  /// \brief Searche the container for an element with a key equivalent to ´key´ and return an
+  /// iterator to it if found, otherwise it returns an iterator to MetaInfoMap::end.
+  ///
+  /// \param key  Key to be searched for
+  /// \return An iterator to the element, if an element with specified key is found, or
+  /// MetaInfoMap::end otherwise
+  template <class StringType>
+  iterator find(StringType&& key) noexcept {
+    return map_.find(key);
+  }
+  template <class StringType>
+  const_iterator find(StringType&& key) const noexcept {
+    return map_.find(key);
+  }
+
   /// \brief Insert a new element in the map
   ///
   /// The element is inserted only if its key is not equivalent to the key of any other element
@@ -90,7 +105,7 @@ public:
   ///
   /// \param key    Key of the new element
   /// \param value  Object to be copied to (or moved as) the value of the new element
-  /// 
+  ///
   /// \return Value indicating whether the element was successfully inserted or not
   template <class KeyType, class ValueType>
   bool insert(KeyType&& key, ValueType&& value) noexcept {
@@ -101,6 +116,21 @@ public:
     return insert(std::forward<KeyType>(key), std::string(value));
   }
 
+  /// \brief Convert value of element with key ´key´ to type ´T´ 
+  /// 
+  /// If the type ´T´ is different than the internally stored type, the function does its best to 
+  /// convert the value to ´T´ in a meaningful way.
+  /// 
+  /// \param key    Key of the new element
+  /// \return Copy of the value of the element as type ´T´
+  /// 
+  /// \throw Exception  Key ´key´ does not exist or conversion results in truncation of the value
+  template<class ValueType>
+  ValueType as(const std::string& key) {
+    static_assert(isSupported<ValueType>::value, "ValueType is not supported");
+    return value_type();
+  }
+  
   /// \brief Removes from the MetaInfoMap either a single element or a range of
   /// elements [first,last)
   iterator erase(const_iterator position) { return map_.erase(position); }
@@ -152,10 +182,10 @@ public:
   ///
   /// \throw Exception  JSON node is ill-formed
   void fromJSON(const json::json& jsonNode);
-  
+
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const MetaInfoMap& s);
-
+  
 private:
   map_type map_;
 };

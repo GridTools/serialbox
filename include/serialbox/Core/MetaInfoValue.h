@@ -23,8 +23,9 @@
 namespace serialbox {
 
 /// \brief Represent a meta information value as a type-id and type-erased data
-struct MetaInfoValue {
-  /// \brief Default consor
+class MetaInfoValue {
+public:
+  /// \brief Default constructor
   MetaInfoValue() : type_(TypeID::Invalid), any_(){};
 
   /// \brief Copy constructor

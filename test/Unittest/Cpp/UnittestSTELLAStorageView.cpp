@@ -8,7 +8,7 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains the unittests of the StorageView interoperating with GridTools.
+/// This file contains the unittests of the StorageView interoperating with STELLA.
 ///
 //===------------------------------------------------------------------------------------------===//
 
