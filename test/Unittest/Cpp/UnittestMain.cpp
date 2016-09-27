@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
   // Initialize glog
   Logging::init(argv[0], true);
   Logging::setLogToStderr(true);
-  Logging::setMinLogLevel(serialbox::Logging::Warning);
+  Logging::setMinLogLevel(serialbox::Logging::Info);
   Logging::setColorLogToStdErr(true);
   Logging::setStdErrThreshold(Logging::Error);
 

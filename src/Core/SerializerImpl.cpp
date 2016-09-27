@@ -18,7 +18,9 @@
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Type.h"
+#include "serialbox/Core/Unreachable.h"
 #include "serialbox/Core/Version.h"
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <fstream>
 #include <memory>
@@ -321,58 +323,281 @@ void SerializerImpl::constructArchive(const std::string& archiveName) {
   archive_ = ArchiveFactory::getInstance().create(archiveName, mode_, directory_.string(), prefix_);
 }
 
+//===------------------------------------------------------------------------------------------===//
+//     Upgrade
+//===------------------------------------------------------------------------------------------===//
+
 void SerializerImpl::upgradeMetaData() {
   boost::filesystem::path oldMetaDataFile = directory_ / (prefix_ + ".json");
-  boost::filesystem::path newMetaDataFile = SerializerImpl::SerializerMetaDataFile;
+  boost::filesystem::path newMetaDataFile = directory_ / SerializerImpl::SerializerMetaDataFile;
+  boost::filesystem::path newArchiveMetaDataFile = directory_ / Archive::ArchiveMetaDataFile;
+  
+
+  //
+  // Check if update is necessary
+  //
 
   try {
     // Check if prefix.json exists
     if(!boost::filesystem::exists(oldMetaDataFile))
       return;
-
-    LOG(INFO) << "Detected old meta-data file " << oldMetaDataFile;
     
+    LOG(INFO) << "Detected old serialbox meta-data " << oldMetaDataFile;    
+
     // Check if we already upgraded this archive
     if(boost::filesystem::exists(newMetaDataFile) &&
        (boost::filesystem::last_write_time(oldMetaDataFile) <
-        boost::filesystem::last_write_time(newMetaDataFile)))
+        boost::filesystem::last_write_time(newMetaDataFile))) {
       return;
+    }
+      
+    // Remove the new-meta data (if it exists)
+    if(boost::filesystem::exists(newMetaDataFile))
+      boost::filesystem::remove(newMetaDataFile);
 
+    if(boost::filesystem::exists(newArchiveMetaDataFile)) 
+      boost::filesystem::remove(newArchiveMetaDataFile);
+  
   } catch(boost::filesystem::filesystem_error& e) {
     throw Exception("filesystem error: %s", e.what());
   }
 
-  LOG(INFO) << "Upgrading MetaData to serialbox version (" << SERIALBOX_VERSION_STRING << ") ...";
-
-  // Read Fields.json
+  LOG(INFO) << "Upgrading meta-data to serialbox version (" << SERIALBOX_VERSION_STRING << ") ...";
+  
   json::json oldJson;
   std::ifstream ifs(oldMetaDataFile.string());
+  if(!ifs.is_open())
+    throw Exception("upgrade failed: cannot open %s", oldMetaDataFile);
   ifs >> oldJson;
-
+  ifs.close();
+  
+  //
   // Upgrade MetaInfo
-  if(oldJson.count("GlobalMetainfo")) {
-    //    for(auto it = oldJson["GlobalMetainfo"].begin(), end = oldJson["GlobalMetainfo"].end();
-    //        it != end; ++it) {
+  //
 
-    //    }
+  // Try to guess the precision of the floating point type. We try to match the floating point type
+  // of the fields while defaulting to double.
+  TypeID globalMetaInfoFloatType = TypeID::Float64;
+  if(oldJson.count("FieldsTable") && oldJson["FieldsTable"].size() > 0) {
+    if(oldJson["FieldsTable"][0]["__elementtype"] == "float")
+      globalMetaInfoFloatType = TypeID::Float32;
   }
 
+  LOG(INFO) << "Deduced float type of global meta-info as: " << globalMetaInfoFloatType;
+
+  if(oldJson.count("GlobalMetainfo")) {
+
+    LOG(INFO) << "Upgrading global meta-info ...";
+
+    for(auto it = oldJson["GlobalMetainfo"].begin(), end = oldJson["GlobalMetainfo"].end();
+        it != end; ++it) {
+
+      LOG(INFO) << "Inserting global meta-info: key = " << it.key() << ", value = " << it.value();
+
+      std::string key = it.key();
+      if(!boost::algorithm::starts_with(key, "__")) {
+        if(it.value().is_string()) {
+          std::string value = it.value();
+          addGlobalMetaInfo(key, value);
+        } else if(it.value().is_boolean()) {
+          addGlobalMetaInfo(key, bool(it.value()));
+        } else if(it.value().is_number_integer()) {
+          addGlobalMetaInfo(key, int(it.value()));
+        } else if(it.value().is_number_float()) {
+          if(globalMetaInfoFloatType == TypeID::Float32)
+            addGlobalMetaInfo(key, float(it.value()));
+          else
+            addGlobalMetaInfo(key, double(it.value()));
+        } else
+          throw Exception("failed to upgrade: Cannot deduce type of globalMetaInfo '%s'", it.key());
+      }
+    }
+
+    LOG(INFO) << "Successfully upgraded global meta-info";
+  }
+
+  //
   // Upgrade FieldsTable
+  //
 
-  // Upgrade SavepointVector
+  if(oldJson.count("FieldsTable")) {
 
-  // Upgrade ArchiveMetaData
-  std::unique_ptr<Archive> archive(
-      new BinaryArchive(OpenModeKind::Append, directory_.string(), prefix_));
+    LOG(INFO) << "Upgrading fields table ...";
 
-  archive->updateMetaData();
-  archive_ = std::move(archive);
+    const auto& fieldsTable = oldJson["FieldsTable"];
+    for(std::size_t i = 0; i < fieldsTable.size(); ++i) {
+      auto& fieldInfo = fieldsTable[i];
+
+      LOG(INFO) << "Inserting field: " << fieldInfo["__name"];
+
+      // Get Type
+      TypeID type = TypeID::Float64;
+      if(fieldInfo["__elementtype"] == "int")
+        type = TypeID::Int32;
+      else if(fieldInfo["__elementtype"] == "float")
+        type = TypeID::Float32;
+      else if(fieldInfo["__elementtype"] == "double")
+        type = TypeID::Float64;
+
+      // Get dimension
+      std::vector<int> dims(3, 1);
+      dims[0] = int(fieldInfo["__isize"]);
+      dims[1] = int(fieldInfo["__jsize"]);
+      dims[2] = int(fieldInfo["__ksize"]);
+
+      if(fieldInfo.count("__lsize"))
+        dims.push_back(int(fieldInfo["__lsize"]));
+
+      // Add Halos as meta-info
+      MetaInfoMap metaInfo;
+      metaInfo.insert("__iminushalosize", int(fieldInfo["__iminushalosize"]));
+      metaInfo.insert("__jminushalosize", int(fieldInfo["__jminushalosize"]));
+      metaInfo.insert("__kminushalosize", int(fieldInfo["__kminushalosize"]));
+      metaInfo.insert("__iplushalosize", int(fieldInfo["__iplushalosize"]));
+      metaInfo.insert("__jplushalosize", int(fieldInfo["__jplushalosize"]));
+      metaInfo.insert("__kplushalosize", int(fieldInfo["__kplushalosize"]));
+
+      // Add name as meta-info
+      std::string name = fieldInfo["__name"];
+      metaInfo.insert("__name", name);
+      
+      // Add rank as meta-info
+      metaInfo.insert("__rank", int(fieldInfo["__rank"]));      
+
+      // Iterate field meta-info
+      for(auto it = fieldInfo.begin(), end = fieldInfo.end(); it != end; ++it) {
+        std::string key = it.key();
+        if(!boost::algorithm::starts_with(key, "__")) {
+          if(it.value().is_string()) {
+            std::string value = it.value();
+            metaInfo.insert(it.key(), value);
+          } else if(it.value().is_boolean()) {
+            metaInfo.insert(it.key(), bool(it.value()));
+          } else if(it.value().is_number_integer()) {
+            metaInfo.insert(it.key(), int(it.value()));
+          } else if(it.value().is_number_float()) {
+            if(globalMetaInfoFloatType == TypeID::Float32)
+              metaInfo.insert(it.key(), float(it.value()));
+            else
+              metaInfo.insert(it.key(), double(it.value()));
+          } else
+            throw Exception("failed to upgrade: Cannot deduce type of meta-info '%s' of field '%s'",
+                            it.key(), name);
+        }
+      }
+
+      fieldMap_.insert(name, type, dims, metaInfo);
+    }
+
+    LOG(INFO) << "Successfully upgraded fields table";
+  }
+
+  //
+  // Upgrade SavepointVector and ArchiveMetaData
+  //
+  BinaryArchive archive(OpenModeKind::Append, directory_.string(), prefix_);
+  BinaryArchive::FieldTable& fieldTable = archive.fieldTable();
+
+  if(oldJson.count("OffsetTable")) {
+
+    LOG(INFO) << "Upgrading offset table ...";
+
+    const auto& offsetTable = oldJson["OffsetTable"];
+    for(std::size_t i = 0; i < offsetTable.size(); ++i) {
+      auto& offsetTableEntry = offsetTable[i];
+
+      // Create savepoint
+      std::string name = offsetTableEntry["__name"];
+      Savepoint savepoint(name);
+
+      // Add meta-info to savepoint
+      for(auto it = offsetTableEntry.begin(), end = offsetTableEntry.end(); it != end; ++it) {
+        std::string key = it.key();
+        if(!boost::algorithm::starts_with(key, "__")) {
+          if(it.value().is_string()) {
+            std::string value = it.value();
+            savepoint.addMetaInfo(it.key(), value);
+          } else if(it.value().is_boolean()) {
+            savepoint.addMetaInfo(it.key(), bool(it.value()));
+          } else if(it.value().is_number_integer()) {
+            savepoint.addMetaInfo(it.key(), int(it.value()));
+          } else if(it.value().is_number_float()) {
+            if(globalMetaInfoFloatType == TypeID::Float32)
+              savepoint.addMetaInfo(it.key(), float(it.value()));
+            else
+              savepoint.addMetaInfo(it.key(), double(it.value()));
+          } else
+            throw Exception(
+                "failed to upgrade: Cannot deduce type of meta-info '%s' of savepoint '%s'",
+                it.key(), name);
+        }
+      }
+
+      LOG(INFO) << "Adding savepoint: " << savepoint;
+
+      // Register savepoint
+      int savepointIdx = savepointVector_.insert(savepoint);
+      CHECK_NE(savepointIdx, -1);
+
+      // Add fields to savepoint and field table of the archive
+      for(auto it = offsetTableEntry["__offsets"].begin(),
+               end = offsetTableEntry["__offsets"].end();
+          it != end; ++it) {
+        std::string fieldname = it.key();
+
+        FieldID fieldID{fieldname, 0};
+        BinaryArchive::FileOffsetType fileOffset{it.value()[0], it.value()[1]};
+
+        // Insert offsets into the field table (This mimics the write operation of the
+        // Binary archive)
+        auto fieldTableIt = fieldTable.find(fieldname);
+        if(fieldTableIt != fieldTable.end()) {
+          CHECK_NE(fileOffset.offset, 0);
+
+          BinaryArchive::FieldOffsetTable& fieldOffsetTable = fieldTableIt->second;
+          bool fieldAlreadySerialized = false;
+
+          // Check if field has already been serialized by comparing the checksum
+          for(std::size_t i = 0; i < fieldOffsetTable.size(); ++i)
+            if(fileOffset.checksum == fieldOffsetTable[i].checksum) {
+              fieldAlreadySerialized = true;
+              fieldID.id = i;
+            }
+
+          // Append field at the end
+          if(!fieldAlreadySerialized) {
+            fieldID.id = fieldOffsetTable.size();
+            fieldOffsetTable.push_back(fileOffset);
+          }
+        } else {
+          CHECK_EQ(fileOffset.offset, 0);
+          fieldID.id = 0;
+          fieldTable.insert(BinaryArchive::FieldTable::value_type(
+              fieldname, BinaryArchive::FieldOffsetTable(1, fileOffset)));
+        }
+
+        // Add field to savepoint
+        savepointVector_.addField(savepointIdx, fieldID);
+
+        LOG(INFO) << "Adding field '" << fieldID << "' to savepoint " << savepoint;
+      }
+    }
+
+    LOG(INFO) << "Successfully upgraded offset table";
+  }
+
+  // Flush archive to disk
+  archive.updateMetaData();
 
   // Write new serializer meta-data and archive meta-data to disk
+  constructArchive("BinaryArchive");
   updateMetaData();
 
   // Clear all objects and release the archive
   clear();
+
+  LOG(INFO) << "Successfully upgraded MetaData to serialbox version (" << SERIALBOX_VERSION_STRING
+            << ")";
 }
 
 } // namespace serialbox

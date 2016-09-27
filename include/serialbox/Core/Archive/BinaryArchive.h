@@ -89,6 +89,10 @@ public:
   /// \brief Create a BinaryArchive
   static std::unique_ptr<Archive> create(OpenModeKind mode, const std::string& directory,
                                          const std::string& prefix);
+  
+  /// \brief Get field table
+  FieldTable& fieldTable() noexcept { return fieldTable_; }
+  const FieldTable& fieldTable() const noexcept { return fieldTable_; }
 
 private:
   OpenModeKind mode_;

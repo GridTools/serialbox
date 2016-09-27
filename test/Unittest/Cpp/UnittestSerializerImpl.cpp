@@ -253,7 +253,7 @@ TEST_F(SerializerImplUtilityTest, WriteExceptions) {
   {
     // Wrong mode -> Exception
     SerializerImpl s_read(OpenModeKind::Read, directory->path().string(), "BinaryArchive");
-    ASSERT_THROW(s_read.write("field", savepoint, sv), Exception);
+    ASSERT_THROW(s_read.read("field", savepoint, sv), Exception);
   }
 }
 

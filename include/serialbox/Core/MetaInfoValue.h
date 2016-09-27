@@ -72,7 +72,7 @@ struct MetaInfoValue {
                       TypeUtil::toString(ToTypeID<T>::value));
     return (*boost::any_cast<T>(&any_));
   }
-
+  
   /// \brief Implicitly convert value to type T
   ///
   /// \throws Exception  TypeID of type T does not match TypeID of the captured value

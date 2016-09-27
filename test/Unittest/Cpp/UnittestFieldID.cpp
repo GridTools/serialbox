@@ -33,5 +33,5 @@ TEST(FieldIDTest, toString) {
   FieldID f{"field1", 0};
   std::stringstream ss;
   ss << f;
-  EXPECT_STREQ(ss.str().c_str(), "{\n  name: field1\n  id: 0\n}");
+  EXPECT_STREQ(ss.str().c_str(), "{field1, 0}");
 }
