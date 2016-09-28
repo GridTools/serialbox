@@ -48,7 +48,7 @@ TEST(SavepointTest, Construction) {
     ASSERT_TRUE(s.metaInfo().hasKey("key1"));
     EXPECT_EQ(s.metaInfo().at("key1").as<std::string>(), "str");
     EXPECT_EQ(s.getMetaInfoAs<std::string>("key1"), "str");
-    
+
     ASSERT_TRUE(s.metaInfo().hasKey("key2"));
     EXPECT_EQ(s.metaInfo().at("key2").as<double>(), double(5));
     EXPECT_EQ(s.getMetaInfoAs<double>("key2"), double(5));
@@ -98,8 +98,6 @@ TEST(SavepointTest, Construction) {
     EXPECT_EQ(s.metaInfo().at("key1").as<std::string>(), "str");
     EXPECT_EQ(s.metaInfo().at("key1").as<std::string>(),
               s_to_copy.metaInfo().at("key1").as<std::string>());
-
-    std::cout << "what the" << std::endl;
     ASSERT_TRUE(s.metaInfo().hasKey("key2"));
     EXPECT_EQ(s.metaInfo().at("key2").as<double>(), double(5));
     EXPECT_EQ(s.metaInfo().at("key2").as<double>(), s_to_copy.metaInfo().at("key2").as<double>());
@@ -195,7 +193,7 @@ TEST(SavepointTest, Hash) {
   s2.addMetaInfo("key1", bool(true));
 
   std::hash<Savepoint> hash;
-  
+
   // Check that operator() of std::hash<Savepoint> adheres to the concept:
 
   // 1) Does not throw exceptions when called.
@@ -215,28 +213,28 @@ TEST(SavepointTest, Hash) {
 TEST(SavepointTest, HashMap) {
   Savepoint s1("savepoint");
   s1.addMetaInfo("key1", double(5));
-  
+
   Savepoint s2("savepoint");
   s2.addMetaInfo("key1", bool(true));
-  
+
   Savepoint s3("diffrent-savepoint");
   s3.addMetaInfo("key1", bool(true));
-  
+
   std::unordered_map<Savepoint, int> hashMap;
   using value_type = std::unordered_map<Savepoint, int>::value_type;
-  
+
   // Insert savepoint into empty map
   ASSERT_TRUE(hashMap.insert(value_type{s1, 0}).second);
-  
+
   // Insert savepoint with same hash but different metaInfo
-  ASSERT_TRUE(hashMap.insert(value_type{s2, 1}).second);  
-  
+  ASSERT_TRUE(hashMap.insert(value_type{s2, 1}).second);
+
   // Insert savepoint with same hash and same metaInfo -> Fail
-  ASSERT_FALSE(hashMap.insert(value_type{s1, 0}).second);  
-  
+  ASSERT_FALSE(hashMap.insert(value_type{s1, 0}).second);
+
   // Insert additional savepoint (diffrent name)
-  ASSERT_TRUE(hashMap.insert(value_type{s3, 2}).second); 
-  
+  ASSERT_TRUE(hashMap.insert(value_type{s3, 2}).second);
+
   EXPECT_EQ(hashMap.size(), 3);
 }
 

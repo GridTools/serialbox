@@ -32,12 +32,9 @@ namespace stella {
 /// or double precision) or strings.
 class MetainfoSet {
 public:
-  /// \brief Default constructor
-  MetainfoSet();
+  /// \brief Construct with MetaInfoMap (lifetime of MetaInfoMap has to be managed externally)
+  MetainfoSet(MetaInfoMap* map);
   
-  /// \brief Destructor
-  ~MetainfoSet();
-
   /// \brief Copy constructor
   MetainfoSet(const MetainfoSet& other) { *this = other; }
 
@@ -174,16 +171,7 @@ public:
   /// \return The size of the set is returned
   std::size_t size() const;
 
-  /// \brief Construct from MetaInfoMap (lifetime of the pointer has to be managed externally!) 
-  ///
-  /// This function is for internal usage only!
-  void FromMetaInfoMap(MetaInfoMap* map);
-  
-  /// \brief Check if the MetaInfoMap pointer is owned by the MetaInfoSet
-  bool owner() { return owner_; }
-
 private:
-  bool owner_;
   MetaInfoMap* mapImpl_;
 };
 

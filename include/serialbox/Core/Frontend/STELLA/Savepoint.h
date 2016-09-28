@@ -20,7 +20,6 @@ namespace serialbox {
 namespace stella {
 
 class Savepoint {
-  
 };
 
 } // namespace stella

@@ -34,6 +34,7 @@ set(CPP_UNITTEST_SOURCES
   # STELLA
   UnittestSTELLAStorageView.cpp
   UnittestSTELLAMetainfoSet.cpp
+  UnittestSTELLAException.cpp
 )
 
 # Setup external libraries
