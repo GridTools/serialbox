@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Frontend/STELLA/MetainfoSet.h"
 #include "serialbox/Core/Exception.h"
+#include "serialbox/Core/Frontend/STELLA/MetainfoSet.h"
 #include "serialbox/Core/Frontend/STELLA/Utility.h"
 #include "serialbox/Core/MetaInfoMap.h"
 #include "serialbox/Core/Unreachable.h"

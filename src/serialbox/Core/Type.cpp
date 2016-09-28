@@ -14,6 +14,7 @@
 
 #include "serialbox/Core/Type.h"
 #include "serialbox/Core/Unreachable.h"
+#include <ostream>
 
 namespace serialbox {
 
