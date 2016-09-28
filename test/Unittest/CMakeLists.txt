@@ -23,8 +23,8 @@ cmake_minimum_required(VERSION 3.1)
 function(serialbox_add_cpp_unittest_executable name libraries)
   add_executable(${name} ${ARGN} ${SERIALBOX_HEADERS})
   target_link_libraries(${name} ${libraries} 
-                                SerialboxCppUnittestUtility 
-                                SerialboxCore)
+                                SerialboxCppUnittestUtilityLibrary 
+                                SerialboxCoreLibraryStatic)
   
   if(DEFINED SERIALBOX_VERBOSE_WARNINGS)
     set_target_properties(${name} PROPERTIES COMPILE_FLAGS -Wall)

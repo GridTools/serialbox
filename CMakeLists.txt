@@ -11,6 +11,8 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
+SET(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "Installation prefix")
+
 project(serialbox C CXX)
 cmake_minimum_required(VERSION 3.1)
 
@@ -50,17 +52,18 @@ message(STATUS "Git HEAD revision: ${GIT_SHA1}")
 
 #---------------------------------------- User options ---------------------------------------------
 
-option(SERIALBOX_TESTING "Build unit-test executables" ON)
+option(SERIALBOX_BUILD_SHARED "Build shared libraries" OFF)
 option(SERIALBOX_LOGGING "Enable logging" ON)
-option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" ON)
 
+option(SERIALBOX_TESTING "Build unit-test executables" ON)
 option(SERIALBOX_ENABLE_GRIDTOOLS "Build GridTools Unitests" OFF)
 option(SERIALBOX_ENABLE_STELLA "Build STELLA Unitests" OFF)
 option(SERIALBOX_ENABLE_OLD_SERIALBOX "Build compatiblity unitests against old serialbox" OFF)
-option(SERIALBOX_ENABLE_FORTRAN "Build Fortran Unitests" OFF)
+option(SERIALBOX_ENABLE_C "Build C Unitests" OFF)
 option(SERIALBOX_ENABLE_DEATH_TESTS "Run death-tests" OFF)
 
 option(SERIALBOX_CODE_COVERAGE "Generate code coverage" OFF)
+option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" ON)
   
 #---------------------------------------- CMake options --------------------------------------------
  
@@ -81,7 +84,7 @@ endif()
 
 # Set build type to RelWithDebInfo if nothing was specified (instead of Debug)
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "RelWithDebInfo " CACHE STRING 
+  set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING 
       "Choose the type of build, options are: Debug Release RelWithDebInfo " FORCE)
   message(STATUS "Setting build type to 'RelWithDebInfo' as none was specified")
 endif(NOT CMAKE_BUILD_TYPE)
@@ -97,6 +100,22 @@ find_package(Threads REQUIRED)
 # Set script directory
 set(SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tools)
 
+# Set shared library flags
+if(SERIALBOX_BUILD_SHARED)
+  set(BUILD_SHARED_LIBS ON)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+  
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    # CMake requires a RPATH configuration variable set on OSX with CMake >= 3.0
+    # (CMake policy CMP0042) to build dynamic libraries. Setting this variable
+    # to INSTALL/lib.
+    # More information: http://www.cmake.org/Wiki/CMake_RPATH_handling
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    set(CMAKE_MACOSX_RPATH "${CMAKE_INSTALL_RPATH}")
+  endif ()
+endif()
+
 #---------------------------------------- sha256 ---------------------------------------------------
 set(SHA256_INSTALL_DIR "${CMAKE_BINARY_DIR}/external/sha256/install")
     
@@ -106,6 +125,7 @@ set(CMAKE_EXTERNAL_ARGS -Wno-dev
   -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
   -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
   -DCMAKE_INSTALL_PREFIX=${SHA256_INSTALL_DIR}
+  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
 )
 
 # Build libsha256
@@ -120,8 +140,13 @@ message(STATUS "Building sh256 from: ${CMAKE_CURRENT_SOURCE_DIR}/external/sh256"
 set(SHA256_INCLUDE_DIRS "${SHA256_INSTALL_DIR}/include")
 if(COMPILER_IS_MSVC)
   set(SHA256_LIBRARIES "${SHA256_INSTALL_DIR}/lib/sha256.lib")
+  #TODO: Handle shared libraries/runtime
 else()
-  set(SHA256_LIBRARIES "${SHA256_INSTALL_DIR}/lib/libsha256.a")
+  if(BUILD_SHARED_LIBS)
+    set(SHA256_LIBRARIES "${SHA256_INSTALL_DIR}/lib/libsha256.so")
+  else()
+    set(SHA256_LIBRARIES "${SHA256_INSTALL_DIR}/lib/libsha256.a")
+  endif()
 endif()
 include_directories(${SHA256_INCLUDE_DIRS})
 
@@ -187,6 +212,7 @@ if(SERIALBOX_LOGGING)
       -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
       -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
       -DCMAKE_INSTALL_PREFIX=${GLOG_INSTALL_DIR}
+      -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
     )
 
     # Build Glog
@@ -200,11 +226,14 @@ if(SERIALBOX_LOGGING)
 
     set(GLOG_INCLUDE_DIRS "${GLOG_INSTALL_DIR}/include")
     if(COMPILER_IS_MSVC)
-      set(GLOG_LIBRARIES "${GLOG_INSTALL_DIR}/lib/glog.lib" 
-                         "${CMAKE_THREAD_LIBS_INIT}")
+      set(GLOG_LIBRARIES "${GLOG_INSTALL_DIR}/lib/glog.lib" "${CMAKE_THREAD_LIBS_INIT}")
+       #TODO: Handle shared libraries/runtime
     else()
-      set(GLOG_LIBRARIES "${GLOG_INSTALL_DIR}/lib/libglog.a" 
-                         "${CMAKE_THREAD_LIBS_INIT}")
+      if(BUILD_SHARED_LIBS)
+        set(GLOG_LIBRARIES "${GLOG_INSTALL_DIR}/lib/libglog.so" "${CMAKE_THREAD_LIBS_INIT}")
+      else()
+        set(GLOG_LIBRARIES "${GLOG_INSTALL_DIR}/lib/libglog.a" "${CMAKE_THREAD_LIBS_INIT}")
+      endif()
     endif()
   else()
     find_package(GLog REQUIRED)
@@ -345,12 +374,12 @@ if(SERIALBOX_ENABLE_OLD_SERIALBOX)
   
 endif(SERIALBOX_ENABLE_OLD_SERIALBOX)
 
-#--------------------------------------- Fortran ---------------------------------------------------
-if(SERIALBOX_ENABLE_FORTRAN)
+#------------------------------------------- C -----------------------------------------------------
+if(SERIALBOX_ENABLE_C)
 
-  set(SERIALBOX_HAS_FORTRAN 1)
+  set(SERIALBOX_HAS_C 1)
 
-endif(SERIALBOX_ENABLE_FORTRAN)
+endif(SERIALBOX_ENABLE_C)
 
 #---------------------------------------- Doxygen --------------------------------------------------
 find_package(Doxygen)
@@ -425,6 +454,7 @@ set(SERIALBOX_CONFIG_FILE ${CMAKE_BINARY_DIR}/include/serialbox/Core/Config.h)
 set(SERIALBOX_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
 configure_file(${SERIALBOX_CONFIG_FILE_IN} ${SERIALBOX_CONFIG_FILE})
 include_directories(${CMAKE_BINARY_DIR}/include)
+install(FILES ${SERIALBOX_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox/Core)
 
 enable_testing()
 
@@ -436,7 +466,10 @@ file(GLOB_RECURSE SERIALBOX_HEADERS
      ${CMAKE_CURRENT_SOURCE_DIR}/include
      ${CMAKE_CURRENT_SOURCE_DIR}/include/serialbox/*.h)
      
-     
+# Install serialbox headers
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/serialbox DESTINATION include 
+        PATTERN "*.cmake" EXCLUDE)
+
 ## Build Serialbox
 add_subdirectory(src)
 

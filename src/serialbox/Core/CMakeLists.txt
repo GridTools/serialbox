@@ -32,4 +32,4 @@ set(SOURCES
 
 set(EXTERNAL_LIBRARIES ${BOOST_LIBRARIES} ${GLOG_LIBRARIES} ${SHA256_LIBRARIES})
 
-serialbox_add_library(SerialboxCore "${EXTERNAL_LIBRARIES}" ${SOURCES})
+serialbox_add_library(SerialboxCore SerialboxCoreLibrary "${EXTERNAL_LIBRARIES}" ${SOURCES})

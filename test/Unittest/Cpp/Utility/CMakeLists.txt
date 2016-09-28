@@ -19,6 +19,5 @@ set(CPP_UNITTEST_UTILITY_SOURCES
   Serialbox.h
 )
 
-add_library(SerialboxCppUnittestUtility ${CPP_UNITTEST_UTILITY_SOURCES})
-target_link_libraries(SerialboxCppUnittestUtility SerialboxCore ${SERIALBOX_EXTERNAL_LIBRARIES})
+add_library(SerialboxCppUnittestUtilityLibrary STATIC ${CPP_UNITTEST_UTILITY_SOURCES})
 
