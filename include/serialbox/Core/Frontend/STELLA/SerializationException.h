@@ -15,7 +15,6 @@
 #ifndef SERIALBOX_CORE_FRONTEND_STELLA_SERIALIZATIONEXCEPTION_H
 #define SERIALBOX_CORE_FRONTEND_STELLA_SERIALIZATIONEXCEPTION_H
 
-#include "serialbox/Core/Frontend/STELLA/Config.h"
 #include <exception>
 #include <string>
 

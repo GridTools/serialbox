@@ -1,4 +1,4 @@
-//===-- Core/Frontend/STELLA/MetainfoSet.cpp ----------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/Frontend/STELLA/MetainfoSet.cpp ------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -30,6 +30,7 @@ static MetaInfoMap::const_iterator checkKeyExists(const MetaInfoMap* mapImpl, Ke
     internal::throwSerializationException("Error: requested key %s is not in set", key);
   return it;
 }
+
 }
 
 MetainfoSet::MetainfoSet() {

@@ -128,7 +128,7 @@ public:
   template<class ValueType>
   ValueType as(const std::string& key) {
     static_assert(isSupported<ValueType>::value, "ValueType is not supported");
-    return value_type();
+    return value_type(); // Never reached;
   }
   
   /// \brief Removes from the MetaInfoMap either a single element or a range of

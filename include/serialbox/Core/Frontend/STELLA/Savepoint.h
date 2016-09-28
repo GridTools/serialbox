@@ -15,9 +15,6 @@
 #ifndef SERIALBOX_CORE_FRONTEND_STELLA_SAVEPOINT_H
 #define SERIALBOX_CORE_FRONTEND_STELLA_SAVEPOINT_H
 
-#include "serialbox/Core/Frontend/STELLA/ForwardDecl.h"
-#include "serialbox/Core/Frontend/STELLA/Config.h"
-
 namespace serialbox {
 
 namespace stella {

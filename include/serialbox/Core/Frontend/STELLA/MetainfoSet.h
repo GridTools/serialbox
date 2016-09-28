@@ -15,7 +15,6 @@
 #ifndef SERIALBOX_CORE_FRONTEND_STELLA_METAINFOSET_H
 #define SERIALBOX_CORE_FRONTEND_STELLA_METAINFOSET_H
 
-#include "serialbox/Core/Frontend/STELLA/Config.h"
 #include "serialbox/Core/Frontend/STELLA/ForwardDecl.h"
 #include <boost/any.hpp>
 #include <boost/type_traits.hpp>

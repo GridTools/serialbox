@@ -20,8 +20,6 @@
 
 #ifdef SERIALBOX_HAS_STELLA
 
-#include "serialbox/Core/Frontend/STELLA/StorageViewHelper.h"
-
 namespace {
 
 template <class T>
@@ -207,14 +205,30 @@ protected:
 };
 
 template <typename TFieldType>
-serialbox::StorageView makeStorageView(const TFieldType& field) {
-  using namespace serialbox::stella;
+serialbox::StorageView makeStorageView(const TFieldType& dataField) {
+  // Strides
+  DataFieldStorageStrides<typename TFieldType::StorageFormat::StorageOrder> storageStrides;
+  storageStrides.Init(dataField.storage().paddedSize());
 
-  std::vector<int> dims(internal::getDims(field));
-  std::vector<int> strides(internal::getStrides(field));
-  void* orignPtr = internal::getOriginPtr(field);
+  std::vector<int> strides(3);
+  strides[0] = storageStrides.ComputeStride(1, 0, 0);
+  strides[1] = storageStrides.ComputeStride(0, 1, 0);
+  strides[2] = storageStrides.ComputeStride(0, 0, 1);
 
-  return serialbox::StorageView(orignPtr,
+  // Dimension
+  const IJKSize& size = dataField.storage().allocatedSize();
+
+  std::vector<int> dims(3);
+  dims[0] = size.iSize();
+  dims[1] = size.jSize();
+  dims[2] = size.kSize();
+
+  // Origin ptr
+  const IJKIndex& originOffset = dataField.storage().originOffset();
+  void* originPtr = const_cast<void*>(static_cast<const void*>(
+      &dataField(-originOffset.iIndex(), -originOffset.jIndex(), -originOffset.kIndex())));
+
+  return serialbox::StorageView(originPtr,
                                 serialbox::ToTypeID<typename TFieldType::ValueType>::value,
                                 std::move(dims), std::move(strides));
 }
@@ -225,42 +239,7 @@ using TestTypes = testing::Types<double, float, int>;
 
 TYPED_TEST_CASE(STELLAStorageViewTest, TestTypes);
 
-TYPED_TEST(STELLAStorageViewTest, Construction) {
-  using namespace serialbox::stella;
-
-#define CHECK_FIELD(field_ptr)                                                                     \
-  {                                                                                                \
-    auto field = *this->field_ptr;                                                                 \
-    const IJKSize& size = field.storage().allocatedSize();                                         \
-    std::vector<int> dims(internal::getDims(field));                                               \
-    EXPECT_EQ(dims[0], size.iSize()) << field.name();                                              \
-    EXPECT_EQ(dims[1], size.jSize()) << field.name();                                              \
-    EXPECT_EQ(dims[2], size.kSize()) << field.name();                                              \
-    const void* originPtr = internal::getOriginPtr(field);                                         \
-    EXPECT_EQ(originPtr, field.storage().pStorageBase()) << field.name();                          \
-  }
-
-  CHECK_FIELD(cpu_jik_field_ptr);
-  CHECK_FIELD(cpu_ji_field_ptr);
-  CHECK_FIELD(cpu_ik_field_ptr);
-  CHECK_FIELD(cpu_jk_field_ptr);
-  CHECK_FIELD(cpu_i_field_ptr);
-  CHECK_FIELD(cpu_j_field_ptr);
-  CHECK_FIELD(cpu_k_field_ptr);
-
-  CHECK_FIELD(gpu_kji_field_ptr);
-  CHECK_FIELD(gpu_ji_field_ptr);
-  CHECK_FIELD(gpu_ki_field_ptr);
-  CHECK_FIELD(gpu_kj_field_ptr);
-  CHECK_FIELD(gpu_i_field_ptr);
-  CHECK_FIELD(gpu_j_field_ptr);
-  CHECK_FIELD(gpu_k_field_ptr);
-
-#undef CHECK_FIELD
-}
-
 TYPED_TEST(STELLAStorageViewTest, Iterator) {
-  using namespace serialbox::stella;
   int dim1 = this->dim1, dim2 = this->dim2, dim3 = this->dim3;
 
 // -------------------------------------------------------------------------------------------------

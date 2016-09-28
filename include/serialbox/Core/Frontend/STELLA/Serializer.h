@@ -15,10 +15,6 @@
 #ifndef SERIALBOX_CORE_FRONTEND_STELLA_SERIALIZER_H
 #define SERIALBOX_CORE_FRONTEND_STELLA_SERIALIZER_H
 
-#include "serialbox/Core/Frontend/STELLA/Config.h"
-#include <utility>
-#include <vector>
-
 namespace serialbox {
 
 namespace stella {
