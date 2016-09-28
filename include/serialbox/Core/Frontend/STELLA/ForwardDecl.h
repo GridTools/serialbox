@@ -15,6 +15,8 @@
 #ifndef SERIALBOX_CORE_FRONTEND_STELLA_FORWARDDECL_H
 #define SERIALBOX_CORE_FRONTEND_STELLA_FORWARDDECL_H
 
+#include "serialbox/Core/Compiler.h"
+
 namespace serialbox {
 
 class FieldMap;
@@ -24,12 +26,14 @@ class MetaInfoValue;
 class SerializerImpl;
 class SavepointImpl;
 
+/// \namespace stella
+/// \brief Namespace of the STELLA frontend
 namespace stella {}
 
 } // namespace serialbox
 
 /// \namespace ser
-/// \brief Namespace of the STELLA frontend
+/// \brief Namespace of the old serialbox library
 namespace ser = serialbox::stella;
 
 #endif
