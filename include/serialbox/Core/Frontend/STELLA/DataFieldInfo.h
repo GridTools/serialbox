@@ -19,6 +19,7 @@
 #include "serialbox/Core/Frontend/STELLA/IJKBoundary.h"
 #include "serialbox/Core/Frontend/STELLA/IJKSize.h"
 #include "serialbox/Core/Frontend/STELLA/MetainfoSet.h"
+#include "serialbox/Core/Frontend/STELLA/SerializationException.h"
 #include "serialbox/Core/Frontend/STELLA/TypeName.h"
 
 namespace serialbox {
@@ -121,7 +122,9 @@ public:
   /// \brief Sets the name to a value different than that of the initialization field
   void set_Name(std::string name) {
     if(name.empty()) {
-      throw std::invalid_argument("Passed empty name to DataFieldInfo");
+      SerializationException exception;
+      exception.Init("Passed empty name to DataFieldInfo");
+      throw exception;
     }
     name_ = name;
   }

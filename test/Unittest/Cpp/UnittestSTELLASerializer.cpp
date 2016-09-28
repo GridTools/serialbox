@@ -12,4 +12,14 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "Utility/STELLA.h"
+#include "serialbox/Core/Frontend/STELLA/Serializer.h"
 #include <gtest/gtest.h>
+
+#ifdef SERIALBOX_HAS_STELLA
+
+TEST(STELLASerializerTest, Construction) {
+
+}
+
+#endif
