@@ -20,9 +20,9 @@ using namespace serialbox;
 
 TEST(SavepointVectorTest, Construction) {
   // s1 and s2 have same name but different meta-info, s3 has a different name and no meta-info
-  Savepoint savepoint1("savepoint");
-  Savepoint savepoint2("savepoint");
-  Savepoint savepoint3("different-savepoint");
+  SavepointImpl savepoint1("savepoint");
+  SavepointImpl savepoint2("savepoint");
+  SavepointImpl savepoint3("different-savepoint");
 
   ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
   ASSERT_NO_THROW(savepoint2.addMetaInfo("key1", "s2"));
@@ -200,9 +200,9 @@ TEST(SavepointVectorTest, Construction) {
 
 TEST(SavepointVectorTest, toJSON) {
   // s1 and s2 have same name but different meta-info, s3 has a different name and no meta-info
-  Savepoint savepoint1("savepoint");
-  Savepoint savepoint2("savepoint");
-  Savepoint savepoint3("different-savepoint");
+  SavepointImpl savepoint1("savepoint");
+  SavepointImpl savepoint2("savepoint");
+  SavepointImpl savepoint3("different-savepoint");
 
   ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
   ASSERT_NO_THROW(savepoint2.addMetaInfo("key1", "s2"));
@@ -240,9 +240,9 @@ TEST(SavepointVectorTest, toJSON) {
 }
 
 TEST(SavepointVectorTest, fromJSON) {
-  Savepoint savepoint1("savepoint");
-  Savepoint savepoint2("savepoint");
-  Savepoint savepoint3("different-savepoint");
+  SavepointImpl savepoint1("savepoint");
+  SavepointImpl savepoint2("savepoint");
+  SavepointImpl savepoint3("different-savepoint");
 
   ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
   ASSERT_NO_THROW(savepoint2.addMetaInfo("key1", "s2"));
@@ -376,7 +376,7 @@ TEST(SavepointVectorTest, fromJSON) {
 }
 
 TEST(SavepointVectorTest, toString) {
-  Savepoint savepoint1("savepoint");
+  SavepointImpl savepoint1("savepoint");
   ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
   
   std::stringstream ss;

@@ -116,7 +116,7 @@ void SerializerImpl::checkStorageView(const std::string& name,
 //     Writing
 //===------------------------------------------------------------------------------------------===//
 
-void SerializerImpl::write(const std::string& name, const Savepoint& savepoint,
+void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoint,
                            StorageView& storageView) {
   LOG(INFO) << "Serializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";
 
@@ -167,7 +167,7 @@ void SerializerImpl::write(const std::string& name, const Savepoint& savepoint,
 //     Reading
 //===------------------------------------------------------------------------------------------===//
 
-void SerializerImpl::read(const std::string& name, const Savepoint& savepoint,
+void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoint,
                           StorageView& storageView) {
   LOG(INFO) << "Deserializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";
 
@@ -508,7 +508,7 @@ void SerializerImpl::upgradeMetaData() {
 
       // Create savepoint
       std::string name = offsetTableEntry["__name"];
-      Savepoint savepoint(name);
+      SavepointImpl savepoint(name);
 
       // Add meta-info to savepoint
       for(auto it = offsetTableEntry.begin(), end = offsetTableEntry.end(); it != end; ++it) {

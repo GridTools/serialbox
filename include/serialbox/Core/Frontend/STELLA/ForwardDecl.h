@@ -22,7 +22,7 @@ class FieldMetaInfo;
 class MetaInfoMap;
 class MetaInfoValue;
 class SerializerImpl;
-class Savepoint;
+class SavepointImpl;
 
 } // namespace serialbox
 

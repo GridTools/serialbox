@@ -178,10 +178,10 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
     // Check order and meto-info of savepoints is correct
     ASSERT_EQ(ser_read.savepoints().size(), 4);
 
-    const Savepoint& savepoint1_t_1 = ser_read.savepoints()[0];
-    const Savepoint& savepoint1_t_2 = ser_read.savepoints()[1];
-    const Savepoint& savepoint_u_1 = ser_read.savepoints()[2];
-    const Savepoint& savepoint_v_1 = ser_read.savepoints()[3];
+    const SavepointImpl& savepoint1_t_1 = ser_read.savepoints()[0];
+    const SavepointImpl& savepoint1_t_2 = ser_read.savepoints()[1];
+    const SavepointImpl& savepoint_u_1 = ser_read.savepoints()[2];
+    const SavepointImpl& savepoint_v_1 = ser_read.savepoints()[3];
 
     EXPECT_EQ(savepoint1_t_1.name(), "savepoint1");
     EXPECT_EQ(savepoint1_t_1.metaInfo().at("time").as<int>(), 1);

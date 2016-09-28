@@ -20,7 +20,7 @@ set(CPP_UNITTEST_SOURCES
   UnittestMetaInfoValue.cpp
   UnittestStorage.cpp
   UnittestStorageView.cpp
-  UnittestSavepoint.cpp
+  UnittestSavepointImpl.cpp
   UnittestSavepointVector.cpp
   UnittestSerializerImpl.cpp
   UnittestType.cpp

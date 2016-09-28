@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Savepoint.h ----------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/SavepointImpl.h ----------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_SAVEPOINT_H
-#define SERIALBOX_CORE_SAVEPOINT_H
+#ifndef SERIALBOX_CORE_SAVEPOINTIMPL_H
+#define SERIALBOX_CORE_SAVEPOINTIMPL_H
 
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Json.h"
@@ -25,35 +25,38 @@
 
 namespace serialbox {
 
-/// \brief Implementation of the Savepoint
+/// \brief Shared implementation of the Savepoint
 ///
 /// Savepoints have a specialization of std::hash and can thus be used in hash-maps such as
 /// std::unordered_map.
-class Savepoint {
+/// 
+/// Direct usage of this class is discouraged, use the Savepoint classes provided by the Frontends
+/// instead.
+class SavepointImpl {
 public:
   /// \brief Construct an empty savepoint (wihtout ´metaInfo´ i.e this->empty() == true)
   template <class StringType,
             class = typename std::enable_if<!std::is_same<StringType, json::json>::value>::type>
-  explicit Savepoint(const StringType& name) : name_(name), metaInfo_(){};
+  explicit SavepointImpl(const StringType& name) : name_(name), metaInfo_(){};
 
   /// \brief Construct savepoint with ´name´ and ´metaInfo´
   template <class StringType, class MetaInfoType>
-  Savepoint(StringType&& name, MetaInfoType&& metaInfo) : name_(name), metaInfo_(metaInfo){};
+  SavepointImpl(StringType&& name, MetaInfoType&& metaInfo) : name_(name), metaInfo_(metaInfo){};
 
   /// \brief Copy constructor
-  Savepoint(const Savepoint&) = default;
+  SavepointImpl(const SavepointImpl&) = default;
 
   /// \brief Move constructor
-  Savepoint(Savepoint&&) = default;
+  SavepointImpl(SavepointImpl&&) = default;
 
   /// \brief Construct from JSON
-  explicit Savepoint(const json::json& jsonNode) { fromJSON(jsonNode); }
+  explicit SavepointImpl(const json::json& jsonNode) { fromJSON(jsonNode); }
 
   /// \brief Copy assignment
-  Savepoint& operator=(const Savepoint&) = default;
+  SavepointImpl& operator=(const SavepointImpl&) = default;
 
   /// \brief Move assignment
-  Savepoint& operator=(Savepoint&&) = default;
+  SavepointImpl& operator=(SavepointImpl&&) = default;
 
   /// \brief Add a new key-value pair to the ´metaInfo´ of the Savepoint
   ///
@@ -83,15 +86,15 @@ public:
   }
 
   /// \brief Test for equality
-  bool operator==(const Savepoint& right) const {
+  bool operator==(const SavepointImpl& right) const {
     return (name_ == right.name_) && (metaInfo_ == right.metaInfo_);
   }
 
   /// \brief Test for inequality
-  bool operator!=(const Savepoint& right) const { return (!(*this == right)); }
+  bool operator!=(const SavepointImpl& right) const { return (!(*this == right)); }
 
   /// \brief Swap with other
-  void swap(Savepoint& other) noexcept {
+  void swap(SavepointImpl& other) noexcept {
     name_.swap(other.name_);
     metaInfo_.swap(other.metaInfo_);
   }
@@ -119,7 +122,7 @@ public:
   std::string toString() const;
 
   /// \brief Convert to stream
-  friend std::ostream& operator<<(std::ostream& stream, const Savepoint& s);
+  friend std::ostream& operator<<(std::ostream& stream, const SavepointImpl& s);
 
 protected:
   std::string name_;     ///< Name of this savepoint
@@ -136,8 +139,8 @@ namespace std {
 /// unique, it is a reasoanble compromise as we assume there are only O(1) savepoints sharing the
 /// same name.
 template <>
-struct hash<serialbox::Savepoint> {
-  std::size_t operator()(const serialbox::Savepoint& s) const noexcept {
+struct hash<serialbox::SavepointImpl> {
+  std::size_t operator()(const serialbox::SavepointImpl& s) const noexcept {
     return std::hash<std::string>()(s.name());
   }
 };

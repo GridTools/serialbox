@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/UnittestSavepoint.cpp ------------------------------------------*- C++ -*-===//
+//===-- Unittest/Cpp/UnittestSavepointImpl.cpp --------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,18 +8,18 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file implements the unittests of the savepoint.
+/// This file implements the unittests of the shared savepoint implementation.
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Savepoint.h"
+#include "serialbox/Core/SavepointImpl.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 #include <unordered_map>
 
 using namespace serialbox;
 
-TEST(SavepointTest, Construction) {
+TEST(SavepointImplTest, Construction) {
   std::string name("savepoint");
   MetaInfoMap metaInfo(std::initializer_list<MetaInfoMap::value_type>{
       {"key1", MetaInfoValue(std::string("str"))}, {"key2", MetaInfoValue(double(5))}});
@@ -28,11 +28,11 @@ TEST(SavepointTest, Construction) {
   //  Empty constructor
   // -----------------------------------------------------------------------------------------------
   {
-    Savepoint s(name);
+    SavepointImpl s(name);
     EXPECT_EQ(s.name(), name);
     EXPECT_TRUE(s.empty());
 
-    const Savepoint const_s(name);
+    const SavepointImpl const_s(name);
     EXPECT_EQ(const_s.name(), name);
     EXPECT_TRUE(const_s.empty());
   }
@@ -41,7 +41,7 @@ TEST(SavepointTest, Construction) {
   //  Construct with metaInfo
   // -----------------------------------------------------------------------------------------------
   {
-    Savepoint s(name, metaInfo);
+    SavepointImpl s(name, metaInfo);
 
     EXPECT_EQ(s.name(), name);
 
@@ -69,8 +69,8 @@ TEST(SavepointTest, Construction) {
   //  Copy construct
   // -----------------------------------------------------------------------------------------------
   {
-    Savepoint s_to_copy(name, metaInfo);
-    Savepoint s(s_to_copy);
+    SavepointImpl s_to_copy(name, metaInfo);
+    SavepointImpl s(s_to_copy);
 
     EXPECT_EQ(s.name(), s_to_copy.name());
 
@@ -88,8 +88,8 @@ TEST(SavepointTest, Construction) {
   //  Copy assign
   // ---------------------------------------------------------------------------------------------
   {
-    Savepoint s_to_copy(name, metaInfo);
-    Savepoint s("name");
+    SavepointImpl s_to_copy(name, metaInfo);
+    SavepointImpl s("name");
     s = s_to_copy;
 
     EXPECT_EQ(s.name(), s_to_copy.name());
@@ -107,8 +107,8 @@ TEST(SavepointTest, Construction) {
   //  Move construct
   //----------------------------------------------------------------------------------------------
   {
-    Savepoint s_to_move(name, metaInfo);
-    Savepoint s(std::move(s_to_move));
+    SavepointImpl s_to_move(name, metaInfo);
+    SavepointImpl s(std::move(s_to_move));
 
     EXPECT_EQ(s.name(), name);
 
@@ -123,8 +123,8 @@ TEST(SavepointTest, Construction) {
   //  Move assign
   //----------------------------------------------------------------------------------------------
   {
-    Savepoint s_to_move(name, metaInfo);
-    Savepoint s("name");
+    SavepointImpl s_to_move(name, metaInfo);
+    SavepointImpl s("name");
     s = std::move(s_to_move);
 
     EXPECT_EQ(s.name(), name);
@@ -140,8 +140,8 @@ TEST(SavepointTest, Construction) {
   //  Swap
   // -----------------------------------------------------------------------------------------------
   {
-    Savepoint s(name, metaInfo);
-    Savepoint s_swap("savepoint-swap", metaInfo);
+    SavepointImpl s(name, metaInfo);
+    SavepointImpl s_swap("savepoint-swap", metaInfo);
     s_swap.metaInfo()["key1"] = MetaInfoValue(std::string("changed-value"));
 
     s.swap(s_swap);
@@ -151,10 +151,10 @@ TEST(SavepointTest, Construction) {
   }
 }
 
-TEST(SavepointTest, Comparison) {
+TEST(SavepointImplTest, Comparison) {
   {
-    Savepoint s1("s1");
-    Savepoint s2("s2");
+    SavepointImpl s1("s1");
+    SavepointImpl s2("s2");
 
     // Savepoints with diffrent names are not equal equal ...
     EXPECT_FALSE(s1 == s2);
@@ -168,8 +168,8 @@ TEST(SavepointTest, Comparison) {
   }
 
   {
-    Savepoint s1("savepoint");
-    Savepoint s2("savepoint");
+    SavepointImpl s1("savepoint");
+    SavepointImpl s2("savepoint");
 
     // Savepoints with equal names and empty metainfo are equal
     EXPECT_TRUE(s1 == s2);
@@ -186,13 +186,13 @@ TEST(SavepointTest, Comparison) {
   }
 }
 
-TEST(SavepointTest, Hash) {
-  Savepoint s1("savepoint");
+TEST(SavepointImplTest, Hash) {
+  SavepointImpl s1("savepoint");
   s1.addMetaInfo("key1", double(5));
-  Savepoint s2("savepoint");
+  SavepointImpl s2("savepoint");
   s2.addMetaInfo("key1", bool(true));
 
-  std::hash<Savepoint> hash;
+  std::hash<SavepointImpl> hash;
 
   // Check that operator() of std::hash<Savepoint> adheres to the concept:
 
@@ -210,18 +210,18 @@ TEST(SavepointTest, Hash) {
   EXPECT_EQ(hash(s1), hash(s2));
 }
 
-TEST(SavepointTest, HashMap) {
-  Savepoint s1("savepoint");
+TEST(SavepointImplTest, HashMap) {
+  SavepointImpl s1("savepoint");
   s1.addMetaInfo("key1", double(5));
 
-  Savepoint s2("savepoint");
+  SavepointImpl s2("savepoint");
   s2.addMetaInfo("key1", bool(true));
 
-  Savepoint s3("diffrent-savepoint");
+  SavepointImpl s3("diffrent-savepoint");
   s3.addMetaInfo("key1", bool(true));
 
-  std::unordered_map<Savepoint, int> hashMap;
-  using value_type = std::unordered_map<Savepoint, int>::value_type;
+  std::unordered_map<SavepointImpl, int> hashMap;
+  using value_type = std::unordered_map<SavepointImpl, int>::value_type;
 
   // Insert savepoint into empty map
   ASSERT_TRUE(hashMap.insert(value_type{s1, 0}).second);
@@ -238,12 +238,12 @@ TEST(SavepointTest, HashMap) {
   EXPECT_EQ(hashMap.size(), 3);
 }
 
-TEST(SavepointTest, toJSON) {
+TEST(SavepointImplTest, toJSON) {
   std::string name("savepoint");
   MetaInfoMap metaInfo(std::initializer_list<MetaInfoMap::value_type>{
       {"key1", MetaInfoValue(std::string("str"))}, {"key2", MetaInfoValue(double(5))}});
 
-  Savepoint s(name, metaInfo);
+  SavepointImpl s(name, metaInfo);
   json::json j = s.toJSON();
 
   // Type
@@ -263,7 +263,7 @@ TEST(SavepointTest, toJSON) {
   EXPECT_EQ(double(j["meta_info"]["key2"]["value"]), double(5));
 }
 
-TEST(SavepointTest, fromJSON) {
+TEST(SavepointImplTest, fromJSON) {
   std::string name("savepoint");
   MetaInfoMap metaInfo(std::initializer_list<MetaInfoMap::value_type>{
       {"key1", MetaInfoValue(std::string("str"))}, {"key2", MetaInfoValue(double(5))}});
@@ -288,7 +288,7 @@ TEST(SavepointTest, fromJSON) {
      }
     )"_json;
 
-    Savepoint s(j);
+    SavepointImpl s(j);
     EXPECT_EQ(s.name(), name);
 
     ASSERT_TRUE(s.metaInfo().hasKey("key1"));
@@ -308,7 +308,7 @@ TEST(SavepointTest, fromJSON) {
      }
     )"_json;
 
-    Savepoint s(j);
+    SavepointImpl s(j);
     EXPECT_EQ(s.name(), name);
     EXPECT_TRUE(s.metaInfo().empty());
   }
@@ -318,7 +318,7 @@ TEST(SavepointTest, fromJSON) {
   // -----------------------------------------------------------------------------------------------
   {
     auto j = R"({})"_json;
-    ASSERT_THROW((Savepoint(j)), Exception);
+    ASSERT_THROW((SavepointImpl(j)), Exception);
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -339,17 +339,17 @@ TEST(SavepointTest, fromJSON) {
          }
      }
     )"_json;
-    ASSERT_THROW((Savepoint(j)), Exception);
+    ASSERT_THROW((SavepointImpl(j)), Exception);
   }
 }
 
-TEST(SavepointTest, toString) {
+TEST(SavepointImplTest, toString) {
   std::string name("savepoint");
   MetaInfoMap metaInfo(std::initializer_list<MetaInfoMap::value_type>{
       {"key1", MetaInfoValue(std::string("str"))}, {"key2", MetaInfoValue(double(5))}});
 
   std::stringstream ss;
-  Savepoint savepoint(name, metaInfo);
+  SavepointImpl savepoint(name, metaInfo);
 
   ss << savepoint;
   EXPECT_NE(ss.str().find(name), std::string::npos);

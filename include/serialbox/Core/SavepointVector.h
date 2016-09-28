@@ -18,7 +18,7 @@
 
 #include "serialbox/Core/FieldID.h"
 #include "serialbox/Core/Json.h"
-#include "serialbox/Core/Savepoint.h"
+#include "serialbox/Core/SavepointImpl.h"
 #include <iosfwd>
 #include <unordered_map>
 #include <vector>
@@ -30,17 +30,17 @@ namespace serialbox {
 ///
 /// The savepoints are ordered in the sequence they were registred.
 class SavepointVector {
-  using index_type = std::unordered_map<Savepoint, int>;
+  using index_type = std::unordered_map<SavepointImpl, int>;
 
 public:
   /// \brief Map of fields per savepoint
   using FieldsPerSavepointMap = std::unordered_map<std::string, unsigned int>;
 
   /// \brief A random access iterator to `Savepoint`
-  using iterator = std::vector<Savepoint>::iterator;
+  using iterator = std::vector<SavepointImpl>::iterator;
 
   /// \brief A random access iterator to `const Savepoint`
-  using const_iterator = std::vector<Savepoint>::const_iterator;
+  using const_iterator = std::vector<SavepointImpl>::const_iterator;
 
   /// \brief Default constructor (empty)
   SavepointVector() : index_(), savepoints_(), fields_(){};
@@ -62,27 +62,27 @@ public:
 
   /// \brief Check if savepoint exists
   /// \return True iff the savepoint exists
-  bool exists(const Savepoint& savepoint) const noexcept;
+  bool exists(const SavepointImpl& savepoint) const noexcept;
 
   /// \brief Find savepoint
   /// \return Index of ´savepoint´ in the savepoint-vector or -1 if savepoint does not exist
-  int find(const Savepoint& savepoint) const noexcept;
+  int find(const SavepointImpl& savepoint) const noexcept;
 
   /// \brief Insert savepoint in savepoint vector
   /// \return Index of the newly inserted savepoint or -1 if savepoint already exists
-  int insert(const Savepoint& savepoint) noexcept;
+  int insert(const SavepointImpl& savepoint) noexcept;
 
   /// \brief Add a field to the savepoint
   /// \return True iff the field was successfully addeed to the savepoint
-  bool addField(const Savepoint& savepoint, const FieldID& fieldID) noexcept;
+  bool addField(const SavepointImpl& savepoint, const FieldID& fieldID) noexcept;
 
   /// \brief Add a field to the savepoint given a valid savepoint index ´idx´
   /// \return True iff the field was successfully addeed to the savepoint
   bool addField(int idx, const FieldID& fieldID) noexcept;
-  
+
   /// \brief Check if savepoint has field ´field´
   /// \return True iff the field ´field´ exists at savepoint
-  bool hasField(const Savepoint& savepoint, const std::string& field) noexcept;
+  bool hasField(const SavepointImpl& savepoint, const std::string& field) noexcept;
 
   /// \brief Check if savepoint has field ´field´ given a valid savepoint index ´idx´
   /// \return True iff the field ´field´ exists at savepoint
@@ -91,7 +91,7 @@ public:
   /// \brief Get the FielID of field ´field´ at savepoint ´savepoint´
   ///
   /// \throw Exception  Savepoint or field at savepoint do not exist
-  FieldID getFieldID(const Savepoint& savepoint, const std::string& field) const;
+  FieldID getFieldID(const SavepointImpl& savepoint, const std::string& field) const;
 
   /// \brief Get the FielID of field ´field´ given a valid savepoint index ´idx´
   ///
@@ -101,7 +101,7 @@ public:
   /// \brief Access fields of savepoint
   ///
   /// \throw Exception  Savepoint does not exists
-  const FieldsPerSavepointMap& fieldsOf(const Savepoint& savepoint) const;
+  const FieldsPerSavepointMap& fieldsOf(const SavepointImpl& savepoint) const;
 
   /// \brief Access fields of savepoint
   const FieldsPerSavepointMap& fieldsOf(int idx) const noexcept;
@@ -128,11 +128,11 @@ public:
   const_iterator end() const noexcept { return savepoints_.end(); }
 
   /// \brief Get savepoint
-  Savepoint& operator[](int idx) noexcept { return savepoints_[idx]; }
-  const Savepoint& operator[](int idx) const noexcept { return savepoints_[idx]; }
-  
+  SavepointImpl& operator[](int idx) noexcept { return savepoints_[idx]; }
+  const SavepointImpl& operator[](int idx) const noexcept { return savepoints_[idx]; }
+
   /// \brief Access the savepoints
-  const std::vector<Savepoint>& savepoints() const noexcept { return savepoints_; }
+  const std::vector<SavepointImpl>& savepoints() const noexcept { return savepoints_; }
 
   /// \brief Convert to JSON
   json::json toJSON() const;
@@ -146,9 +146,9 @@ public:
   friend std::ostream& operator<<(std::ostream& stream, const SavepointVector& s);
 
 private:
-  std::unordered_map<Savepoint, int> index_;  ///< Hash-map for fast lookup
-  std::vector<Savepoint> savepoints_;         ///< Vector of stored savepoints
-  std::vector<FieldsPerSavepointMap> fields_; ///< Fields of each savepoint
+  std::unordered_map<SavepointImpl, int> index_; ///< Hash-map for fast lookup
+  std::vector<SavepointImpl> savepoints_;        ///< Vector of stored savepoints
+  std::vector<FieldsPerSavepointMap> fields_;    ///< Fields of each savepoint
 };
 
 } // namespace serialbox

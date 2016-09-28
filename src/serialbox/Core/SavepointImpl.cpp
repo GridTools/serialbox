@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Savepoint.cpp ------------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/SavepointImpl.cpp --------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,24 +8,24 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains the implementation the Savepoint.
+/// This file contains the shared implementation the Savepoint.
 ///
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/Core/Logging.h"
-#include "serialbox/Core/Savepoint.h"
+#include "serialbox/Core/SavepointImpl.h"
 #include <sstream>
 
 namespace serialbox {
 
-json::json Savepoint::toJSON() const {
+json::json SavepointImpl::toJSON() const {
   json::json jsonNode;
   jsonNode["name"] = name_;
   jsonNode["meta_info"] = metaInfo_.toJSON();
   return jsonNode;
 }
 
-void Savepoint::fromJSON(const json::json& jsonNode) {
+void SavepointImpl::fromJSON(const json::json& jsonNode) {
   name_.clear();
   metaInfo_.clear();
 
@@ -40,13 +40,13 @@ void Savepoint::fromJSON(const json::json& jsonNode) {
     metaInfo_.fromJSON(jsonNode["meta_info"]);
 }
 
-std::string Savepoint::toString() const {
+std::string SavepointImpl::toString() const {
   std::stringstream ss;
   ss << *this;
   return ss.str();
 }
 
-std::ostream& operator<<(std::ostream& stream, const Savepoint& s) {
+std::ostream& operator<<(std::ostream& stream, const SavepointImpl& s) {
   stream << s.name_;
   if(!s.metaInfo().empty()) {
     stream << " [ ";

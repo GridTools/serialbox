@@ -133,7 +133,7 @@ TEST_F(SerializerImplUtilityTest, AddMetaInfo) {
 TEST_F(SerializerImplUtilityTest, RegisterSavepoints) {
   SerializerImpl s(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
 
-  Savepoint savepoint1("savepoint1");
+  SavepointImpl savepoint1("savepoint1");
   ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
 
   // Add savepoint by copying/moving
@@ -148,19 +148,19 @@ TEST_F(SerializerImplUtilityTest, RegisterSavepoints) {
   // Add empty savepoint given by name
   ASSERT_TRUE(s.registerSavepoint("savepoint2"));
   EXPECT_EQ(s.savepoints().size(), 2);
-  EXPECT_EQ(s.savepoints()[1], Savepoint("savepoint2"));
+  EXPECT_EQ(s.savepoints()[1], SavepointImpl("savepoint2"));
 
   // Add savepoint given by name and metainfo
   MetaInfoMap metaInfo;
   metaInfo.insert("key1", float(3));
   ASSERT_TRUE(s.registerSavepoint("savepoint3", metaInfo));
   EXPECT_EQ(s.savepoints().size(), 3);
-  EXPECT_EQ(s.savepoints()[2], Savepoint("savepoint3", metaInfo));
+  EXPECT_EQ(s.savepoints()[2], SavepointImpl("savepoint3", metaInfo));
 
   // Add savepoint with same name but diffrent meta-info
   ASSERT_TRUE(s.registerSavepoint("savepoint4", metaInfo));
   EXPECT_EQ(s.savepoints().size(), 4);
-  EXPECT_EQ(s.savepoints()[3], Savepoint("savepoint4", metaInfo));
+  EXPECT_EQ(s.savepoints()[3], SavepointImpl("savepoint4", metaInfo));
 
   // Add savepoint with same name and same meta-info -> Fail
   ASSERT_FALSE(s.registerSavepoint("savepoint4", metaInfo));
@@ -226,7 +226,7 @@ TEST_F(SerializerImplUtilityTest, WriteExceptions) {
   StorageView sv_wrong_dims1 = storage_wrong_dims1.toStorageView();
   StorageView sv_wrong_dims2 = storage_wrong_dims2.toStorageView();
 
-  Savepoint savepoint("savepoint");
+  SavepointImpl savepoint("savepoint");
 
   SerializerImpl s(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
   s.updateMetaData();
@@ -271,7 +271,7 @@ TEST_F(SerializerImplUtilityTest, ReadExceptions) {
   }
 
   SerializerImpl s(OpenModeKind::Read, directory->path().string(), "BinaryArchive");
-  Savepoint savepoint("savepoint");
+  SavepointImpl savepoint("savepoint");
 
   // Savepoint does no exist -> Exception
   ASSERT_THROW(s.read("field", savepoint, sv), Exception);
@@ -306,9 +306,9 @@ TEST_F(SerializerImplUtilityTest, JSONSuccess) {
                         FieldMetaInfo(TypeID::Float32, std::vector<int>{20, 15}, metaInfoField2));
 
   // Add savepoints
-  Savepoint savepoint1("savepoint");
+  SavepointImpl savepoint1("savepoint");
   ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "savepoint_key1_first"));
-  Savepoint savepoint2("savepoint");
+  SavepointImpl savepoint2("savepoint");
   ASSERT_NO_THROW(savepoint2.addMetaInfo("key1", "savepoint_key1_second"));
 
   ASSERT_TRUE(s_write.registerSavepoint(savepoint1));
@@ -352,9 +352,9 @@ TEST_F(SerializerImplUtilityTest, JSONSuccess) {
   // Savepoints
   ASSERT_EQ(s_read.savepoints().size(), 3);
 
-  const Savepoint& sp1 = s_read.savepoints()[0];
-  const Savepoint& sp2 = s_read.savepoints()[1];
-  const Savepoint& sp3 = s_read.savepoints()[2];
+  const SavepointImpl& sp1 = s_read.savepoints()[0];
+  const SavepointImpl& sp2 = s_read.savepoints()[1];
+  const SavepointImpl& sp3 = s_read.savepoints()[2];
   EXPECT_EQ(sp1.name(), "savepoint");
   EXPECT_EQ(sp2.name(), "savepoint");
   EXPECT_EQ(sp3.name(), "different-savepoint");
@@ -541,13 +541,13 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
   Storage field_6d_output(Storage::RowMajor, {2, 2, 1, 2, 1, 2});
 
   // Savepoints
-  Savepoint savepoint1_t_1("savepoint1");
+  SavepointImpl savepoint1_t_1("savepoint1");
   savepoint1_t_1.addMetaInfo("time", int(1));
-  Savepoint savepoint1_t_2("savepoint1");
+  SavepointImpl savepoint1_t_2("savepoint1");
   savepoint1_t_2.addMetaInfo("time", int(2));
-  Savepoint savepoint_u_1("savepoint_u_1");
-  Savepoint savepoint_v_1("savepoint_v_1");
-  Savepoint savepoint_6d("savepoint_6d");
+  SavepointImpl savepoint_u_1("savepoint_u_1");
+  SavepointImpl savepoint_v_1("savepoint_v_1");
+  SavepointImpl savepoint_6d("savepoint_6d");
 
   // -----------------------------------------------------------------------------------------------
   // Writing / Appending
@@ -620,7 +620,7 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
     // Check order of savepoints is correct
     ASSERT_EQ(s_read.savepoints().size(), 5);
     EXPECT_EQ(s_read.savepoints(),
-              (std::vector<Savepoint>{savepoint1_t_1, savepoint1_t_2, savepoint_u_1, savepoint_v_1,
+              (std::vector<SavepointImpl>{savepoint1_t_1, savepoint1_t_2, savepoint_u_1, savepoint_v_1,
                                       savepoint_6d}));
     // Read
     s_read.read("u", savepoint1_t_1, sv_u_0);

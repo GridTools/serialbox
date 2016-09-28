@@ -26,7 +26,7 @@
 
 namespace serialbox {
 
-/// \brief Shared implementation of the Serializers
+/// \brief Shared implementation of the Serializer
 ///
 /// Direct usage of this class is discouraged, use the Serializer classes provided by the Frontends
 /// instead.
@@ -176,24 +176,24 @@ public:
   /// \return True iff the savepoint was successfully inserted
   template <typename... Args>
   bool registerSavepoint(Args&&... args) noexcept {
-    return (savepointVector_.insert(Savepoint(std::forward<Args>(args)...)) != -1);
+    return (savepointVector_.insert(SavepointImpl(std::forward<Args>(args)...)) != -1);
   }
 
   /// \brief Add a field to the savepoint
   /// \return True iff the field was successfully addeed to the savepoint
-  bool addFieldToSavepoint(const Savepoint& savepoint, const FieldID& fieldID) noexcept {
+  bool addFieldToSavepoint(const SavepointImpl& savepoint, const FieldID& fieldID) noexcept {
     return savepointVector_.addField(savepoint, fieldID);
   }
 
   /// \brief Get the FielID of field ´field´ at savepoint ´savepoint´
   ///
   /// \throw Exception  Savepoint or field at savepoint do not exist
-  FieldID getFieldOfSavepoint(const Savepoint& savepoint, const std::string& field) const {
+  FieldID getFieldOfSavepoint(const SavepointImpl& savepoint, const std::string& field) const {
     return savepointVector_.getFieldID(savepoint, field);
   }
 
   /// \brief Get refrence to savepoint vector
-  const std::vector<Savepoint>& savepoints() const noexcept {
+  const std::vector<SavepointImpl>& savepoints() const noexcept {
     return savepointVector_.savepoints();
   }
 
@@ -231,7 +231,7 @@ public:
   /// \throw Exception
   ///
   /// \see serialbox::Archive::write "Archive::write"
-  void write(const std::string& name, const Savepoint& savepoint, StorageView& storageView);
+  void write(const std::string& name, const SavepointImpl& savepoint, StorageView& storageView);
 
   //===----------------------------------------------------------------------------------------===//
   //     Reading
@@ -256,7 +256,7 @@ public:
   /// \throw Exception
   ///
   /// \see serialbox::Archive::write "Archive::read"
-  void read(const std::string& name, const Savepoint& savepoint, StorageView& storageView);
+  void read(const std::string& name, const SavepointImpl& savepoint, StorageView& storageView);
 
   //===----------------------------------------------------------------------------------------===//
   //     JSON Serialization

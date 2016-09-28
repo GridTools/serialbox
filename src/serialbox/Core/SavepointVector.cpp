@@ -18,7 +18,7 @@
 
 namespace serialbox {
 
-int SavepointVector::insert(const Savepoint& savepoint) noexcept {
+int SavepointVector::insert(const SavepointImpl& savepoint) noexcept {
   int idx = savepoints_.size();
   if(index_.insert(typename index_type::value_type{savepoint, idx}).second) {
     savepoints_.push_back(savepoint);
@@ -28,7 +28,7 @@ int SavepointVector::insert(const Savepoint& savepoint) noexcept {
   return -1;
 }
 
-bool SavepointVector::addField(const Savepoint& savepoint, const FieldID& fieldID) noexcept {
+bool SavepointVector::addField(const SavepointImpl& savepoint, const FieldID& fieldID) noexcept {
   int idx = find(savepoint);
   if(idx != -1)
     return addField(idx, fieldID);
@@ -39,7 +39,7 @@ bool SavepointVector::addField(int idx, const FieldID& fieldID) noexcept {
   return fields_[idx].insert({fieldID.name, fieldID.id}).second;
 }
 
-bool SavepointVector::hasField(const Savepoint& savepoint, const std::string& field) noexcept {
+bool SavepointVector::hasField(const SavepointImpl& savepoint, const std::string& field) noexcept {
   int idx = find(savepoint);
   if(idx != -1)
     return hasField(idx, field);
@@ -57,7 +57,7 @@ FieldID SavepointVector::getFieldID(int idx, const std::string& field) const {
   throw Exception("field '%s' does not exists at savepoint '%s'", field, savepoints_[idx].name());
 }
 
-FieldID SavepointVector::getFieldID(const Savepoint& savepoint, const std::string& field) const {
+FieldID SavepointVector::getFieldID(const SavepointImpl& savepoint, const std::string& field) const {
   int idx = find(savepoint);
   if(idx != -1)
     return getFieldID(idx, field);
@@ -70,11 +70,11 @@ void SavepointVector::swap(SavepointVector& other) noexcept {
   fields_.swap(other.fields_);
 }
 
-bool SavepointVector::exists(const Savepoint& savepoint) const noexcept {
+bool SavepointVector::exists(const SavepointImpl& savepoint) const noexcept {
   return (find(savepoint) != -1);
 }
 
-int SavepointVector::find(const Savepoint& savepoint) const noexcept {
+int SavepointVector::find(const SavepointImpl& savepoint) const noexcept {
   auto it = index_.find(savepoint);
   return ((it != index_.end()) ? it->second : -1);
 }
@@ -84,7 +84,7 @@ const SavepointVector::FieldsPerSavepointMap& SavepointVector::fieldsOf(int idx)
 }
 
 const SavepointVector::FieldsPerSavepointMap&
-SavepointVector::fieldsOf(const Savepoint& savepoint) const {
+SavepointVector::fieldsOf(const SavepointImpl& savepoint) const {
   auto it = index_.find(savepoint);
   if(it != index_.end())
     return fieldsOf(it->second);
@@ -132,7 +132,7 @@ void SavepointVector::fromJSON(const json::json& jsonNode) {
   if(jsonNode.count("savepoints")) {
     for(auto it = jsonNode["savepoints"].begin(), end = jsonNode["savepoints"].end(); it != end;
         ++it) {
-      Savepoint sp(*it);
+      SavepointImpl sp(*it);
       insert(sp);
     }
   }
