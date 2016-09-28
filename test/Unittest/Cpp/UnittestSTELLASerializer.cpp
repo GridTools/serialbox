@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/STELLA/Serializer.cpp -------------------------------*- C++ -*-===//
+//===-- Unittest/Cpp/UnittestSTELLASerializer.cpp -----------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,16 +8,8 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains the Serializer implementation of the STELLA frontend.
+/// This file contains the unittests of the Serializer implementation of the STELLA frontend.
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/SerializerImpl.h"
-
-namespace serialbox {
-
-namespace stella {
-
-} // namespace stella
-
-} // namespace serialbox
+#include <gtest/gtest.h>

@@ -32,11 +32,16 @@ namespace stella {
 /// or double precision) or strings.
 class MetainfoSet {
 public:
+  ~MetainfoSet();
+
+  /// \brief Construct empty map
+  MetainfoSet();
+
   /// \brief Construct with MetaInfoMap (lifetime of MetaInfoMap has to be managed externally)
-  MetainfoSet(MetaInfoMap* map);
+  explicit MetainfoSet(MetaInfoMap* map);
 
   /// \brief Copy constructor
-  MetainfoSet(const MetainfoSet& other) { *this = other; }
+  MetainfoSet(const MetainfoSet& other);
 
   /// \brief Assignment operator
   ///
@@ -170,8 +175,12 @@ public:
   ///
   /// \return The size of the set is returned
   std::size_t size() const;
+  
+  /// \brief Comparison operator
+  bool operator==(const MetainfoSet& other) const;
 
 private:
+  bool owner_;
   MetaInfoMap* mapImpl_;
 };
 

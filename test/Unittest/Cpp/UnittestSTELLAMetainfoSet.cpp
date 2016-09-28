@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/UnittestStorageViewSTELLA.cpp ----------------------------------*- C++ -*-===//
+//===-- Unittest/Cpp/UnittestserMetainfoSet.cpp ----------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,7 +8,7 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains the unittests of the MetainfoSet of the STELLA Frontend.
+/// This file contains the unittests of the MetainfoSet of the ser Frontend.
 ///
 //===------------------------------------------------------------------------------------------===//
 
@@ -20,8 +20,7 @@
 using namespace serialbox;
 
 TEST(STELLAMetainfoSetTest, Construction) {
-  MetaInfoMap map;
-  stella::MetainfoSet set(&map);
+  ser::MetainfoSet set;
   EXPECT_EQ(set.size(), 0);
 
   //
@@ -31,29 +30,29 @@ TEST(STELLAMetainfoSetTest, Construction) {
   // bool
   ASSERT_NO_THROW(set.AddMetainfo("bool", bool(true)));
   EXPECT_TRUE(set.HasKey("bool"));
-  ASSERT_THROW(set.AddMetainfo("bool", bool(true)), stella::SerializationException);
+  ASSERT_THROW(set.AddMetainfo("bool", bool(true)), ser::SerializationException);
 
   // int
   ASSERT_NO_THROW(set.AddMetainfo("int32", int(32)));
   EXPECT_TRUE(set.HasKey("int32"));
-  ASSERT_THROW(set.AddMetainfo("int32", int(32)), stella::SerializationException);
+  ASSERT_THROW(set.AddMetainfo("int32", int(32)), ser::SerializationException);
 
   // float
   ASSERT_NO_THROW(set.AddMetainfo("float32", float(32.0f)));
   EXPECT_TRUE(set.HasKey("float32"));
-  ASSERT_THROW(set.AddMetainfo("float32", float(32.0f)), stella::SerializationException);
+  ASSERT_THROW(set.AddMetainfo("float32", float(32.0f)), ser::SerializationException);
   ASSERT_NO_THROW(set.AddMetainfo("float32_1", float(32.1f)));
 
   // double
   ASSERT_NO_THROW(set.AddMetainfo("float64", double(64.0f)));
   EXPECT_TRUE(set.HasKey("float64"));
-  ASSERT_THROW(set.AddMetainfo("float64", double(64.0f)), stella::SerializationException);
+  ASSERT_THROW(set.AddMetainfo("float64", double(64.0f)), ser::SerializationException);
   ASSERT_NO_THROW(set.AddMetainfo("float64_1", double(64.1)));
 
   // string
   ASSERT_NO_THROW(set.AddMetainfo("string", std::string("str")));
   EXPECT_TRUE(set.HasKey("string"));
-  ASSERT_THROW(set.AddMetainfo("string", std::string("str")), stella::SerializationException);
+  ASSERT_THROW(set.AddMetainfo("string", std::string("str")), ser::SerializationException);
 
   ASSERT_EQ(set.size(), 7);
 
@@ -71,7 +70,7 @@ TEST(STELLAMetainfoSetTest, Construction) {
   EXPECT_EQ(set.AsBool("float32"), true);
   EXPECT_EQ(set.AsBool("float64"), true);
   EXPECT_EQ(set.AsBool("string"), false);
-  ASSERT_THROW(set.AsBool("XXX"), stella::SerializationException);
+  ASSERT_THROW(set.AsBool("XXX"), ser::SerializationException);
 
   //
   // Query as Integer
@@ -79,11 +78,11 @@ TEST(STELLAMetainfoSetTest, Construction) {
   EXPECT_EQ(set.AsInt("bool"), 1);
   EXPECT_EQ(set.AsInt("int32"), 32);
   EXPECT_EQ(set.AsInt("float32"), 32);
-  ASSERT_THROW(set.AsInt("float32_1"), stella::SerializationException);
+  ASSERT_THROW(set.AsInt("float32_1"), ser::SerializationException);
   EXPECT_EQ(set.AsInt("float64"), 64);
-  ASSERT_THROW(set.AsInt("float64_1"), stella::SerializationException);
+  ASSERT_THROW(set.AsInt("float64_1"), ser::SerializationException);
   EXPECT_EQ(set.AsInt("string"), 0);
-  ASSERT_THROW(set.AsInt("XXX"), stella::SerializationException);
+  ASSERT_THROW(set.AsInt("XXX"), ser::SerializationException);
 
   //
   // Query as Float
@@ -93,7 +92,7 @@ TEST(STELLAMetainfoSetTest, Construction) {
   EXPECT_EQ(set.AsFloat("float32"), 32.0f);
   EXPECT_EQ(set.AsFloat("float64"), 64.0f);
   EXPECT_EQ(set.AsFloat("string"), 0);
-  ASSERT_THROW(set.AsFloat("XXX"), stella::SerializationException);
+  ASSERT_THROW(set.AsFloat("XXX"), ser::SerializationException);
 
   //
   // Query as Double
@@ -103,7 +102,7 @@ TEST(STELLAMetainfoSetTest, Construction) {
   EXPECT_EQ(set.AsDouble("float32"), 32.0);
   EXPECT_EQ(set.AsDouble("float64"), 64.0);
   EXPECT_EQ(set.AsDouble("string"), 0);
-  ASSERT_THROW(set.AsDouble("XXX"), stella::SerializationException);
+  ASSERT_THROW(set.AsDouble("XXX"), ser::SerializationException);
 
   //
   // Query as String
@@ -113,7 +112,7 @@ TEST(STELLAMetainfoSetTest, Construction) {
   EXPECT_EQ(set.AsString("float32"), "32.000000");
   EXPECT_EQ(set.AsString("float64"), "64.000000");
   EXPECT_EQ(set.AsString("string"), "str");
-  ASSERT_THROW(set.AsString("XXX"), stella::SerializationException);
+  ASSERT_THROW(set.AsString("XXX"), ser::SerializationException);
 
   //
   // ToString
@@ -131,9 +130,14 @@ TEST(STELLAMetainfoSetTest, Construction) {
   // Assignment
   //
   MetaInfoMap map2;
-  stella::MetainfoSet set2(&map2);
+  ser::MetainfoSet set2(&map2);
   set2 = set;
   ASSERT_EQ(set2.size(), 7);
+
+  //
+  // Comparison
+  //
+  ASSERT_TRUE(set2 == set);
 
   //
   // Clear

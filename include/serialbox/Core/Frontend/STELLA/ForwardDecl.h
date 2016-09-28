@@ -24,6 +24,12 @@ class MetaInfoValue;
 class SerializerImpl;
 class SavepointImpl;
 
+namespace stella {}
+
 } // namespace serialbox
+
+/// \namespace ser
+/// \brief Namespace of the STELLA frontend
+namespace ser = serialbox::stella;
 
 #endif

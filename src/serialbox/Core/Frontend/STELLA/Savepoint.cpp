@@ -13,17 +13,66 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/Core/Frontend/STELLA/Savepoint.h"
+#include "serialbox/Core/Frontend/STELLA/Utility.h"
 #include "serialbox/Core/SavepointImpl.h"
+#include <ostream>
 
 namespace serialbox {
 
 namespace stella {
 
-Savepoint::Savepoint(SavepointImpl* savepointImpl) { savepointImpl_ = savepointImpl; }
+namespace internal {
+
+template <class KeyType, class ValueType>
+void insertHelper(SavepointImpl* savepointImpl, KeyType&& key, ValueType&& value) {
+  try {
+    savepointImpl->addMetaInfo(key, value);
+  } catch(Exception& e) {
+    internal::throwSerializationException("Error: metainfo with key = %s exists already", key);
+  }
+}
+
+} // namespace internal
+
+Savepoint::~Savepoint() {
+  if(owner_)
+    delete savepointImpl_;
+}
+
+Savepoint::Savepoint(const std::string& name)
+    : owner_(true), savepointImpl_(new SavepointImpl(name)) {}
+
+Savepoint::Savepoint(SavepointImpl* savepointImpl) : owner_(false), savepointImpl_(savepointImpl){};
+
+Savepoint::Savepoint(const Savepoint& other) {
+  savepointImpl_ = new SavepointImpl(other.name());
+  owner_ = true;
+  *savepointImpl_ = *other.savepointImpl_;  
+}
 
 Savepoint& Savepoint::operator=(const Savepoint& other) {
   *savepointImpl_ = *other.savepointImpl_;
   return (*this);
+}
+
+void Savepoint::AddMetainfo(const std::string& key, const bool& value) {
+  internal::insertHelper(savepointImpl_, key, value);
+}
+
+void Savepoint::AddMetainfo(const std::string& key, const int& value) {
+  internal::insertHelper(savepointImpl_, key, value);
+}
+
+void Savepoint::AddMetainfo(const std::string& key, const float& value) {
+  internal::insertHelper(savepointImpl_, key, value);
+}
+
+void Savepoint::AddMetainfo(const std::string& key, const double& value) {
+  internal::insertHelper(savepointImpl_, key, value);
+}
+
+void Savepoint::AddMetainfo(const std::string& key, const std::string& value) {
+  internal::insertHelper(savepointImpl_, key, value);
 }
 
 std::string Savepoint::name() const { return savepointImpl_->name(); }

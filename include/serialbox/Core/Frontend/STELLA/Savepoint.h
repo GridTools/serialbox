@@ -17,8 +17,8 @@
 
 #include "serialbox/Core/Frontend/STELLA/ForwardDecl.h"
 #include "serialbox/Core/Frontend/STELLA/MetainfoSet.h"
-#include <string>
 #include <iosfwd>
+#include <string>
 
 namespace serialbox {
 
@@ -27,11 +27,39 @@ namespace stella {
 /// \brief Implementation of the STELLA Savepoint
 class Savepoint {
 public:
+  ~Savepoint();
+
+  /// \brief Construct empty savepoint with name ´name´
+  explicit Savepoint(const std::string& name);
+
   /// \brief Construct with SavepointImpl (lifetime of SavepointImpl has to be managed externally)
-  Savepoint(SavepointImpl* savepointImpl);
+  explicit Savepoint(SavepointImpl* savepointImpl);
+
+  /// \brief Copy constructor
+  Savepoint(const Savepoint& other);
 
   /// \brief Copy assignment
   Savepoint& operator=(const Savepoint& other);
+
+  /// \brief Add metainformation to the savepoint
+  ///
+  /// After this call a new key-value pair is registered as metainformation in the savepoint. The
+  /// order in which the metainformation is added is irrelevant.
+  ///
+  /// \param key    The key of the new metainformation
+  /// \param value  The value of the new metainformaiton
+  ///
+  /// \throw SerializationException The key exists already
+  /// @{
+  void AddMetainfo(const std::string& key, const bool& value);
+  void AddMetainfo(const std::string& key, const int& value);
+  void AddMetainfo(const std::string& key, const float& value);
+  void AddMetainfo(const std::string& key, const double& value);
+  void AddMetainfo(const std::string& key, const std::string& value);
+  void AddMetainfo(const std::string& key, const char* value) {
+    AddMetainfo(key, std::string(value));
+  }
+  /// @}
 
   /// \brief Access to the name
   std::string name() const;
@@ -46,14 +74,15 @@ public:
 
   /// \brief Compare unequal
   bool operator!=(const Savepoint& other) const;
-  
+
   /// \brief Convert to string
   std::string ToString() const;
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& out, const Savepoint& sp);
-  
+
 private:
+  bool owner_;
   SavepointImpl* savepointImpl_;
 };
 

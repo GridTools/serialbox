@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/UnittestStorageViewSTELLA.cpp ----------------------------------*- C++ -*-===//
+//===-- Unittest/Cpp/UnittestSTELLAException.cpp ------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,7 +8,7 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains the unittests of the MetainfoSet of the STELLA Frontend.
+/// This file contains the unittests of the SerializationException of the STELLA Frontend.
 ///
 //===------------------------------------------------------------------------------------------===//
 
@@ -21,7 +21,7 @@ using namespace serialbox;
 TEST(STELLAExceptionTest, Throw) {
   auto throwAnExcpetion = [](bool doIt) -> void {
     if(doIt) {
-      stella::SerializationException exception;
+      ser::SerializationException exception;
       exception.Init("you asked for it!");
       throw exception;
     }
@@ -31,10 +31,9 @@ TEST(STELLAExceptionTest, Throw) {
   EXPECT_NO_THROW(throwAnExcpetion(false));
 
   try {
-    stella::internal::throwSerializationException("the %s should be %i", "answer", 42);
-  } catch(stella::SerializationException& e) {
+    ser::internal::throwSerializationException("the %s should be %i", "answer", 42);
+  } catch(ser::SerializationException& e) {
     EXPECT_STREQ(e.what(), "the answer should be 42");
     EXPECT_EQ(e.message(), "the answer should be 42");
-
   }
 }

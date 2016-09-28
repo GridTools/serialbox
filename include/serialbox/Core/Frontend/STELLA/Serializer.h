@@ -17,6 +17,8 @@
 
 #include "serialbox/Core/Frontend/STELLA/ForwardDecl.h"
 #include "serialbox/Core/Frontend/STELLA/Savepoint.h"
+#include "serialbox/Core/Frontend/STELLA/MetainfoSet.h"
+#include "serialbox/Core/Frontend/STELLA/DataFieldInfo.h"
 #include <vector>
 
 namespace serialbox {

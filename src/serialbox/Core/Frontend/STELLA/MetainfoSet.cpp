@@ -33,10 +33,22 @@ static MetaInfoMap::const_iterator checkKeyExists(const MetaInfoMap* mapImpl, Ke
 }
 }
 
-MetainfoSet::MetainfoSet(MetaInfoMap* map) { mapImpl_ = map; }
+MetainfoSet::~MetainfoSet() {
+  if(owner_)
+    delete mapImpl_;
+}
+
+MetainfoSet::MetainfoSet() : owner_(true), mapImpl_(new MetaInfoMap) {}
+
+MetainfoSet::MetainfoSet(MetaInfoMap* map) : owner_(false), mapImpl_(map){};
+
+MetainfoSet::MetainfoSet(const MetainfoSet& other) {
+  mapImpl_ = new MetaInfoMap;
+  owner_ = true;
+  *mapImpl_ = *other.mapImpl_;
+}
 
 MetainfoSet& MetainfoSet::operator=(const MetainfoSet& other) {
-  mapImpl_->clear();
   *mapImpl_ = *other.mapImpl_;
   return (*this);
 }
@@ -114,6 +126,10 @@ std::string MetainfoSet::ToString() const {
 }
 
 std::size_t MetainfoSet::size() const { return mapImpl_->size(); }
+
+bool MetainfoSet::operator==(const MetainfoSet& other) const {
+  return (*mapImpl_ == *other.mapImpl_);
+}
 
 } // namespace stella
 

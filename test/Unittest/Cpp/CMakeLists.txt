@@ -35,6 +35,9 @@ set(CPP_UNITTEST_SOURCES
   UnittestSTELLAStorageView.cpp
   UnittestSTELLAMetainfoSet.cpp
   UnittestSTELLAException.cpp
+  UnittestSTELLASavepoint.cpp  
+  UnittestSTELLASerializer.cpp
+  UnittestSTELLADataFieldInfo.cpp
 )
 
 # Setup external libraries

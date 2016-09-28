@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/UnittestStorageViewSTELLA.cpp ----------------------------------*- C++ -*-===//
+//===-- Unittest/Cpp/UnittestSTELLAStorageView.cpp ----------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
