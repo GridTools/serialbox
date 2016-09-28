@@ -34,7 +34,7 @@ class MetainfoSet {
 public:
   /// \brief Construct with MetaInfoMap (lifetime of MetaInfoMap has to be managed externally)
   MetainfoSet(MetaInfoMap* map);
-  
+
   /// \brief Copy constructor
   MetainfoSet(const MetainfoSet& other) { *this = other; }
 

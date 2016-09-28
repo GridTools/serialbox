@@ -125,7 +125,7 @@ public:
   /// \return Copy of the value of the element as type ´T´
   ///
   /// \throw Exception  Key ´key´ does not exist or conversion results in truncation of the value
-  /// 
+  ///
   /// \see MetaInfoValue::as
   template <class ValueType, class KeyType>
   ValueType as(KeyType&& key) {

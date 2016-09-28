@@ -29,7 +29,7 @@ namespace serialbox {
 ///
 /// Savepoints have a specialization of std::hash and can thus be used in hash-maps such as
 /// std::unordered_map.
-/// 
+///
 /// Direct usage of this class is discouraged, use the Savepoint classes provided by the Frontends
 /// instead.
 class SavepointImpl {

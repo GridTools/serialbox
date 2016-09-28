@@ -293,7 +293,7 @@ protected:
   /// If an inconsistency is detected, an Exception is thrown.
   void checkStorageView(const std::string& name, const StorageView& storageView) const;
 
-  /// \brief Check if the current directory contains meta-information of an older version of 
+  /// \brief Check if the current directory contains meta-information of an older version of
   /// serialbox and upgrade it if necessary
   ///
   /// The function will check if there is a ´prefix.json´ file which is newer than ´MetaData.json´

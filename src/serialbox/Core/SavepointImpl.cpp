@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Logging.h"
 #include "serialbox/Core/SavepointImpl.h"
+#include "serialbox/Core/Logging.h"
 #include <sstream>
 
 namespace serialbox {

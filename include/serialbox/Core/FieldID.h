@@ -15,8 +15,8 @@
 #ifndef SERIALBOX_CORE_FIELDID_H
 #define SERIALBOX_CORE_FIELDID_H
 
-#include <string>
 #include <iosfwd>
+#include <string>
 
 namespace serialbox {
 

@@ -24,7 +24,7 @@ bool operator==(const FieldID& left, const FieldID& right) {
 bool operator!=(const FieldID& left, const FieldID& right) { return (!(left == right)); }
 
 std::ostream& operator<<(std::ostream& stream, const FieldID& f) {
-  return (stream << "{" << f.name << ", " <<  f.id << "}");
+  return (stream << "{" << f.name << ", " << f.id << "}");
 }
 
 } // namespace serialbox

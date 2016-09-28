@@ -69,7 +69,7 @@ public:
     static_assert(isSupported<T>::value, "ValueType is not supported");
     return T(); // Unreachable
   }
-  
+
   /// \brief Implicitly convert value to type T
   ///
   /// \see MetaInfoValue::as
@@ -101,7 +101,7 @@ public:
   std::string toString() const;
 
 private:
-  template<class T>
+  template <class T>
   const T& convert() const noexcept {
     return *boost::any_cast<T>(&any_);
   }

@@ -13,8 +13,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Logging.h"
 #include "serialbox/Core/StorageView.h"
+#include "serialbox/Core/Logging.h"
 #include "serialbox/Core/StorageViewIterator.h"
 #include <algorithm>
 

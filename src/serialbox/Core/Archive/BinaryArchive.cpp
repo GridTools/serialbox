@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
+#include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/SHA256.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/Version.h"
@@ -39,7 +39,7 @@ void BinaryArchive::readMetaDataFromJson() {
     return;
 
   boost::filesystem::path filename = directory_ / Archive::ArchiveMetaDataFile;
-  
+
   // Check if metaData file exists
   if(!boost::filesystem::exists(filename)) {
     if(mode_ == OpenModeKind::Append)

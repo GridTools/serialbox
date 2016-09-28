@@ -13,8 +13,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Logging.h"
 #include "serialbox/Core/SavepointVector.h"
+#include "serialbox/Core/Logging.h"
 
 namespace serialbox {
 
@@ -57,7 +57,8 @@ FieldID SavepointVector::getFieldID(int idx, const std::string& field) const {
   throw Exception("field '%s' does not exists at savepoint '%s'", field, savepoints_[idx].name());
 }
 
-FieldID SavepointVector::getFieldID(const SavepointImpl& savepoint, const std::string& field) const {
+FieldID SavepointVector::getFieldID(const SavepointImpl& savepoint,
+                                    const std::string& field) const {
   int idx = find(savepoint);
   if(idx != -1)
     return getFieldID(idx, field);
@@ -80,7 +81,7 @@ int SavepointVector::find(const SavepointImpl& savepoint) const noexcept {
 }
 
 const SavepointVector::FieldsPerSavepointMap& SavepointVector::fieldsOf(int idx) const noexcept {
- return fields_[idx];
+  return fields_[idx];
 }
 
 const SavepointVector::FieldsPerSavepointMap&

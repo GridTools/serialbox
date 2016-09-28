@@ -120,7 +120,7 @@ public:
   const MetaInfoMap& getMetaInfoOf(StringType&& name) const {
     return getFieldMetaInfoOf(name).metaInfo();
   }
-  
+
   /// \brief Get Dimensions of field with name `name`
   ///
   /// \param name  Name of the field
@@ -140,7 +140,7 @@ public:
       return fieldIt->second.dims();
     throw Exception("field '%s' does not exist in FieldMap", name);
   }
-  
+
   /// \brief Get Type of field with name `name`
   ///
   /// \param name  Name of the field

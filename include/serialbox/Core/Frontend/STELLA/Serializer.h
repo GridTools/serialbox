@@ -21,9 +21,7 @@ namespace stella {
 
 namespace internal {
 
-class Serializer {
-  
-};
+class Serializer {};
 
 } // namespace internal
 

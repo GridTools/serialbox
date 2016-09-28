@@ -12,11 +12,11 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/STLExtras.h"
-#include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Type.h"
 #include "serialbox/Core/Unreachable.h"
 #include "serialbox/Core/Version.h"

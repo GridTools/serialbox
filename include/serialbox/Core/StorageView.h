@@ -82,7 +82,7 @@ public:
   /// \brief Get raw data pointer
   Byte* originPtr() noexcept { return originPtr_; }
   const Byte* originPtr() const noexcept { return originPtr_; }
-  
+
   /// \brief Get type
   TypeID type() const noexcept { return type_; }
 
