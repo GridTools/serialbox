@@ -97,7 +97,7 @@ public:
   /// \throw Exception  Key ´key´ does not exist in the globalMetaInfo map or value cannot be
   ///                   converted to type ´T´
   template <class T, class StringType>
-  const T& getGlobalMetainfoAs(StringType&& key) const {
+  T getGlobalMetainfoAs(StringType&& key) const {
     try {
       return globalMetaInfo_.at(key).template as<T>();
     } catch(Exception& e) {

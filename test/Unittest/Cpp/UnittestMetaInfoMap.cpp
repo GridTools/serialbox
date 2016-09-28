@@ -120,6 +120,21 @@ TEST(MetaInfoMapTest, Comparison) {
   EXPECT_TRUE(map1 != map2);
 }
 
+TEST(MetaInfoMapTest, Conversion) {
+  MetaInfoMap map;  
+  ASSERT_TRUE(map.insert("key", int(32)));
+  EXPECT_EQ(map.size(), 1);
+  
+  // Boolean
+  EXPECT_EQ(map.as<bool>("key"), true);
+  EXPECT_EQ(map.as<int>("key"), 32);
+  EXPECT_EQ(map.as<std::int64_t>("key"), 32);  
+  EXPECT_EQ(map.as<float>("key"), 32.0f);
+  EXPECT_EQ(map.as<double>("key"), 32.0);
+  EXPECT_EQ(map.as<std::string>("key"), "32");
+  ASSERT_THROW(map.as<bool>("XXX"), Exception);
+}
+
 TEST(MetaInfoMapTest, toJSON) {
   MetaInfoMap map;
   EXPECT_TRUE(map.toJSON().empty());

@@ -48,13 +48,10 @@ TEST(SavepointTest, Construction) {
     ASSERT_TRUE(s.metaInfo().hasKey("key1"));
     EXPECT_EQ(s.metaInfo().at("key1").as<std::string>(), "str");
     EXPECT_EQ(s.getMetaInfoAs<std::string>("key1"), "str");
-
+    
     ASSERT_TRUE(s.metaInfo().hasKey("key2"));
     EXPECT_EQ(s.metaInfo().at("key2").as<double>(), double(5));
     EXPECT_EQ(s.getMetaInfoAs<double>("key2"), double(5));
-
-    // Wrong type -> Exception
-    EXPECT_THROW(s.getMetaInfoAs<float>("key2"), Exception);
 
     // Non-existent key -> Exception
     EXPECT_THROW(s.getMetaInfoAs<double>("key3"), Exception);
@@ -102,6 +99,7 @@ TEST(SavepointTest, Construction) {
     EXPECT_EQ(s.metaInfo().at("key1").as<std::string>(),
               s_to_copy.metaInfo().at("key1").as<std::string>());
 
+    std::cout << "what the" << std::endl;
     ASSERT_TRUE(s.metaInfo().hasKey("key2"));
     EXPECT_EQ(s.metaInfo().at("key2").as<double>(), double(5));
     EXPECT_EQ(s.metaInfo().at("key2").as<double>(), s_to_copy.metaInfo().at("key2").as<double>());

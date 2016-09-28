@@ -22,7 +22,7 @@
 
 namespace serialbox {
 
-/// \brief Represent a meta information value as a type-id and type-erased data
+/// \brief Represent an immutable meta information value as a type-id and type-erased data
 class MetaInfoValue {
 public:
   /// \brief Default constructor
@@ -55,35 +55,26 @@ public:
   }
   explicit MetaInfoValue(const char* value) : MetaInfoValue(std::string(value)) {}
 
-  /// \brief Convert value to type T
+  /// \brief Convert value of element with key ´key´ to type ´T´
   ///
-  /// \throws Exception  TypeID of type T does not match TypeID of the captured value
+  /// If the type ´T´ is different than the internally stored type, the function does its best to
+  /// convert the value to ´T´ in a meaningful way.
+  ///
+  /// \return Copy of the value of the element as type ´T´
+  ///
+  /// \throw Exception  Conversion would result in truncation of the value (only applies to int and
+  ///                   std::int64_t conversion of floating point values)
   template <class T>
-  T& as() {
-    if(ToTypeID<T>::value != type_)
-      throw Exception("cannot convert [type = %s] to [T = %s]", TypeUtil::toString(type_),
-                      TypeUtil::toString(ToTypeID<T>::value));
-    return (*boost::any_cast<T>(&any_));
-  }
-
-  template <class T>
-  const T& as() const {
-    if(ToTypeID<T>::value != type_)
-      throw Exception("cannot convert [type = %s] to [T = %s]", TypeUtil::toString(type_),
-                      TypeUtil::toString(ToTypeID<T>::value));
-    return (*boost::any_cast<T>(&any_));
+  T as() const {
+    static_assert(isSupported<T>::value, "ValueType is not supported");
+    return T(); // Unreachable
   }
   
   /// \brief Implicitly convert value to type T
   ///
-  /// \throws Exception  TypeID of type T does not match TypeID of the captured value
+  /// \see MetaInfoValue::as
   template <class T>
   operator T() const {
-    return as<T>();
-  }
-
-  template <class T>
-  operator T() {
     return as<T>();
   }
 
@@ -107,12 +98,36 @@ public:
   const boost::any& any() const noexcept { return any_; }
 
   /// \brief Convert to string
-  std::string toString() const noexcept;
+  std::string toString() const;
+
+private:
+  template<class T>
+  const T& convert() const noexcept {
+    return *boost::any_cast<T>(&any_);
+  }
 
 private:
   TypeID type_;    ///< Type of the data
   boost::any any_; ///< Type-erased value of the data
 };
+
+template <>
+bool MetaInfoValue::as() const;
+
+template <>
+int MetaInfoValue::as() const;
+
+template <>
+std::int64_t MetaInfoValue::as() const;
+
+template <>
+float MetaInfoValue::as() const;
+
+template <>
+double MetaInfoValue::as() const;
+
+template <>
+std::string MetaInfoValue::as() const;
 
 } // namespace serialbox
 

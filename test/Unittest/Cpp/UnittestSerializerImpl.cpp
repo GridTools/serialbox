@@ -121,7 +121,6 @@ TEST_F(SerializerImplUtilityTest, AddMetaInfo) {
   // Query meta-info
   EXPECT_EQ(s.getGlobalMetainfoAs<bool>("bool"), bool(true));
   EXPECT_EQ(s.globalMetaInfo().at("bool").as<bool>(), bool(true));
-  ASSERT_THROW(s.getGlobalMetainfoAs<double>("bool"), Exception);
   ASSERT_THROW(s.getGlobalMetainfoAs<bool>("bool-not-present"), Exception);
 
   EXPECT_EQ(s.getGlobalMetainfoAs<int>("int32"), int(32));

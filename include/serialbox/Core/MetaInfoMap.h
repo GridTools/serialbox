@@ -116,21 +116,22 @@ public:
     return insert(std::forward<KeyType>(key), std::string(value));
   }
 
-  /// \brief Convert value of element with key ´key´ to type ´T´ 
-  /// 
-  /// If the type ´T´ is different than the internally stored type, the function does its best to 
+  /// \brief Convert value of element with key ´key´ to type ´T´
+  ///
+  /// If the type ´T´ is different than the internally stored type, the function does its best to
   /// convert the value to ´T´ in a meaningful way.
-  /// 
+  ///
   /// \param key    Key of the new element
   /// \return Copy of the value of the element as type ´T´
-  /// 
+  ///
   /// \throw Exception  Key ´key´ does not exist or conversion results in truncation of the value
-  template<class ValueType>
-  ValueType as(const std::string& key) {
-    static_assert(isSupported<ValueType>::value, "ValueType is not supported");
-    return value_type(); // Never reached;
+  /// 
+  /// \see MetaInfoValue::as
+  template <class ValueType, class KeyType>
+  ValueType as(KeyType&& key) {
+    return at(key).template as<ValueType>();
   }
-  
+
   /// \brief Removes from the MetaInfoMap either a single element or a range of
   /// elements [first,last)
   iterator erase(const_iterator position) { return map_.erase(position); }
@@ -185,7 +186,7 @@ public:
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const MetaInfoMap& s);
-  
+
 private:
   map_type map_;
 };

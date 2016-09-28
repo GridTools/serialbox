@@ -46,17 +46,17 @@ std::pair<std::int64_t, std::int64_t> getValuePair<std::int64_t>() {
 
 template <>
 std::pair<float, float> getValuePair<float>() {
-  return std::make_pair<float, float>(1.0f, 2.0f);
+  return std::make_pair<float, float>(1.0f, 2.2f);
 }
 
 template <>
 std::pair<double, double> getValuePair<double>() {
-  return std::make_pair<double, double>(1.0, 2.0);
+  return std::make_pair<double, double>(1.0, 2.2);
 }
 
 template <>
 std::pair<std::string, std::string> getValuePair<std::string>() {
-  return std::make_pair<std::string, std::string>("str1", "str2");
+  return std::make_pair<std::string, std::string>("str1", "55");
 }
 
 // Convert value to string
@@ -68,6 +68,11 @@ std::string toString(const T& v) {
 template <>
 std::string toString<std::string>(const std::string& v) {
   return v;
+}
+
+template <>
+std::string toString<bool>(const bool& v) {
+  return (v ? "true" : "false");
 }
 
 using TestTypes = testing::Types<bool, double, float, int, std::int64_t, std::string>;
@@ -102,19 +107,95 @@ TYPED_TEST(MetaInfoValueTest, Constrcution) {
   // Explicit conversion
   EXPECT_EQ(value1.as<TypeParam>(), pair.first);
   EXPECT_EQ(value2.as<TypeParam>(), pair.second);
-
+  
   // Implicit conversion
   TypeParam v1 = value1;
   TypeParam v2 = value2;
   EXPECT_TRUE(v1 == pair.first);
   EXPECT_TRUE(v2 == pair.second);
 
-  // Conversion with wrong type
-  if(std::is_same<TypeParam, std::string>::value)
-    ASSERT_THROW(value1.as<bool>(), Exception);
-  else
-    ASSERT_THROW(value1.as<std::string>(), Exception);
-
+  // Conversion to different type  
+  
+  //
+  // bool
+  //
+  if(std::is_same<TypeParam, bool>::value) {
+   EXPECT_EQ(value1.as<bool>(), true); 
+   EXPECT_EQ(value1.as<int>(), 1); 
+   EXPECT_EQ(value1.as<std::int64_t>(), true); 
+   EXPECT_EQ(value1.as<float>(), true); 
+   EXPECT_EQ(value1.as<double>(), true); 
+   EXPECT_EQ(value1.as<std::string>(), "true"); 
+  }
+  
+  //
+  // int
+  //
+  if(std::is_same<TypeParam, int>::value) {
+   EXPECT_EQ(value1.as<bool>(), true); 
+   EXPECT_EQ(value1.as<int>(), 1); 
+   EXPECT_EQ(value1.as<std::int64_t>(), 1); 
+   EXPECT_EQ(value1.as<float>(), 1.0f); 
+   EXPECT_EQ(value1.as<double>(), 1.0); 
+   EXPECT_EQ(value1.as<std::string>(), "1"); 
+  }
+  
+  //
+  // std::int64_t
+  //
+  if(std::is_same<TypeParam, std::int64_t>::value) {
+   EXPECT_EQ(value1.as<bool>(), true); 
+   EXPECT_EQ(value1.as<int>(), 1); 
+   EXPECT_EQ(value1.as<std::int64_t>(), 1); 
+   EXPECT_EQ(value1.as<float>(), 1.0f); 
+   EXPECT_EQ(value1.as<double>(), 1.0); 
+   EXPECT_EQ(value1.as<std::string>(), "1"); 
+  }
+  
+  //
+  // float
+  //
+  if(std::is_same<TypeParam, float>::value) {
+   EXPECT_EQ(value1.as<bool>(), true); 
+   EXPECT_EQ(value1.as<int>(), 1); 
+   EXPECT_EQ(value1.as<std::int64_t>(), 1); 
+   EXPECT_EQ(value1.as<float>(), 1.0f); 
+   EXPECT_EQ(value1.as<double>(), 1.0); 
+   EXPECT_EQ(value1.as<std::string>(), "1.000000"); 
+   
+   // Truncation -> Exception
+   EXPECT_THROW(value2.as<int>(), Exception);  
+   EXPECT_THROW(value2.as<std::int64_t>(), Exception); 
+  }
+  
+  //
+  // double
+  //
+  if(std::is_same<TypeParam, double>::value) {
+   EXPECT_EQ(value1.as<bool>(), true); 
+   EXPECT_EQ(value1.as<int>(), 1); 
+   EXPECT_EQ(value1.as<std::int64_t>(), 1); 
+   EXPECT_EQ(value1.as<float>(), 1.0f); 
+   EXPECT_EQ(value1.as<double>(), 1.0); 
+   EXPECT_EQ(value1.as<std::string>(), "1.000000"); 
+   
+   // Truncation -> Exception
+   EXPECT_THROW(value2.as<int>(), Exception);  
+   EXPECT_THROW(value2.as<std::int64_t>(), Exception); 
+  }
+  
+  //
+  // double
+  //
+  if(std::is_same<TypeParam, std::string>::value) {
+   EXPECT_EQ(value2.as<bool>(), true); 
+   EXPECT_EQ(value2.as<int>(), 55); 
+   EXPECT_EQ(value2.as<std::int64_t>(), 55); 
+   EXPECT_EQ(value2.as<float>(), 55.0f); 
+   EXPECT_EQ(value2.as<double>(), 55.0); 
+   EXPECT_EQ(value2.as<std::string>(), "55"); 
+  }
+  
   // Swap
   value1.swap(value2);
   EXPECT_EQ(value1.as<TypeParam>(), pair.second);

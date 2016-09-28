@@ -74,7 +74,7 @@ public:
   /// \throw Exception  Key ´key´ does not exist in the metaInfo map or value cannot be
   ///                   converted to type ´T´
   template <class T, class StringType>
-  const T& getMetaInfoAs(StringType&& key) const {
+  T getMetaInfoAs(StringType&& key) const {
     try {
       return metaInfo_.at(key).template as<T>();
     } catch(Exception& e) {

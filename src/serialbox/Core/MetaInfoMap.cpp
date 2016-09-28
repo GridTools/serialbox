@@ -43,7 +43,7 @@ MetaInfoMap::mapped_type& MetaInfoMap::at(const MetaInfoMap::key_type& key) {
   try {
     return map_.at(key);
   } catch(std::out_of_range&) {
-    throw Exception("no key '%s' exists in MetaInfoMap", key);
+    throw Exception("no key '%s' exists", key);
   }
 }
 
@@ -51,7 +51,7 @@ const MetaInfoMap::mapped_type& MetaInfoMap::at(const MetaInfoMap::key_type& key
   try {
     return map_.at(key);
   } catch(std::out_of_range&) {
-    throw Exception("no key '%s' exists in MetaInfoMap", key);
+    throw Exception("no key '%s' exists", key);
   }
 }
 

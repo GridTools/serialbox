@@ -14,9 +14,22 @@
 
 #include "serialbox/Core/MetaInfoValue.h"
 #include "serialbox/Core/Unreachable.h"
-#include <iostream>
+#include <sstream>
 
 namespace serialbox {
+
+namespace internal {
+
+template <class ValueType, class StringType>
+static ValueType fromString(StringType&& valueStr) {
+  std::stringstream ss;
+  ss << valueStr;
+  ValueType value;
+  ss >> value;
+  return value;
+}
+
+} // namespace internal
 
 bool MetaInfoValue::operator==(const MetaInfoValue& right) const noexcept {
   if(type_ != right.type_)
@@ -24,37 +37,155 @@ bool MetaInfoValue::operator==(const MetaInfoValue& right) const noexcept {
 
   switch(type_) {
   case TypeID::Boolean:
-    return (*boost::any_cast<bool>(&any_) == *boost::any_cast<bool>(&right.any_));
+    return (convert<bool>() == right.convert<bool>());
   case TypeID::Int32:
-    return (*boost::any_cast<int>(&any_) == *boost::any_cast<int>(&right.any_));
+    return (convert<int>() == right.convert<int>());
   case TypeID::Int64:
-    return (*boost::any_cast<std::int64_t>(&any_) == *boost::any_cast<std::int64_t>(&right.any_));
+    return (convert<std::int64_t>() == right.convert<std::int64_t>());
   case TypeID::Float32:
-    return (*boost::any_cast<float>(&any_) == *boost::any_cast<float>(&right.any_));
+    return (convert<float>() == right.convert<float>());
   case TypeID::Float64:
-    return (*boost::any_cast<double>(&any_) == *boost::any_cast<double>(&right.any_));
+    return (convert<double>() == right.convert<double>());
   case TypeID::String:
-    return (*boost::any_cast<std::string>(&any_) == *boost::any_cast<std::string>(&right.any_));
+    return (convert<std::string>() == right.convert<std::string>());
   default:
     serialbox_unreachable("Invalid TypeID");
   }
 }
 
-/// \brief Convert to string
-std::string MetaInfoValue::toString() const noexcept {
+std::string MetaInfoValue::toString() const { return as<std::string>(); }
+
+template <>
+bool MetaInfoValue::as() const {
   switch(type_) {
   case TypeID::Boolean:
-    return std::to_string(*boost::any_cast<bool>(&any_));
+    return convert<bool>();
   case TypeID::Int32:
-    return std::to_string(*boost::any_cast<int>(&any_));
+    return (bool)convert<int>();
   case TypeID::Int64:
-    return std::to_string(*boost::any_cast<std::int64_t>(&any_));
+    return (bool)convert<std::int64_t>();
   case TypeID::Float32:
-    return std::to_string(*boost::any_cast<float>(&any_));
+    return (bool)convert<float>();
   case TypeID::Float64:
-    return std::to_string(*boost::any_cast<double>(&any_));
+    return (bool)convert<double>();
   case TypeID::String:
-    return (*boost::any_cast<std::string>(&any_));
+    return internal::fromString<bool>(convert<std::string>());
+  default:
+    serialbox_unreachable("Invalid TypeID");
+  }
+}
+
+template <>
+int MetaInfoValue::as() const {
+  switch(type_) {
+  case TypeID::Boolean:
+    return (int)convert<bool>();
+  case TypeID::Int32:
+    return convert<int>();
+  case TypeID::Int64:
+    return (int)convert<std::int64_t>();
+  case TypeID::Float32: {
+    if((float)static_cast<int>(convert<float>()) != convert<float>())
+      throw Exception("conversion of [type = %s] to [T = %s] results in truncation of the value",
+                      TypeUtil::toString(type_), TypeUtil::toString(ToTypeID<int>::value));
+    return (int)convert<float>();
+  }
+  case TypeID::Float64: {
+    if((double)static_cast<int>(convert<double>()) != convert<double>())
+      throw Exception("conversion of [type = %s] to [T = %s] results in truncation of the value",
+                      TypeUtil::toString(type_), TypeUtil::toString(ToTypeID<int>::value));
+    return (int)convert<double>();
+  }
+  case TypeID::String:
+    return internal::fromString<int>(convert<std::string>());
+  default:
+    serialbox_unreachable("Invalid TypeID");
+  }
+}
+
+template <>
+std::int64_t MetaInfoValue::as() const {
+  switch(type_) {
+  case TypeID::Boolean:
+    return (std::int64_t)convert<bool>();
+  case TypeID::Int32:
+    return (std::int64_t)convert<int>();
+  case TypeID::Int64:
+    return convert<std::int64_t>();
+  case TypeID::Float32: {
+    if((float)static_cast<std::int64_t>(convert<float>()) != convert<float>())
+      throw Exception("conversion of [type = %s] to [T = %s] results in truncation of the value",
+                      TypeUtil::toString(type_), TypeUtil::toString(ToTypeID<std::int64_t>::value));
+    return (std::int64_t)convert<float>();
+  }
+  case TypeID::Float64: {
+    if((double)static_cast<std::int64_t>(convert<double>()) != convert<double>())
+      throw Exception("conversion of [type = %s] to [T = %s] results in truncation of the value",
+                      TypeUtil::toString(type_), TypeUtil::toString(ToTypeID<std::int64_t>::value));
+    return (std::int64_t)convert<double>();
+  }
+  case TypeID::String:
+    return internal::fromString<std::int64_t>(convert<std::string>());
+  default:
+    serialbox_unreachable("Invalid TypeID");
+  }
+}
+
+template <>
+float MetaInfoValue::as() const {
+  switch(type_) {
+  case TypeID::Boolean:
+    return (float)convert<bool>();
+  case TypeID::Int32:
+    return (float)convert<int>();
+  case TypeID::Int64:
+    return (float)convert<std::int64_t>();
+  case TypeID::Float32:
+    return convert<float>();
+  case TypeID::Float64:
+    return (float)convert<double>();
+  case TypeID::String:
+    return internal::fromString<float>(convert<std::string>());
+  default:
+    serialbox_unreachable("Invalid TypeID");
+  }
+}
+
+template <>
+double MetaInfoValue::as() const {
+  switch(type_) {
+  case TypeID::Boolean:
+    return (double)convert<bool>();
+  case TypeID::Int32:
+    return (double)convert<int>();
+  case TypeID::Int64:
+    return (double)convert<std::int64_t>();
+  case TypeID::Float32:
+    return (double)convert<float>();
+  case TypeID::Float64:
+    return convert<double>();
+  case TypeID::String:
+    return internal::fromString<double>(convert<std::string>());
+  default:
+    serialbox_unreachable("Invalid TypeID");
+  }
+}
+
+template <>
+std::string MetaInfoValue::as() const {
+  switch(type_) {
+  case TypeID::Boolean:
+    return (convert<bool>() ? "true" : "false");
+  case TypeID::Int32:
+    return std::to_string(convert<int>());
+  case TypeID::Int64:
+    return std::to_string(convert<std::int64_t>());
+  case TypeID::Float32:
+    return std::to_string(convert<float>());
+  case TypeID::Float64:
+    return std::to_string(convert<double>());
+  case TypeID::String:
+    return convert<std::string>();
   default:
     serialbox_unreachable("Invalid TypeID");
   }
