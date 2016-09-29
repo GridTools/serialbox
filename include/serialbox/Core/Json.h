@@ -16,6 +16,7 @@
 #ifndef SERIALBOX_CORE_JSON_H
 #define SERIALBOX_CORE_JSON_H
 
+// TODO: change this for install targets
 #include <json/json.hpp>
 
 /// \namespace json

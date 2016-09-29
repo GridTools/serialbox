@@ -12,11 +12,11 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/STLExtras.h"
+#include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Type.h"
 #include "serialbox/Core/Unreachable.h"
 #include "serialbox/Core/Version.h"
@@ -40,43 +40,36 @@ static std::string vecToString(VecType&& vec) {
 }
 
 SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
-                               const std::string& archiveName, std::string prefix)
+                               const std::string& prefix, const std::string& archiveName)
     : mode_(mode), directory_(directory), prefix_(prefix) {
 
   LOG(INFO) << "Creating Serializer (mode = " << mode_ << ") from directory " << directory_;
 
   // Validate integrity of directory (non-existent directories are created by the archive)
   try {
-    bool directoryExists = boost::filesystem::exists(directory_);
-
-    switch(mode) {
-    case OpenModeKind::Read: {
-      if(!directoryExists)
-        throw Exception("cannot create Serializer: directory %s does not exist", directory_);
-      break;
-    }
-    case OpenModeKind::Write: {
-      if(directoryExists && !boost::filesystem::is_empty(directory_))
-        throw Exception("cannot create Serializer: directory %s is not empty", directory_);
-      break;
-    }
-    case OpenModeKind::Append:
-      break;
-    }
+    if(mode_ == OpenModeKind::Read && !boost::filesystem::exists(directory_))
+      throw Exception("cannot create Serializer: directory %s does not exist", directory_);
   } catch(boost::filesystem::filesystem_error& e) {
     throw Exception("filesystem error: %s", e.what());
   }
 
-  // Construct Archive and meta-data
-  constructMetaDataFromJson();
-  constructArchive(archiveName);
+  // Check if we deal with an older version of serialbox and perform necessary upgrades, otherwise
+  // construct from meta-datafrom JSON
+  if(!upgradeMetaData()) {
+    constructMetaDataFromJson();
+    constructArchive(archiveName);
+  }
+
+  // If mode is writing drop all files
+  if(mode_ == OpenModeKind::Write)
+    clear();
 }
 
 void SerializerImpl::clear() noexcept {
   savepointVector_.clear();
   fieldMap_.clear();
   globalMetaInfo_.clear();
-  archive_.release();
+  archive_->clear();
 }
 
 std::vector<std::string> SerializerImpl::fieldnames() const {
@@ -204,19 +197,11 @@ void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoin
 void SerializerImpl::constructMetaDataFromJson() {
   LOG(INFO) << "Constructing Serializer from MetaData ... ";
 
-  clear();
-
-  if(mode_ == OpenModeKind::Write)
-    return;
-
-  // Check if we deal with an older version of serialbox and perform necessary upgrades
-  upgradeMetaData();
-
   // Try open MetaData.json file
   boost::filesystem::path filename = directory_ / SerializerImpl::SerializerMetaDataFile;
 
   if(!boost::filesystem::exists(filename)) {
-    if(mode_ == OpenModeKind::Append)
+    if(mode_ != OpenModeKind::Read)
       return;
     else
       throw Exception("cannot create Serializer: MetaData.json not found in %s", directory_);
@@ -316,7 +301,7 @@ void SerializerImpl::updateMetaData() {
   fs << jsonNode.dump(1) << std::endl;
   fs.close();
 
-  // Update archive meta-data if necessary
+  // Update archive meta-data
   archive_->updateMetaData();
 }
 
@@ -328,10 +313,9 @@ void SerializerImpl::constructArchive(const std::string& archiveName) {
 //     Upgrade
 //===------------------------------------------------------------------------------------------===//
 
-void SerializerImpl::upgradeMetaData() {
+bool SerializerImpl::upgradeMetaData() {
   boost::filesystem::path oldMetaDataFile = directory_ / (prefix_ + ".json");
   boost::filesystem::path newMetaDataFile = directory_ / SerializerImpl::SerializerMetaDataFile;
-  boost::filesystem::path newArchiveMetaDataFile = directory_ / Archive::ArchiveMetaDataFile;
 
   //
   // Check if upgrade is necessary
@@ -340,7 +324,7 @@ void SerializerImpl::upgradeMetaData() {
   try {
     // Check if prefix.json exists
     if(!boost::filesystem::exists(oldMetaDataFile))
-      return;
+      return false;
 
     LOG(INFO) << "Detected old serialbox meta-data " << oldMetaDataFile;
 
@@ -348,21 +332,16 @@ void SerializerImpl::upgradeMetaData() {
     if(boost::filesystem::exists(newMetaDataFile) &&
        (boost::filesystem::last_write_time(oldMetaDataFile) <
         boost::filesystem::last_write_time(newMetaDataFile))) {
-      return;
+      return false;
     }
-
-    // Remove the new-meta data (if it exists)
-    if(boost::filesystem::exists(newMetaDataFile))
-      boost::filesystem::remove(newMetaDataFile);
-
-    if(boost::filesystem::exists(newArchiveMetaDataFile))
-      boost::filesystem::remove(newArchiveMetaDataFile);
-
   } catch(boost::filesystem::filesystem_error& e) {
     throw Exception("filesystem error: %s", e.what());
   }
 
   LOG(INFO) << "Upgrading meta-data to serialbox version (" << SERIALBOX_VERSION_STRING << ") ...";
+
+  if(mode_ != OpenModeKind::Read)
+    throw Exception("old serialbox archives cannot be opened in 'Write' or 'Append' mode");
 
   json::json oldJson;
   std::ifstream ifs(oldMetaDataFile.string());
@@ -495,8 +474,10 @@ void SerializerImpl::upgradeMetaData() {
   //
   // Upgrade SavepointVector and ArchiveMetaData
   //
-  BinaryArchive archive(OpenModeKind::Append, directory_.string(), prefix_);
-  BinaryArchive::FieldTable& fieldTable = archive.fieldTable();
+
+  // Construct archive but don't parse the meta-data (we will do it ourselves below)
+  archive_ = make_unique<BinaryArchive>(mode_, directory_.string(), prefix_, true);
+  BinaryArchive::FieldTable& fieldTable = static_cast<BinaryArchive*>(archive_.get())->fieldTable();
 
   if(oldJson.count("OffsetTable")) {
 
@@ -586,18 +567,18 @@ void SerializerImpl::upgradeMetaData() {
     LOG(INFO) << "Successfully upgraded offset table";
   }
 
-  // Flush archive to disk
-  archive.updateMetaData();
-
-  // Write new serializer meta-data and archive meta-data to disk
-  constructArchive("BinaryArchive");
-  updateMetaData();
-
-  // Clear all objects and release the archive
-  clear();
+  // Try to write the mata data to disk so that we can avoid such an upgrade in the future. However,
+  // if we read from a location where we have no write permission, this should be non-fatal.
+  try {
+    updateMetaData();
+  } catch(Exception& e) {
+    LOG(WARNING) << "failed to write upgraded meta-data to disk: " << e.what();
+  }
 
   LOG(INFO) << "Successfully upgraded MetaData to serialbox version (" << SERIALBOX_VERSION_STRING
             << ")";
+
+  return true;
 }
 
 } // namespace serialbox

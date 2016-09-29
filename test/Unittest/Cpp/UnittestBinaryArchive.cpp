@@ -62,12 +62,6 @@ TYPED_TEST(BinaryArchiveTest, Construction) {
     EXPECT_EQ(b.prefix(), "field");
   }
 
-  // Throw Exception: Directory is not empty
-  {
-    EXPECT_THROW(BinaryArchive(OpenModeKind::Write, this->directory->path().string(), "field"),
-                 Exception);
-  }
-
   // Create directory if not already existent
   {
     BinaryArchive b(OpenModeKind::Write, (this->directory->path() / "this-dir-is-created").string(),
@@ -291,6 +285,17 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
 
   ASSERT_TRUE(Storage::verify(storage_7d_0_output, storage_7d_0_input));
   ASSERT_TRUE(Storage::verify(storage_7d_1_output, storage_7d_1_input));
+
+  // -----------------------------------------------------------------------------------------------
+  // Cleanup
+  // -----------------------------------------------------------------------------------------------
+  {
+    BinaryArchive archiveWrite(OpenModeKind::Write, this->directory->path().string(), "field");
+    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_u.dat")));
+    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_v.dat")));
+    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_storage_2d.dat")));
+    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_storage_7d.dat")));
+  }
 }
 
 TYPED_TEST(BinaryArchiveTest, MetaData) {
@@ -306,15 +311,15 @@ TYPED_TEST(BinaryArchiveTest, MetaData) {
   archiveWrite.updateMetaData();
 
   // Read meta data file to get in memory copy
-  std::ifstream ifs((this->directory->path() / Archive::ArchiveMetaDataFile).string());
+  std::ifstream ifs(archiveWrite.metaDataFile());
   json::json j;
   ifs >> j;
   ifs.close();
 
   // Write meta file to disk (to corrupt it)
-  auto toFile = [this](const json::json& jsonNode) -> void {
-    std::ofstream ofs((this->directory->path() / Archive::ArchiveMetaDataFile).string(),
-                      std::ios::out | std::ios::trunc);
+  std::string filename = archiveWrite.metaDataFile();
+  auto toFile = [this, &filename](const json::json& jsonNode) -> void {
+    std::ofstream ofs(filename, std::ios::out | std::ios::trunc);
     ofs << jsonNode.dump(4);
   };
 
@@ -374,7 +379,7 @@ TYPED_TEST(BinaryArchiveTest, MetaData) {
   // MetaData not found
   // -----------------------------------------------------------------------------------------------
   {
-    boost::filesystem::remove(this->directory->path() / Archive::ArchiveMetaDataFile);
+    boost::filesystem::remove(filename);
     ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
                  Exception);
   }

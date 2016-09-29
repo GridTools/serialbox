@@ -26,9 +26,6 @@ namespace serialbox {
 ///
 class Archive {
 public:
-  ///
-  static constexpr const char* ArchiveMetaDataFile = "ArchiveMetaData.json";
-
   /// \brief Vritual destructor
   virtual ~Archive() {}
 
@@ -52,6 +49,12 @@ public:
 
   ///
   virtual const std::string& prefix() const = 0;
+  
+  ///
+  virtual const std::string& metaDataFile() const = 0;
+  
+  ///
+  virtual void clear() = 0;
 
   ///
   virtual std::ostream& toStream(std::ostream& stream) const = 0;

@@ -150,8 +150,8 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
   // -----------------------------------------------------------------------------------------------
   {
     // Implicitly upgrade the archive
-    SerializerImpl ser_read(OpenModeKind::Read, this->directory->path().string(), "BinaryArchive",
-                            "UpgradeArchiveTest");
+    SerializerImpl ser_read(OpenModeKind::Read, this->directory->path().string(),
+                            "UpgradeArchiveTest", "BinaryArchive");
 
     // Check metaInfo
     EXPECT_EQ(ser_read.getGlobalMetainfoAs<int>("Day"), 29);
@@ -226,7 +226,14 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
   // Old meta data is possibly not out-dated -> upgrade again
   {
     ASSERT_NO_THROW(SerializerImpl(OpenModeKind::Read, this->directory->path().string(),
-                                   "BinaryArchive", "UpgradeArchiveTest"));
+                                   "UpgradeArchiveTest", "BinaryArchive"));
+  }
+
+  // Old archives can only be used in Read mode
+  {
+    ASSERT_THROW(SerializerImpl(OpenModeKind::Write, this->directory->path().string(),
+                                "UpgradeArchiveTest", "BinaryArchive"),
+                 Exception);
   }
 
   // Old meta data is outdated -> no upgrade
@@ -239,8 +246,8 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
                                        timeStampBeforeConstruction - 1);
 
     // Should perform no upgrade
-    SerializerImpl ser_read(OpenModeKind::Read, this->directory->path().string(), "BinaryArchive",
-                            "UpgradeArchiveTest");
+    SerializerImpl ser_read(OpenModeKind::Read, this->directory->path().string(),
+                            "UpgradeArchiveTest", "BinaryArchive");
 
     auto timeStampAfterConstruction = boost::filesystem::last_write_time(
         this->directory->path() / SerializerImpl::SerializerMetaDataFile);

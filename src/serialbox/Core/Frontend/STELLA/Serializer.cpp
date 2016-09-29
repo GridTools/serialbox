@@ -50,9 +50,17 @@ void Serializer::Init(const std::string& directory, const std::string& prefix,
     enabled_ = (envvar && std::atoi(envvar) > 0) ? -1 : 1;
   }
 
-  //
-  // Remove all files with prefix if OpenMode is Write
-  //
+  // Initialize SerializerImpl
+  switch(mode) {
+  case SerializerOpenModeRead:
+    break;
+  case SerializerOpenModeWrite:
+    break;
+  case SerializerOpenModeAppend:
+    break;
+  }
+
+  // Initialize savepoint vector
 }
 
 } // namespace stella

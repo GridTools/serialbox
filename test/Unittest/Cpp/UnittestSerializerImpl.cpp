@@ -48,20 +48,15 @@ TEST_F(SerializerImplUtilityTest, ConstructionOfEmptySerializer) {
   // -----------------------------------------------------------------------------------------------
   {
     // Open fresh serializer and write meta data to disk
-    SerializerImpl s(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+    SerializerImpl s(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
     s.updateMetaData();
-  }
-
-  {
-    // Non-empty directory -> Exception
-    ASSERT_THROW((SerializerImpl(OpenModeKind::Write, directory->path().string(), "BinaryArchive")),
-                 Exception);
   }
 
   {
     // Directory does not exists (should be created by the Archive)
     SerializerImpl s(OpenModeKind::Append,
-                     (directory->path() / "dir-is-created-from-write").string(), "BinaryArchive");
+                     (directory->path() / "dir-is-created-from-write").string(), "Field",
+                     "BinaryArchive");
     ASSERT_TRUE(boost::filesystem::exists(directory->path() / "dir-is-created-from-write"));
     s.updateMetaData();
   }
@@ -71,13 +66,13 @@ TEST_F(SerializerImplUtilityTest, ConstructionOfEmptySerializer) {
   // -----------------------------------------------------------------------------------------------
   {
     // MetaData.json exists (from Writing part)
-    SerializerImpl s(OpenModeKind::Read, directory->path().string(), "BinaryArchive");
+    SerializerImpl s(OpenModeKind::Read, directory->path().string(), "Field", "BinaryArchive");
   }
 
   {
     // Directory does not exist -> Exception
     ASSERT_THROW(SerializerImpl(OpenModeKind::Read, (directory->path() / "not-a-dir").string(),
-                                "BinaryArchive"),
+                                "Field", "BinaryArchive"),
                  Exception);
   }
 
@@ -86,7 +81,7 @@ TEST_F(SerializerImplUtilityTest, ConstructionOfEmptySerializer) {
     boost::filesystem::remove((directory->path() / "dir-is-created-from-write") /
                               SerializerImpl::SerializerMetaDataFile);
     ASSERT_THROW(SerializerImpl(OpenModeKind::Read,
-                                (directory->path() / "dir-is-created-from-write").string(),
+                                (directory->path() / "dir-is-created-from-write").string(), "Field",
                                 "BinaryArchive"),
                  Exception);
   }
@@ -96,19 +91,20 @@ TEST_F(SerializerImplUtilityTest, ConstructionOfEmptySerializer) {
   // -----------------------------------------------------------------------------------------------
   {
     // Construct from existing (empty) metaData
-    SerializerImpl s(OpenModeKind::Append, directory->path().string(), "BinaryArchive");
+    SerializerImpl s(OpenModeKind::Append, directory->path().string(), "Field", "BinaryArchive");
   }
 
   {
     // Directory does not exists (should be created by the Archive)
     SerializerImpl s(OpenModeKind::Append,
-                     (directory->path() / "dir-is-created-from-append").string(), "BinaryArchive");
+                     (directory->path() / "dir-is-created-from-append").string(), "Field",
+                     "BinaryArchive");
     ASSERT_TRUE(boost::filesystem::exists(directory->path() / "dir-is-created-from-append"));
   }
 }
 
 TEST_F(SerializerImplUtilityTest, AddMetaInfo) {
-  SerializerImpl s(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+  SerializerImpl s(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
 
   // Add some meta-info
   s.addGlobalMetaInfo("bool", bool(true));
@@ -131,7 +127,7 @@ TEST_F(SerializerImplUtilityTest, AddMetaInfo) {
 }
 
 TEST_F(SerializerImplUtilityTest, RegisterSavepoints) {
-  SerializerImpl s(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+  SerializerImpl s(OpenModeKind::Write, directory->path().string(), "Field","BinaryArchive");
 
   SavepointImpl savepoint1("savepoint1");
   ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
@@ -168,7 +164,7 @@ TEST_F(SerializerImplUtilityTest, RegisterSavepoints) {
 }
 
 TEST_F(SerializerImplUtilityTest, RegisterFields) {
-  SerializerImpl s(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+  SerializerImpl s(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
 
   // Perfect forwarding
   MetaInfoMap metaInfoField1(std::initializer_list<MetaInfoMap::value_type>{
@@ -228,7 +224,7 @@ TEST_F(SerializerImplUtilityTest, WriteExceptions) {
 
   SavepointImpl savepoint("savepoint");
 
-  SerializerImpl s(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+  SerializerImpl s(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
   s.updateMetaData();
 
   // Regsister field
@@ -248,13 +244,13 @@ TEST_F(SerializerImplUtilityTest, WriteExceptions) {
   ASSERT_TRUE(s.registerSavepoint(savepoint));
   ASSERT_TRUE(s.savepointVector().addField(savepoint, FieldID{"field", 0}));
   ASSERT_THROW(s.write("field", savepoint, sv), Exception);
-  
-  // Wrong mode -> Exception  
-  ASSERT_THROW(s.read("field", savepoint, sv), Exception);  
+
+  // Wrong mode -> Exception
+  ASSERT_THROW(s.read("field", savepoint, sv), Exception);
 
   {
     // Wrong mode -> Exception
-    SerializerImpl s_read(OpenModeKind::Read, directory->path().string(), "BinaryArchive");
+    SerializerImpl s_read(OpenModeKind::Read, directory->path().string(), "Field", "BinaryArchive");
     ASSERT_THROW(s_read.write("field", savepoint, sv), Exception);
   }
 }
@@ -264,13 +260,13 @@ TEST_F(SerializerImplUtilityTest, ReadExceptions) {
   StorageView sv = storage.toStorageView();
 
   {
-    SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+    SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field",
+                           "BinaryArchive");
     s_write.registerField("field", sv.type(), sv.dims());
     s_write.updateMetaData();
-    
   }
 
-  SerializerImpl s(OpenModeKind::Read, directory->path().string(), "BinaryArchive");
+  SerializerImpl s(OpenModeKind::Read, directory->path().string(), "Field", "BinaryArchive");
   SavepointImpl savepoint("savepoint");
 
   // Savepoint does no exist -> Exception
@@ -285,7 +281,7 @@ TEST_F(SerializerImplUtilityTest, JSONSuccess) {
   // -----------------------------------------------------------------------------------------------
   // Writing
   // -----------------------------------------------------------------------------------------------
-  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
 
   // Add some meta-info
   s_write.addGlobalMetaInfo("bool", bool(true));
@@ -328,7 +324,7 @@ TEST_F(SerializerImplUtilityTest, JSONSuccess) {
   // -----------------------------------------------------------------------------------------------
 
   // Open Reading Serializer and deserialize meta-data from JSON
-  SerializerImpl s_read(OpenModeKind::Read, directory->path().string(), "BinaryArchive");
+  SerializerImpl s_read(OpenModeKind::Read, directory->path().string(), "Field", "BinaryArchive");
 
   // Global meta-info
   ASSERT_TRUE(s_read.globalMetaInfo().hasKey("bool"));
@@ -383,7 +379,7 @@ TEST_F(SerializerImplUtilityTest, JSONSuccess) {
 }
 
 TEST_F(SerializerImplUtilityTest, JSONFailEmpty) {
-  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
   s_write.updateMetaData();
 
   // Erase MetaData.json -> this produces a parser error
@@ -392,12 +388,13 @@ TEST_F(SerializerImplUtilityTest, JSONFailEmpty) {
   ofs.close();
 
   // Open with empty MetaData.json
-  ASSERT_THROW(SerializerImpl(OpenModeKind::Read, directory->path().string(), "BinaryArchive"),
-               Exception);
+  ASSERT_THROW(
+      SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "BinaryArchive"),
+      Exception);
 }
 
 TEST_F(SerializerImplUtilityTest, JSONFailCorruputedVersion) {
-  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
   s_write.updateMetaData();
 
   // Read MetaData.json
@@ -416,21 +413,22 @@ TEST_F(SerializerImplUtilityTest, JSONFailCorruputedVersion) {
   ofs.close();
 
   // Open with corruputed MetaData.json
-  ASSERT_THROW(SerializerImpl(OpenModeKind::Read, directory->path().string(), "BinaryArchive"),
-               Exception);
+  ASSERT_THROW(
+      SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "BinaryArchive"),
+      Exception);
 }
 
 TEST_F(SerializerImplUtilityTest, JSONFailWrongPrefix) {
-  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
   s_write.updateMetaData();
 
   // Open with corruputed MetaData.json
-  ASSERT_THROW(SerializerImpl(OpenModeKind::Read, directory->path().string(), "BinaryArchive", "X"),
+  ASSERT_THROW(SerializerImpl(OpenModeKind::Read, directory->path().string(), "X", "BinaryArchive"),
                Exception);
 }
 
 TEST_F(SerializerImplUtilityTest, JSONFailNoVersion) {
-  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
   s_write.updateMetaData();
 
   // Read MetaData.json
@@ -449,12 +447,13 @@ TEST_F(SerializerImplUtilityTest, JSONFailNoVersion) {
   ofs.close();
 
   // Open with corruputed MetaData.json
-  ASSERT_THROW(SerializerImpl(OpenModeKind::Read, directory->path().string(), "BinaryArchive"),
-               Exception);
+  ASSERT_THROW(
+      SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "BinaryArchive"),
+      Exception);
 }
 
 TEST_F(SerializerImplUtilityTest, JSONFailNoPrefix) {
-  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
   s_write.updateMetaData();
 
   // Read MetaData.json
@@ -473,12 +472,13 @@ TEST_F(SerializerImplUtilityTest, JSONFailNoPrefix) {
   ofs.close();
 
   // Open with corruputed MetaData.json
-  ASSERT_THROW(SerializerImpl(OpenModeKind::Read, directory->path().string(), "BinaryArchive"),
-               Exception);
+  ASSERT_THROW(
+      SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "BinaryArchive"),
+      Exception);
 }
 
 TEST_F(SerializerImplUtilityTest, toString) {
-  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "BinaryArchive");
+  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
   std::stringstream ss;
   ss << s_write;
   EXPECT_NE(ss.str().find("mode"), std::string::npos);
@@ -562,7 +562,8 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
   //  savepoint_6d  | -          | field_6d
   //
   {
-    SerializerImpl s_write(OpenModeKind::Write, this->directory->path().string(), "BinaryArchive");
+    SerializerImpl s_write(OpenModeKind::Write, this->directory->path().string(), "Field",
+                           "BinaryArchive");
 
     // StorageViews
     auto sv_u_0 = u_0_input.toStorageView();
@@ -585,7 +586,8 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
 
   // Reopen serializer and append a data field
   {
-    SerializerImpl s_app(OpenModeKind::Append, this->directory->path().string(), "BinaryArchive");
+    SerializerImpl s_app(OpenModeKind::Append, this->directory->path().string(), "Field",
+                         "BinaryArchive");
 
     auto sv_field_6d = field_6d_input.toStorageView();
     s_app.registerField("field_6d", sv_field_6d.type(), sv_field_6d.dims());
@@ -598,7 +600,8 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
   // Reading
   // -----------------------------------------------------------------------------------------------
   {
-    SerializerImpl s_read(OpenModeKind::Read, this->directory->path().string(), "BinaryArchive");
+    SerializerImpl s_read(OpenModeKind::Read, this->directory->path().string(), "Field",
+                          "BinaryArchive");
 
     // StorageViews
     auto sv_u_0 = u_0_output.toStorageView();
@@ -620,8 +623,8 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
     // Check order of savepoints is correct
     ASSERT_EQ(s_read.savepoints().size(), 5);
     EXPECT_EQ(s_read.savepoints(),
-              (std::vector<SavepointImpl>{savepoint1_t_1, savepoint1_t_2, savepoint_u_1, savepoint_v_1,
-                                      savepoint_6d}));
+              (std::vector<SavepointImpl>{savepoint1_t_1, savepoint1_t_2, savepoint_u_1,
+                                          savepoint_v_1, savepoint_6d}));
     // Read
     s_read.read("u", savepoint1_t_1, sv_u_0);
     ASSERT_TRUE(Storage::verify(u_0_output, u_0_input));

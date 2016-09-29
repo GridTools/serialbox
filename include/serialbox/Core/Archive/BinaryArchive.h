@@ -45,17 +45,20 @@ public:
   /// \brief Table of all fields owned by this archive, each field has a corresponding file
   using FieldTable = std::unordered_map<std::string, FieldOffsetTable>;
 
-  /// \brief Initialize the archive with a directory and open file policy
+  /// \brief Initialize the archive
   ///
-  /// \param mode       Policy to open files in the archive
-  /// \param directory  Directory to write/read files. If the archive is opened in ´Read´ mode, the
-  ///                   directory is expected to supply a ´ArchiveMetaData.json´. In case the
-  ///                   archive is opened in ´Write´ mode, the directory needs to be empty or
-  ///                   non-existent, in the latter case the directory will be cretaed.
-  ///                   The ´Append´ mode will try to open ´ArchiveMetaData.json´ if the directory
-  ///                   exists otherwise created the directory.
-  /// \param prefix     Prefix of all files followed by an underscore ´_´
-  BinaryArchive(OpenModeKind mode, const std::string& directory, const std::string& prefix);
+  /// \param mode          Policy to open files in the archive
+  /// \param directory     Directory to write/read files. If the archive is opened in ´Read´ mode,
+  ///                      the directory is expected to supply a ´ArchiveMetaData-prefix.json´.
+  ///                      In case the archive is opened in ´Write´ mode, the directory will be
+  ///                      cleansed from all files matching the pattern ´prefix_*.dat´, if the
+  ///                      directory is  non-existent, it will be cretaed.
+  ///                      The ´Append´ mode will try to open ´ArchiveMetaData-predfix.json´ if the
+  ///                      directory exists otherwise create it.
+  /// \param prefix        Prefix of all files followed by an underscore ´_´ and fieldname
+  /// \param skipMetaData  Do not read meta-data from disk
+  BinaryArchive(OpenModeKind mode, const std::string& directory, const std::string& prefix,
+                bool skipMetaData = false);
 
   /// \brief Copy constructor [deleted]
   BinaryArchive(const BinaryArchive&) = delete;
@@ -83,8 +86,13 @@ public:
   virtual const std::string& directory() const override { return directory_.string(); }
   virtual const std::string& prefix() const override { return prefix_; }
   virtual const std::string& name() const override { return BinaryArchive::Name; }
+  virtual const std::string& metaDataFile() const override { return metaDatafile_.string(); }
   virtual std::ostream& toStream(std::ostream& stream) const override;
+  virtual void clear() override;
   /// @}
+
+  /// \brief Clear fieldTable
+  void clearFieldTable();
 
   /// \brief Create a BinaryArchive
   static std::unique_ptr<Archive> create(OpenModeKind mode, const std::string& directory,
@@ -98,6 +106,7 @@ private:
   OpenModeKind mode_;
   boost::filesystem::path directory_;
   std::string prefix_;
+  boost::filesystem::path metaDatafile_;
 
   std::vector<Byte> binaryData_;
 

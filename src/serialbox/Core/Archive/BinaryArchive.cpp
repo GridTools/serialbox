@@ -12,11 +12,12 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Archive/ArchiveFactory.h"
+#include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/SHA256.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/Version.h"
+#include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <iostream>
 
@@ -31,23 +32,14 @@ BinaryArchive::~BinaryArchive() {}
 void BinaryArchive::readMetaDataFromJson() {
   LOG(INFO) << "Reading MetaData for BinaryArchive ... ";
 
-  fieldTable_.clear();
-  json_.clear();
-
-  // Writing always operates on fresh directories
-  if(mode_ == OpenModeKind::Write)
-    return;
-
-  boost::filesystem::path filename = directory_ / Archive::ArchiveMetaDataFile;
-
   // Check if metaData file exists
-  if(!boost::filesystem::exists(filename)) {
-    if(mode_ == OpenModeKind::Append)
+  if(!boost::filesystem::exists(metaDatafile_)) {
+    if(mode_ != OpenModeKind::Read)
       return;
     throw Exception("archive meta data not found in directory '%s'", directory_.string());
   }
 
-  std::ifstream fs(filename.string(), std::ios::in);
+  std::ifstream fs(metaDatafile_.string(), std::ios::in);
   fs >> json_;
   fs.close();
 
@@ -81,10 +73,6 @@ void BinaryArchive::readMetaDataFromJson() {
 }
 
 void BinaryArchive::writeMetaDataToJson() {
-  if(mode_ == OpenModeKind::Read)
-    return;
-
-  boost::filesystem::path filename = directory_ / Archive::ArchiveMetaDataFile;
   LOG(INFO) << "Update MetaData of BinaryArchive";
 
   json_.clear();
@@ -103,16 +91,22 @@ void BinaryArchive::writeMetaDataToJson() {
 
   // Write metaData to disk (just overwrite the file, we assume that there is never more than one
   // Archive per data set and thus our in-memory copy is always the up-to-date one)
-  std::ofstream fs(filename.string(), std::ios::out | std::ios::trunc);
+  std::ofstream fs(metaDatafile_.string(), std::ios::out | std::ios::trunc);
+  
+  if(!fs.is_open())
+    throw Exception("cannot open file: %s", metaDatafile_);
+    
   fs << json_.dump(2) << std::endl;
   fs.close();
 }
 
 BinaryArchive::BinaryArchive(OpenModeKind mode, const std::string& directory,
-                             const std::string& prefix)
+                             const std::string& prefix, bool skipMetaData)
     : mode_(mode), directory_(directory), prefix_(prefix), json_() {
 
   LOG(INFO) << "Creating BinaryArchive (mode = " << mode_ << ") from directory " << directory_;
+
+  metaDatafile_ = directory_ / ("ArchiveMetaData-" + prefix_ + ".json");
 
   try {
     bool isDir = boost::filesystem::is_directory(directory_);
@@ -123,11 +117,8 @@ BinaryArchive::BinaryArchive(OpenModeKind mode, const std::string& directory,
       if(!isDir)
         throw Exception("no such directory: '%s'", directory_.string());
       break;
-    // We are writing, the directory has to be empty
+    // We are writing or appending, create directories if it they don't exist
     case OpenModeKind::Write:
-      if(isDir && !boost::filesystem::is_empty(directory_))
-        throw Exception("directory '%s' is not empty", directory_.string());
-    // We are appending, create directories if it they don't exist
     case OpenModeKind::Append:
       if(!isDir)
         boost::filesystem::create_directories(directory_);
@@ -137,7 +128,12 @@ BinaryArchive::BinaryArchive(OpenModeKind mode, const std::string& directory,
     throw Exception(e.what());
   }
 
-  readMetaDataFromJson();
+  if(!skipMetaData)
+    readMetaDataFromJson();
+
+  // Remove all files
+  if(mode_ == OpenModeKind::Write)
+    clear();
 }
 
 void BinaryArchive::updateMetaData() { writeMetaDataToJson(); }
@@ -320,9 +316,26 @@ std::ostream& BinaryArchive::toStream(std::ostream& stream) const {
   return stream;
 }
 
+void BinaryArchive::clear() {
+  boost::filesystem::directory_iterator end;
+  for(boost::filesystem::directory_iterator it(directory_); it != end; ++it) {
+    if(boost::filesystem::is_regular_file(it->path()) &&
+       boost::algorithm::starts_with(it->path().filename().string(), prefix_ + "_")) {
+      if(!boost::filesystem::remove(it->path()))
+        LOG(WARNING) << "BinaryArchive: cannot remove file " << it->path();
+    }
+  }
+  clearFieldTable();
+}
+
+void BinaryArchive::clearFieldTable() {
+  fieldTable_.clear();
+  json_.clear();
+}
+
 std::unique_ptr<Archive> BinaryArchive::create(OpenModeKind mode, const std::string& directory,
                                                const std::string& prefix) {
-  return make_unique<BinaryArchive>(mode, directory, prefix);
+  return make_unique<BinaryArchive>(mode, directory, prefix, false);
 }
 
 SERIALBOX_REGISTER_ARCHIVE(BinaryArchive, BinaryArchive::create)

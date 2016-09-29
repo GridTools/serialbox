@@ -51,15 +51,15 @@ public:
   ///
   /// \param mode         Mode of the Serializer
   /// \param directory    Directory of the Archive and Serializer meta-data
-  /// \param archiveName  String passed to the ArchiveFactory to construct the Archive
   /// \param prefix       Prefix of all filenames
+  /// \param archiveName  String passed to the ArchiveFactory to construct the Archive
   ///
   /// This will read MetaData.json to initialize the savepoint vector, the fieldMap and
   /// globalMetaInfo. Further, it will construct the Archive by reading the ArchiveMetaData.json.
   ///
   /// \throw Exception  Invalid directory or corrupted meta-data files
-  SerializerImpl(OpenModeKind mode, const std::string& directory, const std::string& archiveName,
-                 std::string prefix = "Field");
+  SerializerImpl(OpenModeKind mode, const std::string& directory, const std::string& prefix,
+                 const std::string& archiveName);
 
   /// \brief Access the mode of the serializer
   OpenModeKind mode() const noexcept { return mode_; }
@@ -71,6 +71,8 @@ public:
   const std::string& prefix() const noexcept { return prefix_; }
 
   /// \brief Drop all field and savepoint meta-data.
+  /// 
+  /// This will also call Archive::clear() which may \b remove all related files on the disk.
   void clear() noexcept;
 
   //===----------------------------------------------------------------------------------------===//
@@ -302,8 +304,10 @@ protected:
   /// The process will use the infrastructure of the current serializer but will eventually call
   /// SerialzerImpl::clear().
   ///
+  /// \return True iff the upgrade was successful
+  ///
   /// \throw Exception
-  void upgradeMetaData();
+  bool upgradeMetaData();
 
 protected:
   OpenModeKind mode_;
