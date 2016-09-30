@@ -40,14 +40,16 @@ Savepoint::~Savepoint() {
 }
 
 Savepoint::Savepoint(const std::string& name)
-    : owner_(true), savepointImpl_(new SavepointImpl(name)) {}
+    : owner_(true), savepointImpl_(new SavepointImpl(name)),
+      metainfo_(&savepointImpl_->metaInfo()) {}
 
-Savepoint::Savepoint(SavepointImpl* savepointImpl) : owner_(false), savepointImpl_(savepointImpl){};
+Savepoint::Savepoint(SavepointImpl* savepointImpl)
+    : owner_(false), savepointImpl_(savepointImpl), metainfo_(&savepointImpl_->metaInfo()){};
 
 Savepoint::Savepoint(const Savepoint& other) {
   savepointImpl_ = new SavepointImpl(other.name());
   owner_ = true;
-  *savepointImpl_ = *other.savepointImpl_;  
+  *savepointImpl_ = *other.savepointImpl_;
 }
 
 Savepoint& Savepoint::operator=(const Savepoint& other) {
@@ -76,8 +78,6 @@ void Savepoint::AddMetainfo(const std::string& key, const std::string& value) {
 }
 
 std::string Savepoint::name() const { return savepointImpl_->name(); }
-
-MetainfoSet Savepoint::metainfo() const { return MetainfoSet(&savepointImpl_->metaInfo()); }
 
 bool Savepoint::operator==(const Savepoint& other) const {
   return (*savepointImpl_ == *other.savepointImpl_);

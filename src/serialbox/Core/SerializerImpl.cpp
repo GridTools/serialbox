@@ -28,6 +28,8 @@
 
 namespace serialbox {
 
+namespace internal {
+
 template <class VecType>
 static std::string vecToString(VecType&& vec) {
   std::stringstream ss;
@@ -39,9 +41,13 @@ static std::string vecToString(VecType&& vec) {
   return ss.str();
 }
 
+} // namespace internal
+
 SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
                                const std::string& prefix, const std::string& archiveName)
     : mode_(mode), directory_(directory), prefix_(prefix) {
+
+  metaDataFile_ = directory_ / ("MetaData-" + prefix + ".json");
 
   LOG(INFO) << "Creating Serializer (mode = " << mode_ << ") from directory " << directory_;
 
@@ -101,7 +107,8 @@ void SerializerImpl::checkStorageView(const std::string& name,
     throw Exception("dimensions of field '%s' do not match regsitered ones:"
                     "\nRegistred as: [ %s ]"
                     "\nGiven     as: [ %s ]",
-                    name, vecToString(fieldInfo.dims()), vecToString(storageView.dims()));
+                    name, internal::vecToString(fieldInfo.dims()),
+                    internal::vecToString(storageView.dims()));
   }
 }
 
@@ -197,19 +204,18 @@ void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoin
 void SerializerImpl::constructMetaDataFromJson() {
   LOG(INFO) << "Constructing Serializer from MetaData ... ";
 
-  // Try open MetaData.json file
-  boost::filesystem::path filename = directory_ / SerializerImpl::SerializerMetaDataFile;
-
-  if(!boost::filesystem::exists(filename)) {
+  // Try open meta-data file
+  if(!boost::filesystem::exists(metaDataFile_)) {
     if(mode_ != OpenModeKind::Read)
       return;
     else
-      throw Exception("cannot create Serializer: MetaData.json not found in %s", directory_);
+      throw Exception("cannot create Serializer: MetaData-%s.json not found in %s", prefix_,
+                      directory_);
   }
 
   json::json jsonNode;
   try {
-    std::ifstream fs(filename.string(), std::ios::in);
+    std::ifstream fs(metaDataFile_.string(), std::ios::in);
     fs >> jsonNode;
     fs.close();
   } catch(std::exception& e) {
@@ -248,7 +254,7 @@ void SerializerImpl::constructMetaDataFromJson() {
       fieldMap_.fromJSON(jsonNode["field_map"]);
 
   } catch(Exception& e) {
-    throw Exception("error while parsing %s: %s", filename, e.what());
+    throw Exception("error while parsing %s: %s", metaDataFile_, e.what());
   }
 }
 
@@ -291,13 +297,12 @@ void SerializerImpl::updateMetaData() {
   LOG(INFO) << "Update MetaData of Serializer";
 
   json::json jsonNode = toJSON();
-  boost::filesystem::path filename = directory_ / SerializerImpl::SerializerMetaDataFile;
 
   // Write metaData to disk (just overwrite the file, we assume that there is never more than one
   // Serializer per data set and thus our in-memory copy is always the up-to-date one)
-  std::ofstream fs(filename.string(), std::ios::out | std::ios::trunc);
+  std::ofstream fs(metaDataFile_.string(), std::ios::out | std::ios::trunc);
   if(!fs.is_open())
-    throw Exception("cannot open file: %s", filename);
+    throw Exception("cannot open file: %s", metaDataFile_);
   fs << jsonNode.dump(1) << std::endl;
   fs.close();
 
@@ -315,7 +320,6 @@ void SerializerImpl::constructArchive(const std::string& archiveName) {
 
 bool SerializerImpl::upgradeMetaData() {
   boost::filesystem::path oldMetaDataFile = directory_ / (prefix_ + ".json");
-  boost::filesystem::path newMetaDataFile = directory_ / SerializerImpl::SerializerMetaDataFile;
 
   //
   // Check if upgrade is necessary
@@ -329,9 +333,9 @@ bool SerializerImpl::upgradeMetaData() {
     LOG(INFO) << "Detected old serialbox meta-data " << oldMetaDataFile;
 
     // Check if we already upgraded this archive
-    if(boost::filesystem::exists(newMetaDataFile) &&
+    if(boost::filesystem::exists(metaDataFile_) &&
        (boost::filesystem::last_write_time(oldMetaDataFile) <
-        boost::filesystem::last_write_time(newMetaDataFile))) {
+        boost::filesystem::last_write_time(metaDataFile_))) {
       return false;
     }
   } catch(boost::filesystem::filesystem_error& e) {
@@ -388,7 +392,7 @@ bool SerializerImpl::upgradeMetaData() {
           else
             addGlobalMetaInfo(key, double(it.value()));
         } else
-          throw Exception("failed to upgrade: Cannot deduce type of globalMetaInfo '%s'", it.key());
+          throw Exception("failed to upgrade: cannot deduce type of globalMetaInfo '%s'", it.key());
       }
     }
 
@@ -406,16 +410,19 @@ bool SerializerImpl::upgradeMetaData() {
     const auto& fieldsTable = oldJson["FieldsTable"];
     for(std::size_t i = 0; i < fieldsTable.size(); ++i) {
       auto& fieldInfo = fieldsTable[i];
+      std::string name = fieldInfo["__name"];
 
-      LOG(INFO) << "Inserting field: " << fieldInfo["__name"];
+      LOG(INFO) << "Inserting field: " << name;
 
       // Get Type
+      std::string elementtype = fieldInfo["__elementtype"];
       TypeID type = TypeID::Float64;
-      if(fieldInfo["__elementtype"] == "int")
+
+      if(elementtype == "int")
         type = TypeID::Int32;
-      else if(fieldInfo["__elementtype"] == "float")
+      else if(elementtype == "float")
         type = TypeID::Float32;
-      else if(fieldInfo["__elementtype"] == "double")
+      else if(elementtype == "double")
         type = TypeID::Float64;
 
       // Get dimension
@@ -427,42 +434,25 @@ bool SerializerImpl::upgradeMetaData() {
       if(fieldInfo.count("__lsize"))
         dims.push_back(int(fieldInfo["__lsize"]));
 
-      // Add Halos as meta-info
-      MetaInfoMap metaInfo;
-      metaInfo.insert("__iminushalosize", int(fieldInfo["__iminushalosize"]));
-      metaInfo.insert("__jminushalosize", int(fieldInfo["__jminushalosize"]));
-      metaInfo.insert("__kminushalosize", int(fieldInfo["__kminushalosize"]));
-      metaInfo.insert("__iplushalosize", int(fieldInfo["__iplushalosize"]));
-      metaInfo.insert("__jplushalosize", int(fieldInfo["__jplushalosize"]));
-      metaInfo.insert("__kplushalosize", int(fieldInfo["__kplushalosize"]));
-
-      // Add name as meta-info
-      std::string name = fieldInfo["__name"];
-      metaInfo.insert("__name", name);
-
-      // Add rank as meta-info
-      metaInfo.insert("__rank", int(fieldInfo["__rank"]));
-
       // Iterate field meta-info
+      MetaInfoMap metaInfo;
       for(auto it = fieldInfo.begin(), end = fieldInfo.end(); it != end; ++it) {
         std::string key = it.key();
-        if(!boost::algorithm::starts_with(key, "__")) {
-          if(it.value().is_string()) {
-            std::string value = it.value();
-            metaInfo.insert(it.key(), value);
-          } else if(it.value().is_boolean()) {
-            metaInfo.insert(it.key(), bool(it.value()));
-          } else if(it.value().is_number_integer()) {
-            metaInfo.insert(it.key(), int(it.value()));
-          } else if(it.value().is_number_float()) {
-            if(globalMetaInfoFloatType == TypeID::Float32)
-              metaInfo.insert(it.key(), float(it.value()));
-            else
-              metaInfo.insert(it.key(), double(it.value()));
-          } else
-            throw Exception("failed to upgrade: Cannot deduce type of meta-info '%s' of field '%s'",
-                            it.key(), name);
-        }
+        if(it.value().is_string()) {
+          std::string value = it.value();
+          metaInfo.insert(key, value);
+        } else if(it.value().is_boolean()) {
+          metaInfo.insert(key, bool(it.value()));
+        } else if(it.value().is_number_integer()) {
+          metaInfo.insert(key, int(it.value()));
+        } else if(it.value().is_number_float()) {
+          if(globalMetaInfoFloatType == TypeID::Float32)
+            metaInfo.insert(key, float(it.value()));
+          else
+            metaInfo.insert(key, double(it.value()));
+        } else
+          throw Exception("failed to upgrade: Cannot deduce type of meta-info '%s' of field '%s'",
+                          key, name);
       }
 
       fieldMap_.insert(name, type, dims, metaInfo);
@@ -572,7 +562,7 @@ bool SerializerImpl::upgradeMetaData() {
   try {
     updateMetaData();
   } catch(Exception& e) {
-    LOG(WARNING) << "failed to write upgraded meta-data to disk: " << e.what();
+    LOG(WARNING) << "Failed to write upgraded meta-data to disk: " << e.what();
   }
 
   LOG(INFO) << "Successfully upgraded MetaData to serialbox version (" << SERIALBOX_VERSION_STRING

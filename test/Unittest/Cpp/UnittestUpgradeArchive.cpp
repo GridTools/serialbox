@@ -239,7 +239,7 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
   // Old meta data is outdated -> no upgrade
   {
     auto timeStampBeforeConstruction = boost::filesystem::last_write_time(
-        this->directory->path() / SerializerImpl::SerializerMetaDataFile);
+        this->directory->path() / "MetaData-UpgradeArchiveTest.json");
 
     // Set old-meta data to be out-dated
     boost::filesystem::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
@@ -249,8 +249,7 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
     SerializerImpl ser_read(OpenModeKind::Read, this->directory->path().string(),
                             "UpgradeArchiveTest", "BinaryArchive");
 
-    auto timeStampAfterConstruction = boost::filesystem::last_write_time(
-        this->directory->path() / SerializerImpl::SerializerMetaDataFile);
+    auto timeStampAfterConstruction = boost::filesystem::last_write_time(ser_read.metaDataFile());
 
     ASSERT_EQ(timeStampBeforeConstruction, timeStampAfterConstruction);
   }

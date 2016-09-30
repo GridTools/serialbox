@@ -128,7 +128,7 @@ public:
   ///
   /// \see MetaInfoValue::as
   template <class ValueType, class KeyType>
-  ValueType as(KeyType&& key) {
+  ValueType as(KeyType&& key) const {
     return at(key).template as<ValueType>();
   }
 

@@ -178,6 +178,9 @@ public:
   
   /// \brief Comparison operator
   bool operator==(const MetainfoSet& other) const;
+  
+  /// \brief Set implementation pointer
+  void setImpl(MetaInfoMap* metaInfoMap);
 
 private:
   bool owner_;

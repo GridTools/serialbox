@@ -17,6 +17,7 @@
 #include "serialbox/Core/Frontend/STELLA/Utility.h"
 #include "serialbox/Core/MetaInfoMap.h"
 #include "serialbox/Core/Unreachable.h"
+#include <boost/algorithm/string.hpp>
 
 namespace serialbox {
 
@@ -120,15 +121,29 @@ std::string MetainfoSet::ToString() const {
   std::ostringstream ss;
   ss << "[ ";
   for(auto it = mapImpl_->begin(), end = mapImpl_->end(); it != end; ++it)
-    ss << it->first << "=" << it->second.toString() << " ";
+    if(!boost::algorithm::starts_with(it->first, "__"))    
+      ss << it->first << "=" << it->second.toString() << " ";
   ss << "]";
   return ss.str();
 }
 
-std::size_t MetainfoSet::size() const { return mapImpl_->size(); }
+std::size_t MetainfoSet::size() const {
+  std::size_t s = 0;
+  for(auto it = mapImpl_->begin(), end = mapImpl_->end(); it != end; ++it)
+    if(!boost::algorithm::starts_with(it->first, "__"))
+      s++;
+  return s;
+}
 
 bool MetainfoSet::operator==(const MetainfoSet& other) const {
   return (*mapImpl_ == *other.mapImpl_);
+}
+
+void MetainfoSet::setImpl(MetaInfoMap* metaInfoMap) {
+  if(owner_)
+    delete mapImpl_;
+  owner_ = false;
+  mapImpl_ = metaInfoMap;
 }
 
 } // namespace stella

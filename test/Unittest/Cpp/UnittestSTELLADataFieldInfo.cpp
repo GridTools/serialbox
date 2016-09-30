@@ -14,11 +14,41 @@
 
 #include "Utility/STELLA.h"
 #include "serialbox/Core/Frontend/STELLA/DataFieldInfo.h"
+#include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 
 #ifdef SERIALBOX_HAS_STELLA
 
-TEST(STELLADataFieldInfoTest, Construction) {
+TEST(STELLADataFieldInfoTest, InitConstruction) {
+  //
+  // Default construct
+  //
+  ser::DataFieldInfo info;
+  
+  info.Init("field1", "int", 4, 2, 42, 1, 1, 12, 1, 1, 0, 0, 0, 0, 2, 2);
+  
+  //
+  // Check infomration was set correct
+  //
+  EXPECT_EQ(std::string("field1"), info.name());
+  EXPECT_EQ(std::string("int"), info.type());
+  EXPECT_EQ(4, info.bytesPerElement());
+  EXPECT_EQ(2, info.rank());
+  EXPECT_EQ(42, info.iSize());
+  EXPECT_EQ(1, info.jSize());
+  EXPECT_EQ(1, info.kSize());
+  EXPECT_EQ(12, info.lSize());
+  EXPECT_EQ(1, info.iMinusHaloSize());
+  EXPECT_EQ(0, info.jMinusHaloSize());
+  EXPECT_EQ(0, info.kMinusHaloSize());
+  EXPECT_EQ(2, info.lMinusHaloSize());
+  EXPECT_EQ(1, info.iPlusHaloSize());
+  EXPECT_EQ(0, info.jPlusHaloSize());
+  EXPECT_EQ(0, info.kPlusHaloSize());
+  EXPECT_EQ(2, info.lPlusHaloSize());
+}
+
+TEST(STELLADataFieldInfoTest, STELLAConstruction) {
   //
   // Default construct
   //
@@ -56,7 +86,7 @@ TEST(STELLADataFieldInfoTest, Construction) {
   //
   // ToString
   //
-  EXPECT_STREQ(info1.ToString().c_str(), "info (7x8x3x1) [ key2=5.000000 key1=str ]");
+  EXPECT_TRUE(boost::algorithm::starts_with(info1.ToString(), "info (7x8x3x1)"));
 }
 
 #endif
