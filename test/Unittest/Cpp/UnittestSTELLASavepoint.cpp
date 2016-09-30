@@ -22,7 +22,8 @@ using namespace serialbox;
 
 TEST(STELLASavepointTest, Construction) {
   // Construction
-  ser::Savepoint savepoint1("savepoint");
+  ser::Savepoint savepoint1;
+  savepoint1.Init("savepoint");
 
   // Add meta-information
   EXPECT_NO_THROW(savepoint1.AddMetainfo("bool", bool()));

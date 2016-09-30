@@ -73,7 +73,7 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
   //
   //  Savepoint     | MetaData                               | Fields
   //  -----------------------------------------------------------------
-  //  savepoint1    | time: 1, dt: 5.1,  b: true, s: "str1"  | u_0, v_0
+  //  savepoint1    | time: 1, dt: 5.1, b: true, s: "str1"   | u_0, v_0
   //  savepoint1    | time: 2, dt: 9.1, b: false, s: "str2"  | u_1, v_1
   //  savepoint_u_1 | -                                      | u_1
   //  savepoint_v_1 | -                                      | v_1

@@ -12,11 +12,11 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/STLExtras.h"
-#include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Type.h"
 #include "serialbox/Core/Unreachable.h"
 #include "serialbox/Core/Version.h"
@@ -229,7 +229,7 @@ void SerializerImpl::constructMetaDataFromJson() {
 
     int serialboxVersion = jsonNode["serialbox_version"];
 
-    if(!Version::compare(serialboxVersion))
+    if(!Version::match(serialboxVersion))
       throw Exception(
           "serialbox version of MetaData (%s) does not match the version of the library (%s)",
           Version::toString(serialboxVersion), SERIALBOX_VERSION_STRING);
@@ -466,7 +466,7 @@ bool SerializerImpl::upgradeMetaData() {
   //
 
   // Construct archive but don't parse the meta-data (we will do it ourselves below)
-  archive_ = make_unique<BinaryArchive>(mode_, directory_.string(), prefix_, true);
+  archive_ = std::make_unique<BinaryArchive>(mode_, directory_.string(), prefix_, true);
   BinaryArchive::FieldTable& fieldTable = static_cast<BinaryArchive*>(archive_.get())->fieldTable();
 
   if(oldJson.count("OffsetTable")) {

@@ -79,101 +79,99 @@ public:
 
 protected:
   virtual void SetUp() override {
-    using serialbox::make_unique;
-
     dim1 = 2;
     dim2 = 3;
     dim3 = 4;
 
-    k_boundary = make_unique<KBoundary>();
+    k_boundary = std::make_unique<KBoundary>();
     k_boundary->Init(0, 1);
 
     // CPU Size
-    cpu_jik_size = make_unique<IJKSize>();
+    cpu_jik_size = std::make_unique<IJKSize>();
     cpu_jik_size->Init(dim1, dim2, dim3);
 
-    cpu_ji_size = make_unique<IJKSize>();
+    cpu_ji_size = std::make_unique<IJKSize>();
     cpu_ji_size->Init(dim1, dim2, 1);
 
-    cpu_ik_size = make_unique<IJKSize>();
+    cpu_ik_size = std::make_unique<IJKSize>();
     cpu_ik_size->Init(dim1, 1, dim3);
 
-    cpu_jk_size = make_unique<IJKSize>();
+    cpu_jk_size = std::make_unique<IJKSize>();
     cpu_jk_size->Init(1, dim2, dim3);
 
-    cpu_i_size = make_unique<IJKSize>();
+    cpu_i_size = std::make_unique<IJKSize>();
     cpu_i_size->Init(dim1, 1, 1);
 
-    cpu_j_size = make_unique<IJKSize>();
+    cpu_j_size = std::make_unique<IJKSize>();
     cpu_j_size->Init(1, dim2, 1);
 
-    cpu_k_size = make_unique<IJKSize>();
+    cpu_k_size = std::make_unique<IJKSize>();
     cpu_k_size->Init(1, 1, dim3);
 
     // GPU Size
-    gpu_kji_size = make_unique<IJKSize>();
+    gpu_kji_size = std::make_unique<IJKSize>();
     gpu_kji_size->Init(dim1, dim2, dim3);
 
-    gpu_ji_size = make_unique<IJKSize>();
+    gpu_ji_size = std::make_unique<IJKSize>();
     gpu_ji_size->Init(dim1, dim2, 1);
 
-    gpu_ki_size = make_unique<IJKSize>();
+    gpu_ki_size = std::make_unique<IJKSize>();
     gpu_ki_size->Init(dim1, 1, dim3);
 
-    gpu_kj_size = make_unique<IJKSize>();
+    gpu_kj_size = std::make_unique<IJKSize>();
     gpu_kj_size->Init(1, dim2, dim3);
 
-    gpu_i_size = make_unique<IJKSize>();
+    gpu_i_size = std::make_unique<IJKSize>();
     gpu_i_size->Init(dim1, 1, 1);
 
-    gpu_j_size = make_unique<IJKSize>();
+    gpu_j_size = std::make_unique<IJKSize>();
     gpu_j_size->Init(1, dim2, 1);
 
-    gpu_k_size = make_unique<IJKSize>();
+    gpu_k_size = std::make_unique<IJKSize>();
     gpu_k_size->Init(1, 1, dim3);
 
     // CPU Storages
-    cpu_jik_field_ptr = make_unique<typename StorageType::cpu_jik_storage>();
+    cpu_jik_field_ptr = std::make_unique<typename StorageType::cpu_jik_storage>();
     cpu_jik_field_ptr->Init("cpu_jik_field", *cpu_jik_size, *k_boundary);
 
-    cpu_ji_field_ptr = make_unique<typename StorageType::cpu_ji_storage>();
+    cpu_ji_field_ptr = std::make_unique<typename StorageType::cpu_ji_storage>();
     cpu_ji_field_ptr->Init("cpu_ji_field", *cpu_ji_size, *k_boundary);
 
-    cpu_ik_field_ptr = make_unique<typename StorageType::cpu_ik_storage>();
+    cpu_ik_field_ptr = std::make_unique<typename StorageType::cpu_ik_storage>();
     cpu_ik_field_ptr->Init("cpu_ik_field", *cpu_ik_size, *k_boundary);
 
-    cpu_jk_field_ptr = make_unique<typename StorageType::cpu_jk_storage>();
+    cpu_jk_field_ptr = std::make_unique<typename StorageType::cpu_jk_storage>();
     cpu_jk_field_ptr->Init("cpu_jk_field", *cpu_jk_size, *k_boundary);
 
-    cpu_i_field_ptr = make_unique<typename StorageType::cpu_i_storage>();
+    cpu_i_field_ptr = std::make_unique<typename StorageType::cpu_i_storage>();
     cpu_i_field_ptr->Init("cpu_i_field", *cpu_i_size, *k_boundary);
 
-    cpu_j_field_ptr = make_unique<typename StorageType::cpu_j_storage>();
+    cpu_j_field_ptr = std::make_unique<typename StorageType::cpu_j_storage>();
     cpu_j_field_ptr->Init("cpu_j_field", *cpu_j_size, *k_boundary);
 
-    cpu_k_field_ptr = make_unique<typename StorageType::cpu_k_storage>();
+    cpu_k_field_ptr = std::make_unique<typename StorageType::cpu_k_storage>();
     cpu_k_field_ptr->Init("cpu_k_field", *cpu_k_size, *k_boundary);
 
     // GPU Storages
-    gpu_kji_field_ptr = make_unique<typename StorageType::gpu_kji_storage>();
+    gpu_kji_field_ptr = std::make_unique<typename StorageType::gpu_kji_storage>();
     gpu_kji_field_ptr->Init("gpu_kji_field", *gpu_kji_size, *k_boundary);
 
-    gpu_ji_field_ptr = make_unique<typename StorageType::gpu_ji_storage>();
+    gpu_ji_field_ptr = std::make_unique<typename StorageType::gpu_ji_storage>();
     gpu_ji_field_ptr->Init("gpu_ji_field", *gpu_ji_size, *k_boundary);
 
-    gpu_ki_field_ptr = make_unique<typename StorageType::gpu_ki_storage>();
+    gpu_ki_field_ptr = std::make_unique<typename StorageType::gpu_ki_storage>();
     gpu_ki_field_ptr->Init("gpu_ki_field", *gpu_ki_size, *k_boundary);
 
-    gpu_kj_field_ptr = make_unique<typename StorageType::gpu_kj_storage>();
+    gpu_kj_field_ptr = std::make_unique<typename StorageType::gpu_kj_storage>();
     gpu_kj_field_ptr->Init("gpu_kj_field", *gpu_kj_size, *k_boundary);
 
-    gpu_i_field_ptr = make_unique<typename StorageType::gpu_i_storage>();
+    gpu_i_field_ptr = std::make_unique<typename StorageType::gpu_i_storage>();
     gpu_i_field_ptr->Init("gpu_i_field", *gpu_i_size, *k_boundary);
 
-    gpu_j_field_ptr = make_unique<typename StorageType::gpu_j_storage>();
+    gpu_j_field_ptr = std::make_unique<typename StorageType::gpu_j_storage>();
     gpu_j_field_ptr->Init("gpu_j_field", *gpu_j_size, *k_boundary);
 
-    gpu_k_field_ptr = make_unique<typename StorageType::gpu_k_storage>();
+    gpu_k_field_ptr = std::make_unique<typename StorageType::gpu_k_storage>();
     gpu_k_field_ptr->Init("gpu_k_field", *gpu_k_size, *k_boundary);
 
     T val = 0.0;

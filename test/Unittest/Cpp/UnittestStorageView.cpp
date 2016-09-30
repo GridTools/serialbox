@@ -112,37 +112,37 @@ protected:
     auto colMajor = Storage<T>::ColMajor;
     auto rowMajor = Storage<T>::RowMajor;
 
-    storage_1d = make_unique<Storage<T>>(colMajor, Dims{dim1});
+    storage_1d = std::make_unique<Storage<T>>(colMajor, Dims{dim1});
     storage_1d_padded =
-        make_unique<Storage<T>>(colMajor, Dims{dim1}, Padding{{pad1_left, pad1_right}});
+        std::make_unique<Storage<T>>(colMajor, Dims{dim1}, Padding{{pad1_left, pad1_right}});
 
-    storage_2d_col_major = make_unique<Storage<T>>(colMajor, Dims{dim1, dim2});
-    storage_2d_col_major_padded = make_unique<Storage<T>>(
+    storage_2d_col_major = std::make_unique<Storage<T>>(colMajor, Dims{dim1, dim2});
+    storage_2d_col_major_padded = std::make_unique<Storage<T>>(
         colMajor, Dims{dim1, dim2}, Padding{{pad1_left, pad1_right}, {pad2_left, pad2_right}});
     ;
 
-    storage_2d_row_major = make_unique<Storage<T>>(rowMajor, Dims{dim1, dim2});
-    storage_2d_row_major_padded = make_unique<Storage<T>>(
+    storage_2d_row_major = std::make_unique<Storage<T>>(rowMajor, Dims{dim1, dim2});
+    storage_2d_row_major_padded = std::make_unique<Storage<T>>(
         rowMajor, Dims{dim1, dim2}, Padding{{pad1_left, pad1_right}, {pad2_left, pad2_right}});
 
-    storage_3d_col_major = make_unique<Storage<T>>(colMajor, Dims{dim1, dim2, dim3});
-    storage_3d_col_major_padded = make_unique<Storage<T>>(
+    storage_3d_col_major = std::make_unique<Storage<T>>(colMajor, Dims{dim1, dim2, dim3});
+    storage_3d_col_major_padded = std::make_unique<Storage<T>>(
         colMajor, Dims{dim1, dim2, dim3},
         Padding{{pad1_left, pad1_right}, {pad2_left, pad2_right}, {pad3_left, pad3_right}});
 
-    storage_3d_row_major = make_unique<Storage<T>>(rowMajor, Dims{dim1, dim2, dim3});
-    storage_3d_row_major_padded = make_unique<Storage<T>>(
+    storage_3d_row_major = std::make_unique<Storage<T>>(rowMajor, Dims{dim1, dim2, dim3});
+    storage_3d_row_major_padded = std::make_unique<Storage<T>>(
         rowMajor, Dims{dim1, dim2, dim3},
         Padding{{pad1_left, pad1_right}, {pad2_left, pad2_right}, {pad3_left, pad3_right}});
 
-    storage_5d_col_major_padded = make_unique<Storage<T>>(
+    storage_5d_col_major_padded = std::make_unique<Storage<T>>(
         colMajor, Dims{dim1, dim2, dim3, dim4, dim5}, Padding{{pad1_left, pad1_right},
                                                               {pad2_left, pad2_right},
                                                               {pad3_left, pad3_right},
                                                               {pad4_left, pad4_right},
                                                               {pad5_left, pad5_right}});
 
-    storage_5d_row_major_padded = make_unique<Storage<T>>(
+    storage_5d_row_major_padded = std::make_unique<Storage<T>>(
         rowMajor, Dims{dim1, dim2, dim3, dim4, dim5}, Padding{{pad1_left, pad1_right},
                                                               {pad2_left, pad2_right},
                                                               {pad3_left, pad3_right},

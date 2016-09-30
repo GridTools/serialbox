@@ -39,9 +39,16 @@ Savepoint::~Savepoint() {
     delete savepointImpl_;
 }
 
-Savepoint::Savepoint(const std::string& name)
-    : owner_(true), savepointImpl_(new SavepointImpl(name)),
-      metainfo_(&savepointImpl_->metaInfo()) {}
+Savepoint::Savepoint()
+    : owner_(true), savepointImpl_(new SavepointImpl("")), metainfo_(&savepointImpl_->metaInfo()) {}
+
+void Savepoint::Init(const std::string& name) {
+  if(owner_)
+    delete savepointImpl_;
+  owner_ = true;
+  savepointImpl_ = new SavepointImpl(name);
+  metainfo_.setImpl(&savepointImpl_->metaInfo());
+}
 
 Savepoint::Savepoint(SavepointImpl* savepointImpl)
     : owner_(false), savepointImpl_(savepointImpl), metainfo_(&savepointImpl_->metaInfo()){};

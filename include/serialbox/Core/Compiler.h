@@ -51,8 +51,7 @@
 #endif
 
 /// \macro SERIALBOX_GNUC_PREREQ
-/// \brief Extend the default __GNUC_PREREQ even if glibc's features.h isn't
-/// available
+/// \brief Extend the default __GNUC_PREREQ even if glibc's features.h isn't available
 #ifndef SERIALBOX_GNUC_PREREQ
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__GNUC_PATCHLEVEL__)
 #define SERIALBOX_GNUC_PREREQ(maj, min, patch)                                                     \

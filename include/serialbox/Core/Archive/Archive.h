@@ -49,10 +49,10 @@ public:
 
   ///
   virtual const std::string& prefix() const = 0;
-  
+
   ///
   virtual const std::string& metaDataFile() const = 0;
-  
+
   ///
   virtual void clear() = 0;
 

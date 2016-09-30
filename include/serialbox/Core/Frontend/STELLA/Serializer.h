@@ -22,6 +22,7 @@
 #include "serialbox/Core/Frontend/STELLA/Savepoint.h"
 #include "serialbox/Core/Frontend/STELLA/SerializationException.h"
 #include <boost/shared_ptr.hpp>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -282,6 +283,9 @@ public:
   void ReadField(std::string name, TDataField& field, const Savepoint& savepoint,
                  bool hasStorageInI, bool hasStorageInJ, const int iStride, const int jStride,
                  const int kStride, bool alsoPrevious = false) const;
+
+  /// \brief Convert to string
+  std::string ToString() const;
 
   /// \brief Get implementation pointer
   SerializerImpl* getImpl() const { return serializerImpl_; }

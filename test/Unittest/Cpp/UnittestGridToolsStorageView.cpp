@@ -63,7 +63,6 @@ public:
 
 protected:
   virtual void SetUp() override {
-    using serialbox::make_unique;
 
     dim1 = 2 + storage_types::halo1_left + storage_types::halo1_right;
     dim2 = 3 + storage_types::halo2_left + storage_types::halo2_right;
@@ -74,43 +73,43 @@ protected:
     // Meta Data
     // ---------------------------------------------------------------------------------------------
     cpu_2d_real_meta_data_ptr =
-        make_unique<typename storage_types::cpu_2d_real_meta_data_type>(dim1, dim2);
+        std::make_unique<typename storage_types::cpu_2d_real_meta_data_type>(dim1, dim2);
     gpu_2d_real_meta_data_ptr =
-        make_unique<typename storage_types::gpu_2d_real_meta_data_type>(dim1, dim2);
+        std::make_unique<typename storage_types::gpu_2d_real_meta_data_type>(dim1, dim2);
     cpu_2d_meta_data_ptr =
-        make_unique<typename storage_types::cpu_2d_meta_data_type>(dim1, dim2, 0);
+        std::make_unique<typename storage_types::cpu_2d_meta_data_type>(dim1, dim2, 0);
     gpu_2d_meta_data_ptr =
-        make_unique<typename storage_types::gpu_2d_meta_data_type>(dim1, dim2, 0);
+        std::make_unique<typename storage_types::gpu_2d_meta_data_type>(dim1, dim2, 0);
     cpu_3d_meta_data_ptr =
-        make_unique<typename storage_types::cpu_3d_meta_data_type>(dim1, dim2, dim3);
+        std::make_unique<typename storage_types::cpu_3d_meta_data_type>(dim1, dim2, dim3);
     gpu_3d_meta_data_ptr =
-        make_unique<typename storage_types::gpu_3d_meta_data_type>(dim1, dim2, dim3);
+        std::make_unique<typename storage_types::gpu_3d_meta_data_type>(dim1, dim2, dim3);
     cpu_4d_meta_data_ptr =
-        make_unique<typename storage_types::cpu_4d_meta_data_type>(dim1, dim2, dim3, dim4);
+        std::make_unique<typename storage_types::cpu_4d_meta_data_type>(dim1, dim2, dim3, dim4);
     gpu_4d_meta_data_ptr =
-        make_unique<typename storage_types::gpu_4d_meta_data_type>(dim1, dim2, dim3, dim4);
+        std::make_unique<typename storage_types::gpu_4d_meta_data_type>(dim1, dim2, dim3, dim4);
 
     // ---------------------------------------------------------------------------------------------
     // Storages
     // ---------------------------------------------------------------------------------------------
-    cpu_2d_real_storage_ptr = make_unique<typename storage_types::cpu_2d_real_storage_type>(
+    cpu_2d_real_storage_ptr = std::make_unique<typename storage_types::cpu_2d_real_storage_type>(
         *cpu_2d_real_meta_data_ptr, "cpu_2d_real_storage", -1.0);
-    gpu_2d_real_storage_ptr = make_unique<typename storage_types::gpu_2d_real_storage_type>(
+    gpu_2d_real_storage_ptr = std::make_unique<typename storage_types::gpu_2d_real_storage_type>(
         *gpu_2d_real_meta_data_ptr, "gpu_2d_real_storage", -1.0);
 
-    cpu_2d_storage_ptr = make_unique<typename storage_types::cpu_2d_storage_type>(
+    cpu_2d_storage_ptr = std::make_unique<typename storage_types::cpu_2d_storage_type>(
         *cpu_2d_meta_data_ptr, "cpu_2d_storage", -1.0);
-    gpu_2d_storage_ptr = make_unique<typename storage_types::gpu_2d_storage_type>(
+    gpu_2d_storage_ptr = std::make_unique<typename storage_types::gpu_2d_storage_type>(
         *gpu_2d_meta_data_ptr, "gpu_2d_storage", -1.0);
 
-    cpu_3d_storage_ptr = make_unique<typename storage_types::cpu_3d_storage_type>(
+    cpu_3d_storage_ptr = std::make_unique<typename storage_types::cpu_3d_storage_type>(
         *cpu_3d_meta_data_ptr, "cpu_3d_storage", -1.0);
-    gpu_3d_storage_ptr = make_unique<typename storage_types::gpu_3d_storage_type>(
+    gpu_3d_storage_ptr = std::make_unique<typename storage_types::gpu_3d_storage_type>(
         *gpu_3d_meta_data_ptr, "gpu_3d_storage", -1.0);
 
-    cpu_4d_storage_ptr = make_unique<typename storage_types::cpu_4d_storage_type>(
+    cpu_4d_storage_ptr = std::make_unique<typename storage_types::cpu_4d_storage_type>(
         *cpu_4d_meta_data_ptr, "cpu_4d_storage", -1.0);
-    gpu_4d_storage_ptr = make_unique<typename storage_types::gpu_4d_storage_type>(
+    gpu_4d_storage_ptr = std::make_unique<typename storage_types::gpu_4d_storage_type>(
         *gpu_4d_meta_data_ptr, "gpu_4d_storage", -1.0);
 
     // 2D

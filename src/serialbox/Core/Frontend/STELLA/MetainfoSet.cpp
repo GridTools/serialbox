@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Frontend/STELLA/MetainfoSet.h"
+#include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Frontend/STELLA/Utility.h"
 #include "serialbox/Core/MetaInfoMap.h"
 #include "serialbox/Core/Unreachable.h"
@@ -121,7 +121,7 @@ std::string MetainfoSet::ToString() const {
   std::ostringstream ss;
   ss << "[ ";
   for(auto it = mapImpl_->begin(), end = mapImpl_->end(); it != end; ++it)
-    if(!boost::algorithm::starts_with(it->first, "__"))    
+    if(!boost::algorithm::starts_with(it->first, "__"))
       ss << it->first << "=" << it->second.toString() << " ";
   ss << "]";
   return ss.str();

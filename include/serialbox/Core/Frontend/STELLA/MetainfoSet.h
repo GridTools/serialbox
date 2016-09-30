@@ -175,10 +175,10 @@ public:
   ///
   /// \return The size of the set is returned
   std::size_t size() const;
-  
+
   /// \brief Comparison operator
   bool operator==(const MetainfoSet& other) const;
-  
+
   /// \brief Set implementation pointer
   void setImpl(MetaInfoMap* metaInfoMap);
 

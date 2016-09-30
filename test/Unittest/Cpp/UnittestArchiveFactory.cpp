@@ -42,7 +42,7 @@ public:
 
   static std::unique_ptr<Archive> create(OpenModeKind mode, const std::string& directory,
                                          const std::string& prefix) {
-    return make_unique<DummyArchive>(mode, directory, prefix);
+    return std::make_unique<DummyArchive>(mode, directory, prefix);
   }
 
 private:

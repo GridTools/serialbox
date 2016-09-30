@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
+#include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/SHA256.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/Version.h"
@@ -48,7 +48,7 @@ void BinaryArchive::readMetaDataFromJson() {
   int archiveVersion = json_["archive_version"];
 
   // Check consistency
-  if(!Version::compare(serialboxVersion))
+  if(!Version::match(serialboxVersion))
     throw Exception("serialbox version of binary archive (%s) does not match the version "
                     "of the library (%s)",
                     Version::toString(serialboxVersion), SERIALBOX_VERSION_STRING);
@@ -92,10 +92,10 @@ void BinaryArchive::writeMetaDataToJson() {
   // Write metaData to disk (just overwrite the file, we assume that there is never more than one
   // Archive per data set and thus our in-memory copy is always the up-to-date one)
   std::ofstream fs(metaDatafile_.string(), std::ios::out | std::ios::trunc);
-  
+
   if(!fs.is_open())
     throw Exception("cannot open file: %s", metaDatafile_);
-    
+
   fs << json_.dump(2) << std::endl;
   fs.close();
 }
@@ -335,7 +335,7 @@ void BinaryArchive::clearFieldTable() {
 
 std::unique_ptr<Archive> BinaryArchive::create(OpenModeKind mode, const std::string& directory,
                                                const std::string& prefix) {
-  return make_unique<BinaryArchive>(mode, directory, prefix, false);
+  return std::make_unique<BinaryArchive>(mode, directory, prefix, false);
 }
 
 SERIALBOX_REGISTER_ARCHIVE(BinaryArchive, BinaryArchive::create)

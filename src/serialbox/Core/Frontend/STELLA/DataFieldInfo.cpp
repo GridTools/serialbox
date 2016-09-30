@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/FieldMetaInfo.h"
 #include "serialbox/Core/Frontend/STELLA/DataFieldInfo.h"
+#include "serialbox/Core/FieldMetaInfo.h"
 #include "serialbox/Core/Frontend/STELLA/Utility.h"
 #include "serialbox/Core/Type.h"
 
