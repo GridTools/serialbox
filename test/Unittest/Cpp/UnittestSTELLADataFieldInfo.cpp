@@ -12,12 +12,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/STELLA.h"
 #include "serialbox/Core/Frontend/STELLA/DataFieldInfo.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
-
-#ifdef SERIALBOX_HAS_STELLA
 
 TEST(STELLADataFieldInfoTest, InitConstruction) {
   //
@@ -47,6 +44,9 @@ TEST(STELLADataFieldInfoTest, InitConstruction) {
   EXPECT_EQ(0, info.kPlusHaloSize());
   EXPECT_EQ(2, info.lPlusHaloSize());
 }
+
+#include "Utility/STELLA.h"
+#ifdef SERIALBOX_HAS_STELLA
 
 TEST(STELLADataFieldInfoTest, STELLAConstruction) {
   //

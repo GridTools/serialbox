@@ -30,7 +30,19 @@ public:
   ~Savepoint();
 
   /// \brief Construct empty savepoint with name ´name´
-  explicit Savepoint(const std::string& name);
+  Savepoint();
+
+  /// \brief Initialize the savepoint
+  ///
+  /// This method prepares the savepoint for usage and gives a name, which is the only required
+  /// information for the savepoint to be usable. Metainformation can be added after the
+  /// initialization has been performed.
+  ///
+  /// A savepoint can be initialized multiple times. In this case, every initialization removes all
+  /// metainformation and sets a new name.
+  ///
+  /// \param name The name of the savepoint
+  void Init(const std::string& name);
 
   /// \brief Construct with SavepointImpl (lifetime of SavepointImpl has to be managed externally)
   explicit Savepoint(SavepointImpl* savepointImpl);

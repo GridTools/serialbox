@@ -18,17 +18,15 @@
 #include "serialbox/Core/Compiler.h"
 #include <cstddef>
 #include <memory>
-#include <string>
 #include <type_traits>
-#include <utility>
-
-namespace serialbox {
 
 //===------------------------------------------------------------------------------------------===//
 //     Extra additions to <memory>
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_COMPILER_MSVC
+#if !defined(SERIALBOX_COMPILER_MSVC) && __cplusplus <= 201103L
+
+namespace std {
 
 // Implement make_unique according to N3656.
 
@@ -66,10 +64,8 @@ make_unique(std::size_t n) {
 template <class T, class... Args>
 typename std::enable_if<std::extent<T>::value != 0>::type make_unique(Args&&...) = delete;
 
-#else
-using std::make_unique;
-#endif
+} // namespace std
 
-} // namespace serialbox
+#endif
 
 #endif

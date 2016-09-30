@@ -22,10 +22,10 @@ TEST(VersionTest, Comparison) {
   int minor = SERIALBOX_VERSION_MINOR;
   int patch = SERIALBOX_VERSION_PATCH;
 
-  EXPECT_TRUE(Version::compare(major, minor, patch));
-  EXPECT_FALSE(Version::compare(major - 1, minor, patch));
-  EXPECT_TRUE(Version::compare(major * 100 + minor * 10 + patch));
-  EXPECT_FALSE(Version::compare(0));
+  EXPECT_TRUE(Version::match(major, minor, patch));
+  EXPECT_FALSE(Version::match(major - 1, minor, patch));
+  EXPECT_TRUE(Version::match(major * 100 + minor * 10 + patch));
+  EXPECT_FALSE(Version::match(0));
 }
 
 TEST(VersionTest, ToString) {

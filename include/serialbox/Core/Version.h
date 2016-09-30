@@ -42,13 +42,13 @@ struct Version {
   /// \brief Check if the given version equals the current library version
   /// \return Return true if the versions match
   /// @{
-  static bool compare(int version) noexcept {
+  static bool match(int version) noexcept {
     int major = version / 100;
     int minor = (version - major * 100) / 10;
-    return Version::compare(major, minor, version - 100 * major - 10 * minor);
+    return Version::match(major, minor, version - 100 * major - 10 * minor);
   }
 
-  static bool compare(int major, int minor, int patch) noexcept {
+  static bool match(int major, int minor, int patch) noexcept {
     return ((major == SERIALBOX_VERSION_MAJOR) && (minor == SERIALBOX_VERSION_MINOR) &&
             (patch == SERIALBOX_VERSION_PATCH));
   }
