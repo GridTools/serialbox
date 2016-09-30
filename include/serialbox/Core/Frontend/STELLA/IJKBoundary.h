@@ -8,7 +8,7 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains defintion of the boundary container.
+/// This file contains the defintion of the boundary container.
 ///
 //===------------------------------------------------------------------------------------------===//
 

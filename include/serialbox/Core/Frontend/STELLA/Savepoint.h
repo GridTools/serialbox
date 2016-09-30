@@ -67,7 +67,7 @@ public:
   /// \brief Access to the metainfo
   ///
   /// The meta-information is constructed from the underlying MetaInfoMap of the SavepointImpl.
-  MetainfoSet metainfo() const;
+  const MetainfoSet& metainfo() const { return metainfo_; }
 
   /// \brief Compare equal
   bool operator==(const Savepoint& other) const;
@@ -81,9 +81,13 @@ public:
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& out, const Savepoint& sp);
 
+  /// \brief Get implementation pointer
+  SavepointImpl* getImpl() const { return savepointImpl_; }
+
 private:
   bool owner_;
   SavepointImpl* savepointImpl_;
+  MetainfoSet metainfo_;
 };
 
 } // namespace stella

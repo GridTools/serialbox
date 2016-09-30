@@ -133,6 +133,7 @@ public:
 
   /// \brief Access the savepoints
   const std::vector<SavepointImpl>& savepoints() const noexcept { return savepoints_; }
+  std::vector<SavepointImpl>& savepoints() noexcept { return savepoints_; }
 
   /// \brief Convert to JSON
   json::json toJSON() const;

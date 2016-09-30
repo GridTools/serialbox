@@ -19,7 +19,6 @@
 #include "serialbox/Core/Frontend/STELLA/IJKBoundary.h"
 #include "serialbox/Core/Frontend/STELLA/IJKSize.h"
 #include "serialbox/Core/Frontend/STELLA/MetainfoSet.h"
-#include "serialbox/Core/Frontend/STELLA/SerializationException.h"
 #include "serialbox/Core/Frontend/STELLA/TypeName.h"
 
 namespace serialbox {
@@ -32,11 +31,17 @@ public:
   /// \brief Default constructor
   DataFieldInfo();
 
+  /// \brief Default constructor
+  DataFieldInfo(FieldMetaInfo* fieldMetaInfo);
+
   /// \brief Copy constructor
-  DataFieldInfo(const DataFieldInfo& other) { *this = other; }
+  DataFieldInfo(const DataFieldInfo& other);
 
   /// \brief Assignment operator
   DataFieldInfo& operator=(const DataFieldInfo& other);
+
+  /// \brief Destructor
+  ~DataFieldInfo();
 
   /// \brief Initialize with field.
   ///
@@ -117,88 +122,80 @@ public:
   const MetainfoSet& metainfo() const { return metainfo_; }
 
   /// \brief The field name
-  const std::string& name() const { return name_; }
-
-  /// \brief Sets the name to a value different than that of the initialization field
-  void set_Name(std::string name) {
-    if(name.empty()) {
-      SerializationException exception;
-      exception.Init("Passed empty name to DataFieldInfo");
-      throw exception;
-    }
-    name_ = name;
-  }
+  std::string name() const;
 
   /// \brief The field scalar type
-  const std::string& type() const { return type_; }
+  std::string type() const;
 
   /// \brief The size of the field data in bytes is returned
-  int dataSize() const { return bytesPerElement_ * iSize_ * jSize_ * kSize_ * lSize_; }
+  int dataSize() const { return bytesPerElement() * iSize() * jSize() * kSize() * lSize(); }
 
   /// \brief The dimension in bytes of a single element
-  int bytesPerElement() const { return bytesPerElement_; }
+  int bytesPerElement() const;
 
   /// \brief The number of dimensions of the field
-  int rank() const { return rank_; }
+  int rank() const;
 
   /// \brief The size of the field in i-direction, including the halo
-  int iSize() const { return iSize_; }
+  int iSize() const;
 
   /// \brief The size of the field in j-direction, including the halo
-  int jSize() const { return jSize_; }
+  int jSize() const;
 
   /// \brief The size of the field in k-direction, including the halo
-  int kSize() const { return kSize_; }
+  int kSize() const;
 
   /// \brief The size of the field in l-direction, including the halo
-  int lSize() const { return lSize_; }
+  int lSize() const;
 
   /// \brief The size of the halo in negative i-direction
-  int iMinusHaloSize() const { return iMinusHalo_; }
+  int iMinusHaloSize() const;
 
   /// \brief The size of the halo in positive i-direction
-  int iPlusHaloSize() const { return iPlusHalo_; }
+  int iPlusHaloSize() const;
 
   /// \brief The size of the halo in negative i-direction
-  int jMinusHaloSize() const { return jMinusHalo_; }
+  int jMinusHaloSize() const;
 
   /// \brief The size of the halo in positive i-direction
-  int jPlusHaloSize() const { return jPlusHalo_; }
+  int jPlusHaloSize() const;
 
   /// \brief The size of the halo in negative i-direction
-  int kMinusHaloSize() const { return kMinusHalo_; }
+  int kMinusHaloSize() const;
 
   /// \brief The size of the halo in positive i-direction
-  int kPlusHaloSize() const { return kPlusHalo_; }
+  int kPlusHaloSize() const;
 
   /// \brief The size of the halo in negative i-direction
-  int lMinusHaloSize() const { return lMinusHalo_; }
+  int lMinusHaloSize() const;
 
   /// \brief The size of the halo in positive i-direction
-  int lPlusHaloSize() const { return lPlusHalo_; }
+  int lPlusHaloSize() const;
 
   /// \brief The number of bytes occupied by the field
-  int fieldLength() const { return bytesPerElement_ * iSize_ * jSize_ * kSize_ * lSize_; }
+  int fieldLength() const { return bytesPerElement() * iSize() * jSize() * kSize() * lSize(); }
 
   /// \brief The calculation domain of the field
   IJKSize calculationDomain() const {
     IJKSize size;
-    size.Init(iSize_ - iMinusHalo_ - iPlusHalo_, jSize_ - jMinusHalo_ - jPlusHalo_,
-              kSize_ - kMinusHalo_ - kPlusHalo_);
+    size.Init(iSize() - iMinusHaloSize() - iPlusHaloSize(),
+              jSize() - jMinusHaloSize() - jPlusHaloSize(),
+              kSize() - kMinusHaloSize() - kPlusHaloSize());
     return size;
   }
 
   /// \brief The total storage of the field (calculation domain and boundary)
   IJKSize size() const {
     IJKSize size;
-    size.Init(iSize_, jSize_, kSize_);
+    size.Init(iSize(), jSize(), kSize());
     return size;
   }
 
   /// \brief The size of the halo of the field
   IJKBoundary boundary() const {
     IJKBoundary boundary;
-    boundary.Init(-iMinusHalo_, iPlusHalo_, -jMinusHalo_, jPlusHalo_, -kMinusHalo_, kPlusHalo_);
+    boundary.Init(-iMinusHaloSize(), iPlusHaloSize(), -jMinusHaloSize(), jPlusHaloSize(),
+                  -kMinusHaloSize(), kPlusHaloSize());
     return boundary;
   }
 
@@ -217,23 +214,12 @@ public:
   /// \brief Gives a string representation of the object, useful for debugging
   std::string ToString() const;
 
+  /// \brief Get implementation pointer
+  FieldMetaInfo* getImpl() const { return fieldMetaInfoImpl_; }
+
 private:
-  std::string name_;
-  std::string type_;
-  int bytesPerElement_;
-
-  int rank_;
-
-  int iSize_;
-  int jSize_;
-  int kSize_;
-  int lSize_;
-
-  int iPlusHalo_, iMinusHalo_;
-  int jPlusHalo_, jMinusHalo_;
-  int kPlusHalo_, kMinusHalo_;
-  int lPlusHalo_, lMinusHalo_;
-
+  bool owner_;
+  FieldMetaInfo* fieldMetaInfoImpl_;
   MetainfoSet metainfo_;
 };
 

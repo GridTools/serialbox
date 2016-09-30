@@ -13,7 +13,10 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/Core/Frontend/STELLA/Serializer.h"
+#include "serialbox/Core/Frontend/STELLA/Utility.h"
 #include "serialbox/Core/SerializerImpl.h"
+#include "serialbox/Core/Unreachable.h"
+#include <boost/make_shared.hpp>
 #include <cstdlib>
 
 namespace serialbox {
@@ -39,10 +42,6 @@ std::string Serializer::directory() const { return serializerImpl_->directory().
 
 std::string Serializer::prefix() const { return serializerImpl_->prefix(); }
 
-MetainfoSet Serializer::globalMetainfo() const {
-  return MetainfoSet(&serializerImpl_->globalMetaInfo());
-}
-
 void Serializer::Init(const std::string& directory, const std::string& prefix,
                       SerializerOpenMode mode) {
   if(enabled_ == 0) {
@@ -51,17 +50,163 @@ void Serializer::Init(const std::string& directory, const std::string& prefix,
   }
 
   // Initialize SerializerImpl
-  switch(mode) {
-  case SerializerOpenModeRead:
-    break;
-  case SerializerOpenModeWrite:
-    break;
-  case SerializerOpenModeAppend:
-    break;
+  try {
+    switch(mode) {
+    case SerializerOpenModeRead:
+      serializerImpl_ = new SerializerImpl(OpenModeKind::Read, directory, prefix, "BinaryArchive");
+      break;
+    case SerializerOpenModeWrite:
+      serializerImpl_ = new SerializerImpl(OpenModeKind::Write, directory, prefix, "BinaryArchive");
+      break;
+    case SerializerOpenModeAppend:
+      serializerImpl_ =
+          new SerializerImpl(OpenModeKind::Append, directory, prefix, "BinaryArchive");
+      break;
+    }
+  } catch(Exception& e) {
+    internal::throwSerializationException("Error: %s", e.what());
   }
 
+  // Initialize MetainfoSet
+  globalMetainfo_ = boost::make_shared<MetainfoSet>(&serializerImpl_->globalMetaInfo());
+
   // Initialize savepoint vector
+  for(auto& savepoint : serializerImpl_->savepoints())
+    savepoints_.emplace_back(&savepoint);
 }
+
+bool Serializer::RegisterField(const std::string& name, std::string type, int bytesPerElement,
+                               int iSize, int jSize, int kSize, int lSize, int iMinusHalo,
+                               int iPlusHalo, int jMinusHalo, int jPlusHalo, int kMinusHalo,
+                               int kPlusHalo, int lMinusHalo, int lPlusHalo) {
+  try {
+    TypeID typeID = internal::TypeNameToTypeID(type);
+    if(bytesPerElement != TypeUtil::sizeOf(typeID))
+      throw Exception("inconsistent bytes-per-element: got '%i' but according to passed type "
+                      "'%s' expected '%i'",
+                      bytesPerElement, type, TypeUtil::sizeOf(typeID));
+
+    int rank =
+        (iSize != 1 ? 1 : 0) + (jSize != 1 ? 1 : 0) + (kSize != 1 ? 1 : 0) + (lSize != 1 ? 1 : 0);
+
+    std::vector<int> dims{iSize, jSize, kSize, lSize};
+    MetaInfoMap metaInfo;
+    metaInfo.insert("__name", name);
+    metaInfo.insert("__elementtype", type);
+    metaInfo.insert("__bytesperelement", bytesPerElement);
+    metaInfo.insert("__rank", rank);
+    metaInfo.insert("__isize", iSize);
+    metaInfo.insert("__jsize", jSize);
+    metaInfo.insert("__ksize", kSize);
+    metaInfo.insert("__lsize", lSize);
+    metaInfo.insert("__iminushalosize", iMinusHalo);
+    metaInfo.insert("__iplushalosize", iPlusHalo);
+    metaInfo.insert("__jminushalosize", jMinusHalo);
+    metaInfo.insert("__jplushalosize", jPlusHalo);
+    metaInfo.insert("__kminushalosize", kMinusHalo);
+    metaInfo.insert("__kplushalosize", kPlusHalo);
+    metaInfo.insert("__lminushalosize", lMinusHalo);
+    metaInfo.insert("__lplushalosize", lPlusHalo);
+
+    FieldMetaInfo fieldMetaInfo(typeID, dims, metaInfo);
+
+    // Field was already registered with the same meta-data
+    if(serializerImpl_->hasField(name) &&
+       (serializerImpl_->getFieldMetaInfoOf(name) == fieldMetaInfo))
+      return false;
+
+    serializerImpl_->registerField(name, fieldMetaInfo);
+  } catch(Exception& e) {
+    internal::throwSerializationException("Error: %s", e.what());
+  }
+  return true;
+}
+
+// This allows to return refrences (yes.. it's super ugly)
+namespace dont_even_ask {
+std::vector<DataFieldInfo> datafieldInfos;
+}
+
+const DataFieldInfo& Serializer::FindField(const std::string& fieldname) const {
+  dont_even_ask::datafieldInfos.push_back(
+      DataFieldInfo(const_cast<FieldMetaInfo*>(&serializerImpl_->getFieldMetaInfoOf(fieldname))));
+  return dont_even_ask::datafieldInfos.back();
+}
+
+void Serializer::AddFieldMetainfo(const std::string& fieldname, const std::string& key,
+                                  bool value) {
+  try {
+    serializerImpl_->addFieldMetaInfo(fieldname, key, value);
+  } catch(Exception& e) {
+    internal::throwSerializationException("Error: %s", e.what());
+  }
+}
+
+void Serializer::AddFieldMetainfo(const std::string& fieldname, const std::string& key, int value) {
+  try {
+    serializerImpl_->addFieldMetaInfo(fieldname, key, value);
+  } catch(Exception& e) {
+    internal::throwSerializationException("Error: %s", e.what());
+  }
+}
+
+void Serializer::AddFieldMetainfo(const std::string& fieldname, const std::string& key,
+                                  float value) {
+  try {
+    serializerImpl_->addFieldMetaInfo(fieldname, key, value);
+  } catch(Exception& e) {
+    internal::throwSerializationException("Error: %s", e.what());
+  }
+}
+
+void Serializer::AddFieldMetainfo(const std::string& fieldname, const std::string& key,
+                                  double value) {
+  try {
+    serializerImpl_->addFieldMetaInfo(fieldname, key, value);
+  } catch(Exception& e) {
+    internal::throwSerializationException("Error: %s", e.what());
+  }
+}
+
+void Serializer::AddFieldMetainfo(const std::string& fieldname, const std::string& key,
+                                  std::string value) {
+  try {
+    serializerImpl_->addFieldMetaInfo(fieldname, key, value);
+  } catch(Exception& e) {
+    internal::throwSerializationException("Error: %s", e.what());
+  }
+}
+
+std::vector<std::string> Serializer::fieldnames() const {
+  std::vector<std::string> fields;
+  for(auto it = serializerImpl_->fieldMap().begin(), end = serializerImpl_->fieldMap().end();
+      it != end; ++it)
+    fields.push_back(it->first);
+  return fields;
+}
+
+std::vector<std::string> Serializer::FieldsAtSavepoint(const Savepoint& savepoint) const {
+  std::vector<std::string> fields;
+
+  // Check if savepoint exists
+  int idx = serializerImpl_->savepointVector().find(*savepoint.getImpl());
+  if(idx != -1) {
+    // Iterate fields per savepoint
+    const auto& fieldsPerSavepointMap = serializerImpl_->savepointVector().fieldsOf(idx);
+    for(auto it = fieldsPerSavepointMap.begin(), end = fieldsPerSavepointMap.end(); it != end; ++it)
+      fields.push_back(it->first);
+  }
+  return fields;
+}
+
+void Serializer::WriteField(const std::string& fieldName, const Savepoint& savepoint,
+                            const void* pData, int iStride, int jStride, int kStride, int lStride) {
+
+}
+
+void Serializer::ReadField(const std::string& fieldName, const Savepoint& savepoint, void* pData,
+                           int iStride, int jStride, int kStride, int lStride,
+                           bool alsoPrevious) const {}
 
 } // namespace stella
 

@@ -32,9 +32,6 @@ namespace serialbox {
 /// instead.
 class SerializerImpl {
 public:
-  /// \brief
-  static constexpr const char* SerializerMetaDataFile = "MetaData.json";
-
   /// \brief Copy constructor [deleted]
   SerializerImpl(const SerializerImpl&) = delete;
 
@@ -70,8 +67,11 @@ public:
   /// \brief Access prefix of all filenames
   const std::string& prefix() const noexcept { return prefix_; }
 
+  /// \brief Access the path to the meta-data file
+  const boost::filesystem::path& metaDataFile() const noexcept { return metaDataFile_; }
+
   /// \brief Drop all field and savepoint meta-data.
-  /// 
+  ///
   /// This will also call Archive::clear() which may \b remove all related files on the disk.
   void clear() noexcept;
 
@@ -124,7 +124,7 @@ public:
   template <class StringType, typename... Args>
   void registerField(StringType&& name, Args&&... args) {
     if(!fieldMap_.insert(std::forward<StringType>(name), std::forward<Args>(args)...))
-      throw Exception("cannot register field '%s': field already exists");
+      throw Exception("cannot register field '%s': field already exists", name);
   }
 
   /// \brief Check if field ´name´ has been registred within the Serializer
@@ -198,6 +198,7 @@ public:
   const std::vector<SavepointImpl>& savepoints() const noexcept {
     return savepointVector_.savepoints();
   }
+  std::vector<SavepointImpl>& savepoints() noexcept { return savepointVector_.savepoints(); }
 
   /// \brief Get refrence to SavepointVector
   const SavepointVector& savepointVector() const noexcept { return savepointVector_; }
@@ -312,6 +313,7 @@ protected:
 protected:
   OpenModeKind mode_;
   boost::filesystem::path directory_;
+  boost::filesystem::path metaDataFile_;
   std::string prefix_;
 
   SavepointVector savepointVector_;

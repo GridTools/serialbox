@@ -17,8 +17,11 @@
 #ifndef SERIALBOX_CORE_FRONTEND_STELLA_UTILITY_H
 #define SERIALBOX_CORE_FRONTEND_STELLA_UTILITY_H
 
+#include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Frontend/STELLA/SerializationException.h"
+#include "serialbox/Core/Type.h"
 #include <boost/format.hpp>
+#include <string>
 
 namespace serialbox {
 
@@ -28,7 +31,8 @@ namespace internal {
 
 /// \brief Throw SerializationException constructed with printf-style arguments
 template <typename... Args>
-void throwSerializationException(const char* fmt, Args&&... args) throw(SerializationException) {
+inline void throwSerializationException(const char* fmt,
+                                        Args&&... args) throw(SerializationException) {
   boost::format f(fmt);
 
   int unroll[]{0, (f % std::forward<Args>(args), 0)...};
@@ -37,6 +41,34 @@ void throwSerializationException(const char* fmt, Args&&... args) throw(Serializ
   SerializationException exception;
   exception.Init(boost::str(f));
   throw exception;
+}
+
+template <class StringType>
+inline TypeID TypeNameToTypeID(StringType&& name) {
+  if(name == "bool")
+    return TypeID::Boolean;
+  else if(name == "int")
+    return TypeID::Int32;
+  else if(name == "float")
+    return TypeID::Float32;
+  else if(name == "double")
+    return TypeID::Float64;
+  throw Exception("unsupported type: %s", name);
+}
+
+inline std::string TypeIDToTypeName(TypeID typeID) {
+  switch(typeID) {
+  case TypeID::Boolean:
+    return "bool";
+  case TypeID::Int32:
+    return "int";
+  case TypeID::Float32:
+    return "float";
+  case TypeID::Float64:
+    return "double";
+  default:
+    throw Exception("unsupported type: %s", TypeUtil::toString(typeID));
+  }
 }
 
 } // namespace internal

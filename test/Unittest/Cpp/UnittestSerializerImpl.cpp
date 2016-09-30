@@ -77,9 +77,9 @@ TEST_F(SerializerImplUtilityTest, ConstructionOfEmptySerializer) {
   }
 
   {
-    // MetaData.json does not exist -> Exception
+    // MetaData-prefix.json does not exist -> Exception
     boost::filesystem::remove((directory->path() / "dir-is-created-from-write") /
-                              SerializerImpl::SerializerMetaDataFile);
+                              "MetaData-Field.json");
     ASSERT_THROW(SerializerImpl(OpenModeKind::Read,
                                 (directory->path() / "dir-is-created-from-write").string(), "Field",
                                 "BinaryArchive"),
@@ -127,7 +127,7 @@ TEST_F(SerializerImplUtilityTest, AddMetaInfo) {
 }
 
 TEST_F(SerializerImplUtilityTest, RegisterSavepoints) {
-  SerializerImpl s(OpenModeKind::Write, directory->path().string(), "Field","BinaryArchive");
+  SerializerImpl s(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
 
   SavepointImpl savepoint1("savepoint1");
   ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
@@ -382,12 +382,11 @@ TEST_F(SerializerImplUtilityTest, JSONFailEmpty) {
   SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
   s_write.updateMetaData();
 
-  // Erase MetaData.json -> this produces a parser error
-  std::ofstream ofs((directory->path() / SerializerImpl::SerializerMetaDataFile).string(),
-                    std::ios::trunc);
+  // Erase MetaData-prefix.json -> this produces a parser error
+  std::ofstream ofs(s_write.metaDataFile().string(), std::ios::trunc);
   ofs.close();
 
-  // Open with empty MetaData.json
+  // Open with empty MetaData-preifx.json
   ASSERT_THROW(
       SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "BinaryArchive"),
       Exception);
@@ -399,16 +398,15 @@ TEST_F(SerializerImplUtilityTest, JSONFailCorruputedVersion) {
 
   // Read MetaData.json
   json::json j;
-  std::ifstream ifs((directory->path() / SerializerImpl::SerializerMetaDataFile).string());
+  std::ifstream ifs(s_write.metaDataFile().string());
   ifs >> j;
   ifs.close();
 
   // Corruput version
   j["serialbox_version"] = int(j["serialbox_version"]) + 1;
 
-  // Write MetaData.json
-  std::ofstream ofs((directory->path() / SerializerImpl::SerializerMetaDataFile).string(),
-                    std::ios::trunc);
+  // Write MetaData-prefix.json
+  std::ofstream ofs(s_write.metaDataFile().string(), std::ios::trunc);
   ofs << j.dump(4) << std::endl;
   ofs.close();
 
@@ -433,16 +431,15 @@ TEST_F(SerializerImplUtilityTest, JSONFailNoVersion) {
 
   // Read MetaData.json
   json::json j;
-  std::ifstream ifs((directory->path() / SerializerImpl::SerializerMetaDataFile).string());
+  std::ifstream ifs(s_write.metaDataFile().string());
   ifs >> j;
   ifs.close();
 
   // Remove version
   j.erase("serialbox_version");
 
-  // Write MetaData.json
-  std::ofstream ofs((directory->path() / SerializerImpl::SerializerMetaDataFile).string(),
-                    std::ios::trunc);
+  // Write MetaData-prefix.json
+  std::ofstream ofs(s_write.metaDataFile().string(), std::ios::trunc);
   ofs << j.dump(4) << std::endl;
   ofs.close();
 
@@ -456,22 +453,21 @@ TEST_F(SerializerImplUtilityTest, JSONFailNoPrefix) {
   SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
   s_write.updateMetaData();
 
-  // Read MetaData.json
+  // Read MetaData-prefix.json
   json::json j;
-  std::ifstream ifs((directory->path() / SerializerImpl::SerializerMetaDataFile).string());
+  std::ifstream ifs(s_write.metaDataFile().string());
   ifs >> j;
   ifs.close();
 
   // Remove prefix
   j.erase("prefix");
 
-  // Write MetaData.json
-  std::ofstream ofs((directory->path() / SerializerImpl::SerializerMetaDataFile).string(),
-                    std::ios::trunc);
+  // Write MetaData-prefix.json
+  std::ofstream ofs(s_write.metaDataFile().string(), std::ios::trunc);
   ofs << j.dump(4) << std::endl;
   ofs.close();
 
-  // Open with corruputed MetaData.json
+  // Open with corruputed MetaData-prefix.json
   ASSERT_THROW(
       SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "BinaryArchive"),
       Exception);
