@@ -154,22 +154,22 @@ public:
   /// \brief The size of the halo in positive i-direction
   int iPlusHaloSize() const;
 
-  /// \brief The size of the halo in negative i-direction
+  /// \brief The size of the halo in negative j-direction
   int jMinusHaloSize() const;
 
-  /// \brief The size of the halo in positive i-direction
+  /// \brief The size of the halo in positive j-direction
   int jPlusHaloSize() const;
 
-  /// \brief The size of the halo in negative i-direction
+  /// \brief The size of the halo in negative k-direction
   int kMinusHaloSize() const;
 
-  /// \brief The size of the halo in positive i-direction
+  /// \brief The size of the halo in positive k-direction
   int kPlusHaloSize() const;
 
-  /// \brief The size of the halo in negative i-direction
+  /// \brief The size of the halo in negative l-direction
   int lMinusHaloSize() const;
 
-  /// \brief The size of the halo in positive i-direction
+  /// \brief The size of the halo in positive l-direction
   int lPlusHaloSize() const;
 
   /// \brief The number of bytes occupied by the field
