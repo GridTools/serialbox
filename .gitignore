@@ -5,6 +5,7 @@
 *.~
 *~
 *.user
+*.project
 
 # Build directories
 build.sh
