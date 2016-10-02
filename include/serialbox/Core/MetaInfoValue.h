@@ -43,7 +43,7 @@ public:
   /// \brief Construct with given value
   ///
   /// \tparam ValueType  Type of the captured value (needs to be supported)
-  /// \param  value      Value to caputre
+  /// \param  value      Value to capture
   template <
       class ValueType, class DecayedValueType = typename std::decay<ValueType>::type,
       class = typename std::enable_if<!std::is_same<DecayedValueType, MetaInfoValue>::value>::type>
@@ -55,7 +55,7 @@ public:
   }
   explicit MetaInfoValue(const char* value) : MetaInfoValue(std::string(value)) {}
 
-  /// \brief Convert value of element with key ´key´ to type ´T´
+  /// \brief Convert the value to type ´T´
   ///
   /// If the type ´T´ is different than the internally stored type, the function does its best to
   /// convert the value to ´T´ in a meaningful way.

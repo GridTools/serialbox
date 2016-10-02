@@ -17,6 +17,7 @@
 #ifndef SERIALBOX_CORE_FRONTEND_STELLA_UTILITY_H
 #define SERIALBOX_CORE_FRONTEND_STELLA_UTILITY_H
 
+#include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Frontend/STELLA/SerializationException.h"
 #include "serialbox/Core/Type.h"
@@ -31,8 +32,7 @@ namespace internal {
 
 /// \brief Throw SerializationException constructed with printf-style arguments
 template <typename... Args>
-inline void throwSerializationException(const char* fmt,
-                                        Args&&... args) throw(SerializationException) {
+SERIALBOX_ATTRIBUTE_NORETURN void throwSerializationException(const char* fmt, Args&&... args) {
   boost::format f(fmt);
 
   int unroll[]{0, (f % std::forward<Args>(args), 0)...};

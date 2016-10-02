@@ -26,7 +26,7 @@
 
 namespace serialbox {
 
-/// \brief Has-map of meta-information of the form key = value pair
+/// \brief Hash-map of meta-information of the form ´key = value´ pair
 ///
 /// They keys are strings (std::string), while the values can be booleans, integers (32 and 64 bit),
 /// floating point numbers (32 and 64 bit) or strings.
@@ -77,16 +77,18 @@ public:
   /// \brief Check if key exists in the map
   ///
   /// \param key  Key to be searched for
+  ///
   /// \return True iff the key is present
   template <class StringType>
   bool hasKey(StringType&& key) const noexcept {
     return (map_.find(key) != map_.end());
   }
 
-  /// \brief Searche the container for an element with a key equivalent to ´key´ and return an
-  /// iterator to it if found, otherwise it returns an iterator to MetaInfoMap::end.
+  /// \brief Search the container for an element with a key equivalent to ´key´ and return an
+  /// iterator to it if found, otherwise it returns an iterator to MetaInfoMap::end
   ///
   /// \param key  Key to be searched for
+  ///
   /// \return An iterator to the element, if an element with specified key is found, or
   /// MetaInfoMap::end otherwise
   template <class StringType>
@@ -122,6 +124,7 @@ public:
   /// convert the value to ´T´ in a meaningful way.
   ///
   /// \param key    Key of the new element
+  ///
   /// \return Copy of the value of the element as type ´T´
   ///
   /// \throw Exception  Key ´key´ does not exist or conversion results in truncation of the value

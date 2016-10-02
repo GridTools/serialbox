@@ -61,30 +61,37 @@ public:
   SavepointVector& operator=(SavepointVector&&) = default;
 
   /// \brief Check if savepoint exists
+  ///
   /// \return True iff the savepoint exists
   bool exists(const SavepointImpl& savepoint) const noexcept;
 
   /// \brief Find savepoint
+  ///
   /// \return Index of ´savepoint´ in the savepoint-vector or -1 if savepoint does not exist
   int find(const SavepointImpl& savepoint) const noexcept;
 
   /// \brief Insert savepoint in savepoint vector
+  ///
   /// \return Index of the newly inserted savepoint or -1 if savepoint already exists
   int insert(const SavepointImpl& savepoint) noexcept;
 
   /// \brief Add a field to the savepoint
+  ///
   /// \return True iff the field was successfully addeed to the savepoint
   bool addField(const SavepointImpl& savepoint, const FieldID& fieldID) noexcept;
 
   /// \brief Add a field to the savepoint given a valid savepoint index ´idx´
+  ///
   /// \return True iff the field was successfully addeed to the savepoint
   bool addField(int idx, const FieldID& fieldID) noexcept;
 
   /// \brief Check if savepoint has field ´field´
+  ///
   /// \return True iff the field ´field´ exists at savepoint
   bool hasField(const SavepointImpl& savepoint, const std::string& field) noexcept;
 
   /// \brief Check if savepoint has field ´field´ given a valid savepoint index ´idx´
+  ///
   /// \return True iff the field ´field´ exists at savepoint
   bool hasField(int idx, const std::string& field) noexcept;
 
@@ -103,10 +110,10 @@ public:
   /// \throw Exception  Savepoint does not exists
   const FieldsPerSavepointMap& fieldsOf(const SavepointImpl& savepoint) const;
 
-  /// \brief Access fields of savepoint
+  /// \brief Access fields of savepoint given a valid savepoint index ´idx´
   const FieldsPerSavepointMap& fieldsOf(int idx) const noexcept;
 
-  /// \brief Returns a bool value indicating whether the savepoint is empty
+  /// \brief Returns a bool value indicating whether the savepoint vector is empty
   bool empty() const noexcept { return index_.empty(); }
 
   /// \brief Returns the number of savepoints in the vector

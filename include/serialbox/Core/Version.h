@@ -39,7 +39,8 @@ struct Version {
   }
   /// @}
 
-  /// \brief Check if the given version equals the current library version
+  /// \brief Check if the given version matches the current library version
+  ///
   /// \return Return true if the versions match
   /// @{
   static bool match(int version) noexcept {

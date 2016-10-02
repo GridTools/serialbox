@@ -20,6 +20,7 @@
 namespace serialbox {
 
 /// \brief Implementation of the SHA-1 (Secure Hash Algorithm 1) cryptographic hash function
+///
 /// \see https://en.wikipedia.org/wiki/SHA-1
 struct SHA256 {
   SHA256() = delete;
@@ -31,6 +32,7 @@ struct SHA256 {
   ///
   /// \param data     Binary data
   /// \param length   Lenght of the binary data
+  ///
   /// \return SHA-1 hash as string
   static std::string hash(const void* data, int length) noexcept;
 };

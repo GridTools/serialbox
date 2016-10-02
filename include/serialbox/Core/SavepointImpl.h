@@ -58,7 +58,7 @@ public:
   /// \brief Move assignment
   SavepointImpl& operator=(SavepointImpl&&) = default;
 
-  /// \brief Add a new key-value pair to the ´metaInfo´ of the Savepoint
+  /// \brief Add a new ´key = value´ pair to the ´metaInfo´ of the Savepoint
   ///
   /// \param key    Key of the new element
   /// \param value  Object to be copied to (or moved as) the value of the new element
