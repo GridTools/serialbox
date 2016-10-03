@@ -404,7 +404,6 @@ if(${CLANG_FORMAT_FOUND})
                     ${CLANG_FORMAT_BIN} 
                     1
                     `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
-                          ${CMAKE_CURRENT_SOURCE_DIR}/include 
                           -name \*.h -print -o -name \*.cpp -print`)
 
   # Runs clang format and exits with a non-zero exit code if any files need to be reformatted
@@ -414,7 +413,6 @@ if(${CLANG_FORMAT_FOUND})
                     ${CLANG_FORMAT_BIN} 
                     0
                     `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
-                          ${CMAKE_CURRENT_SOURCE_DIR}/include 
                           -name \*.h -print -o -name \*.cpp -print`)
 endif()
 
@@ -426,7 +424,6 @@ if(${CLANG_TIDY_FOUND})
                     ${CMAKE_BINARY_DIR}/compile_commands.json 
                     1
                     `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
-                          ${CMAKE_CURRENT_SOURCE_DIR}/include 
                           -name \*.h -print -o -name \*.cpp -print`)
 
   # Runs clang-tidy and exits with a non-zero exit code if any errors are found.
@@ -436,7 +433,6 @@ if(${CLANG_TIDY_FOUND})
                     ${CMAKE_BINARY_DIR}/compile_commands.json
                     0
                     `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
-                          ${CMAKE_CURRENT_SOURCE_DIR}/include 
                           -name \*.h -print -o -name \*.cpp -print`)
 endif()
 
@@ -449,26 +445,26 @@ endif(SERIALBOX_CODE_COVERAGE)
 #---------------------------------------- Compilation ----------------------------------------------
 
 # Generate serialbox/Support/Config.h
-set(SERIALBOX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/include/serialbox/Core/Config.h.cmake)
-set(SERIALBOX_CONFIG_FILE ${CMAKE_BINARY_DIR}/include/serialbox/Core/Config.h)
+set(SERIALBOX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/src/serialbox/Core/Config.h.cmake)
+set(SERIALBOX_CONFIG_FILE ${CMAKE_BINARY_DIR}/src/serialbox/Core/Config.h)
 set(SERIALBOX_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
 configure_file(${SERIALBOX_CONFIG_FILE_IN} ${SERIALBOX_CONFIG_FILE})
-include_directories(${CMAKE_BINARY_DIR}/include)
-install(FILES ${SERIALBOX_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox/Core)
+include_directories(${CMAKE_BINARY_DIR}/src)
+install(FILES ${SERIALBOX_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_PREFIX}/src/serialbox/Core)
 
 enable_testing()
 
 # Setup include directories and glob the headers (for IDEs)
-set(SERIALBOX_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(SERIALBOX_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${SERIALBOX_INCLUDE_DIRS})
 
 file(GLOB_RECURSE SERIALBOX_HEADERS 
-     ${CMAKE_CURRENT_SOURCE_DIR}/include
-     ${CMAKE_CURRENT_SOURCE_DIR}/include/serialbox/*.h)
+     ${CMAKE_CURRENT_SOURCE_DIR}/src
+     ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox/*.h)
      
 # Install serialbox headers
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/serialbox DESTINATION include 
-        PATTERN "*.cmake" EXCLUDE)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox DESTINATION include 
+        PATTERN "*.cpp" PATTERN "*.cmake" EXCLUDE)
 
 ## Build Serialbox
 add_subdirectory(src)

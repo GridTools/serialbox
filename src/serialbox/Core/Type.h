@@ -8,7 +8,8 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains definitions for types recognized and used by Serialbox.
+/// This file contains definitions for types recognized and used by Serialbox as well as some
+/// meta-functions.
 ///
 //===------------------------------------------------------------------------------------------===//
 
