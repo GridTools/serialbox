@@ -18,16 +18,25 @@
 
 namespace serialbox {
 
+SavepointImpl& SavepointImpl::operator=(const SavepointImpl& other) {
+  name_ = other.name_;
+  metaInfo_ = std::make_shared<MetaInfoMap>(*other.metaInfo_);
+  return (*this);
+}
+
 json::json SavepointImpl::toJSON() const {
   json::json jsonNode;
   jsonNode["name"] = name_;
-  jsonNode["meta_info"] = metaInfo_.toJSON();
+  jsonNode["meta_info"] = metaInfo_->toJSON();
   return jsonNode;
 }
 
 void SavepointImpl::fromJSON(const json::json& jsonNode) {
+  if(!metaInfo_)
+    metaInfo_ = std::make_shared<MetaInfoMap>();
+  
   name_.clear();
-  metaInfo_.clear();
+  metaInfo_->clear();
 
   if(jsonNode.is_null() || jsonNode.empty())
     throw Exception("node is empty");
@@ -37,7 +46,7 @@ void SavepointImpl::fromJSON(const json::json& jsonNode) {
   name_ = jsonNode["name"];
 
   if(jsonNode.count("meta_info"))
-    metaInfo_.fromJSON(jsonNode["meta_info"]);
+    metaInfo_->fromJSON(jsonNode["meta_info"]);
 }
 
 std::string SavepointImpl::toString() const {
@@ -50,7 +59,7 @@ std::ostream& operator<<(std::ostream& stream, const SavepointImpl& s) {
   stream << s.name_;
   if(!s.metaInfo().empty()) {
     stream << " [ ";
-    for(auto it = s.metaInfo_.begin(), end = s.metaInfo_.end(); it != end; ++it)
+    for(auto it = s.metaInfo_->begin(), end = s.metaInfo_->end(); it != end; ++it)
       stream << it->first << " = " << it->second.toString() << " ";
     stream << "]";
   }

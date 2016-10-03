@@ -24,7 +24,8 @@ namespace stella {
 namespace internal {
 
 template <class KeyType, class ValueType>
-void insertHelper(SavepointImpl* savepointImpl, KeyType&& key, ValueType&& value) {
+void insertHelper(boost::shared_ptr<SavepointImpl>& savepointImpl, KeyType&& key,
+                  ValueType&& value) {
   try {
     savepointImpl->addMetaInfo(key, value);
   } catch(Exception& e) {
@@ -34,29 +35,20 @@ void insertHelper(SavepointImpl* savepointImpl, KeyType&& key, ValueType&& value
 
 } // namespace internal
 
-Savepoint::~Savepoint() {
-  if(owner_)
-    delete savepointImpl_;
-}
-
-Savepoint::Savepoint()
-    : owner_(true), savepointImpl_(new SavepointImpl("")), metainfo_(&savepointImpl_->metaInfo()) {}
+Savepoint::Savepoint() : savepointImpl_(), metainfo_() {}
 
 void Savepoint::Init(const std::string& name) {
-  if(owner_)
-    delete savepointImpl_;
-  owner_ = true;
-  savepointImpl_ = new SavepointImpl(name);
-  metainfo_.setImpl(&savepointImpl_->metaInfo());
+  savepointImpl_ = boost::make_shared<SavepointImpl>(name);
+  metainfo_.setImpl(internal::make_shared_ptr<MetaInfoMap>(savepointImpl_->metaInfoPtr()));
 }
 
-Savepoint::Savepoint(SavepointImpl* savepointImpl)
-    : owner_(false), savepointImpl_(savepointImpl), metainfo_(&savepointImpl_->metaInfo()){};
+Savepoint::Savepoint(const boost::shared_ptr<SavepointImpl>& savepointImpl)
+    : savepointImpl_(savepointImpl),
+      metainfo_(internal::make_shared_ptr<MetaInfoMap>(savepointImpl_->metaInfoPtr())){};
 
 Savepoint::Savepoint(const Savepoint& other) {
-  savepointImpl_ = new SavepointImpl(other.name());
-  owner_ = true;
-  *savepointImpl_ = *other.savepointImpl_;
+  savepointImpl_ = other.savepointImpl_;
+  metainfo_.setImpl(internal::make_shared_ptr<MetaInfoMap>(savepointImpl_->metaInfoPtr()));
 }
 
 Savepoint& Savepoint::operator=(const Savepoint& other) {
@@ -84,8 +76,6 @@ void Savepoint::AddMetainfo(const std::string& key, const std::string& value) {
   internal::insertHelper(savepointImpl_, key, value);
 }
 
-std::string Savepoint::name() const { return savepointImpl_->name(); }
-
 bool Savepoint::operator==(const Savepoint& other) const {
   return (*savepointImpl_ == *other.savepointImpl_);
 }
@@ -94,9 +84,20 @@ bool Savepoint::operator!=(const Savepoint& other) const {
   return (*savepointImpl_ != *other.savepointImpl_);
 }
 
+const std::string& Savepoint::name() const { return savepointImpl_->name(); }
+
 std::string Savepoint::ToString() const { return savepointImpl_->toString(); }
 
 std::ostream& operator<<(std::ostream& out, const Savepoint& sp) { return (out << sp.ToString()); }
+
+void Savepoint::setImpl(const boost::shared_ptr<SavepointImpl>& savepointImpl) {
+  savepointImpl_ = savepointImpl;
+  metainfo_.setImpl(internal::make_shared_ptr<MetaInfoMap>(savepointImpl_->metaInfoPtr()));  
+}
+
+boost::shared_ptr<SavepointImpl>& Savepoint::getImpl() { return savepointImpl_; }
+
+const boost::shared_ptr<SavepointImpl>& Savepoint::getImpl() const { return savepointImpl_; }
 
 } // namespace stella
 

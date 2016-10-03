@@ -25,15 +25,16 @@ namespace serialbox {
 class FieldMap {
 public:
   /// \brief Type of the underlying hash-map
-  using map_type = std::unordered_map<std::string, FieldMetaInfo>;
+  using map_type = std::unordered_map<std::string, std::shared_ptr<FieldMetaInfo>>;
 
-  /// \brief Type of an entry of the MetaInfoMap (`std::pair<std::string, FieldMetaInfo>`)
+  /// \brief Type of an entry of the MetaInfoMap 
+  /// (`std::pair<std::string, std::shared_ptr<FieldMetaInfo>>`)
   using value_type = map_type::value_type;
 
   /// \brief Type of the key (`std::string`) i.e name of the fields
   using key_type = map_type::key_type;
 
-  /// \brief Type of the value (`FieldMetaInfo`)
+  /// \brief Type of the value (`std::shared_ptr<FieldMetaInfo>`)
   using mapped_type = map_type::mapped_type;
 
   /// \brief An unsigned integral type (`std::size_t`)
@@ -95,7 +96,7 @@ public:
   FieldMetaInfo& getFieldMetaInfoOf(StringType&& name) {
     iterator fieldIt = map_.find(name);
     if(fieldIt != map_.end())
-      return fieldIt->second;
+      return *(fieldIt->second);
     throw Exception("field '%s' does not exist in FieldMap", name);
   }
 
@@ -103,7 +104,7 @@ public:
   const FieldMetaInfo& getFieldMetaInfoOf(StringType&& name) const {
     const_iterator fieldIt = map_.find(name);
     if(fieldIt != map_.end())
-      return fieldIt->second;
+      return *(fieldIt->second);
     throw Exception("field '%s' does not exist in FieldMap", name);
   }
 
@@ -129,7 +130,7 @@ public:
   std::vector<int>& getDimsOf(StringType&& name) {
     iterator fieldIt = map_.find(name);
     if(fieldIt != map_.end())
-      return fieldIt->second.dims();
+      return fieldIt->second->dims();
     throw Exception("field '%s' does not exist in FieldMap", name);
   }
 
@@ -137,7 +138,7 @@ public:
   const std::vector<int>& getDimsOf(StringType&& name) const {
     const_iterator fieldIt = map_.find(name);
     if(fieldIt != map_.end())
-      return fieldIt->second.dims();
+      return fieldIt->second->dims();
     throw Exception("field '%s' does not exist in FieldMap", name);
   }
 
@@ -149,7 +150,7 @@ public:
   TypeID getTypeOf(StringType&& name) const {
     const_iterator fieldIt = map_.find(name);
     if(fieldIt != map_.end())
-      return fieldIt->second.type();
+      return fieldIt->second->type();
     throw Exception("field '%s' does not exist in FieldMap", name);
   }
 
@@ -163,7 +164,7 @@ public:
   /// \return Value indicating whether the field was successfully inserted or not
   template <class StringType, typename... Args>
   bool insert(StringType&& key, Args&&... args) {
-    return (map_.insert({key, FieldMetaInfo(std::forward<Args>(args)...)}).second);
+    return map_.insert({key, std::make_shared<FieldMetaInfo>(std::forward<Args>(args)...)}).second;
   }
 
   /// \brief Returns the number of elements in the FieldMap

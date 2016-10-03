@@ -40,6 +40,7 @@ set(CPP_UNITTEST_SOURCES
   Frontend/STELLA/UnittestSavepoint.cpp  
   Frontend/STELLA/UnittestSerializer.cpp
   Frontend/STELLA/UnittestDataFieldInfo.cpp
+  Frontend/STELLA/UnittestUtility.cpp  
 )
 
 # Setup external libraries

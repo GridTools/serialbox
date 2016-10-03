@@ -135,7 +135,7 @@ TEST_F(SerializerImplUtilityTest, RegisterSavepoints) {
   // Add savepoint by copying/moving
   ASSERT_TRUE(s.registerSavepoint(savepoint1));
   EXPECT_EQ(s.savepoints().size(), 1);
-  EXPECT_EQ(s.savepoints()[0], savepoint1);
+  EXPECT_EQ(*s.savepoints()[0], savepoint1);
 
   ASSERT_TRUE(s.addFieldToSavepoint(savepoint1, FieldID{"u", 0}));
   ASSERT_FALSE(s.addFieldToSavepoint(savepoint1, FieldID{"u", 0}));
@@ -144,19 +144,19 @@ TEST_F(SerializerImplUtilityTest, RegisterSavepoints) {
   // Add empty savepoint given by name
   ASSERT_TRUE(s.registerSavepoint("savepoint2"));
   EXPECT_EQ(s.savepoints().size(), 2);
-  EXPECT_EQ(s.savepoints()[1], SavepointImpl("savepoint2"));
+  EXPECT_EQ(*s.savepoints()[1], SavepointImpl("savepoint2"));
 
   // Add savepoint given by name and metainfo
   MetaInfoMap metaInfo;
   metaInfo.insert("key1", float(3));
   ASSERT_TRUE(s.registerSavepoint("savepoint3", metaInfo));
   EXPECT_EQ(s.savepoints().size(), 3);
-  EXPECT_EQ(s.savepoints()[2], SavepointImpl("savepoint3", metaInfo));
+  EXPECT_EQ(*s.savepoints()[2], SavepointImpl("savepoint3", metaInfo));
 
   // Add savepoint with same name but diffrent meta-info
   ASSERT_TRUE(s.registerSavepoint("savepoint4", metaInfo));
   EXPECT_EQ(s.savepoints().size(), 4);
-  EXPECT_EQ(s.savepoints()[3], SavepointImpl("savepoint4", metaInfo));
+  EXPECT_EQ(*s.savepoints()[3], SavepointImpl("savepoint4", metaInfo));
 
   // Add savepoint with same name and same meta-info -> Fail
   ASSERT_FALSE(s.registerSavepoint("savepoint4", metaInfo));
@@ -348,9 +348,9 @@ TEST_F(SerializerImplUtilityTest, JSONSuccess) {
   // Savepoints
   ASSERT_EQ(s_read.savepoints().size(), 3);
 
-  const SavepointImpl& sp1 = s_read.savepoints()[0];
-  const SavepointImpl& sp2 = s_read.savepoints()[1];
-  const SavepointImpl& sp3 = s_read.savepoints()[2];
+  const SavepointImpl& sp1 = *s_read.savepoints()[0];
+  const SavepointImpl& sp2 = *s_read.savepoints()[1];
+  const SavepointImpl& sp3 = *s_read.savepoints()[2];
   EXPECT_EQ(sp1.name(), "savepoint");
   EXPECT_EQ(sp2.name(), "savepoint");
   EXPECT_EQ(sp3.name(), "different-savepoint");
@@ -618,9 +618,13 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
 
     // Check order of savepoints is correct
     ASSERT_EQ(s_read.savepoints().size(), 5);
-    EXPECT_EQ(s_read.savepoints(),
-              (std::vector<SavepointImpl>{savepoint1_t_1, savepoint1_t_2, savepoint_u_1,
-                                          savepoint_v_1, savepoint_6d}));
+    
+    EXPECT_EQ(*s_read.savepoints()[0], savepoint1_t_1);
+    EXPECT_EQ(*s_read.savepoints()[1], savepoint1_t_2);
+    EXPECT_EQ(*s_read.savepoints()[2], savepoint_u_1);
+    EXPECT_EQ(*s_read.savepoints()[3], savepoint_v_1);
+    EXPECT_EQ(*s_read.savepoints()[4], savepoint_6d);
+
     // Read
     s_read.read("u", savepoint1_t_1, sv_u_0);
     ASSERT_TRUE(Storage::verify(u_0_output, u_0_input));

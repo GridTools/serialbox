@@ -15,6 +15,8 @@
 #include "serialbox/Core/Frontend/STELLA/MetainfoSet.h"
 #include "serialbox/Core/Frontend/STELLA/SerializationException.h"
 #include "serialbox/Core/MetaInfoMap.h"
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include <gtest/gtest.h>
 
 using namespace serialbox;
@@ -129,11 +131,12 @@ TEST(STELLAMetainfoSetTest, Construction) {
   //
   // Assignment
   //
-  MetaInfoMap map2;
-  ser::MetainfoSet set2(&map2);
+  boost::shared_ptr<MetaInfoMap> map2 = boost::make_shared<MetaInfoMap>();
+  ser::MetainfoSet set2(map2);
   set2 = set;
   ASSERT_EQ(set2.size(), 7);
-
+  ASSERT_EQ(map2->size(), 7);
+  
   //
   // Comparison
   //

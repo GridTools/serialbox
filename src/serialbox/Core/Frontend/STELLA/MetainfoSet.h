@@ -17,6 +17,7 @@
 
 #include "serialbox/Core/Frontend/STELLA/ForwardDecl.h"
 #include <boost/any.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/type_traits.hpp>
 #include <utility>
 #include <vector>
@@ -32,13 +33,11 @@ namespace stella {
 /// or double precision) or strings.
 class MetainfoSet {
 public:
-  ~MetainfoSet();
-
   /// \brief Construct empty map
   MetainfoSet();
 
-  /// \brief Construct with MetaInfoMap (lifetime of MetaInfoMap has to be managed externally)
-  explicit MetainfoSet(MetaInfoMap* map);
+  /// \brief Construct with MetaInfoMap
+  explicit MetainfoSet(const boost::shared_ptr<MetaInfoMap>& map);
 
   /// \brief Copy constructor
   MetainfoSet(const MetainfoSet& other);
@@ -180,11 +179,14 @@ public:
   bool operator==(const MetainfoSet& other) const;
 
   /// \brief Set implementation pointer
-  void setImpl(MetaInfoMap* metaInfoMap);
+  void setImpl(const boost::shared_ptr<MetaInfoMap>& metaInfoMap);
 
+  /// \brief Get implementation pointer
+  boost::shared_ptr<MetaInfoMap>& getImpl();
+  const boost::shared_ptr<MetaInfoMap>& getImpl() const;
+  
 private:
-  bool owner_;
-  MetaInfoMap* mapImpl_;
+  boost::shared_ptr<MetaInfoMap> mapImpl_;
 };
 
 } // namespace stella

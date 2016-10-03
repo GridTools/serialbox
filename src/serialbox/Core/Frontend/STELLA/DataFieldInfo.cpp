@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Frontend/STELLA/DataFieldInfo.h"
 #include "serialbox/Core/FieldMetaInfo.h"
+#include "serialbox/Core/Frontend/STELLA/DataFieldInfo.h"
 #include "serialbox/Core/Frontend/STELLA/Utility.h"
 #include "serialbox/Core/Type.h"
 
@@ -21,18 +21,16 @@ namespace serialbox {
 
 namespace stella {
 
-DataFieldInfo::DataFieldInfo()
-    : owner_(true), fieldMetaInfoImpl_(new FieldMetaInfo),
-      metainfo_(&fieldMetaInfoImpl_->metaInfo()) {}
+DataFieldInfo::DataFieldInfo() : fieldMetaInfoImpl_(), metainfo_() {}
 
-DataFieldInfo::DataFieldInfo(FieldMetaInfo* fieldMetaInfoImpl)
-    : owner_(false), fieldMetaInfoImpl_(fieldMetaInfoImpl),
-      metainfo_(&fieldMetaInfoImpl_->metaInfo()) {}
+DataFieldInfo::DataFieldInfo(const boost::shared_ptr<FieldMetaInfo>& fieldMetaInfoImpl)
+    : fieldMetaInfoImpl_(fieldMetaInfoImpl),
+      metainfo_(internal::make_shared_ptr<MetaInfoMap>(fieldMetaInfoImpl_->metaInfoPtr())) {
+}
 
-DataFieldInfo::DataFieldInfo(const DataFieldInfo& other) {
-  fieldMetaInfoImpl_ = new FieldMetaInfo(*other.fieldMetaInfoImpl_);
-  metainfo_.setImpl(&fieldMetaInfoImpl_->metaInfo());
-  owner_ = true;
+DataFieldInfo::DataFieldInfo(const DataFieldInfo& other)
+    : fieldMetaInfoImpl_(other.fieldMetaInfoImpl_),
+      metainfo_(internal::make_shared_ptr<MetaInfoMap>(fieldMetaInfoImpl_->metaInfoPtr())) {
 }
 
 DataFieldInfo& DataFieldInfo::operator=(const DataFieldInfo& other) {
@@ -40,16 +38,14 @@ DataFieldInfo& DataFieldInfo::operator=(const DataFieldInfo& other) {
   return (*this);
 }
 
-DataFieldInfo::~DataFieldInfo() {
-  if(owner_)
-    delete fieldMetaInfoImpl_;
-}
-
 void DataFieldInfo::Init(std::string name, std::string type, int bytesPerElement, int rank,
                          int iSize, int jSize, int kSize, int lSize, int iMinusHalo, int iPlusHalo,
                          int jMinusHalo, int jPlusHalo, int kMinusHalo, int kPlusHalo,
                          int lMinusHalo, int lPlusHalo) {
-
+  
+  fieldMetaInfoImpl_ = boost::make_shared<FieldMetaInfo>();  
+  metainfo_.setImpl(internal::make_shared_ptr<MetaInfoMap>(fieldMetaInfoImpl_->metaInfoPtr()));
+  
   try {
     TypeID typeID = internal::TypeNameToTypeID(type);
     fieldMetaInfoImpl_->type() = typeID;
@@ -198,8 +194,18 @@ std::string DataFieldInfo::ToString() const {
   int lSize = dims.size() < 4 ? 1 : dims[3];
 
   ss << name << " (" << iSize << "x" << jSize << "x" << kSize << "x" << lSize << ") "
-     << MetainfoSet(const_cast<MetaInfoMap*>(&metaInfo)).ToString();
+     << metainfo_.ToString();
   return ss.str();
+}
+
+void DataFieldInfo::setImpl(const boost::shared_ptr<FieldMetaInfo>& fieldMetaInfoImpl) {
+  metainfo_.setImpl(internal::make_shared_ptr<MetaInfoMap>(fieldMetaInfoImpl_->metaInfoPtr()));
+}
+
+boost::shared_ptr<FieldMetaInfo>& DataFieldInfo::getImpl() { return fieldMetaInfoImpl_; }
+
+const boost::shared_ptr<FieldMetaInfo>& DataFieldInfo::getImpl() const {
+  return fieldMetaInfoImpl_;
 }
 
 } // namespace stella

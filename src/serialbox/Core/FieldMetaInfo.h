@@ -17,6 +17,7 @@
 
 #include "serialbox/Core/Json.h"
 #include "serialbox/Core/MetaInfoMap.h"
+#include <memory>
 
 namespace serialbox {
 
@@ -24,27 +25,27 @@ namespace serialbox {
 class FieldMetaInfo {
 public:
   /// \brief Default constructor
-  FieldMetaInfo() : type_(TypeID::Invalid), dims_(), metaInfo_() {}
+  FieldMetaInfo() : type_(TypeID::Invalid), dims_(), metaInfo_(std::make_shared<MetaInfoMap>()) {}
 
   /// \brief Construct members externally
   FieldMetaInfo(TypeID type, const std::vector<int>& dims, const MetaInfoMap& metaInfo)
-      : type_(type), dims_(dims), metaInfo_(metaInfo) {}
+      : type_(type), dims_(dims), metaInfo_(std::make_shared<MetaInfoMap>(metaInfo)) {}
 
   /// \brief Construct members externally
   FieldMetaInfo(TypeID type, const std::vector<int>& dims)
-      : type_(type), dims_(dims), metaInfo_() {}
+      : type_(type), dims_(dims), metaInfo_(std::make_shared<MetaInfoMap>()) {}
 
   /// \brief Construct from JSON
-  explicit FieldMetaInfo(const json::json& jsonNode) { fromJSON(jsonNode); }
+  explicit FieldMetaInfo(const json::json& jsonNode) : FieldMetaInfo() { fromJSON(jsonNode); }
 
   /// \brief Copy constructor
-  FieldMetaInfo(const FieldMetaInfo&) = default;
+  FieldMetaInfo(const FieldMetaInfo& other) { *this = other; }
 
   /// \brief Move constructor
   FieldMetaInfo(FieldMetaInfo&&) = default;
 
   /// \brief Copy assignment
-  FieldMetaInfo& operator=(const FieldMetaInfo&) = default;
+  FieldMetaInfo& operator=(const FieldMetaInfo& other);
 
   /// \brief Move assignment
   FieldMetaInfo& operator=(FieldMetaInfo&&) = default;
@@ -67,8 +68,8 @@ public:
   const std::vector<int>& dims() const noexcept { return dims_; }
 
   /// \brief Access meta-info map
-  MetaInfoMap& metaInfo() noexcept { return metaInfo_; }
-  const MetaInfoMap& metaInfo() const noexcept { return metaInfo_; }
+  MetaInfoMap& metaInfo() noexcept { return *metaInfo_; }
+  const MetaInfoMap& metaInfo() const noexcept { return *metaInfo_; }
 
   /// \brief Convert to JSON
   json::json toJSON() const;
@@ -80,11 +81,15 @@ public:
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const FieldMetaInfo& f);
+  
+  /// \brief Get meta-info pointer
+  std::shared_ptr<MetaInfoMap>& metaInfoPtr() noexcept { return metaInfo_; }
+  const std::shared_ptr<MetaInfoMap>& metaInfoPtr() const noexcept { return metaInfo_; }
 
 private:
   TypeID type_;
   std::vector<int> dims_;
-  MetaInfoMap metaInfo_;
+  std::shared_ptr<MetaInfoMap> metaInfo_;
 };
 
 } // namespace serialbox

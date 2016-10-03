@@ -12,11 +12,11 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/STLExtras.h"
+#include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Type.h"
 #include "serialbox/Core/Unreachable.h"
 #include "serialbox/Core/Version.h"
@@ -49,6 +49,10 @@ SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
 
   metaDataFile_ = directory_ / ("MetaData-" + prefix + ".json");
 
+  savepointVector_ = std::make_shared<SavepointVector>();
+  fieldMap_ = std::make_shared<FieldMap>();
+  globalMetaInfo_ = std::make_shared<MetaInfoMap>();
+
   LOG(INFO) << "Creating Serializer (mode = " << mode_ << ") from directory " << directory_;
 
   // Validate integrity of directory (non-existent directories are created by the archive)
@@ -72,16 +76,16 @@ SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
 }
 
 void SerializerImpl::clear() noexcept {
-  savepointVector_.clear();
-  fieldMap_.clear();
-  globalMetaInfo_.clear();
+  savepointVector_->clear();
+  fieldMap_->clear();
+  globalMetaInfo_->clear();
   archive_->clear();
 }
 
 std::vector<std::string> SerializerImpl::fieldnames() const {
   std::vector<std::string> fields;
-  fields.reserve(fieldMap_.size());
-  for(auto it = fieldMap_.begin(), end = fieldMap_.end(); it != end; ++it)
+  fields.reserve(fieldMap_->size());
+  for(auto it = fieldMap_->begin(), end = fieldMap_->end(); it != end; ++it)
     fields.push_back(it->first);
   return fields;
 }
@@ -90,11 +94,11 @@ void SerializerImpl::checkStorageView(const std::string& name,
                                       const StorageView& storageView) const {
 
   // Check if field exists
-  auto fieldIt = fieldMap_.findField(name);
-  if(fieldIt == fieldMap_.end())
+  auto fieldIt = fieldMap_->findField(name);
+  if(fieldIt == fieldMap_->end())
     throw Exception("field '%s' is not registerd within the Serializer", name);
 
-  const FieldMetaInfo& fieldInfo = fieldIt->second;
+  const FieldMetaInfo& fieldInfo = *fieldIt->second;
 
   // Check if types match
   if(fieldInfo.type() != storageView.type())
@@ -131,19 +135,19 @@ void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoi
   //
   // 2) Locate savepoint and register it if necessary
   //
-  int savepointIdx = savepointVector_.find(savepoint);
+  int savepointIdx = savepointVector_->find(savepoint);
 
   if(savepointIdx == -1) {
     LOG(INFO) << "Registering new savepoint \"" << savepoint << "\"";
-    savepointIdx = savepointVector_.insert(savepoint);
+    savepointIdx = savepointVector_->insert(savepoint);
   }
 
   //
   // 3) Check if field can be added to Savepoint
   //
-  if(savepointVector_.hasField(savepointIdx, name))
+  if(savepointVector_->hasField(savepointIdx, name))
     throw Exception("field '%s' already saved at savepoint '%s'", name,
-                    savepointVector_[savepointIdx].toString());
+                    (*savepointVector_)[savepointIdx].toString());
 
   //
   // 4) Pass the StorageView to the backend Archive and perform actual data-serialization.
@@ -153,7 +157,7 @@ void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoi
   //
   // 5) Register FieldID within Savepoint.
   //
-  savepointVector_.addField(savepointIdx, fieldID);
+  savepointVector_->addField(savepointIdx, fieldID);
 
   //
   // 6) Update meta-data on disk
@@ -182,12 +186,12 @@ void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoin
   //
   // 2) Check if savepoint exists and obtain fieldID
   //
-  int savepointIdx = savepointVector_.find(savepoint);
+  int savepointIdx = savepointVector_->find(savepoint);
 
   if(savepointIdx == -1)
     throw Exception("savepoint '%s' does not exist", savepoint.toString());
 
-  FieldID fieldID = savepointVector_.getFieldID(savepointIdx, name);
+  FieldID fieldID = savepointVector_->getFieldID(savepointIdx, name);
 
   //
   // 3) Pass the StorageView to the backend Archive and perform actual data-deserialization.
@@ -243,15 +247,15 @@ void SerializerImpl::constructMetaDataFromJson() {
 
     // Construct globalMetaInfo
     if(jsonNode.count("global_meta_info"))
-      globalMetaInfo_.fromJSON(jsonNode["global_meta_info"]);
+      globalMetaInfo_->fromJSON(jsonNode["global_meta_info"]);
 
     // Construct Savepoints
     if(jsonNode.count("savepoint_vector"))
-      savepointVector_.fromJSON(jsonNode["savepoint_vector"]);
+      savepointVector_->fromJSON(jsonNode["savepoint_vector"]);
 
     // Construct FieldMap
     if(jsonNode.count("field_map"))
-      fieldMap_.fromJSON(jsonNode["field_map"]);
+      fieldMap_->fromJSON(jsonNode["field_map"]);
 
   } catch(Exception& e) {
     throw Exception("error while parsing %s: %s", metaDataFile_, e.what());
@@ -262,9 +266,9 @@ std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s) {
   stream << "Serializer = {\n";
   stream << "  mode: " << s.mode_ << "\n";
   stream << "  directory: " << s.directory_ << "\n";
-  stream << "  " << s.savepointVector_ << "\n";
-  stream << "  " << s.fieldMap_ << "\n";
-  stream << "  " << s.globalMetaInfo_ << "\n";
+  stream << "  " << (*s.savepointVector_) << "\n";
+  stream << "  " << (*s.fieldMap_) << "\n";
+  stream << "  " << (*s.globalMetaInfo_) << "\n";
   stream << "}\n";
   return stream;
 }
@@ -282,13 +286,13 @@ json::json SerializerImpl::toJSON() const {
   jsonNode["prefix"] = prefix_;
 
   // Serialize globalMetaInfo
-  jsonNode["global_meta_info"] = globalMetaInfo_.toJSON();
+  jsonNode["global_meta_info"] = globalMetaInfo_->toJSON();
 
   // Serialize SavepointVector
-  jsonNode["savepoint_vector"] = savepointVector_.toJSON();
+  jsonNode["savepoint_vector"] = savepointVector_->toJSON();
 
   // Serialize FieldMap
-  jsonNode["field_map"] = fieldMap_.toJSON();
+  jsonNode["field_map"] = fieldMap_->toJSON();
 
   return jsonNode;
 }
@@ -455,7 +459,7 @@ bool SerializerImpl::upgradeMetaData() {
                           key, name);
       }
 
-      fieldMap_.insert(name, type, dims, metaInfo);
+      fieldMap_->insert(name, type, dims, metaInfo);
     }
 
     LOG(INFO) << "Successfully upgraded fields table";
@@ -507,7 +511,7 @@ bool SerializerImpl::upgradeMetaData() {
       LOG(INFO) << "Adding savepoint: " << savepoint;
 
       // Register savepoint
-      int savepointIdx = savepointVector_.insert(savepoint);
+      int savepointIdx = savepointVector_->insert(savepoint);
       CHECK_NE(savepointIdx, -1);
 
       // Add fields to savepoint and field table of the archive
@@ -548,7 +552,7 @@ bool SerializerImpl::upgradeMetaData() {
         }
 
         // Add field to savepoint
-        savepointVector_.addField(savepointIdx, fieldID);
+        savepointVector_->addField(savepointIdx, fieldID);
 
         LOG(INFO) << "Adding field '" << fieldID << "' to savepoint " << savepoint;
       }

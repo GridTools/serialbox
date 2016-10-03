@@ -23,7 +23,7 @@ json::json FieldMap::toJSON() const {
     return jsonNode;
 
   for(const_iterator it = this->begin(), end = this->end(); it != end; ++it)
-    jsonNode[it->first] = it->second.toJSON();
+    jsonNode[it->first] = it->second->toJSON();
 
   return jsonNode;
 }

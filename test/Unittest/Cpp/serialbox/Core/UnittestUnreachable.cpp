@@ -19,7 +19,7 @@
 using namespace serialbox;
 
 TEST(UnreachableTest, Unreachable) {
-#if defined(SERIALBOX_RUN_DEATH_TESTS) && defined(NDEBUG)
+#if defined(SERIALBOX_RUN_DEATH_TESTS) && !defined(NDEBUG)
   ASSERT_DEATH_IF_SUPPORTED(TypeUtil::sizeOf(TypeID::String), "^FATAL ERROR: UNREACHABLE executed");
 #endif
 }

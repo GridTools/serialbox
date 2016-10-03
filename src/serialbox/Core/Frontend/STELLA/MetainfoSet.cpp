@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Frontend/STELLA/MetainfoSet.h"
 #include "serialbox/Core/Exception.h"
+#include "serialbox/Core/Frontend/STELLA/MetainfoSet.h"
 #include "serialbox/Core/Frontend/STELLA/Utility.h"
 #include "serialbox/Core/MetaInfoMap.h"
 #include "serialbox/Core/Unreachable.h"
@@ -26,7 +26,8 @@ namespace stella {
 namespace internal {
 
 template <class KeyType>
-static MetaInfoMap::const_iterator checkKeyExists(const MetaInfoMap* mapImpl, KeyType&& key) {
+static MetaInfoMap::const_iterator checkKeyExists(const boost::shared_ptr<MetaInfoMap>& mapImpl,
+                                                  KeyType&& key) {
   auto it = mapImpl->find(key);
   if(it == mapImpl->end())
     internal::throwSerializationException("Error: requested key %s is not in set", key);
@@ -34,19 +35,13 @@ static MetaInfoMap::const_iterator checkKeyExists(const MetaInfoMap* mapImpl, Ke
 }
 }
 
-MetainfoSet::~MetainfoSet() {
-  if(owner_)
-    delete mapImpl_;
-}
+MetainfoSet::MetainfoSet() : mapImpl_(boost::make_shared<MetaInfoMap>()) {}
 
-MetainfoSet::MetainfoSet() : owner_(true), mapImpl_(new MetaInfoMap) {}
-
-MetainfoSet::MetainfoSet(MetaInfoMap* map) : owner_(false), mapImpl_(map){};
+MetainfoSet::MetainfoSet(const boost::shared_ptr<MetaInfoMap>& map)
+    : mapImpl_(map){};
 
 MetainfoSet::MetainfoSet(const MetainfoSet& other) {
-  mapImpl_ = new MetaInfoMap;
-  owner_ = true;
-  *mapImpl_ = *other.mapImpl_;
+  mapImpl_ = other.mapImpl_;
 }
 
 MetainfoSet& MetainfoSet::operator=(const MetainfoSet& other) {
@@ -139,12 +134,12 @@ bool MetainfoSet::operator==(const MetainfoSet& other) const {
   return (*mapImpl_ == *other.mapImpl_);
 }
 
-void MetainfoSet::setImpl(MetaInfoMap* metaInfoMap) {
-  if(owner_)
-    delete mapImpl_;
-  owner_ = false;
+void MetainfoSet::setImpl(const boost::shared_ptr<MetaInfoMap>& metaInfoMap) {
   mapImpl_ = metaInfoMap;
 }
+
+boost::shared_ptr<MetaInfoMap>& MetainfoSet::getImpl() { return mapImpl_; }
+const boost::shared_ptr<MetaInfoMap>& MetainfoSet::getImpl() const { return mapImpl_; }
 
 } // namespace stella
 

@@ -300,9 +300,9 @@ TEST(SavepointVectorTest, fromJSON) {
     EXPECT_EQ(s.savepoints().size(), 3);
     
     // Check order of savepoints is correct
-    EXPECT_EQ(s.savepoints()[0], savepoint1);
-    EXPECT_EQ(s.savepoints()[1], savepoint2);
-    EXPECT_EQ(s.savepoints()[2], savepoint3);
+    EXPECT_EQ(*s.savepoints()[0], savepoint1);
+    EXPECT_EQ(*s.savepoints()[1], savepoint2);
+    EXPECT_EQ(*s.savepoints()[2], savepoint3);
     
     // Check fields
     EXPECT_EQ(s.fieldsOf(savepoint1).size(), 2);

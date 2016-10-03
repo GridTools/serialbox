@@ -35,6 +35,8 @@ SerializerOpenMode Serializer::mode() const {
     return SerializerOpenModeWrite;
   case OpenModeKind::Append:
     return SerializerOpenModeAppend;
+  default:
+    serialbox_unreachable("invalid mode");
   }
 }
 
@@ -68,11 +70,17 @@ void Serializer::Init(const std::string& directory, const std::string& prefix,
   }
 
   // Initialize MetainfoSet
-  globalMetainfo_ = boost::make_shared<MetainfoSet>(&serializerImpl_->globalMetaInfo());
+  globalMetainfo_.setImpl(
+      internal::make_shared_ptr<MetaInfoMap>(serializerImpl_->globalMetaInfoPtr()));
 
   // Initialize savepoint vector
   for(auto& savepoint : serializerImpl_->savepoints())
-    savepoints_.emplace_back(&savepoint);
+    savepoints_.emplace_back(internal::make_shared_ptr(savepoint));
+
+  // Initialize data field infos
+  for(auto it = serializerImpl_->fieldMap().begin(), end = serializerImpl_->fieldMap().end();
+      it != end; ++it)
+    datafieldInfos_.insert({it->first, internal::make_shared_ptr<FieldMetaInfo>(it->second)});
 }
 
 bool Serializer::RegisterField(const std::string& name, std::string type, int bytesPerElement,
@@ -112,35 +120,39 @@ bool Serializer::RegisterField(const std::string& name, std::string type, int by
 
     // Field was already registered with the same meta-data
     if(serializerImpl_->hasField(name) &&
-       (serializerImpl_->getFieldMetaInfoOf(name) == fieldMetaInfo))
+       (serializerImpl_->getFieldMetaInfoOf(name) == fieldMetaInfo)) {
       return false;
+    }
 
     serializerImpl_->registerField(name, fieldMetaInfo);
+
+    // Keep the frontend data-structure up to date
+    auto it = serializerImpl_->fieldMap().findField(name);
+    datafieldInfos_.insert({it->first, internal::make_shared_ptr<FieldMetaInfo>(it->second)});
+
   } catch(Exception& e) {
     internal::throwSerializationException("Error: %s", e.what());
   }
   return true;
 }
 
-// This allows to return refrences (yes.. it's super ugly)
-namespace internal {
-std::vector<DataFieldInfo> datafieldInfos;
-}
-
 const DataFieldInfo& Serializer::FindField(const std::string& fieldname) const {
   try {
-    internal::datafieldInfos.push_back(
-        DataFieldInfo(const_cast<FieldMetaInfo*>(&serializerImpl_->getFieldMetaInfoOf(fieldname))));
+    auto it = datafieldInfos_.find(fieldname);
+    if(it == datafieldInfos_.end())
+      throw Exception("field %s is not registered", fieldname);
+    return it->second;
+
   } catch(Exception& e) {
     internal::throwSerializationException("Error: %s", e.what());
   }
-  return internal::datafieldInfos.back();
 }
 
 void Serializer::AddFieldMetainfo(const std::string& fieldname, const std::string& key,
                                   bool value) {
   try {
-    serializerImpl_->addFieldMetaInfo(fieldname, key, value);
+    if(!serializerImpl_->addFieldMetaInfo(fieldname, key, value))
+      throw Exception("metainfo with key = %s exists already in field %s", key, fieldname);
   } catch(Exception& e) {
     internal::throwSerializationException("Error: %s", e.what());
   }
@@ -148,7 +160,8 @@ void Serializer::AddFieldMetainfo(const std::string& fieldname, const std::strin
 
 void Serializer::AddFieldMetainfo(const std::string& fieldname, const std::string& key, int value) {
   try {
-    serializerImpl_->addFieldMetaInfo(fieldname, key, value);
+    if(!serializerImpl_->addFieldMetaInfo(fieldname, key, value))
+      throw Exception("metainfo with key = %s exists already in field %s", key, fieldname);
   } catch(Exception& e) {
     internal::throwSerializationException("Error: %s", e.what());
   }
@@ -157,7 +170,8 @@ void Serializer::AddFieldMetainfo(const std::string& fieldname, const std::strin
 void Serializer::AddFieldMetainfo(const std::string& fieldname, const std::string& key,
                                   float value) {
   try {
-    serializerImpl_->addFieldMetaInfo(fieldname, key, value);
+    if(!serializerImpl_->addFieldMetaInfo(fieldname, key, value))
+      throw Exception("metainfo with key = %s exists already in field %s", key, fieldname);
   } catch(Exception& e) {
     internal::throwSerializationException("Error: %s", e.what());
   }
@@ -166,7 +180,8 @@ void Serializer::AddFieldMetainfo(const std::string& fieldname, const std::strin
 void Serializer::AddFieldMetainfo(const std::string& fieldname, const std::string& key,
                                   double value) {
   try {
-    serializerImpl_->addFieldMetaInfo(fieldname, key, value);
+    if(!serializerImpl_->addFieldMetaInfo(fieldname, key, value))
+      throw Exception("metainfo with key = %s exists already in field %s", key, fieldname);
   } catch(Exception& e) {
     internal::throwSerializationException("Error: %s", e.what());
   }
@@ -175,19 +190,14 @@ void Serializer::AddFieldMetainfo(const std::string& fieldname, const std::strin
 void Serializer::AddFieldMetainfo(const std::string& fieldname, const std::string& key,
                                   std::string value) {
   try {
-    serializerImpl_->addFieldMetaInfo(fieldname, key, value);
+    if(!serializerImpl_->addFieldMetaInfo(fieldname, key, value))
+      throw Exception("metainfo with key = %s exists already in field %s", key, fieldname);
   } catch(Exception& e) {
     internal::throwSerializationException("Error: %s", e.what());
   }
 }
 
-std::vector<std::string> Serializer::fieldnames() const {
-  std::vector<std::string> fields;
-  for(auto it = serializerImpl_->fieldMap().begin(), end = serializerImpl_->fieldMap().end();
-      it != end; ++it)
-    fields.push_back(it->first);
-  return fields;
-}
+std::vector<std::string> Serializer::fieldnames() const { return serializerImpl_->fieldnames(); }
 
 std::vector<std::string> Serializer::FieldsAtSavepoint(const Savepoint& savepoint) const {
   std::vector<std::string> fields;
@@ -208,7 +218,7 @@ static StorageView makeStorageView(const void* pData, TypeID type, std::vector<i
 
   int bytesPerElement = TypeUtil::sizeOf(type);
 
-  // Strides have to be per-byte
+  // The StorageView operates on strides per type (not per byte)
   for(std::size_t i = 0; i < dims.size(); ++i)
     strides[i] /= bytesPerElement;
 
@@ -236,8 +246,10 @@ void Serializer::WriteField(const std::string& fieldName, const Savepoint& savep
 
     serializerImpl_->write(fieldName, *savepoint.getImpl(), storageView);
 
+    // Keep the frontend data-structure up to date
     if(numSavepoints < serializerImpl_->savepointVector().size())
-      savepoints_.emplace_back(&serializerImpl_->savepointVector().back());
+      savepoints_.emplace_back(
+          internal::make_shared_ptr<SavepointImpl>(serializerImpl_->savepointVector().back()));
 
   } catch(Exception& e) {
     internal::throwSerializationException("Error: %s", e.what());

@@ -87,7 +87,7 @@ public:
   /// \throw Exception  Value cannot be inserted as it already exists
   template <class StringType, class ValueType>
   void addGlobalMetaInfo(StringType&& key, ValueType&& value) {
-    if(!globalMetaInfo_.insert(std::forward<StringType>(key), std::forward<ValueType>(value)))
+    if(!globalMetaInfo_->insert(std::forward<StringType>(key), std::forward<ValueType>(value)))
       throw Exception("cannot add element with key '%s' to globalMetaInfo: element already exists",
                       key);
   }
@@ -101,15 +101,19 @@ public:
   template <class T, class StringType>
   T getGlobalMetainfoAs(StringType&& key) const {
     try {
-      return globalMetaInfo_.at(key).template as<T>();
+      return globalMetaInfo_->at(key).template as<T>();
     } catch(Exception& e) {
       throw Exception("cannot get element with key '%s' from globalMetaInfo: %s", key, e.what());
     }
   }
 
   /// \brief Get a refrence to the global meta information
-  MetaInfoMap& globalMetaInfo() noexcept { return globalMetaInfo_; }
-  const MetaInfoMap& globalMetaInfo() const noexcept { return globalMetaInfo_; }
+  MetaInfoMap& globalMetaInfo() noexcept { return *globalMetaInfo_; }
+  const MetaInfoMap& globalMetaInfo() const noexcept { return *globalMetaInfo_; }
+
+  /// \brief Get pointer to the global meta information
+  std::shared_ptr<MetaInfoMap>& globalMetaInfoPtr() noexcept { return globalMetaInfo_; }
+  const std::shared_ptr<MetaInfoMap>& globalMetaInfoPtr() const noexcept { return globalMetaInfo_; }
 
   //===----------------------------------------------------------------------------------------===//
   //     FieldMap
@@ -123,7 +127,7 @@ public:
   /// \throw Exception  Field with same name already exists
   template <class StringType, typename... Args>
   void registerField(StringType&& name, Args&&... args) {
-    if(!fieldMap_.insert(std::forward<StringType>(name), std::forward<Args>(args)...))
+    if(!fieldMap_->insert(std::forward<StringType>(name), std::forward<Args>(args)...))
       throw Exception("cannot register field '%s': field already exists", name);
   }
 
@@ -133,7 +137,7 @@ public:
   /// \return True iff the field is present
   template <class StringType>
   bool hasField(StringType&& name) const noexcept {
-    return fieldMap_.hasField(std::forward<StringType>(name));
+    return fieldMap_->hasField(std::forward<StringType>(name));
   }
 
   /// \brief Add key-value meta-information to field ´name´
@@ -146,8 +150,8 @@ public:
   /// \throw Exception  Field with name `name` does not exist in FieldMap
   template <class StringType, class KeyType, class ValueType>
   bool addFieldMetaInfo(StringType&& name, KeyType&& key, ValueType&& value) {
-    return fieldMap_.getMetaInfoOf(name).insert(std::forward<KeyType>(key),
-                                                std::forward<ValueType>(value));
+    return fieldMap_->getMetaInfoOf(name).insert(std::forward<KeyType>(key),
+                                                 std::forward<ValueType>(value));
   }
 
   /// \brief Query FieldMap for field with name ´name´ and return refrence to FieldMetaInfo
@@ -157,7 +161,7 @@ public:
   /// \throw Exception  Field with name `name` does not exist in FieldMap
   template <class StringType>
   const FieldMetaInfo& getFieldMetaInfoOf(StringType&& name) const {
-    return fieldMap_.getFieldMetaInfoOf(std::forward<StringType>(name));
+    return fieldMap_->getFieldMetaInfoOf(std::forward<StringType>(name));
   }
 
   /// \brief Get a vector of all registered fields
@@ -165,8 +169,12 @@ public:
   std::vector<std::string> fieldnames() const;
 
   /// \brief Get refrence to the field map
-  FieldMap& fieldMap() noexcept { return fieldMap_; }
-  const FieldMap& fieldMap() const noexcept { return fieldMap_; }
+  FieldMap& fieldMap() noexcept { return *fieldMap_; }
+  const FieldMap& fieldMap() const noexcept { return *fieldMap_; }
+
+  /// \brief Get pointer to the field map
+  std::shared_ptr<FieldMap>& fieldMapPtr() noexcept { return fieldMap_; }
+  const std::shared_ptr<FieldMap>& fieldMapPtr() const noexcept { return fieldMap_; }
 
   //===----------------------------------------------------------------------------------------===//
   //     SavepointVector
@@ -178,31 +186,39 @@ public:
   /// \return True iff the savepoint was successfully inserted
   template <typename... Args>
   bool registerSavepoint(Args&&... args) noexcept {
-    return (savepointVector_.insert(SavepointImpl(std::forward<Args>(args)...)) != -1);
+    return (savepointVector_->insert(SavepointImpl(std::forward<Args>(args)...)) != -1);
   }
 
   /// \brief Add a field to the savepoint
   /// \return True iff the field was successfully addeed to the savepoint
   bool addFieldToSavepoint(const SavepointImpl& savepoint, const FieldID& fieldID) noexcept {
-    return savepointVector_.addField(savepoint, fieldID);
+    return savepointVector_->addField(savepoint, fieldID);
   }
 
   /// \brief Get the FielID of field ´field´ at savepoint ´savepoint´
   ///
   /// \throw Exception  Savepoint or field at savepoint do not exist
   FieldID getFieldOfSavepoint(const SavepointImpl& savepoint, const std::string& field) const {
-    return savepointVector_.getFieldID(savepoint, field);
+    return savepointVector_->getFieldID(savepoint, field);
   }
 
   /// \brief Get refrence to savepoint vector
-  const std::vector<SavepointImpl>& savepoints() const noexcept {
-    return savepointVector_.savepoints();
+  const SavepointVector::savepoint_vector_type& savepoints() const noexcept {
+    return savepointVector_->savepoints();
   }
-  std::vector<SavepointImpl>& savepoints() noexcept { return savepointVector_.savepoints(); }
+  SavepointVector::savepoint_vector_type& savepoints() noexcept {
+    return savepointVector_->savepoints();
+  }
 
   /// \brief Get refrence to SavepointVector
-  const SavepointVector& savepointVector() const noexcept { return savepointVector_; }
-  SavepointVector& savepointVector() noexcept { return savepointVector_; }
+  const SavepointVector& savepointVector() const noexcept { return *savepointVector_; }
+  SavepointVector& savepointVector() noexcept { return *savepointVector_; }
+
+  /// \brief Get pointer to SavepointVector
+  const std::shared_ptr<SavepointVector>& savepointVectorPtr() const noexcept {
+    return savepointVector_;
+  }
+  std::shared_ptr<SavepointVector>& savepointVectorPtr() noexcept { return savepointVector_; }
 
   //===----------------------------------------------------------------------------------------===//
   //     Writing
@@ -316,9 +332,9 @@ protected:
   boost::filesystem::path metaDataFile_;
   std::string prefix_;
 
-  SavepointVector savepointVector_;
-  FieldMap fieldMap_;
-  MetaInfoMap globalMetaInfo_;
+  std::shared_ptr<SavepointVector> savepointVector_;
+  std::shared_ptr<FieldMap> fieldMap_;
+  std::shared_ptr<MetaInfoMap> globalMetaInfo_;
 
   std::unique_ptr<Archive> archive_;
 };

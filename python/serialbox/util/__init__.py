@@ -7,11 +7,14 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## Python Interface of Serialbox.
+## Several system related utility functions.
+##
+## Source: https://github.com/llvm-mirror/llvm/blob/master/utils/lit/lit/util.py, with modifications 
+## Fabian Thuring.
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-"""'Serialbox Python Interface'"""
+"""'Serialbox Python Utilities'"""
 
 from __future__ import absolute_import
 

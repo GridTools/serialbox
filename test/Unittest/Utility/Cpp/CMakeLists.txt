@@ -21,3 +21,6 @@ set(CPP_UNITTEST_UTILITY_SOURCES
 
 add_library(SerialboxCppUnittestUtilityLibrary STATIC ${CPP_UNITTEST_UTILITY_SOURCES})
 
+if(DEFINED BUILD_GTEST)
+  add_dependencies(SerialboxCppUnittestUtilityLibrary gtest)
+endif()

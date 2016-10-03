@@ -83,11 +83,14 @@ TEST(FieldMetaInfoTest, Construction) {
     EXPECT_EQ(f.type(), f_copy.type());
     EXPECT_TRUE(std::equal(f.dims().begin(), f.dims().end(), f_copy.dims().begin()));
     EXPECT_TRUE(mapEqual(f.metaInfo(), f_copy.metaInfo()));
-
+    
+    // Check that we actually performed a deep copy
+    f.metaInfo().insert("newKey", "str");
+    EXPECT_FALSE(mapEqual(f.metaInfo(), f_copy.metaInfo()));
+    
     FieldMetaInfo f_move(std::move(f));
     EXPECT_EQ(f_move.type(), f_copy.type());
     EXPECT_TRUE(std::equal(f_move.dims().begin(), f_move.dims().end(), f_copy.dims().begin()));
-    EXPECT_TRUE(mapEqual(f_move.metaInfo(), f_copy.metaInfo()));
   }
 
   // -----------------------------------------------------------------------------------------------

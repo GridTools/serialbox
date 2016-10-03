@@ -33,14 +33,20 @@ class SavepointVector {
   using index_type = std::unordered_map<SavepointImpl, int>;
 
 public:
+  /// \brief Vector of savepoints
+  using savepoint_vector_type = std::vector<std::shared_ptr<SavepointImpl>>;
+
   /// \brief Map of fields per savepoint
-  using FieldsPerSavepointMap = std::unordered_map<std::string, unsigned int>;
+  using fields_per_savepoint_type = std::unordered_map<std::string, unsigned int>;
 
-  /// \brief A random access iterator to `Savepoint`
-  using iterator = std::vector<SavepointImpl>::iterator;
+  /// \brief Vector of map of fields per savepoint
+  using fields_per_savepoint_vector_type = std::vector<fields_per_savepoint_type>;
 
-  /// \brief A random access iterator to `const Savepoint`
-  using const_iterator = std::vector<SavepointImpl>::const_iterator;
+  /// \brief A random access iterator to `std::shared_ptr<Savepoint>`
+  using iterator = savepoint_vector_type::iterator;
+
+  /// \brief A random access iterator to `const std::shared_ptr<Savepoint>`
+  using const_iterator = savepoint_vector_type::const_iterator;
 
   /// \brief Default constructor (empty)
   SavepointVector() : index_(), savepoints_(), fields_(){};
@@ -108,10 +114,10 @@ public:
   /// \brief Access fields of savepoint
   ///
   /// \throw Exception  Savepoint does not exists
-  const FieldsPerSavepointMap& fieldsOf(const SavepointImpl& savepoint) const;
+  const fields_per_savepoint_type& fieldsOf(const SavepointImpl& savepoint) const;
 
   /// \brief Access fields of savepoint given a valid savepoint index ´idx´
-  const FieldsPerSavepointMap& fieldsOf(int idx) const noexcept;
+  const fields_per_savepoint_type& fieldsOf(int idx) const noexcept;
 
   /// \brief Returns a bool value indicating whether the savepoint vector is empty
   bool empty() const noexcept { return index_.empty(); }
@@ -135,16 +141,16 @@ public:
   const_iterator end() const noexcept { return savepoints_.end(); }
 
   /// \brief Get savepoint
-  SavepointImpl& operator[](int idx) noexcept { return savepoints_[idx]; }
-  const SavepointImpl& operator[](int idx) const noexcept { return savepoints_[idx]; }
-  
+  SavepointImpl& operator[](int idx) noexcept { return *savepoints_[idx]; }
+  const SavepointImpl& operator[](int idx) const noexcept { return *savepoints_[idx]; }
+
   /// \brief Returns a reference to the last element in the savepoint vector
-  SavepointImpl& back() noexcept { return savepoints_.back(); }
-  const SavepointImpl& back() const noexcept { return savepoints_.back(); }
+  std::shared_ptr<SavepointImpl>& back() noexcept { return savepoints_.back(); }
+  const std::shared_ptr<SavepointImpl>& back() const noexcept { return savepoints_.back(); }
 
   /// \brief Access the savepoints
-  const std::vector<SavepointImpl>& savepoints() const noexcept { return savepoints_; }
-  std::vector<SavepointImpl>& savepoints() noexcept { return savepoints_; }
+  const savepoint_vector_type& savepoints() const noexcept { return savepoints_; }
+  savepoint_vector_type& savepoints() noexcept { return savepoints_; }
 
   /// \brief Convert to JSON
   json::json toJSON() const;
@@ -158,9 +164,9 @@ public:
   friend std::ostream& operator<<(std::ostream& stream, const SavepointVector& s);
 
 private:
-  std::unordered_map<SavepointImpl, int> index_; ///< Hash-map for fast lookup
-  std::vector<SavepointImpl> savepoints_;        ///< Vector of stored savepoints
-  std::vector<FieldsPerSavepointMap> fields_;    ///< Fields of each savepoint
+  index_type index_;                        ///< Hash-map for fast lookup
+  savepoint_vector_type savepoints_;        ///< Vector of stored savepoints
+  fields_per_savepoint_vector_type fields_; ///< Fields of each savepoint
 };
 
 } // namespace serialbox

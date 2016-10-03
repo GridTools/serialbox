@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/STELLA/UnittestsetSavepoint.cpp ---------------------*- C++ -*-===//
+//===-- serialbox/Core/Frontend/STELLA/UnittestSavepoint.cpp ------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -16,6 +16,8 @@
 #include "serialbox/Core/Frontend/STELLA/SerializationException.h"
 #include "serialbox/Core/SavepointImpl.h"
 #include <boost/algorithm/string.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include <gtest/gtest.h>
 
 using namespace serialbox;
@@ -44,8 +46,8 @@ TEST(STELLASavepointTest, Construction) {
   EXPECT_EQ(savepoint1.metainfo().AsDouble("key2"), double(5));
 
   // Comparison
-  SavepointImpl savepointImpl2("savepoint2");
-  ser::Savepoint savepoint2(&savepointImpl2);
+  boost::shared_ptr<SavepointImpl> savepointImpl2 = boost::make_shared<SavepointImpl>("savepoint2");
+  ser::Savepoint savepoint2(savepointImpl2);
   EXPECT_EQ(savepoint2.name(), "savepoint2");
 
   EXPECT_TRUE(savepoint1 == savepoint1);

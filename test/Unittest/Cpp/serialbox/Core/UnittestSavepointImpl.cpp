@@ -79,6 +79,10 @@ TEST(SavepointImplTest, Construction) {
     EXPECT_EQ(s.metaInfo().at("key1").as<std::string>(),
               s_to_copy.metaInfo().at("key1").as<std::string>());
 
+    // Check for deep copy
+    s.metaInfo().insert("newKey", "str");
+    ASSERT_FALSE(s.metaInfo() == s_to_copy.metaInfo());
+    
     ASSERT_TRUE(s.metaInfo().hasKey("key2"));
     EXPECT_EQ(s.metaInfo().at("key2").as<double>(), double(5));
     EXPECT_EQ(s.metaInfo().at("key2").as<double>(), s_to_copy.metaInfo().at("key2").as<double>());

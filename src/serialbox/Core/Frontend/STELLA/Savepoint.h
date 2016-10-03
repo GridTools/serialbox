@@ -27,8 +27,6 @@ namespace stella {
 /// \brief Implementation of the STELLA Savepoint
 class Savepoint {
 public:
-  ~Savepoint();
-
   /// \brief Construct empty savepoint with name ´name´
   Savepoint();
 
@@ -44,8 +42,8 @@ public:
   /// \param name The name of the savepoint
   void Init(const std::string& name);
 
-  /// \brief Construct with SavepointImpl (lifetime of SavepointImpl has to be managed externally)
-  explicit Savepoint(SavepointImpl* savepointImpl);
+  /// \brief Construct with SavepointImpl
+  explicit Savepoint(const boost::shared_ptr<SavepointImpl>& savepointImpl);
 
   /// \brief Copy constructor
   Savepoint(const Savepoint& other);
@@ -74,13 +72,13 @@ public:
   /// @}
 
   /// \brief Access to the name
-  std::string name() const;
+  const std::string& name() const;
 
   /// \brief Access to the metainfo
   ///
   /// The meta-information is constructed from the underlying MetaInfoMap of the SavepointImpl.
   const MetainfoSet& metainfo() const { return metainfo_; }
-
+  
   /// \brief Compare equal
   bool operator==(const Savepoint& other) const;
 
@@ -93,13 +91,16 @@ public:
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& out, const Savepoint& sp);
 
+  /// \brief Set implementation pointer
+  void setImpl(const boost::shared_ptr<SavepointImpl>& savepointImpl);
+  
   /// \brief Get implementation pointer
-  SavepointImpl* getImpl() const { return savepointImpl_; }
+  boost::shared_ptr<SavepointImpl>& getImpl();
+  const boost::shared_ptr<SavepointImpl>& getImpl() const;
 
 private:
-  bool owner_;
-  SavepointImpl* savepointImpl_;
-  MetainfoSet metainfo_;
+  boost::shared_ptr<SavepointImpl> savepointImpl_;
+  MetainfoSet metainfo_; // Allow refrence access
 };
 
 } // namespace stella

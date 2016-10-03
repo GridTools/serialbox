@@ -13,9 +13,11 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "Utility/Cpp/FileUtility.h"
+#include "Utility/Cpp/STELLA.h"
 #include "serialbox/Core/Frontend/STELLA/SerializationException.h"
 #include "serialbox/Core/Frontend/STELLA/Serializer.h"
 #include "serialbox/Core/SerializerImpl.h"
+
 #include <gtest/gtest.h>
 
 using namespace serialbox;
@@ -159,12 +161,22 @@ TEST_F(STELLASerializerUtilityTest, FieldMetaInfo) {
   ser.RegisterField("field1", "int", 4, 42, 1, 1, 12, 1, 1, 0, 0, 0, 0, 2, 2);
   ser.RegisterField("field2", "double", 8, 42, 28, 80, 1, 3, 3, 3, 3, 0, 1, 0, 0);
 
-  // Add some metainfo
+  // Add some metainfo (second invocation should always throw)
   ser.AddFieldMetainfo("field1", "FirstField", true);
+  ASSERT_THROW(ser.AddFieldMetainfo("field1", "FirstField", true), ser::SerializationException);
+
   ser.AddFieldMetainfo("field1", "InitValue", 10.75);
+  ASSERT_THROW(ser.AddFieldMetainfo("field1", "InitValue", 10.75), ser::SerializationException);
+
   ser.AddFieldMetainfo("field1", "Elements", 42 * 80);
+  ASSERT_THROW(ser.AddFieldMetainfo("field1", "Elements", 42 * 80), ser::SerializationException);
+
   ser.AddFieldMetainfo("field2", "FirstField", false);
+  ASSERT_THROW(ser.AddFieldMetainfo("field2", "FirstField", false), ser::SerializationException);
+
   ser.AddFieldMetainfo("field2", "AlternateName", "density");
+  ASSERT_THROW(ser.AddFieldMetainfo("field2", "AlternateName", "density"),
+               ser::SerializationException);
 
   // Read metainfo
   ASSERT_EQ(3, ser.FindField("field1").metainfo().size());
@@ -181,7 +193,6 @@ TEST_F(STELLASerializerUtilityTest, FieldMetaInfo) {
 //     Read/Write tests
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/Cpp/STELLA.h"
 #ifdef SERIALBOX_HAS_STELLA
 
 namespace {
@@ -207,7 +218,27 @@ using TestTypes = testing::Types<double>;
 
 TYPED_TEST_CASE(STELLASerializerReadWriteTest, TestTypes);
 
+template <class SerializerType, class FieldType, class StringType>
+static void writeField(SerializerType& serializer, StringType&& name, FieldType& dataField,
+                       const ser::Savepoint& savepoint) {
+
+  DataFieldStorageStrides<typename FieldType::StorageFormat::StorageOrder> storageStrides;
+  storageStrides.Init(dataField.storage().paddedSize());
+
+  const int bytesPerElement = sizeof(typename FieldType::ValueType);
+
+  int iStride = storageStrides.ComputeStride(1, 0, 0) * bytesPerElement;
+  int jStride = storageStrides.ComputeStride(0, 1, 0) * bytesPerElement;
+  int kStride = storageStrides.ComputeStride(0, 0, 1) * bytesPerElement;
+
+  serializer.WriteField(name, dataField, savepoint, iStride, jStride, kStride);
+}
+
 TYPED_TEST(STELLASerializerReadWriteTest, WriteAndRead) {
+  // Sizes (including halos)
+  int iSize = 25;
+  int jSize = 11;
+  int kSize = 80;
 
   // -----------------------------------------------------------------------------------------------
   // Write
@@ -252,38 +283,36 @@ TYPED_TEST(STELLASerializerReadWriteTest, WriteAndRead) {
     savepoint_v_1.Init("savepoint_v_1");
 
     // Register fields
-    ser_write.RegisterField("u", ser::type_name<TypeParam>(), sizeof(TypeParam), 5, 6, 7, 1, 0, 0,
-                            0, 0, 0, 0, 0, 0);
-    ser_write.RegisterField("v", ser::type_name<TypeParam>(), sizeof(TypeParam), 5, 1, 1, 1, 0, 0,
-                            0, 0, 0, 0, 0, 0);
+    ser_write.RegisterField("u", ser::type_name<TypeParam>(), sizeof(TypeParam), iSize, jSize,
+                            kSize, 1, 3, 3, 3, 3, 0, 0, 0, 0);
+    ser_write.RegisterField("v", ser::type_name<TypeParam>(), sizeof(TypeParam), iSize, jSize, 1, 1,
+                            3, 3, 3, 3, 0, 0, 0, 0);
 
-    // Add some field meta-info
-    ser_write.AddFieldMetainfo("u", "Day", int(29));
-    ser_write.AddFieldMetainfo("u", "Month", "March");
-    ser_write.AddFieldMetainfo("u", "Year", TypeParam(2016.10));
-    ser_write.AddFieldMetainfo("v", "boolean", true);
+    IJKRealField u_0, u_1, v_0, v_1;
+    ser_write.InitializeField("u", u_0, true, true);
+    ser_write.InitializeField("u", u_1, true, true);
+    ser_write.InitializeField("v", v_0, true, true);
+    ser_write.InitializeField("v", v_1, true, true);
+
+    // Fill some values
+    const IJKBoundary& boundary = u_0.boundary();
+    for(int i = boundary.iMinusOffset(); i < (iSize + boundary.iMinusOffset()); ++i)
+      for(int j = boundary.jMinusOffset(); j < (jSize + boundary.jMinusOffset()); ++j) {
+        v_0(i, j, 0) = j * iSize + j * jSize;
+        v_1(i, j, 0) = u_0(i, j, 0) + 1;
+        for(int k = boundary.kMinusOffset(); k < (kSize + boundary.kMinusOffset()); ++k) {
+          u_0(i, j, k) = i * iSize + j * jSize + k * kSize;
+          u_1(i, j, k) = u_0(i, j, k) + 1;
+        }
+      }
 
     // Writing (implicitly register the savepoints)
-//    int bytesPerElement = sizeof(TypeParam);
-
-//    ser_write.WriteField(
-//        "u", savepoint1_t_1, (void*)u_0_input.originPtr(), bytesPerElement * u_0_input.strides()[0],
-//        bytesPerElement * u_0_input.strides()[1], bytesPerElement * u_0_input.strides()[2], 0);
-//    ser_write.WriteField(
-//        "v", savepoint1_t_1, (void*)v_0_input.originPtr(), bytesPerElement * v_0_input.strides()[0],
-//        bytesPerElement * v_0_input.strides()[1], bytesPerElement * v_0_input.strides()[2], 0);
-//    ser_write.WriteField(
-//        "u", savepoint1_t_2, (void*)u_1_input.originPtr(), bytesPerElement * u_1_input.strides()[0],
-//        bytesPerElement * u_1_input.strides()[1], bytesPerElement * u_1_input.strides()[2], 0);
-//    ser_write.WriteField(
-//        "v", savepoint1_t_2, (void*)v_1_input.originPtr(), bytesPerElement * v_1_input.strides()[0],
-//        bytesPerElement * v_1_input.strides()[1], bytesPerElement * v_1_input.strides()[2], 0);
-//    ser_write.WriteField(
-//        "u", savepoint_u_1, (void*)u_1_input.originPtr(), bytesPerElement * u_1_input.strides()[0],
-//        bytesPerElement * u_1_input.strides()[1], bytesPerElement * u_1_input.strides()[2], 0);
-//    ser_write.WriteField(
-//        "v", savepoint_v_1, (void*)v_1_input.originPtr(), bytesPerElement * v_1_input.strides()[0],
-//        bytesPerElement * v_1_input.strides()[1], bytesPerElement * v_1_input.strides()[2], 0);
+    writeField(ser_write, "u", u_0, savepoint1_t_1);
+    writeField(ser_write, "v", v_0, savepoint1_t_1);
+    writeField(ser_write, "u", u_1, savepoint1_t_2);
+    writeField(ser_write, "v", v_1, savepoint1_t_2);
+    writeField(ser_write, "u", u_1, savepoint_u_1);
+    writeField(ser_write, "v", v_1, savepoint_v_1);
   }
 }
 

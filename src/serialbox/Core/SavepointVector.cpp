@@ -21,8 +21,8 @@ namespace serialbox {
 int SavepointVector::insert(const SavepointImpl& savepoint) noexcept {
   int idx = savepoints_.size();
   if(index_.insert(typename index_type::value_type{savepoint, idx}).second) {
-    savepoints_.push_back(savepoint);
-    fields_.push_back(FieldsPerSavepointMap());
+    savepoints_.push_back(std::make_shared<SavepointImpl>(savepoint));
+    fields_.push_back(fields_per_savepoint_type());
     return idx;
   }
   return -1;
@@ -54,7 +54,7 @@ FieldID SavepointVector::getFieldID(int idx, const std::string& field) const {
   auto it = fields_[idx].find(field);
   if(it != fields_[idx].end())
     return FieldID{it->first, it->second};
-  throw Exception("field '%s' does not exists at savepoint '%s'", field, savepoints_[idx].name());
+  throw Exception("field '%s' does not exists at savepoint '%s'", field, savepoints_[idx]->name());
 }
 
 FieldID SavepointVector::getFieldID(const SavepointImpl& savepoint,
@@ -80,11 +80,11 @@ int SavepointVector::find(const SavepointImpl& savepoint) const noexcept {
   return ((it != index_.end()) ? it->second : -1);
 }
 
-const SavepointVector::FieldsPerSavepointMap& SavepointVector::fieldsOf(int idx) const noexcept {
+const SavepointVector::fields_per_savepoint_type& SavepointVector::fieldsOf(int idx) const noexcept {
   return fields_[idx];
 }
 
-const SavepointVector::FieldsPerSavepointMap&
+const SavepointVector::fields_per_savepoint_type&
 SavepointVector::fieldsOf(const SavepointImpl& savepoint) const {
   auto it = index_.find(savepoint);
   if(it != index_.end())
@@ -103,10 +103,10 @@ json::json SavepointVector::toJSON() const {
   CHECK(savepoints_.size() == fields_.size());
 
   for(std::size_t i = 0; i < savepoints_.size(); ++i)
-    jsonNode["savepoints"].push_back(savepoints_[i].toJSON());
+    jsonNode["savepoints"].push_back(savepoints_[i]->toJSON());
 
   for(std::size_t i = 0; i < fields_.size(); ++i) {
-    const std::string& savepoint = savepoints_[i].name();
+    const std::string& savepoint = savepoints_[i]->name();
     json::json fieldNode;
 
     if(fields_[i].empty())
@@ -144,7 +144,7 @@ void SavepointVector::fromJSON(const json::json& jsonNode) {
     throw Exception("inconsistent number of 'fields_per_savepoint' and 'savepoints'");
 
   for(std::size_t i = 0; i < fields_.size(); ++i) {
-    const json::json& fieldNode = jsonNode["fields_per_savepoint"][i][savepoints_[i].name()];
+    const json::json& fieldNode = jsonNode["fields_per_savepoint"][i][savepoints_[i]->name()];
 
     // Savepoint has no fields
     if(fieldNode.is_null() || fieldNode.empty())

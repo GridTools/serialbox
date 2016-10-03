@@ -22,7 +22,10 @@
 #include "serialbox/Core/Frontend/STELLA/SerializationException.h"
 #include "serialbox/Core/Type.h"
 #include <boost/format.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include <string>
+#include <memory>
 
 namespace serialbox {
 
@@ -69,6 +72,16 @@ inline std::string TypeIDToTypeName(TypeID typeID) {
   default:
     throw Exception("unsupported type: %s", TypeUtil::toString(typeID));
   }
+}
+
+template <typename T>
+boost::shared_ptr<T> make_shared_ptr(std::shared_ptr<T>& ptr) {
+  return boost::shared_ptr<T>(ptr.get(), [ptr](T*) mutable { ptr.reset(); });
+}
+
+template <typename T>
+std::shared_ptr<T> make_shared_ptr(boost::shared_ptr<T>& ptr) {
+  return std::shared_ptr<T>(ptr.get(), [ptr](T*) mutable { ptr.reset(); });
 }
 
 } // namespace internal

@@ -31,17 +31,14 @@ public:
   /// \brief Default constructor
   DataFieldInfo();
 
-  /// \brief Default constructor
-  DataFieldInfo(FieldMetaInfo* fieldMetaInfo);
+  /// \brief Construct with FieldMetaInfo
+  DataFieldInfo(const boost::shared_ptr<FieldMetaInfo>& fieldMetaInfoImpl);
 
   /// \brief Copy constructor
   DataFieldInfo(const DataFieldInfo& other);
 
   /// \brief Assignment operator
   DataFieldInfo& operator=(const DataFieldInfo& other);
-
-  /// \brief Destructor
-  ~DataFieldInfo();
 
   /// \brief Initialize with field.
   ///
@@ -214,13 +211,16 @@ public:
   /// \brief Gives a string representation of the object, useful for debugging
   std::string ToString() const;
 
+  /// \brief Set implementation pointer
+  void setImpl(const boost::shared_ptr<FieldMetaInfo>& fieldMetaInfoImpl);
+  
   /// \brief Get implementation pointer
-  FieldMetaInfo* getImpl() const { return fieldMetaInfoImpl_; }
+  boost::shared_ptr<FieldMetaInfo>& getImpl();
+  const boost::shared_ptr<FieldMetaInfo>& getImpl() const;
 
 private:
-  bool owner_;
-  FieldMetaInfo* fieldMetaInfoImpl_;
-  MetainfoSet metainfo_;
+  boost::shared_ptr<FieldMetaInfo> fieldMetaInfoImpl_;
+  MetainfoSet metainfo_; // Allow refrence access
 };
 
 } // namespace stella

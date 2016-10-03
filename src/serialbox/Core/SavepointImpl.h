@@ -37,14 +37,16 @@ public:
   /// \brief Construct an empty savepoint (wihtout ´metaInfo´ i.e this->empty() == true)
   template <class StringType,
             class = typename std::enable_if<!std::is_same<StringType, json::json>::value>::type>
-  explicit SavepointImpl(const StringType& name) : name_(name), metaInfo_(){};
+  explicit SavepointImpl(const StringType& name)
+      : name_(name), metaInfo_(std::make_shared<MetaInfoMap>()){};
 
   /// \brief Construct savepoint with ´name´ and ´metaInfo´
   template <class StringType, class MetaInfoType>
-  SavepointImpl(StringType&& name, MetaInfoType&& metaInfo) : name_(name), metaInfo_(metaInfo){};
+  SavepointImpl(StringType&& name, MetaInfoType&& metaInfo)
+      : name_(name), metaInfo_(std::make_shared<MetaInfoMap>(metaInfo)){};
 
   /// \brief Copy constructor
-  SavepointImpl(const SavepointImpl&) = default;
+  SavepointImpl(const SavepointImpl& other) { *this = other; };
 
   /// \brief Move constructor
   SavepointImpl(SavepointImpl&&) = default;
@@ -53,8 +55,8 @@ public:
   explicit SavepointImpl(const json::json& jsonNode) { fromJSON(jsonNode); }
 
   /// \brief Copy assignment
-  SavepointImpl& operator=(const SavepointImpl&) = default;
-
+  SavepointImpl& operator=(const SavepointImpl& other);
+  
   /// \brief Move assignment
   SavepointImpl& operator=(SavepointImpl&&) = default;
 
@@ -66,7 +68,7 @@ public:
   /// \throw Exception  Value cannot be inserted as it already exists
   template <class StringType, class ValueType>
   void addMetaInfo(StringType&& key, ValueType&& value) {
-    if(!metaInfo_.insert(std::forward<StringType>(key), std::forward<ValueType>(value)))
+    if(!metaInfo_->insert(std::forward<StringType>(key), std::forward<ValueType>(value)))
       throw Exception("cannot add element with key '%s' to metaInfo: element already exists", key);
   }
 
@@ -79,7 +81,7 @@ public:
   template <class T, class StringType>
   T getMetaInfoAs(StringType&& key) const {
     try {
-      return metaInfo_.at(key).template as<T>();
+      return metaInfo_->at(key).template as<T>();
     } catch(Exception& e) {
       throw Exception("cannot get element with key '%s' from metaInfo: %s", key, e.what());
     }
@@ -87,7 +89,7 @@ public:
 
   /// \brief Test for equality
   bool operator==(const SavepointImpl& right) const {
-    return (name_ == right.name_) && (metaInfo_ == right.metaInfo_);
+    return (name_ == right.name_) && (*metaInfo_ == *right.metaInfo_);
   }
 
   /// \brief Test for inequality
@@ -96,19 +98,19 @@ public:
   /// \brief Swap with other
   void swap(SavepointImpl& other) noexcept {
     name_.swap(other.name_);
-    metaInfo_.swap(other.metaInfo_);
+    metaInfo_->swap(*other.metaInfo_);
   }
 
   /// \brief Access name
   const std::string& name() const noexcept { return name_; }
 
   /// \brief Access meta-info
-  MetaInfoMap& metaInfo() noexcept { return metaInfo_; }
-  const MetaInfoMap& metaInfo() const noexcept { return metaInfo_; }
+  MetaInfoMap& metaInfo() noexcept { return *metaInfo_; }
+  const MetaInfoMap& metaInfo() const noexcept { return *metaInfo_; }
 
   /// \brief Returns a bool value indicating whether the savepoint is empty (i.e has no
   /// meta-information attached)
-  bool empty() const noexcept { return metaInfo_.empty(); }
+  bool empty() const noexcept { return metaInfo_->empty(); }
 
   /// \brief Convert to JSON
   json::json toJSON() const;
@@ -123,10 +125,14 @@ public:
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const SavepointImpl& s);
+  
+  /// \brief Get meta-info pointer
+  std::shared_ptr<MetaInfoMap>& metaInfoPtr() noexcept { return metaInfo_; }
+  const std::shared_ptr<MetaInfoMap>& metaInfoPtr() const noexcept { return metaInfo_; }
 
 protected:
-  std::string name_;     ///< Name of this savepoint
-  MetaInfoMap metaInfo_; ///< Meta-information of this savepoint
+  std::string name_;                      ///< Name of this savepoint
+  std::shared_ptr<MetaInfoMap> metaInfo_; ///< Meta-information of this savepoint
 };
 
 } // namespace serialbox

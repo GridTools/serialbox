@@ -44,27 +44,33 @@ TEST(FieldMapTest, Construction) {
 
   // Perfect forwarding
   ASSERT_TRUE(map.insert("field_forwarded_args", type, dims, metaInfo));
+  
+  // Copy construct (deep copy)
+  FieldMap map_copy(map);
+  ASSERT_TRUE(map_copy == map);
+  map_copy.insert("new_field", type, dims, metaInfo);
+  ASSERT_FALSE(map_copy == map);
 
   // Query dimensions
-  EXPECT_EQ(map.findField("field1")->second.dims(), dims);
+  EXPECT_EQ(map.findField("field1")->second->dims(), dims);
   EXPECT_EQ(map.getDimsOf("field1"), dims);
   EXPECT_THROW(map.getDimsOf("X"), Exception);
 
-  EXPECT_EQ(const_map.findField("field1")->second.dims(), dims);
+  EXPECT_EQ(const_map.findField("field1")->second->dims(), dims);
   EXPECT_EQ(const_map.getDimsOf("field1"), dims);
   EXPECT_THROW(const_map.getDimsOf("X"), Exception);
 
   // Query type
-  EXPECT_EQ(map.findField("field1")->second.type(), type);
+  EXPECT_EQ(map.findField("field1")->second->type(), type);
   EXPECT_EQ(map.getTypeOf("field1"), type);
   EXPECT_THROW(map.getTypeOf("X"), Exception);
 
-  EXPECT_EQ(const_map.findField("field1")->second.type(), type);
+  EXPECT_EQ(const_map.findField("field1")->second->type(), type);
   EXPECT_EQ(const_map.getTypeOf("field1"), type);
   EXPECT_THROW(map.getTypeOf("X"), Exception);
 
   // Query meta information of the field
-  EXPECT_EQ(map.findField("field1")->second.metaInfo().at("key1").as<std::string>(), "str");
+  EXPECT_EQ(map.findField("field1")->second->metaInfo().at("key1").as<std::string>(), "str");
 
   EXPECT_EQ(map.getFieldMetaInfoOf("field1").metaInfo().at("key1").as<std::string>(), "str");
   EXPECT_THROW(map.getFieldMetaInfoOf("X").metaInfo().at("key1").as<std::string>(), Exception);
@@ -72,7 +78,7 @@ TEST(FieldMapTest, Construction) {
   EXPECT_EQ(map.getMetaInfoOf("field1").at("key1").as<std::string>(), "str");
   EXPECT_THROW(map.getMetaInfoOf("X").at("key1").as<std::string>(), Exception);
 
-  EXPECT_EQ(const_map.findField("field1")->second.metaInfo().at("key1").as<std::string>(), "str");
+  EXPECT_EQ(const_map.findField("field1")->second->metaInfo().at("key1").as<std::string>(), "str");
 
   EXPECT_EQ(const_map.getFieldMetaInfoOf("field1").metaInfo().at("key1").as<std::string>(), "str");
   EXPECT_THROW(const_map.getFieldMetaInfoOf("X").metaInfo().at("key1").as<std::string>(), Exception);
@@ -87,7 +93,7 @@ TEST(FieldMapTest, Construction) {
   ASSERT_FALSE(map.insert("field1", f1));
   EXPECT_FALSE(map.empty());
   EXPECT_EQ(map.size(), 2);
-  EXPECT_EQ(map.findField("field1")->second.metaInfo().at("key1").as<std::string>(), "str");
+  EXPECT_EQ(map.findField("field1")->second->metaInfo().at("key1").as<std::string>(), "str");
 
   // Comparison
   //
@@ -114,7 +120,7 @@ TEST(FieldMapTest, Construction) {
   // Iterate values
   std::vector<FieldMetaInfo> fieldMetaVec;
   for(const auto& map_element : map)
-    fieldMetaVec.push_back(map_element.second);
+    fieldMetaVec.push_back(*map_element.second);
   EXPECT_EQ(fieldMetaVec.size(), map.size());
 
   // Clear map

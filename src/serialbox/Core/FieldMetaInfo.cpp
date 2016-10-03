@@ -18,10 +18,17 @@
 
 namespace serialbox {
 
+FieldMetaInfo& FieldMetaInfo::operator=(const FieldMetaInfo& other) {
+  type_ = other.type_;
+  dims_ = other.dims_;
+  metaInfo_ = std::make_shared<MetaInfoMap>(*other.metaInfo_);
+  return (*this);
+}
+
 void FieldMetaInfo::swap(FieldMetaInfo& other) noexcept {
   std::swap(type_, other.type_);
   dims_.swap(other.dims_);
-  metaInfo_.swap(other.metaInfo_);
+  metaInfo_->swap(*other.metaInfo_);
 }
 
 bool FieldMetaInfo::operator==(const FieldMetaInfo& right) const noexcept {
@@ -32,21 +39,20 @@ bool FieldMetaInfo::operator==(const FieldMetaInfo& right) const noexcept {
      !std::equal(dims_.begin(), dims_.end(), right.dims_.begin()))
     return false;
 
-  // This is really expensive
-  return (metaInfo_ == right.metaInfo_);
+  return (*metaInfo_ == *right.metaInfo_);
 }
 
 json::json FieldMetaInfo::toJSON() const {
   json::json jsonNode;
   jsonNode["type_id"] = static_cast<int>(type_);
   jsonNode["dims"] = dims_;
-  jsonNode["meta_info"] = metaInfo_.toJSON();
+  jsonNode["meta_info"] = metaInfo_->toJSON();
   return jsonNode;
 }
 
 void FieldMetaInfo::fromJSON(const json::json& jsonNode) {
   dims_.clear();
-  metaInfo_.clear();
+  metaInfo_->clear();
 
   if(jsonNode.is_null() || jsonNode.empty())
     throw Exception("node is empty");
@@ -63,7 +69,7 @@ void FieldMetaInfo::fromJSON(const json::json& jsonNode) {
   if(!jsonNode.count("meta_info"))
     throw Exception("no node 'meta_info'");
   try {
-    metaInfo_.fromJSON(jsonNode["meta_info"]);
+    metaInfo_->fromJSON(jsonNode["meta_info"]);
   } catch(Exception& e) {
     throw Exception("in node 'meta_info': %s", e.what());
   }
