@@ -57,5 +57,7 @@ function(serialbox_add_cpp_unittest_executable name libraries)
 endfunction(serialbox_add_cpp_unittest_executable)
 
 ## Add subdirectories
+add_subdirectory(Utility)
 add_subdirectory(Cpp)
+
 

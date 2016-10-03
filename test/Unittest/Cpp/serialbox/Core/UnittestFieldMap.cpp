@@ -1,0 +1,295 @@
+//===-- serialbox/Core/UnittestFieldMap.cpp -----------------------------------------*- C++ -*-===//
+//
+//                                    S E R I A L B O X
+//
+// This file is distributed under terms of BSD license.
+// See LICENSE.txt for more information
+//
+//===------------------------------------------------------------------------------------------===//
+//
+/// \file
+/// This file implements the unittests of the FieldMap.
+///
+//===------------------------------------------------------------------------------------------===//
+
+#include "serialbox/Core/FieldMap.h"
+#include <boost/algorithm/string.hpp>
+#include <gtest/gtest.h>
+
+using namespace serialbox;
+
+static FieldMetaInfo constructFieldMetaInfo(double value_key2 = 5.0) {
+  TypeID type(TypeID::Float64);
+  std::vector<int> dims{20, 15, 20};
+  MetaInfoMap metaInfo(std::initializer_list<MetaInfoMap::value_type>{
+      {"key1", MetaInfoValue(std::string("str"))}, {"key2", MetaInfoValue(value_key2)}});
+  return FieldMetaInfo(type, dims, metaInfo);
+}
+
+TEST(FieldMapTest, Construction) {
+  TypeID type(TypeID::Float64);
+  std::vector<int> dims{20, 15, 20};
+  MetaInfoMap metaInfo;
+
+  FieldMap map;
+  const FieldMap& const_map = map;
+
+  EXPECT_TRUE(map.empty());
+  EXPECT_EQ(map.size(), 0);
+
+  // Insert a field
+  ASSERT_TRUE(map.insert("field1", constructFieldMetaInfo()));
+  ASSERT_TRUE(map.hasField("field1"));
+  ASSERT_TRUE(const_map.hasField("field1"));
+
+  // Perfect forwarding
+  ASSERT_TRUE(map.insert("field_forwarded_args", type, dims, metaInfo));
+
+  // Query dimensions
+  EXPECT_EQ(map.findField("field1")->second.dims(), dims);
+  EXPECT_EQ(map.getDimsOf("field1"), dims);
+  EXPECT_THROW(map.getDimsOf("X"), Exception);
+
+  EXPECT_EQ(const_map.findField("field1")->second.dims(), dims);
+  EXPECT_EQ(const_map.getDimsOf("field1"), dims);
+  EXPECT_THROW(const_map.getDimsOf("X"), Exception);
+
+  // Query type
+  EXPECT_EQ(map.findField("field1")->second.type(), type);
+  EXPECT_EQ(map.getTypeOf("field1"), type);
+  EXPECT_THROW(map.getTypeOf("X"), Exception);
+
+  EXPECT_EQ(const_map.findField("field1")->second.type(), type);
+  EXPECT_EQ(const_map.getTypeOf("field1"), type);
+  EXPECT_THROW(map.getTypeOf("X"), Exception);
+
+  // Query meta information of the field
+  EXPECT_EQ(map.findField("field1")->second.metaInfo().at("key1").as<std::string>(), "str");
+
+  EXPECT_EQ(map.getFieldMetaInfoOf("field1").metaInfo().at("key1").as<std::string>(), "str");
+  EXPECT_THROW(map.getFieldMetaInfoOf("X").metaInfo().at("key1").as<std::string>(), Exception);
+
+  EXPECT_EQ(map.getMetaInfoOf("field1").at("key1").as<std::string>(), "str");
+  EXPECT_THROW(map.getMetaInfoOf("X").at("key1").as<std::string>(), Exception);
+
+  EXPECT_EQ(const_map.findField("field1")->second.metaInfo().at("key1").as<std::string>(), "str");
+
+  EXPECT_EQ(const_map.getFieldMetaInfoOf("field1").metaInfo().at("key1").as<std::string>(), "str");
+  EXPECT_THROW(const_map.getFieldMetaInfoOf("X").metaInfo().at("key1").as<std::string>(), Exception);
+
+  EXPECT_EQ(const_map.getMetaInfoOf("field1").at("key1").as<std::string>(), "str");
+  EXPECT_THROW(const_map.getMetaInfoOf("X").at("key1").as<std::string>(), Exception);
+
+  // Reinsert same field but with diffrent meta information (should do nothing)
+  FieldMetaInfo f1(constructFieldMetaInfo());
+  f1.metaInfo()["key1"].as<std::string>() = "strXXX";
+
+  ASSERT_FALSE(map.insert("field1", f1));
+  EXPECT_FALSE(map.empty());
+  EXPECT_EQ(map.size(), 2);
+  EXPECT_EQ(map.findField("field1")->second.metaInfo().at("key1").as<std::string>(), "str");
+
+  // Comparison
+  //
+  // map :  { field1 with (key2 = 5.0), field2 }
+  // map2 : { field1 with (key2 = 2.0)
+  //
+  FieldMap map2;
+  ASSERT_TRUE(map2.insert("field1", constructFieldMetaInfo(2.0)));
+  ASSERT_TRUE(map.insert("field2", constructFieldMetaInfo(2.0)));
+
+  EXPECT_TRUE(map == const_map);
+  EXPECT_FALSE(map == map2);
+  EXPECT_TRUE(map != map2);
+
+  // Swap
+  map2.clear();
+  map.swap(map2);
+  ASSERT_TRUE(map.empty());
+  ASSERT_FALSE(map2.empty());
+  map.swap(map2);
+  ASSERT_FALSE(map.empty());
+  ASSERT_TRUE(map2.empty());
+
+  // Iterate values
+  std::vector<FieldMetaInfo> fieldMetaVec;
+  for(const auto& map_element : map)
+    fieldMetaVec.push_back(map_element.second);
+  EXPECT_EQ(fieldMetaVec.size(), map.size());
+
+  // Clear map
+  map.clear();
+  EXPECT_TRUE(map.empty());
+  EXPECT_EQ(map.size(), 0);
+}
+
+TEST(FieldMapTest, toJSON) {
+  FieldMap map;
+  ASSERT_TRUE(map.insert("field1", constructFieldMetaInfo(1.0)));
+  ASSERT_TRUE(map.insert("field2", constructFieldMetaInfo(2.0)));
+
+  json::json j = map.toJSON();
+
+  // The correct serialization of the FieldMetaInfo is tested elsewhere
+  ASSERT_TRUE(j.count("field1"));
+  ASSERT_TRUE(j.count("field2"));
+}
+
+TEST(FieldMapTest, fromJSON) {
+  // -----------------------------------------------------------------------------------------------
+  // Success
+  // -----------------------------------------------------------------------------------------------
+  {
+    auto j = R"(
+    {
+        "field1": {
+            "dims": [
+                32,
+                16
+            ],
+            "meta_info": {
+                "key1": {
+                    "type_id": 6,
+                    "value": "field1_meta_info_str"
+                },
+                "key2": {
+                    "type_id": 5,
+                    "value": 1
+                }
+            },
+            "type_id": 4
+        },
+        "field2": {
+            "dims": [
+                20,
+                55,
+                1992
+            ],
+            "meta_info": {
+                "key1": {
+                    "type_id": 6,
+                    "value": "field2_meta_info_str"
+                },
+                "key2": {
+                    "type_id": 5,
+                    "value": 2
+                }
+            },
+            "type_id": 5
+        }
+    }
+    )"_json;
+
+    FieldMap map;
+    map.fromJSON(j);
+    
+    // type
+    EXPECT_EQ(map.getTypeOf("field1"), TypeID::Float32);
+    EXPECT_EQ(map.getTypeOf("field2"), TypeID::Float64);
+    
+    // dims
+    EXPECT_EQ(map.getDimsOf("field1"), (std::vector<int>{32, 16}));
+    EXPECT_EQ(map.getDimsOf("field2"), (std::vector<int>{20, 55, 1992}));
+    
+    // meta-info
+    EXPECT_EQ(map.getMetaInfoOf("field1").at("key1").as<std::string>(), "field1_meta_info_str");
+    EXPECT_EQ(map.getMetaInfoOf("field2").at("key1").as<std::string>(), "field2_meta_info_str");
+
+    EXPECT_EQ(map.getMetaInfoOf("field1").at("key2").as<double>(), 1.0);
+    EXPECT_EQ(map.getMetaInfoOf("field2").at("key2").as<double>(), 2.0);
+  }
+
+  // -----------------------------------------------------------------------------------------------
+  // Success (empty)
+  // -----------------------------------------------------------------------------------------------
+  {
+    auto j = R"({})"_json;
+    FieldMap map;
+    map.fromJSON(j);
+    EXPECT_TRUE(map.empty());
+  }
+  
+  // -----------------------------------------------------------------------------------------------
+  // Failure (corrupted meta_info of field1; key1 is missing the type-id)
+  // -----------------------------------------------------------------------------------------------
+  {
+    auto j = R"(
+    {
+        "field1": {
+            "dims": [
+                32,
+                16
+            ],
+            "meta_info": {
+                "key1": {
+                    "value": "field1_meta_info_str"
+                },
+                "key2": {
+                    "type_id": 5,
+                    "value": 1
+                }
+            },
+            "type_id": 4
+        }
+    }
+    )"_json;
+    FieldMap map;
+    ASSERT_THROW(map.fromJSON(j), Exception);
+  }
+  
+  // -----------------------------------------------------------------------------------------------
+  // Failure (multiple field1)
+  // -----------------------------------------------------------------------------------------------
+  {
+    auto j = R"(
+    {
+        "field1": {
+            "dims": [
+                32,
+                16
+            ],
+            "meta_info": {
+                "key1": {
+                    "value": "field1_meta_info_str"
+                },
+                "key2": {
+                    "type_id": 5,
+                    "value": 1
+                }
+            },
+            "type_id": 4
+        },
+        "field1": {
+             "dims": [
+                 32,
+                 16
+             ],
+             "meta_info": {
+                 "key1": {
+                     "value": "field1_meta_info_str"
+                 },
+                 "key2": {
+                     "type_id": 5,
+                     "value": 1
+                 }
+             },
+             "type_id": 4
+         }
+    }
+    )"_json;
+    FieldMap map;
+    ASSERT_THROW(map.fromJSON(j), Exception);
+  }
+}
+
+TEST(FieldMapTest, toString) {
+  FieldMap map;
+  ASSERT_TRUE(map.insert("field1", constructFieldMetaInfo(1.0)));
+
+  std::stringstream ss;
+  ss << map;
+  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "FieldMap"));
+  EXPECT_NE(ss.str().find("field1"), std::string::npos);
+  EXPECT_NE(ss.str().find("key1"), std::string::npos);
+  EXPECT_NE(ss.str().find("key2"), std::string::npos);
+}
