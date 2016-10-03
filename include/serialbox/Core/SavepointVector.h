@@ -137,6 +137,10 @@ public:
   /// \brief Get savepoint
   SavepointImpl& operator[](int idx) noexcept { return savepoints_[idx]; }
   const SavepointImpl& operator[](int idx) const noexcept { return savepoints_[idx]; }
+  
+  /// \brief Returns a reference to the last element in the savepoint vector
+  SavepointImpl& back() noexcept { return savepoints_.back(); }
+  const SavepointImpl& back() const noexcept { return savepoints_.back(); }
 
   /// \brief Access the savepoints
   const std::vector<SavepointImpl>& savepoints() const noexcept { return savepoints_; }

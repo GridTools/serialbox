@@ -203,30 +203,42 @@ std::vector<std::string> Serializer::FieldsAtSavepoint(const Savepoint& savepoin
   return fields;
 }
 
+static StorageView makeStorageView(const void* pData, TypeID type, std::vector<int> dims,
+                                   std::vector<int> strides) {
+
+  int bytesPerElement = TypeUtil::sizeOf(type);
+
+  // Strides have to be per-byte
+  for(std::size_t i = 0; i < dims.size(); ++i)
+    strides[i] /= bytesPerElement;
+
+  // Adjust size of dimensions (if necessary)
+  if(dims.size() > 4)
+    throw Exception("the STELLA frontend does not support %i dimensional storages", dims.size());
+
+  while(strides.size() != dims.size())
+    dims.push_back(1);
+
+  return StorageView(const_cast<void*>(pData), type, dims, std::vector<int>(strides));
+}
+
 void Serializer::WriteField(const std::string& fieldName, const Savepoint& savepoint,
                             const void* pData, int iStride, int jStride, int kStride, int lStride) {
   if(enabled_ < 0)
     return;
 
   try {
+    std::size_t numSavepoints = serializerImpl_->savepointVector().size();
     const FieldMetaInfo& info = serializerImpl_->getFieldMetaInfoOf(fieldName);
 
-    int bytesPerElement = TypeUtil::sizeOf(info.type());
+    StorageView storageView =
+        makeStorageView(pData, info.type(), info.dims(), {iStride, jStride, kStride, lStride});
 
-    // Get dimensions & strides
-    std::vector<int> strides{iStride / bytesPerElement, jStride / bytesPerElement,
-                             kStride / bytesPerElement, lStride / bytesPerElement};
-    std::vector<int> dims(info.dims());
-
-    // Adjust size of dimensions (if necessary)
-    if(dims.size() > 4)
-      throw Exception("the STELLA frontend does not support %i dimensional storages", dims.size());
-
-    while(strides.size() != dims.size())
-      dims.push_back(1);
-
-    StorageView storageView(const_cast<void*>(pData), info.type(), dims, strides);
     serializerImpl_->write(fieldName, *savepoint.getImpl(), storageView);
+
+    if(numSavepoints < serializerImpl_->savepointVector().size())
+      savepoints_.emplace_back(&serializerImpl_->savepointVector().back());
+
   } catch(Exception& e) {
     internal::throwSerializationException("Error: %s", e.what());
   }
@@ -238,27 +250,14 @@ void Serializer::ReadField(const std::string& fieldName, const Savepoint& savepo
   if(enabled_ < 0)
     return;
 
-  // Never used
   (void)alsoPrevious;
 
   try {
     const FieldMetaInfo& info = serializerImpl_->getFieldMetaInfoOf(fieldName);
 
-    int bytesPerElement = TypeUtil::sizeOf(info.type());
+    StorageView storageView =
+        makeStorageView(pData, info.type(), info.dims(), {iStride, jStride, kStride, lStride});
 
-    // Get dimensions & strides
-    std::vector<int> strides{iStride / bytesPerElement, jStride / bytesPerElement,
-                             kStride / bytesPerElement, lStride / bytesPerElement};
-    std::vector<int> dims(info.dims());
-
-    // Adjust size of dimensions (if necessary)
-    if(dims.size() > 4)
-      throw Exception("the STELLA frontend does not support %i dimensional storages", dims.size());
-
-    while(strides.size() != dims.size())
-      dims.push_back(1);
-
-    StorageView storageView(pData, info.type(), dims, strides);
     serializerImpl_->read(fieldName, *savepoint.getImpl(), storageView);
 
   } catch(Exception& e) {
