@@ -334,12 +334,12 @@ void Serializer::WriteField(std::string name, const TDataField& field, const Sav
   IJKSize size;
   size.Init(field.storage().allocatedSize().iSize(), field.storage().allocatedSize().jSize(),
             field.storage().allocatedSize().kSize());
-  
+
   IJKBoundary boundary;
   boundary.Init(field.boundary().iMinusOffset(), field.boundary().iPlusOffset(),
                 field.boundary().jMinusOffset(), field.boundary().jPlusOffset(),
                 field.boundary().kMinusOffset(), field.boundary().kPlusOffset());
-  
+
   const int bytesPerElement = sizeof(typename TDataField::ValueType);
 
   // Register field
@@ -413,7 +413,8 @@ void Serializer::ReadField(std::string name, TDataField& field, const Savepoint&
     // Throw exception
     std::ostringstream errorstr;
     errorstr << "Error: the requested field " << name << " has different type than"
-             << " the provided data field.";
+             << " the provided data field (expected " << info.type() << ", got "
+             << type_name<ValueType>() << ")";
     SerializationException exception;
     exception.Init(errorstr.str());
     throw exception;
@@ -433,7 +434,7 @@ void Serializer::ReadField(std::string name, TDataField& field, const Savepoint&
 
 template <typename TDataField>
 void Serializer::InitializeField(const std::string& fieldname, TDataField& field,
-                                                    bool hasStorageInI, bool hasStorageInJ) const {
+                                 bool hasStorageInI, bool hasStorageInJ) const {
   // Get info (will throw if does not exist)
   const serialbox::stella::DataFieldInfo& info = FindField(fieldname);
 
