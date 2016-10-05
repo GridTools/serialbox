@@ -55,14 +55,16 @@ void Serializer::Init(const std::string& directory, const std::string& prefix,
   try {
     switch(mode) {
     case SerializerOpenModeRead:
-      serializerImpl_ = new SerializerImpl(OpenModeKind::Read, directory, prefix, "BinaryArchive");
+      serializerImpl_ = boost::make_shared<SerializerImpl>(OpenModeKind::Read, directory, prefix,
+                                                           "BinaryArchive");
       break;
     case SerializerOpenModeWrite:
-      serializerImpl_ = new SerializerImpl(OpenModeKind::Write, directory, prefix, "BinaryArchive");
+      serializerImpl_ = boost::make_shared<SerializerImpl>(OpenModeKind::Write, directory, prefix,
+                                                           "BinaryArchive");
       break;
     case SerializerOpenModeAppend:
-      serializerImpl_ =
-          new SerializerImpl(OpenModeKind::Append, directory, prefix, "BinaryArchive");
+      serializerImpl_ = boost::make_shared<SerializerImpl>(OpenModeKind::Append, directory, prefix,
+                                                           "BinaryArchive");
       break;
     }
   } catch(Exception& e) {
@@ -225,7 +227,7 @@ static StorageView makeStorageView(const void* pData, TypeID type, const std::ve
   // Check dimensions (strides.size() == 4 is guaranteed)
   if(dims.size() > 4)
     throw Exception("the STELLA frontend does not support %i dimensional storages", dims.size());
-  
+
   // Adjust strides s.t dims.size() == strides.size()
   while(strides.size() != dims.size())
     strides.pop_back();

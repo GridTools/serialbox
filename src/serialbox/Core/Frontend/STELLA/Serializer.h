@@ -292,11 +292,12 @@ public:
   std::string ToString() const;
 
   /// \brief Get implementation pointer
-  SerializerImpl* getImpl() const { return serializerImpl_; }
+  boost::shared_ptr<SerializerImpl>& getImpl() { return serializerImpl_; }
+  const boost::shared_ptr<SerializerImpl>& getImpl() const { return serializerImpl_; }
 
 private:
   // Implementation pointer
-  SerializerImpl* serializerImpl_;
+  boost::shared_ptr<SerializerImpl> serializerImpl_;
 
   // These data-strucures allow to return refrences but do not actually own any data but they need
   // to be kept in sync with the data from serializerImpl!
