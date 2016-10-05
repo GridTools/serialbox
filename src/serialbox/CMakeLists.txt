@@ -26,8 +26,6 @@ function(serialbox_add_library name target libraries)
     set_target_properties(${target}Objects PROPERTIES COMPILE_FLAGS -Wall)
   endif(SERIALBOX_VERBOSE_WARNINGS)
 
-  add_dependencies(${target}Objects sha256)
-
   if(BUILD_GLOG)
     add_dependencies(${target}Objects glog)
   endif(BUILD_GLOG)
@@ -39,19 +37,22 @@ function(serialbox_add_library name target libraries)
   endif()
 
   # Build static library
-  add_library(${target}Static STATIC $<TARGET_OBJECTS:${target}Objects>)
+  add_library(${target}Static STATIC $<TARGET_OBJECTS:${target}Objects> $<TARGET_OBJECTS:sha256>)
   set_target_properties(${target}Static PROPERTIES OUTPUT_NAME ${name})
   target_link_libraries(${target}Static ${libraries})
+  install(TARGETS ${target}Static DESTINATION lib)
 
   # Build shared library
   if(SERIALBOX_BUILD_SHARED)
-    add_library(${target}Shared SHARED $<TARGET_OBJECTS:${target}Objects>)
+    add_library(${target}Shared SHARED $<TARGET_OBJECTS:${target}Objects> $<TARGET_OBJECTS:sha256>)
     set_target_properties(${target}Shared PROPERTIES OUTPUT_NAME ${name})
     target_link_libraries(${target}Shared ${libraries})
+    install(TARGETS ${target}Shared DESTINATION lib)
   endif()
 
 endfunction(serialbox_add_library)
 
 ## Add subdirectories
+add_subdirectory(external)
 add_subdirectory(Core)
 

@@ -13,7 +13,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/Core/SHA256.h"
-#include <sha256/sha256.h>
+#include "serialbox/external/sha256/sha256.h"
 #include <sstream>
 
 namespace serialbox {

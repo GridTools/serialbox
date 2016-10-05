@@ -11,7 +11,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-SET(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "Installation prefix")
+set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "Installation prefix")
 
 project(serialbox C CXX)
 cmake_minimum_required(VERSION 3.1)
@@ -106,49 +106,25 @@ if(SERIALBOX_BUILD_SHARED)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
   
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    # CMake requires a RPATH configuration variable set on OSX with CMake >= 3.0
-    # (CMake policy CMP0042) to build dynamic libraries. Setting this variable
-    # to INSTALL/lib.
-    # More information: http://www.cmake.org/Wiki/CMake_RPATH_handling
-    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-    set(CMAKE_MACOSX_RPATH "${CMAKE_INSTALL_RPATH}")
-  endif ()
-endif()
+  # Use, i.e. don't skip the full RPATH for the build tree
+  set(CMAKE_SKIP_BUILD_RPATH  FALSE)
 
-#---------------------------------------- sha256 ---------------------------------------------------
-set(SHA256_INSTALL_DIR "${CMAKE_BINARY_DIR}/external/sha256/install")
-    
-# Forward toolchain
-set(CMAKE_EXTERNAL_ARGS -Wno-dev
-  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
-  -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-  -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-  -DCMAKE_INSTALL_PREFIX=${SHA256_INSTALL_DIR}
-  -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
-)
+  # When building, don't use the install RPATH already (but later on when installing)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
 
-# Build libsha256
-ExternalProject_Add(
-  sha256
-  URL        "${CMAKE_CURRENT_SOURCE_DIR}/external/sha256"
-  PREFIX     "external/sha256"
-  CMAKE_ARGS ${CMAKE_EXTERNAL_ARGS}
-)
-message(STATUS "Building sh256 from: ${CMAKE_CURRENT_SOURCE_DIR}/external/sh256")
-    
-set(SHA256_INCLUDE_DIRS "${SHA256_INSTALL_DIR}/include")
-if(COMPILER_IS_MSVC)
-  set(SHA256_LIBRARIES "${SHA256_INSTALL_DIR}/lib/sha256.lib")
-  #TODO: Handle shared libraries/runtime
-else()
-  if(BUILD_SHARED_LIBS)
-    set(SHA256_LIBRARIES "${SHA256_INSTALL_DIR}/lib/libsha256.so")
-  else()
-    set(SHA256_LIBRARIES "${SHA256_INSTALL_DIR}/lib/libsha256.a")
-  endif()
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  set(CMAKE_MACOSX_RPATH "${CMAKE_INSTALL_RPATH}")
+
+  # Add the automatically determined parts of the RPATH which point to directories outside the 
+  # build tree to the install RPATH
+  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+  # The RPATH to be used when installing, but only if it's not a system directory
+  list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+  if("${isSystemDir}" STREQUAL "-1")
+     SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  endif("${isSystemDir}" STREQUAL "-1")
 endif()
-include_directories(${SHA256_INCLUDE_DIRS})
 
 #---------------------------------------- GTest ----------------------------------------------------
 if(SERIALBOX_TESTING)
@@ -226,20 +202,30 @@ if(SERIALBOX_LOGGING)
 
     set(GLOG_INCLUDE_DIRS "${GLOG_INSTALL_DIR}/include")
     if(COMPILER_IS_MSVC)
-      set(GLOG_LIBRARIES "${GLOG_INSTALL_DIR}/lib/glog.lib" "${CMAKE_THREAD_LIBS_INIT}")
+      set(GLOG_LIBRARY "${GLOG_INSTALL_DIR}/lib/glog.lib")
        #TODO: Handle shared libraries/runtime
     else()
       if(BUILD_SHARED_LIBS)
-        set(GLOG_LIBRARIES "${GLOG_INSTALL_DIR}/lib/libglog.so" "${CMAKE_THREAD_LIBS_INIT}")
+        set(GLOG_LIBRARY "${GLOG_INSTALL_DIR}/lib/libglog.so")
       else()
-        set(GLOG_LIBRARIES "${GLOG_INSTALL_DIR}/lib/libglog.a" "${CMAKE_THREAD_LIBS_INIT}")
+        set(GLOG_LIBRARY "${GLOG_INSTALL_DIR}/lib/libglog.a")
       endif()
     endif()
+    set(GLOG_LIBRARIES ${GLOG_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+    
   else()
     find_package(GLog REQUIRED)
   endif()
   include_directories(SYSTEM ${GLOG_INCLUDE_DIRS})
+  set(SERIALBOX_HAS_GLOG 1)
+  
+  
+  # Install GLog
+  install(DIRECTORY ${GLOG_INCLUDE_DIRS}/ DESTINATION include FILES_MATCHING PATTERN "*.h")
+  install(FILES ${GLOG_LIBRARY} DESTINATION lib)
+
 else()
+  set(SERIALBOX_HAS_GLOG 0)
   add_definitions(-DSERIALBOX_DISABLE_LOGGING)
 endif()
 
@@ -252,11 +238,6 @@ endif(NOT(${Boost_FOUND}))
 
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
-
-
-#---------------------------------------- JSON -----------------------------------------------------
-message(STATUS "Using json from: ${CMAKE_CURRENT_SOURCE_DIR}/external/json")
-include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/external/json/include)
 
 #---------------------------------------- GridTools ------------------------------------------------
 if(SERIALBOX_ENABLE_GRIDTOOLS)
@@ -450,7 +431,7 @@ set(SERIALBOX_CONFIG_FILE ${CMAKE_BINARY_DIR}/src/serialbox/Core/Config.h)
 set(SERIALBOX_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
 configure_file(${SERIALBOX_CONFIG_FILE_IN} ${SERIALBOX_CONFIG_FILE})
 include_directories(${CMAKE_BINARY_DIR}/src)
-install(FILES ${SERIALBOX_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_PREFIX}/src/serialbox/Core)
+install(FILES ${SERIALBOX_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox/Core)
 
 enable_testing()
 
@@ -464,7 +445,7 @@ file(GLOB_RECURSE SERIALBOX_HEADERS
      
 # Install serialbox headers
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox DESTINATION include 
-        PATTERN "*.cpp" PATTERN "*.cmake" EXCLUDE)
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
 ## Build Serialbox
 add_subdirectory(src)
