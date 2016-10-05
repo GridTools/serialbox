@@ -27,8 +27,6 @@
 #include <string>
 #include <vector>
 
-#include <iostream>
-
 namespace serialbox {
 
 namespace stella {
@@ -420,8 +418,7 @@ void Serializer::ReadField(std::string name, TDataField& field, const Savepoint&
     throw exception;
   }
 
-  // This hack is used to retrieve the storage pointer for the host memory
-  // in case of GPU fields
+  // This hack is used to retrieve the storage pointer for the host memory in case of GPU fields
   // This will synchronize the host storage
   ValueType* data =
       &field(boundary.iMinusOffset(), boundary.jMinusOffset(), boundary.kMinusOffset());

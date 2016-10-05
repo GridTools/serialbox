@@ -213,7 +213,7 @@ std::vector<std::string> Serializer::FieldsAtSavepoint(const Savepoint& savepoin
   return fields;
 }
 
-static StorageView makeStorageView(const void* pData, TypeID type, std::vector<int> dims,
+static StorageView makeStorageView(const void* pData, TypeID type, const std::vector<int>& dims,
                                    std::vector<int> strides) {
 
   int bytesPerElement = TypeUtil::sizeOf(type);
@@ -222,12 +222,13 @@ static StorageView makeStorageView(const void* pData, TypeID type, std::vector<i
   for(std::size_t i = 0; i < dims.size(); ++i)
     strides[i] /= bytesPerElement;
 
-  // Adjust size of dimensions (if necessary)
+  // Check dimensions (strides.size() == 4 is guaranteed)
   if(dims.size() > 4)
     throw Exception("the STELLA frontend does not support %i dimensional storages", dims.size());
-
+  
+  // Adjust strides s.t dims.size() == strides.size()
   while(strides.size() != dims.size())
-    dims.push_back(1);
+    strides.pop_back();
 
   return StorageView(const_cast<void*>(pData), type, dims, std::vector<int>(strides));
 }
