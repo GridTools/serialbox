@@ -57,6 +57,16 @@ TEST(STELLAMetainfoSetTest, Construction) {
   ASSERT_THROW(set.AddMetainfo("string", std::string("str")), ser::SerializationException);
 
   ASSERT_EQ(set.size(), 7);
+  
+  auto keys = set.keys();
+  ASSERT_EQ(keys.size(), set.size());
+  EXPECT_TRUE(std::find(keys.begin(), keys.end(), "bool") != keys.end());
+  EXPECT_TRUE(std::find(keys.begin(), keys.end(), "int32") != keys.end());
+  EXPECT_TRUE(std::find(keys.begin(), keys.end(), "float32") != keys.end());
+  EXPECT_TRUE(std::find(keys.begin(), keys.end(), "float32_1") != keys.end());
+  EXPECT_TRUE(std::find(keys.begin(), keys.end(), "float64") != keys.end());
+  EXPECT_TRUE(std::find(keys.begin(), keys.end(), "float64_1") != keys.end());
+  EXPECT_TRUE(std::find(keys.begin(), keys.end(), "string") != keys.end());
 
   // Query non-existent key
   ASSERT_FALSE(set.HasKey("XXX"));

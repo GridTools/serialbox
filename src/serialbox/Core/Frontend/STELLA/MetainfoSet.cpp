@@ -138,6 +138,13 @@ void MetainfoSet::setImpl(const boost::shared_ptr<MetaInfoMap>& metaInfoMap) {
   mapImpl_ = metaInfoMap;
 }
 
+std::vector<std::string> MetainfoSet::keys() const {
+  std::vector<std::string> keyStr;
+  for(auto it = mapImpl_->begin(), end = mapImpl_->end(); it != end; ++it)
+    keyStr.push_back(it->first);
+  return keyStr;
+}
+
 boost::shared_ptr<MetaInfoMap>& MetainfoSet::getImpl() { return mapImpl_; }
 const boost::shared_ptr<MetaInfoMap>& MetainfoSet::getImpl() const { return mapImpl_; }
 

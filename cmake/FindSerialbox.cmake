@@ -113,12 +113,7 @@ find_package_handle_standard_args(SERIALBOX
                                   SERIALBOX_LIBRARIES SERIALBOX_INCLUDE_DIRS SERIALBOX_VERSION_OK)
 
 if(SERIALBOX_FOUND)
-  message(STATUS "  Version: ${SERIALBOX_VERSION}") 
-  if(SERIALBOX_HAS_GLOG)
-    message(STATUS "  Logging: ON")
-  else()
-    message(STATUS "  Logging: OFF")
-  endif()
+  message(STATUS "Serialbox version: ${SERIALBOX_VERSION}") 
   mark_as_advanced(SERIALBOX_LIBRARIES SERIALBOX_INCLUDE_DIRS SERIALBOX_VERSION_OK)
 else()
   # If the package was required we abort the process

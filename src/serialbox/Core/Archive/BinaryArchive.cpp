@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Archive/ArchiveFactory.h"
+#include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/SHA256.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/Version.h"
@@ -152,12 +152,14 @@ FieldID BinaryArchive::write(StorageView& storageView, const std::string& field)
   std::ofstream fs;
 
   // Create binary data buffer
+  std::size_t sizeInBytes = storageView.sizeInBytes();
   try {
-    std::size_t sizeInBytes = storageView.sizeInBytes();
-    LOG(INFO) << "Resizing binary buffer to " << sizeInBytes << " bytes from " << binaryData_.size()
-              << " bytes";
+    if(binaryData_.size() < sizeInBytes) {
+      LOG(INFO) << "Resizing binary buffer to " << sizeInBytes << " bytes from "
+                << binaryData_.size() << " bytes";
 
-    binaryData_.resize(sizeInBytes);
+      binaryData_.resize(sizeInBytes);
+    }
   } catch(std::bad_alloc&) {
     throw Exception("out of memory");
   }
@@ -167,7 +169,7 @@ FieldID BinaryArchive::write(StorageView& storageView, const std::string& field)
 
   // Copy field into contiguous memory
   if(storageView.isMemCopyable()) {
-    std::memcpy(dataPtr, storageView.originPtr(), binaryData_.size());
+    std::memcpy(dataPtr, storageView.originPtr(), sizeInBytes);
   } else {
     for(auto it = storageView.begin(), end = storageView.end(); it != end;
         ++it, dataPtr += bytesPerElement)
@@ -175,7 +177,7 @@ FieldID BinaryArchive::write(StorageView& storageView, const std::string& field)
   }
 
   // Compute hash
-  std::string checksum(SHA256::hash(binaryData_.data(), binaryData_.size()));
+  std::string checksum(SHA256::hash(binaryData_.data(), sizeInBytes));
 
   // Check if field already exists
   auto it = fieldTable_.find(field);
@@ -221,7 +223,7 @@ FieldID BinaryArchive::write(StorageView& storageView, const std::string& field)
     throw Exception("cannot open file: '%s'", filename.string());
 
   // Write binaryData to disk
-  fs.write(binaryData_.data(), binaryData_.size());
+  fs.write(binaryData_.data(), sizeInBytes);
   fs.close();
 
   updateMetaData();
@@ -254,12 +256,13 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) throw
     throw Exception("invalid id '%i' of field '%s'", fieldID.id, fieldID.name);
 
   // Create binary data buffer
+  std::size_t sizeInBytes = storageView.sizeInBytes();
   try {
-    std::size_t sizeInBytes = storageView.sizeInBytes();
-    LOG(INFO) << "Resizing binary buffer to " << sizeInBytes << " bytes from " << binaryData_.size()
-              << " bytes";
-
-    binaryData_.resize(sizeInBytes);
+    if(binaryData_.size() < sizeInBytes) {
+      LOG(INFO) << "Resizing binary buffer to " << sizeInBytes << " bytes from "
+                << binaryData_.size() << " bytes";
+      binaryData_.resize(sizeInBytes);
+    }
   } catch(std::bad_alloc&) {
     throw Exception("out of memory");
   }
@@ -276,21 +279,21 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) throw
   fs.seekg(offset);
 
   // Read data into contiguous memory
-  fs.read(binaryData_.data(), binaryData_.size());
+  fs.read(binaryData_.data(), sizeInBytes);
   fs.close();
 
   Byte* dataPtr = binaryData_.data();
   const int bytesPerElement = storageView.bytesPerElement();
 
   // Compute hash and compare
-  std::string checksum(SHA256::hash(binaryData_.data(), binaryData_.size()));
+  std::string checksum(SHA256::hash(binaryData_.data(), sizeInBytes));
 
   if(checksum != fieldOffsetTable[fieldID.id].checksum)
     throw Exception("hashsum mismatch for field '%s' at id '%i'", fieldID.name, fieldID.id);
 
   // Copy contiguous memory into field
   if(storageView.isMemCopyable()) {
-    std::memcpy(storageView.originPtr(), dataPtr, binaryData_.size());
+    std::memcpy(storageView.originPtr(), dataPtr, sizeInBytes);
   } else {
     for(auto it = storageView.begin(), end = storageView.end(); it != end;
         ++it, dataPtr += bytesPerElement)
