@@ -37,14 +37,14 @@ function(serialbox_add_library name target libraries)
   endif()
 
   # Build static library
-  add_library(${target}Static STATIC $<TARGET_OBJECTS:${target}Objects> $<TARGET_OBJECTS:sha256>)
+  add_library(${target}Static STATIC $<TARGET_OBJECTS:${target}Objects>)
   set_target_properties(${target}Static PROPERTIES OUTPUT_NAME ${name})
   target_link_libraries(${target}Static ${libraries})
   install(TARGETS ${target}Static DESTINATION lib)
 
   # Build shared library
   if(SERIALBOX_BUILD_SHARED)
-    add_library(${target}Shared SHARED $<TARGET_OBJECTS:${target}Objects> $<TARGET_OBJECTS:sha256>)
+    add_library(${target}Shared SHARED $<TARGET_OBJECTS:${target}Objects>)
     set_target_properties(${target}Shared PROPERTIES OUTPUT_NAME ${name})
     target_link_libraries(${target}Shared ${libraries})
     install(TARGETS ${target}Shared DESTINATION lib)
@@ -53,6 +53,5 @@ function(serialbox_add_library name target libraries)
 endfunction(serialbox_add_library)
 
 ## Add subdirectories
-add_subdirectory(external)
 add_subdirectory(Core)
 
