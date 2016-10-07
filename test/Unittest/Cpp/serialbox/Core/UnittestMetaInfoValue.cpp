@@ -103,10 +103,17 @@ TYPED_TEST(MetaInfoValueTest, Constrcution) {
   TypeParam&& v1_rref = getValue1();
   MetaInfoValue value1_rref(v1_rref);
   EXPECT_EQ(value1_rref.as<TypeParam>(), pair.first);
+  
+  // Construct with Array
+  Array<TypeParam> array = {pair.first, pair.second};
+  MetaInfoValue valueArray(array);  
 
   // Explicit conversion
   EXPECT_EQ(value1.as<TypeParam>(), pair.first);
   EXPECT_EQ(value2.as<TypeParam>(), pair.second);
+  
+  EXPECT_EQ(valueArray.as<Array<TypeParam>>()[0], pair.first);
+  EXPECT_EQ(valueArray.as<Array<TypeParam>>()[1], pair.second);
 
   // Implicit conversion
   TypeParam v1 = value1;
@@ -195,10 +202,14 @@ TYPED_TEST(MetaInfoValueTest, Constrcution) {
     EXPECT_EQ(value2.as<double>(), 55.0);
     EXPECT_EQ(value2.as<std::string>(), "55");
   }
-
-  // Conversion from Invalid -> Exception
+  
   MetaInfoValue valueInvalid;
+  
+  // Conversion from Invalid -> Exception
   EXPECT_THROW(valueInvalid.as<TypeParam>(), Exception);
+  
+  // Conversion from non-array type to array -> Exception
+  EXPECT_THROW(valueInvalid.as<Array<TypeParam>>(), Exception);  
   
   // Swap
   value1.swap(value2);

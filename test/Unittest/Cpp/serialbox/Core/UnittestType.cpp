@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Type.h"
 #include "serialbox/Core/Exception.h"
+#include "serialbox/Core/Type.h"
 #include <gtest/gtest.h>
 #include <sstream>
 
@@ -25,8 +25,8 @@ TEST(TypeTest, sizeOf) {
   EXPECT_EQ(TypeUtil::sizeOf(TypeID::Int64), sizeof(std::int64_t));
   EXPECT_EQ(TypeUtil::sizeOf(TypeID::Float32), sizeof(float));
   EXPECT_EQ(TypeUtil::sizeOf(TypeID::Float64), sizeof(double));
-  
-  EXPECT_THROW(TypeUtil::sizeOf(TypeID::String), Exception);  
+
+  EXPECT_THROW(TypeUtil::sizeOf(TypeID::String), Exception);
   EXPECT_THROW(TypeUtil::sizeOf(TypeID::ArrayOfBoolean), Exception);
 }
 
@@ -37,7 +37,7 @@ TEST(TypeTest, toString) {
   EXPECT_STREQ(TypeUtil::toString(TypeID::Float32).c_str(), "float");
   EXPECT_STREQ(TypeUtil::toString(TypeID::Float64).c_str(), "double");
   EXPECT_STREQ(TypeUtil::toString(TypeID::Invalid).c_str(), "invalid-type");
-  
+
   EXPECT_STREQ(TypeUtil::toString(TypeID::ArrayOfBoolean).c_str(), "std::vector<bool>");
   EXPECT_STREQ(TypeUtil::toString(TypeID::ArrayOfInt32).c_str(), "std::vector<int>");
   EXPECT_STREQ(TypeUtil::toString(TypeID::ArrayOfInt64).c_str(), "std::vector<std::int64_t>");
@@ -83,6 +83,14 @@ TEST(TypeTest, ToTypeID) {
   static_assert(ToTypeID<std::int64_t>::value == TypeID::Int64, "Int64");
   static_assert(ToTypeID<float>::value == TypeID::Float32, "Float32");
   static_assert(ToTypeID<double>::value == TypeID::Float64, "Float64");
+  static_assert(ToTypeID<std::string>::value == TypeID::String, "String");
+
+  static_assert(ToTypeID<Array<bool>>::value == TypeID::ArrayOfBoolean, "ArrayOfBoolean");
+  static_assert(ToTypeID<Array<std::int32_t>>::value == TypeID::ArrayOfInt32, "ArrayOfInt32");
+  static_assert(ToTypeID<Array<std::int64_t>>::value == TypeID::ArrayOfInt64, "ArrayOfInt64");
+  static_assert(ToTypeID<Array<float>>::value == TypeID::ArrayOfFloat32, "ArrayOfFloat32");
+  static_assert(ToTypeID<Array<double>>::value == TypeID::ArrayOfFloat64, "ArrayOfFloat64");
+  static_assert(ToTypeID<Array<std::string>>::value == TypeID::ArrayOfString, "ArrayOfString");
 }
 
 TEST(TypeTest, ToType) {
@@ -91,6 +99,14 @@ TEST(TypeTest, ToType) {
   testing::StaticAssertTypeEq<ToType<TypeID::Int64>::type, std::int64_t>();
   testing::StaticAssertTypeEq<ToType<TypeID::Float32>::type, float>();
   testing::StaticAssertTypeEq<ToType<TypeID::Float64>::type, double>();
+  testing::StaticAssertTypeEq<ToType<TypeID::String>::type, std::string>();
+
+  testing::StaticAssertTypeEq<ToType<TypeID::ArrayOfBoolean>::type, Array<bool>>();
+  testing::StaticAssertTypeEq<ToType<TypeID::ArrayOfInt32>::type, Array<std::int32_t>>();
+  testing::StaticAssertTypeEq<ToType<TypeID::ArrayOfInt64>::type, Array<std::int64_t>>();
+  testing::StaticAssertTypeEq<ToType<TypeID::ArrayOfFloat32>::type, Array<float>>();
+  testing::StaticAssertTypeEq<ToType<TypeID::ArrayOfFloat64>::type, Array<double>>();
+  testing::StaticAssertTypeEq<ToType<TypeID::ArrayOfString>::type, Array<std::string>>();
 }
 
 TEST(TypeTest, MatchCVQualifier) {

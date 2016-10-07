@@ -16,6 +16,8 @@
 #include "serialbox/Core/Unreachable.h"
 #include <sstream>
 
+#include <iostream>
+
 namespace serialbox {
 
 namespace internal {
@@ -183,13 +185,13 @@ std::string makePrimitiveOf<std::string>(const boost::any& any, TypeID type) {
 }
 
 /// Convert any to array of T
-template <class T>
-Array<T> makeArrayOf(const boost::any& any, TypeID type) {
+template <class T, class ArrayType = Array<T>>
+ArrayType makeArrayOf(const boost::any& any, TypeID type) {
   if(!TypeUtil::isArray(type))
     throw Exception("cannot convert non-array [type = %s] to array [T = %s]",
-                    TypeUtil::toString(type), TypeUtil::toString(ToTypeID<T>::value));
+                    TypeUtil::toString(type), TypeUtil::toString(ToTypeID<ArrayType>::value));
 
-  Array<T> arrayT;
+  ArrayType arrayT;
 
   switch(TypeUtil::getPrimitive(type)) {
   case TypeID::Boolean: {

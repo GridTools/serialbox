@@ -113,10 +113,6 @@ public:
   bool insert(KeyType&& key, ValueType&& value) noexcept {
     return (map_.insert({key, MetaInfoValue(std::forward<ValueType>(value))}).second);
   }
-  template <class KeyType>
-  bool insert(KeyType&& key, const char* value) noexcept {
-    return insert(std::forward<KeyType>(key), std::string(value));
-  }
 
   /// \brief Convert value of element with key ´key´ to type ´T´
   ///

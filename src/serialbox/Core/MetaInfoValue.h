@@ -47,15 +47,14 @@ public:
   /// \tparam ValueType  Type of the captured value (needs to be supported)
   /// \param  value      Value to capture
   template <
-      class ValueType, class DecayedValueType = typename std::decay<ValueType>::type,
-      bool IsArray = isArray<ValueType>::value,
+      class ValueType, 
+      class DecayedValueType = typename std::decay<ValueType>::type,
       class PrimitiveType = typename MakePrimitive<DecayedValueType>::type,
       class = typename std::enable_if<!std::is_same<DecayedValueType, MetaInfoValue>::value>::type>
   explicit MetaInfoValue(ValueType&& value) {
     static_assert(isSupported<PrimitiveType>::value, "ValueType is not supported");
 
-    type_ = IsArray ? TypeID((int)ToTypeID<PrimitiveType>::value | (int)TypeID::Array)
-                    : ToTypeID<PrimitiveType>::value;
+    type_ = ToTypeID<DecayedValueType>::value;
     any_ = boost::any(DecayedValueType(value));
   }
   explicit MetaInfoValue(const char* value) : MetaInfoValue(std::string(value)) {}

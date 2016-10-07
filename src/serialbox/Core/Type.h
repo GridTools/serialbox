@@ -16,6 +16,7 @@
 #ifndef SERIALBOX_CORE_TYPE_H
 #define SERIALBOX_CORE_TYPE_H
 
+#include "serialbox/Core/Array.h"
 #include <boost/mpl/set.hpp>
 #include <cstdint>
 #include <iosfwd>
@@ -95,7 +96,7 @@ struct TypeUtil {
   static std::string toString(TypeID id);
 
   /// \brief Get size of the type
-  /// 
+  ///
   /// \throw Exception  Type can not be handeled
   static int sizeOf(TypeID id);
 
@@ -119,7 +120,8 @@ struct TypeUtil {
 /// \brief Convert C++ type \c T to \ref serialbox::TypeID "TypeID"
 template <class T>
 struct ToTypeID {
-  static_assert(isSupported<T>::value, "type is not supported (cannot be mapped to TypeID)");
+  static_assert(isSupported<typename MakePrimitive<T>::type>::value,
+                "type is not supported (cannot be mapped to TypeID)");
 };
 
 template <>
@@ -150,6 +152,36 @@ struct ToTypeID<double> {
 template <>
 struct ToTypeID<std::string> {
   static constexpr TypeID value = TypeID::String;
+};
+
+template <>
+struct ToTypeID<Array<bool>> {
+  static constexpr TypeID value = TypeID::ArrayOfBoolean;
+};
+
+template <>
+struct ToTypeID<Array<std::int32_t>> {
+  static constexpr TypeID value = TypeID::ArrayOfInt32;
+};
+
+template <>
+struct ToTypeID<Array<std::int64_t>> {
+  static constexpr TypeID value = TypeID::ArrayOfInt64;
+};
+
+template <>
+struct ToTypeID<Array<float>> {
+  static constexpr TypeID value = TypeID::ArrayOfFloat32;
+};
+
+template <>
+struct ToTypeID<Array<double>> {
+  static constexpr TypeID value = TypeID::ArrayOfFloat64;
+};
+
+template <>
+struct ToTypeID<Array<std::string>> {
+  static constexpr TypeID value = TypeID::ArrayOfString;
 };
 
 /// \brief Convert \ref serialbox::Type "TypeID" to C++ type
@@ -184,6 +216,36 @@ struct ToType<TypeID::Float64> {
 template <>
 struct ToType<TypeID::String> {
   using type = std::string;
+};
+
+template <>
+struct ToType<TypeID::ArrayOfBoolean> {
+  using type = Array<bool>;
+};
+
+template <>
+struct ToType<TypeID::ArrayOfInt32> {
+  using type = Array<std::int32_t>;
+};
+
+template <>
+struct ToType<TypeID::ArrayOfInt64> {
+  using type = Array<std::int64_t>;
+};
+
+template <>
+struct ToType<TypeID::ArrayOfFloat32> {
+  using type = Array<float>;
+};
+
+template <>
+struct ToType<TypeID::ArrayOfFloat64> {
+  using type = Array<double>;
+};
+
+template <>
+struct ToType<TypeID::ArrayOfString> {
+  using type = Array<std::string>;
 };
 
 //===------------------------------------------------------------------------------------------===//
