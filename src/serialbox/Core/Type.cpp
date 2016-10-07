@@ -14,30 +14,10 @@
 
 #include "serialbox/Core/Type.h"
 #include "serialbox/Core/Unreachable.h"
+#include "serialbox/Core/Exception.h"
 #include <ostream>
 
 namespace serialbox {
-
-std::string TypeUtil::toString(TypeID id) {
-  switch(id) {
-  case TypeID::Boolean:
-    return std::string("bool");
-  case TypeID::Int32:
-    return std::string("int");
-  case TypeID::Int64:
-    return std::string("int64");
-  case TypeID::Float32:
-    return std::string("float");
-  case TypeID::Float64:
-    return std::string("double");
-  case TypeID::String:
-    return std::string("std::string");
-  case TypeID::Invalid:
-    return std::string("<invalid>");
-  default:
-    serialbox_unreachable("invalid TypeID for TypeUtil::toString");
-  }
-}
 
 std::ostream& operator<<(std::ostream& stream, const OpenModeKind& mode) {
   switch(mode) {
@@ -52,11 +32,45 @@ std::ostream& operator<<(std::ostream& stream, const OpenModeKind& mode) {
   }
 }
 
-std::ostream& operator<<(std::ostream& stream, const TypeID& t) {
-  return (stream << TypeUtil::toString(t));
+std::string TypeUtil::toString(TypeID id) {
+  std::string str;
+
+  if(TypeUtil::isArray(id))
+    str += "std::vector<";
+
+  switch(TypeUtil::getPrimitive(id)) {
+  case TypeID::Boolean:
+    str += "bool";
+    break;
+  case TypeID::Int32:
+    str += "int";
+    break;
+  case TypeID::Int64:
+    str += "std::int64_t";
+    break;
+  case TypeID::Float32:
+    str += "float";
+    break;
+  case TypeID::Float64:
+    str += "double";
+    break;
+  case TypeID::String:
+    str += "std::string";
+    break;
+  case TypeID::Invalid:
+    str += "invalid-type";
+    break;
+  default:
+    serialbox_unreachable("invalid TypeID for TypeUtil::toString");
+  }
+
+  if(TypeUtil::isArray(id))
+    str += ">";
+
+  return str;
 }
 
-int TypeUtil::sizeOf(TypeID id) noexcept {
+int TypeUtil::sizeOf(TypeID id) {
   switch(id) {
   case TypeID::Boolean:
     return 1;
@@ -67,8 +81,29 @@ int TypeUtil::sizeOf(TypeID id) noexcept {
   case TypeID::Float64:
     return 8;
   default:
-    serialbox_unreachable("invalid TypeID for TypeUtil::sizeOf");
+    throw Exception("invalid type '%s' for TypeUtil::sizeOf", TypeUtil::toString(id));
   }
+  serialbox_unreachable("unreachable");
+}
+
+bool TypeUtil::isPrimitive(TypeID id) noexcept { return (!TypeUtil::isArray(id)); }
+
+bool TypeUtil::isArray(TypeID id) noexcept { return ((int)id & (int)TypeID::Array); }
+
+TypeID TypeUtil::getPrimitive(TypeID id) noexcept {
+  if(TypeUtil::isArray(id))
+    return TypeID((int)id & ~((int)TypeID::Array));
+  return id;
+}
+
+TypeID TypeUtil::getArray(TypeID id) noexcept {
+  if(TypeUtil::isArray(id))
+    return id;
+  return TypeID((int)id | ((int)TypeID::Array));
+}
+
+std::ostream& operator<<(std::ostream& stream, const TypeID& t) {
+  return (stream << TypeUtil::toString(t));
 }
 
 } // namespace serialbox

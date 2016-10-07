@@ -113,7 +113,7 @@ TYPED_TEST(MetaInfoValueTest, Constrcution) {
   TypeParam v2 = value2;
   EXPECT_TRUE(v1 == pair.first);
   EXPECT_TRUE(v2 == pair.second);
-
+  
   // Conversion to different type
 
   //
@@ -196,6 +196,10 @@ TYPED_TEST(MetaInfoValueTest, Constrcution) {
     EXPECT_EQ(value2.as<std::string>(), "55");
   }
 
+  // Conversion from Invalid -> Exception
+  MetaInfoValue valueInvalid;
+  EXPECT_THROW(valueInvalid.as<TypeParam>(), Exception);
+  
   // Swap
   value1.swap(value2);
   EXPECT_EQ(value1.as<TypeParam>(), pair.second);

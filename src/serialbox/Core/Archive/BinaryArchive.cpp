@@ -285,12 +285,6 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) throw
   Byte* dataPtr = binaryData_.data();
   const int bytesPerElement = storageView.bytesPerElement();
 
-  // Compute hash and compare
-  std::string checksum(SHA256::hash(binaryData_.data(), sizeInBytes));
-
-  if(checksum != fieldOffsetTable[fieldID.id].checksum)
-    throw Exception("hashsum mismatch for field '%s' at id '%i'", fieldID.name, fieldID.id);
-
   // Copy contiguous memory into field
   if(storageView.isMemCopyable()) {
     std::memcpy(storageView.originPtr(), dataPtr, sizeInBytes);

@@ -10,6 +10,7 @@
 cmake_minimum_required(VERSION 3.1)
 
 set(CPP_UNITTEST_SOURCES
+  UnittestArray.cpp
   UnittestException.cpp
   UnittestFieldMap.cpp
   UnittestFieldMetaInfo.cpp

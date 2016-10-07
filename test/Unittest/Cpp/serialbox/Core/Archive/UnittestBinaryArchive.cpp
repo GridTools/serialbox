@@ -324,21 +324,6 @@ TYPED_TEST(BinaryArchiveTest, MetaData) {
   };
 
   // -----------------------------------------------------------------------------------------------
-  // Invalid hash
-  // -----------------------------------------------------------------------------------------------
-  {
-    json::json corrupted = j;
-    corrupted["fields_table"]["u"][0][1] = "LOOKS_LIKE_THIS_HASH_IS_CORRUPTED";
-    toFile(corrupted);
-
-    BinaryArchive archiveRead(OpenModeKind::Read, this->directory->path().string(), "field");
-
-    // The data of u_0_output should NOT be modified
-    auto sv = u_0_output.toStorageView();
-    ASSERT_THROW(archiveRead.read(sv, FieldID{"u", 0}), Exception);
-  }
-
-  // -----------------------------------------------------------------------------------------------
   // Invlaid serialbox version
   // -----------------------------------------------------------------------------------------------
   {

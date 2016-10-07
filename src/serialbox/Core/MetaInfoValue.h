@@ -15,9 +15,11 @@
 #ifndef SERIALBOX_CORE_METAINFOVALUE_H
 #define SERIALBOX_CORE_METAINFOVALUE_H
 
+#include "serialbox/Core/Array.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Type.h"
 #include <boost/any.hpp>
+#include <boost/mpl/if.hpp>
 #include <type_traits>
 
 namespace serialbox {
@@ -46,11 +48,14 @@ public:
   /// \param  value      Value to capture
   template <
       class ValueType, class DecayedValueType = typename std::decay<ValueType>::type,
+      bool IsArray = isArray<ValueType>::value,
+      class PrimitiveType = typename MakePrimitive<DecayedValueType>::type,
       class = typename std::enable_if<!std::is_same<DecayedValueType, MetaInfoValue>::value>::type>
   explicit MetaInfoValue(ValueType&& value) {
-    static_assert(isSupported<DecayedValueType>::value, "ValueType is not supported");
+    static_assert(isSupported<PrimitiveType>::value, "ValueType is not supported");
 
-    type_ = ToTypeID<DecayedValueType>::value;
+    type_ = IsArray ? TypeID((int)ToTypeID<PrimitiveType>::value | (int)TypeID::Array)
+                    : ToTypeID<PrimitiveType>::value;
     any_ = boost::any(DecayedValueType(value));
   }
   explicit MetaInfoValue(const char* value) : MetaInfoValue(std::string(value)) {}
@@ -62,15 +67,16 @@ public:
   ///
   /// \return Copy of the value of the element as type ´T´
   ///
-  /// \throw Exception  Conversion would result in truncation of the value (only applies to int and
-  ///                   std::int64_t conversion of floating point values)
+  /// \throw Exception  Conversion error: Conversion would result in truncation of the value or
+  ///                   conversions from primitive to array type
   template <class T>
   T as() const {
-    static_assert(isSupported<T>::value, "ValueType is not supported");
+    static_assert(isSupported<typename MakePrimitive<T>::type>::value,
+                  "ValueType is not supported");
     return T(); // Unreachable
   }
 
-  /// \brief Implicitly convert value to type T
+  /// \brief Implicitly convert value to type ´T´
   ///
   /// \see MetaInfoValue::as
   template <class T>
@@ -128,6 +134,24 @@ double MetaInfoValue::as() const;
 
 template <>
 std::string MetaInfoValue::as() const;
+
+template <>
+Array<bool> MetaInfoValue::as() const;
+
+template <>
+Array<int> MetaInfoValue::as() const;
+
+template <>
+Array<std::int64_t> MetaInfoValue::as() const;
+
+template <>
+Array<float> MetaInfoValue::as() const;
+
+template <>
+Array<double> MetaInfoValue::as() const;
+
+template <>
+Array<std::string> MetaInfoValue::as() const;
 
 } // namespace serialbox
 

@@ -32,18 +32,37 @@ static_assert(sizeof(Byte) == 1, "invalid size of Byte");
 /// \brief Policy for opening files in the Serializer and Archive
 enum OpenModeKind : std::uint8_t { Read = 0, Write, Append };
 
+/// \brief Convert OpenModeKind to stream
+std::ostream& operator<<(std::ostream& stream, const OpenModeKind& mode);
+
 //===------------------------------------------------------------------------------------------===//
 //     Type-id
 //===------------------------------------------------------------------------------------------===//
-
-/// \brief Convert TypeID to stream
-std::ostream& operator<<(std::ostream& stream, const OpenModeKind& mode);
 
 /// \enum TypeID
 /// \brief Type-id of types recognized by serialbox
 ///
 /// \see isSupported
-enum class TypeID : std::uint8_t { Invalid = 0, Boolean, Int32, Int64, Float32, Float64, String };
+enum class TypeID : int {
+  Invalid = 0,
+
+  // Primitive Types
+  Boolean,
+  Int32,
+  Int64,
+  Float32,
+  Float64,
+  String,
+
+  // Array Types
+  Array = 0x10,
+  ArrayOfBoolean = Array | Boolean,
+  ArrayOfInt32 = Array | Int32,
+  ArrayOfInt64 = Array | Int64,
+  ArrayOfFloat32 = Array | Float32,
+  ArrayOfFloat64 = Array | Float64,
+  ArrayOfString = Array | String
+};
 
 /// \brief Check if the Type is recognized by serialbox i.e maps to a type-id in \ref TypeID
 ///
@@ -76,7 +95,21 @@ struct TypeUtil {
   static std::string toString(TypeID id);
 
   /// \brief Get size of the type
-  static int sizeOf(TypeID id) noexcept;
+  /// 
+  /// \throw Exception  Type can not be handeled
+  static int sizeOf(TypeID id);
+
+  /// \brief Check if type is primitive
+  static bool isPrimitive(TypeID id) noexcept;
+
+  /// \brief Return the underlying primitve type
+  static TypeID getPrimitive(TypeID id) noexcept;
+
+  /// \brief Check if type is an array of types
+  static bool isArray(TypeID id) noexcept;
+
+  /// \brief Return the array type
+  static TypeID getArray(TypeID id) noexcept;
 };
 
 //===------------------------------------------------------------------------------------------===//
