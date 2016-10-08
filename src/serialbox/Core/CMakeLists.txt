@@ -33,7 +33,7 @@ set(SOURCES
   Frontend/STELLA/DataFieldInfo.cpp
 )
 
-set(EXTERNAL_LIBRARIES ${BOOST_LIBRARIES} ${GLOG_LIBRARIES})
+set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${GLOG_LIBRARIES})
 
 serialbox_add_library(SerialboxCore 
                       SerialboxCoreLibrary 

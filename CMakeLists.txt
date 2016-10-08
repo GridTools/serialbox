@@ -225,6 +225,7 @@ if(SERIALBOX_LOGGING)
     set(GLOG_LIBRARIES ${GLOG_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
     
   else()
+    #TODO: Update the FindGlog to handle shared libaries
     find_package(GLog REQUIRED)
   endif()
   include_directories(SYSTEM ${GLOG_INCLUDE_DIRS})
