@@ -51,8 +51,9 @@ public:
   /// \param prefix       Prefix of all filenames
   /// \param archiveName  String passed to the ArchiveFactory to construct the Archive
   ///
-  /// This will read MetaData.json to initialize the savepoint vector, the fieldMap and
-  /// globalMetaInfo. Further, it will construct the Archive by reading the ArchiveMetaData.json.
+  /// This will read MetaData-prefix.json to initialize the savepoint vector, the fieldMap and
+  /// globalMetaInfo. Further, it will construct the Archive by reading the
+  /// ArchiveMetaData-prefix.json.
   ///
   /// \throw Exception  Invalid directory or corrupted meta-data files
   SerializerImpl(OpenModeKind mode, const std::string& directory, const std::string& prefix,
@@ -281,9 +282,10 @@ public:
   //     JSON Serialization
   //===----------------------------------------------------------------------------------------===//
 
-  /// \brief Convert meta-data to JSON and serialize to MetaData.json and ArchiveMetaData.json
+  /// \brief Convert meta-data to JSON and serialize to MetaData-prefix.json and
+  /// ArchiveMetaData-prefix.json
   ///
-  /// This will ensure MetaData.json is up-to-date with the in-memory versions of the
+  /// This will ensure MetaData-prefix.json is up-to-date with the in-memory versions of the
   /// savepointVector, fieldMap and globalMetaInfo as well as the meta-data of the Archive.
   void updateMetaData();
 
@@ -296,30 +298,31 @@ public:
 protected:
   /// \brief Construct meta-data from JSON
   ///
-  /// This will read MetaData.json to initialize the savepoint vector, the fieldMap and
+  /// This will read MetaData-prefix.json to initialize the savepoint vector, the fieldMap and
   /// globalMetaInfo.
   void constructMetaDataFromJson();
 
   /// \brief Construct Archive from JSON
   ///
-  /// This will read ArchiveMetaData.json and initialize the archive.
+  /// This will read ArchiveMetaData-prefix.json and initialize the archive.
   ///
   /// \param archiveName  String passed to the ArchiveFactory to construct the Archive
   void constructArchive(const std::string& archiveName);
 
   /// \brief Check if ´storageView´ is consistent with the field ´name´
   ///
-  /// If an inconsistency is detected, an Exception is thrown.
+  /// \throw Exception    Inconsistency is detected
   void checkStorageView(const std::string& name, const StorageView& storageView) const;
 
   /// \brief Check if the current directory contains meta-information of an older version of
   /// serialbox and upgrade it if necessary
   ///
-  /// The function will check if there is a ´prefix.json´ file which is newer than ´MetaData.json´
-  /// and, if ture, convert ´prefix.json´ to ´MetaData.json´ and ´ArchiveMetaData.json´.
+  /// The function will check if there is a ´prefix.json´ file which is newer than
+  /// ´MetaData-prefix.json´ and, if ture, convert ´prefix.json´ to ´MetaData-prefix.json´ and
+  /// ´ArchiveMetaData.json´.
   ///
-  /// The process will use the infrastructure of the current serializer but will eventually call
-  /// SerialzerImpl::clear().
+  /// Older versions of serialbox can only be \b opened in ´OpenModeKind::Read´ and will use the
+  /// BinaryArchive.
   ///
   /// \return True iff the upgrade was successful
   ///

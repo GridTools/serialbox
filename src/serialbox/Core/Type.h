@@ -97,7 +97,7 @@ struct TypeUtil {
 
   /// \brief Get size of the type
   ///
-  /// \throw Exception  Type can not be handeled
+  /// \throw Exception  Type can not be handled
   static int sizeOf(TypeID id);
 
   /// \brief Check if type is primitive

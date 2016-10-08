@@ -26,14 +26,22 @@ struct InsertHelper {
   const std::string& key;
   const json::json& node;
 
-  // Read value from JSON node (and check if the types match) and insert it into the MetaInfoMap
-  // (this is just a fancy way to avoid ugly macros)
+  // Read value from JSON node (and check if the types match) and insert it into the MetaInfoMap as
+  // type ´T´
   template <class T, class CheckFunction>
-  void insert(CheckFunction&& checkFunction, const char* valueStr) {
+  void insertAs(CheckFunction&& checkFunction, const char* valueStr) {
     if(!(node["value"].*checkFunction)())
       throw Exception("sub-node '%s' not regconized as %s", key, valueStr);
     T value = node["value"];
     map.insert(key, value);
+  }
+
+  // Read value from JSON node as Array of type ´T´ and insert as array of type ´T´ into the
+  // MetaInfoMap
+  template <class T>
+  void insertAsArrayOf() {
+    Array<T> array = node["value"];
+    map.insert(key, array);
   }
 };
 
@@ -56,40 +64,77 @@ const MetaInfoMap::mapped_type& MetaInfoMap::at(const MetaInfoMap::key_type& key
 }
 
 json::json MetaInfoMap::toJSON() const {
-  json::json j;
+  json::json jsonNode;
 
   if(map_.empty())
-    return j;
+    return jsonNode;
 
   for(auto it = map_.cbegin(), end = map_.cend(); it != end; ++it) {
     const MetaInfoValue& value = it->second;
     const std::string& key = it->first;
 
-    j[key]["type_id"] = static_cast<int>(value.type());
-    switch(value.type()) {
+    jsonNode[key]["type_id"] = static_cast<int>(value.type());
+
+    json::json valueNode;
+    const bool isArray = TypeUtil::isArray(value.type());
+
+    switch(TypeUtil::getPrimitive(value.type())) {
     case TypeID::Boolean:
-      j[key]["value"] = value.as<bool>();
+      if(isArray) {
+        for(const bool& v : value.as<Array<bool>>())
+          valueNode.push_back(v);
+      } else {
+        valueNode = value.as<bool>();
+      }
       break;
     case TypeID::Int32:
-      j[key]["value"] = value.as<int>();
+      if(isArray) {
+        for(const int& v : value.as<Array<int>>())
+          valueNode.push_back(v);
+      } else {
+        valueNode = value.as<int>();
+      }
       break;
     case TypeID::Int64:
-      j[key]["value"] = value.as<std::int64_t>();
+      if(isArray) {
+        for(const std::int64_t& v : value.as<Array<std::int64_t>>())
+          valueNode.push_back(v);
+      } else {
+        valueNode = value.as<std::int64_t>();
+      }
       break;
     case TypeID::Float32:
-      j[key]["value"] = value.as<float>();
+      if(isArray) {
+        for(const float& v : value.as<Array<float>>())
+          valueNode.push_back(v);
+      } else {
+        valueNode = value.as<float>();
+      }
       break;
     case TypeID::Float64:
-      j[key]["value"] = value.as<double>();
+      if(isArray) {
+        for(const double& v : value.as<Array<double>>())
+          valueNode.push_back(v);
+      } else {
+        valueNode = value.as<double>();
+      }
       break;
     case TypeID::String:
-      j[key]["value"] = value.as<std::string>();
+      if(isArray) {
+        for(const std::string& v : value.as<Array<std::string>>())
+          valueNode.push_back(v);
+      } else {
+        valueNode = value.as<std::string>();
+      }
       break;
     default:
       serialbox_unreachable("Invalid TypeID");
     }
+
+    jsonNode[key]["value"] = valueNode;
   }
-  return j;
+
+  return jsonNode;
 }
 
 void MetaInfoMap::fromJSON(const json::json& jsonNode) {
@@ -108,27 +153,54 @@ void MetaInfoMap::fromJSON(const json::json& jsonNode) {
 
     const json::json& node = it.value();
     const std::string& key = it.key();
-    int typeAsInt = node["type_id"];
+    const int typeAsInt = node["type_id"];
+    const TypeID type = static_cast<TypeID>(typeAsInt);
+    const bool isArray = TypeUtil::isArray(type);
 
     InsertHelper insertHelper{*this, key, node};
-    switch(static_cast<TypeID>(typeAsInt)) {
+
+    switch(TypeUtil::getPrimitive(type)) {
     case TypeID::Boolean:
-      insertHelper.insert<bool>(&json::json::is_boolean, "boolean");
+      if(isArray) {
+        insertHelper.insertAsArrayOf<bool>();
+      } else {
+        insertHelper.insertAs<bool>(&json::json::is_boolean, "boolean");
+      }
       break;
     case TypeID::Int32:
-      insertHelper.insert<int>(&json::json::is_number_integer, "integer");
+      if(isArray) {
+        insertHelper.insertAsArrayOf<int>();
+      } else {
+        insertHelper.insertAs<int>(&json::json::is_number_integer, "integer");
+      }
       break;
     case TypeID::Int64:
-      insertHelper.insert<std::int64_t>(&json::json::is_number_integer, "integer");
+      if(isArray) {
+        insertHelper.insertAsArrayOf<std::int64_t>();
+      } else {
+        insertHelper.insertAs<std::int64_t>(&json::json::is_number_integer, "integer");
+      }
       break;
     case TypeID::Float32:
-      insertHelper.insert<float>(&json::json::is_number, "floating pointer number");
+      if(isArray) {
+        insertHelper.insertAsArrayOf<float>();
+      } else {
+        insertHelper.insertAs<float>(&json::json::is_number, "floating pointer number");
+      }
       break;
     case TypeID::Float64:
-      insertHelper.insert<double>(&json::json::is_number, "floating pointer number");
+      if(isArray) {
+        insertHelper.insertAsArrayOf<double>();
+      } else {
+        insertHelper.insertAs<double>(&json::json::is_number, "floating pointer number");
+      }
       break;
     case TypeID::String:
-      insertHelper.insert<std::string>(&json::json::is_string, "string");
+      if(isArray) {
+        insertHelper.insertAsArrayOf<std::string>();
+      } else {
+        insertHelper.insertAs<std::string>(&json::json::is_string, "string");
+      }
       break;
     default:
       serialbox_unreachable("Invalid TypeID");

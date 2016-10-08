@@ -22,12 +22,14 @@
 using namespace serialbox;
 using namespace unittest;
 
+//===------------------------------------------------------------------------------------------===//
+//     Utility tests
+//===------------------------------------------------------------------------------------------===//
+
 namespace {
 
-template <class T>
-class BinaryArchiveTest : public testing::Test {
+class BinaryArchiveUtilityTest : public testing::Test {
 public:
-  using value_type = T;
   std::shared_ptr<Directory> directory;
 
 protected:
@@ -40,13 +42,10 @@ protected:
   virtual void TearDown() override { directory.reset(); }
 };
 
-using TestTypes = testing::Types<double, float, int, std::int64_t>;
 
 } // anonymous namespace
 
-TYPED_TEST_CASE(BinaryArchiveTest, TestTypes);
-
-TYPED_TEST(BinaryArchiveTest, Construction) {
+TEST_F(BinaryArchiveUtilityTest, Construction) {
 
   // -----------------------------------------------------------------------------------------------
   // Writing
@@ -106,7 +105,123 @@ TYPED_TEST(BinaryArchiveTest, Construction) {
   }
 }
 
-TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
+TEST_F(BinaryArchiveUtilityTest, MetaData) {
+  using Storage = Storage<double>;
+
+  Storage u_0_input(Storage::RowMajor, {5, 6, 7}, {{2, 2}, {4, 2}, {4, 5}}, Storage::random);
+
+  BinaryArchive archiveWrite(OpenModeKind::Write, this->directory->path().string(), "field");
+
+  auto sv_u_0_input = u_0_input.toStorageView();
+  archiveWrite.write(sv_u_0_input, "u");
+  archiveWrite.updateMetaData();
+
+  // Read meta data file to get in memory copy
+  std::ifstream ifs(archiveWrite.metaDataFile());
+  json::json j;
+  ifs >> j;
+  ifs.close();
+
+  // Write meta file to disk (to corrupt it)
+  std::string filename = archiveWrite.metaDataFile();
+  auto toFile = [this, &filename](const json::json& jsonNode) -> void {
+    std::ofstream ofs(filename, std::ios::out | std::ios::trunc);
+    ofs << jsonNode.dump(4);
+  };
+
+  // -----------------------------------------------------------------------------------------------
+  // Invlaid serialbox version
+  // -----------------------------------------------------------------------------------------------
+  {
+    json::json corrupted = j;
+    corrupted["serialbox_version"] = 100 * (SERIALBOX_VERSION_MAJOR - 1) +
+                                     10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
+    toFile(corrupted);
+
+    ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
+                 Exception);
+  }
+
+  // -----------------------------------------------------------------------------------------------
+  // Not a binary archive
+  // -----------------------------------------------------------------------------------------------
+  {
+    json::json corrupted = j;
+    corrupted["archive_name"] = "not-BinaryArchive";
+    toFile(corrupted);
+
+    ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
+                 Exception);
+  }
+
+  // -----------------------------------------------------------------------------------------------
+  // Invalid binary archive version
+  // -----------------------------------------------------------------------------------------------
+  {
+    json::json corrupted = j;
+    corrupted["archive_version"] = -1;
+    toFile(corrupted);
+
+    ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
+                 Exception);
+  }
+
+  // -----------------------------------------------------------------------------------------------
+  // MetaData not found
+  // -----------------------------------------------------------------------------------------------
+  {
+    boost::filesystem::remove(filename);
+    ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
+                 Exception);
+  }
+}
+
+TEST_F(BinaryArchiveUtilityTest, toString) {
+  using Storage = Storage<double>;  
+  std::stringstream ss;
+  
+  Storage storage(Storage::ColMajor, {5, 1, 1});  
+  
+  BinaryArchive archive(OpenModeKind::Write, this->directory->path().string(), "field");
+  StorageView sv = storage.toStorageView();
+  archive.write(sv, "storage");
+
+  ss << archive;
+  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "BinaryArchive"));
+  EXPECT_NE(ss.str().find("directory"), std::string::npos);
+  EXPECT_NE(ss.str().find("mode"), std::string::npos);
+  EXPECT_NE(ss.str().find("prefix"), std::string::npos);
+  EXPECT_NE(ss.str().find("fieldsTable"), std::string::npos);
+}
+
+//===------------------------------------------------------------------------------------------===//
+//     Read/Write tests
+//===------------------------------------------------------------------------------------------===//
+
+namespace {
+
+template<class T>
+class BinaryArchiveReadWriteTest : public testing::Test {
+public:
+  std::shared_ptr<Directory> directory;
+
+protected:
+  virtual void SetUp() override {
+    directory = std::make_shared<Directory>(UnittestEnvironment::getInstance().directory() /
+                                            UnittestEnvironment::getInstance().testCaseName() /
+                                            UnittestEnvironment::getInstance().testName());
+  }
+
+  virtual void TearDown() override { directory.reset(); }
+};
+
+using TestTypes = testing::Types<double, float, int, std::int64_t>;
+
+} // anonymous namespace
+
+TYPED_TEST_CASE(BinaryArchiveReadWriteTest, TestTypes);
+
+TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
 
   // -----------------------------------------------------------------------------------------------
   // Preparation
@@ -296,88 +411,4 @@ TYPED_TEST(BinaryArchiveTest, WriteAndRead) {
     EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_storage_2d.dat")));
     EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_storage_7d.dat")));
   }
-}
-
-TYPED_TEST(BinaryArchiveTest, MetaData) {
-  using Storage = Storage<TypeParam>;
-
-  Storage u_0_input(Storage::RowMajor, {5, 6, 7}, {{2, 2}, {4, 2}, {4, 5}}, Storage::random);
-  Storage u_0_output(Storage::RowMajor, {5, 6, 7});
-
-  BinaryArchive archiveWrite(OpenModeKind::Write, this->directory->path().string(), "field");
-
-  auto sv_u_0_input = u_0_input.toStorageView();
-  archiveWrite.write(sv_u_0_input, "u");
-  archiveWrite.updateMetaData();
-
-  // Read meta data file to get in memory copy
-  std::ifstream ifs(archiveWrite.metaDataFile());
-  json::json j;
-  ifs >> j;
-  ifs.close();
-
-  // Write meta file to disk (to corrupt it)
-  std::string filename = archiveWrite.metaDataFile();
-  auto toFile = [this, &filename](const json::json& jsonNode) -> void {
-    std::ofstream ofs(filename, std::ios::out | std::ios::trunc);
-    ofs << jsonNode.dump(4);
-  };
-
-  // -----------------------------------------------------------------------------------------------
-  // Invlaid serialbox version
-  // -----------------------------------------------------------------------------------------------
-  {
-    json::json corrupted = j;
-    corrupted["serialbox_version"] = 100 * (SERIALBOX_VERSION_MAJOR - 1) +
-                                     10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
-    toFile(corrupted);
-
-    ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
-                 Exception);
-  }
-
-  // -----------------------------------------------------------------------------------------------
-  // Not a binary archive
-  // -----------------------------------------------------------------------------------------------
-  {
-    json::json corrupted = j;
-    corrupted["archive_name"] = "not-BinaryArchive";
-    toFile(corrupted);
-
-    ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
-                 Exception);
-  }
-
-  // -----------------------------------------------------------------------------------------------
-  // Invalid binary archive version
-  // -----------------------------------------------------------------------------------------------
-  {
-    json::json corrupted = j;
-    corrupted["archive_version"] = -1;
-    toFile(corrupted);
-
-    ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
-                 Exception);
-  }
-
-  // -----------------------------------------------------------------------------------------------
-  // MetaData not found
-  // -----------------------------------------------------------------------------------------------
-  {
-    boost::filesystem::remove(filename);
-    ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
-                 Exception);
-  }
-}
-
-TYPED_TEST(BinaryArchiveTest, toString) {
-  std::stringstream ss;
-  BinaryArchive archive(OpenModeKind::Write, this->directory->path().string(), "field");
-
-  ss << archive;
-  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "BinaryArchive"));
-  EXPECT_NE(ss.str().find("directory"), std::string::npos);
-  EXPECT_NE(ss.str().find("mode"), std::string::npos);
-  EXPECT_NE(ss.str().find("prefix"), std::string::npos);
-  EXPECT_NE(ss.str().find("fieldsTable"), std::string::npos);
 }

@@ -113,6 +113,9 @@ TEST_F(SerializerImplUtilityTest, AddMetaInfo) {
   s.addGlobalMetaInfo("float32", float(32.0f));
   s.addGlobalMetaInfo("float64", double(64.0f));
   s.addGlobalMetaInfo("string", "str"); // This has to go through the const char* specialization
+  
+  // MetaInfo already exists -> Exception
+  EXPECT_THROW(s.addGlobalMetaInfo("string", "str"), Exception);
 
   // Query meta-info
   EXPECT_EQ(s.getGlobalMetainfoAs<bool>("bool"), bool(true));
@@ -461,6 +464,29 @@ TEST_F(SerializerImplUtilityTest, JSONFailNoPrefix) {
 
   // Remove prefix
   j.erase("prefix");
+
+  // Write MetaData-prefix.json
+  std::ofstream ofs(s_write.metaDataFile().string(), std::ios::trunc);
+  ofs << j.dump(4) << std::endl;
+  ofs.close();
+
+  // Open with corruputed MetaData-prefix.json
+  ASSERT_THROW(
+      SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "BinaryArchive"),
+      Exception);
+}
+
+TEST_F(SerializerImplUtilityTest, JSONFailCorruptedPrefix) {
+  SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "BinaryArchive");
+  s_write.updateMetaData();
+
+  // Read MetaData-prefix.json
+  json::json j;
+  std::ifstream ifs(s_write.metaDataFile().string());
+  ifs >> j;
+  ifs.close();
+
+  j["prefix"] = "Field2";
 
   // Write MetaData-prefix.json
   std::ofstream ofs(s_write.metaDataFile().string(), std::ios::trunc);

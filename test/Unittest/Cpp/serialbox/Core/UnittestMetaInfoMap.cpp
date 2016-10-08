@@ -101,34 +101,34 @@ TEST(MetaInfoMapTest, Construction) {
 TEST(MetaInfoMapTest, Comparison) {
   MetaInfoMap map1;
   MetaInfoMap map2;
-  
+
   // Empty maps compare equal
   EXPECT_TRUE(map1 == map2);
-  EXPECT_FALSE(map1 != map2);  
+  EXPECT_FALSE(map1 != map2);
 
   // Maps of diffrent sizes are never equal
-  ASSERT_TRUE(map1.insert("bool", bool(true)));  
+  ASSERT_TRUE(map1.insert("bool", bool(true)));
   EXPECT_FALSE(map1 == map2);
 
   // Maps are equal again
-  ASSERT_TRUE(map2.insert("bool", bool(true)));  
+  ASSERT_TRUE(map2.insert("bool", bool(true)));
   EXPECT_TRUE(map1 == map2);
-  
+
   // Maps have equal sizes and keys but one of their values differs
-  ASSERT_TRUE(map1.insert("double", double(1)));  
-  ASSERT_TRUE(map2.insert("double", double(2)));  
+  ASSERT_TRUE(map1.insert("double", double(1)));
+  ASSERT_TRUE(map2.insert("double", double(2)));
   EXPECT_TRUE(map1 != map2);
 }
 
 TEST(MetaInfoMapTest, Conversion) {
-  MetaInfoMap map;  
+  MetaInfoMap map;
   ASSERT_TRUE(map.insert("key", int(32)));
   EXPECT_EQ(map.size(), 1);
-  
+
   // Boolean
   EXPECT_EQ(map.as<bool>("key"), true);
   EXPECT_EQ(map.as<int>("key"), 32);
-  EXPECT_EQ(map.as<std::int64_t>("key"), 32);  
+  EXPECT_EQ(map.as<std::int64_t>("key"), 32);
   EXPECT_EQ(map.as<float>("key"), 32.0f);
   EXPECT_EQ(map.as<double>("key"), 32.0);
   EXPECT_EQ(map.as<std::string>("key"), "32");
@@ -145,6 +145,13 @@ TEST(MetaInfoMapTest, toJSON) {
   ASSERT_TRUE(map.insert("float32", float(32.0f)));
   ASSERT_TRUE(map.insert("float64", double(64.0f)));
   ASSERT_TRUE(map.insert("string", std::string("string")));
+
+  ASSERT_TRUE(map.insert("ArrayOfBoolean", (Array<bool>{true, false, true})));
+  ASSERT_TRUE(map.insert("ArrayOfInt32", (Array<int>{1, 2, 3})));
+  ASSERT_TRUE(map.insert("ArrayOfInt64", (Array<std::int64_t>{1, 2, 3})));
+  ASSERT_TRUE(map.insert("ArrayOfFloat32", (Array<float>{1.0f, 2.0f, 3.0f})));
+  ASSERT_TRUE(map.insert("ArrayOfFloat64", (Array<double>{1.0, 2.0, 3.0})));
+  ASSERT_TRUE(map.insert("ArrayOfString", (Array<std::string>{"one", "two", "three"})));
 
   json::json j(map.toJSON());
 
@@ -178,6 +185,42 @@ TEST(MetaInfoMapTest, toJSON) {
   ASSERT_EQ(int(j["string"]["type_id"]), (int)TypeID::String);
   std::string str = j["string"]["value"];
   ASSERT_STREQ(str.c_str(), "string");
+
+  // array of bool
+  ASSERT_TRUE(j.count("ArrayOfBoolean"));
+  ASSERT_EQ(int(j["ArrayOfBoolean"]["type_id"]), (int)TypeID::ArrayOfBoolean);
+  Array<bool> arrayOfBoolean = j["ArrayOfBoolean"]["value"];
+  ASSERT_EQ(arrayOfBoolean, (Array<bool>{true, false, true}));
+
+  // array of int32
+  ASSERT_TRUE(j.count("ArrayOfInt32"));
+  ASSERT_EQ(int(j["ArrayOfInt32"]["type_id"]), (int)TypeID::ArrayOfInt32);
+  Array<int> arrayOfInt32 = j["ArrayOfInt32"]["value"];
+  ASSERT_EQ(arrayOfInt32, (Array<int>{1, 2, 3}));
+
+  // array of int64
+  ASSERT_TRUE(j.count("ArrayOfInt64"));
+  ASSERT_EQ(int(j["ArrayOfInt64"]["type_id"]), (int)TypeID::ArrayOfInt64);
+  Array<std::int64_t> arrayOfInt64 = j["ArrayOfInt64"]["value"];
+  ASSERT_EQ(arrayOfInt64, (Array<std::int64_t>{1, 2, 3}));
+
+  // array of float32
+  ASSERT_TRUE(j.count("ArrayOfFloat32"));
+  ASSERT_EQ(int(j["ArrayOfFloat32"]["type_id"]), (int)TypeID::ArrayOfFloat32);
+  Array<float> arrayOfFloat32 = j["ArrayOfFloat32"]["value"];
+  ASSERT_EQ(arrayOfFloat32, (Array<float>{1.0f, 2.0f, 3.0f}));
+
+  // array of float64
+  ASSERT_TRUE(j.count("ArrayOfFloat64"));
+  ASSERT_EQ(int(j["ArrayOfFloat64"]["type_id"]), (int)TypeID::ArrayOfFloat64);
+  Array<double> arrayOfFloat64 = j["ArrayOfFloat64"]["value"];
+  ASSERT_EQ(arrayOfFloat64, (Array<double>{1.0, 2.0, 3.0}));
+
+  // array of string
+  ASSERT_TRUE(j.count("ArrayOfString"));
+  ASSERT_EQ(int(j["ArrayOfString"]["type_id"]), (int)TypeID::ArrayOfString);
+  Array<std::string> arrayOfString = j["ArrayOfString"]["value"];
+  ASSERT_EQ(arrayOfString, (Array<std::string>{"one", "two", "three"}));
 }
 
 TEST(MetaInfoMapTest, fromJSON) {
@@ -199,13 +242,16 @@ TEST(MetaInfoMapTest, fromJSON) {
     json::json j;                                                                                  \
     j["key1"] = {{"type_id", (int)type_id}, {"value", type(value1)}};                              \
     j["key2"] = {{"type_id", (int)type_id}, {"value", type(value2)}};                              \
+    j["array"] = {{"type_id", (int)type_id | (int)TypeID::Array},                                  \
+                  {"value", Array<type>{value1, value2}}};                                         \
     std::string typeStr(TypeUtil::toString(type_id));                                              \
     ASSERT_NO_THROW(map.fromJSON(j)) << typeStr;                                                   \
-    EXPECT_EQ(map.size(), 2) << typeStr;                                                           \
+    EXPECT_EQ(map.size(), 3) << typeStr;                                                           \
     ASSERT_TRUE(map.hasKey("key1")) << typeStr;                                                    \
     ASSERT_TRUE(map.hasKey("key2")) << typeStr;                                                    \
     ASSERT_EQ(map["key1"].as<type>(), value1) << typeStr;                                          \
     ASSERT_EQ(map["key2"].as<type>(), value2) << typeStr;                                          \
+    ASSERT_EQ((map["array"].as<Array<type>>()), (Array<type>{value1, value2})) << typeStr;         \
   }
 
   CHECK_FROM_JSON(bool, TypeID::Boolean, true, false);
@@ -260,10 +306,9 @@ TEST(MetaInfoMapTest, toString) {
   MetaInfoMap map;
   map.insert("key1", std::string("value2"));
   map.insert("key2", double(5.1));
-  
+
   ss << map;
   EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "MetaInfoMap"));
   EXPECT_NE(ss.str().find("key1"), std::string::npos);
   EXPECT_NE(ss.str().find("key2"), std::string::npos);
 }
-

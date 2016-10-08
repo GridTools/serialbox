@@ -9,7 +9,8 @@ function(enable_coverage root)
 
                       # Unittests and external libraries
                       '*test/*'
-                      '*external/*' 
+                      '*external/*'
+                      '*External/*' 
                       
                       # Not fully testable
                       '*/Unreachable.cpp'
