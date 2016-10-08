@@ -24,3 +24,7 @@ add_library(SerialboxCppUnittestUtilityLibrary STATIC ${CPP_UNITTEST_UTILITY_SOU
 if(DEFINED BUILD_GTEST)
   add_dependencies(SerialboxCppUnittestUtilityLibrary gtest)
 endif()
+
+if(BUILD_GLOG)
+  add_dependencies(SerialboxCppUnittestUtilityLibrary glog)
+endif(BUILD_GLOG)

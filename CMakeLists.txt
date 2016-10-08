@@ -54,13 +54,14 @@ message(STATUS "Git HEAD revision: ${GIT_SHA1}")
 
 option(SERIALBOX_BUILD_SHARED "Build shared libraries" OFF)
 option(SERIALBOX_LOGGING "Enable logging" ON)
+option(SERIALBOX_ENABLE_C "Build C-Interface" ON)
 
 option(SERIALBOX_TESTING "Build unit-test executables" ON)
-option(SERIALBOX_ENABLE_GRIDTOOLS "Build GridTools Unitests" OFF)
-option(SERIALBOX_ENABLE_STELLA "Build STELLA Unitests" OFF)
-option(SERIALBOX_ENABLE_OLD_SERIALBOX "Build compatiblity unitests against old serialbox" OFF)
-option(SERIALBOX_ENABLE_C "Build C Unitests" OFF)
-option(SERIALBOX_ENABLE_DEATH_TESTS "Run death-tests" OFF)
+option(SERIALBOX_TESTING_GRIDTOOLS "Build GridTools Unitests" OFF)
+option(SERIALBOX_TESTING_STELLA "Build STELLA Unitests" OFF)
+option(SERIALBOX_TESTING_OLD_SERIALBOX "Build compatiblity unitests with old serialbox" OFF)
+option(SERIALBOX_TESTING_DEATH_TESTS "Run death-tests" OFF)
+option(SERIALBOX_TESTING_PERF_TESTS "Run performance-tests" OFF)
 
 option(SERIALBOX_CODE_COVERAGE "Generate code coverage" OFF)
 option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" ON)
@@ -99,6 +100,12 @@ find_package(Threads REQUIRED)
 
 # Set script directory
 set(SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tools)
+
+# If we build the C Interface we require shared libraries
+if(SERIALBOX_ENABLE_C AND NOT(SERIALBOX_BUILD_SHARED))
+  message(STATUS "SERIALBOX_ENABLE_C requies shared library, setting SERIALBOX_BUILD_SHARED=ON")
+  set(SERIALBOX_BUILD_SHARED ON)
+endif()
 
 # Set shared library flags
 if(SERIALBOX_BUILD_SHARED)
@@ -222,7 +229,8 @@ if(SERIALBOX_LOGGING)
   
   # Install GLog
   install(DIRECTORY ${GLOG_INCLUDE_DIRS}/ DESTINATION include FILES_MATCHING PATTERN "*.h")
-  install(FILES ${GLOG_LIBRARY} DESTINATION lib)
+  get_filename_component(GLOG_LIBRARY_DIR ${GLOG_LIBRARY} DIRECTORY)
+  install(DIRECTORY ${GLOG_LIBRARY_DIR}/ DESTINATION lib PATTERN "*cmake*" EXCLUDE)
 
 else()
   set(SERIALBOX_HAS_GLOG 0)
@@ -240,7 +248,7 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
 #---------------------------------------- GridTools ------------------------------------------------
-if(SERIALBOX_ENABLE_GRIDTOOLS)
+if(SERIALBOX_TESTING_GRIDTOOLS)
 
   # If GRIDTOOLS_ROOT is not provided, we try to find it in external/
   set(GRIDTOOLS_ROOT_ENV "$ENV{GRIDTOOLS_ROOT}")
@@ -254,10 +262,10 @@ if(SERIALBOX_ENABLE_GRIDTOOLS)
   include_directories(SYSTEM ${GRIDTOOLS_INCLUDE_DIRS})
   set(SERIALBOX_HAS_GRIDTOOLS 1)
   
-endif(SERIALBOX_ENABLE_GRIDTOOLS)
+endif(SERIALBOX_TESTING_GRIDTOOLS)
 
 #---------------------------------------- STELLA ---------------------------------------------------
-if(SERIALBOX_ENABLE_STELLA)
+if(SERIALBOX_TESTING_STELLA)
 
   # If STELLA_ROOT is not provided, we try to find it in external/
   set(STELLA_ROOT_ENV "$ENV{STELLA_ROOT}")
@@ -302,10 +310,10 @@ if(SERIALBOX_ENABLE_STELLA)
   include_directories(SYSTEM ${STELLA_INCLUDE_DIRS})
   set(SERIALBOX_HAS_STELLA 1)
 
-endif(SERIALBOX_ENABLE_STELLA)
+endif(SERIALBOX_TESTING_STELLA)
 
 #---------------------------------------- Serialbox (old) ------------------------------------------
-if(SERIALBOX_ENABLE_OLD_SERIALBOX)
+if(SERIALBOX_TESTING_OLD_SERIALBOX)
 
   # If SERIALBOX_OLD_ROOT is not provided, we try to find it in external/
   set(SERIALBOX_OLD_ROOT_ENV "$ENV{SERIALBOX_OLD_ROOT}")
@@ -353,14 +361,7 @@ if(SERIALBOX_ENABLE_OLD_SERIALBOX)
   include_directories(SYSTEM ${SERIALBOX_OLD_INCLUDE_DIRS})
   set(SERIALBOX_HAS_SERIALBOX_OLD 1)
   
-endif(SERIALBOX_ENABLE_OLD_SERIALBOX)
-
-#------------------------------------------- C -----------------------------------------------------
-if(SERIALBOX_ENABLE_C)
-
-  set(SERIALBOX_HAS_C 1)
-
-endif(SERIALBOX_ENABLE_C)
+endif(SERIALBOX_TESTING_OLD_SERIALBOX)
 
 #---------------------------------------- Doxygen --------------------------------------------------
 find_package(Doxygen)
@@ -453,7 +454,7 @@ add_subdirectory(src)
 ## Build unittests
 if(SERIALBOX_TESTING)
   
-  if(SERIALBOX_ENABLE_DEATH_TESTS)
+  if(SERIALBOX_TESTING_DEATH_TESTS)
     add_definitions(-DSERIALBOX_RUN_DEATH_TESTS)
   endif()
   
