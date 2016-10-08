@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/FieldMetaInfo.h"
 #include "serialbox/Core/Frontend/STELLA/DataFieldInfo.h"
+#include "serialbox/Core/FieldMetaInfo.h"
 #include "serialbox/Core/Frontend/STELLA/Utility.h"
 #include "serialbox/Core/Type.h"
 
@@ -25,13 +25,11 @@ DataFieldInfo::DataFieldInfo() : fieldMetaInfoImpl_(), metainfo_() {}
 
 DataFieldInfo::DataFieldInfo(const boost::shared_ptr<FieldMetaInfo>& fieldMetaInfoImpl)
     : fieldMetaInfoImpl_(fieldMetaInfoImpl),
-      metainfo_(internal::make_shared_ptr<MetaInfoMap>(fieldMetaInfoImpl_->metaInfoPtr())) {
-}
+      metainfo_(internal::make_shared_ptr<MetaInfoMap>(fieldMetaInfoImpl_->metaInfoPtr())) {}
 
 DataFieldInfo::DataFieldInfo(const DataFieldInfo& other)
     : fieldMetaInfoImpl_(other.fieldMetaInfoImpl_),
-      metainfo_(internal::make_shared_ptr<MetaInfoMap>(fieldMetaInfoImpl_->metaInfoPtr())) {
-}
+      metainfo_(internal::make_shared_ptr<MetaInfoMap>(fieldMetaInfoImpl_->metaInfoPtr())) {}
 
 DataFieldInfo& DataFieldInfo::operator=(const DataFieldInfo& other) {
   *fieldMetaInfoImpl_ = *other.fieldMetaInfoImpl_;
@@ -42,10 +40,10 @@ void DataFieldInfo::Init(std::string name, std::string type, int bytesPerElement
                          int iSize, int jSize, int kSize, int lSize, int iMinusHalo, int iPlusHalo,
                          int jMinusHalo, int jPlusHalo, int kMinusHalo, int kPlusHalo,
                          int lMinusHalo, int lPlusHalo) {
-  
-  fieldMetaInfoImpl_ = boost::make_shared<FieldMetaInfo>();  
+
+  fieldMetaInfoImpl_ = boost::make_shared<FieldMetaInfo>();
   metainfo_.setImpl(internal::make_shared_ptr<MetaInfoMap>(fieldMetaInfoImpl_->metaInfoPtr()));
-  
+
   try {
     TypeID typeID = internal::TypeNameToTypeID(type);
     fieldMetaInfoImpl_->type() = typeID;

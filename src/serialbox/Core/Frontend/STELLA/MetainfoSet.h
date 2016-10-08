@@ -184,7 +184,7 @@ public:
   /// \brief Get implementation pointer
   boost::shared_ptr<MetaInfoMap>& getImpl();
   const boost::shared_ptr<MetaInfoMap>& getImpl() const;
-  
+
 private:
   boost::shared_ptr<MetaInfoMap> mapImpl_;
 };

@@ -213,7 +213,7 @@ public:
 
   /// \brief Set implementation pointer
   void setImpl(const boost::shared_ptr<FieldMetaInfo>& fieldMetaInfoImpl);
-  
+
   /// \brief Get implementation pointer
   boost::shared_ptr<FieldMetaInfo>& getImpl();
   const boost::shared_ptr<FieldMetaInfo>& getImpl() const;

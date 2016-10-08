@@ -51,9 +51,9 @@ public:
   /// \param prefix       Prefix of all filenames
   /// \param archiveName  String passed to the ArchiveFactory to construct the Archive
   ///
-  /// This will read MetaData-prefix.json to initialize the savepoint vector, the fieldMap and
+  /// This will read ´MetaData-prefix.json´ to initialize the savepoint vector, the fieldMap and
   /// globalMetaInfo. Further, it will construct the Archive by reading the
-  /// ArchiveMetaData-prefix.json.
+  /// ´ArchiveMetaData-prefix.json´.
   ///
   /// \throw Exception  Invalid directory or corrupted meta-data files
   SerializerImpl(OpenModeKind mode, const std::string& directory, const std::string& prefix,

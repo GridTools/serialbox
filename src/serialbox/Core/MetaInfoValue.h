@@ -47,8 +47,7 @@ public:
   /// \tparam ValueType  Type of the captured value (needs to be supported)
   /// \param  value      Value to capture
   template <
-      class ValueType, 
-      class DecayedValueType = typename std::decay<ValueType>::type,
+      class ValueType, class DecayedValueType = typename std::decay<ValueType>::type,
       class PrimitiveType = typename MakePrimitive<DecayedValueType>::type,
       class = typename std::enable_if<!std::is_same<DecayedValueType, MetaInfoValue>::value>::type>
   explicit MetaInfoValue(ValueType&& value) {

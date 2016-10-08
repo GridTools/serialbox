@@ -13,8 +13,8 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/Core/Type.h"
-#include "serialbox/Core/Unreachable.h"
 #include "serialbox/Core/Exception.h"
+#include "serialbox/Core/Unreachable.h"
 #include <ostream>
 
 namespace serialbox {

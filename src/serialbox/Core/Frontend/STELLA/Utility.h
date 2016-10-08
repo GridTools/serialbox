@@ -22,10 +22,10 @@
 #include "serialbox/Core/Frontend/STELLA/SerializationException.h"
 #include "serialbox/Core/Type.h"
 #include <boost/format.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
-#include <string>
+#include <boost/shared_ptr.hpp>
 #include <memory>
+#include <string>
 
 namespace serialbox {
 

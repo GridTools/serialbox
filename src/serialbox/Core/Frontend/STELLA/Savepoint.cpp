@@ -92,7 +92,7 @@ std::ostream& operator<<(std::ostream& out, const Savepoint& sp) { return (out <
 
 void Savepoint::setImpl(const boost::shared_ptr<SavepointImpl>& savepointImpl) {
   savepointImpl_ = savepointImpl;
-  metainfo_.setImpl(internal::make_shared_ptr<MetaInfoMap>(savepointImpl_->metaInfoPtr()));  
+  metainfo_.setImpl(internal::make_shared_ptr<MetaInfoMap>(savepointImpl_->metaInfoPtr()));
 }
 
 boost::shared_ptr<SavepointImpl>& Savepoint::getImpl() { return savepointImpl_; }

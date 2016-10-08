@@ -41,7 +41,7 @@ function(serialbox_add_library
          buildShared
          libraries)
 
-  add_library(${target}Objects OBJECT ${ARGN} ${SERIALBOX_HEADERS})
+  add_library(${target}Objects OBJECT ${ARGN} ${SERIALBOX_HEADERS} ${SERIALBOX_C_HEADERS})
 
   if(SERIALBOX_VERBOSE_WARNINGS)
     set_target_properties(${target}Objects PROPERTIES COMPILE_FLAGS -Wall)

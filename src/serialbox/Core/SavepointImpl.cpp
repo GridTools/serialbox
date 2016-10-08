@@ -34,7 +34,7 @@ json::json SavepointImpl::toJSON() const {
 void SavepointImpl::fromJSON(const json::json& jsonNode) {
   if(!metaInfo_)
     metaInfo_ = std::make_shared<MetaInfoMap>();
-  
+
   name_.clear();
   metaInfo_->clear();
 

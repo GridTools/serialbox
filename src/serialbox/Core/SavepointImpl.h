@@ -56,7 +56,7 @@ public:
 
   /// \brief Copy assignment
   SavepointImpl& operator=(const SavepointImpl& other);
-  
+
   /// \brief Move assignment
   SavepointImpl& operator=(SavepointImpl&&) = default;
 
@@ -125,7 +125,7 @@ public:
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const SavepointImpl& s);
-  
+
   /// \brief Get meta-info pointer
   std::shared_ptr<MetaInfoMap>& metaInfoPtr() noexcept { return metaInfo_; }
   const std::shared_ptr<MetaInfoMap>& metaInfoPtr() const noexcept { return metaInfo_; }

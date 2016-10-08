@@ -15,19 +15,7 @@
 #ifndef SERIALBOX_C_SERIALBOX_H
 #define SERIALBOX_C_SERIALBOX_H
 
-#include "serialbox/Core/Compiler.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/**
- * \brief Dummy function
- */
-void serialbox_hello_world();
-
-#ifdef __cplusplus
-}
-#endif
+#include "serialbox-c/ErrorHandling.h"
+#include "serialbox-c/Serializer.h"
 
 #endif

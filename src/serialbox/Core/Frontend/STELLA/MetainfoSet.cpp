@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Frontend/STELLA/MetainfoSet.h"
+#include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Frontend/STELLA/Utility.h"
 #include "serialbox/Core/MetaInfoMap.h"
 #include "serialbox/Core/Unreachable.h"
@@ -37,12 +37,9 @@ static MetaInfoMap::const_iterator checkKeyExists(const boost::shared_ptr<MetaIn
 
 MetainfoSet::MetainfoSet() : mapImpl_(boost::make_shared<MetaInfoMap>()) {}
 
-MetainfoSet::MetainfoSet(const boost::shared_ptr<MetaInfoMap>& map)
-    : mapImpl_(map){};
+MetainfoSet::MetainfoSet(const boost::shared_ptr<MetaInfoMap>& map) : mapImpl_(map){};
 
-MetainfoSet::MetainfoSet(const MetainfoSet& other) {
-  mapImpl_ = other.mapImpl_;
-}
+MetainfoSet::MetainfoSet(const MetainfoSet& other) { mapImpl_ = other.mapImpl_; }
 
 MetainfoSet& MetainfoSet::operator=(const MetainfoSet& other) {
   *mapImpl_ = *other.mapImpl_;

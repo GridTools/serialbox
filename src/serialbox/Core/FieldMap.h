@@ -27,7 +27,7 @@ public:
   /// \brief Type of the underlying hash-map
   using map_type = std::unordered_map<std::string, std::shared_ptr<FieldMetaInfo>>;
 
-  /// \brief Type of an entry of the MetaInfoMap 
+  /// \brief Type of an entry of the MetaInfoMap
   /// (`std::pair<std::string, std::shared_ptr<FieldMetaInfo>>`)
   using value_type = map_type::value_type;
 

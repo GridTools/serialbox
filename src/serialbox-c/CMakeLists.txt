@@ -10,7 +10,8 @@
 cmake_minimum_required(VERSION 3.1)
 
 set(SOURCES 
-  Serialbox.cpp
+  ErrorHandling.cpp
+  Serializer.cpp
 )
 
 set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES})

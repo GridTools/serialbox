@@ -78,7 +78,7 @@ public:
   ///
   /// The meta-information is constructed from the underlying MetaInfoMap of the SavepointImpl.
   const MetainfoSet& metainfo() const { return metainfo_; }
-  
+
   /// \brief Compare equal
   bool operator==(const Savepoint& other) const;
 
@@ -93,7 +93,7 @@ public:
 
   /// \brief Set implementation pointer
   void setImpl(const boost::shared_ptr<SavepointImpl>& savepointImpl);
-  
+
   /// \brief Get implementation pointer
   boost::shared_ptr<SavepointImpl>& getImpl();
   const boost::shared_ptr<SavepointImpl>& getImpl() const;

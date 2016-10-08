@@ -81,7 +81,7 @@ public:
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const FieldMetaInfo& f);
-  
+
   /// \brief Get meta-info pointer
   std::shared_ptr<MetaInfoMap>& metaInfoPtr() noexcept { return metaInfo_; }
   const std::shared_ptr<MetaInfoMap>& metaInfoPtr() const noexcept { return metaInfo_; }

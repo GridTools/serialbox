@@ -80,7 +80,8 @@ int SavepointVector::find(const SavepointImpl& savepoint) const noexcept {
   return ((it != index_.end()) ? it->second : -1);
 }
 
-const SavepointVector::fields_per_savepoint_type& SavepointVector::fieldsOf(int idx) const noexcept {
+const SavepointVector::fields_per_savepoint_type& SavepointVector::fieldsOf(int idx) const
+    noexcept {
   return fields_[idx];
 }
 

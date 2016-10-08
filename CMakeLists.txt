@@ -184,11 +184,11 @@ if(SERIALBOX_TESTING)
 endif(SERIALBOX_TESTING)
 
 #---------------------------------------- Boost ----------------------------------------------------
-if(SERIALBOX_BUILD_SHARED)
-  set(Boost_USE_STATIC_RUNTIME OFF)
-  add_definitions(-DBOOST_LOG_DYN_LINK=1)  
-endif()
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_STATIC_RUNTIME OFF)
 set(Boost_USE_MULTITHREADED ON)  
+add_definitions(-DBOOST_LOG_DYN_LINK)  
+add_definitions(-DBOOST_ALL_DYN_LINK)
 
 find_package(Boost 1.54 REQUIRED system chrono filesystem log)
 
@@ -395,10 +395,20 @@ include_directories(${SERIALBOX_INCLUDE_DIRS})
 file(GLOB_RECURSE SERIALBOX_HEADERS 
      ${CMAKE_CURRENT_SOURCE_DIR}/src
      ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox/*.h)
+   
      
 # Install serialbox headers
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox DESTINATION include 
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
+      
+if(SERIALBOX_ENABLE_C)
+  file(GLOB_RECURSE SERIALBOX_C_HEADERS 
+       ${CMAKE_CURRENT_SOURCE_DIR}/src
+       ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox-c/*.h)
+     
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox-c DESTINATION include 
+          FILES_MATCHING PATTERN "*.h")
+endif()
 
 ## Build Serialbox
 add_subdirectory(src)

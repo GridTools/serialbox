@@ -36,22 +36,22 @@ struct isArray<Array<T>> : public boost::mpl::true_ {};
 
 namespace internal {
 
-template<class T, bool IsArray>
+template <class T, bool IsArray>
 struct MakePrimitiveImpl {
   using type = typename T::value_type;
 };
 
-template<class T>
+template <class T>
 struct MakePrimitiveImpl<T, false> {
   using type = T;
 };
-  
+
 } // namespace internal
 
 /// \brief Return the primtive type (´T::value_type´) if ´T´ is an Array or ´T´ otherwise
-template<class T>
+template <class T>
 struct MakePrimitive {
-  using type = typename internal::MakePrimitiveImpl<T, isArray<T>::value>::type; 
+  using type = typename internal::MakePrimitiveImpl<T, isArray<T>::value>::type;
 };
 
 } // namespace serialbox
