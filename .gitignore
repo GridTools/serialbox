@@ -16,7 +16,6 @@ buildenv*
 # External projects
 external/*
 !external/gtest
-!external/glog
 
 # Generated files
 include/serialbox/Support/Config.h

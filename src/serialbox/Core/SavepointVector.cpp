@@ -100,7 +100,7 @@ void SavepointVector::clear() noexcept {
 
 json::json SavepointVector::toJSON() const {
   json::json jsonNode;
-  CHECK(savepoints_.size() == fields_.size());
+  assert(savepoints_.size() == fields_.size());
 
   for(std::size_t i = 0; i < savepoints_.size(); ++i)
     jsonNode["savepoints"].push_back(savepoints_[i]->toJSON());

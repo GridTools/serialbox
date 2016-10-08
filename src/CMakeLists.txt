@@ -47,10 +47,7 @@ function(serialbox_add_library
     set_target_properties(${target}Objects PROPERTIES COMPILE_FLAGS -Wall)
   endif(SERIALBOX_VERBOSE_WARNINGS)
 
-  if(BUILD_GLOG)
-    add_dependencies(${target}Objects glog)
-  endif(BUILD_GLOG)
-
+  # Set properties for code-coverage
   if(DEFINED COVERAGE_SUPPORTED)
     set_property(TARGET ${target}Objects PROPERTY COMPILE_FLAGS ${CMAKE_CXX_FLAGS_COVERAGE})
     set_property(TARGET ${target}Objects PROPERTY LINK_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})
@@ -67,7 +64,10 @@ function(serialbox_add_library
   # Build static library
   if(buildStatic)
     add_library(${target}Static STATIC $<TARGET_OBJECTS:${target}Objects> ${OBJECT_SOURCES})
+    
     set_target_properties(${target}Static PROPERTIES OUTPUT_NAME ${name})
+    set_target_properties(${target}Static PROPERTIES INTERPROCEDURAL_OPTIMIZATION True)  
+    
     target_link_libraries(${target}Static ${libraries})
     install(TARGETS ${target}Static DESTINATION lib)
   endif()
@@ -80,7 +80,10 @@ function(serialbox_add_library
     endif(NOT(SERIALBOX_BUILD_SHARED))
 
     add_library(${target}Shared SHARED $<TARGET_OBJECTS:${target}Objects> ${OBJECT_SOURCES})
+    
     set_target_properties(${target}Shared PROPERTIES OUTPUT_NAME ${name})
+    set_target_properties(${target}Shared PROPERTIES INTERPROCEDURAL_OPTIMIZATION True)  
+    
     target_link_libraries(${target}Shared ${libraries})
     install(TARGETS ${target}Shared DESTINATION lib)
   endif()

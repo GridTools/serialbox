@@ -11,7 +11,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "Installation prefix")
+set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "CMake install prefix")
 
 project(serialbox C CXX)
 cmake_minimum_required(VERSION 3.1)
@@ -52,7 +52,7 @@ message(STATUS "Git HEAD revision: ${GIT_SHA1}")
 
 #---------------------------------------- User options ---------------------------------------------
 
-option(SERIALBOX_BUILD_SHARED "Build shared libraries" OFF)
+option(SERIALBOX_BUILD_SHARED "Build shared libraries" ON)
 option(SERIALBOX_LOGGING "Enable logging" ON)
 option(SERIALBOX_ENABLE_C "Build C-Interface" ON)
 
@@ -133,6 +133,10 @@ if(SERIALBOX_BUILD_SHARED)
   endif("${isSystemDir}" STREQUAL "-1")
 endif()
 
+if(NOT(SERIALBOX_LOGGING))
+  add_definitions(-DSERIALBOX_DISABLE_LOGGING)
+endif()
+
 #---------------------------------------- GTest ----------------------------------------------------
 if(SERIALBOX_TESTING)
   if(APPLE AND NOT(CMAKE_CXX_COMPILER_ID MATCHES "GNU"))
@@ -179,71 +183,14 @@ if(SERIALBOX_TESTING)
   include_directories(SYSTEM ${GTEST_INCLUDE_DIRS})
 endif(SERIALBOX_TESTING)
 
-#---------------------------------------- GLog -----------------------------------------------------
-if(SERIALBOX_LOGGING)
-  
-  # If GLOG_ROOT is provided we will use it
-  set(GLOG_ROOT_ENV "$ENV{GLOG_ROOT}")
-  if(NOT(GLOG_ROOT) AND NOT(GLOG_ROOT_ENV))
-    set(BUILD_GLOG "ON" BOOL)
-    set(GLOG_INSTALL_DIR "${CMAKE_BINARY_DIR}/external/glog/install")
-    
-    # Forward toolchain
-    set(CMAKE_EXTERNAL_ARGS -Wno-dev
-      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
-      -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-      -DCMAKE_INSTALL_PREFIX=${GLOG_INSTALL_DIR}
-      -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}
-    )
-
-    # Build Glog
-    ExternalProject_Add(
-        glog
-        URL        "${CMAKE_CURRENT_SOURCE_DIR}/external/glog"
-        PREFIX     "external/glog"
-        CMAKE_ARGS ${CMAKE_EXTERNAL_ARGS}
-    )
-    message(STATUS "Building Glog from: ${CMAKE_CURRENT_SOURCE_DIR}/external/glog")
-
-    set(GLOG_INCLUDE_DIRS "${GLOG_INSTALL_DIR}/include")
-    if(COMPILER_IS_MSVC)
-      set(GLOG_LIBRARY "${GLOG_INSTALL_DIR}/lib/glog.lib")
-       #TODO: Handle shared libraries/runtime
-    else()
-      if(BUILD_SHARED_LIBS)
-        if(APPLE)
-          set(GLOG_LIBRARY "${GLOG_INSTALL_DIR}/lib/libglog.dylib")
-        else(APPLE)
-          set(GLOG_LIBRARY "${GLOG_INSTALL_DIR}/lib/libglog.so")
-        endif(APPLE)
-      else()
-        set(GLOG_LIBRARY "${GLOG_INSTALL_DIR}/lib/libglog.a")
-      endif()
-    endif()
-    set(GLOG_LIBRARIES ${GLOG_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
-    
-  else()
-    #TODO: Update the FindGlog to handle shared libaries
-    find_package(GLog REQUIRED)
-  endif()
-  include_directories(SYSTEM ${GLOG_INCLUDE_DIRS})
-  set(SERIALBOX_HAS_GLOG 1)
-  
-  
-  # Install GLog
-  install(DIRECTORY ${GLOG_INCLUDE_DIRS}/ DESTINATION include FILES_MATCHING PATTERN "*.h")
-  get_filename_component(GLOG_LIBRARY_DIR ${GLOG_LIBRARY} DIRECTORY)
-  install(DIRECTORY ${GLOG_LIBRARY_DIR}/ DESTINATION lib PATTERN "*cmake*" EXCLUDE)
-
-else()
-  set(SERIALBOX_HAS_GLOG 0)
-  add_definitions(-DSERIALBOX_DISABLE_LOGGING)
-endif()
-
 #---------------------------------------- Boost ----------------------------------------------------
-find_package(Boost 1.54 REQUIRED system chrono filesystem) # TODO: we don't always need all of them
+if(SERIALBOX_BUILD_SHARED)
+  set(Boost_USE_STATIC_RUNTIME OFF)
+  add_definitions(-DBOOST_LOG_DYN_LINK=1)  
+endif()
+set(Boost_USE_MULTITHREADED ON)  
+
+find_package(Boost 1.54 REQUIRED system chrono filesystem log)
 
 if(NOT(${Boost_FOUND}))
   message(FATAL_ERROR "Boost not found or insufficient version.")

@@ -17,21 +17,22 @@
 #include "serialbox/Core/Logging.h"
 #include "serialbox/Core/StorageViewIterator.h"
 #include <algorithm>
+#include <cassert>
 
 namespace serialbox {
 
 StorageView::StorageView(void* originPtr, TypeID type, const std::vector<int>& dims,
                          const std::vector<int>& strides)
     : originPtr_(reinterpret_cast<Byte*>(originPtr)), type_(type), dims_(dims), strides_(strides) {
-  CHECK(!dims_.empty()) << "empty dimension";
-  CHECK(dims_.size() == strides_.size()) << "dimension mismatch";
+  assert(!dims_.empty() && "empty dimension");
+  assert(dims_.size() == strides_.size() && "dimension mismatch");
 }
 
 StorageView::StorageView(void* originPtr, TypeID type, std::vector<int>&& dims,
                          std::vector<int>&& strides)
     : originPtr_(reinterpret_cast<Byte*>(originPtr)), type_(type), dims_(dims), strides_(strides) {
-  CHECK(!dims_.empty()) << "empty dimension";
-  CHECK(dims_.size() == strides_.size()) << "dimension mismatch";
+  assert(!dims_.empty() && "empty dimension");
+  assert(dims_.size() == strides_.size() && "dimension mismatch");
 }
 
 void StorageView::swap(StorageView& other) noexcept {

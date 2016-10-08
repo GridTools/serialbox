@@ -49,9 +49,9 @@ void UnittestEnvironment::SetUp() {
        
     hasError = !boost::filesystem::create_directories(*directory_);
     
-    LOG(INFO) << "Creating unittest directory: " << directory_->string();
+    LOG(info) << "Creating unittest directory: " << directory_->string();
   } catch(boost::filesystem::filesystem_error& e) {
-    LOG(WARNING) << "unresolved boost::filesystem::filesystem_error: " << e.what();
+    LOG(warning) << "unresolved boost::filesystem::filesystem_error: " << e.what();
     hasError = true;
     errStr += e.what();
   }
@@ -68,10 +68,10 @@ void UnittestEnvironment::TearDown() {
   try {
     if(cleanup_) {
       auto numFiles = boost::filesystem::remove_all(*directory_);
-      LOG(INFO) << "Removed " << numFiles << " files";
+      LOG(info) << "Removed " << numFiles << " files";
     }
   } catch(boost::filesystem::filesystem_error& e) {
-    LOG(WARNING) << e.what();
+    LOG(warning) << e.what();
   }
 }
 

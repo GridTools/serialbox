@@ -16,53 +16,6 @@
 
 namespace serialbox {
 
-#ifndef SERIALBOX_DISABLE_LOGGING
-
-void Logging::init(const char* programName, bool useSignalHandler) noexcept {
-  if(useSignalHandler)
-    google::InstallFailureSignalHandler();
-
-  google::InitGoogleLogging(programName);
-}
-
-void Logging::setLogToStderr(bool value) noexcept { FLAGS_logtostderr = value; }
-
-void Logging::setAlsoLogToStderr(bool value) noexcept { FLAGS_alsologtostderr = value; }
-
-void Logging::setStdErrThreshold(SeverityKind value) noexcept {
-  FLAGS_stderrthreshold = static_cast<int>(value);
-}
-
-void Logging::setMinLogLevel(SeverityKind value) noexcept {
-  FLAGS_minloglevel = static_cast<int>(value);
-}
-
-Logging::SeverityKind Logging::getMinLogLevel() noexcept {
-  return static_cast<SeverityKind>(FLAGS_minloglevel);
-}
-
-void Logging::setColorLogToStdErr(bool value) noexcept { FLAGS_colorlogtostderr = value; }
-
-void Logging::setLogDir(const char* value) noexcept { FLAGS_log_dir = value; }
-
-#else // SERIALBOX_DISABLE_LOGGING
-
-void Logging::init(const char* programName, bool useSignalHandler) noexcept {}
-
-void Logging::setLogToStderr(bool value) noexcept {}
-
-void Logging::setAlsoLogToStderr(bool value) noexcept {}
-
-void Logging::setStdErrThreshold(SeverityKind value) noexcept {}
-
-void Logging::setMinLogLevel(SeverityKind value) noexcept {}
-
-void Logging::setColorLogToStdErr(bool value) noexcept {}
-
-void Logging::setLogDir(const char* value) noexcept {}
-
-Logging::SeverityKind Logging::getMinLogLevel() noexcept { return Logging::SeverityKind::Fatal; }
-
 namespace internal {
 
 NullLogger* NullLogger::instance_ = nullptr;
@@ -75,6 +28,6 @@ NullLogger& NullLogger::getInstance() noexcept {
 
 } // namespace internal
 
-#endif
+bool Logging::enable_ = false;
 
 } // namespace serialbox

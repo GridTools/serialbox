@@ -262,7 +262,7 @@ private:
   template <class... Indices>
   int computeIndex(const Indices&... indices) const noexcept {
     std::array<int, sizeof...(Indices)> index{{indices...}};
-    CHECK(index.size() == strides_.size()) << "incorrect number of dimensions";
+    assert(index.size() == strides_.size() && "incorrect number of dimensions");
     int pos = 0;
     for(unsigned int i = 0; i < index.size(); ++i)
       pos += (padding_[i].first + index[i]) * strides_[i];

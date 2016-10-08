@@ -53,7 +53,7 @@ SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
   fieldMap_ = std::make_shared<FieldMap>();
   globalMetaInfo_ = std::make_shared<MetaInfoMap>();
 
-  LOG(INFO) << "Creating Serializer (mode = " << mode_ << ") from directory " << directory_;
+  LOG(info) << "Creating Serializer (mode = " << mode_ << ") from directory " << directory_;
 
   // Validate integrity of directory (non-existent directories are created by the archive)
   try {
@@ -122,7 +122,7 @@ void SerializerImpl::checkStorageView(const std::string& name,
 
 void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoint,
                            StorageView& storageView) {
-  LOG(INFO) << "Serializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";
+  LOG(info) << "Serializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";
 
   if(mode_ == OpenModeKind::Read)
     throw Exception("serializer not open in write mode, but write operation requested");
@@ -138,7 +138,7 @@ void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoi
   int savepointIdx = savepointVector_->find(savepoint);
 
   if(savepointIdx == -1) {
-    LOG(INFO) << "Registering new savepoint \"" << savepoint << "\"";
+    LOG(info) << "Registering new savepoint \"" << savepoint << "\"";
     savepointIdx = savepointVector_->insert(savepoint);
   }
 
@@ -164,7 +164,7 @@ void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoi
   //
   updateMetaData();
 
-  LOG(INFO) << "Successfully serialized field \"" << name << "\"";
+  LOG(info) << "Successfully serialized field \"" << name << "\"";
 }
 
 //===------------------------------------------------------------------------------------------===//
@@ -173,7 +173,7 @@ void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoi
 
 void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoint,
                           StorageView& storageView) {
-  LOG(INFO) << "Deserializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";
+  LOG(info) << "Deserializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";
 
   if(mode_ != OpenModeKind::Read)
     throw Exception("serializer not open in read mode, but read operation requested");
@@ -198,7 +198,7 @@ void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoin
   //
   archive_->read(storageView, fieldID);
 
-  LOG(INFO) << "Successfully deserialized field \"" << name << "\"";
+  LOG(info) << "Successfully deserialized field \"" << name << "\"";
 }
 
 //===------------------------------------------------------------------------------------------===//
@@ -206,7 +206,7 @@ void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoin
 //===------------------------------------------------------------------------------------------===//
 
 void SerializerImpl::constructMetaDataFromJson() {
-  LOG(INFO) << "Constructing Serializer from MetaData ... ";
+  LOG(info) << "Constructing Serializer from MetaData ... ";
 
   // Try open meta-data file
   if(!boost::filesystem::exists(metaDataFile_)) {
@@ -274,7 +274,7 @@ std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s) {
 }
 
 json::json SerializerImpl::toJSON() const {
-  LOG(INFO) << "Converting Serializer MetaData to JSON";
+  LOG(info) << "Converting Serializer MetaData to JSON";
 
   json::json jsonNode;
 
@@ -298,7 +298,7 @@ json::json SerializerImpl::toJSON() const {
 }
 
 void SerializerImpl::updateMetaData() {
-  LOG(INFO) << "Update MetaData of Serializer";
+  LOG(info) << "Update MetaData of Serializer";
 
   json::json jsonNode = toJSON();
 
@@ -334,7 +334,7 @@ bool SerializerImpl::upgradeMetaData() {
     if(!boost::filesystem::exists(oldMetaDataFile))
       return false;
 
-    LOG(INFO) << "Detected old serialbox meta-data " << oldMetaDataFile;
+    LOG(info) << "Detected old serialbox meta-data " << oldMetaDataFile;
 
     // Check if we already upgraded this archive
     if(boost::filesystem::exists(metaDataFile_) &&
@@ -346,7 +346,7 @@ bool SerializerImpl::upgradeMetaData() {
     throw Exception("filesystem error: %s", e.what());
   }
 
-  LOG(INFO) << "Upgrading meta-data to serialbox version (" << SERIALBOX_VERSION_STRING << ") ...";
+  LOG(info) << "Upgrading meta-data to serialbox version (" << SERIALBOX_VERSION_STRING << ") ...";
 
   if(mode_ != OpenModeKind::Read)
     throw Exception("old serialbox archives cannot be opened in 'Write' or 'Append' mode");
@@ -370,16 +370,16 @@ bool SerializerImpl::upgradeMetaData() {
       globalMetaInfoFloatType = TypeID::Float32;
   }
 
-  LOG(INFO) << "Deduced float type of global meta-info as: " << globalMetaInfoFloatType;
+  LOG(info) << "Deduced float type of global meta-info as: " << globalMetaInfoFloatType;
 
   if(oldJson.count("GlobalMetainfo")) {
 
-    LOG(INFO) << "Upgrading global meta-info ...";
+    LOG(info) << "Upgrading global meta-info ...";
 
     for(auto it = oldJson["GlobalMetainfo"].begin(), end = oldJson["GlobalMetainfo"].end();
         it != end; ++it) {
 
-      LOG(INFO) << "Inserting global meta-info: key = " << it.key() << ", value = " << it.value();
+      LOG(info) << "Inserting global meta-info: key = " << it.key() << ", value = " << it.value();
 
       std::string key = it.key();
       if(!boost::algorithm::starts_with(key, "__")) {
@@ -400,7 +400,7 @@ bool SerializerImpl::upgradeMetaData() {
       }
     }
 
-    LOG(INFO) << "Successfully upgraded global meta-info";
+    LOG(info) << "Successfully upgraded global meta-info";
   }
 
   //
@@ -409,14 +409,14 @@ bool SerializerImpl::upgradeMetaData() {
 
   if(oldJson.count("FieldsTable")) {
 
-    LOG(INFO) << "Upgrading fields table ...";
+    LOG(info) << "Upgrading fields table ...";
 
     const auto& fieldsTable = oldJson["FieldsTable"];
     for(std::size_t i = 0; i < fieldsTable.size(); ++i) {
       auto& fieldInfo = fieldsTable[i];
       std::string name = fieldInfo["__name"];
 
-      LOG(INFO) << "Inserting field: " << name;
+      LOG(info) << "Inserting field: " << name;
 
       // Get Type
       std::string elementtype = fieldInfo["__elementtype"];
@@ -462,7 +462,7 @@ bool SerializerImpl::upgradeMetaData() {
       fieldMap_->insert(name, type, dims, metaInfo);
     }
 
-    LOG(INFO) << "Successfully upgraded fields table";
+    LOG(info) << "Successfully upgraded fields table";
   }
 
   //
@@ -475,7 +475,7 @@ bool SerializerImpl::upgradeMetaData() {
 
   if(oldJson.count("OffsetTable")) {
 
-    LOG(INFO) << "Upgrading offset table ...";
+    LOG(info) << "Upgrading offset table ...";
 
     const auto& offsetTable = oldJson["OffsetTable"];
     for(std::size_t i = 0; i < offsetTable.size(); ++i) {
@@ -508,11 +508,11 @@ bool SerializerImpl::upgradeMetaData() {
         }
       }
 
-      LOG(INFO) << "Adding savepoint: " << savepoint;
+      LOG(info) << "Adding savepoint: " << savepoint;
 
       // Register savepoint
       int savepointIdx = savepointVector_->insert(savepoint);
-      CHECK_NE(savepointIdx, -1);
+      assert(savepointIdx != -1);
 
       // Add fields to savepoint and field table of the archive
       for(auto it = offsetTableEntry["__offsets"].begin(),
@@ -540,12 +540,12 @@ bool SerializerImpl::upgradeMetaData() {
 
           // Append field at the end
           if(!fieldAlreadySerialized) {
-            CHECK_NE(fileOffset.offset, 0);
+            assert(fileOffset.offset != 0);
             fieldID.id = fieldOffsetTable.size();
             fieldOffsetTable.push_back(fileOffset);
           }
         } else {
-          CHECK_EQ(fileOffset.offset, 0);
+          assert(fileOffset.offset == 0);
           fieldID.id = 0;
           fieldTable.insert(BinaryArchive::FieldTable::value_type(
               fieldname, BinaryArchive::FieldOffsetTable(1, fileOffset)));
@@ -554,11 +554,11 @@ bool SerializerImpl::upgradeMetaData() {
         // Add field to savepoint
         savepointVector_->addField(savepointIdx, fieldID);
 
-        LOG(INFO) << "Adding field '" << fieldID << "' to savepoint " << savepoint;
+        LOG(info) << "Adding field '" << fieldID << "' to savepoint " << savepoint;
       }
     }
 
-    LOG(INFO) << "Successfully upgraded offset table";
+    LOG(info) << "Successfully upgraded offset table";
   }
 
   // Try to write the mata data to disk so that we can avoid such an upgrade in the future. However,
@@ -566,10 +566,10 @@ bool SerializerImpl::upgradeMetaData() {
   try {
     updateMetaData();
   } catch(Exception& e) {
-    LOG(WARNING) << "Failed to write upgraded meta-data to disk: " << e.what();
+    LOG(warning) << "Failed to write upgraded meta-data to disk: " << e.what();
   }
 
-  LOG(INFO) << "Successfully upgraded MetaData to serialbox version (" << SERIALBOX_VERSION_STRING
+  LOG(info) << "Successfully upgraded MetaData to serialbox version (" << SERIALBOX_VERSION_STRING
             << ")";
 
   return true;
