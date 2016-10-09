@@ -8,12 +8,14 @@
  *===------------------------------------------------------------------------------------------===//
  *
  *! \file
- *! This file contains C implementation of the Serializer.
+ *! This file contains the C implementation of the Serializer.
  *
 \*===------------------------------------------------------------------------------------------===*/
 
 #ifndef SERIALBOX_C_SERIALIZER_H
 #define SERIALBOX_C_SERIALIZER_H
+
+#include "serialbox-c/DataFieldInfo.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -12,6 +12,7 @@ cmake_minimum_required(VERSION 3.1)
 set(SOURCES 
   ErrorHandling.cpp
   Serializer.cpp
+  Logging.cpp
 )
 
 set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES})

@@ -33,10 +33,6 @@ function(serialbox_add_cpp_unittest_executable name libraries)
   if(DEFINED BUILD_GTEST)
     add_dependencies(${name} gtest)
   endif()
-
-  if(DEFINED BUILD_GLOG)
-    add_dependencies(${name} glog)
-  endif()
   
   if(DEFINED BUILD_SERIALBOX_OLD)
     add_dependencies(${name} serialbox-old)
