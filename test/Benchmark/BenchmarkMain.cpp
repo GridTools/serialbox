@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestMain.cpp ---------------------------------------------*- C++ -*-===//
+//===-- Benchmark/UnittestMain.cpp --------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,23 +12,22 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "Utility/BenchmarkEnvironment.h"
 #include "serialbox/Core/Logging.h"
-#include "Utility/UnittestEnvironment.h"
-#include <boost/filesystem.hpp>
 #include <gtest/gtest.h>
 
 using namespace serialbox;
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 
   // Initialize gtest
   testing::InitGoogleTest(&argc, argv);
 
-  // Initialize glog
+  // Initialize Logger
   Logging::disable();
 
   // Register test environment
-  testing::AddGlobalTestEnvironment(&unittest::UnittestEnvironment::getInstance());
+  testing::AddGlobalTestEnvironment(&unittest::BenchmarkEnvironment::getInstance());
 
   return RUN_ALL_TESTS();
 }

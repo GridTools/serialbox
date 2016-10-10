@@ -46,4 +46,11 @@ void ArchiveFactory::registerArchive(const std::string& name, const CreateArchiv
   }
 }
 
+std::vector<std::string> ArchiveFactory::registeredArchives() const {
+  std::vector<std::string> archives;
+  for(auto it = registeredArchives_.begin(), end = registeredArchives_.end(); it != end; ++it)
+    archives.push_back(it->first);
+  return archives;
+}
+
 } // namespace serialbox

@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Archive/ArchiveFactory.h"
+#include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/SHA256.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/Version.h"
@@ -142,7 +142,8 @@ void BinaryArchive::updateMetaData() { writeMetaDataToJson(); }
 //     Writing
 //===------------------------------------------------------------------------------------------===//
 
-FieldID BinaryArchive::write(StorageView& storageView, const std::string& field) throw(Exception) {
+FieldID BinaryArchive::write(const StorageView& storageView,
+                             const std::string& field) throw(Exception) {
   if(mode_ == OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Write' or 'Append'");
 

@@ -51,7 +51,7 @@ public:
       class PrimitiveType = typename MakePrimitive<DecayedValueType>::type,
       class = typename std::enable_if<!std::is_same<DecayedValueType, MetaInfoValue>::value>::type>
   explicit MetaInfoValue(ValueType&& value) {
-    static_assert(isSupported<PrimitiveType>::value, "ValueType is not supported");
+    static_assert(IsSupported<PrimitiveType>::value, "ValueType is not supported");
 
     type_ = ToTypeID<DecayedValueType>::value;
     any_ = boost::any(DecayedValueType(value));
@@ -69,7 +69,7 @@ public:
   ///                   conversions from primitive to array type
   template <class T>
   T as() const {
-    static_assert(isSupported<typename MakePrimitive<T>::type>::value,
+    static_assert(IsSupported<typename MakePrimitive<T>::type>::value,
                   "ValueType is not supported");
     return T(); // Unreachable
   }

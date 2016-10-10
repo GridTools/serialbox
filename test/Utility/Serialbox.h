@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/Utility/Serialbox.h --------------------------------------------*- C++ -*-===//
+//===-- Utility/Serialbox.h ---------------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_UNITTEST_CPP_UTILITY_SERIALBOX_H
-#define SERIALBOX_UNITTEST_CPP_UTILITY_SERIALBOX_H
+#ifndef SERIALBOX_UTILITY_SERIALBOX_H
+#define SERIALBOX_UTILITY_SERIALBOX_H
 
 #include "Utility/Config.h"
 

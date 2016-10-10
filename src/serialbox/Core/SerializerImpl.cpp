@@ -121,7 +121,7 @@ void SerializerImpl::checkStorageView(const std::string& name,
 //===------------------------------------------------------------------------------------------===//
 
 void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoint,
-                           StorageView& storageView) {
+                           const StorageView& storageView) {
   LOG(info) << "Serializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";
 
   if(mode_ == OpenModeKind::Read)

@@ -49,7 +49,7 @@ TEST(TypeTest, toString) {
   EXPECT_STREQ(ss.str().c_str(), "bool");
 }
 
-TEST(TypeTest, isArray) {
+TEST(TypeTest, IsArray) {
   EXPECT_TRUE(TypeUtil::isArray(TypeID::ArrayOfBoolean));
   EXPECT_TRUE(TypeUtil::isArray(TypeID::ArrayOfString));
   EXPECT_FALSE(TypeUtil::isArray(TypeID::Float64));

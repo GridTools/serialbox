@@ -18,6 +18,8 @@
 #include "serialbox/Core/Archive/Archive.h"
 #include "serialbox/Core/Type.h"
 #include <functional>
+#include <vector>
+#include <string>
 #include <map>
 #include <memory>
 
@@ -50,6 +52,9 @@ public:
 
   /// \brief Register an archive (this function is called by ´SERIALBOX_REGISTER_ARCHIVE´)
   void registerArchive(const std::string& name, const CreateArchiveFunction& func);
+  
+  /// \brief Get a vector of strings of the registered archives
+  std::vector<std::string> registeredArchives() const;
 
 private:
   std::map<std::string, CreateArchiveFunction> registeredArchives_;

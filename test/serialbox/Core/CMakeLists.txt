@@ -9,7 +9,7 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-set(CPP_UNITTEST_SOURCES
+set(SOURCES
   UnittestArray.cpp
   UnittestException.cpp
   UnittestFieldMap.cpp
@@ -45,15 +45,13 @@ set(CPP_UNITTEST_SOURCES
   Frontend/STELLA/UnittestUtility.cpp  
 )
 
-# Setup external libraries
-set(CPP_EXTERNAL_LIBRARIES ${Boost_LIBRARIES} 
-                           ${GTEST_LIBRARIES} 
-                           ${GLOG_LIBRARIES} 
-                           ${SHA256_LIBRARIES}
-                           ${SERIALBOX_OLD_LIBRARIES}
-                           ${STELLA_LIBRARIES})
+set(EXTERNAL_LIBRARIES SerialboxCoreLibraryStatic
+                       ${Boost_LIBRARIES} 
+                       ${GTEST_LIBRARIES} 
+                       ${SERIALBOX_OLD_LIBRARIES}
+                       ${STELLA_LIBRARIES})
   
-serialbox_add_cpp_unittest_executable(SerialboxCppUnittest 
-                                      "${CPP_EXTERNAL_LIBRARIES}"
-                                      ${CPP_UNITTEST_SOURCES} UnittestMain.cpp)
+serialbox_add_unittest_executable(SerialboxCppUnittest 
+                                  "${EXTERNAL_LIBRARIES}"
+                                  ${SOURCES} UnittestMain.cpp)
 

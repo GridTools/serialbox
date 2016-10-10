@@ -17,12 +17,12 @@
 
 using namespace serialbox;
 
-TEST(ArrayTest, isArray) {
+TEST(ArrayTest, IsArray) {
   using T1 = Array<double>;
-  static_assert(isArray<T1>::value == true, "Array of doubles");
+  static_assert(IsArray<T1>::value == true, "Array of doubles");
 
   using T2 = double;
-  static_assert(isArray<T2>::value == false, "Doubles");
+  static_assert(IsArray<T2>::value == false, "Doubles");
 }
 
 TEST(ArrayTest, MakePrimitive) {

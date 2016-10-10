@@ -61,7 +61,8 @@ option(SERIALBOX_TESTING_GRIDTOOLS "Build GridTools Unitests" OFF)
 option(SERIALBOX_TESTING_STELLA "Build STELLA Unitests" OFF)
 option(SERIALBOX_TESTING_OLD_SERIALBOX "Build compatiblity unitests with old serialbox" OFF)
 option(SERIALBOX_TESTING_DEATH_TESTS "Run death-tests" OFF)
-option(SERIALBOX_TESTING_PERF_TESTS "Run performance-tests" OFF)
+
+option(SERIALBOX_BENCHMARKING "Build benchmark exectuables" OFF)
 
 option(SERIALBOX_CODE_COVERAGE "Generate code coverage" OFF)
 option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" ON)
@@ -103,7 +104,7 @@ set(SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tools)
 
 # If we build the C Interface we require shared libraries
 if(SERIALBOX_ENABLE_C AND NOT(SERIALBOX_BUILD_SHARED))
-  message(STATUS "SERIALBOX_ENABLE_C requies shared library, setting SERIALBOX_BUILD_SHARED=ON")
+  message(STATUS "SERIALBOX_ENABLE_C requires shared libraries, setting SERIALBOX_BUILD_SHARED=ON")
   set(SERIALBOX_BUILD_SHARED ON)
 endif()
 
@@ -181,6 +182,10 @@ if(SERIALBOX_TESTING)
     find_package(GTest REQUIRED)
   endif()
   include_directories(SYSTEM ${GTEST_INCLUDE_DIRS})
+  
+  if(SERIALBOX_ENABLE_C)
+    set(SERIALBOX_HAS_C 1)
+  endif(SERIALBOX_ENABLE_C)
 endif(SERIALBOX_TESTING)
 
 #---------------------------------------- Boost ----------------------------------------------------
@@ -420,18 +425,15 @@ if(SERIALBOX_TESTING)
     add_definitions(-DSERIALBOX_RUN_DEATH_TESTS)
   endif()
   
-  # ------------------ C++ ------------------
-  
-  # Cpp Unittest Utility library
-  include_directories(${PROJECT_SOURCE_DIR}/test/Unittest)
+  # Unittest Utility library
+  include_directories(${PROJECT_SOURCE_DIR}/test)
   
   # Generate Utility/Config.h
-  set(SERIALBOX_CPP_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/test/Unittest/Utility/Config.h.cmake)
-  set(SERIALBOX_CPP_CONFIG_FILE ${CMAKE_BINARY_DIR}/test/Unittest/Utility/Config.h)
+  set(SERIALBOX_CPP_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/test/Utility/Config.h.cmake)
+  set(SERIALBOX_CPP_CONFIG_FILE ${CMAKE_BINARY_DIR}/test/Utility/Config.h)
   configure_file(${SERIALBOX_CPP_CONFIG_FILE_IN} ${SERIALBOX_CPP_CONFIG_FILE})
-  include_directories(${CMAKE_BINARY_DIR}/test/Unittest)
+  include_directories(${CMAKE_BINARY_DIR}/test)
   
   add_subdirectory(test)
 endif(SERIALBOX_TESTING)
-
 

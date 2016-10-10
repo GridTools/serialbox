@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/Utility/UnittestEnvironment.cpp --------------------------------*- C++ -*-===//
+//===-- Utility/UnittestEnvironment.cpp ---------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -15,6 +15,7 @@
 #include "Utility/UnittestEnvironment.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Logging.h"
+#include "serialbox/Core/STLExtras.h"
 
 namespace serialbox {
 
@@ -41,14 +42,14 @@ void UnittestEnvironment::SetUp() {
 
   // Try to create a path to run our unittests in the form "$(pwd)/unittest-tmp-dir/"
   try {
-    directory_ = std::make_shared<boost::filesystem::path>(
+    directory_ = std::make_unique<boost::filesystem::path>(
         boost::filesystem::current_path() / boost::filesystem::path("unittest-tmp-dir"));
-    
+
     if(boost::filesystem::exists(*directory_))
       boost::filesystem::remove_all(*directory_);
-       
+
     hasError = !boost::filesystem::create_directories(*directory_);
-    
+
     LOG(info) << "Creating unittest directory: " << directory_->string();
   } catch(boost::filesystem::filesystem_error& e) {
     LOG(warning) << "unresolved boost::filesystem::filesystem_error: " << e.what();

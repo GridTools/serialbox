@@ -10,18 +10,13 @@
 cmake_minimum_required(VERSION 3.1)
 
 set(SOURCES 
-  UnittestEnvironment.cpp
-  FileUtility.h
-  UnittestEnvironment.h
-  GridTools.h
-  Storage.h
-  STELLA.h
-  Serialbox.h
+  UnittestLogging.cpp
 )
 
-add_library(SerialboxUnittestUtility STATIC ${SOURCES})
-
-if(DEFINED BUILD_GTEST)
-  add_dependencies(SerialboxUnittestUtility gtest)
-endif()
+# Setup external libraries
+set(EXTERNAL_LIBRARIES SerialboxCLibraryStatic ${Boost_LIBRARIES} ${GTEST_LIBRARIES})
+  
+serialbox_add_unittest_executable(SerialboxCUnittest 
+                                  "${EXTERNAL_LIBRARIES}"
+                                  ${SOURCES} UnittestMain.cpp)
 

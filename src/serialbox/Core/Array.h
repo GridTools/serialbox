@@ -15,8 +15,8 @@
 #ifndef SERIALBOX_CORE_ARRAY_H
 #define SERIALBOX_CORE_ARRAY_H
 
-#include <boost/mpl/bool.hpp>
 #include <vector>
+#include <type_traits>
 
 namespace serialbox {
 
@@ -28,10 +28,10 @@ using Array = std::vector<T>;
 /// \brief Check if type ´T´ is an Array
 /// @{
 template <typename T>
-struct isArray : public boost::mpl::false_ {};
+struct IsArray : public std::false_type {};
 
 template <typename T>
-struct isArray<Array<T>> : public boost::mpl::true_ {};
+struct IsArray<Array<T>> : public std::true_type {};
 /// @}
 
 namespace internal {
@@ -51,7 +51,7 @@ struct MakePrimitiveImpl<T, false> {
 /// \brief Return the primtive type (´T::value_type´) if ´T´ is an Array or ´T´ otherwise
 template <class T>
 struct MakePrimitive {
-  using type = typename internal::MakePrimitiveImpl<T, isArray<T>::value>::type;
+  using type = typename internal::MakePrimitiveImpl<T, IsArray<T>::value>::type;
 };
 
 } // namespace serialbox

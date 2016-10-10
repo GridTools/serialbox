@@ -251,7 +251,8 @@ public:
   /// \throw Exception
   ///
   /// \see serialbox::Archive::write "Archive::write"
-  void write(const std::string& name, const SavepointImpl& savepoint, StorageView& storageView);
+  void write(const std::string& name, const SavepointImpl& savepoint,
+             const StorageView& storageView);
 
   //===----------------------------------------------------------------------------------------===//
   //     Reading

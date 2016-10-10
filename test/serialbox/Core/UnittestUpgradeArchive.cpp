@@ -231,6 +231,14 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
 
   // Old archives can only be used in Read mode
   {
+    auto timeStampBeforeConstruction = boost::filesystem::last_write_time(
+        this->directory->path() / "MetaData-UpgradeArchiveTest.json");
+    
+    // Mark old serialbox data as newer
+    boost::filesystem::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
+                                       timeStampBeforeConstruction + 1);
+    
+    // Try to perform upgrade but fail because open mode is write -> Exception
     ASSERT_THROW(SerializerImpl(OpenModeKind::Write, this->directory->path().string(),
                                 "UpgradeArchiveTest", "BinaryArchive"),
                  Exception);

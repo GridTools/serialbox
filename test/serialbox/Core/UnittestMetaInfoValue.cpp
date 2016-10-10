@@ -25,7 +25,7 @@ class MetaInfoValueTest : public testing::Test {};
 // Generate a pair of values v1 and v2 of type T wiht v1 != v2
 template <class T>
 std::pair<T, T> getValuePair() {
-  static_assert(isSupported<T>::value, "type is not supported (cannot be mapped to TypeID)");
+  static_assert(IsSupported<T>::value, "type is not supported (cannot be mapped to TypeID)");
   return std::make_pair<T, T>(T(), T());
 }
 

@@ -78,9 +78,10 @@ public:
   /// \name Archive implementation
   /// \see serialbox::Archive "Archive"
   /// @{
-  virtual FieldID write(StorageView& storageView,
+  virtual FieldID write(const StorageView& storageView,
                         const std::string& fieldID) throw(Exception) override;
-  virtual void read(StorageView& storageView, const FieldID& fieldID) throw(Exception) override;
+  virtual void read(StorageView& storageView,
+                    const FieldID& fieldID) throw(Exception) override;
   virtual void updateMetaData() override;
   virtual OpenModeKind mode() const override { return mode_; }
   virtual const std::string& directory() const override { return directory_.string(); }

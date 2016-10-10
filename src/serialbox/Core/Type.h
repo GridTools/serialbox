@@ -77,7 +77,7 @@ enum class TypeID : int {
 ///
 /// \see TypeID
 template <class T>
-struct isSupported {
+struct IsSupported {
 
   /// \brief Set of supported types
   using SupportedTypesSet = boost::mpl::set<bool, int, std::int64_t, float, double, std::string>;
@@ -120,7 +120,7 @@ struct TypeUtil {
 /// \brief Convert C++ type \c T to \ref serialbox::TypeID "TypeID"
 template <class T>
 struct ToTypeID {
-  static_assert(isSupported<typename MakePrimitive<T>::type>::value,
+  static_assert(IsSupported<typename MakePrimitive<T>::type>::value,
                 "type is not supported (cannot be mapped to TypeID)");
 };
 

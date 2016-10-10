@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/FileUtility.h"
+#include "Utility/SerializerTestBase.h"
 #include "Utility/STELLA.h"
 #include "Utility/Storage.h"
 #include "serialbox/Core/Frontend/STELLA/SerializationException.h"
@@ -29,19 +29,7 @@ using namespace unittest;
 
 namespace {
 
-class STELLASerializerUtilityTest : public testing::Test {
-public:
-  std::shared_ptr<Directory> directory;
-
-protected:
-  virtual void SetUp() override {
-    directory = std::make_shared<Directory>(UnittestEnvironment::getInstance().directory() /
-                                            UnittestEnvironment::getInstance().testCaseName() /
-                                            UnittestEnvironment::getInstance().testName());
-  }
-
-  virtual void TearDown() override { directory.reset(); }
-};
+class STELLASerializerUtilityTest : public SerializerUnittestBase {};
 
 } // anonymous namespace
 
@@ -198,19 +186,7 @@ TEST_F(STELLASerializerUtilityTest, FieldMetaInfo) {
 namespace {
 
 template <class T>
-class STELLASerializerReadWriteTest : public testing::Test {
-public:
-  std::shared_ptr<Directory> directory;
-
-protected:
-  virtual void SetUp() override {
-    directory = std::make_shared<Directory>(UnittestEnvironment::getInstance().directory() /
-                                            UnittestEnvironment::getInstance().testCaseName() /
-                                            UnittestEnvironment::getInstance().testName());
-  }
-
-  virtual void TearDown() override { directory.reset(); }
-};
+class STELLASerializerReadWriteTest : public SerializerUnittestBase {};
 
 using TestTypes = testing::Types<double, float, int>;
 

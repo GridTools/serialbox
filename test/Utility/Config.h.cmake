@@ -1,4 +1,4 @@
-//===--Unittest/Cpp/Utility/CppConfig.h ---------------------------------------------*- C++ -*-===//
+//===--Utility/CppConfig.h ----------------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -22,6 +22,9 @@
 
 /* Define if compatibility Unittests with old serialbox are built */
 #cmakedefine SERIALBOX_HAS_SERIALBOX_OLD ${SERIALBOX_HAS_SERIALBOX_OLD}
+
+/* Define if C Unittests are built */
+#cmakedefine SERIALBOX_HAS_C ${SERIALBOX_HAS_C}
 
 /* Define if Fortran Unittests are built */
 #cmakedefine SERIALBOX_HAS_FORTRAN ${SERIALBOX_HAS_FORTRAN}

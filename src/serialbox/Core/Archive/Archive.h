@@ -30,7 +30,8 @@ public:
   virtual ~Archive() {}
 
   ///
-  virtual FieldID write(StorageView& storageView, const std::string& field) throw(Exception) = 0;
+  virtual FieldID write(const StorageView& storageView,
+                        const std::string& field) throw(Exception) = 0;
 
   ///
   virtual void read(StorageView& storageView, const FieldID& fieldID) throw(Exception) = 0;

@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/Utility/Storage.h ----------------------------------------------*- C++ -*-===//
+//===-- Utility/Storage.h -----------------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_UNITTEST_CPP_UTILITY_STORAGE_H
-#define SERIALBOX_UNITTEST_CPP_UTILITY_STORAGE_H
+#ifndef SERIALBOX_UTILITY_STORAGE_H
+#define SERIALBOX_UTILITY_STORAGE_H
 
 #include "serialbox/Core/Logging.h"
 #include "serialbox/Core/STLExtras.h"
@@ -78,7 +78,8 @@ struct Storage {
   Storage& operator=(const Storage&) = default;
   Storage& operator=(Storage&&) = default;
 
-  Storage(StorageOrderKind ordering, std::initializer_list<int> dims,
+  template<class Dimensions>
+  Storage(StorageOrderKind ordering, Dimensions&& dims,
           std::function<T(int)> init = Storage<T>::sequential)
       : ordering_(ordering), dims_(dims) {
     padding_.resize(dims_.size(), std::make_pair<int, int>(0, 0));
@@ -94,8 +95,9 @@ struct Storage {
     computeStrides();
     forEach(init);
   }
-
-  Storage(StorageOrderKind ordering, std::initializer_list<int> dims,
+  
+  template<class Dimensions>  
+  Storage(StorageOrderKind ordering, Dimensions&& dims,
           std::initializer_list<std::pair<int, int>> padding,
           std::function<T(int)> init = Storage<T>::sequential)
       : ordering_(ordering), dims_(dims), padding_(padding) {

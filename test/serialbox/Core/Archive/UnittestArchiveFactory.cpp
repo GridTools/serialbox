@@ -26,18 +26,18 @@ public:
   DummyArchive(OpenModeKind mode, const std::string& directory, const std::string& prefix)
       : mode_(mode), directory_(directory), prefix_(prefix) {}
 
-  virtual FieldID write(StorageView& storageView,
+  virtual FieldID write(const StorageView& storageView,
                         const std::string& fieldID) throw(Exception) override {
     return FieldID{"dummy", 0};
   }
   virtual void read(StorageView& storageView, const FieldID& fieldID) throw(Exception) override{};
-  virtual void updateMetaData() override {};
+  virtual void updateMetaData() override{};
   virtual OpenModeKind mode() const override { return mode_; }
   virtual const std::string& directory() const override { return directory_; }
   virtual const std::string& prefix() const override { return prefix_; }
   virtual const std::string& name() const override { return DummyArchive::Name; }
   virtual const std::string& metaDataFile() const override { return directory_; }
-  virtual void clear() override {};
+  virtual void clear() override{};
   virtual std::ostream& toStream(std::ostream& stream) const override { return stream; }
 
   static std::unique_ptr<Archive> create(OpenModeKind mode, const std::string& directory,
@@ -60,6 +60,7 @@ using namespace serialbox;
 
 TEST(ArchiveFactory, Register) {
 #ifdef SERIALBOX_RUN_DEATH_TESTS
+  // Register archive twice -> std::exit(1)
   ASSERT_DEATH_IF_SUPPORTED(
       ArchiveFactory::getInstance().registerArchive("DummyArchive", DummyArchive::create), "");
 #endif
@@ -77,4 +78,12 @@ TEST(ArchiveFactory, Create) {
   // Archive does not exists
   ASSERT_THROW(ArchiveFactory::getInstance().create("XXX", OpenModeKind::Write, "d", "p"),
                Exception);
+}
+
+TEST(ArchiveFactory, registerdArchives) {
+  std::vector<std::string> archives(ArchiveFactory::getInstance().registeredArchives());
+
+  EXPECT_GE(archives.size(), 2); // Dummy and Binary
+
+  EXPECT_TRUE(std::find(archives.begin(), archives.end(), "DummyArchive") != archives.end());
 }

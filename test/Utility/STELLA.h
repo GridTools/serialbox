@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/Utility/STELLA.h -----------------------------------------------*- C++ -*-===//
+//===-- Utility/STELLA.h ------------------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_UNITTEST_CPP_UTILITY_STELLA_H
-#define SERIALBOX_UNITTEST_CPP_UTILITY_STELLA_H
+#ifndef SERIALBOX_UTILITY_STELLA_H
+#define SERIALBOX_UTILITY_STELLA_H
 
 #include "Utility/Config.h"
 

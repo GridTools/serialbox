@@ -1,4 +1,4 @@
-//===-- Unittest/Cpp/Utility/UnittestEnvironment.h ----------------------------------*- C++ -*-===//
+//===-- Utility/UnittestEnvironment.h -----------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_UNITTEST_CPP_UTILITY_UNITTESTENVIRONMENT_H
-#define SERIALBOX_UNITTEST_CPP_UTILITY_UNITTESTENVIRONMENT_H
+#ifndef SERIALBOX_UTILITY_UNITTESTENVIRONMENT_H
+#define SERIALBOX_UTILITY_UNITTESTENVIRONMENT_H
 
 #include <boost/filesystem.hpp>
 #include <gtest/gtest.h>
@@ -23,7 +23,7 @@ namespace serialbox {
 namespace unittest {
 
 /// \brief Global access to the testing infrastructure
-class UnittestEnvironment : public ::testing::Environment, boost::noncopyable /* singleton */ {
+class UnittestEnvironment : public ::testing::Environment /* singleton */ {
 public:
   UnittestEnvironment(bool cleanup) : cleanup_(cleanup) {}
   
@@ -43,7 +43,7 @@ public:
   
 private:
   bool cleanup_;
-  std::shared_ptr<boost::filesystem::path> directory_; 
+  std::unique_ptr<boost::filesystem::path> directory_; 
   static UnittestEnvironment* instance_;
 };
 

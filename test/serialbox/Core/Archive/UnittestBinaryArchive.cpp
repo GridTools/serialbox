@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/FileUtility.h"
+#include "Utility/SerializerTestBase.h"
 #include "Utility/Storage.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Version.h"
@@ -28,20 +28,7 @@ using namespace unittest;
 
 namespace {
 
-class BinaryArchiveUtilityTest : public testing::Test {
-public:
-  std::shared_ptr<Directory> directory;
-
-protected:
-  virtual void SetUp() override {
-    directory = std::make_shared<Directory>(UnittestEnvironment::getInstance().directory() /
-                                            UnittestEnvironment::getInstance().testCaseName() /
-                                            UnittestEnvironment::getInstance().testName());
-  }
-
-  virtual void TearDown() override { directory.reset(); }
-};
-
+class BinaryArchiveUtilityTest : public SerializerUnittestBase {};
 
 } // anonymous namespace
 

@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/FileUtility.h"
+#include "Utility/SerializerTestBase.h"
 #include "Utility/Storage.h"
 #include "serialbox/Core/SerializerImpl.h"
 #include <gtest/gtest.h>
@@ -26,19 +26,7 @@ using namespace unittest;
 
 namespace {
 
-class SerializerImplUtilityTest : public testing::Test {
-public:
-  std::shared_ptr<Directory> directory;
-
-protected:
-  virtual void SetUp() override {
-    directory = std::make_shared<Directory>(UnittestEnvironment::getInstance().directory() /
-                                            UnittestEnvironment::getInstance().testCaseName() /
-                                            UnittestEnvironment::getInstance().testName());
-  }
-
-  virtual void TearDown() override { directory.reset(); }
-};
+class SerializerImplUtilityTest : public SerializerUnittestBase {};
 
 } // anonymous namespace
 
@@ -517,19 +505,7 @@ TEST_F(SerializerImplUtilityTest, toString) {
 namespace {
 
 template <class T>
-class SerializerImplReadWriteTest : public testing::Test {
-public:
-  std::shared_ptr<Directory> directory;
-
-protected:
-  virtual void SetUp() override {
-    directory = std::make_shared<Directory>(UnittestEnvironment::getInstance().directory() /
-                                            UnittestEnvironment::getInstance().testCaseName() /
-                                            UnittestEnvironment::getInstance().testName());
-  }
-
-  virtual void TearDown() override { directory.reset(); }
-};
+class SerializerImplReadWriteTest : public SerializerUnittestBase {};
 
 using TestTypes = testing::Types<double, float, int, std::int64_t>;
 
