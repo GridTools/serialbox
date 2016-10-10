@@ -15,21 +15,11 @@
 #ifndef SERIALBOX_C_SERIALIZER_H
 #define SERIALBOX_C_SERIALIZER_H
 
-#include "serialbox-c/DataFieldInfo.h"
+#include "serialbox-c/Type.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * \brief Policy for opening files in the Serializer and Archive
- */
-enum serialboxOpenModeKind { Read = 0, Write, Append };
-
-/**
- * \brief Refrence to a serializer
- */
-typedef void* serialboxSerializer_t;
 
 /**
  * \brief Create a new Serializer
@@ -50,9 +40,9 @@ serialboxSerializer_t serialboxSerializerCreate(serialboxOpenModeKind mode, cons
 /**
  * \brief Destroy the serializer and deallocate all memory
  *
- * \param serializer  Serializer to use
+ * \param serializerPtr  Pointer to Serializer to use
  */
-void serialboxSerializerDestroy(serialboxSerializer_t serializer);
+void serialboxSerializerDestroy(serialboxSerializer_t* serializerPtr);
 
 /**
  * \brief Return mode of the Serializer

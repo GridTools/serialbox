@@ -12,6 +12,8 @@ cmake_minimum_required(VERSION 3.1)
 set(SOURCES
   BenchmarkEnvironment.h
   BenchmarkEnvironment.cpp
+  CInterfaceTestBase.h
+  CInterfaceTestBase.cpp  
   FileUtility.h
   GridTools.h
   Storage.h

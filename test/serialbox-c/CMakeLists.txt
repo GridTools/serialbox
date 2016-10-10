@@ -11,6 +11,9 @@ cmake_minimum_required(VERSION 3.1)
 
 set(SOURCES 
   UnittestLogging.cpp
+  UnittestFieldMetaInfo.cpp
+  UnittestSerializer.cpp
+  UnittestMetaInfo.cpp
 )
 
 # Setup external libraries

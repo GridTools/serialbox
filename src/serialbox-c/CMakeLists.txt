@@ -11,6 +11,8 @@ cmake_minimum_required(VERSION 3.1)
 
 set(SOURCES 
   ErrorHandling.cpp
+  FieldMetaInfo.cpp
+  MetaInfo.cpp
   Serializer.cpp
   Logging.cpp
 )

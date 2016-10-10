@@ -18,5 +18,6 @@
 #include "serialbox-c/ErrorHandling.h"
 #include "serialbox-c/Logging.h"
 #include "serialbox-c/Serializer.h"
+#include "serialbox-c/Type.h"
 
 #endif

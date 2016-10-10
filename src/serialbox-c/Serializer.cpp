@@ -12,8 +12,8 @@
  *
 \*===------------------------------------------------------------------------------------------===*/
 
-#include "serialbox-c/Serializer.h"
 #include "serialbox-c/ErrorHandling.h"
+#include "serialbox-c/Serializer.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Unreachable.h"
@@ -46,17 +46,17 @@ serialboxSerializer_t serialboxSerializerCreate(serialboxOpenModeKind mode, cons
       break;
     }
   } catch(std::exception& e) {
-    serializer = NULL;
     serialboxFatalError(e.what());
   }
-  return serializer ? static_cast<serialboxSerializer_t>(serializer) : NULL;
+  return static_cast<serialboxSerializer_t>(serializer);
 }
 
-void serialboxSerializerDestroy(serialboxSerializer_t serializer) {
-  Serializer* ser = internal::toSerializer(serializer);
-  if(ser)
+void serialboxSerializerDestroy(serialboxSerializer_t* serializerPtr) {
+  if(serializerPtr) {
+    Serializer* ser = internal::toSerializer(*serializerPtr);
     delete ser;
-  ser = NULL;
+    *serializerPtr = NULL;
+  }
 }
 
 serialboxOpenModeKind serialboxSerializerGetMode(serialboxSerializer_t serializer) {

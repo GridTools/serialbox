@@ -1,4 +1,4 @@
-//===-- serialbox-c/UnittestLogging.cpp ---------------------------------------------*- C++ -*-===//
+//===-- serialbox-c/UnittestSerializer.cpp ------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,17 +8,9 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file implements the unittests of C Interface Logger.
+/// This file implements the unittests of the C Interface.
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox-c/Logging.h"
+#include "serialbox-c/Serializer.h"
 #include <gtest/gtest.h>
-
-TEST(CLoggingTest, EnableAndDisable) {
-  serialboxLoggingEnable();
-  ASSERT_TRUE(serialboxLoggingIsEnabled());
-
-  serialboxLoggingDisable();
-  ASSERT_FALSE(serialboxLoggingIsEnabled());
-}
