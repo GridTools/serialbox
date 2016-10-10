@@ -9,5 +9,19 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-## Add subdirectories
-add_subdirectory(Cpp)
+set(SOURCES 
+  UnittestEnvironment.cpp
+  FileUtility.h
+  UnittestEnvironment.h
+  GridTools.h
+  Storage.h
+  STELLA.h
+  Serialbox.h
+)
+
+add_library(SerialboxUnittestUtility STATIC ${SOURCES})
+
+if(DEFINED BUILD_GTEST)
+  add_dependencies(SerialboxUnittestUtility gtest)
+endif()
+

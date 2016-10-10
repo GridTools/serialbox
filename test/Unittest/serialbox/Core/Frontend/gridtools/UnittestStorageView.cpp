@@ -14,7 +14,7 @@
 
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/StorageView.h"
-#include "Utility/Cpp/GridTools.h"
+#include "Utility/GridTools.h"
 #include <gtest/gtest.h>
 #include <memory>
 

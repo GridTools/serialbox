@@ -23,7 +23,7 @@ cmake_minimum_required(VERSION 3.1)
 function(serialbox_add_cpp_unittest_executable name libraries)
   add_executable(${name} ${ARGN} ${SERIALBOX_HEADERS})
   target_link_libraries(${name} ${libraries} 
-                                SerialboxCppUnittestUtilityLibrary 
+                                SerialboxUnittestUtility 
                                 SerialboxCoreLibraryStatic)
   
   if(DEFINED SERIALBOX_VERBOSE_WARNINGS)
@@ -54,6 +54,5 @@ endfunction(serialbox_add_cpp_unittest_executable)
 
 ## Add subdirectories
 add_subdirectory(Utility)
-add_subdirectory(Cpp)
-
+add_subdirectory(serialbox)
 

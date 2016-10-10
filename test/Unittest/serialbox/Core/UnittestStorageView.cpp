@@ -12,15 +12,15 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/Cpp/Storage.h"
+#include "Utility/Storage.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/Type.h"
 #include <boost/algorithm/string.hpp>
-#include <cstring>
 #include <gtest/gtest.h>
+#include <cstring>
 #include <numeric>
-
+ 
 using namespace serialbox;
 using namespace unittest;
 

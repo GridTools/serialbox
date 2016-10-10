@@ -13,7 +13,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/Core/STLExtras.h"
-#include "Utility/Cpp/Storage.h"
+#include "Utility/Storage.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

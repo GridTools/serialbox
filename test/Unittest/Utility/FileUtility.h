@@ -15,7 +15,7 @@
 #ifndef SERIALBOX_UNITTEST_FILEUTILITY_H
 #define SERIALBOX_UNITTEST_FILEUTILITY_H
 
-#include "Utility/Cpp/UnittestEnvironment.h"
+#include "Utility/UnittestEnvironment.h"
 #include <boost/filesystem.hpp>
 #include <fstream>
 

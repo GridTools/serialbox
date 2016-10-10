@@ -13,7 +13,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/Core/Logging.h"
-#include "Utility/Cpp/UnittestEnvironment.h"
+#include "Utility/UnittestEnvironment.h"
 #include <boost/filesystem.hpp>
 #include <gtest/gtest.h>
 

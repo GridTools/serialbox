@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/Cpp/FileUtility.h"
-#include "Utility/Cpp/Storage.h"
+#include "Utility/FileUtility.h"
+#include "Utility/Storage.h"
 #include "serialbox/Core/SerializerImpl.h"
 #include <gtest/gtest.h>
 

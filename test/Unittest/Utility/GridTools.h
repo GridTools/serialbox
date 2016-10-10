@@ -15,7 +15,7 @@
 #ifndef SERIALBOX_UNITTEST_CPP_UTILITY_GRIDTOOLS_H
 #define SERIALBOX_UNITTEST_CPP_UTILITY_GRIDTOOLS_H
 
-#include "Utility/Cpp/CppConfig.h"
+#include "Utility/Config.h"
 
 #ifdef SERIALBOX_HAS_GRIDTOOLS
 

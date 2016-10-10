@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/Cpp/UnittestEnvironment.h"
+#include "Utility/UnittestEnvironment.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Logging.h"
 
