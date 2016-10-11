@@ -47,6 +47,22 @@ struct InsertHelper {
 
 } // anonymous namespace
 
+std::vector<std::string> MetaInfoMap::keys() const {
+  std::vector<std::string> keys;
+  keys.reserve(map_.size());
+  for(auto it = map_.begin(), end = map_.end(); it != end; ++it)
+    keys.push_back(it->first);
+  return keys;
+}
+
+std::vector<TypeID> MetaInfoMap::types() const {
+  std::vector<TypeID> types;
+  types.reserve(map_.size());
+  for(auto it = map_.begin(), end = map_.end(); it != end; ++it)
+    types.push_back(it->second.type());
+  return types;
+}
+
 MetaInfoMap::mapped_type& MetaInfoMap::at(const MetaInfoMap::key_type& key) {
   try {
     return map_.at(key);

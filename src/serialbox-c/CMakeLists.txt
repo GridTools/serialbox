@@ -9,10 +9,13 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-set(SOURCES 
+set(SOURCES
+  Archive.h
+  Archive.cpp
   ErrorHandling.cpp
   FieldMetaInfo.cpp
   MetaInfo.cpp
+  Savepoint.cpp
   Serializer.cpp
   Logging.cpp
 )

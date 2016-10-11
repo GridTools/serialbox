@@ -22,6 +22,7 @@
 #include <iosfwd>
 #include <string>
 #include <unordered_map>
+#include <vector>
 #include <utility>
 
 namespace serialbox {
@@ -83,6 +84,20 @@ public:
   bool hasKey(StringType&& key) const noexcept {
     return (map_.find(key) != map_.end());
   }
+  
+  /// \brief Get vector of strings of all available keys
+  /// 
+  /// To get the corresponding TypeIDs, use ´MetaInfoMap::types()´.
+  /// 
+  /// \return vector of strings of all keys
+  std::vector<std::string> keys() const;
+  
+  /// \brief Get vector of all available keys
+  ///
+  /// To get the corresponding keys, use ´MetaInfoMap::keys()´.
+  ///  
+  /// \return vector of TypeIDs of all elements
+  std::vector<TypeID> types() const;
 
   /// \brief Search the container for an element with a key equivalent to ´key´ and return an
   /// iterator to it if found, otherwise it returns an iterator to MetaInfoMap::end

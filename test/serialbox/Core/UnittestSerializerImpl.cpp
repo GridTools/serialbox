@@ -30,7 +30,7 @@ class SerializerImplUtilityTest : public SerializerUnittestBase {};
 
 } // anonymous namespace
 
-TEST_F(SerializerImplUtilityTest, ConstructionOfEmptySerializer) {
+TEST_F(SerializerImplUtilityTest, Construction) {
   // -----------------------------------------------------------------------------------------------
   // OpenModeKind::Write
   // -----------------------------------------------------------------------------------------------

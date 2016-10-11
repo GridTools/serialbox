@@ -16,9 +16,18 @@
 #include <gtest/gtest.h>
 
 TEST(CLoggingTest, EnableAndDisable) {
+  // Capture current state
+  int loggingState = serialboxLoggingIsEnabled();
+
+  // Disable logging
   serialboxLoggingEnable();
   ASSERT_TRUE(serialboxLoggingIsEnabled());
 
+  // Enable logging
   serialboxLoggingDisable();
   ASSERT_FALSE(serialboxLoggingIsEnabled());
+
+  // Restore logging state
+  if(loggingState)
+    serialboxLoggingEnable();
 }

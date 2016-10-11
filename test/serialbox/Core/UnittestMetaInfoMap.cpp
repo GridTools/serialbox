@@ -39,6 +39,12 @@ TEST(MetaInfoMapTest, Construction) {
   EXPECT_EQ(map["key1"].as<std::string>(), "value2");
   EXPECT_EQ(map.at("key1").as<std::string>(), "value2");
   EXPECT_THROW(map.at("key2").as<std::string>(), Exception);
+  
+  // Get vector of keys
+  EXPECT_EQ(map.keys(), std::vector<std::string>{"key1"});
+  
+  // Get vector of types
+  EXPECT_EQ(map.types(), std::vector<TypeID>{TypeID::String});  
 
   const MetaInfoMap constMap;
   EXPECT_THROW(constMap.at("key2").as<std::string>(), Exception);

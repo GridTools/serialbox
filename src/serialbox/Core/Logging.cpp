@@ -14,9 +14,12 @@
 
 #include "serialbox/Core/Logging.h"
 
+
 namespace serialbox {
 
 namespace internal {
+
+bool LoggingIsEnabled = false;
 
 NullLogger* NullLogger::instance_ = nullptr;
 
@@ -27,7 +30,5 @@ NullLogger& NullLogger::getInstance() noexcept {
 }
 
 } // namespace internal
-
-bool Logging::enable_ = false;
 
 } // namespace serialbox

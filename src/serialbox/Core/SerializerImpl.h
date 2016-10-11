@@ -77,7 +77,7 @@ public:
   void clear() noexcept;
 
   //===----------------------------------------------------------------------------------------===//
-  //     Global meta-information
+  //     Global Meta-Information
   //===----------------------------------------------------------------------------------------===//
 
   /// \brief Add a new key-value pair to the global meta-information of the Serializer
@@ -117,7 +117,7 @@ public:
   const std::shared_ptr<MetaInfoMap>& globalMetaInfoPtr() const noexcept { return globalMetaInfo_; }
 
   //===----------------------------------------------------------------------------------------===//
-  //     FieldMap
+  //     Register and Query Fields
   //===----------------------------------------------------------------------------------------===//
 
   /// \brief Register a new field within the Serializer
@@ -178,7 +178,7 @@ public:
   const std::shared_ptr<FieldMap>& fieldMapPtr() const noexcept { return fieldMap_; }
 
   //===----------------------------------------------------------------------------------------===//
-  //     SavepointVector
+  //     Register and Query Savepoints
   //===----------------------------------------------------------------------------------------===//
 
   /// \brief Register a savepoint

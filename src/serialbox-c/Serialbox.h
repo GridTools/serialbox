@@ -8,7 +8,7 @@
  *===------------------------------------------------------------------------------------------===//
  *
  *! \file
- *! This file contains the C Interface of Serialbox.
+ *! This file includes all headers of the C Interface of Serialbox.
  *
 \*===------------------------------------------------------------------------------------------===*/
 
@@ -18,6 +18,7 @@
 #include "serialbox-c/ErrorHandling.h"
 #include "serialbox-c/Logging.h"
 #include "serialbox-c/Serializer.h"
+#include "serialbox-c/Savepoint.h"
 #include "serialbox-c/Type.h"
 
 #endif

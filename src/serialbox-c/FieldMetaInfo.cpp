@@ -12,24 +12,17 @@
  *
 \*===------------------------------------------------------------------------------------------===*/
 
-#include "serialbox-c/ErrorHandling.h"
 #include "serialbox-c/FieldMetaInfo.h"
-#include "serialbox/Core/FieldMetaInfo.h"
+#include "serialbox-c/Utility.h"
 
-using FieldMetaInfo = serialbox::FieldMetaInfo;
+using namespace serialboxC;
 
-namespace internal {
+/*===------------------------------------------------------------------------------------------===*\
+ *     Construction & Destruction
+\*===------------------------------------------------------------------------------------------===*/
 
-static FieldMetaInfo* toFieldMetaInfo(serialboxFieldMetaInfo_t fieldMetaInfo) {
-  if(!fieldMetaInfo)
-    serialboxFatalError("invalid FieldMetaInfo: NULL pointer");
-  return reinterpret_cast<FieldMetaInfo*>(fieldMetaInfo);
-}
-
-} // namespace internal
-
-serialboxFieldMetaInfo_t serialboxFieldMetaInfoCreate(serialboxTypeID type, int numDimensions,
-                                                      int* dimensions) {
+serialboxFieldMetaInfo_t serialboxFieldMetaInfoCreate(serialboxTypeID type, const int* dimensions,
+                                                      int numDimensions) {
 
   std::vector<int> dims(dimensions, dimensions + numDimensions);
   serialboxFieldMetaInfo_t fieldMetaInfo = NULL;
@@ -43,28 +36,47 @@ serialboxFieldMetaInfo_t serialboxFieldMetaInfoCreate(serialboxTypeID type, int 
 
 void serialboxFieldMetaInfoDestroy(serialboxFieldMetaInfo_t* fieldMetaInfoPtr) {
   if(fieldMetaInfoPtr) {
-    FieldMetaInfo* info = internal::toFieldMetaInfo(*fieldMetaInfoPtr);
+    FieldMetaInfo* info = toFieldMetaInfo(*fieldMetaInfoPtr);
     delete info;
     *fieldMetaInfoPtr = NULL;
   }
 }
 
-serialboxTypeID serialboxFieldMetaInfoGetTypeID(serialboxFieldMetaInfo_t fieldMetaInfo) {
-  FieldMetaInfo* info = internal::toFieldMetaInfo(fieldMetaInfo);
+/*===------------------------------------------------------------------------------------------===*\
+ *     Utility
+\*===------------------------------------------------------------------------------------------===*/
+
+int serialboxFieldMetaInfoEqual(const serialboxFieldMetaInfo_t f1,
+                                const serialboxFieldMetaInfo_t f2) {
+  const FieldMetaInfo* info1 = toConstFieldMetaInfo(f1);
+  const FieldMetaInfo* info2 = toConstFieldMetaInfo(f2);
+  return ((*info1) == (*info2));
+}
+
+/*===------------------------------------------------------------------------------------------===*\
+ *     Dimensions and TypeID
+\*===------------------------------------------------------------------------------------------===*/
+
+serialboxTypeID serialboxFieldMetaInfoGetTypeID(const serialboxFieldMetaInfo_t fieldMetaInfo) {
+  const FieldMetaInfo* info = toConstFieldMetaInfo(fieldMetaInfo);
   return serialboxTypeID((int)info->type());
 }
 
-const int* serialboxFieldMetaInfoGetDimensions(serialboxFieldMetaInfo_t fieldMetaInfo) {
-  FieldMetaInfo* info = internal::toFieldMetaInfo(fieldMetaInfo);
+const int* serialboxFieldMetaInfoGetDimensions(const serialboxFieldMetaInfo_t fieldMetaInfo) {
+  const FieldMetaInfo* info = toConstFieldMetaInfo(fieldMetaInfo);
   return info->dims().data();
 }
 
-int serialboxFieldMetaInfoGetNumDimensions(serialboxFieldMetaInfo_t fieldMetaInfo) {
-  FieldMetaInfo* info = internal::toFieldMetaInfo(fieldMetaInfo);
+int serialboxFieldMetaInfoGetNumDimensions(const serialboxFieldMetaInfo_t fieldMetaInfo) {
+  const FieldMetaInfo* info = toConstFieldMetaInfo(fieldMetaInfo);
   return (int)info->dims().size();
 }
 
+/*===------------------------------------------------------------------------------------------===*\
+ *     Meta-information
+\*===------------------------------------------------------------------------------------------===*/
+
 serialboxMetaInfo_t serialboxFieldMetaInfoGetMetaInfo(serialboxFieldMetaInfo_t fieldMetaInfo) {
-  FieldMetaInfo* info = internal::toFieldMetaInfo(fieldMetaInfo);
+  FieldMetaInfo* info = toFieldMetaInfo(fieldMetaInfo);
   return static_cast<serialboxMetaInfo_t>(info->metaInfoPtr().get());
 }

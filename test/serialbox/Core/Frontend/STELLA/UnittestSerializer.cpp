@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/SerializerTestBase.h"
 #include "Utility/STELLA.h"
+#include "Utility/SerializerTestBase.h"
 #include "Utility/Storage.h"
 #include "serialbox/Core/Frontend/STELLA/SerializationException.h"
 #include "serialbox/Core/Frontend/STELLA/Serializer.h"
@@ -47,6 +47,7 @@ TEST_F(STELLASerializerUtilityTest, ConstructionOfEmptySerializer) {
   {
     ser::Serializer s;
     ASSERT_NO_THROW(s.Init(directory->path().string(), "Field", ser::SerializerOpenModeAppend));
+    EXPECT_EQ(s.mode(), ser::SerializerOpenModeAppend);
   }
 
   // SerializerOpenModeRead
@@ -140,6 +141,9 @@ TEST_F(STELLASerializerUtilityTest, RegisterField) {
   EXPECT_EQ(3, field2.jPlusHaloSize());
   EXPECT_EQ(1, field2.kPlusHaloSize());
   EXPECT_EQ(0, field2.lPlusHaloSize());
+
+  // Field does not exists -> Exception
+  ASSERT_THROW(ser.FindField("field3"), ser::SerializationException);
 }
 
 TEST_F(STELLASerializerUtilityTest, FieldMetaInfo) {
@@ -156,6 +160,9 @@ TEST_F(STELLASerializerUtilityTest, FieldMetaInfo) {
   ser.AddFieldMetainfo("field1", "InitValue", 10.75);
   ASSERT_THROW(ser.AddFieldMetainfo("field1", "InitValue", 10.75), ser::SerializationException);
 
+  ser.AddFieldMetainfo("field1", "InitValue2", 0.75f);
+  ASSERT_THROW(ser.AddFieldMetainfo("field1", "InitValue2", 0.75f), ser::SerializationException);
+
   ser.AddFieldMetainfo("field1", "Elements", 42 * 80);
   ASSERT_THROW(ser.AddFieldMetainfo("field1", "Elements", 42 * 80), ser::SerializationException);
 
@@ -167,11 +174,12 @@ TEST_F(STELLASerializerUtilityTest, FieldMetaInfo) {
                ser::SerializationException);
 
   // Read metainfo
-  ASSERT_EQ(3, ser.FindField("field1").metainfo().size());
+  ASSERT_EQ(4, ser.FindField("field1").metainfo().size());
   ASSERT_EQ(2, ser.FindField("field2").metainfo().size());
 
   ASSERT_EQ(true, ser.FindField("field1").metainfo().AsBool("FirstField"));
   ASSERT_EQ(10.75, ser.FindField("field1").metainfo().AsDouble("InitValue"));
+  ASSERT_EQ(0.75f, ser.FindField("field1").metainfo().AsFloat("InitValue2"));
   ASSERT_EQ(42 * 80, ser.FindField("field1").metainfo().AsInt("Elements"));
   ASSERT_EQ(false, ser.FindField("field2").metainfo().AsBool("FirstField"));
   ASSERT_EQ(std::string("density"), ser.FindField("field2").metainfo().AsString("AlternateName"));
@@ -228,7 +236,7 @@ static void readField(SerializerType& serializer, StringType&& name, FieldType& 
   serializer.ReadField(name, dataField, savepoint, true, true, iStride, jStride, kStride, false);
 }
 
-/// Verify data fields are bit-wise identical 
+/// Verify data fields are bit-wise identical
 template <class FieldType, class RefFieldType>
 static testing::AssertionResult verifyFields(FieldType&& field, RefFieldType&& refField) {
   const IJKSize& calculationDomain = field.calculationDomain();
@@ -337,6 +345,18 @@ TYPED_TEST(STELLASerializerReadWriteTest, WriteAndRead) {
     writeField(ser_write, "v", v_1_input, savepoint1_t_2);
     writeField(ser_write, "u", u_1_input, savepoint_u_1);
     writeField(ser_write, "v", v_1_input, savepoint_v_1);
+
+    // Write field with wrong dimensions -> Exception
+    ASSERT_THROW(writeField(ser_write, "v", u_0_input, savepoint1_t_1),
+                 ser::SerializationException);
+
+    // Write field with wrong type -> Exception
+    if(std::is_same<TypeParam, double>::value) {
+      IJKIntField field;
+      ser_write.InitializeField("u", field, true, true);
+      ASSERT_THROW(writeField(ser_write, "u", field, savepoint1_t_1),
+                   ser::SerializationException);
+    }
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -367,6 +387,12 @@ TYPED_TEST(STELLASerializerReadWriteTest, WriteAndRead) {
     ASSERT_EQ(ser_read.savepoints()[2], savepoint_u_1);
     ASSERT_EQ(ser_read.savepoints()[3], savepoint_v_1);
 
+    // Check fields at savepoint
+    auto fields = ser_read.FieldsAtSavepoint(savepoint1_t_1);
+    ASSERT_EQ(fields.size(), 2);
+    ASSERT_NE(std::find(fields.begin(), fields.end(), "u"), fields.end());
+    ASSERT_NE(std::find(fields.begin(), fields.end(), "v"), fields.end());
+
     // Read
     readField(ser_read, "u", u_0_output, savepoint1_t_1);
     ASSERT_TRUE(verifyFields(u_0_output, u_0_input));
@@ -387,6 +413,17 @@ TYPED_TEST(STELLASerializerReadWriteTest, WriteAndRead) {
     // Read into v_0_output as v_1 already_output has the correct result
     readField(ser_read, "v", v_0_output, savepoint_v_1);
     ASSERT_TRUE(verifyFields(v_0_output, v_1_input));
+
+    // Read field with wrong dimensions -> Exception
+    ASSERT_THROW(readField(ser_read, "v", u_0_input, savepoint1_t_1), ser::SerializationException);
+
+    // Read field with wrong type -> Exception
+    if(std::is_same<TypeParam, double>::value) {
+      IJKIntField field;
+      ser_read.InitializeField("u", field, true, true);
+      ASSERT_THROW(readField(ser_read, "u", field, savepoint1_t_1),
+                   ser::SerializationException);
+    }
   }
 }
 

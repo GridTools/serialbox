@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
 
   // Initialize Logger
   Logging::disable();
-
+  
   // Register test environment
   testing::AddGlobalTestEnvironment(&unittest::UnittestEnvironment::getInstance());
 

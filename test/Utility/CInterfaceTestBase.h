@@ -15,6 +15,7 @@
 #ifndef SERIALBOX_UTILITY_CINTERFACETESTBASE_H
 #define SERIALBOX_UTILITY_CINTERFACETESTBASE_H
 
+#include "Utility/FileUtility.h"
 #include <gtest/gtest.h>
 
 namespace serialbox {
@@ -23,7 +24,13 @@ namespace unittest {
 
 /// \brief Simplify construction of C Interface tests by automatically registering a
 /// FatalErrorHandler which allows to query the error messages
+///
+/// In addition, the a unqiue directory for each test will be created (i.e same behaviour as 
+/// SerializerTestBase).
 class CInterfaceTestBase : public ::testing::Test {
+public:
+  std::unique_ptr<Directory> directory;
+  
 protected:
   /// \brief Install the ErrorHandler
   virtual void SetUp() override;
@@ -31,10 +38,13 @@ protected:
   /// \brief Release the ErrorHandler
   virtual void TearDown() override;
 
-  /// \brief Check if an error occured
-  bool hasError() const noexcept;
+  /// \brief Check if an error occured  
+  bool hasError() const noexcept;   
+  
+  /// \brief Check if an error occured and reset the error counter
+  bool hasErrorAndReset() const noexcept;
 
-  /// \brief Get last error message and reset the error counter
+  /// \brief Get last error message
   std::string getLastErrorMsg() const;
 };
 

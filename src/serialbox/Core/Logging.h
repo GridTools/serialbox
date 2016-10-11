@@ -38,7 +38,10 @@ private:
   static NullLogger* instance_;
 };
 
+extern bool LoggingIsEnabled;
+
 } // namespace internal
+
 
 /// \brief Control the logging behaviour
 ///
@@ -48,16 +51,13 @@ class Logging {
 
 public:
   /// \brief Disable logging
-  static void enable() noexcept { enable_ = true; }
+  static void enable() noexcept { internal::LoggingIsEnabled = true; }
 
   /// \brief Enable logging
-  static void disable() noexcept { enable_ = false; }
+  static void disable() noexcept { internal::LoggingIsEnabled = false; }
 
   /// \brief Return true if logging is eneabled
-  static bool isEnabled() noexcept { return enable_; }
-
-private:
-  static bool enable_;
+  static bool isEnabled() noexcept { return internal::LoggingIsEnabled; }
 };
 
 /// \macro LOG

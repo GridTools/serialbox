@@ -43,6 +43,8 @@ std::ostream& operator<<(std::ostream& stream, const OpenModeKind& mode);
 /// \enum TypeID
 /// \brief Type-id of types recognized by serialbox
 ///
+/// This enum is duplicated in ´serialbox-c/Type.h´. 
+/// 
 /// \see isSupported
 enum class TypeID : int {
   Invalid = 0,

@@ -15,6 +15,7 @@
 #ifndef SERIALBOX_C_TYPE_H
 #define SERIALBOX_C_TYPE_H
 
+#include "serialbox/Core/Config.h"
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -90,13 +91,18 @@ typedef serialboxFloat64_t* serialboxArrayOfFloat64_t;
 typedef serialboxString_t* serialboxArrayOfString_t;
 
 /*===------------------------------------------------------------------------------------------===*\
- *     Compound Types
+ *     Serialbox Types
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Refrence to a serializer
+ * \brief Refrence to a Serializer
  */
 typedef void* serialboxSerializer_t;
+
+/**
+ * \brief Refrence to a Savepoint
+ */
+typedef void* serialboxSavepoint_t;
 
 /**
  * \brief Refrence to a MetaInfo

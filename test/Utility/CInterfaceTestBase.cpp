@@ -14,6 +14,8 @@
 
 #include "Utility/CInterfaceTestBase.h"
 #include "Utility/Config.h"
+#include "Utility/UnittestEnvironment.h"
+#include "serialbox/Core/STLExtras.h"
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -28,8 +30,10 @@ static char* ErrorMessage = nullptr;
 static void CInterfaceTestBaseFatalErrorHandler(const char* reason) {
   std::string str(reason);
 
-  if(ErrorMessage)
-    delete ErrorMessage;
+  if(HasError && ErrorMessage) {
+    std::cerr << "FATAL ERROR: uncaught exception: " << ErrorMessage << std::endl;
+    std::abort();
+  }
 
   try {
     ErrorMessage = new char[str.size() + 1];
@@ -48,18 +52,33 @@ namespace unittest {
 
 void CInterfaceTestBase::SetUp() {
   serialboxInstallFatalErrorHandler(CInterfaceTestBaseFatalErrorHandler);
+  directory =
+      std::make_unique<unittest::Directory>(UnittestEnvironment::getInstance().directory() /
+                                            UnittestEnvironment::getInstance().testCaseName() /
+                                            UnittestEnvironment::getInstance().testName());
 }
 
-void CInterfaceTestBase::TearDown() { serialboxResetFatalErrorHandler(); }
+void CInterfaceTestBase::TearDown() {
+  serialboxResetFatalErrorHandler();
+  directory.reset();
+}
 
 bool CInterfaceTestBase::hasError() const noexcept { return HasError; }
+
+bool CInterfaceTestBase::hasErrorAndReset() const noexcept {
+  bool hasError = HasError;
+  HasError = false;
+  return hasError;
+}
 
 std::string CInterfaceTestBase::getLastErrorMsg() const {
   std::string errMsg("Exception caught: \"");
   errMsg += ErrorMessage ? ErrorMessage : "<unknown>";
   errMsg += "\"";
-  HasError = false;
+
+  delete ErrorMessage;
   ErrorMessage = nullptr;
+
   return errMsg;
 }
 
