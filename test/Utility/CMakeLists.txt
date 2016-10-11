@@ -25,6 +25,7 @@ set(SOURCES
 )
 
 add_library(SerialboxUnittestUtility STATIC ${SOURCES})
+target_link_libraries(SerialboxUnittestUtility ${Boost_LIBRARIES} ${GTEST_LIBRARIES})
 
 if(DEFINED BUILD_GTEST)
   add_dependencies(SerialboxUnittestUtility gtest)

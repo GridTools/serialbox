@@ -18,8 +18,6 @@
 #include "serialbox/Core/Compiler.h"
 #include <string>
 
-#include <iostream>
-
 namespace serialbox {
 
 /// \brief Utility to deal with Serialbox versions

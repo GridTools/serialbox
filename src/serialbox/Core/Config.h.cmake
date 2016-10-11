@@ -35,7 +35,7 @@
 /* SERIALBOX version string */
 #define SERIALBOX_VERSION_STRING "${SERIALBOX_VERSION_MAJOR}.${SERIALBOX_VERSION_MINOR}.${SERIALBOX_VERSION_PATCH}"
 
-/* Serialbox was compiled with GLog */
-#define SERIALBOX_HAS_GLOG ${SERIALBOX_HAS_GLOG}
+/* Boost version used for compilation */
+#define SERIALBOX_BOOST_VERSION ${SERIALBOX_BOOST_VERSION} 
 
 #endif

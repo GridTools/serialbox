@@ -203,6 +203,7 @@ endif(NOT(${Boost_FOUND}))
 
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
+set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
 
 #---------------------------------------- GridTools ------------------------------------------------
 if(SERIALBOX_TESTING_GRIDTOOLS)
