@@ -38,4 +38,7 @@
 /* Boost version used for compilation */
 #define SERIALBOX_BOOST_VERSION ${SERIALBOX_BOOST_VERSION} 
 
+/* Define if OpenSSL is available */
+#cmakedefine SERIALBOX_HAS_OPENSSL ${SERIALBOX_HAS_OPENSSL}
+
 #endif

@@ -201,6 +201,8 @@ static void sha256(const void* data, int size, byte_t hash[32]) {
 
 } // sha256
 
+const char* SHA256::Name = "SHA256";
+
 std::string SHA256::hash(const void* data, int length) noexcept {
   sha256::byte_t hash[32];
   sha256::sha256(data, length, hash);

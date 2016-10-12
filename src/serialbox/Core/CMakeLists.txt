@@ -14,6 +14,7 @@ set(SOURCES
   FieldMetaInfo.cpp
   FieldID.cpp
   Logging.cpp
+  MD5.cpp
   MetaInfoMap.cpp
   MetaInfoValue.cpp
   SavepointImpl.cpp
@@ -33,7 +34,7 @@ set(SOURCES
   Frontend/STELLA/DataFieldInfo.cpp
 )
 
-set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES})
+set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES})
 
 serialbox_add_library(SerialboxCore 
                       SerialboxCoreLibrary 

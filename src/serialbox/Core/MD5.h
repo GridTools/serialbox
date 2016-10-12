@@ -1,4 +1,4 @@
-//===-- serialbox/Core/SHA256.h -----------------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/MD5.h --------------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,33 +8,33 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// Implementation of the SHA-1 cryptographic hash algorithm.
+/// OpenSSL implementation of the MD5 cryptographic hash algorithm.
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_SHA256_H
-#define SERIALBOX_CORE_SHA256_H
+#ifndef SERIALBOX_CORE_MD5_H
+#define SERIALBOX_CORE_MD5_H
 
 #include <string>
 
 namespace serialbox {
 
-/// \brief Implementation of the SHA-1 (Secure Hash Algorithm 1)
+/// \brief Implementation of MD5 cryptographic hash algorithm
 ///
-/// \see https://en.wikipedia.org/wiki/SHA-1
-struct SHA256 {
-  SHA256() = delete;
+/// \see https://en.wikipedia.org/wiki/MD5
+struct MD5 {
+  MD5() = delete;
   
   /// \brief Identifier of the hash
   static const char* Name;
   
-  /// \brief Compute 256 bit hash using SHA-1
+  /// \brief Compute 128 bit hash using MD5
   ///
   /// \param data     Binary data
   /// \param length   Lenght of the binary data
   ///
-  /// \return SHA-1 hash hex representation as string
-  static std::string hash(const void* data, int length) noexcept;
+  /// \return MD5 hash hex representation as string
+  static std::string hash(const void* data, int length);
 };
 
 } // namespace serialbox

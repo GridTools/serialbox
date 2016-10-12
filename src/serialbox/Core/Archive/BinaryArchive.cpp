@@ -14,7 +14,6 @@
 
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
-#include "serialbox/Core/SHA256.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/Version.h"
 #include <boost/algorithm/string.hpp>
@@ -46,6 +45,7 @@ void BinaryArchive::readMetaDataFromJson() {
   int serialboxVersion = json_["serialbox_version"];
   std::string archiveName = json_["archive_name"];
   int archiveVersion = json_["archive_version"];
+  std::string hashAlgorithm = json_["hash_algorithm"];
 
   // Check consistency
   if(!Version::match(serialboxVersion))
@@ -59,6 +59,11 @@ void BinaryArchive::readMetaDataFromJson() {
   if(archiveVersion != BinaryArchive::Version)
     throw Exception("binary archive version (%s) does not match the version of the library (%s)",
                     archiveVersion, BinaryArchive::Version);
+
+  // Appending with different hash algorithms doesn't work
+  if(mode_ == OpenModeKind::Append && hashAlgorithm != HashAlgorithm::Name)
+    throw Exception("binary archive uses hash algorithm '%s' but library was compiled with '%s'",
+                    hashAlgorithm, HashAlgorithm::Name);
 
   // Deserialize FieldTable
   for(auto it = json_["fields_table"].begin(); it != json_["fields_table"].end(); ++it) {
@@ -82,6 +87,7 @@ void BinaryArchive::writeMetaDataToJson() {
       100 * SERIALBOX_VERSION_MAJOR + 10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
   json_["archive_name"] = BinaryArchive::Name;
   json_["archive_version"] = BinaryArchive::Version;
+  json_["hash_algorithm"] = HashAlgorithm::Name;
 
   // FieldsTable
   for(auto it = fieldTable_.begin(), end = fieldTable_.end(); it != end; ++it) {
@@ -154,18 +160,9 @@ FieldID BinaryArchive::write(const StorageView& storageView,
 
   // Create binary data buffer
   std::size_t sizeInBytes = storageView.sizeInBytes();
-  try {
-    if(binaryData_.size() < sizeInBytes) {
-      LOG(info) << "Resizing binary buffer to " << sizeInBytes << " bytes from "
-                << binaryData_.size() << " bytes";
+  std::vector<Byte> binaryData(sizeInBytes);
 
-      binaryData_.resize(sizeInBytes);
-    }
-  } catch(std::bad_alloc&) {
-    throw Exception("out of memory");
-  }
-
-  Byte* dataPtr = binaryData_.data();
+  Byte* dataPtr = binaryData.data();
   const int bytesPerElement = storageView.bytesPerElement();
 
   // Copy field into contiguous memory
@@ -178,7 +175,7 @@ FieldID BinaryArchive::write(const StorageView& storageView,
   }
 
   // Compute hash
-  std::string checksum(SHA256::hash(binaryData_.data(), sizeInBytes));
+  std::string checksum(HashAlgorithm::hash(binaryData.data(), sizeInBytes));
 
   // Check if field already exists
   auto it = fieldTable_.find(field);
@@ -224,7 +221,7 @@ FieldID BinaryArchive::write(const StorageView& storageView,
     throw Exception("cannot open file: '%s'", filename.string());
 
   // Write binaryData to disk
-  fs.write(binaryData_.data(), sizeInBytes);
+  fs.write(binaryData.data(), sizeInBytes);
   fs.close();
 
   updateMetaData();
@@ -258,15 +255,7 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) throw
 
   // Create binary data buffer
   std::size_t sizeInBytes = storageView.sizeInBytes();
-  try {
-    if(binaryData_.size() < sizeInBytes) {
-      LOG(info) << "Resizing binary buffer to " << sizeInBytes << " bytes from "
-                << binaryData_.size() << " bytes";
-      binaryData_.resize(sizeInBytes);
-    }
-  } catch(std::bad_alloc&) {
-    throw Exception("out of memory");
-  }
+  std::vector<Byte> binaryData(sizeInBytes);
 
   // Open file & read into binary buffer
   std::string filename((directory_ / (prefix_ + "_" + fieldID.name + ".dat")).string());
@@ -280,10 +269,10 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) throw
   fs.seekg(offset);
 
   // Read data into contiguous memory
-  fs.read(binaryData_.data(), sizeInBytes);
+  fs.read(binaryData.data(), sizeInBytes);
   fs.close();
 
-  Byte* dataPtr = binaryData_.data();
+  Byte* dataPtr = binaryData.data();
   const int bytesPerElement = storageView.bytesPerElement();
 
   // Copy contiguous memory into field
@@ -319,6 +308,7 @@ void BinaryArchive::clear() {
   for(boost::filesystem::directory_iterator it(directory_); it != end; ++it) {
     if(boost::filesystem::is_regular_file(it->path()) &&
        boost::algorithm::starts_with(it->path().filename().string(), prefix_ + "_")) {
+
       if(!boost::filesystem::remove(it->path()))
         LOG(warning) << "BinaryArchive: cannot remove file " << it->path();
     }

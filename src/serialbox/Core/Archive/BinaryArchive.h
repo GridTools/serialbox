@@ -17,6 +17,8 @@
 
 #include "serialbox/Core/Archive/Archive.h"
 #include "serialbox/Core/Json.h"
+#include "serialbox/Core/MD5.h"
+#include "serialbox/Core/SHA256.h"
 #include <boost/filesystem.hpp>
 #include <string>
 #include <unordered_map>
@@ -32,6 +34,9 @@ public:
 
   /// \brief Revision of the binary archive
   static const int Version;
+  
+  /// \brief Hash algorithm
+  using HashAlgorithm = MD5;
 
   /// \brief Offset
   struct FileOffsetType {
@@ -108,8 +113,6 @@ private:
   boost::filesystem::path directory_;
   std::string prefix_;
   boost::filesystem::path metaDatafile_;
-
-  std::vector<Byte> binaryData_;
 
   json::json json_;
   FieldTable fieldTable_;

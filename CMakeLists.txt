@@ -205,6 +205,13 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
 
+#---------------------------------------- OpenSSL --------------------------------------------------
+find_package(OpenSSL)
+if(${OpenSSL_FOUND})
+  include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
+  set(SERIALBOX_HAS_OPENSSL 1)
+endif()
+
 #---------------------------------------- GridTools ------------------------------------------------
 if(SERIALBOX_TESTING_GRIDTOOLS)
 

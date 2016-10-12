@@ -20,7 +20,10 @@ set(SOURCES
 )
 
 # Setup external libraries
-set(EXTERNAL_LIBRARIES SerialboxCLibraryStatic ${Boost_LIBRARIES} ${GTEST_LIBRARIES})
+set(EXTERNAL_LIBRARIES SerialboxCLibraryStatic 
+                       ${Boost_LIBRARIES} 
+                       ${OPENSSL_LIBRARIES}
+                       ${GTEST_LIBRARIES})
   
 serialbox_add_unittest_executable(SerialboxCUnittest 
                                   "${EXTERNAL_LIBRARIES}"

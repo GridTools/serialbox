@@ -46,7 +46,8 @@ set(SOURCES
 )
 
 set(EXTERNAL_LIBRARIES SerialboxCoreLibraryStatic
-                       ${Boost_LIBRARIES} 
+                       ${Boost_LIBRARIES}
+                       ${OPENSSL_LIBRARIES} 
                        ${GTEST_LIBRARIES} 
                        ${SERIALBOX_OLD_LIBRARIES}
                        ${STELLA_LIBRARIES})
