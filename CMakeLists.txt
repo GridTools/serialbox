@@ -138,6 +138,9 @@ if(NOT(SERIALBOX_LOGGING))
   add_definitions(-DSERIALBOX_DISABLE_LOGGING)
 endif()
 
+## Third party libraries
+set(SERIALBOX_EXTERNAL_LIBRARIES)
+
 #---------------------------------------- GTest ----------------------------------------------------
 if(SERIALBOX_TESTING)
   if(APPLE AND NOT(CMAKE_CXX_COMPILER_ID MATCHES "GNU"))
@@ -209,7 +212,17 @@ set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
 find_package(OpenSSL)
 if(${OpenSSL_FOUND})
   include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
+  set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${OPENSSL_LIBRARIES})  
   set(SERIALBOX_HAS_OPENSSL 1)
+endif()
+
+#---------------------------------------- NetCDF ---------------------------------------------------
+set(NETCDF_CXX "YES")
+find_package(NetCDF)
+if(${NetCDF_FOUND})
+  include_directories(SYSTEM ${NETCDF_INCLUDES})
+  set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${NETCDF_LIBRARIES})  
+  set(SERIALBOX_HAS_NETCDF 1)
 endif()
 
 #---------------------------------------- GridTools ------------------------------------------------

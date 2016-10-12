@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Archive/UnittestBinaryArchive.cpp ----------------------------*- C++ -*-===//
+//===-- serialbox/Core/Archive/UnittestNetCDFArchive.cpp ----------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,16 +8,18 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains the unittests for the Binary Archive.
+/// This file contains the unittests for the NetCDF Archive.
 ///
 //===------------------------------------------------------------------------------------------===//
 
 #include "Utility/SerializerTestBase.h"
 #include "Utility/Storage.h"
-#include "serialbox/Core/Archive/BinaryArchive.h"
-#include "serialbox/Core/Version.h"
+#include "serialbox/Core/Archive/NetCDFArchive.h"
+#include "serialbox/Core/Compiler.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
+
+#ifdef SERIALBOX_HAS_NETCDF
 
 using namespace serialbox;
 using namespace unittest;
@@ -28,11 +30,11 @@ using namespace unittest;
 
 namespace {
 
-class BinaryArchiveUtilityTest : public SerializerUnittestBase {};
+class NetCDFArchiveUtilityTest : public SerializerUnittestBase {};
 
 } // anonymous namespace
 
-TEST_F(BinaryArchiveUtilityTest, Construction) {
+TEST_F(NetCDFArchiveUtilityTest, Construction) {
 
   // -----------------------------------------------------------------------------------------------
   // Writing
@@ -40,17 +42,17 @@ TEST_F(BinaryArchiveUtilityTest, Construction) {
 
   // Open fresh archive and write meta data to disk
   {
-    BinaryArchive b(OpenModeKind::Write, this->directory->path().string(), "field");
+    NetCDFArchive b(OpenModeKind::Write, this->directory->path().string(), "field");
     b.updateMetaData();
 
-    EXPECT_EQ(b.name(), "Binary");
+    EXPECT_EQ(b.name(), "NetCDF");
     EXPECT_EQ(b.mode(), OpenModeKind::Write);
     EXPECT_EQ(b.prefix(), "field");
   }
 
   // Create directory if not already existent
   {
-    BinaryArchive b(OpenModeKind::Write, (this->directory->path() / "this-dir-is-created").string(),
+    NetCDFArchive b(OpenModeKind::Write, (this->directory->path() / "this-dir-is-created").string(),
                     "field");
     EXPECT_TRUE(boost::filesystem::exists(this->directory->path() / "this-dir-is-created"));
   }
@@ -59,13 +61,13 @@ TEST_F(BinaryArchiveUtilityTest, Construction) {
   // Reading
   // -----------------------------------------------------------------------------------------------
   {
-    BinaryArchive b(OpenModeKind::Read, this->directory->path().string(), "field");
+    NetCDFArchive b(OpenModeKind::Read, this->directory->path().string(), "field");
     b.updateMetaData();
   }
 
   // Throw Exception: Directory does not exist
   {
-    EXPECT_THROW(BinaryArchive(OpenModeKind::Read, (this->directory->path() / "not-a-dir").string(),
+    EXPECT_THROW(NetCDFArchive(OpenModeKind::Read, (this->directory->path() / "not-a-dir").string(),
                                "field"),
                  Exception);
   }
@@ -75,29 +77,29 @@ TEST_F(BinaryArchiveUtilityTest, Construction) {
   // -----------------------------------------------------------------------------------------------
 
   {
-    EXPECT_NO_THROW(BinaryArchive(OpenModeKind::Append, this->directory->path().string(), "field"));
+    EXPECT_NO_THROW(NetCDFArchive(OpenModeKind::Append, this->directory->path().string(), "field"));
   }
 
   // Create directory if not already existent
   {
-    BinaryArchive b(OpenModeKind::Append,
+    NetCDFArchive b(OpenModeKind::Append,
                     (this->directory->path() / "this-dir-is-created").string(), "field");
   }
 
   // Create directories if not already existent
   {
-    BinaryArchive b(OpenModeKind::Append, (this->directory->path() / "nest1" / "nest2").string(),
+    NetCDFArchive b(OpenModeKind::Append, (this->directory->path() / "nest1" / "nest2").string(),
                     "field");
     EXPECT_TRUE(boost::filesystem::exists(this->directory->path() / "nest1" / "nest2"));
   }
 }
 
-TEST_F(BinaryArchiveUtilityTest, MetaData) {
+TEST_F(NetCDFArchiveUtilityTest, MetaData) {
   using Storage = Storage<double>;
 
   Storage u_0_input(Storage::RowMajor, {5, 6, 7}, {{2, 2}, {4, 2}, {4, 5}}, Storage::random);
 
-  BinaryArchive archiveWrite(OpenModeKind::Write, this->directory->path().string(), "field");
+  NetCDFArchive archiveWrite(OpenModeKind::Write, this->directory->path().string(), "field");
 
   auto sv_u_0_input = u_0_input.toStorageView();
   archiveWrite.write(sv_u_0_input, "u");
@@ -125,7 +127,7 @@ TEST_F(BinaryArchiveUtilityTest, MetaData) {
                                      10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
     toFile(corrupted);
 
-    ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
+    ASSERT_THROW(NetCDFArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
                  Exception);
   }
 
@@ -134,10 +136,10 @@ TEST_F(BinaryArchiveUtilityTest, MetaData) {
   // -----------------------------------------------------------------------------------------------
   {
     json::json corrupted = j;
-    corrupted["archive_name"] = "not-BinaryArchive";
+    corrupted["archive_name"] = "not-NetCDFArchive";
     toFile(corrupted);
 
-    ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
+    ASSERT_THROW(NetCDFArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
                  Exception);
   }
 
@@ -149,7 +151,7 @@ TEST_F(BinaryArchiveUtilityTest, MetaData) {
     corrupted["archive_version"] = -1;
     toFile(corrupted);
 
-    ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
+    ASSERT_THROW(NetCDFArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
                  Exception);
   }
 
@@ -158,27 +160,28 @@ TEST_F(BinaryArchiveUtilityTest, MetaData) {
   // -----------------------------------------------------------------------------------------------
   {
     boost::filesystem::remove(filename);
-    ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
+    ASSERT_THROW(NetCDFArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
                  Exception);
   }
 }
 
-TEST_F(BinaryArchiveUtilityTest, toString) {
+TEST_F(NetCDFArchiveUtilityTest, toString) {
   using Storage = Storage<double>;
   std::stringstream ss;
 
   Storage storage(Storage::ColMajor, {5, 1, 1});
 
-  BinaryArchive archive(OpenModeKind::Write, this->directory->path().string(), "field");
+  NetCDFArchive archive(OpenModeKind::Write, this->directory->path().string(), "field");
   StorageView sv = storage.toStorageView();
   archive.write(sv, "storage");
 
   ss << archive;
-  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "BinaryArchive"));
+
+  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "NetCDFArchive"));
   EXPECT_NE(ss.str().find("directory"), std::string::npos);
   EXPECT_NE(ss.str().find("mode"), std::string::npos);
   EXPECT_NE(ss.str().find("prefix"), std::string::npos);
-  EXPECT_NE(ss.str().find("fieldsTable"), std::string::npos);
+  EXPECT_NE(ss.str().find("fieldMap"), std::string::npos);
 }
 
 //===------------------------------------------------------------------------------------------===//
@@ -188,15 +191,15 @@ TEST_F(BinaryArchiveUtilityTest, toString) {
 namespace {
 
 template <class T>
-class BinaryArchiveReadWriteTest : public SerializerUnittestBase {};
+class NetCDFArchiveReadWriteTest : public SerializerUnittestBase {};
 
 using TestTypes = testing::Types<double, float, int, std::int64_t>;
 
 } // anonymous namespace
 
-TYPED_TEST_CASE(BinaryArchiveReadWriteTest, TestTypes);
+TYPED_TEST_CASE(NetCDFArchiveReadWriteTest, TestTypes);
 
-TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
+TYPED_TEST(NetCDFArchiveReadWriteTest, WriteAndRead) {
 
   // -----------------------------------------------------------------------------------------------
   // Preparation
@@ -237,7 +240,8 @@ TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
   // Writing (data and meta-data)
   // -----------------------------------------------------------------------------------------------
   {
-    BinaryArchive archiveWrite(OpenModeKind::Write, this->directory->path().string(), "field");
+    NetCDFArchive archiveWrite(OpenModeKind::Write, this->directory->path().string(), "field");
+
     EXPECT_STREQ(archiveWrite.directory().c_str(), this->directory->path().string().c_str());
 
     // u: id = 0
@@ -288,10 +292,6 @@ TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
       ASSERT_EQ(fieldID.id, 2);
     }
 
-    // Try to write already existing data
-    auto sv_v_1 = v_1_input.toStorageView();
-    ASSERT_EQ(archiveWrite.write(sv_v_1, "v"), (FieldID{"v", 1}));
-
     // storage 2d
     auto sv_2d_0_input = storage_2d_0_input.toStorageView();
     archiveWrite.write(sv_2d_0_input, "storage_2d");
@@ -315,9 +315,8 @@ TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
   // Reading
   // -----------------------------------------------------------------------------------------------
   {
-    BinaryArchive archiveRead(OpenModeKind::Read, this->directory->path().string(), "field");
+    NetCDFArchive archiveRead(OpenModeKind::Read, this->directory->path().string(), "field");
     EXPECT_STREQ(archiveRead.directory().c_str(), this->directory->path().string().c_str());
-    archiveRead.updateMetaData(); // should do nothing
 
     // u
     auto sv_u_0_output = u_0_output.toStorageView();
@@ -380,10 +379,12 @@ TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
   // Cleanup
   // -----------------------------------------------------------------------------------------------
   {
-    BinaryArchive archiveWrite(OpenModeKind::Write, this->directory->path().string(), "field");
-    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_u.dat")));
-    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_v.dat")));
-    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_storage_2d.dat")));
-    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_storage_7d.dat")));
+    NetCDFArchive archiveWrite(OpenModeKind::Write, this->directory->path().string(), "field");
+    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_u.nc")));
+    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_v.nc")));
+    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_storage_2d.nc")));
+    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_storage_7d.nc")));
   }
 }
+
+#endif

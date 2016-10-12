@@ -27,6 +27,7 @@ set(SOURCES
   
   Archive/ArchiveFactory.cpp
   Archive/BinaryArchive.cpp
+  Archive/NetCDFArchive.cpp
   
   Frontend/STELLA/MetainfoSet.cpp
   Frontend/STELLA/Savepoint.cpp
@@ -34,7 +35,7 @@ set(SOURCES
   Frontend/STELLA/DataFieldInfo.cpp
 )
 
-set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES})
+set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})
 
 serialbox_add_library(SerialboxCore 
                       SerialboxCoreLibrary 

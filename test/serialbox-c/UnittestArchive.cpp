@@ -30,7 +30,7 @@ TEST_F(CArchiveTest, Test) {
 
   ASSERT_GE(len, 1);
   ASSERT_TRUE(std::find_if(archives, archives + len, [](const char* s) {
-                return (std::memcmp(s, "BinaryArchive", sizeof("BinaryArchive")) == 0);
+                return (std::memcmp(s, "Binary", sizeof("Binary")) == 0);
               }) != (archives + len));
 
   for(int i = 0; i < len; ++i)

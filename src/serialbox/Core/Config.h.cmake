@@ -41,4 +41,7 @@
 /* Define if OpenSSL is available */
 #cmakedefine SERIALBOX_HAS_OPENSSL ${SERIALBOX_HAS_OPENSSL}
 
+/* Define if NetCDF is available */
+#cmakedefine SERIALBOX_HAS_NETCDF ${SERIALBOX_HAS_NETCDF}
+
 #endif

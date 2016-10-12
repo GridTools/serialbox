@@ -22,7 +22,7 @@ set(SOURCES
 # Setup external libraries
 set(EXTERNAL_LIBRARIES SerialboxCLibraryStatic 
                        ${Boost_LIBRARIES} 
-                       ${OPENSSL_LIBRARIES}
+                       ${SERIALBOX_EXTERNAL_LIBRARIES}
                        ${GTEST_LIBRARIES})
   
 serialbox_add_unittest_executable(SerialboxCUnittest 

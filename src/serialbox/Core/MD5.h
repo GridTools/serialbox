@@ -29,6 +29,8 @@ struct MD5 {
   static const char* Name;
   
   /// \brief Compute 128 bit hash using MD5
+  /// 
+  /// This function is only available if Serialbox has OpenSSL support.
   ///
   /// \param data     Binary data
   /// \param length   Lenght of the binary data

@@ -70,13 +70,11 @@ public:
   /// \brief Get data pointer as type ´T´ of the origin of the data
   template <class T>
   T* originPtrAs() noexcept {
-    CHECK(ToTypeID<T>::value == type_);
-    return static_cast<T>(originPtr_);
+    return (T*)(originPtr_);
   }
   template <class T>
   const T* originPtrAs() const noexcept {
-    CHECK(ToTypeID<T>::value == originPtr_);
-    return static_cast<T>(originPtr_);
+    return (T*)(originPtr_);
   }
 
   /// \brief Get raw data pointer

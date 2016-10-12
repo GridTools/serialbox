@@ -31,6 +31,7 @@ set(SOURCES
   # Archive/  
   Archive/UnittestArchiveFactory.cpp 
   Archive/UnittestBinaryArchive.cpp
+  Archive/UnittestNetCDFArchive.cpp
   
   # Frontend/gridtools/
   Frontend/gridtools/UnittestStorageView.cpp
@@ -47,7 +48,7 @@ set(SOURCES
 
 set(EXTERNAL_LIBRARIES SerialboxCoreLibraryStatic
                        ${Boost_LIBRARIES}
-                       ${OPENSSL_LIBRARIES} 
+                       ${SERIALBOX_EXTERNAL_LIBRARIES} 
                        ${GTEST_LIBRARIES} 
                        ${SERIALBOX_OLD_LIBRARIES}
                        ${STELLA_LIBRARIES})

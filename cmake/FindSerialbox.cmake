@@ -24,7 +24,6 @@
 #   SERIALBOX_FOUND           System has Serialbox libraries and headers
 #   SERIALBOX_LIBRARIES       The Serialbox library
 #   SERIALBOX_INCLUDE_DIRS    The location of Serialbox headers
-#   SERIALBOX_HAS_GLOG        Indicate whether Serialbox was compiled with GLog
 #   SERIALBOX_VERSION         Version of Serialbox
 #
 ##===------------------------------------------------------------------------------------------===##
@@ -83,10 +82,6 @@ macro(_serialbox_read_config)
                    "but at least version ${Serialbox_FIND_VERSION} is required")
   endif(NOT SERIALBOX_VERSION_OK)
   
-  # Read GLog
-  string(REGEX MATCH "define[ \t]+SERIALBOX_HAS_GLOG[ \t]+([0-9]+)" _GLOG "${_CONFIG_FILE}")
-  set(SERIALBOX_HAS_GLOG "${CMAKE_MATCH_1}")
-  
 endmacro(_serialbox_read_config)
 
 # Read config file
@@ -100,14 +95,9 @@ find_path(SERIALBOX_INCLUDE_DIRS NAMES serialbox/Core/Config.h HINTS ${SERIALBOX
 
 # Set libraries
 find_library(_SERIALBOX_CORE NAMES SerialboxCore HINTS ${SERIALBOX_ROOT}/lib)
-find_library(_SERIALBOX_GLOG NAMES glog HINTS ${SERIALBOX_ROOT}/lib)
-
-mark_as_advanced(_SERIALBOX_CORE _SERIALBOX_GLOG)
+mark_as_advanced(_SERIALBOX_CORE)
 
 set(SERIALBOX_LIBRARIES ${_SERIALBOX_CORE} ${CMAKE_THREAD_LIBS_INIT})
-if(SERIALBOX_HAS_GLOG)
-  list(APPEND SERIALBOX_LIBRARIES ${_SERIALBOX_GLOG})
-endif()
 
 find_package_handle_standard_args(SERIALBOX 
                                   SERIALBOX_LIBRARIES SERIALBOX_INCLUDE_DIRS SERIALBOX_VERSION_OK)

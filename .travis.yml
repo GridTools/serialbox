@@ -16,6 +16,7 @@ install:
   # Homebrew (Mac OSX)
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew outdated cmake || brew upgrade cmake; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install netcdf
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export PATH=/usr/local/bin:$PATH; fi
   
 # APT (Linux)
@@ -79,7 +80,7 @@ script:
   - pushd $(pwd)
   - cd build
 
-  # Run C++ unittests
+  # Run C/C++ unittests
   - ctest --output-on-failure --force-new-ctest-process
 
   - popd

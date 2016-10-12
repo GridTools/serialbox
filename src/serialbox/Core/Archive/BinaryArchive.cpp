@@ -12,17 +12,16 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
+#include "serialbox/Core/Logging.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/Version.h"
 #include <boost/algorithm/string.hpp>
 #include <fstream>
-#include <iostream>
 
 namespace serialbox {
 
-const std::string BinaryArchive::Name = "BinaryArchive";
+const std::string BinaryArchive::Name = "Binary";
 
 const int BinaryArchive::Version = 0;
 
@@ -235,7 +234,7 @@ FieldID BinaryArchive::write(const StorageView& storageView,
 //     Reading
 //===------------------------------------------------------------------------------------------===//
 
-void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) throw(Exception) {
+void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) const throw(Exception) {
   if(mode_ != OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Read'");
 
@@ -307,7 +306,8 @@ void BinaryArchive::clear() {
   boost::filesystem::directory_iterator end;
   for(boost::filesystem::directory_iterator it(directory_); it != end; ++it) {
     if(boost::filesystem::is_regular_file(it->path()) &&
-       boost::algorithm::starts_with(it->path().filename().string(), prefix_ + "_")) {
+       boost::algorithm::starts_with(it->path().filename().string(), prefix_ + "_") &&
+       boost::filesystem::extension(it->path()) == ".dat") {
 
       if(!boost::filesystem::remove(it->path()))
         LOG(warning) << "BinaryArchive: cannot remove file " << it->path();
@@ -325,7 +325,5 @@ std::unique_ptr<Archive> BinaryArchive::create(OpenModeKind mode, const std::str
                                                const std::string& prefix) {
   return std::make_unique<BinaryArchive>(mode, directory, prefix, false);
 }
-
-SERIALBOX_REGISTER_ARCHIVE(BinaryArchive, BinaryArchive::create)
 
 } // namespace serialbox

@@ -13,6 +13,8 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/Core/Archive/ArchiveFactory.h"
+#include "serialbox/Core/Archive/BinaryArchive.h"
+#include "serialbox/Core/Archive/NetCDFArchive.h"
 #include <cstdlib>
 #include <iostream>
 
@@ -23,8 +25,19 @@ ArchiveFactory* ArchiveFactory::instance_ = nullptr;
 ArchiveFactory::ArchiveFactory() : registeredArchives_() {}
 
 ArchiveFactory& ArchiveFactory::getInstance() noexcept {
-  if(!instance_)
+  if(!instance_) {
     instance_ = new ArchiveFactory();
+
+    //
+    // Register Archives
+    //
+    instance_->registerArchive("Binary", BinaryArchive::create);
+
+#ifdef SERIALBOX_HAS_NETCDF
+    instance_->registerArchive("NetCDF", NetCDFArchive::create);
+#endif
+  }
+
   return (*instance_);
 }
 
@@ -38,8 +51,6 @@ std::unique_ptr<Archive> ArchiveFactory::create(const std::string& name, OpenMod
 }
 
 void ArchiveFactory::registerArchive(const std::string& name, const CreateArchiveFunction& func) {
-  // This function is called during static initialization, if we cannot register the archive we just
-  // die.
   if(!registeredArchives_.insert({name, func}).second) {
     std::cerr << "serialbox error: multiple registration of archive '" << name << "'" << std::endl;
     std::abort();

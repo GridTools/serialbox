@@ -33,7 +33,7 @@ TEST_F(CSerializerUtilityTest, Construction) {
   {
     // Open fresh serializer and write meta data to disk
     serialboxSerializer_t ser =
-        serialboxSerializerCreate(Write, directory->path().c_str(), "Field", "BinaryArchive");
+        serialboxSerializerCreate(Write, directory->path().c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
     EXPECT_EQ(serialboxSerializerGetMode(ser), Write);
@@ -47,7 +47,7 @@ TEST_F(CSerializerUtilityTest, Construction) {
   {
     // Directory does not exists (should be created by the Archive)
     serialboxSerializer_t ser = serialboxSerializerCreate(
-        Write, (directory->path() / "dir-is-created-from-write").c_str(), "Field", "BinaryArchive");
+        Write, (directory->path() / "dir-is-created-from-write").c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
     ASSERT_TRUE(boost::filesystem::exists(directory->path() / "dir-is-created-from-write"));
@@ -61,14 +61,14 @@ TEST_F(CSerializerUtilityTest, Construction) {
   // -----------------------------------------------------------------------------------------------
   {
     // MetaData.json exists (from Writing part)
-    serialboxSerializerCreate(Read, directory->path().c_str(), "Field", "BinaryArchive");
+    serialboxSerializerCreate(Read, directory->path().c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   }
 
   {
     // Directory does not exist -> FatalError
     serialboxSerializerCreate(Read, (directory->path() / "not-a-dir").c_str(), "Field",
-                              "BinaryArchive");
+                              "Binary");
     ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   }
 
@@ -78,7 +78,7 @@ TEST_F(CSerializerUtilityTest, Construction) {
                               "MetaData-Field.json");
 
     serialboxSerializerCreate(Read, (directory->path() / "dir-is-created-from-write").c_str(),
-                              "Field", "BinaryArchive");
+                              "Field", "Binary");
     ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   }
 
@@ -87,14 +87,14 @@ TEST_F(CSerializerUtilityTest, Construction) {
   // -----------------------------------------------------------------------------------------------
   {
     // Construct from existing (empty) metaData
-    serialboxSerializerCreate(Append, directory->path().c_str(), "Field", "BinaryArchive");
+    serialboxSerializerCreate(Append, directory->path().c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   }
 
   {
     // Directory does not exists (should be created by the Archive)
     serialboxSerializerCreate(Append, (directory->path() / "dir-is-created-from-append").c_str(),
-                              "Field", "BinaryArchive");
+                              "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
     ASSERT_TRUE(boost::filesystem::exists(directory->path() / "dir-is-created-from-append"));
   }
@@ -102,7 +102,7 @@ TEST_F(CSerializerUtilityTest, Construction) {
 
 TEST_F(CSerializerUtilityTest, AddMetaInfo) {
   serialboxSerializer_t ser =
-      serialboxSerializerCreate(Write, directory->path().c_str(), "Field", "BinaryArchive");
+      serialboxSerializerCreate(Write, directory->path().c_str(), "Field", "Binary");
 
   // Add meta-information
   {
@@ -122,7 +122,7 @@ TEST_F(CSerializerUtilityTest, AddMetaInfo) {
 
 TEST_F(CSerializerUtilityTest, RegisterSavepoints) {
   serialboxSerializer_t ser =
-      serialboxSerializerCreate(Write, directory->path().c_str(), "Field", "BinaryArchive");
+      serialboxSerializerCreate(Write, directory->path().c_str(), "Field", "Binary");
 
   // Create Savepoints
   serialboxSavepoint_t savepoint1 = serialboxSavepointCreate("savepoint1");
@@ -149,7 +149,7 @@ TEST_F(CSerializerUtilityTest, RegisterSavepoints) {
 
 TEST_F(CSerializerUtilityTest, RegisterFields) {
   serialboxSerializer_t ser =
-      serialboxSerializerCreate(Write, directory->path().c_str(), "Field", "BinaryArchive");
+      serialboxSerializerCreate(Write, directory->path().c_str(), "Field", "Binary");
 
   // Create FieldMetaInfo
   int dims[3] = {10, 15, 20};
@@ -249,7 +249,7 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
   //
   {
     serialboxSerializer_t ser_write =
-        serialboxSerializerCreate(Write, this->directory->path().c_str(), "Field", "BinaryArchive");
+        serialboxSerializerCreate(Write, this->directory->path().c_str(), "Field", "Binary");
 
     // Register fields
     serialboxTypeID type = static_cast<serialboxTypeID>((int)serialbox::ToTypeID<TypeParam>::value);
@@ -309,7 +309,7 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
   // Reopen serializer and append a data field
   {
     serialboxSerializer_t ser_append = serialboxSerializerCreate(
-        Append, this->directory->path().c_str(), "Field", "BinaryArchive");
+        Append, this->directory->path().c_str(), "Field", "Binary");
 
     serialboxTypeID type = static_cast<serialboxTypeID>((int)serialbox::ToTypeID<TypeParam>::value);
     serialboxFieldMetaInfo_t info_field_6d = serialboxFieldMetaInfoCreate(
@@ -330,7 +330,7 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
   // -----------------------------------------------------------------------------------------------
   {
     serialboxSerializer_t ser_read =
-        serialboxSerializerCreate(Read, this->directory->path().c_str(), "Field", "BinaryArchive");
+        serialboxSerializerCreate(Read, this->directory->path().c_str(), "Field", "Binary");
 
     // Check order of savepoints is correct
     ASSERT_EQ(serialboxSerializerGetNumSavepoints(ser_read), 5);

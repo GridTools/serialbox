@@ -20,7 +20,7 @@ set(SOURCES
   Logging.cpp
 )
 
-set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES})
+set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})
 
 serialbox_add_library(SerialboxC 
                       SerialboxCLibrary 
