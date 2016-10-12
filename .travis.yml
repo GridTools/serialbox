@@ -34,7 +34,7 @@ addons:
       - cmake
       - cmake-data
       - libboost1.54-all-dev
-
+      - libssl-dev
 os:
   - linux
   - osx
