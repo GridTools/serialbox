@@ -21,7 +21,7 @@
 
 namespace serialbox {
 
-/// \brief Meta-infomration of a data field
+/// \brief Meta-information of a data field
 class FieldMetaInfo {
 public:
   /// \brief Default constructor

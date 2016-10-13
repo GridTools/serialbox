@@ -24,12 +24,12 @@ namespace serialbox {
 /// \see https://en.wikipedia.org/wiki/MD5
 struct MD5 {
   MD5() = delete;
-  
+
   /// \brief Identifier of the hash
   static const char* Name;
-  
+
   /// \brief Compute 128 bit hash using MD5
-  /// 
+  ///
   /// This function is only available if Serialbox has OpenSSL support.
   ///
   /// \param data     Binary data

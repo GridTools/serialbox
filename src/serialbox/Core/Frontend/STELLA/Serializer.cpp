@@ -55,16 +55,16 @@ void Serializer::Init(const std::string& directory, const std::string& prefix,
   try {
     switch(mode) {
     case SerializerOpenModeRead:
-      serializerImpl_ = boost::make_shared<SerializerImpl>(OpenModeKind::Read, directory, prefix,
-                                                           "Binary");
+      serializerImpl_ =
+          boost::make_shared<SerializerImpl>(OpenModeKind::Read, directory, prefix, "Binary");
       break;
     case SerializerOpenModeWrite:
-      serializerImpl_ = boost::make_shared<SerializerImpl>(OpenModeKind::Write, directory, prefix,
-                                                           "Binary");
+      serializerImpl_ =
+          boost::make_shared<SerializerImpl>(OpenModeKind::Write, directory, prefix, "Binary");
       break;
     case SerializerOpenModeAppend:
-      serializerImpl_ = boost::make_shared<SerializerImpl>(OpenModeKind::Append, directory, prefix,
-                                                           "Binary");
+      serializerImpl_ =
+          boost::make_shared<SerializerImpl>(OpenModeKind::Append, directory, prefix, "Binary");
       break;
     }
   } catch(Exception& e) {

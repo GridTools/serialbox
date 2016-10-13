@@ -12,13 +12,13 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/Core/MD5.h"
 #include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/Exception.h"
-#include "serialbox/Core/MD5.h"
 #include <algorithm>
-#include <sstream>
 #include <iomanip>
 #include <iterator>
+#include <sstream>
 
 #ifdef SERIALBOX_HAS_OPENSSL
 #include <openssl/md5.h>

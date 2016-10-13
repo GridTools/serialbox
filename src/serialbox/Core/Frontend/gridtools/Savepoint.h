@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/gridtools/savepoint.hpp ----------------------------*- C++ -*-===//
+//===-- serialbox/Core/Frontend/gridtools/Savepoint.h -------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,18 +12,17 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_SAVEPOINT_HPP
-#define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_SAVEPOINT_HPP
+#ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_SAVEPOINT_H
+#define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_SAVEPOINT_H
 
+#include "serialbox/Core/Frontend/gridtools/Exception.h"
+#include "serialbox/Core/Frontend/gridtools/MetaInfoMap.h"
 #include "serialbox/Core/SavepointImpl.h"
 #include <memory>
 
 namespace serialbox {
 
-namespace gridtools {
-
-
-} // namespace gridtools
+namespace gridtools {} // namespace gridtools
 
 } // namespace serialbox
 

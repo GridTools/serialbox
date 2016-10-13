@@ -42,7 +42,6 @@ extern bool LoggingIsEnabled;
 
 } // namespace internal
 
-
 /// \brief Control the logging behaviour
 ///
 /// For logging use the macro LOG(severity)

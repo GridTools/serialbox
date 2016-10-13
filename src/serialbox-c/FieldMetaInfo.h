@@ -92,7 +92,7 @@ int serialboxFieldMetaInfoGetNumDimensions(const serialboxFieldMetaInfo_t* field
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Allocate a new ´serialboxMetaInfo_t´ which maps to the meta-information of the Field 
+ * \brief Allocate a new ´serialboxMetaInfo_t´ which maps to the meta-information of the Field
  * meta-information
  *
  * \param fieldMetaInfo  Field meta-information to use

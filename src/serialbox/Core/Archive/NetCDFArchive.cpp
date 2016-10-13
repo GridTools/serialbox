@@ -60,7 +60,7 @@ struct DispatchInt64Impl {
   template <class FunctionForLong, class FunctionForLongLong, typename... Args>
   int operator()(FunctionForLong&& functionForLong, FunctionForLongLong&& functionForLongLong,
                  Args&&... args) noexcept {
-    (void) functionForLongLong;    
+    (void)functionForLongLong;
     return functionForLong(args...);
   }
 };
@@ -70,7 +70,7 @@ struct DispatchInt64Impl<false> {
   template <class FunctionForLong, class FunctionForLongLong, typename... Args>
   int operator()(FunctionForLong&& functionForLong, FunctionForLongLong&& functionForLongLong,
                  Args&&... args) noexcept {
-    (void) functionForLong;
+    (void)functionForLong;
     return functionForLongLong(args...);
   }
 };

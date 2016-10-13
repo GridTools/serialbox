@@ -100,7 +100,7 @@ typedef serialboxString_t* serialboxArrayOfString_t;
 typedef struct {
   void* impl;
   int ownsData;
-}serialboxSerializer_t;
+} serialboxSerializer_t;
 
 /**
  * \brief Refrence to a Savepoint

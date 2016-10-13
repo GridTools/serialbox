@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/gridtools/storage_view_helper.h ---------------------*- C++ -*-===//
+//===-- serialbox/Core/Frontend/gridtools/StorageViewHelper.h -----------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //

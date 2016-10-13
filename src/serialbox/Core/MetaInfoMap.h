@@ -22,12 +22,12 @@
 #include <iosfwd>
 #include <string>
 #include <unordered_map>
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace serialbox {
 
-/// \brief Hash-map of meta-information of the form ´key = value´ pair or 
+/// \brief Hash-map of meta-information of the form ´key = value´ pair or
 /// ´key = {value1, ..., valueN}´
 ///
 /// They keys are strings (std::string), while the values can be booleans, integers (32 and 64 bit),
@@ -85,18 +85,18 @@ public:
   bool hasKey(StringType&& key) const noexcept {
     return (map_.find(key) != map_.end());
   }
-  
+
   /// \brief Get vector of strings of all available keys
-  /// 
+  ///
   /// To get the corresponding TypeIDs, use ´MetaInfoMap::types()´.
-  /// 
+  ///
   /// \return vector of strings of all keys
   std::vector<std::string> keys() const;
-  
+
   /// \brief Get vector of all available keys
   ///
   /// To get the corresponding keys, use ´MetaInfoMap::keys()´.
-  ///  
+  ///
   /// \return vector of TypeIDs of all elements
   std::vector<TypeID> types() const;
 

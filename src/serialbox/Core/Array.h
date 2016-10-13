@@ -15,8 +15,8 @@
 #ifndef SERIALBOX_CORE_ARRAY_H
 #define SERIALBOX_CORE_ARRAY_H
 
-#include <vector>
 #include <type_traits>
+#include <vector>
 
 namespace serialbox {
 

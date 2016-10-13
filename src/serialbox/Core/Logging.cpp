@@ -14,7 +14,6 @@
 
 #include "serialbox/Core/Logging.h"
 
-
 namespace serialbox {
 
 namespace internal {

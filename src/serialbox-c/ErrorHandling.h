@@ -61,22 +61,21 @@ void serialboxResetFatalErrorHandler(void);
  */
 void serialboxDefaultFatalErrorHandler(const char* Reason);
 
-
 /*===------------------------------------------------------------------------------------------===*\
  *     State Error Handler
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Store the the current state of the error which can be queried via 
- * serialboxStateErrorHandlerGetLastError() 
+ * \brief Store the the current state of the error which can be queried via
+ * serialboxStateErrorHandlerGetLastError()
  */
 void serialboxStateErrorHandler(const char* Reason);
 
 /**
  * \brief Query the current error state
- * 
+ *
  * This function requires to set the ErrorHandler to ´serialboxStateErrorHandler´.
- *   
+ *
  * \param[out]  hasError        Set to 1 if an error occured, 0 otherwise
  * \param[out]  errorMessage    Error message of the last error (NULL if no error occured)
  */
@@ -89,12 +88,11 @@ void serialboxStateErrorHandlerResetState(void);
 
 /**
  * \brief Query the current error state and \b reset it
- * 
- * \see serialboxStateErrorHandlerGetCurrentError 
+ *
+ * \see serialboxStateErrorHandlerGetCurrentError
  * \see serialboxStateErrorHandlerResetState.
  */
 void serialboxStateErrorHandlerGetCurrentErrorAndReset(int* hasError, char** errorMessage);
-
 
 #ifdef __cplusplus
 }

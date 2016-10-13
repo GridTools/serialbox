@@ -28,7 +28,7 @@
 namespace serialbox {
 
 /// \brief Archive based on NetCDF
-/// 
+///
 /// \see https://github.com/Unidata/netcdf-c
 class NetCDFArchive : public Archive {
 public:
@@ -57,7 +57,7 @@ public:
 
   /// \brief Convert meta-data to JSON and serialize to file
   void writeMetaDataToJson();
-  
+
   /// \name Archive implementation
   /// \see serialbox::Archive "Archive"
   /// @{

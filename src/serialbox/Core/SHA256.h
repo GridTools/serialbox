@@ -24,10 +24,10 @@ namespace serialbox {
 /// \see https://en.wikipedia.org/wiki/SHA-1
 struct SHA256 {
   SHA256() = delete;
-  
+
   /// \brief Identifier of the hash
   static const char* Name;
-  
+
   /// \brief Compute 256 bit hash using SHA-1
   ///
   /// \param data     Binary data

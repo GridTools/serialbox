@@ -53,13 +53,13 @@ public:
 
   ///
   virtual const std::string& metaDataFile() const = 0;
-  
+
   ///
   virtual void clear() = 0;
 
   ///
   virtual bool isReadingThreadSafe() const = 0;
-  
+
   ///
   virtual bool isWritingThreadSafe() const = 0;
 

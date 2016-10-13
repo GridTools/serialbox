@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/gridtools/savepoint_vector.hpp ----------------------*- C++ -*-===//
+//===-- serialbox/Core/Frontend/gridtools/MetaInfoValue.h ---------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,20 +8,22 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains the gridtools implementation of the savepoint_vector and savepoint_iterator.
+/// This file contains the gridtools implementation of the meta-information value.
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_SAVEPOINT_VECTOR_HPP
-#define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_SAVEPOINT_VECTOR_HPP
+#ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_META_INFO_VALUE_H
+#define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_META_INFO_VALUE_H
 
-#include "serialbox/Core/SavepointVector.h"
+#include "serialbox/Core/MetaInfoValue.h"
 #include <memory>
 
 namespace serialbox {
 
 namespace gridtools {
 
+/// \brief Represent an immutable meta information value as a type-id and type-erased data
+using meta_info_value = MetaInfoValue;
 
 } // namespace gridtools
 

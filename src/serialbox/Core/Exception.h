@@ -20,7 +20,7 @@
 
 namespace serialbox {
 
-/// \brief Simple exception class which stores a human-readable error description
+/// \brief Exception class which stores a human-readable error description
 ///
 /// Creates a ´std::runtime_error´ with ´std::runtime_error::what()´ set to the formatted
 /// string.

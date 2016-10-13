@@ -15,8 +15,8 @@
 #ifndef SERIALBOX_CORE_ARCHIVE_BINARYARCHIVE_H
 #define SERIALBOX_CORE_ARCHIVE_BINARYARCHIVE_H
 
-#include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/Archive/Archive.h"
+#include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/Json.h"
 #include "serialbox/Core/MD5.h"
 #include "serialbox/Core/SHA256.h"
@@ -36,11 +36,11 @@ public:
   /// \brief Revision of the binary archive
   static const int Version;
 
-  /// \brief Hash algorithm
+/// \brief Hash algorithm
 #ifdef SERIALBOX_HAS_OPENSSL
   using HashAlgorithm = MD5;
 #else
-  using HashAlgorithm = SHA256;  
+  using HashAlgorithm = SHA256;
 #endif
 
   /// \brief Offset within a file

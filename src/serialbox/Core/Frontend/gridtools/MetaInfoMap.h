@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/gridtools/meta_info_map.hpp -------------------------*- C++ -*-===//
+//===-- serialbox/Core/Frontend/gridtools/MetaInfoMap.h -----------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,9 +12,11 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_META_INFO_MAP_HPP
-#define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_META_INFO_MAP_HPP
+#ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_META_INFO_MAP_H
+#define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_META_INFO_MAP_H
 
+#include "serialbox/Core/Frontend/gridtools/Exception.h"
+#include "serialbox/Core/Frontend/gridtools/MetaInfoValue.h"
 #include "serialbox/Core/MetaInfoMap.h"
 #include <memory>
 
@@ -51,17 +53,16 @@ public:
   using const_iterator = map_type::const_iterator;
 
   /// \brief Default constructor (empty map)
-  meta_info_map() { mapImpl_ = std::make_shared<MetaInfoMap>(); };
+  meta_info_map() : mapImpl_(std::make_shared<MetaInfoMap>()) {}
 
   /// \brief Construct from initalizer-list
   ///
   /// \b Example:
   /// \code
-  ///   meta_info_map m({{"key1", double(5)}, {"key2, int(4)}});
+  ///   meta_info_map m({{"key1", meta_info_value(4.0)}, {"key2", meta_info_value(2))}});
   /// \endcode
-  explicit meta_info_map(std::initializer_list<value_type> list) {
-    mapImpl_ = std::make_shared<MetaInfoMap>(list);
-  }
+  explicit meta_info_map(std::initializer_list<value_type> list)
+      : mapImpl_(std::make_shared<MetaInfoMap>(list)) {}
 
   /// \brief Construct with MetaInfoMap (internal use)
   explicit meta_info_map(const std::shared_ptr<MetaInfoMap>& map) { mapImpl_ = map; }
@@ -70,6 +71,15 @@ public:
   ///
   /// This performs a \i shallow copy, meaning the objects share the same underlying MetaInfoMap.
   /// To deep copy the object call meta_info_map::clone().
+  ///
+  /// \b Example
+  /// \code
+  ///   meta_info_map m1 = {{"key1", meta_info_value(4.0)}, {"key2", meta_info_value(2))}};
+  ///   meta_info_map m2 = m1;
+  ///
+  ///   m1.clear();
+  ///   assert(m2.empty()); // m1 and m2 do share the same MetaInfoMap, hence m2 is empty as well
+  /// \endcode
   ///
   /// \see meta_info_map::clone()
   meta_info_map(const meta_info_map&) = default;
@@ -82,6 +92,15 @@ public:
   /// This performs a \i shallow copy, meaning the objects share the same underlying MetaInfoMap.
   /// To deep copy the object call meta_info_map::clone().
   ///
+  /// \b Example
+  /// \code
+  ///   meta_info_map m1 = {{"key1", meta_info_value(4.0)}, {"key2", meta_info_value(2))}};
+  ///   meta_info_map m2 = m1;
+  ///
+  ///   m1.clear();
+  ///   assert(m2.empty()); // m1 and m2 do share the same MetaInfoMap, hence m2 is empty as well
+  /// \endcode
+  ///
   /// \see meta_info_map::clone
   meta_info_map& operator=(const meta_info_map&) = default;
 
@@ -92,23 +111,24 @@ public:
   ///
   /// \b Example:
   /// \code
-  ///   meta_info_map m({{"key1", double(5)}, {"key2, int(4)}});
+  ///   meta_info_map m1 = {{"key1", meta_info_value(4.0)}, {"key2", meta_info_value(2))}};
   /// \endcode
   meta_info_map& operator=(std::initializer_list<value_type> list) {
     mapImpl_ = std::make_shared<MetaInfoMap>(list);
+    return (*this);
   }
 
   /// \brief Clone the current meta_info_map object by performing a deep copy
   ///
   /// \Example: To deep copy a meta_info_map
   /// \code
-  ///   meta_info_map m1 = {{"key1, double(4)}, {"key2", int(2)}};
+  ///   meta_info_map m1 = {{"key1", double(4)}, {"key2", int(2)}};
   ///   meta_info_map m2 = m1.clone();
   ///
   ///   m1.clear();
   ///   assert(!m2.empty()); // m1 and m2 do NOT share the same MetaInfoMap, hence m2 is not empty
   /// \endcode
-  meta_info_map clone() const { return meta_info_map(std::make_shared<MetaInfoMap>(mapImpl_)); }
+  meta_info_map clone() const { return meta_info_map(std::make_shared<MetaInfoMap>(*mapImpl_)); }
 
   /// \brief Check if key exists in the map
   ///
@@ -116,7 +136,7 @@ public:
   ///
   /// \return True iff the key is present
   template <class StringType>
-  bool hasKey(StringType&& key) const noexcept {
+  bool has_key(StringType&& key) const noexcept {
     return mapImpl_->hasKey(std::forward<StringType>(key));
   }
 
@@ -215,7 +235,7 @@ public:
 
   /// \brief Returns a bool value indicating whether the meta_info_map is empty, i.e. whether its
   /// size is 0
-  bool empty() const noexcept { return mapImpl_.empty(); }
+  bool empty() const noexcept { return mapImpl_->empty(); }
 
   /// \brief All the elements in the meta_info_map are dropped: their destructors are called, and
   /// they are removed from the container, leaving it with a size of 0
@@ -230,16 +250,21 @@ public:
   const_iterator end() const noexcept { return mapImpl_->end(); }
 
   /// \brief Swap with other
-  void swap(meta_info_map& other) noexcept { mapImpl_->swap(other.mapImpl_); }
+  void swap(meta_info_map& other) noexcept { mapImpl_->swap(*other.mapImpl_); }
 
   /// \brief Test for equality
-  bool operator==(const meta_info_map& right) const noexcept { return (map_ == right.mapImpl_); }
+  bool operator==(const meta_info_map& right) const noexcept {
+    return (*mapImpl_ == *right.mapImpl_);
+  }
 
   /// \brief Test for inequality
   bool operator!=(const meta_info_map& right) const noexcept { return (!(*this == right)); }
 
-  //    /// \brief Convert to stream
-  //    friend std::ostream& operator<<(std::ostream& stream, const meta_info_map& s);
+  /// \brief Convert to stream
+  template <class StreamType>
+  friend std::ostream& operator<<(StreamType&& stream, const meta_info_map& s) {
+    return (stream << *s.mapImpl_);
+  }
 
 private:
   std::shared_ptr<MetaInfoMap> mapImpl_;

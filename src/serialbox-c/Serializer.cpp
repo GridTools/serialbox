@@ -12,9 +12,9 @@
  *
 \*===------------------------------------------------------------------------------------------===*/
 
+#include "serialbox-c/Serializer.h"
 #include "serialbox-c/Logging.h"
 #include "serialbox-c/Savepoint.h"
-#include "serialbox-c/Serializer.h"
 #include "serialbox-c/Utility.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Logging.h"
@@ -50,13 +50,14 @@ serialboxSerializer_t* serialboxSerializerCreate(serialboxOpenModeKind mode, con
       serializer->impl = new Serializer(serialbox::OpenModeKind::Read, directory, prefix, archive);
       break;
     case Write:
-      serializer->impl  = new Serializer(serialbox::OpenModeKind::Write, directory, prefix, archive);
+      serializer->impl = new Serializer(serialbox::OpenModeKind::Write, directory, prefix, archive);
       break;
     case Append:
-      serializer->impl  = new Serializer(serialbox::OpenModeKind::Append, directory, prefix, archive);
+      serializer->impl =
+          new Serializer(serialbox::OpenModeKind::Append, directory, prefix, archive);
       break;
     }
-    serializer->ownsData = 1;    
+    serializer->ownsData = 1;
   } catch(std::exception& e) {
     std::free(serializer);
     serializer = NULL;

@@ -71,7 +71,7 @@ int serialboxSavepointEqual(const serialboxSavepoint_t* s1, const serialboxSavep
 
 /**
  * \brief Convert to string
- * 
+ *
  * The function will allocate a sufficiently large ´char´ buffer (using malloc()) which needs
  * be freed by the user using free().
  *

@@ -22,7 +22,7 @@ using namespace serialboxC;
 \*===------------------------------------------------------------------------------------------===*/
 
 serialboxFieldMetaInfo_t* serialboxFieldMetaInfoCreate(serialboxTypeID type, const int* dimensions,
-                                                      int numDimensions) {
+                                                       int numDimensions) {
   serialboxFieldMetaInfo_t* fieldMetaInfo = allocate<serialboxFieldMetaInfo_t>();
 
   std::vector<int> dims(dimensions, dimensions + numDimensions);

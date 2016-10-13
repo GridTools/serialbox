@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/gridtools/serializer.hpp ----------------------------*- C++ -*-===//
+//===-- serialbox/Core/Frontend/gridtools/Serializer.h ------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,18 +12,19 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_SERIALIZER_HPP
-#define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_SERIALIZER_HPP
+#ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_SERIALIZER_H
+#define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_SERIALIZER_H
 
+#include "serialbox/Core/Frontend/gridtools/Exception.h"
+#include "serialbox/Core/Frontend/gridtools/MetaInfoMap.h"
+#include "serialbox/Core/Frontend/gridtools/Savepoint.h"
+#include "serialbox/Core/Frontend/gridtools/SavepointVector.h"
 #include "serialbox/Core/SerializerImpl.h"
 #include <memory>
 
 namespace serialbox {
 
-namespace gridtools {
-
-
-} // namespace gridtools
+namespace gridtools {} // namespace gridtools
 
 } // namespace serialbox
 

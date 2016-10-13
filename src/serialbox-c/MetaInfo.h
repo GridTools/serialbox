@@ -196,11 +196,14 @@ int serialboxMetaInfoAddArrayOfString(serialboxMetaInfo_t* metaInfo, const char*
  * \exception FatalError   Key ´key´ does not exist, conversion results in truncation of the value
  * @{
  */
-serialboxBoolean_t serialboxMetaInfoGetBoolean(const serialboxMetaInfo_t* metaInfo, const char* key);
+serialboxBoolean_t serialboxMetaInfoGetBoolean(const serialboxMetaInfo_t* metaInfo,
+                                               const char* key);
 serialboxInt32_t serialboxMetaInfoGetInt32(const serialboxMetaInfo_t* metaInfo, const char* key);
 serialboxInt64_t serialboxMetaInfoGetInt64(const serialboxMetaInfo_t* metaInfo, const char* key);
-serialboxFloat32_t serialboxMetaInfoGetFloat32(const serialboxMetaInfo_t* metaInfo, const char* key);
-serialboxFloat64_t serialboxMetaInfoGetFloat64(const serialboxMetaInfo_t* metaInfo, const char* key);
+serialboxFloat32_t serialboxMetaInfoGetFloat32(const serialboxMetaInfo_t* metaInfo,
+                                               const char* key);
+serialboxFloat64_t serialboxMetaInfoGetFloat64(const serialboxMetaInfo_t* metaInfo,
+                                               const char* key);
 serialboxString_t serialboxMetaInfoGetString(const serialboxMetaInfo_t* metaInfo, const char* key);
 /** @} */
 

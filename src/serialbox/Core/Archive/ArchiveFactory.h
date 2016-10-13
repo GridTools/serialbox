@@ -33,7 +33,7 @@ class ArchiveFactory {
 
 public:
   /// \brief Function used to construct archives
-  /// 
+  ///
   /// The ArchiveFactory expects this function signature to construct the respective archive. The
   /// return type should be a pointer the the derived Archive as its dynamic-type.
   ///
@@ -48,7 +48,7 @@ public:
       std::function<std::unique_ptr<Archive>(OpenModeKind, const std::string&, const std::string&)>;
 
   /// \brief Return the instance of this singleton class
-  /// 
+  ///
   /// The first call will also register all archives.
   static ArchiveFactory& getInstance() noexcept;
 
