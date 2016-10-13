@@ -16,7 +16,10 @@ install:
   # Homebrew (Mac OSX)
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew outdated cmake || brew upgrade cmake; fi
+  
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew tap homebrew/science; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install netcdf; fi
+  
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export PATH=/usr/local/bin:$PATH; fi
   
 # APT (Linux)
