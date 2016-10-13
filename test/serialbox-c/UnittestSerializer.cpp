@@ -32,7 +32,7 @@ TEST_F(CSerializerUtilityTest, Construction) {
   // -----------------------------------------------------------------------------------------------
   {
     // Open fresh serializer and write meta data to disk
-    serialboxSerializer_t ser =
+    serialboxSerializer_t* ser =
         serialboxSerializerCreate(Write, directory->path().c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
@@ -42,11 +42,12 @@ TEST_F(CSerializerUtilityTest, Construction) {
 
     serialboxSerializerUpdateMetaData(ser);
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+    serialboxSerializerDestroy(ser);    
   }
 
   {
     // Directory does not exists (should be created by the Archive)
-    serialboxSerializer_t ser = serialboxSerializerCreate(
+    serialboxSerializer_t* ser = serialboxSerializerCreate(
         Write, (directory->path() / "dir-is-created-from-write").c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
@@ -54,6 +55,7 @@ TEST_F(CSerializerUtilityTest, Construction) {
 
     serialboxSerializerUpdateMetaData(ser);
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+    serialboxSerializerDestroy(ser);    
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -61,15 +63,16 @@ TEST_F(CSerializerUtilityTest, Construction) {
   // -----------------------------------------------------------------------------------------------
   {
     // MetaData.json exists (from Writing part)
-    serialboxSerializerCreate(Read, directory->path().c_str(), "Field", "Binary");
+    serialboxSerializer_t* ser = serialboxSerializerCreate(Read, directory->path().c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+    serialboxSerializerDestroy(ser);    
   }
 
   {
     // Directory does not exist -> FatalError
-    serialboxSerializerCreate(Read, (directory->path() / "not-a-dir").c_str(), "Field",
-                              "Binary");
+    serialboxSerializer_t* ser = serialboxSerializerCreate(Read, (directory->path() / "not-a-dir").c_str(), "Field", "Binary");
     ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+    serialboxSerializerDestroy(ser);    
   }
 
   {
@@ -77,9 +80,10 @@ TEST_F(CSerializerUtilityTest, Construction) {
     boost::filesystem::remove((directory->path() / "dir-is-created-from-write") /
                               "MetaData-Field.json");
 
-    serialboxSerializerCreate(Read, (directory->path() / "dir-is-created-from-write").c_str(),
+    serialboxSerializer_t* ser = serialboxSerializerCreate(Read, (directory->path() / "dir-is-created-from-write").c_str(),
                               "Field", "Binary");
     ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+    serialboxSerializerDestroy(ser);    
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -87,48 +91,54 @@ TEST_F(CSerializerUtilityTest, Construction) {
   // -----------------------------------------------------------------------------------------------
   {
     // Construct from existing (empty) metaData
-    serialboxSerializerCreate(Append, directory->path().c_str(), "Field", "Binary");
+    serialboxSerializer_t* ser = serialboxSerializerCreate(Append, directory->path().c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+    serialboxSerializerDestroy(ser);        
   }
 
   {
     // Directory does not exists (should be created by the Archive)
-    serialboxSerializerCreate(Append, (directory->path() / "dir-is-created-from-append").c_str(),
+    serialboxSerializer_t* ser = serialboxSerializerCreate(Append, (directory->path() / "dir-is-created-from-append").c_str(),
                               "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
     ASSERT_TRUE(boost::filesystem::exists(directory->path() / "dir-is-created-from-append"));
+    serialboxSerializerDestroy(ser);    
   }
 }
 
 TEST_F(CSerializerUtilityTest, AddMetaInfo) {
-  serialboxSerializer_t ser =
+  serialboxSerializer_t* ser =
       serialboxSerializerCreate(Write, directory->path().c_str(), "Field", "Binary");
 
   // Add meta-information
   {
-    serialboxMetaInfo_t metaInfo = serialboxSerializerGetGlobalMetaInfo(ser);
+    serialboxMetaInfo_t* metaInfo = serialboxSerializerGetGlobalMetaInfo(ser);
+    ASSERT_FALSE(metaInfo->ownsData);
     ASSERT_TRUE(serialboxMetaInfoAddBoolean(metaInfo, "key", true));
+    serialboxMetaInfoDestroy(metaInfo);
   }
 
   // Query meta-information
   {
-    serialboxMetaInfo_t metaInfo = serialboxSerializerGetGlobalMetaInfo(ser);
+    serialboxMetaInfo_t* metaInfo = serialboxSerializerGetGlobalMetaInfo(ser);
+    ASSERT_FALSE(metaInfo->ownsData);
     ASSERT_TRUE(serialboxMetaInfoHasKey(metaInfo, "key"));
     EXPECT_EQ(serialboxMetaInfoGetBoolean(metaInfo, "key"), true);
+    serialboxMetaInfoDestroy(metaInfo);
   }
 
-  serialboxSerializerDestroy(&ser);
+  serialboxSerializerDestroy(ser);
 }
 
 TEST_F(CSerializerUtilityTest, RegisterSavepoints) {
-  serialboxSerializer_t ser =
+  serialboxSerializer_t* ser =
       serialboxSerializerCreate(Write, directory->path().c_str(), "Field", "Binary");
 
   // Create Savepoints
-  serialboxSavepoint_t savepoint1 = serialboxSavepointCreate("savepoint1");
+  serialboxSavepoint_t* savepoint1 = serialboxSavepointCreate("savepoint1");
   serialboxMetaInfoAddBoolean(serialboxSavepointGetMetaInfo(savepoint1), "key", true);
 
-  serialboxSavepoint_t savepoint2 = serialboxSavepointCreate("savepoint2");
+  serialboxSavepoint_t* savepoint2 = serialboxSavepointCreate("savepoint2");
 
   // Add Savepoint to Serializer
   ASSERT_TRUE(serialboxSerializerAddSavepoint(ser, savepoint1));
@@ -138,22 +148,23 @@ TEST_F(CSerializerUtilityTest, RegisterSavepoints) {
   int numSavepoints = serialboxSerializerGetNumSavepoints(ser);
   ASSERT_EQ(numSavepoints, 2);
 
-  serialboxSavepoint_t* savepoints = serialboxSerializerGetSavepointVector(ser);
+  serialboxSavepoint_t** savepoints = serialboxSerializerGetSavepointVector(ser);
   EXPECT_TRUE(serialboxSavepointEqual(savepoints[0], savepoint1));
   EXPECT_TRUE(serialboxSavepointEqual(savepoints[1], savepoint2));
 
-  serialboxSavepointDestroy(&savepoint1);
-  serialboxSavepointDestroy(&savepoint2);
-  serialboxSerializerDestroy(&ser);
+  serialboxSavepointDestroy(savepoint1);
+  serialboxSavepointDestroy(savepoint2);
+  serialboxSerializerDestroySavepointVector(savepoints, numSavepoints);
+  serialboxSerializerDestroy(ser);
 }
 
 TEST_F(CSerializerUtilityTest, RegisterFields) {
-  serialboxSerializer_t ser =
+  serialboxSerializer_t* ser =
       serialboxSerializerCreate(Write, directory->path().c_str(), "Field", "Binary");
 
   // Create FieldMetaInfo
   int dims[3] = {10, 15, 20};
-  serialboxFieldMetaInfo_t info = serialboxFieldMetaInfoCreate(Float64, dims, 3);
+  serialboxFieldMetaInfo_t* info = serialboxFieldMetaInfoCreate(Float64, dims, 3);
 
   // Register field
   ASSERT_TRUE(serialboxSerializerAddField(ser, "field", info));
@@ -172,14 +183,15 @@ TEST_F(CSerializerUtilityTest, RegisterFields) {
   std::free(fieldnames);
 
   // Get FieldMetaInfo of "field"
-  serialboxFieldMetaInfo_t infoQuery = serialboxSerializerGetFieldMetaInfo(ser, "field");
+  serialboxFieldMetaInfo_t* infoQuery = serialboxSerializerGetFieldMetaInfo(ser, "field");
   ASSERT_TRUE(serialboxFieldMetaInfoEqual(info, infoQuery));
 
   // Get FieldMetaInfo of non-existing field -> NULL
   ASSERT_EQ(NULL, serialboxSerializerGetFieldMetaInfo(ser, "X"));
 
-  serialboxFieldMetaInfoDestroy(&info);
-  serialboxSerializerDestroy(&ser);
+  serialboxFieldMetaInfoDestroy(info);
+  serialboxFieldMetaInfoDestroy(infoQuery);
+  serialboxSerializerDestroy(ser);
 }
 
 namespace {
@@ -225,15 +237,15 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
   Storage field_6d_output(Storage::RowMajor, {2, 2, 1, 2, 1, 2});
 
   // Savepoints
-  serialboxSavepoint_t savepoint1_t_1 = serialboxSavepointCreate("savepoint1");
+  serialboxSavepoint_t* savepoint1_t_1 = serialboxSavepointCreate("savepoint1");
   serialboxMetaInfoAddBoolean(serialboxSavepointGetMetaInfo(savepoint1_t_1), "time", int(1));
 
-  serialboxSavepoint_t savepoint1_t_2 = serialboxSavepointCreate("savepoint2");
+  serialboxSavepoint_t* savepoint1_t_2 = serialboxSavepointCreate("savepoint2");
   serialboxMetaInfoAddBoolean(serialboxSavepointGetMetaInfo(savepoint1_t_2), "time", int(2));
 
-  serialboxSavepoint_t savepoint_u_1 = serialboxSavepointCreate("savepoint_u_1");
-  serialboxSavepoint_t savepoint_v_1 = serialboxSavepointCreate("savepoint_v_1");
-  serialboxSavepoint_t savepoint_6d = serialboxSavepointCreate("savepoint_6d");
+  serialboxSavepoint_t* savepoint_u_1 = serialboxSavepointCreate("savepoint_u_1");
+  serialboxSavepoint_t* savepoint_v_1 = serialboxSavepointCreate("savepoint_v_1");
+  serialboxSavepoint_t* savepoint_6d = serialboxSavepointCreate("savepoint_6d");
 
   // -----------------------------------------------------------------------------------------------
   // Writing / Appending
@@ -248,14 +260,14 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
   //  savepoint_6d  | -          | field_6d
   //
   {
-    serialboxSerializer_t ser_write =
+    serialboxSerializer_t* ser_write =
         serialboxSerializerCreate(Write, this->directory->path().c_str(), "Field", "Binary");
 
     // Register fields
     serialboxTypeID type = static_cast<serialboxTypeID>((int)serialbox::ToTypeID<TypeParam>::value);
-    serialboxFieldMetaInfo_t info_u =
+    serialboxFieldMetaInfo_t* info_u =
         serialboxFieldMetaInfoCreate(type, u_0_input.dims().data(), u_0_input.dims().size());
-    serialboxFieldMetaInfo_t info_v =
+    serialboxFieldMetaInfo_t* info_v =
         serialboxFieldMetaInfoCreate(type, v_0_input.dims().data(), v_0_input.dims().size());
 
     ASSERT_TRUE(serialboxSerializerAddField(ser_write, "u", info_u));
@@ -303,16 +315,18 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
                              field_6d_input.strides().data(), field_6d_input.strides().size());
     ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-    serialboxSerializerDestroy(&ser_write);
+    serialboxFieldMetaInfoDestroy(info_u);
+    serialboxFieldMetaInfoDestroy(info_v);
+    serialboxSerializerDestroy(ser_write);
   }
 
   // Reopen serializer and append a data field
   {
-    serialboxSerializer_t ser_append = serialboxSerializerCreate(
-        Append, this->directory->path().c_str(), "Field", "Binary");
+    serialboxSerializer_t* ser_append =
+        serialboxSerializerCreate(Append, this->directory->path().c_str(), "Field", "Binary");
 
     serialboxTypeID type = static_cast<serialboxTypeID>((int)serialbox::ToTypeID<TypeParam>::value);
-    serialboxFieldMetaInfo_t info_field_6d = serialboxFieldMetaInfoCreate(
+    serialboxFieldMetaInfo_t* info_field_6d = serialboxFieldMetaInfoCreate(
         type, field_6d_input.dims().data(), field_6d_input.dims().size());
     ASSERT_TRUE(serialboxSerializerAddField(ser_append, "field_6d", info_field_6d));
 
@@ -322,20 +336,22 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
                              field_6d_input.strides().size());
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-    serialboxSerializerDestroy(&ser_append);
+    serialboxFieldMetaInfoDestroy(info_field_6d);
+    serialboxSerializerDestroy(ser_append);
   }
 
   // -----------------------------------------------------------------------------------------------
   // Reading
   // -----------------------------------------------------------------------------------------------
   {
-    serialboxSerializer_t ser_read =
+    serialboxSerializer_t* ser_read =
         serialboxSerializerCreate(Read, this->directory->path().c_str(), "Field", "Binary");
 
     // Check order of savepoints is correct
-    ASSERT_EQ(serialboxSerializerGetNumSavepoints(ser_read), 5);
+    int numSavepoints = serialboxSerializerGetNumSavepoints(ser_read);
+    ASSERT_EQ(numSavepoints, 5);
 
-    serialboxSavepoint_t* savepoints = serialboxSerializerGetSavepointVector(ser_read);
+    serialboxSavepoint_t** savepoints = serialboxSerializerGetSavepointVector(ser_read);
 
     EXPECT_TRUE(serialboxSavepointEqual(savepoints[0], savepoint1_t_1));
     EXPECT_TRUE(serialboxSavepointEqual(savepoints[1], savepoint1_t_2));
@@ -343,7 +359,7 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
     EXPECT_TRUE(serialboxSavepointEqual(savepoints[3], savepoint_v_1));
     EXPECT_TRUE(serialboxSavepointEqual(savepoints[4], savepoint_6d));
 
-    std::free(savepoints);
+    serialboxSerializerDestroySavepointVector(savepoints, numSavepoints);
 
     // Check fields at savepoint
     int len;
@@ -351,7 +367,7 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
     serialboxSerializerGetFieldnamesAtSavepoint(ser_read, savepoint1_t_1, &fieldnames, &len);
 
     ASSERT_EQ(len, 2);
-    
+
     // Check u exists
     EXPECT_TRUE(std::find_if(fieldnames, fieldnames + len, [](const char* s) {
                   return (std::memcmp(s, "u", sizeof("u")) == 0);
@@ -410,12 +426,12 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
     ASSERT_TRUE(Storage::verify(field_6d_output, field_6d_input));
 
-    serialboxSerializerDestroy(&ser_read);
+    serialboxSerializerDestroy(ser_read);
   }
 
-  serialboxSavepointDestroy(&savepoint1_t_1);
-  serialboxSavepointDestroy(&savepoint1_t_2);
-  serialboxSavepointDestroy(&savepoint_u_1);
-  serialboxSavepointDestroy(&savepoint_v_1);
-  serialboxSavepointDestroy(&savepoint_6d);
+  serialboxSavepointDestroy(savepoint1_t_1);
+  serialboxSavepointDestroy(savepoint1_t_2);
+  serialboxSavepointDestroy(savepoint_u_1);
+  serialboxSavepointDestroy(savepoint_v_1);
+  serialboxSavepointDestroy(savepoint_6d);
 }

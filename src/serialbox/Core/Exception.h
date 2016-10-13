@@ -22,7 +22,7 @@ namespace serialbox {
 
 /// \brief Simple exception class which stores a human-readable error description
 ///
-/// Creates a \c std::runtime_error with \c std::runtime_error::what() set to the formatted
+/// Creates a ´std::runtime_error´ with ´std::runtime_error::what()´ set to the formatted
 /// string.
 class Exception : public std::runtime_error {
 public:

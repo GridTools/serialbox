@@ -97,22 +97,34 @@ typedef serialboxString_t* serialboxArrayOfString_t;
 /**
  * \brief Refrence to a Serializer
  */
-typedef void* serialboxSerializer_t;
+typedef struct {
+  void* impl;
+  int ownsData;
+}serialboxSerializer_t;
 
 /**
  * \brief Refrence to a Savepoint
  */
-typedef void* serialboxSavepoint_t;
+typedef struct {
+  void* impl;
+  int ownsData;
+} serialboxSavepoint_t;
 
 /**
  * \brief Refrence to a MetaInfo
  */
-typedef void* serialboxMetaInfo_t;
+typedef struct {
+  void* impl;
+  int ownsData;
+} serialboxMetaInfo_t;
 
 /**
  * \brief Refrence to a FieldMetaInfo
  */
-typedef void* serialboxFieldMetaInfo_t;
+typedef struct {
+  void* impl;
+  int ownsData;
+} serialboxFieldMetaInfo_t;
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Enumtypes
@@ -124,7 +136,7 @@ typedef void* serialboxFieldMetaInfo_t;
 enum serialboxOpenModeKind { Read = 0, Write, Append };
 
 /**
- * \brief
+ * \brief Type-id of types recognized by serialbox
  */
 enum serialboxTypeID {
   Invalid = 0,

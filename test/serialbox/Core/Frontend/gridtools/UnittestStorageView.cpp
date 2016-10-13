@@ -20,7 +20,7 @@
 
 #ifdef SERIALBOX_HAS_GRIDTOOLS
 
-#include "serialbox/Core/Frontend/gridtools/StorageViewHelper.h"
+#include "serialbox/Core/Frontend/gridtools/storage_view_helper.hpp"
 
 namespace {
 

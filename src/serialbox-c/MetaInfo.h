@@ -28,16 +28,16 @@ extern "C" {
 /**
  * \brief Construct an empty meta-information
  *
- * \return refrence to the newly constructed MetaInfo or NULL if an error occured
+ * \return refrence pointer to the newly constructed meta-information or NULL if an error occurred
  */
-serialboxMetaInfo_t serialboxMetaInfoCreate(void);
+serialboxMetaInfo_t* serialboxMetaInfoCreate(void);
 
 /**
  * \brief Destroy the meta-information and deallocate all memory
  *
- * \param metaInfoPtr  Pointer to Meta-information to use
+ * \param metaInfo  Pointer to meta-information to use
  */
-void serialboxMetaInfoDestroy(serialboxMetaInfo_t* metaInfoPtr);
+void serialboxMetaInfoDestroy(serialboxMetaInfo_t* metaInfo);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Utility
@@ -49,15 +49,14 @@ void serialboxMetaInfoDestroy(serialboxMetaInfo_t* metaInfoPtr);
  * \param metaInfo  Meta-information to use
  * \return Number of elemenets in the meta-information
  */
-int serialboxMetaInfoGetSize(const serialboxMetaInfo_t metaInfo);
-
+int serialboxMetaInfoGetSize(const serialboxMetaInfo_t* metaInfo);
 /**
  * \brief Check if meta information is empty
  *
  * \param metaInfo  Meta-information to use
  * \return 1 if empty, 0 otherwise
  */
-int serialboxMetaInfoIsEmpty(const serialboxMetaInfo_t metaInfo);
+int serialboxMetaInfoIsEmpty(const serialboxMetaInfo_t* metaInfo);
 
 /**
  * \brief All the elements in the MetaInfo are dropped: their destructors are called, and they
@@ -65,7 +64,7 @@ int serialboxMetaInfoIsEmpty(const serialboxMetaInfo_t metaInfo);
  *
  * \param metaInfo  Meta-information to use
  */
-void serialboxMetaInfoClear(serialboxMetaInfo_t metaInfo);
+void serialboxMetaInfoClear(serialboxMetaInfo_t* metaInfo);
 
 /**
  * \brief Check if and element with key ´key´ exists
@@ -74,7 +73,7 @@ void serialboxMetaInfoClear(serialboxMetaInfo_t metaInfo);
  * \param key       Key to be searched for
  * \return 1 if elements exists, 0 otherwise
  */
-int serialboxMetaInfoHasKey(const serialboxMetaInfo_t metaInfo, const char* key);
+int serialboxMetaInfoHasKey(const serialboxMetaInfo_t* metaInfo, const char* key);
 
 /**
  * \brief Convert to string
@@ -85,7 +84,7 @@ int serialboxMetaInfoHasKey(const serialboxMetaInfo_t metaInfo, const char* key)
  * \param metaInfo  Meta-information to use
  * \return C-string representation of the meta-information
  */
-char* serialboxMetaInfoToString(const serialboxMetaInfo_t metaInfo);
+char* serialboxMetaInfoToString(const serialboxMetaInfo_t* metaInfo);
 
 /**
  * \brief Get an array of C-strings of all available keys in the meta-information
@@ -99,7 +98,7 @@ char* serialboxMetaInfoToString(const serialboxMetaInfo_t metaInfo);
  * \param[out] keys      Array of length ´len´ of C-strings of all keys in the meta-information
  * \param[out] len       Length of the array
  */
-void serialboxMetaInfoGetKeys(const serialboxMetaInfo_t metaInfo, char*** keys, int* len);
+void serialboxMetaInfoGetKeys(const serialboxMetaInfo_t* metaInfo, char*** keys, int* len);
 
 /**
  * \brief Get an array of ´serialboxTypeID´ of all available elements in the meta-information
@@ -116,7 +115,7 @@ void serialboxMetaInfoGetKeys(const serialboxMetaInfo_t metaInfo, char*** keys, 
  *
  * \return array of ´serialboxTypeID´s of all elements in the meta-information
  */
-void serialboxMetaInfoGetTypes(const serialboxMetaInfo_t metaInfo, serialboxTypeID** types,
+void serialboxMetaInfoGetTypes(const serialboxMetaInfo_t* metaInfo, serialboxTypeID** types,
                                int* len);
 
 /*===------------------------------------------------------------------------------------------===*\
@@ -135,17 +134,17 @@ void serialboxMetaInfoGetTypes(const serialboxMetaInfo_t metaInfo, serialboxType
  * \return 0 if the element was inserted successfully, 1 otherwise
  * @{
  */
-int serialboxMetaInfoAddBoolean(serialboxMetaInfo_t metaInfo, const char* key,
+int serialboxMetaInfoAddBoolean(serialboxMetaInfo_t* metaInfo, const char* key,
                                 serialboxBoolean_t value);
-int serialboxMetaInfoAddInt32(serialboxMetaInfo_t metaInfo, const char* key,
+int serialboxMetaInfoAddInt32(serialboxMetaInfo_t* metaInfo, const char* key,
                               serialboxInt32_t value);
-int serialboxMetaInfoAddInt64(serialboxMetaInfo_t metaInfo, const char* key,
+int serialboxMetaInfoAddInt64(serialboxMetaInfo_t* metaInfo, const char* key,
                               serialboxInt64_t value);
-int serialboxMetaInfoAddFloat32(serialboxMetaInfo_t metaInfo, const char* key,
+int serialboxMetaInfoAddFloat32(serialboxMetaInfo_t* metaInfo, const char* key,
                                 serialboxFloat32_t value);
-int serialboxMetaInfoAddFloat64(serialboxMetaInfo_t metaInfo, const char* key,
+int serialboxMetaInfoAddFloat64(serialboxMetaInfo_t* metaInfo, const char* key,
                                 serialboxFloat64_t value);
-int serialboxMetaInfoAddString(serialboxMetaInfo_t metaInfo, const char* key,
+int serialboxMetaInfoAddString(serialboxMetaInfo_t* metaInfo, const char* key,
                                serialboxString_t value);
 /** @} */
 
@@ -162,17 +161,17 @@ int serialboxMetaInfoAddString(serialboxMetaInfo_t metaInfo, const char* key,
  * \return 0 if the element was inserted successfully, 1 otherwise
  * @{
  */
-int serialboxMetaInfoAddArrayOfBoolean(serialboxMetaInfo_t metaInfo, const char* key,
+int serialboxMetaInfoAddArrayOfBoolean(serialboxMetaInfo_t* metaInfo, const char* key,
                                        serialboxArrayOfBoolean_t value, int len);
-int serialboxMetaInfoAddArrayOfInt32(serialboxMetaInfo_t metaInfo, const char* key,
+int serialboxMetaInfoAddArrayOfInt32(serialboxMetaInfo_t* metaInfo, const char* key,
                                      serialboxArrayOfInt32_t value, int len);
-int serialboxMetaInfoAddArrayOfInt64(serialboxMetaInfo_t metaInfo, const char* key,
+int serialboxMetaInfoAddArrayOfInt64(serialboxMetaInfo_t* metaInfo, const char* key,
                                      serialboxArrayOfInt64_t value, int len);
-int serialboxMetaInfoAddArrayOfFloat32(serialboxMetaInfo_t metaInfo, const char* key,
+int serialboxMetaInfoAddArrayOfFloat32(serialboxMetaInfo_t* metaInfo, const char* key,
                                        serialboxArrayOfFloat32_t value, int len);
-int serialboxMetaInfoAddArrayOfFloat64(serialboxMetaInfo_t metaInfo, const char* key,
+int serialboxMetaInfoAddArrayOfFloat64(serialboxMetaInfo_t* metaInfo, const char* key,
                                        serialboxArrayOfFloat64_t value, int len);
-int serialboxMetaInfoAddArrayOfString(serialboxMetaInfo_t metaInfo, const char* key,
+int serialboxMetaInfoAddArrayOfString(serialboxMetaInfo_t* metaInfo, const char* key,
                                       serialboxArrayOfString_t value, int len);
 /** @} */
 
@@ -197,12 +196,12 @@ int serialboxMetaInfoAddArrayOfString(serialboxMetaInfo_t metaInfo, const char* 
  * \exception FatalError   Key ´key´ does not exist, conversion results in truncation of the value
  * @{
  */
-serialboxBoolean_t serialboxMetaInfoGetBoolean(const serialboxMetaInfo_t metaInfo, const char* key);
-serialboxInt32_t serialboxMetaInfoGetInt32(const serialboxMetaInfo_t metaInfo, const char* key);
-serialboxInt64_t serialboxMetaInfoGetInt64(const serialboxMetaInfo_t metaInfo, const char* key);
-serialboxFloat32_t serialboxMetaInfoGetFloat32(const serialboxMetaInfo_t metaInfo, const char* key);
-serialboxFloat64_t serialboxMetaInfoGetFloat64(const serialboxMetaInfo_t metaInfo, const char* key);
-serialboxString_t serialboxMetaInfoGetString(const serialboxMetaInfo_t metaInfo, const char* key);
+serialboxBoolean_t serialboxMetaInfoGetBoolean(const serialboxMetaInfo_t* metaInfo, const char* key);
+serialboxInt32_t serialboxMetaInfoGetInt32(const serialboxMetaInfo_t* metaInfo, const char* key);
+serialboxInt64_t serialboxMetaInfoGetInt64(const serialboxMetaInfo_t* metaInfo, const char* key);
+serialboxFloat32_t serialboxMetaInfoGetFloat32(const serialboxMetaInfo_t* metaInfo, const char* key);
+serialboxFloat64_t serialboxMetaInfoGetFloat64(const serialboxMetaInfo_t* metaInfo, const char* key);
+serialboxString_t serialboxMetaInfoGetString(const serialboxMetaInfo_t* metaInfo, const char* key);
 /** @} */
 
 /**
@@ -225,17 +224,17 @@ serialboxString_t serialboxMetaInfoGetString(const serialboxMetaInfo_t metaInfo,
  *                         or conversions from primitive to array type
  * @{
  */
-void serialboxMetaInfoGetArrayOfBoolean(const serialboxMetaInfo_t metaInfo, const char* key,
+void serialboxMetaInfoGetArrayOfBoolean(const serialboxMetaInfo_t* metaInfo, const char* key,
                                         serialboxArrayOfBoolean_t* array, int* len);
-void serialboxMetaInfoGetArrayOfInt32(const serialboxMetaInfo_t metaInfo, const char* key,
+void serialboxMetaInfoGetArrayOfInt32(const serialboxMetaInfo_t* metaInfo, const char* key,
                                       serialboxArrayOfInt32_t* array, int* len);
-void serialboxMetaInfoGetArrayOfInt64(const serialboxMetaInfo_t metaInfo, const char* key,
+void serialboxMetaInfoGetArrayOfInt64(const serialboxMetaInfo_t* metaInfo, const char* key,
                                       serialboxArrayOfInt64_t* array, int* len);
-void serialboxMetaInfoGetArrayOfFloat32(const serialboxMetaInfo_t metaInfo, const char* key,
+void serialboxMetaInfoGetArrayOfFloat32(const serialboxMetaInfo_t* metaInfo, const char* key,
                                         serialboxArrayOfFloat32_t* array, int* len);
-void serialboxMetaInfoGetArrayOfFloat64(const serialboxMetaInfo_t metaInfo, const char* key,
+void serialboxMetaInfoGetArrayOfFloat64(const serialboxMetaInfo_t* metaInfo, const char* key,
                                         serialboxArrayOfFloat64_t* array, int* len);
-void serialboxMetaInfoGetArrayOfString(const serialboxMetaInfo_t metaInfo, const char* key,
+void serialboxMetaInfoGetArrayOfString(const serialboxMetaInfo_t* metaInfo, const char* key,
                                        serialboxArrayOfString_t* array, int* len);
 /** @} */
 

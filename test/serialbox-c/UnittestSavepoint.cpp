@@ -26,7 +26,7 @@ class CSavepointTest : public serialbox::unittest::CInterfaceTestBase {};
 TEST_F(CSavepointTest, Test) {
   const char* name = "savepoint";
 
-  serialboxFieldMetaInfo_t savepoint = serialboxSavepointCreate(name);
+  serialboxSavepoint_t* savepoint = serialboxSavepointCreate(name);
 
   //
   // Query name
@@ -37,24 +37,28 @@ TEST_F(CSavepointTest, Test) {
   // Add meta-information
   //
   {
-    serialboxMetaInfo_t metaInfo = serialboxSavepointGetMetaInfo(savepoint);
+    serialboxMetaInfo_t* metaInfo = serialboxSavepointGetMetaInfo(savepoint);
+    ASSERT_FALSE(metaInfo->ownsData);
     ASSERT_TRUE(serialboxMetaInfoAddBoolean(metaInfo, "key", true));
+    serialboxMetaInfoDestroy(metaInfo);
   }
 
   //
   // Query meta-information
   //
   {
-    serialboxMetaInfo_t metaInfo = serialboxSavepointGetMetaInfo(savepoint);
+    serialboxMetaInfo_t* metaInfo = serialboxSavepointGetMetaInfo(savepoint);
+    ASSERT_FALSE(metaInfo->ownsData);    
     ASSERT_TRUE(serialboxMetaInfoHasKey(metaInfo, "key"));
     EXPECT_EQ(serialboxMetaInfoGetBoolean(metaInfo, "key"), true);
+    serialboxMetaInfoDestroy(metaInfo); 
   }
 
   //
   // Compare equal
   //
-  serialboxFieldMetaInfo_t savepoint_not_equal = serialboxSavepointCreate(name);
-  serialboxFieldMetaInfo_t savepoint_equal = serialboxSavepointCreateFromSavepoint(savepoint);
+  serialboxSavepoint_t* savepoint_not_equal = serialboxSavepointCreate(name);
+  serialboxSavepoint_t* savepoint_equal = serialboxSavepointCreateFromSavepoint(savepoint);
 
   ASSERT_FALSE(serialboxSavepointEqual(savepoint, savepoint_not_equal));
   ASSERT_TRUE(serialboxSavepointEqual(savepoint, savepoint_equal));
@@ -72,7 +76,7 @@ TEST_F(CSavepointTest, Test) {
   //
   // Release memory
   //
-  serialboxSavepointDestroy(&savepoint);
-  serialboxSavepointDestroy(&savepoint_not_equal);
-  serialboxSavepointDestroy(&savepoint_equal);
+  serialboxSavepointDestroy(savepoint);
+  serialboxSavepointDestroy(savepoint_not_equal);
+  serialboxSavepointDestroy(savepoint_equal);
 }

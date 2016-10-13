@@ -27,7 +27,8 @@
 
 namespace serialbox {
 
-/// \brief Hash-map of meta-information of the form ´key = value´ pair
+/// \brief Hash-map of meta-information of the form ´key = value´ pair or 
+/// ´key = {value1, ..., valueN}´
 ///
 /// They keys are strings (std::string), while the values can be booleans, integers (32 and 64 bit),
 /// floating point numbers (32 and 64 bit) or strings.
@@ -36,7 +37,7 @@ public:
   /// \brief Type of the underlying hash-map
   using map_type = std::unordered_map<std::string, MetaInfoValue>;
 
-  /// \brief Type of an entry of the MetaInfoMap (`std::pair<std::string, MetaInfoMap::Value>`)
+  /// \brief Type of an entry of the MetaInfoMap (`std::pair<std::string, MetaInfoValue>`)
   using value_type = map_type::value_type;
 
   /// \brief Type of the key (`std::string`)
@@ -153,8 +154,8 @@ public:
   iterator erase(const_iterator first, const_iterator last) { return map_.erase(first, last); }
 
   /// \brief Return a reference to mapped value given by key
-  mapped_type& operator[](const key_type& key) { return map_[key]; }
-  mapped_type& operator[](key_type&& key) { return map_[key]; }
+  mapped_type& operator[](const key_type& key) noexcept { return map_[key]; }
+  mapped_type& operator[](key_type&& key) noexcept { return map_[key]; }
 
   /// \brief Return a reference to mapped value given by key
   ///

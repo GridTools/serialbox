@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/gridtools/StorageViewHelper.h -----------------------*- C++ -*-===//
+//===-- serialbox/Core/Frontend/gridtools/storage_view_helper.h ---------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_STORAGEVIEWHELPER_H
-#define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_STORAGEVIEWHELPER_H
+#ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_STORAGE_VIEW_HELPER_H
+#define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_STORAGE_VIEW_HELPER_H
 
 #include <boost/mpl/max_element.hpp>
 #include <utility>

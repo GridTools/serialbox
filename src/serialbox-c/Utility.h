@@ -38,61 +38,61 @@ using MetaInfoMap = serialbox::MetaInfoMap;
 
 /// \brief Convert ´serialboxSerializer_t´ to ´Serializer´
 /// @{
-inline Serializer* toSerializer(serialboxSerializer_t serializer) {
-  if(!serializer)
-    serialboxFatalError("invalid Serializer: NULL pointer");
-  return reinterpret_cast<Serializer*>(serializer);
+inline Serializer* toSerializer(serialboxSerializer_t* serializer) {
+  if(!serializer->impl)
+    serialboxFatalError("uninitialized Serializer");
+  return reinterpret_cast<Serializer*>(serializer->impl);
 }
 
-inline const Serializer* toConstSerializer(const serialboxSerializer_t serializer) {
-  if(!serializer)
-    serialboxFatalError("invalid Serializer: NULL pointer");
-  return reinterpret_cast<const Serializer*>(serializer);
+inline const Serializer* toConstSerializer(const serialboxSerializer_t* serializer) {
+  if(!serializer->impl)
+    serialboxFatalError("uninitialized Serializer");
+  return reinterpret_cast<const Serializer*>(serializer->impl);
 }
 /// @}
 
 /// \brief Convert ´serialboxSavepoint_t´ to ´Savepoint´
 /// @{
-inline Savepoint* toSavepoint(serialboxSavepoint_t savepoint) {
-  if(!savepoint)
-    serialboxFatalError("invalid Savepoint: NULL pointer");
-  return reinterpret_cast<Savepoint*>(savepoint);
+inline Savepoint* toSavepoint(serialboxSavepoint_t* savepoint) {
+  if(!savepoint->impl)
+    serialboxFatalError("uninitialized Savepoint");
+  return reinterpret_cast<Savepoint*>(savepoint->impl);
 }
 
-inline const Savepoint* toConstSavepoint(const serialboxSavepoint_t savepoint) {
-  if(!savepoint)
-    serialboxFatalError("invalid Savepoint: NULL pointer");
-  return reinterpret_cast<const Savepoint*>(savepoint);
+inline const Savepoint* toConstSavepoint(const serialboxSavepoint_t* savepoint) {
+  if(!savepoint->impl)
+    serialboxFatalError("uninitialized Savepoint");
+  return reinterpret_cast<const Savepoint*>(savepoint->impl);
 }
 /// @}
 
 /// \brief Convert ´serialboxFieldMetaInfo_t´ to ´FieldMetaInfo´
 /// @{
-inline FieldMetaInfo* toFieldMetaInfo(serialboxFieldMetaInfo_t fieldMetaInfo) {
-  if(!fieldMetaInfo)
-    serialboxFatalError("invalid FieldMetaInfo: NULL pointer");
-  return reinterpret_cast<FieldMetaInfo*>(fieldMetaInfo);
+inline FieldMetaInfo* toFieldMetaInfo(serialboxFieldMetaInfo_t* fieldMetaInfo) {
+  if(!fieldMetaInfo->impl)
+    serialboxFatalError("uninitialized FieldMetaInfo");
+  return reinterpret_cast<FieldMetaInfo*>(fieldMetaInfo->impl);
 }
 
-inline const FieldMetaInfo* toConstFieldMetaInfo(const serialboxFieldMetaInfo_t fieldMetaInfo) {
-  if(!fieldMetaInfo)
-    serialboxFatalError("invalid FieldMetaInfo: NULL pointer");
-  return reinterpret_cast<const FieldMetaInfo*>(fieldMetaInfo);
+inline const FieldMetaInfo* toConstFieldMetaInfo(const serialboxFieldMetaInfo_t* fieldMetaInfo) {
+  if(!fieldMetaInfo->impl)
+    serialboxFatalError("uninitialized FieldMetaInfo");
+  return reinterpret_cast<const FieldMetaInfo*>(fieldMetaInfo->impl);
 }
 /// @}
 
 /// \brief Convert ´serialboxMetaInfo_t´ to ´MetaInfoMap´
 /// @{
-inline MetaInfoMap* toMetaInfoMap(serialboxMetaInfo_t metaInfo) {
-  if(!metaInfo)
-    serialboxFatalError("invalid MetaInfo: NULL pointer");
-  return reinterpret_cast<MetaInfoMap*>(metaInfo);
+inline MetaInfoMap* toMetaInfoMap(serialboxMetaInfo_t* metaInfo) {
+  if(!metaInfo->impl)
+    serialboxFatalError("uninitialized MetaInfo");
+  return reinterpret_cast<MetaInfoMap*>(metaInfo->impl);
 }
 
-inline const MetaInfoMap* toConstMetaInfoMap(const serialboxMetaInfo_t metaInfo) {
-  if(!metaInfo)
-    serialboxFatalError("invalid MetaInfo: NULL pointer");
-  return reinterpret_cast<const MetaInfoMap*>(metaInfo);
+inline const MetaInfoMap* toConstMetaInfoMap(const serialboxMetaInfo_t* metaInfo) {
+  if(!metaInfo->impl)
+    serialboxFatalError("uninitialized MetaInfo");
+  return reinterpret_cast<const MetaInfoMap*>(metaInfo->impl);
 }
 /// @}
 
@@ -106,6 +106,16 @@ inline char* allocateAndCopyString(StringType&& str) {
 
   std::memcpy(buffer, str.c_str(), str.size() + 1);
   return buffer;
+}
+
+/// \brief Allocate memory for type ´T´ via malloc
+template <class T>
+T* allocate() noexcept {
+  T* data = (T*)std::malloc(sizeof(T));
+  if(!data)
+    serialboxFatalError("out of memory");
+  std::memset(data, 0, sizeof(T));
+  return data;
 }
 
 } // namespace serialboxC

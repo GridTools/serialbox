@@ -21,24 +21,28 @@ using namespace serialboxC;
  *     Construction & Destruction
 \*===------------------------------------------------------------------------------------------===*/
 
-serialboxFieldMetaInfo_t serialboxFieldMetaInfoCreate(serialboxTypeID type, const int* dimensions,
+serialboxFieldMetaInfo_t* serialboxFieldMetaInfoCreate(serialboxTypeID type, const int* dimensions,
                                                       int numDimensions) {
+  serialboxFieldMetaInfo_t* fieldMetaInfo = allocate<serialboxFieldMetaInfo_t>();
 
   std::vector<int> dims(dimensions, dimensions + numDimensions);
-  serialboxFieldMetaInfo_t fieldMetaInfo = NULL;
   try {
-    fieldMetaInfo = new FieldMetaInfo(serialbox::TypeID((int)type), dims);
+    fieldMetaInfo->impl = new FieldMetaInfo(serialbox::TypeID((int)type), dims);
+    fieldMetaInfo->ownsData = 1;
   } catch(std::exception& e) {
+    std::free(fieldMetaInfo);
+    fieldMetaInfo = NULL;
     serialboxFatalError(e.what());
   }
   return fieldMetaInfo;
 }
 
-void serialboxFieldMetaInfoDestroy(serialboxFieldMetaInfo_t* fieldMetaInfoPtr) {
-  if(fieldMetaInfoPtr) {
-    FieldMetaInfo* info = toFieldMetaInfo(*fieldMetaInfoPtr);
-    delete info;
-    *fieldMetaInfoPtr = NULL;
+void serialboxFieldMetaInfoDestroy(serialboxFieldMetaInfo_t* fieldMetaInfo) {
+  if(fieldMetaInfo) {
+    FieldMetaInfo* info = toFieldMetaInfo(fieldMetaInfo);
+    if(fieldMetaInfo->ownsData)
+      delete info;
+    std::free(fieldMetaInfo);
   }
 }
 
@@ -46,8 +50,8 @@ void serialboxFieldMetaInfoDestroy(serialboxFieldMetaInfo_t* fieldMetaInfoPtr) {
  *     Utility
 \*===------------------------------------------------------------------------------------------===*/
 
-int serialboxFieldMetaInfoEqual(const serialboxFieldMetaInfo_t f1,
-                                const serialboxFieldMetaInfo_t f2) {
+int serialboxFieldMetaInfoEqual(const serialboxFieldMetaInfo_t* f1,
+                                const serialboxFieldMetaInfo_t* f2) {
   const FieldMetaInfo* info1 = toConstFieldMetaInfo(f1);
   const FieldMetaInfo* info2 = toConstFieldMetaInfo(f2);
   return ((*info1) == (*info2));
@@ -57,17 +61,17 @@ int serialboxFieldMetaInfoEqual(const serialboxFieldMetaInfo_t f1,
  *     Dimensions and TypeID
 \*===------------------------------------------------------------------------------------------===*/
 
-serialboxTypeID serialboxFieldMetaInfoGetTypeID(const serialboxFieldMetaInfo_t fieldMetaInfo) {
+serialboxTypeID serialboxFieldMetaInfoGetTypeID(const serialboxFieldMetaInfo_t* fieldMetaInfo) {
   const FieldMetaInfo* info = toConstFieldMetaInfo(fieldMetaInfo);
   return serialboxTypeID((int)info->type());
 }
 
-const int* serialboxFieldMetaInfoGetDimensions(const serialboxFieldMetaInfo_t fieldMetaInfo) {
+const int* serialboxFieldMetaInfoGetDimensions(const serialboxFieldMetaInfo_t* fieldMetaInfo) {
   const FieldMetaInfo* info = toConstFieldMetaInfo(fieldMetaInfo);
   return info->dims().data();
 }
 
-int serialboxFieldMetaInfoGetNumDimensions(const serialboxFieldMetaInfo_t fieldMetaInfo) {
+int serialboxFieldMetaInfoGetNumDimensions(const serialboxFieldMetaInfo_t* fieldMetaInfo) {
   const FieldMetaInfo* info = toConstFieldMetaInfo(fieldMetaInfo);
   return (int)info->dims().size();
 }
@@ -76,7 +80,10 @@ int serialboxFieldMetaInfoGetNumDimensions(const serialboxFieldMetaInfo_t fieldM
  *     Meta-information
 \*===------------------------------------------------------------------------------------------===*/
 
-serialboxMetaInfo_t serialboxFieldMetaInfoGetMetaInfo(serialboxFieldMetaInfo_t fieldMetaInfo) {
+serialboxMetaInfo_t* serialboxFieldMetaInfoGetMetaInfo(serialboxFieldMetaInfo_t* fieldMetaInfo) {
   FieldMetaInfo* info = toFieldMetaInfo(fieldMetaInfo);
-  return static_cast<serialboxMetaInfo_t>(info->metaInfoPtr().get());
+  serialboxMetaInfo_t* metaInfo = allocate<serialboxMetaInfo_t>();
+  metaInfo->impl = info->metaInfoPtr().get();
+  metaInfo->ownsData = 0;
+  return metaInfo;
 }

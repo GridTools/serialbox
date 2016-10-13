@@ -27,7 +27,7 @@ TEST_F(CFieldMetaInfoTest, Test) {
   serialboxTypeID type = Float64;
   int dimensions[3] = {10, 15, 20};
 
-  serialboxFieldMetaInfo_t info = serialboxFieldMetaInfoCreate(type, dimensions, 3);
+  serialboxFieldMetaInfo_t* info = serialboxFieldMetaInfoCreate(type, dimensions, 3);
 
   //
   // Query type
@@ -46,30 +46,34 @@ TEST_F(CFieldMetaInfoTest, Test) {
   // Add meta-information
   //
   {
-    serialboxMetaInfo_t metaInfo = serialboxFieldMetaInfoGetMetaInfo(info);
+    serialboxMetaInfo_t* metaInfo = serialboxFieldMetaInfoGetMetaInfo(info);
+    ASSERT_FALSE(metaInfo->ownsData);
     ASSERT_TRUE(serialboxMetaInfoAddBoolean(metaInfo, "key", true));
+    serialboxMetaInfoDestroy(metaInfo);
   }
 
   //
   // Query meta-information
   //
   {
-    serialboxMetaInfo_t metaInfo = serialboxFieldMetaInfoGetMetaInfo(info);
+    serialboxMetaInfo_t* metaInfo = serialboxFieldMetaInfoGetMetaInfo(info);
+    ASSERT_FALSE(metaInfo->ownsData);    
     ASSERT_TRUE(serialboxMetaInfoHasKey(metaInfo, "key"));
     EXPECT_EQ(serialboxMetaInfoGetBoolean(metaInfo, "key"), true);
+    serialboxMetaInfoDestroy(metaInfo);   
   }
 
   //
   // Comparison
   //
   dimensions[0] = 1024;
-  serialboxFieldMetaInfo_t info2 = serialboxFieldMetaInfoCreate(type, dimensions, 3);
+  serialboxFieldMetaInfo_t* info2 = serialboxFieldMetaInfoCreate(type, dimensions, 3);
   ASSERT_TRUE(serialboxFieldMetaInfoEqual(info, info));
   ASSERT_FALSE(serialboxFieldMetaInfoEqual(info, info2));
 
   //
   // Release memory
   //
-  serialboxFieldMetaInfoDestroy(&info);
-  serialboxFieldMetaInfoDestroy(&info2);
+  serialboxFieldMetaInfoDestroy(info);
+  serialboxFieldMetaInfoDestroy(info2);
 }

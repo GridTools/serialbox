@@ -22,22 +22,25 @@ using namespace serialboxC;
  *     Construction & Destruction
 \*===------------------------------------------------------------------------------------------===*/
 
-serialboxMetaInfo_t serialboxMetaInfoCreate(void) {
-  MetaInfoMap* map = NULL;
+serialboxMetaInfo_t* serialboxMetaInfoCreate(void) {
+  serialboxMetaInfo_t* metaInfo = allocate<serialboxMetaInfo_t>();
   try {
-    map = new MetaInfoMap;
+    metaInfo->impl = new MetaInfoMap;
+    metaInfo->ownsData = 1;
   } catch(std::exception& e) {
+    std::free(metaInfo);
+    metaInfo = NULL;
     serialboxFatalError(e.what());
   }
-
-  return static_cast<serialboxMetaInfo_t>(map);
+  return metaInfo;
 }
 
-void serialboxMetaInfoDestroy(serialboxMetaInfo_t* metaInfoPtr) {
-  if(metaInfoPtr) {
-    MetaInfoMap* map = toMetaInfoMap(*metaInfoPtr);
-    delete map;
-    *metaInfoPtr = NULL;
+void serialboxMetaInfoDestroy(serialboxMetaInfo_t* metaInfo) {
+  if(metaInfo) {
+    MetaInfoMap* map = toMetaInfoMap(metaInfo);
+    if(metaInfo->ownsData)
+      delete map;
+    std::free(metaInfo);
   }
 }
 
@@ -45,34 +48,34 @@ void serialboxMetaInfoDestroy(serialboxMetaInfo_t* metaInfoPtr) {
  *     Utility
 \*===------------------------------------------------------------------------------------------===*/
 
-int serialboxMetaInfoGetSize(const serialboxMetaInfo_t metaInfo) {
+int serialboxMetaInfoGetSize(const serialboxMetaInfo_t* metaInfo) {
   const MetaInfoMap* map = toConstMetaInfoMap(metaInfo);
   return (int)map->size();
 }
 
-int serialboxMetaInfoIsEmpty(const serialboxMetaInfo_t metaInfo) {
+int serialboxMetaInfoIsEmpty(const serialboxMetaInfo_t* metaInfo) {
   const MetaInfoMap* map = toConstMetaInfoMap(metaInfo);
   return (int)map->empty();
 }
 
-void serialboxMetaInfoClear(serialboxMetaInfo_t metaInfo) {
+void serialboxMetaInfoClear(serialboxMetaInfo_t* metaInfo) {
   MetaInfoMap* map = toMetaInfoMap(metaInfo);
   map->clear();
 }
 
-int serialboxMetaInfoHasKey(const serialboxMetaInfo_t metaInfo, const char* key) {
+int serialboxMetaInfoHasKey(const serialboxMetaInfo_t* metaInfo, const char* key) {
   const MetaInfoMap* map = toConstMetaInfoMap(metaInfo);
   return (int)map->hasKey(key);
 }
 
-char* serialboxMetaInfoToString(const serialboxMetaInfo_t metaInfo) {
+char* serialboxMetaInfoToString(const serialboxMetaInfo_t* metaInfo) {
   const MetaInfoMap* map = toConstMetaInfoMap(metaInfo);
   std::stringstream ss;
   ss << *map;
   return allocateAndCopyString(ss.str());
 }
 
-void serialboxMetaInfoGetKeys(const serialboxMetaInfo_t metaInfo, char*** keys, int* len) {
+void serialboxMetaInfoGetKeys(const serialboxMetaInfo_t* metaInfo, char*** keys, int* len) {
   const MetaInfoMap* map = toConstMetaInfoMap(metaInfo);
 
   const auto keyVector = map->keys();
@@ -87,7 +90,7 @@ void serialboxMetaInfoGetKeys(const serialboxMetaInfo_t metaInfo, char*** keys, 
     (*keys)[i] = allocateAndCopyString(keyVector[i]);
 }
 
-void serialboxMetaInfoGetTypes(const serialboxMetaInfo_t metaInfo, serialboxTypeID** types,
+void serialboxMetaInfoGetTypes(const serialboxMetaInfo_t* metaInfo, serialboxTypeID** types,
                                int* len) {
   const MetaInfoMap* map = toConstMetaInfoMap(metaInfo);
 
@@ -108,13 +111,13 @@ void serialboxMetaInfoGetTypes(const serialboxMetaInfo_t metaInfo, serialboxType
 \*===------------------------------------------------------------------------------------------===*/
 
 #define SERIALBOX_METAINFO_ADD_IMPL(name, serialboxType, CXXType)                                  \
-  int serialboxMetaInfoAdd##name(serialboxMetaInfo_t metaInfo, const char* key,                    \
+  int serialboxMetaInfoAdd##name(serialboxMetaInfo_t* metaInfo, const char* key,                   \
                                  serialboxType value) {                                            \
     MetaInfoMap* map = toMetaInfoMap(metaInfo);                                                    \
     return static_cast<int>(map->insert(key, CXXType(value)));                                     \
   }                                                                                                \
                                                                                                    \
-  int serialboxMetaInfoAddArrayOf##name(serialboxMetaInfo_t metaInfo, const char* key,             \
+  int serialboxMetaInfoAddArrayOf##name(serialboxMetaInfo_t* metaInfo, const char* key,            \
                                         serialboxType* array, int len) {                           \
     MetaInfoMap* map = toMetaInfoMap(metaInfo);                                                    \
     serialbox::Array<CXXType> vec(array, array + len);                                             \
@@ -135,7 +138,7 @@ SERIALBOX_METAINFO_ADD_IMPL(String, serialboxString_t, std::string);
 \*===------------------------------------------------------------------------------------------===*/
 
 #define SERIALBOX_METAINFO_GET_IMPL(name, serialboxType, CXXType)                                  \
-  serialboxType serialboxMetaInfoGet##name(const serialboxMetaInfo_t metaInfo, const char* key) {  \
+  serialboxType serialboxMetaInfoGet##name(const serialboxMetaInfo_t* metaInfo, const char* key) { \
     const MetaInfoMap* map = toConstMetaInfoMap(metaInfo);                                         \
     serialboxType value = 0;                                                                       \
     try {                                                                                          \
@@ -154,7 +157,7 @@ SERIALBOX_METAINFO_GET_IMPL(Float64, serialboxFloat64_t, double);
 
 #undef SERIALBOX_METAINFO_GET_IMPL
 
-serialboxString_t serialboxMetaInfoGetString(const serialboxMetaInfo_t metaInfo, const char* key) {
+serialboxString_t serialboxMetaInfoGetString(const serialboxMetaInfo_t* metaInfo, const char* key) {
   const MetaInfoMap* map = toConstMetaInfoMap(metaInfo);
   char* value = NULL;
   try {
@@ -168,7 +171,7 @@ serialboxString_t serialboxMetaInfoGetString(const serialboxMetaInfo_t metaInfo,
 }
 
 #define SERIALBOX_METAINFO_GET_ARRAY_IMPL(name, serialboxType, serialboxArrayType, CXXType)        \
-  void serialboxMetaInfoGetArrayOf##name(const serialboxMetaInfo_t metaInfo, const char* key,      \
+  void serialboxMetaInfoGetArrayOf##name(const serialboxMetaInfo_t* metaInfo, const char* key,     \
                                          serialboxArrayType* array, int* len) {                    \
     const MetaInfoMap* map = toConstMetaInfoMap(metaInfo);                                         \
     try {                                                                                          \
@@ -192,7 +195,7 @@ SERIALBOX_METAINFO_GET_ARRAY_IMPL(Int64, serialboxInt64_t, serialboxArrayOfInt64
 SERIALBOX_METAINFO_GET_ARRAY_IMPL(Float32, serialboxFloat32_t, serialboxArrayOfFloat32_t, float);
 SERIALBOX_METAINFO_GET_ARRAY_IMPL(Float64, serialboxFloat64_t, serialboxArrayOfFloat64_t, double);
 
-void serialboxMetaInfoGetArrayOfString(const serialboxMetaInfo_t metaInfo, const char* key,
+void serialboxMetaInfoGetArrayOfString(const serialboxMetaInfo_t* metaInfo, const char* key,
                                        serialboxArrayOfString_t* array, int* len) {
   const MetaInfoMap* map = toConstMetaInfoMap(metaInfo);
   try {

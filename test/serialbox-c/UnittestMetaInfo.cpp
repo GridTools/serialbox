@@ -49,7 +49,7 @@ class CMetaInfoTest : public serialbox::unittest::CInterfaceTestBase {};
 } // anonymous namespace
 
 TEST_F(CMetaInfoTest, Test) {
-  serialboxMetaInfo_t metaInfo = serialboxMetaInfoCreate();
+  serialboxMetaInfo_t* metaInfo = serialboxMetaInfoCreate();
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   ASSERT_TRUE(serialboxMetaInfoIsEmpty(metaInfo));
 
@@ -157,7 +157,7 @@ TEST_F(CMetaInfoTest, Test) {
   //
   // ToString
   //
-  serialboxMetaInfo_t metaInfo2 = serialboxMetaInfoCreate();
+  serialboxMetaInfo_t* metaInfo2 = serialboxMetaInfoCreate();
   serialboxMetaInfoToString(metaInfo2);
   ASSERT_TRUE(serialboxMetaInfoAddBoolean(metaInfo2, "key", true));
 
@@ -201,6 +201,6 @@ TEST_F(CMetaInfoTest, Test) {
   //
   // Release memory
   //
-  serialboxMetaInfoDestroy(&metaInfo);
-  serialboxMetaInfoDestroy(&metaInfo2);
+  serialboxMetaInfoDestroy(metaInfo);
+  serialboxMetaInfoDestroy(metaInfo2);
 }

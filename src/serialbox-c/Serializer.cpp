@@ -41,32 +41,36 @@ static std::string vecToString(VecType&& vec) {
  *     Construction & Destruction
 \*===------------------------------------------------------------------------------------------===*/
 
-serialboxSerializer_t serialboxSerializerCreate(serialboxOpenModeKind mode, const char* directory,
-                                                const char* prefix, const char* archive) {
-  Serializer* serializer = NULL;
+serialboxSerializer_t* serialboxSerializerCreate(serialboxOpenModeKind mode, const char* directory,
+                                                 const char* prefix, const char* archive) {
+  serialboxSerializer_t* serializer = allocate<serialboxSerializer_t>();
   try {
     switch(mode) {
     case Read:
-      serializer = new Serializer(serialbox::OpenModeKind::Read, directory, prefix, archive);
+      serializer->impl = new Serializer(serialbox::OpenModeKind::Read, directory, prefix, archive);
       break;
     case Write:
-      serializer = new Serializer(serialbox::OpenModeKind::Write, directory, prefix, archive);
+      serializer->impl  = new Serializer(serialbox::OpenModeKind::Write, directory, prefix, archive);
       break;
     case Append:
-      serializer = new Serializer(serialbox::OpenModeKind::Append, directory, prefix, archive);
+      serializer->impl  = new Serializer(serialbox::OpenModeKind::Append, directory, prefix, archive);
       break;
     }
+    serializer->ownsData = 1;    
   } catch(std::exception& e) {
+    std::free(serializer);
+    serializer = NULL;
     serialboxFatalError(e.what());
   }
-  return static_cast<serialboxSerializer_t>(serializer);
+  return serializer;
 }
 
-void serialboxSerializerDestroy(serialboxSerializer_t* serializerPtr) {
-  if(serializerPtr) {
-    Serializer* ser = toSerializer(*serializerPtr);
-    delete ser;
-    *serializerPtr = NULL;
+void serialboxSerializerDestroy(serialboxSerializer_t* serializer) {
+  if(serializer) {
+    Serializer* ser = toSerializer(serializer);
+    if(serializer->ownsData)
+      delete ser;
+    std::free(serializer);
   }
 }
 
@@ -74,22 +78,22 @@ void serialboxSerializerDestroy(serialboxSerializer_t* serializerPtr) {
  *     Utility
 \*===------------------------------------------------------------------------------------------===*/
 
-serialboxOpenModeKind serialboxSerializerGetMode(const serialboxSerializer_t serializer) {
+serialboxOpenModeKind serialboxSerializerGetMode(const serialboxSerializer_t* serializer) {
   const Serializer* ser = toConstSerializer(serializer);
   return static_cast<serialboxOpenModeKind>(static_cast<int>(ser->mode()));
 }
 
-const char* serialboxSerializerGetDirectory(const serialboxSerializer_t serializer) {
+const char* serialboxSerializerGetDirectory(const serialboxSerializer_t* serializer) {
   const Serializer* ser = toConstSerializer(serializer);
   return ser->directory().c_str();
 }
 
-const char* serialboxSerializerGetPrefix(const serialboxSerializer_t serializer) {
+const char* serialboxSerializerGetPrefix(const serialboxSerializer_t* serializer) {
   const Serializer* ser = toConstSerializer(serializer);
   return ser->prefix().c_str();
 }
 
-void serialboxSerializerUpdateMetaData(serialboxSerializer_t serializer) {
+void serialboxSerializerUpdateMetaData(serialboxSerializer_t* serializer) {
   Serializer* ser = toSerializer(serializer);
   try {
     ser->updateMetaData();
@@ -102,42 +106,55 @@ void serialboxSerializerUpdateMetaData(serialboxSerializer_t serializer) {
  *     Global Meta-information
 \*===------------------------------------------------------------------------------------------===*/
 
-serialboxMetaInfo_t serialboxSerializerGetGlobalMetaInfo(serialboxSerializer_t serializer) {
+serialboxMetaInfo_t* serialboxSerializerGetGlobalMetaInfo(serialboxSerializer_t* serializer) {
   Serializer* ser = toSerializer(serializer);
-  return static_cast<serialboxMetaInfo_t>(ser->globalMetaInfoPtr().get());
+  serialboxMetaInfo_t* metaInfo = allocate<serialboxMetaInfo_t>();
+  metaInfo->impl = ser->globalMetaInfoPtr().get();
+  metaInfo->ownsData = 0;
+  return metaInfo;
 }
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Register and Query Savepoints
 \*===------------------------------------------------------------------------------------------===*/
 
-int serialboxSerializerAddSavepoint(serialboxSerializer_t serializer,
-                                    const serialboxSavepoint_t savepoint) {
+int serialboxSerializerAddSavepoint(serialboxSerializer_t* serializer,
+                                    const serialboxSavepoint_t* savepoint) {
   const Savepoint* sp = toConstSavepoint(savepoint);
   Serializer* ser = toSerializer(serializer);
   return ser->registerSavepoint(*sp);
 }
 
-int serialboxSerializerGetNumSavepoints(const serialboxSerializer_t serializer) {
+int serialboxSerializerGetNumSavepoints(const serialboxSerializer_t* serializer) {
   const Serializer* ser = toConstSerializer(serializer);
   return (int)ser->savepointVector().size();
 }
 
-serialboxSavepoint_t*
-serialboxSerializerGetSavepointVector(const serialboxSerializer_t serializer) {
+serialboxSavepoint_t**
+serialboxSerializerGetSavepointVector(const serialboxSerializer_t* serializer) {
   const Serializer* ser = toConstSerializer(serializer);
   const auto& savepointVector = ser->savepointVector().savepoints();
 
-  serialboxSavepoint_t* savepoints =
-      (serialboxSavepoint_t*)std::malloc(sizeof(serialboxSavepoint_t) * savepointVector.size());
+  serialboxSavepoint_t** savepoints =
+      (serialboxSavepoint_t**)std::malloc(sizeof(serialboxSavepoint_t*) * savepointVector.size());
 
   if(!savepoints)
     serialboxFatalError("out of memory");
 
-  for(std::size_t i = 0; i < savepointVector.size(); ++i)
-    savepoints[i] = static_cast<serialboxSavepoint_t>(savepointVector[i].get());
+  for(std::size_t i = 0; i < savepointVector.size(); ++i) {
+    serialboxSavepoint_t* savepoint = allocate<serialboxSavepoint_t>();
+    savepoint->impl = savepointVector[i].get();
+    savepoint->ownsData = 0;
+    savepoints[i] = savepoint;
+  }
 
   return savepoints;
+}
+
+void serialboxSerializerDestroySavepointVector(serialboxSavepoint_t** savepointVector, int len) {
+  for(int i = 0; i < len; ++i)
+    std::free(savepointVector[i]);
+  std::free(savepointVector);
 }
 
 int serialboxSerializationEnabled = 1;
@@ -150,8 +167,8 @@ void serialboxDisableSerialization(void) { serialboxSerializationEnabled = 0; }
  *     Register and Query Fields
 \*===------------------------------------------------------------------------------------------===*/
 
-int serialboxSerializerAddField(serialboxSerializer_t serializer, const char* name,
-                                const serialboxFieldMetaInfo_t fieldMetaInfo) {
+int serialboxSerializerAddField(serialboxSerializer_t* serializer, const char* name,
+                                const serialboxFieldMetaInfo_t* fieldMetaInfo) {
   Serializer* ser = toSerializer(serializer);
   const FieldMetaInfo* info = toConstFieldMetaInfo(fieldMetaInfo);
 
@@ -164,7 +181,7 @@ int serialboxSerializerAddField(serialboxSerializer_t serializer, const char* na
   return 1;
 }
 
-void serialboxSerializerGetFieldnames(const serialboxSerializer_t serializer, char*** fieldnames,
+void serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer, char*** fieldnames,
                                       int* len) {
   const Serializer* ser = toConstSerializer(serializer);
 
@@ -180,18 +197,22 @@ void serialboxSerializerGetFieldnames(const serialboxSerializer_t serializer, ch
     (*fieldnames)[i] = allocateAndCopyString(fieldnameVector[i]);
 }
 
-serialboxFieldMetaInfo_t serialboxSerializerGetFieldMetaInfo(const serialboxSerializer_t serializer,
-                                                             const char* name) {
+serialboxFieldMetaInfo_t*
+serialboxSerializerGetFieldMetaInfo(const serialboxSerializer_t* serializer, const char* name) {
   const Serializer* ser = toConstSerializer(serializer);
 
   auto it = ser->fieldMap().findField(name);
-  if(it != ser->fieldMap().end())
-    return static_cast<serialboxFieldMetaInfo_t>(it->second.get());
+  if(it != ser->fieldMap().end()) {
+    serialboxFieldMetaInfo_t* info = allocate<serialboxFieldMetaInfo_t>();
+    info->impl = it->second.get();
+    info->ownsData = 0;
+    return info;
+  }
   return NULL;
 }
 
-void serialboxSerializerGetFieldnamesAtSavepoint(const serialboxSerializer_t serializer,
-                                                 const serialboxSavepoint_t savepoint,
+void serialboxSerializerGetFieldnamesAtSavepoint(const serialboxSerializer_t* serializer,
+                                                 const serialboxSavepoint_t* savepoint,
                                                  char*** fieldnames, int* len) {
   const Savepoint* sp = toConstSavepoint(savepoint);
   const Serializer* ser = toConstSerializer(serializer);
@@ -244,8 +265,8 @@ serialbox::StorageView makeStorageView(Serializer* ser, const char* name, void* 
 
 } // namespace internal
 
-void serialboxSerializerWrite(serialboxSerializer_t serializer, const char* name,
-                              const serialboxSavepoint_t savepoint, void* originPtr,
+void serialboxSerializerWrite(serialboxSerializer_t* serializer, const char* name,
+                              const serialboxSavepoint_t* savepoint, void* originPtr,
                               const int* strides, int numStrides) {
   Serializer* ser = toSerializer(serializer);
   const Savepoint* sp = toConstSavepoint(savepoint);
@@ -259,8 +280,8 @@ void serialboxSerializerWrite(serialboxSerializer_t serializer, const char* name
   }
 }
 
-void serialboxSerializerRead(serialboxSerializer_t serializer, const char* name,
-                             const serialboxSavepoint_t savepoint, void* originPtr,
+void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name,
+                             const serialboxSavepoint_t* savepoint, void* originPtr,
                              const int* strides, int numStrides) {
   Serializer* ser = toSerializer(serializer);
   const Savepoint* sp = toConstSavepoint(savepoint);
