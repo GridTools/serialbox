@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 3.1)
 
 set(SOURCES 
   BenchmarkOldSerialbox.cpp
-  BenchmarkBinaryArchive.cpp
+  BenchmarkSerialbox.cpp
 )
 
 # Setup external libraries

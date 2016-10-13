@@ -45,7 +45,7 @@ TEST_F(NetCDFArchiveUtilityTest, Construction) {
     NetCDFArchive b(OpenModeKind::Write, this->directory->path().string(), "field");
     b.updateMetaData();
 
-    EXPECT_EQ(b.name(), "NetCDF");
+    EXPECT_TRUE(boost::algorithm::starts_with(b.name(), "NetCDF"));
     EXPECT_EQ(b.mode(), OpenModeKind::Write);
     EXPECT_EQ(b.prefix(), "field");
   }
@@ -132,7 +132,7 @@ TEST_F(NetCDFArchiveUtilityTest, MetaData) {
   }
 
   // -----------------------------------------------------------------------------------------------
-  // Not a binary archive
+  // Not a NetCDF archive
   // -----------------------------------------------------------------------------------------------
   {
     json::json corrupted = j;
@@ -144,7 +144,7 @@ TEST_F(NetCDFArchiveUtilityTest, MetaData) {
   }
 
   // -----------------------------------------------------------------------------------------------
-  // Invalid binary archive version
+  // Invalid NetCDF archive version
   // -----------------------------------------------------------------------------------------------
   {
     json::json corrupted = j;

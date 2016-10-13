@@ -18,16 +18,17 @@
 #include "serialbox/Core/Archive/NetCDFArchive.h"
 #include "serialbox/Core/Logging.h"
 #include "serialbox/Core/STLExtras.h"
-#include "serialbox/Core/Version.h"
 #include "serialbox/Core/Unreachable.h"
+#include "serialbox/Core/Version.h"
 #include <boost/algorithm/string.hpp>
-#include <netcdf.h>
 #include <fstream>
 #include <memory>
+#include <netcdf.h>
+#include <netcdf_meta.h>
 #include <unordered_map>
 #include <vector>
 
-// Check return type of NetCDF function calls
+/// \brief Check return type of NetCDF function calls
 #define NETCDF_CHECK(functionCall)                                                                 \
   if((errorCode = functionCall))                                                                   \
     throw serialbox::Exception("NetCDFArchive: %s", nc_strerror(errorCode));
@@ -36,6 +37,7 @@ namespace serialbox {
 
 namespace internal {
 
+/// \brief
 static int typeID2NcType(TypeID type) {
   switch(type) {
   case TypeID::Boolean:
@@ -53,6 +55,36 @@ static int typeID2NcType(TypeID type) {
   }
 }
 
+template <bool Int64IsLong>
+struct DispatchInt64Impl {
+  template <class FunctionForLong, class FunctionForLongLong, typename... Args>
+  int operator()(FunctionForLong&& functionForLong, FunctionForLongLong&& functionForLongLong,
+                 Args&&... args) noexcept {
+    (void) functionForLongLong;    
+    return functionForLong(args...);
+  }
+};
+
+template <>
+struct DispatchInt64Impl<false> {
+  template <class FunctionForLong, class FunctionForLongLong, typename... Args>
+  int operator()(FunctionForLong&& functionForLong, FunctionForLongLong&& functionForLongLong,
+                 Args&&... args) noexcept {
+    (void) functionForLong;
+    return functionForLongLong(args...);
+  }
+};
+
+/// \brief As std::int64_t can be long or long long depending on the platform, we need to dispatch
+/// it to the correct NetCDF function
+template <class FunctionForLong, class FunctionForLongLong, typename... Args>
+static int dispatchInt64(FunctionForLong&& functionForLong,
+                         FunctionForLongLong&& functionForLongLong, Args&&... args) {
+  return DispatchInt64Impl<std::is_same<std::int64_t, long>::value>()(
+      std::forward<FunctionForLong>(functionForLong),
+      std::forward<FunctionForLongLong>(functionForLongLong), std::forward<Args>(args)...);
+}
+
 } // namespace internal
 
 const std::string NetCDFArchive::Name = "NetCDF";
@@ -63,7 +95,8 @@ NetCDFArchive::NetCDFArchive(OpenModeKind mode, const std::string& directory,
                              const std::string& prefix)
     : mode_(mode), directory_(directory), prefix_(prefix) {
 
-  LOG(info) << "Creating NetCDFArchive (mode = " << mode_ << ") from directory " << directory_;
+  LOG(info) << "Creating NetCDFArchive (mode = " << mode_ << ") based on NetCDF (" << NC_VERSION
+            << ") from directory " << directory_;
 
   metaDatafile_ = directory_ / ("ArchiveMetaData-" + prefix_ + ".json");
 
@@ -87,7 +120,7 @@ NetCDFArchive::NetCDFArchive(OpenModeKind mode, const std::string& directory,
     throw Exception(e.what());
   }
 
-   readMetaDataFromJson();
+  readMetaDataFromJson();
 
   // Remove all files
   if(mode_ == OpenModeKind::Write)
@@ -170,6 +203,8 @@ FieldID NetCDFArchive::write(const StorageView& storageView,
   if(mode_ == OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Write' or 'Append'");
 
+  LOG(info) << "Attempting to write field \"" << field << "\" to NetCDF archive ...";
+
   int ncID, varID, errorCode;
 
   TypeID type = storageView.type();
@@ -195,7 +230,7 @@ FieldID NetCDFArchive::write(const StorageView& storageView,
     NETCDF_CHECK(nc_inq_varid(ncID, field.c_str(), &varID));
 
   } else {
-    // Open new file 
+    // Open new file
     NETCDF_CHECK(nc_create(filename.c_str(), NC_NETCDF4, &ncID));
 
     // Create dimensions
@@ -238,10 +273,12 @@ FieldID NetCDFArchive::write(const StorageView& storageView,
     NETCDF_CHECK(nc_put_varm_int(ncID, varID, startp.data(), countp.data(), stridep.data(),
                                  imapp.data(), storageView.originPtrAs<int>()));
     break;
-  case TypeID::Int64:
-    NETCDF_CHECK(nc_put_varm_long(ncID, varID, startp.data(), countp.data(), stridep.data(),
-                                  imapp.data(), storageView.originPtrAs<std::int64_t>()));
+  case TypeID::Int64: {
+    NETCDF_CHECK(internal::dispatchInt64(nc_put_varm_long, nc_put_varm_longlong, ncID, varID,
+                                         startp.data(), countp.data(), stridep.data(), imapp.data(),
+                                         storageView.originPtrAs<std::int64_t>()));
     break;
+  }
   case TypeID::Float32:
     NETCDF_CHECK(nc_put_varm_float(ncID, varID, startp.data(), countp.data(), stridep.data(),
                                    imapp.data(), storageView.originPtrAs<float>()));
@@ -256,10 +293,10 @@ FieldID NetCDFArchive::write(const StorageView& storageView,
 
   // Close file
   NETCDF_CHECK(nc_close(ncID));
-  
+
   // Update meta-data
   updateMetaData();
-  
+
   LOG(info) << "Successfully wrote field \"" << fieldID.name << "\" (id = " << fieldID.id << ") to "
             << filename.filename();
   return fieldID;
@@ -275,9 +312,9 @@ void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID) const
 
   LOG(info) << "Attempting to read field \"" << fieldID.name << "\" (id = " << fieldID.id
             << ") via NetCDFArchive ... ";
-  
+
   int ncID, varID, errorCode;
-  
+
   TypeID type = storageView.type();
   const std::vector<int>& dims = storageView.dims();
   const std::vector<int>& strides = storageView.strides();
@@ -285,23 +322,23 @@ void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID) const
   std::size_t numDims = dims.size();
   std::size_t numDimsID = numDims + 1;
 
-  // Check if field exists  
+  // Check if field exists
   auto it = fieldMap_.find(fieldID.name);
   if(it == fieldMap_.end())
     throw Exception("no field '%s' registered in NetCDFArchive", fieldID.name);
-    
-  // Check if id is valid  
-  if(fieldID.id > it->second) 
+
+  // Check if id is valid
+  if(fieldID.id > it->second)
     throw Exception("invalid id '%i' of field '%s'", fieldID.id, fieldID.name);
-  
+
   boost::filesystem::path filename = directory_ / (prefix_ + "_" + fieldID.name + ".nc");
-  
+
   // Open file for reading
   NETCDF_CHECK(nc_open(filename.c_str(), NC_NOWRITE, &ncID));
-  
+
   // Get the variable
   NETCDF_CHECK(nc_inq_varid(ncID, fieldID.name.c_str(), &varID));
-  
+
   // Read data from disk
   std::vector<std::size_t> startp(numDimsID, 0), countp(numDimsID);
   std::vector<std::ptrdiff_t> stridep(numDimsID, 1), imapp(numDimsID);
@@ -325,8 +362,9 @@ void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID) const
                                  imapp.data(), storageView.originPtrAs<int>()));
     break;
   case TypeID::Int64:
-    NETCDF_CHECK(nc_get_varm_long(ncID, varID, startp.data(), countp.data(), stridep.data(),
-                                  imapp.data(), storageView.originPtrAs<std::int64_t>()));
+    NETCDF_CHECK(internal::dispatchInt64(nc_get_varm_long, nc_get_varm_longlong, ncID, varID,
+                                         startp.data(), countp.data(), stridep.data(), imapp.data(),
+                                         storageView.originPtrAs<std::int64_t>()));
     break;
   case TypeID::Float32:
     NETCDF_CHECK(nc_get_varm_float(ncID, varID, startp.data(), countp.data(), stridep.data(),
@@ -339,11 +377,11 @@ void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID) const
   default:
     serialbox_unreachable("type not supported");
   }
-  
+
   // Close file
   NETCDF_CHECK(nc_close(ncID));
-  
-  LOG(info) << "Successfully read field \"" << fieldID.name << "\" (id = " << fieldID.id << ")";  
+
+  LOG(info) << "Successfully read field \"" << fieldID.name << "\" (id = " << fieldID.id << ")";
 }
 
 void NetCDFArchive::clear() {
@@ -366,7 +404,7 @@ std::ostream& NetCDFArchive::toStream(std::ostream& stream) const {
   stream << "  mode: " << mode_ << "\n";
   stream << "  prefix: " << prefix_ << "\n";
   stream << "  fieldMap = {\n";
-  for(auto it = fieldMap_.begin(), end = fieldMap_.end(); it != end; ++it) 
+  for(auto it = fieldMap_.begin(), end = fieldMap_.end(); it != end; ++it)
     stream << "    " << it->first << ": " << it->second << "\n";
   stream << "  }\n";
   stream << "}\n";

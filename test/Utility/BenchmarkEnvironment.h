@@ -15,7 +15,7 @@
 #ifndef SERIALBOX_UTILITY_BENCHMARKENVIRONMENT_H
 #define SERIALBOX_UTILITY_BENCHMARKENVIRONMENT_H
 
-#include <boost/filesystem.hpp>
+#include "Utility/UnittestEnvironment.h"
 #include <gtest/gtest.h>
 
 namespace serialbox {

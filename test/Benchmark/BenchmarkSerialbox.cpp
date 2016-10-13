@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestVersion.cpp ------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/BenchmarkSerialbox.cpp ---------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -8,12 +8,13 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains the unittests for the Version class.
+/// This file contains the benchmarks for all registered archives.
 ///
 //===------------------------------------------------------------------------------------------===//
 
 #include "Utility/SerializerTestBase.h"
 #include "Utility/Storage.h"
+#include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Timer.h"
 #include "serialbox/Core/Type.h"
@@ -22,7 +23,7 @@
 using namespace serialbox;
 using namespace unittest;
 
-/// Call ser::Serializer::WriteField
+/// Call write
 template <class Serializer, class Storage>
 static double writeField(Serializer&& serializer, const std::string& name, Storage&& storage,
                          const SavepointImpl& savepoint) {
@@ -36,7 +37,7 @@ static double writeField(Serializer&& serializer, const std::string& name, Stora
   return t.stop();
 }
 
-/// Call ser::Serializer::ReadField
+/// Call read
 template <class Serializer, class Storage>
 static double readField(Serializer&& serializer, const std::string& name, Storage&& storage,
                         const SavepointImpl& savepoint) {
@@ -47,10 +48,11 @@ static double readField(Serializer&& serializer, const std::string& name, Storag
   return t.stop();
 }
 
-class BinaryArchiveBenchmark : public SerializerBenchmarkBase {};
+class SerialboxBenchmark : public SerializerBenchmarkBase,
+                           public ::testing::WithParamInterface<std::string> {};
 
-TEST_F(BinaryArchiveBenchmark, Benchmark) {
-  std::string name = "BinaryArchive";
+TEST_P(SerialboxBenchmark, Benchmark) {
+  std::string name = GetParam();
   BenchmarkResult result;
   result.name = name;
 
@@ -77,8 +79,7 @@ TEST_F(BinaryArchiveBenchmark, Benchmark) {
     double timingWrite = 0.0;
     {
       for(int n = 0; n < BenchmarkEnvironment::NumRepetitions; ++n) {
-        SerializerImpl ser_write(OpenModeKind::Write, this->directory->path().string(),
-                                 BenchmarkEnvironment::getInstance().testName(), "BinaryArchive");
+        SerializerImpl ser_write(OpenModeKind::Write, this->directory->path().string(), "field", GetParam());
 
         timingWrite += writeField(ser_write, "data1", data1, savepoint);
         timingWrite += writeField(ser_write, "data2", data2, savepoint);
@@ -96,8 +97,7 @@ TEST_F(BinaryArchiveBenchmark, Benchmark) {
     double timingRead = 0.0;
     {
       for(int n = 0; n < BenchmarkEnvironment::NumRepetitions; ++n) {
-        SerializerImpl ser_read(OpenModeKind::Read, this->directory->path().string(),
-                                BenchmarkEnvironment::getInstance().testName(), "BinaryArchive");
+        SerializerImpl ser_read(OpenModeKind::Read, this->directory->path().string(), "field", GetParam());
 
         timingRead += readField(ser_read, "data1", data1, savepoint);
         timingRead += readField(ser_read, "data2", data2, savepoint);
@@ -112,3 +112,6 @@ TEST_F(BinaryArchiveBenchmark, Benchmark) {
 
   BenchmarkEnvironment::getInstance().appendResult(result);
 }
+
+INSTANTIATE_TEST_CASE_P(BenchmarkTest, SerialboxBenchmark,
+                        ::testing::ValuesIn(ArchiveFactory::getInstance().registeredArchives()));
