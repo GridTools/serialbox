@@ -15,10 +15,13 @@
 #ifndef SERIALBOX_C_SERIALBOX_H
 #define SERIALBOX_C_SERIALBOX_H
 
+#include "serialbox-c/Archive.h"
 #include "serialbox-c/ErrorHandling.h"
+#include "serialbox-c/FieldMetaInfo.h"
 #include "serialbox-c/Logging.h"
-#include "serialbox-c/Serializer.h"
+#include "serialbox-c/MetaInfo.h"
 #include "serialbox-c/Savepoint.h"
+#include "serialbox-c/Serializer.h"
 #include "serialbox-c/Type.h"
 
 #endif
