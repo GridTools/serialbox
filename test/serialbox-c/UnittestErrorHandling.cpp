@@ -15,9 +15,36 @@
 #include "serialbox-c/ErrorHandling.h"
 #include <gtest/gtest.h>
 
-TEST(CErrorHandling, Test) {
+TEST(CErrorHandling, DefaultErrorHandler) {
 #if defined(SERIALBOX_RUN_DEATH_TESTS) && !defined(NDEBUG)
   serialboxResetFatalErrorHandler();
   ASSERT_DEATH_IF_SUPPORTED(serialboxFatalError("blub"), "Serialbox: ERROR: blub");
 #endif
 }
+
+TEST(CErrorHandling, StateErrorHandler) {
+  serialboxInstallFatalErrorHandler(serialboxStateErrorHandler);
+  
+  int hasError;
+  char* errorMessage;
+ 
+  //
+  // Initial state: No error
+  //
+  serialboxStateErrorHandlerGetCurrentError(&hasError, &errorMessage);
+  ASSERT_FALSE(hasError);
+  ASSERT_EQ(NULL, errorMessage);
+
+  //
+  // Raise error
+  //
+  serialboxFatalError("error");
+  
+  serialboxStateErrorHandlerGetCurrentErrorAndReset(&hasError, &errorMessage);
+  ASSERT_TRUE(hasError);
+  ASSERT_STREQ(errorMessage, "error");
+  serialboxStateErrorHandlerGetCurrentError(&hasError, &errorMessage);
+  ASSERT_FALSE(hasError);
+  ASSERT_EQ(NULL, errorMessage);
+}
+

@@ -73,7 +73,7 @@ public:
   virtual const std::string& metaDataFile() const override { return metaDatafile_.string(); }
   virtual std::ostream& toStream(std::ostream& stream) const override;
   virtual void clear() override;
-  virtual bool isReadingThreadSafe() const override { return true; }
+  virtual bool isReadingThreadSafe() const override { return false; }
   virtual bool isWritingThreadSafe() const override { return false; }
   /// @}
 

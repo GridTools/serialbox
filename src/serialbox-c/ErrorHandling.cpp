@@ -17,12 +17,8 @@
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
-
-SERIALBOX_ATTRIBUTE_NORETURN static void serialboxDefaultFatalErrorHandler(const char* Reason) {
-  std::fprintf(stderr, "Serialbox: ERROR: %s\n", Reason);
-  std::fflush(stderr);
-  std::exit(1);
-}
+#include <cstring>
+#include <string>
 
 static serialboxFatalErrorHandler_t FatalErrorHandler = serialboxDefaultFatalErrorHandler;
 
@@ -38,4 +34,53 @@ void serialboxResetFatalErrorHandler(void) {
 void serialboxFatalError(const char* reason) {
   assert(FatalErrorHandler);
   (*FatalErrorHandler)(reason);
+}
+
+/*===------------------------------------------------------------------------------------------===*\
+ *     Error Handler Callbacks
+\*===------------------------------------------------------------------------------------------===*/
+
+void serialboxDefaultFatalErrorHandler(const char* Reason) {
+  std::fprintf(stderr, "Serialbox: ERROR: %s\n", Reason);
+  std::fflush(stderr);
+  std::exit(1);
+}
+
+namespace internal {
+
+struct ErrorState {
+  bool hasError;
+  std::string errMsg;
+};
+
+static ErrorState errorState;
+
+} // namespace internal
+
+void serialboxStateErrorHandler(const char* Reason) {
+  internal::errorState.hasError = true;
+  internal::errorState.errMsg = Reason;
+}
+
+void serialboxStateErrorHandlerGetCurrentError(int* hasError, char** errorMessage) {
+  (*hasError) = internal::errorState.hasError;
+  (*errorMessage) = NULL;
+
+  if(*hasError) {
+    std::size_t size = internal::errorState.errMsg.size() + 1;
+    (*errorMessage) = (char*)std::malloc(size * sizeof(char));
+
+    if(*errorMessage)
+      std::memcpy(*errorMessage, internal::errorState.errMsg.c_str(), size);
+  }
+}
+
+void serialboxStateErrorHandlerResetState(void) {
+  internal::errorState.hasError = false;
+  internal::errorState.errMsg.clear();
+}
+
+void serialboxStateErrorHandlerGetCurrentErrorAndReset(int* hasError, char** errorMessage) {
+  serialboxStateErrorHandlerGetCurrentError(hasError, errorMessage);
+  serialboxStateErrorHandlerResetState();
 }
