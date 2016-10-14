@@ -7,18 +7,15 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## Python Interface of Serialbox.
+## Unittest of the common utility functions.
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-"""'Serialbox Python Interface'"""
+from serialbox import get_library
+import unittest
 
-from __future__ import absolute_import
-
-__author__ = 'Fabian Thuring'
-__email__ = 'thfabian@student.ethz.ch'
-__versioninfo__ = (2, 0, 1)
-__version__ = '.'.join(str(v) for v in __versioninfo__) + '-dev'
-
-__all__ = []
-
+class TestCommon(unittest.TestCase):
+    def test_get_library(self):
+        pass
+if __name__ == "__main__":
+    unittest.main()

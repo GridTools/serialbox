@@ -7,16 +7,11 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## Several system related utility functions.
-##
-## Source: https://github.com/llvm-mirror/llvm/blob/master/utils/lit/lit/util.py, with modifications 
-## Fabian Thuring.
+## Python Interface of Serialbox.
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-"""'Serialbox Python Utilities'"""
-
-from __future__ import absolute_import
+"""'Serialbox Python Interface'"""
 
 __author__ = 'Fabian Thuring'
 __email__ = 'thfabian@student.ethz.ch'
@@ -24,4 +19,6 @@ __versioninfo__ = (2, 0, 1)
 __version__ = '.'.join(str(v) for v in __versioninfo__) + '-dev'
 
 __all__ = []
+
+from .common import get_library
 

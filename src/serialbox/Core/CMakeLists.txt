@@ -42,5 +42,6 @@ serialbox_add_library(SerialboxCore
                       ""
                       TRUE
                       FALSE
+                      ""
                       "${EXTERNAL_LIBRARIES}"
                       ${SOURCES})

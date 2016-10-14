@@ -22,10 +22,15 @@ set(SOURCES
 
 set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})
 
+set(SYMLINKS_TO ${CMAKE_BINARY_DIR}/src/serialbox-python/serialbox
+                ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox)
+
 serialbox_add_library(SerialboxC 
                       SerialboxCLibrary 
                       SerialboxCoreLibraryObjects
                       TRUE
                       TRUE
+                      "${SYMLINKS_TO}"
                       "${EXTERNAL_LIBRARIES}"
                       ${SOURCES})
+ 

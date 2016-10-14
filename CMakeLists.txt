@@ -33,10 +33,6 @@ if(WIN32)
   set(SERIALBOX_ON_WIN32 1)
 endif(WIN32)
 
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
-  set(COMPILER_IS_MSVC TRUE)
-endif()
-
 # Serialbox version
 set(SERIALBOX_VERSION_MAJOR 2)
 set(SERIALBOX_VERSION_MINOR 0)
@@ -54,7 +50,8 @@ message(STATUS "Git HEAD revision: ${GIT_SHA1}")
 
 option(SERIALBOX_BUILD_SHARED "Build shared libraries" ON)
 option(SERIALBOX_LOGGING "Enable logging" ON)
-option(SERIALBOX_ENABLE_C "Build C-Interface" ON)
+option(SERIALBOX_ENABLE_C "Build C Interface" ON)
+option(SERIALBOX_ENABLE_PYTHON "Build Python Interface" ${SERIALBOX_ENABLE_C})
 
 option(SERIALBOX_TESTING "Build unit-test executables" ON)
 option(SERIALBOX_TESTING_GRIDTOOLS "Build GridTools Unitests" OFF)
@@ -76,12 +73,22 @@ else()
   set(CXX11_FLAG "-std=c++11")
 endif()
 
-if(NOT(COMPILER_IS_MSVC))
-  CHECK_CXX_COMPILER_FLAG("${CXX11_FLAG}" COMPILER_SUPPORTS_CXX11)
-  if(NOT(COMPILER_SUPPORTS_CXX11))
-    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
-  endif(NOT(COMPILER_SUPPORTS_CXX11))
-  set(CMAKE_CXX_FLAGS "${CXX11_FLAG} ${CMAKE_CXX_FLAGS}")
+CHECK_CXX_COMPILER_FLAG("${CXX11_FLAG}" COMPILER_SUPPORTS_CXX11)
+if(NOT(COMPILER_SUPPORTS_CXX11))
+  message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
+endif(NOT(COMPILER_SUPPORTS_CXX11))
+set(CMAKE_CXX_FLAGS "${CXX11_FLAG} ${CMAKE_CXX_FLAGS}")
+
+# Shared architecture flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+
+# Compiler specific
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")            
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif()
 
 # Set build type to RelWithDebInfo if nothing was specified (instead of Debug)
@@ -172,15 +179,9 @@ if(SERIALBOX_TESTING)
     message(STATUS "Building Gtest from: ${CMAKE_CURRENT_SOURCE_DIR}/external/gtest")
 
     set(GTEST_INCLUDE_DIRS "${GTEST_INSTALL_DIR}/include")
-    if(COMPILER_IS_MSVC)
-      set(GTEST_LIBRARIES "${GTEST_INSTALL_DIR}/lib/gtest.lib"
-                          "${GTEST_INSTALL_DIR}/lib/gmock.lib"
-                          "${CMAKE_THREAD_LIBS_INIT}")
-    else()
-      set(GTEST_LIBRARIES "${GTEST_INSTALL_DIR}/lib/libgtest.a"
-                          "${GTEST_INSTALL_DIR}/lib/libgmock.a"
-                          "${CMAKE_THREAD_LIBS_INIT}")
-    endif()      
+    set(GTEST_LIBRARIES "${GTEST_INSTALL_DIR}/lib/libgtest.a"
+                        "${GTEST_INSTALL_DIR}/lib/libgmock.a"
+                        "${CMAKE_THREAD_LIBS_INIT}")
   else()
     find_package(GTest REQUIRED)
   endif()
@@ -224,6 +225,12 @@ if(${NetCDF_FOUND})
   set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${NETCDF_LIBRARIES})  
   set(SERIALBOX_HAS_NETCDF 1)
 endif()
+
+#---------------------------------------- Python ---------------------------------------------------
+if(SERIALBOX_ENABLE_PYTHON)
+  find_package(PythonInterp 3)
+  option(SERIALBOX_TESTING_PYTHON "Run Python tests" ${PYTHONINTERP_FOUND})
+endif(SERIALBOX_ENABLE_PYTHON)
 
 #---------------------------------------- GridTools ------------------------------------------------
 if(SERIALBOX_TESTING_GRIDTOOLS)

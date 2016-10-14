@@ -42,7 +42,7 @@ TEST_F(CSerializerUtilityTest, Construction) {
 
     serialboxSerializerUpdateMetaData(ser);
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-    serialboxSerializerDestroy(ser);    
+    serialboxSerializerDestroy(ser);
   }
 
   {
@@ -55,7 +55,7 @@ TEST_F(CSerializerUtilityTest, Construction) {
 
     serialboxSerializerUpdateMetaData(ser);
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-    serialboxSerializerDestroy(ser);    
+    serialboxSerializerDestroy(ser);
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -63,16 +63,18 @@ TEST_F(CSerializerUtilityTest, Construction) {
   // -----------------------------------------------------------------------------------------------
   {
     // MetaData.json exists (from Writing part)
-    serialboxSerializer_t* ser = serialboxSerializerCreate(Read, directory->path().c_str(), "Field", "Binary");
+    serialboxSerializer_t* ser =
+        serialboxSerializerCreate(Read, directory->path().c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-    serialboxSerializerDestroy(ser);    
+    serialboxSerializerDestroy(ser);
   }
 
   {
     // Directory does not exist -> FatalError
-    serialboxSerializer_t* ser = serialboxSerializerCreate(Read, (directory->path() / "not-a-dir").c_str(), "Field", "Binary");
+    serialboxSerializer_t* ser = serialboxSerializerCreate(
+        Read, (directory->path() / "not-a-dir").c_str(), "Field", "Binary");
     ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-    serialboxSerializerDestroy(ser);    
+    serialboxSerializerDestroy(ser);
   }
 
   {
@@ -80,10 +82,10 @@ TEST_F(CSerializerUtilityTest, Construction) {
     boost::filesystem::remove((directory->path() / "dir-is-created-from-write") /
                               "MetaData-Field.json");
 
-    serialboxSerializer_t* ser = serialboxSerializerCreate(Read, (directory->path() / "dir-is-created-from-write").c_str(),
-                              "Field", "Binary");
+    serialboxSerializer_t* ser = serialboxSerializerCreate(
+        Read, (directory->path() / "dir-is-created-from-write").c_str(), "Field", "Binary");
     ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-    serialboxSerializerDestroy(ser);    
+    serialboxSerializerDestroy(ser);
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -91,18 +93,19 @@ TEST_F(CSerializerUtilityTest, Construction) {
   // -----------------------------------------------------------------------------------------------
   {
     // Construct from existing (empty) metaData
-    serialboxSerializer_t* ser = serialboxSerializerCreate(Append, directory->path().c_str(), "Field", "Binary");
+    serialboxSerializer_t* ser =
+        serialboxSerializerCreate(Append, directory->path().c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-    serialboxSerializerDestroy(ser);        
+    serialboxSerializerDestroy(ser);
   }
 
   {
     // Directory does not exists (should be created by the Archive)
-    serialboxSerializer_t* ser = serialboxSerializerCreate(Append, (directory->path() / "dir-is-created-from-append").c_str(),
-                              "Field", "Binary");
+    serialboxSerializer_t* ser = serialboxSerializerCreate(
+        Append, (directory->path() / "dir-is-created-from-append").c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
     ASSERT_TRUE(boost::filesystem::exists(directory->path() / "dir-is-created-from-append"));
-    serialboxSerializerDestroy(ser);    
+    serialboxSerializerDestroy(ser);
   }
 }
 
@@ -170,27 +173,49 @@ TEST_F(CSerializerUtilityTest, RegisterFields) {
   ASSERT_TRUE(serialboxSerializerAddField(ser, "field", info));
   ASSERT_FALSE(serialboxSerializerAddField(ser, "field", info));
 
+  // Register field (old version)
+  ASSERT_TRUE(
+      serialboxSerializerAddField2(ser, "field2", Int32, 4, 42, 1, 1, 12, 1, 1, 0, 0, 0, 0, 2, 2));
+  ASSERT_FALSE(
+      serialboxSerializerAddField2(ser, "field2", Int32, 4, 42, 1, 1, 12, 1, 1, 0, 0, 0, 0, 2, 2));
+
   // Query fieldnames
   int len;
   char** fieldnames;
   serialboxSerializerGetFieldnames(ser, &fieldnames, &len);
 
-  ASSERT_EQ(len, 1);
-  ASSERT_STREQ(fieldnames[0], "field");
+  ASSERT_EQ(len, 2);
+  ASSERT_TRUE(std::find_if(fieldnames, fieldnames + len, [](const char* s) {
+                return (std::memcmp(s, "field", sizeof("field")) == 0);
+              }) != (fieldnames + len));
+  ASSERT_TRUE(std::find_if(fieldnames, fieldnames + len, [](const char* s) {
+                return (std::memcmp(s, "field2", sizeof("field2")) == 0);
+              }) != (fieldnames + len));
 
   for(int i = 0; i < len; ++i)
     std::free(fieldnames[i]);
   std::free(fieldnames);
 
   // Get FieldMetaInfo of "field"
-  serialboxFieldMetaInfo_t* infoQuery = serialboxSerializerGetFieldMetaInfo(ser, "field");
-  ASSERT_TRUE(serialboxFieldMetaInfoEqual(info, infoQuery));
+  serialboxFieldMetaInfo_t* infoField = serialboxSerializerGetFieldMetaInfo(ser, "field");
+  ASSERT_TRUE(serialboxFieldMetaInfoEqual(info, infoField));
+
+  // Get FieldMetaInfo of "field2"
+
+  // TODO...
+  
+  //  serialboxFieldMetaInfo_t* infoField2 = serialboxSerializerGetFieldMetaInfo(ser, "field2");
+
+  //  int numDimension = serialboxFieldMetaInfoGetNumDimensions(infoField2);
+  //  const int* dimension = serialboxFieldMetaInfoGetDimensions(infoField2);
+  //  serialboxTypeID type = serialboxFieldMetaInfoGetTypeID(infoField2);
+  //  serialboxMetaInfo_t* metaInfo = serialboxFieldMetaInfoGetMetaInfo(infoField2);
 
   // Get FieldMetaInfo of non-existing field -> NULL
   ASSERT_EQ(NULL, serialboxSerializerGetFieldMetaInfo(ser, "X"));
 
   serialboxFieldMetaInfoDestroy(info);
-  serialboxFieldMetaInfoDestroy(infoQuery);
+  serialboxFieldMetaInfoDestroy(infoField);
   serialboxSerializerDestroy(ser);
 }
 

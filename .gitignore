@@ -17,5 +17,5 @@ buildenv*
 external/*
 !external/gtest
 
-# Generated files
-include/serialbox/Support/Config.h
+# Shared library in source dir
+src/serialbox-python/serialbox/*.so

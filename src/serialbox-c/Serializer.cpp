@@ -182,6 +182,58 @@ int serialboxSerializerAddField(serialboxSerializer_t* serializer, const char* n
   return 1;
 }
 
+int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* name,
+                                 serialboxTypeID type, int bytesPerElement, int iSize, int jSize,
+                                 int kSize, int lSize, int iMinusHalo, int iPlusHalo,
+                                 int jMinusHalo, int jPlusHalo, int kMinusHalo, int kPlusHalo,
+                                 int lMinusHalo, int lPlusHalo) {
+  Serializer* ser = toSerializer(serializer);
+
+  try {
+    serialbox::TypeID typeID = static_cast<serialbox::TypeID>((int)type);
+    std::string typeName = serialbox::TypeUtil::toString(typeID);
+
+    if(bytesPerElement != serialbox::TypeUtil::sizeOf(typeID))
+      throw serialbox::Exception("inconsistent bytes-per-element: got '%i' but according to passed "
+                                 "type '%s' expected '%i'",bytesPerElement, typeName,
+                                 serialbox::TypeUtil::sizeOf(typeID));
+
+    int rank =
+        (iSize != 1 ? 1 : 0) + (jSize != 1 ? 1 : 0) + (kSize != 1 ? 1 : 0) + (lSize != 1 ? 1 : 0);
+
+    std::vector<int> dims{iSize, jSize, kSize, lSize};
+    MetaInfoMap metaInfo;
+    metaInfo.insert("__name", name);
+    metaInfo.insert("__elementtype", typeName);
+    metaInfo.insert("__bytesperelement", bytesPerElement);
+    metaInfo.insert("__rank", rank);
+    metaInfo.insert("__isize", iSize);
+    metaInfo.insert("__jsize", jSize);
+    metaInfo.insert("__ksize", kSize);
+    metaInfo.insert("__lsize", lSize);
+    metaInfo.insert("__iminushalosize", iMinusHalo);
+    metaInfo.insert("__iplushalosize", iPlusHalo);
+    metaInfo.insert("__jminushalosize", jMinusHalo);
+    metaInfo.insert("__jplushalosize", jPlusHalo);
+    metaInfo.insert("__kminushalosize", kMinusHalo);
+    metaInfo.insert("__kplushalosize", kPlusHalo);
+    metaInfo.insert("__lminushalosize", lMinusHalo);
+    metaInfo.insert("__lplushalosize", lPlusHalo);
+
+    FieldMetaInfo fieldMetaInfo(typeID, dims, metaInfo);
+
+    // Field was already registered with the same meta-data
+    if(ser->hasField(name) && (ser->getFieldMetaInfoOf(name) == fieldMetaInfo))
+      return 0;
+
+    ser->registerField(name, fieldMetaInfo);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+  return 1;
+}
+
+
 void serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer, char*** fieldnames,
                                       int* len) {
   const Serializer* ser = toConstSerializer(serializer);

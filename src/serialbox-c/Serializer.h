@@ -158,7 +158,7 @@ void serialboxSerializerDestroySavepointVector(serialboxSavepoint_t** savepointV
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Register ´field´ within the serializer
+ * \brief Register field given as ´fieldMetaInfo´ within the serializer
  *
  * \param serializer  Serializer to use
  * \param name        Name of the field to register
@@ -167,6 +167,34 @@ void serialboxSerializerDestroySavepointVector(serialboxSavepoint_t** savepointV
  */
 int serialboxSerializerAddField(serialboxSerializer_t* serializer, const char* name,
                                 const serialboxFieldMetaInfo_t* fieldMetaInfo);
+
+/**
+ * \brief Register ´field´ within the serializer
+ *
+ * This function behaves the same as in older versions of serialbox.
+ *
+ * \param name              The name of the field
+ * \param type              TypeID of the field
+ * \param bytesPerElement   The size in bytes of a scalar value (e.g. 8 for doubles)
+ * \param iSize             The size of the first dimension
+ * \param jSize             The size of the second dimension
+ * \param kSize             The size of the third dimension
+ * \param lsize             The size of the fourth dimension
+ * \param iMinusHalo        The dimension of the halo in negative i-direction
+ * \param iPlusHalo         The dimension of the halo in positive i-direction
+ * \param jMinusHalo        The dimension of the halo in negative j-direction
+ * \param jPlusHalo         The dimension of the halo in positive j-direction
+ * \param kMinusHalo        The dimension of the halo in negative k-direction
+ * \param kPlusHalo         The dimension of the halo in positive k-direction
+ * \param lMinusHalo        The dimension of the halo in negative l-direction
+ * \param lPlusHalo         The dimension of the halo in positive l-direction
+ * \return 1 if field was added successfully, 0 otherwise
+ */
+int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* name,
+                                  serialboxTypeID type, int bytesPerElement, int iSize, int jSize,
+                                  int kSize, int lSize, int iMinusHalo, int iPlusHalo,
+                                  int jMinusHalo, int jPlusHalo, int kMinusHalo, int kPlusHalo,
+                                  int lMinusHalo, int lPlusHalo);
 
 /**
  * \brief Get an array of C-strings of all names of the registered fields

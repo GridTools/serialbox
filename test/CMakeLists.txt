@@ -59,6 +59,10 @@ if(SERIALBOX_ENABLE_C)
   add_subdirectory(serialbox-c)
 endif()
 
+if(SERIALBOX_TESTING_PYTHON)
+  add_subdirectory(serialbox-python)
+endif()
+
 if(SERIALBOX_BENCHMARKING)
   add_subdirectory(Benchmark)
 endif(SERIALBOX_BENCHMARKING)

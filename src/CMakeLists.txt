@@ -19,17 +19,20 @@ cmake_minimum_required(VERSION 3.1)
 ## \param buildStatic   BOOL: Convert object library to static library
 ## \param buildShared   BOOL: Convert object library to shared library (requires 
 ##                      SERIALBOX_BUILD_SHARED)
+## \param addSymlinksTo LIST OF STRING: Add symlinks of the shared library to the specified paths
 ## \param libraries     LIST OF STRINGS: Specify external libraries or flags to be use when linking 
 ##                      the target
 ## \param ARGN          LIST OF STRINGS: List of source files
 ##
 ## Note: To pass in a list of elements you have to *quote* the variable i.e call 
 ##
+## set(EXTERNAL_LIBRARIES ${libA} ${libB})
 ## serialbox_add_library(Serialbox 
 ##                       SerialboxLibrary 
 ##                       ""
 ##                       TRUE
 ##                       FALSE
+##                       ""
 ##                       "${EXTERNAL_LIBRARIES}"
 ##                       SourceA.cpp SoureB.cpp SourceC.cpp)
 ##
@@ -39,6 +42,7 @@ function(serialbox_add_library
          objects
          buildStatic
          buildShared
+         addSymlinksTo
          libraries)
 
   add_library(${target}Objects OBJECT ${ARGN} ${SERIALBOX_HEADERS} ${SERIALBOX_C_HEADERS})
@@ -47,7 +51,7 @@ function(serialbox_add_library
     set_target_properties(${target}Objects PROPERTIES COMPILE_FLAGS -Wall)
   endif(SERIALBOX_VERBOSE_WARNINGS)
 
-  # Set properties for code-coverage
+  ## Set properties for code-coverage
   if(DEFINED COVERAGE_SUPPORTED)
     set_property(TARGET ${target}Objects PROPERTY COMPILE_FLAGS ${CMAKE_CXX_FLAGS_COVERAGE})
     set_property(TARGET ${target}Objects PROPERTY LINK_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})
@@ -61,7 +65,7 @@ function(serialbox_add_library
     endforeach()
   endif()
 
-  # Build static library
+  ## Build static library
   if(buildStatic)
     add_library(${target}Static STATIC $<TARGET_OBJECTS:${target}Objects> ${OBJECT_SOURCES})
     
@@ -72,7 +76,7 @@ function(serialbox_add_library
     install(TARGETS ${target}Static DESTINATION lib)
   endif()
 
-  # Build shared library
+  ## Build shared library
   if(buildShared)
 
     if(NOT(SERIALBOX_BUILD_SHARED))
@@ -87,7 +91,22 @@ function(serialbox_add_library
     target_link_libraries(${target}Shared ${libraries})
     install(TARGETS ${target}Shared DESTINATION lib)
   endif()
-
+  
+  ## Add symlinks of the shared library to the path "addSymlinksTo"
+  if(NOT("${addSymlinksTo}" STREQUAL ""))
+  
+    if(NOT(buildShared))
+      message(WARNING 
+      "Cannot create symlinks of shared library of ${name} (set builShared=ON in the function call")
+    endif()
+  
+    foreach(path ${addSymlinksTo})
+      add_custom_command(TARGET ${target}Shared POST_BUILD
+         COMMAND ${CMAKE_COMMAND} -E create_symlink
+         $<TARGET_FILE:${target}Shared> 
+         ${path}/$<TARGET_FILE_NAME:${target}Shared>)
+    endforeach()
+  endif()
 endfunction(serialbox_add_library)
 
 ## Add subdirectories
@@ -95,5 +114,9 @@ add_subdirectory(serialbox)
 
 if(SERIALBOX_ENABLE_C)
   add_subdirectory(serialbox-c)
+endif()
+
+if(SERIALBOX_ENABLE_PYTHON)
+  add_subdirectory(serialbox-python)
 endif()
 
