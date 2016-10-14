@@ -16,6 +16,18 @@
 
 export PYTHONPATH=$PYTHONPATH:${SERIALOBX_PYTHON_MODULE}
 
+#
+# Check if nose exists
+#
+${PYTHON_EXECUTABLE} -c "import nose"
+if [ "$?" == "1" ]; then
+  echo ">> Python tests require module 'nose'"
+  exit 1
+fi
+
+#
+# Run python tests with nose
+#
 cd ${PYTHON_TEST_DIR}/serialbox
 ${PYTHON_EXECUTABLE} -m "nose"
 
