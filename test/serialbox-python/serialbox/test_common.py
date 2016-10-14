@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 ##===-----------------------------------------------------------------------------*- Python -*-===##
 ##
 ##                                   S E R I A L B O X
@@ -11,11 +13,13 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from serialbox import get_library
+from serialbox import get_library, register_library
 import unittest
 
 class TestCommon(unittest.TestCase):
     def test_get_library(self):
-        pass
+        lib = get_library()
+        register_library(lib)
+
 if __name__ == "__main__":
     unittest.main()

@@ -18,9 +18,9 @@ import platform
 import os
 
 def get_library():
-    """Obtain a reference to the serialboxC shared library.
+    """Obtain a reference to the SerialboxC shared library.
 
-    :returns: refrence to the serialboxC shared library.
+    :returns: ctypes.CDLL -- refrence to the SerialboxC shared library.
     :raises: OSError, Exception
     """
     
@@ -31,10 +31,11 @@ def get_library():
     # To make it possible to run the unit tests without installing the SerialboxC shared
     # library into a default linker search path.  Always Try ctypes.cdll.LoadLibrary()
     # with all possible library names first, then try ctypes.util.find_library().
-    names = ['serialboxC']
+    names = ['SerialboxC']
     
     cwd = os.path.dirname(os.path.realpath(__file__))
     dirs = (cwd, os.path.join(cwd, "../../lib"), )
+  
     for d in dirs:  
         t = platform.system()
         if t == 'Darwin':
@@ -46,6 +47,7 @@ def get_library():
 
         for i in names:
             try:
+                print(os.path.join(d, pfx + i + ext))
                 lib = cdll.LoadLibrary(os.path.join(d, pfx + i + ext))
             except OSError:
                 pass
@@ -56,5 +58,14 @@ def get_library():
             t = ctypes.util.find_library(i)
             if t:
                 return cdll.LoadLibrary(t)
-    raise Exception('serialboxC shared library not found')
 
+    raise Exception("'serialboxC' shared library not found")
+
+def register_library(library):
+    """Register library functions of SerialboxC
+
+    :param library: refrence to the SerialboxC shared library.
+    :type library: ctypes.CDLL.
+    """
+    print(type(library))
+    

@@ -13,12 +13,20 @@
 
 """'Serialbox Python Interface'"""
 
-__author__ = 'Fabian Thuring'
-__email__ = 'thfabian@student.ethz.ch'
 __versioninfo__ = (2, 0, 1)
 __version__ = '.'.join(str(v) for v in __versioninfo__) + '-dev'
 
 __all__ = []
 
-from .common import get_library
+#
+# Check python version
+#
+from sys import version_info
+if version_info <= (3,0):
+  raise Exception("serialbox requires python 3")
+
+#
+# Import submodules
+#
+from .common import *
 
