@@ -10,7 +10,6 @@ install:
   - ${CXX} --version
   - ${CXX} -v
   - python --version
-  - echo $TRAVIS_PYTHON_VERSION
 
   # Info about OS
   - uname -a
@@ -41,6 +40,7 @@ addons:
       - cmake-data
       - libboost1.54-all-dev
       - libssl-dev
+
 os:
   - linux
   - osx
@@ -54,9 +54,6 @@ language: cpp
 compiler:
   - clang
   - gcc
-
-python:
-  - "3.4"
 
 matrix:
   exclude:
