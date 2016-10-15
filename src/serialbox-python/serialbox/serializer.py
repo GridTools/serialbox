@@ -9,17 +9,26 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## Unittest of the common utility functions.
+## This file contains the Serializer implementation of the Python Interface.
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from serialbox import get_library, register_library
-import unittest
+from .common import get_library, extract_string
+from .error import invoke, SerialboxError
 
-class TestCommon(unittest.TestCase):
-    def test_get_library(self):
-        lib = get_library()
-        register_library(lib)
+lib = get_library()
 
-if __name__ == "__main__":
-    unittest.main()
+def register_library(library):
+    pass
+
+class Serializer(object):
+    def __init__(self):
+        print("init Serializer") 
+
+        errstr, errlen = extract_string("oh siieht")
+
+        try:
+          invoke(lib.serialboxFatalError, errstr)
+        except SerialboxError as e:
+          print(e)
+        

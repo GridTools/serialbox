@@ -9,21 +9,32 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## Common utility functions to load the serialboxC shared library.
+## This file contains shared utility functions.
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from ctypes import cdll
+from ctypes import cdll, c_char_p
 
 import ctypes.util
 import platform
 import os
 
+def extract_string(string):
+    """Convert python string to C-string.
+    
+    :param str string: Python string
+    :return: char* and length of the string
+    :rtype: (ctypes.c_char_p, int)
+    """
+    val = string.encode('ascii') if type(string) == str else string
+    return c_char_p(val), len(val)
+
 def get_library():
     """Obtain a reference to the SerialboxC shared library.
 
-    :returns: ctypes.CDLL -- refrence to the SerialboxC shared library.
-    :raises: OSError, Exception
+    :return: refrence to the SerialboxC shared library
+    :rtype: ctypes.CDLL
+    :raises Exception: serialboxC shared library could not be loaded or found
     """
     
     # On Linux, ctypes.cdll.LoadLibrary() respects LD_LIBRARY_PATH
@@ -49,7 +60,6 @@ def get_library():
 
         for i in names:
             try:
-                print(os.path.join(d, pfx + i + ext))
                 lib = cdll.LoadLibrary(os.path.join(d, pfx + i + ext))
             except OSError:
                 pass

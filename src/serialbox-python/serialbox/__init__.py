@@ -26,8 +26,10 @@ if version_info < (3,0):
   raise Exception("serialbox requires python 3")
 
 #
-# Import submodules
+# Import submodules (the core submodule will initialize the error handling)
 #
-from .common import *
-from .core import *
+from .core import init_serialbox
+from .error import SerialboxError
+from .logging import Logging
+from .serializer import Serializer
 

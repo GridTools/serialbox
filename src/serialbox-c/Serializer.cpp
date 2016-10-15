@@ -321,6 +321,9 @@ serialbox::StorageView makeStorageView(Serializer* ser, const char* name, void* 
 void serialboxSerializerWrite(serialboxSerializer_t* serializer, const char* name,
                               const serialboxSavepoint_t* savepoint, void* originPtr,
                               const int* strides, int numStrides) {
+  if(!serialboxSerializationEnabled)
+    return;
+  
   Serializer* ser = toSerializer(serializer);
   const Savepoint* sp = toConstSavepoint(savepoint);
 
@@ -336,6 +339,9 @@ void serialboxSerializerWrite(serialboxSerializer_t* serializer, const char* nam
 void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name,
                              const serialboxSavepoint_t* savepoint, void* originPtr,
                              const int* strides, int numStrides) {
+  if(!serialboxSerializationEnabled)
+    return;
+  
   Serializer* ser = toSerializer(serializer);
   const Savepoint* sp = toConstSavepoint(savepoint);
 

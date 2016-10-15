@@ -27,7 +27,7 @@ namespace stella {
 /// \brief Implementation of the STELLA Savepoint
 class Savepoint {
 public:
-  /// \brief Construct empty savepoint with name ´name´
+  /// \brief Construct empty savepoint with name `name`
   Savepoint();
 
   /// \brief Initialize the savepoint

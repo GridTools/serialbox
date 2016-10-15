@@ -22,7 +22,7 @@ extern "C" {
 /**
  * \brief Enable logging
  *
- * By default, the logging is disabled. If ´SERIALBOX_DISABLE_LOGGING´ is defined, the function
+ * By default, the logging is disabled. If `SERIALBOX_DISABLE_LOGGING` is defined, the function
  * does nothing.
  */
 void serialboxLoggingEnable(void);
@@ -30,7 +30,7 @@ void serialboxLoggingEnable(void);
 /**
  * \brief Disable logging
  *
- * By default, the logging is disabled. If ´SERIALBOX_DISABLE_LOGGING´ is defined, the function
+ * By default, the logging is disabled. If `SERIALBOX_DISABLE_LOGGING` is defined, the function
  * does nothing.
  */
 void serialboxLoggingDisable(void);

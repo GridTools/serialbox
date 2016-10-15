@@ -9,19 +9,16 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## Setup serialboxC library.
+## Unittest of the common utility functions.
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from .common import get_library
+from serialbox import Serializer
+import unittest
 
-lib = get_library()
+class TestSerializer(unittest.TestCase):
+    def test_init(self):
+         serializer = Serializer()
 
-def init_serialbox():
-    """Initialize the SerialboxC library by installing the error handler.
-    """
-    lib.serialboxInstallFatalErrorHandler(lib.serialboxStateErrorHandler)
-    print("init serialbox")
-
-init_serialbox()
-
+if __name__ == "__main__":
+    unittest.main()
