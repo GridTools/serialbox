@@ -73,7 +73,7 @@ public:
 
   /// \brief Find savepoint
   ///
-  /// \return Index of ´savepoint´ in the savepoint-vector or -1 if savepoint does not exist
+  /// \return Index of `savepoint` in the savepoint-vector or -1 if savepoint does not exist
   int find(const SavepointImpl& savepoint) const noexcept;
 
   /// \brief Insert savepoint in savepoint vector
@@ -86,27 +86,27 @@ public:
   /// \return True iff the field was successfully addeed to the savepoint
   bool addField(const SavepointImpl& savepoint, const FieldID& fieldID) noexcept;
 
-  /// \brief Add a field to the savepoint given a valid savepoint index ´idx´
+  /// \brief Add a field to the savepoint given a valid savepoint index `idx`
   ///
   /// \return True iff the field was successfully addeed to the savepoint
   bool addField(int idx, const FieldID& fieldID) noexcept;
 
-  /// \brief Check if savepoint has field ´field´
+  /// \brief Check if savepoint has field `field`
   ///
-  /// \return True iff the field ´field´ exists at savepoint
+  /// \return True iff the field `field` exists at savepoint
   bool hasField(const SavepointImpl& savepoint, const std::string& field) noexcept;
 
-  /// \brief Check if savepoint has field ´field´ given a valid savepoint index ´idx´
+  /// \brief Check if savepoint has field `field` given a valid savepoint index `idx`
   ///
-  /// \return True iff the field ´field´ exists at savepoint
+  /// \return True iff the field `field` exists at savepoint
   bool hasField(int idx, const std::string& field) noexcept;
 
-  /// \brief Get the FielID of field ´field´ at savepoint ´savepoint´
+  /// \brief Get the FielID of field `field` at savepoint `savepoint`
   ///
   /// \throw Exception  Savepoint or field at savepoint do not exist
   FieldID getFieldID(const SavepointImpl& savepoint, const std::string& field) const;
 
-  /// \brief Get the FielID of field ´field´ given a valid savepoint index ´idx´
+  /// \brief Get the FielID of field `field` given a valid savepoint index `idx`
   ///
   /// \throw Exception  Savepoint or field at savepoint do not exist
   FieldID getFieldID(int idx, const std::string& field) const;
@@ -116,7 +116,7 @@ public:
   /// \throw Exception  Savepoint does not exists
   const fields_per_savepoint_type& fieldsOf(const SavepointImpl& savepoint) const;
 
-  /// \brief Access fields of savepoint given a valid savepoint index ´idx´
+  /// \brief Access fields of savepoint given a valid savepoint index `idx`
   const fields_per_savepoint_type& fieldsOf(int idx) const noexcept;
 
   /// \brief Returns a bool value indicating whether the savepoint vector is empty

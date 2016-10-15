@@ -47,7 +47,7 @@ public:
   /// \brief Enable serialization
   ///
   /// Serialization is enabled by default, but it can be disabled either by setting the environment
-  /// variable ´STELLA_SERIALIZATION_DISABLE´ to a positive value or by calling the funcion
+  /// variable `STELLA_SERIALIZATION_DISABLE` to a positive value or by calling the funcion
   /// DisableSerialization. With this function you enable the serialization independently of the
   /// current environment.
   ///
@@ -58,7 +58,7 @@ public:
   /// \brief Disable serialization
   ///
   /// Serialization is enabled by default, but it can be disabled either by setting the environment
-  /// variable ´STELLA_SERIALIZATION_DISABLE´ to a positive value or by calling the funcion
+  /// variable `STELLA_SERIALIZATION_DISABLE` to a positive value or by calling the funcion
   /// DisableSerialization.
   ///
   /// The serialization can be only globally enabled or disabled. There is not way to enable or
@@ -168,7 +168,7 @@ public:
   /// The provided field will be initialized with the provided name and with the ize and boundary
   /// present in the serializer.
   ///
-  /// This method requires the STELLA headers (i.e expects ´IJKSize´ and ´KBoundary´ to be present
+  /// This method requires the STELLA headers (i.e expects `IJKSize` and `KBoundary` to be present
   /// in global namespace) and thus requires you to define:
   /// \code
   ///   #define SERIALBOX_HAS_STELLA 1

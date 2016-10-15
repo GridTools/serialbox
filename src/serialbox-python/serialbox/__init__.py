@@ -22,11 +22,12 @@ __all__ = []
 # Check python version
 #
 from sys import version_info
-if version_info <= (3,0):
+if version_info < (3,0):
   raise Exception("serialbox requires python 3")
 
 #
 # Import submodules
 #
 from .common import *
+from .core import *
 

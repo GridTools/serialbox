@@ -353,6 +353,9 @@ find_package(Doxygen)
 option(SERIALBOX_DOCUMENTATION 
        "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
 set(DOC_DIR ${PROJECT_SOURCE_DIR}/docs)
+if(SERIALBOX_DOCUMENTATION)
+  add_subdirectory(docs)
+endif()
 
 #---------------------------------------- ClangTools -----------------------------------------------
 find_package(ClangTools)

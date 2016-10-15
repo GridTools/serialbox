@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 ##===-----------------------------------------------------------------------------*- Python -*-===##
 ##
 ##                                   S E R I A L B O X
@@ -61,11 +63,4 @@ def get_library():
 
     raise Exception("'serialboxC' shared library not found")
 
-def register_library(library):
-    """Register library functions of SerialboxC
-
-    :param library: refrence to the SerialboxC shared library.
-    :type library: ctypes.CDLL.
-    """
-    print(type(library))
     

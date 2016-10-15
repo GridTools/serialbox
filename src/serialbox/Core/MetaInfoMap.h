@@ -27,8 +27,8 @@
 
 namespace serialbox {
 
-/// \brief Hash-map of meta-information of the form ´key = value´ pair or
-/// ´key = {value1, ..., valueN}´
+/// \brief Hash-map of meta-information of the form `key = value` pair or
+/// `key = {value1, ..., valueN}`
 ///
 /// They keys are strings (std::string), while the values can be booleans, integers (32 and 64 bit),
 /// floating point numbers (32 and 64 bit) or strings.
@@ -88,19 +88,19 @@ public:
 
   /// \brief Get vector of strings of all available keys
   ///
-  /// To get the corresponding TypeIDs, use ´MetaInfoMap::types()´.
+  /// To get the corresponding TypeIDs, use `MetaInfoMap::types()`.
   ///
   /// \return vector of strings of all keys
   std::vector<std::string> keys() const;
 
   /// \brief Get vector of all available keys
   ///
-  /// To get the corresponding keys, use ´MetaInfoMap::keys()´.
+  /// To get the corresponding keys, use `MetaInfoMap::keys()`.
   ///
   /// \return vector of TypeIDs of all elements
   std::vector<TypeID> types() const;
 
-  /// \brief Search the container for an element with a key equivalent to ´key´ and return an
+  /// \brief Search the container for an element with a key equivalent to `key` and return an
   /// iterator to it if found, otherwise it returns an iterator to MetaInfoMap::end
   ///
   /// \param key  Key to be searched for
@@ -130,16 +130,16 @@ public:
     return (map_.insert({key, MetaInfoValue(std::forward<ValueType>(value))}).second);
   }
 
-  /// \brief Convert value of element with key ´key´ to type ´T´
+  /// \brief Convert value of element with key `key` to type `T`
   ///
-  /// If the type ´T´ is different than the internally stored type, the function does its best to
-  /// convert the value to ´T´ in a meaningful way.
+  /// If the type `T` is different than the internally stored type, the function does its best to
+  /// convert the value to `T` in a meaningful way.
   ///
   /// \param key    Key of the new element
   ///
-  /// \return Copy of the value of the element as type ´T´
+  /// \return Copy of the value of the element as type `T`
   ///
-  /// \throw Exception  Key ´key´ does not exist or conversion results in truncation of the value
+  /// \throw Exception  Key `key` does not exist or conversion results in truncation of the value
   ///
   /// \see MetaInfoValue::as
   template <class ValueType, class KeyType>

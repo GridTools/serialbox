@@ -24,7 +24,12 @@
 
 namespace serialbox {
 
-namespace gridtools {} // namespace gridtools
+/// \namespace gridtools
+/// \brief Namespace of the gridtools frontend
+namespace gridtools {
+
+
+} // namespace gridtools
 
 } // namespace serialbox
 

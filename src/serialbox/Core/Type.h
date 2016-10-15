@@ -22,6 +22,8 @@
 #include <iosfwd>
 #include <string>
 
+/// \namespace serialbox
+/// \brief Namespace of the serialbox library
 namespace serialbox {
 
 /// \typedef Byte
@@ -43,7 +45,7 @@ std::ostream& operator<<(std::ostream& stream, const OpenModeKind& mode);
 /// \enum TypeID
 /// \brief Type-id of types recognized by serialbox
 ///
-/// This enum is duplicated in ´serialbox-c/Type.h´.
+/// This enum is duplicated in `serialbox-c/Type.h`.
 ///
 /// \see isSupported
 enum class TypeID : int {

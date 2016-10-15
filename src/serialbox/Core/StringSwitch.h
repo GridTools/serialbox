@@ -47,7 +47,7 @@ using StringRef = boost::string_ref;
 template <typename T, typename R = T>
 class StringSwitch {
 public:
-  /// \brief Initialize with string ´str´ to switch
+  /// \brief Initialize with string `str` to switch
   SERIALBOX_ATTRIBUTE_ALWAYS_INLINE
   explicit StringSwitch(StringRef str) : str_(str), result_(nullptr) {}
 

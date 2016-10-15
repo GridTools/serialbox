@@ -25,7 +25,7 @@ namespace serialbox {
 template <class T>
 using Array = std::vector<T>;
 
-/// \brief Check if type ´T´ is an Array
+/// \brief Check if type `T` is an Array
 /// @{
 template <typename T>
 struct IsArray : public std::false_type {};
@@ -48,7 +48,7 @@ struct MakePrimitiveImpl<T, false> {
 
 } // namespace internal
 
-/// \brief Return the primtive type (´T::value_type´) if ´T´ is an Array or ´T´ otherwise
+/// \brief Return the primtive type (`T::value_type`) if `T` is an Array or `T` otherwise
 template <class T>
 struct MakePrimitive {
   using type = typename internal::MakePrimitiveImpl<T, IsArray<T>::value>::type;
