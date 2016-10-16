@@ -26,7 +26,7 @@ extern "C" {
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Construct an empty Savepoint
+ * \brief Construct a Savepoint
  *
  * \param name   Name of the Savepoint
  * \return refrence to the newly constructed Savepoint or NULL if an error occurred

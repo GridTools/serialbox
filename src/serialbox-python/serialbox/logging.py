@@ -19,39 +19,40 @@ from .common import get_library
 
 lib = get_library()
 
-def register_library(library):
-    lib.serialboxLoggingIsEnabled.restype = c_int
 
-class Logging:
+def register_library(library):
+    library.serialboxLoggingIsEnabled.restype = c_int
+
+
+class Logging(object):
     """Logging infastrucutre"""
 
     @staticmethod
     def enable():
-      """Enable logging
+        """Enable logging
 
-      By default, the logging is disabled. If `SERIALBOX_DISABLE_LOGGING` is defined, the function
-      does nothing.
-      """
-      lib.serialboxLoggingEnable()
+        By default, the logging is disabled. If `SERIALBOX_DISABLE_LOGGING` is defined, the function
+        does nothing.
+        """
+        lib.serialboxLoggingEnable()
 
     @staticmethod
     def disable():
-      """Disable logging
+        """Disable logging
 
-      By default, the logging is disabled. If `SERIALBOX_DISABLE_LOGGING` is defined, the function
-      does nothing.
-      """
-      lib.serialboxLoggingDisable()
+        By default, the logging is disabled. If `SERIALBOX_DISABLE_LOGGING` is defined, the function
+        does nothing.
+        """
+        lib.serialboxLoggingDisable()
 
     @staticmethod
     def is_enabled():
-      """Check if logging is enabled
+        """Check if logging is enabled
 
-      :return: True if logging is enabled, False otherwise
-      :rtype: bool
-      """
-      return bool(lib.serialboxLoggingIsEnabled)
+        :return: True if logging is enabled, False otherwise
+        :rtype: bool
+        """
+        return bool(lib.serialboxLoggingIsEnabled)
+
 
 register_library(lib)
-print("init logging")
-

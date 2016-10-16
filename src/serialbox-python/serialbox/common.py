@@ -13,11 +13,11 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
+import ctypes.util
+import os
+import platform
 from ctypes import cdll, c_char_p
 
-import ctypes.util
-import platform
-import os
 
 def extract_string(string):
     """Convert python string to C-string.
@@ -29,6 +29,7 @@ def extract_string(string):
     val = string.encode('ascii') if type(string) == str else string
     return c_char_p(val), len(val)
 
+
 def get_library():
     """Obtain a reference to the SerialboxC shared library.
 
@@ -36,7 +37,7 @@ def get_library():
     :rtype: ctypes.CDLL
     :raises Exception: serialboxC shared library could not be loaded or found
     """
-    
+
     # On Linux, ctypes.cdll.LoadLibrary() respects LD_LIBRARY_PATH
     # while ctypes.util.find_library() doesn't.
     # See http://docs.python.org/2/library/ctypes.html#finding-shared-libraries
@@ -45,11 +46,11 @@ def get_library():
     # library into a default linker search path.  Always Try ctypes.cdll.LoadLibrary()
     # with all possible library names first, then try ctypes.util.find_library().
     names = ['SerialboxC']
-    
+
     cwd = os.path.dirname(os.path.realpath(__file__))
-    dirs = (cwd, os.path.join(cwd, "../../lib"), )
-  
-    for d in dirs:  
+    dirs = (cwd, os.path.join(cwd, "../../lib"),)
+
+    for d in dirs:
         t = platform.system()
         if t == 'Darwin':
             pfx, ext = 'lib', '.dylib'
@@ -72,5 +73,3 @@ def get_library():
                 return cdll.LoadLibrary(t)
 
     raise Exception("'serialboxC' shared library not found")
-
-    

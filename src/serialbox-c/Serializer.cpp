@@ -12,9 +12,9 @@
  *
 \*===------------------------------------------------------------------------------------------===*/
 
-#include "serialbox-c/Serializer.h"
 #include "serialbox-c/Logging.h"
 #include "serialbox-c/Savepoint.h"
+#include "serialbox-c/Serializer.h"
 #include "serialbox-c/Utility.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Logging.h"
@@ -195,8 +195,8 @@ int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* 
 
     if(bytesPerElement != serialbox::TypeUtil::sizeOf(typeID))
       throw serialbox::Exception("inconsistent bytes-per-element: got '%i' but according to passed "
-                                 "type '%s' expected '%i'",bytesPerElement, typeName,
-                                 serialbox::TypeUtil::sizeOf(typeID));
+                                 "type '%s' expected '%i'",
+                                 bytesPerElement, typeName, serialbox::TypeUtil::sizeOf(typeID));
 
     int rank =
         (iSize != 1 ? 1 : 0) + (jSize != 1 ? 1 : 0) + (kSize != 1 ? 1 : 0) + (lSize != 1 ? 1 : 0);
@@ -232,7 +232,6 @@ int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* 
   }
   return 1;
 }
-
 
 void serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer, char*** fieldnames,
                                       int* len) {
@@ -323,7 +322,7 @@ void serialboxSerializerWrite(serialboxSerializer_t* serializer, const char* nam
                               const int* strides, int numStrides) {
   if(!serialboxSerializationEnabled)
     return;
-  
+
   Serializer* ser = toSerializer(serializer);
   const Savepoint* sp = toConstSavepoint(savepoint);
 
@@ -341,7 +340,7 @@ void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name
                              const int* strides, int numStrides) {
   if(!serialboxSerializationEnabled)
     return;
-  
+
   Serializer* ser = toSerializer(serializer);
   const Savepoint* sp = toConstSavepoint(savepoint);
 

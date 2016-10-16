@@ -19,31 +19,34 @@ from .common import get_library
 
 lib = get_library()
 
+
 def register_library(library):
-    lib.serialboxStateErrorHandlerHasError.restype = c_int
-    lib.serialboxStateErrorHandlerGetErrorMessage.restype = c_char_p
+    library.serialboxStateErrorHandlerHasError.restype = c_int
+    library.serialboxStateErrorHandlerGetErrorMessage.restype = c_char_p
+
 
 class SerialboxError(Exception):
     """Raised when an operation results in an error.
 
-    :attribute str message: explanation of the error
+    :var message: explanation of the error
     """
+
     def __init__(self, message):
         self.message = message
 
 
 def invoke(function, *args):
-    """ Invoke function with *args and raise SerialboxError in case of an error. 
+    """ Invoke function with *args and raise :class:`SerialboxError` in case of an error.
 
-    :param function: function to invoke
-    :param *args: arguments of the function to invoke
-    :raises SerialboxError: function invocation resulted in an error
+    :param function: ctypes._FuncPtr -- function to invoke
+    :param args: arguments of the function to invoke
+    :return: Return type of the function invocation
+    :raises: SerialboxError -- function invocation resulted in an error
     """
-    function(*args)
+    ret = function(*args)
     if lib.serialboxStateErrorHandlerHasError():
         error_message = lib.serialboxStateErrorHandlerGetErrorMessage()
         raise SerialboxError(error_message.decode())
+    return ret
 
 register_library(lib)
-print("init error")
-

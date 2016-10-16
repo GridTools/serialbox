@@ -18,17 +18,19 @@ from .error import invoke, SerialboxError
 
 lib = get_library()
 
+
 def register_library(library):
     pass
 
+
 class Serializer(object):
     def __init__(self):
-        print("init Serializer") 
-
         errstr, errlen = extract_string("oh siieht")
 
         try:
-          invoke(lib.serialboxFatalError, errstr)
+            invoke(lib.serialboxFatalError, errstr)
         except SerialboxError as e:
-          print(e)
-        
+            print(e)
+
+
+register_library(lib)
