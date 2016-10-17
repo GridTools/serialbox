@@ -13,7 +13,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from ctypes import c_char_p, c_void_p, c_int
+from ctypes import c_char_p, c_void_p, c_int, Structure, POINTER
 
 from .common import get_library, extract_string
 from .error import invoke
@@ -21,12 +21,28 @@ from .error import invoke
 lib = get_library()
 
 
+class SavepointImpl(Structure):
+    """ Mapping of serialboxSavepoint_t """
+    _fields_ = [("impl", c_void_p), ("ownsData", c_int)]
+
+
 def register_library(library):
     library.serialboxSavepointCreate.argtypes = [c_char_p]
-    library.serialboxSavepointCreate.restype = c_void_p
-    library.serialboxSavepointCreateFromSavepoint.restype = c_void_p
+    library.serialboxSavepointCreate.restype = POINTER(SavepointImpl)
+
+    library.serialboxSavepointCreateFromSavepoint.argtypes = [POINTER(SavepointImpl)]
+    library.serialboxSavepointCreateFromSavepoint.restype = POINTER(SavepointImpl)
+
+    library.serialboxSavepointDestroy.argtypes = [POINTER(SavepointImpl)]
+    library.serialboxSavepointDestroy.restype = None
+
+    library.serialboxSavepointGetName.argtypes = [POINTER(SavepointImpl)]
     library.serialboxSavepointGetName.restype = c_char_p
+
+    library.serialboxSavepointEqual.argtypes = [POINTER(SavepointImpl), POINTER(SavepointImpl)]
     library.serialboxSavepointEqual.restype = c_int
+
+    library.serialboxSavepointToString.argtypes = [POINTER(SavepointImpl)]
     library.serialboxSavepointToString.restype = c_char_p
 
 
@@ -38,7 +54,7 @@ class Savepoint(object):
     at different points in time.
     """
 
-    def __init__(self, name, metainfo=None):
+    def __init__(self, name, metainfo=None, empty=False):
         """Initialize the Savepoint.
 
         This method prepares the savepoint for usage and gives a name, which is the only required
@@ -46,11 +62,13 @@ class Savepoint(object):
         initialization has been performed.
 
         :param name: str -- Name of the savepoint
-        :param metainfo: tuple -- key=value pairs to add to the meta-information of the Savepoint
+        :param meta_info: tuple -- key=value pairs to add to the meta-information of the Savepoint
+        :param empty: bool -- Allocate memory (internal use only)
         :raises: SerialboxError -- Savepoint could not be initialized
         """
         namestr = extract_string(name)[0]
-        self.__savepoint = c_void_p(invoke(lib.serialboxSavepointCreate, namestr))
+        if not empty:
+            self.__savepoint = invoke(lib.serialboxSavepointCreate, namestr)
 
     @property
     def name(self):
@@ -59,11 +77,10 @@ class Savepoint(object):
         return invoke(lib.serialboxSavepointGetName, self.__savepoint).decode()
 
     def clone(self):
-        """Clone the Savepoint by performing a deepcopy
+        """Clone the Savepoint by performing a deepcopy.
         """
-        clone = Savepoint('')
-        clone.__savepoint = c_void_p(
-            invoke(lib.serialboxSavepointCreateFromSavepoint, self.__savepoint))
+        clone = Savepoint(name='', empty=True)
+        clone.__savepoint = invoke(lib.serialboxSavepointCreateFromSavepoint, self.__savepoint)
         return clone
 
     def __eq__(self, other):

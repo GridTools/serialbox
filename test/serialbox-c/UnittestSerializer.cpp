@@ -195,21 +195,87 @@ TEST_F(CSerializerUtilityTest, RegisterFields) {
   for(int i = 0; i < len; ++i)
     std::free(fieldnames[i]);
   std::free(fieldnames);
-
+  
+  //
   // Get FieldMetaInfo of "field"
+  //
   serialboxFieldMetaInfo_t* infoField = serialboxSerializerGetFieldMetaInfo(ser, "field");
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
   ASSERT_TRUE(serialboxFieldMetaInfoEqual(info, infoField));
 
+  //
   // Get FieldMetaInfo of "field2"
+  //
+  serialboxFieldMetaInfo_t* infoField2 = serialboxSerializerGetFieldMetaInfo(ser, "field2");
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
 
-  // TODO...
+  // Number of dimension
+  int numDimension = serialboxFieldMetaInfoGetNumDimensions(infoField2);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  EXPECT_EQ(numDimension, 4);
+
+  // Dimensions
+  const int* dimension = serialboxFieldMetaInfoGetDimensions(infoField2);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  EXPECT_EQ(dimension[0], 42);
+  EXPECT_EQ(dimension[1], 1);
+  EXPECT_EQ(dimension[2], 1);
+  EXPECT_EQ(dimension[3], 12);
   
-  //  serialboxFieldMetaInfo_t* infoField2 = serialboxSerializerGetFieldMetaInfo(ser, "field2");
+  // Type
+  serialboxTypeID type = serialboxFieldMetaInfoGetTypeID(infoField2);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  EXPECT_EQ(type, Int32);
+  
+  // Meta information
+  serialboxMetaInfo_t* metaInfo = serialboxFieldMetaInfoGetMetaInfo(infoField2);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
 
-  //  int numDimension = serialboxFieldMetaInfoGetNumDimensions(infoField2);
-  //  const int* dimension = serialboxFieldMetaInfoGetDimensions(infoField2);
-  //  serialboxTypeID type = serialboxFieldMetaInfoGetTypeID(infoField2);
-  //  serialboxMetaInfo_t* metaInfo = serialboxFieldMetaInfoGetMetaInfo(infoField2);
+  serialboxString_t name = serialboxMetaInfoGetString(metaInfo, "__name");
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  EXPECT_STREQ(name, "field2");
+  std::free(name);   
+  
+  serialboxString_t typeName = serialboxMetaInfoGetString(metaInfo, "__elementtype");
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  EXPECT_STREQ(typeName, "int");
+  std::free(typeName);    
+  
+  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__bytesperelement"), 4);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__rank"), 2);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg(); 
+  
+  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__isize"), 42);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__jsize"), 1);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__ksize"), 1);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__lsize"), 12);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  
+  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__iminushalosize"), 1);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__iplushalosize"), 1);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  
+  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__jminushalosize"), 0);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__jplushalosize"), 0);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  
+  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__kminushalosize"), 0);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__kplushalosize"), 0);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  
+  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__lminushalosize"), 2);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__lplushalosize"), 2);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  
+  serialboxMetaInfoDestroy(metaInfo);  
 
   // Get FieldMetaInfo of non-existing field -> NULL
   ASSERT_EQ(NULL, serialboxSerializerGetFieldMetaInfo(ser, "X"));

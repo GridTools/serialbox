@@ -61,18 +61,18 @@ void serialboxSavepointDestroy(serialboxSavepoint_t* savepoint);
 const char* serialboxSavepointGetName(const serialboxSavepoint_t* savepoint);
 
 /**
- * \brief Check if savepoint ´s1´ is equal to savepoint ´s2´
+ * \brief Check if savepoint `s1` is equal to savepoint `s2`
  *
  * \param s1  First savepoint to use
  * \param s2  Second savepoint to use
- * \return 1 if ´s1 == s2´, 0 otherwise
+ * \return 1 if `s1 == s2`, 0 otherwise
  */
 int serialboxSavepointEqual(const serialboxSavepoint_t* s1, const serialboxSavepoint_t* s2);
 
 /**
  * \brief Convert to string
  *
- * The function will allocate a sufficiently large ´char´ buffer (using malloc()) which needs
+ * The function will allocate a sufficiently large `char` buffer (using malloc()) which needs
  * be freed by the user using free().
  *
  * \param savepoint  Savepoint to use
@@ -85,7 +85,7 @@ char* serialboxSavepointToString(const serialboxSavepoint_t* savepoint);
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Allocate a new ´serialboxMetaInfo_t´ which maps to the meta-information of the Savepoint
+ * \brief Allocate a new `serialboxMetaInfo_t` which maps to the meta-information of the Savepoint
  *
  * \param savepoint  Savepoint to use
  * \return meta-information of the savepoint

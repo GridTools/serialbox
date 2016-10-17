@@ -9,15 +9,31 @@
 
 cmake_minimum_required(VERSION 3.1)
 
+# Generate serialbox-c/Config.h
+set(SERIALBOX_C_COMPILER ${CMAKE_C_COMPILER})
+set(SERIALBOX_CXX_COMPILER ${CMAKE_C_COMPILER})
+set(SERIALBOX_C_FLAGS ${CMAKE_C_FLAGS})
+set(SERIALBOX_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+
+set(SERIALBOX_C_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/src/serialbox-c/Config.h.cmake)
+set(SERIALBOX_C_CONFIG_FILE ${CMAKE_BINARY_DIR}/src/serialbox-c/Config.h)
+set(SERIALBOX_C_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
+configure_file(${SERIALBOX_C_CONFIG_FILE_IN} ${SERIALBOX_C_CONFIG_FILE})
+install(FILES ${SERIALBOX_C_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox-c)
+
 set(SOURCES
   Archive.h
   Archive.cpp
+  Array.h
+  Array.cpp
+  Config.cpp
   ErrorHandling.cpp
   FieldMetaInfo.cpp
+  Logging.cpp
   MetaInfo.cpp
   Savepoint.cpp
   Serializer.cpp
-  Logging.cpp
+  Type.h
 )
 
 set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})

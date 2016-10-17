@@ -36,7 +36,7 @@ class SerialboxError(Exception):
 
 
 def invoke(function, *args):
-    """ Invoke function with *args and raise :class:`SerialboxError` in case of an error.
+    """ Invoke function with args and raise :class:`SerialboxError` in case of an error.
 
     :param function: ctypes._FuncPtr -- function to invoke
     :param args: arguments of the function to invoke
@@ -48,5 +48,6 @@ def invoke(function, *args):
         error_message = lib.serialboxStateErrorHandlerGetErrorMessage()
         raise SerialboxError(error_message.decode())
     return ret
+
 
 register_library(lib)

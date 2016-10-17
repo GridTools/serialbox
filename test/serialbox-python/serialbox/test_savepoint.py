@@ -9,20 +9,19 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## Unittest of the savepoint.
+## Unittest of the Savepoint.
 ##
 ##===------------------------------------------------------------------------------------------===##
 
 import unittest
 
-from serialbox import Savepoint
-
+from serialbox import Savepoint, MetaInfoMap
 
 class TestSavepoint(unittest.TestCase):
     def test_init(self):
         # Default constructor
-        sp_name1 = Savepoint("sp_name1")
-        sp_name2 = Savepoint(name="sp_name2")
+        sp1 = Savepoint("sp1")
+        sp2 = Savepoint(name="sp2")
 
         # Construct with meta_info
 
@@ -30,7 +29,6 @@ class TestSavepoint(unittest.TestCase):
     def test_get_name(self):
         sp = Savepoint("s")
         self.assertEqual(sp.name, "s")
-        self.assertNotEqual(sp.name, "ss")
 
     def test_equal(self):
         sp = Savepoint("s")

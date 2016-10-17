@@ -42,53 +42,19 @@ typedef int32_t serialboxInt32_t;
 typedef int64_t serialboxInt64_t;
 
 /**
- * \brief 32-bit floating point type of serialbox
+ * \brief 32-bit floating point type of serialbox (float)
  */
 typedef float serialboxFloat32_t;
 
 /**
- * \brief 64-bit floating point type of serialbox
+ * \brief 64-bit floating point type of serialbox (double)
  */
 typedef double serialboxFloat64_t;
 
 /**
  * \brief String type of serialbox
  */
-typedef const char* serialboxString_t;
-
-/*===------------------------------------------------------------------------------------------===*\
- *     Array Types
-\*===------------------------------------------------------------------------------------------===*/
-
-/**
- * \brief Boolean type of serialbox
- */
-typedef serialboxBoolean_t* serialboxArrayOfBoolean_t;
-
-/**
- * \brief 32-bit integral type of serialbox
- */
-typedef serialboxInt32_t* serialboxArrayOfInt32_t;
-
-/**
- * \brief 64-bit integral type of serialbox
- */
-typedef serialboxInt64_t* serialboxArrayOfInt64_t;
-
-/**
- * \brief 32-bit floating point type of serialbox
- */
-typedef serialboxFloat32_t* serialboxArrayOfFloat32_t;
-
-/**
- * \brief 64-bit floating point type of serialbox
- */
-typedef serialboxFloat64_t* serialboxArrayOfFloat64_t;
-
-/**
- * \brief String type of serialbox
- */
-typedef serialboxString_t* serialboxArrayOfString_t;
+typedef char* serialboxString_t;
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Serialbox Types

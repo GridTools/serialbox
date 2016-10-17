@@ -22,10 +22,10 @@ extern "C" {
 /**
  * \brief Get an array of C-strings of all registered archives
  *
- * The function will allocate a sufficiently large array of ´char*´. Each element (as well as the
+ * The function will allocate a sufficiently large array of `char*`. Each element (as well as the
  * array itself) needs to be freed by the user using free().
  *
- * \param archives  Array of length ´len´ of C-strings of the names of all registered archives
+ * \param archives  Array of length `len` of C-strings of the names of all registered archives
  * \param len       Length of the array
  */
 void serialboxArchiveGetRegisteredArchives(char*** archives, int* len);
