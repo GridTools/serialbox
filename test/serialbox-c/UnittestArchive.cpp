@@ -24,16 +24,12 @@ class CArchiveTest : public serialbox::unittest::CInterfaceTestBase {};
 } // anonymous namespace
 
 TEST_F(CArchiveTest, Test) {
-  int len;
-  char** archives;
-  serialboxArchiveGetRegisteredArchives(&archives, &len);
+  serialboxArrayOfString_t* archives = serialboxArchiveGetRegisteredArchives();
 
-  ASSERT_GE(len, 1);
-  ASSERT_TRUE(std::find_if(archives, archives + len, [](const char* s) {
+  ASSERT_GE(archives->len, 1);
+  ASSERT_TRUE(std::find_if(archives->data, archives->data + archives->len, [](const char* s) {
                 return (std::memcmp(s, "Binary", sizeof("Binary")) == 0);
-              }) != (archives + len));
+              }) != (archives->data + archives->len));
 
-  for(int i = 0; i < len; ++i)
-    std::free(archives[i]);
-  std::free(archives);
+  serialboxArrayOfStringDestroy(archives);
 }

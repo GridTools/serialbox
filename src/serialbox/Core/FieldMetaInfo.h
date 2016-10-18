@@ -79,6 +79,9 @@ public:
   /// \throw Exception  JSON node is ill-formed
   void fromJSON(const json::json& jsonNode);
 
+  /// \brief Convert to string
+  std::string toString() const;
+  
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const FieldMetaInfo& f);
 

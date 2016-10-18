@@ -32,6 +32,42 @@ namespace serialbox {
 /// instead.
 class SerializerImpl {
 public:
+  /// \brief Get the status of serialization
+  /// 
+  /// The status is represented as an integer which can take the following values:
+  ///
+  /// - 0: the variable is not yet initialized -> the serialization is enabled if the environment
+  ///   variable `SERIALBOX_SERIALIZATION_DISABLE` is not set to a positive value. The first 
+  ///   Serializer which is initialized has to set this value either to +1 or to -1 according to 
+  ///   the environment.
+  /// - +1: the serialization is enabled, independently of the environment
+  /// - -1: the serialization is disabled, independently of the environment
+  ///
+  /// \return serialization status
+  static int serializationStatus() noexcept { return enabled_; }
+  
+  /// \brief Enable serialization
+  ///
+  /// Serialization is enabled by default, but it can be disabled either by setting the environment
+  /// variable `SERIALBOX_SERIALIZATION_DISABLE` to a positive value or by calling the function
+  /// disableSerialization. With this function you enable the serialization independently of the
+  /// current environment.
+  ///
+  /// The serialization can only globally enabled or disabled. There is no way to enable or
+  /// disable only a specific serializer.
+  static void enableSerialization() noexcept { enabled_ = 1; }
+
+  /// \brief Disable serialization
+  ///
+  /// Serialization is enabled by default, but it can be disabled either by setting the environment
+  /// variable `SERIALBOX_SERIALIZATION_DISABLE` to a positive value or by calling the funtcion
+  /// disableSerialization. With this function you disable the serialization independently of the
+  /// current environment.
+  ///
+  /// The serialization can only be globally enabled or disabled. There is no way to enable or
+  /// disable only a specific serializer.
+  static void disableSerialization() noexcept { enabled_ = -1; }
+  
   /// \brief Copy constructor [deleted]
   SerializerImpl(const SerializerImpl&) = delete;
 
@@ -44,7 +80,7 @@ public:
   /// \brief Move assignment
   SerializerImpl& operator=(SerializerImpl&&) = default;
 
-  /// \brief Construct from JSON meta-data
+  /// \brief Construct Serializer
   ///
   /// \param mode         Mode of the Serializer
   /// \param directory    Directory of the Archive and Serializer meta-data
@@ -341,6 +377,18 @@ protected:
   std::shared_ptr<MetaInfoMap> globalMetaInfo_;
 
   std::unique_ptr<Archive> archive_;
+  
+  // This variable can take three values:
+  //
+  //  0: the variable is not yet initialized -> the serialization is enabled if the environment
+  //     variable SERIALBOX_SERIALIZATION_DISABLE is not set to  a positive value. The first
+  //     serializer which is initialized has to set this value either to +1 or to -1 according to
+  //     the environment.
+  // +1: the serialization is enabled, independently of the environment
+  // -1: the serialization is disabled, independently of the environment
+  //
+  // The value is initialized to 0
+  static int enabled_;  
 };
 
 } // namespace serialbox

@@ -34,6 +34,14 @@ extern "C" {
 serialboxMetaInfo_t* serialboxMetaInfoCreate(void);
 
 /**
+ * \brief Copy construct the meta-information
+ *
+ * \param other   MetaInfo to copy from
+ * \return refrence pointer to the newly constructed meta-information or NULL if an error occurred
+ */
+serialboxMetaInfo_t* serialboxMetaInfoCreateFromMetaInfo(const serialboxMetaInfo_t* other);
+
+/**
  * \brief Destroy the meta-information and deallocate all memory
  *
  * \param metaInfo  Pointer to meta-information to use
@@ -66,6 +74,15 @@ int serialboxMetaInfoIsEmpty(const serialboxMetaInfo_t* metaInfo);
  * \param metaInfo  Meta-information to use
  */
 void serialboxMetaInfoClear(serialboxMetaInfo_t* metaInfo);
+
+/**
+ * \brief Check if MetaInfo `m1` is equal to MetaInfo `m2`
+ *
+ * \param m1  First MetaInfo to use
+ * \param m2  Second MetaInfo to use
+ * \return 1 if `m1 == m2`, 0 otherwise
+ */
+int serialboxMetaInfoEqual(const serialboxMetaInfo_t* m1, const serialboxMetaInfo_t* m2);
 
 /**
  * \brief Check if and element with key `key` exists

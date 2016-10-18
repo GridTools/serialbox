@@ -43,10 +43,17 @@ static std::string vecToString(VecType&& vec) {
 
 } // namespace internal
 
+int SerializerImpl::enabled_ = 0;
+
 SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
                                const std::string& prefix, const std::string& archiveName)
     : mode_(mode), directory_(directory), prefix_(prefix) {
-
+  
+  if(enabled_ == 0) {
+    const char* envvar = std::getenv("SERIALBOX_SERIALIZATION_DISABLED");
+    enabled_ = (envvar && std::atoi(envvar) > 0) ? -1 : 1;
+  }
+  
   metaDataFile_ = directory_ / ("MetaData-" + prefix + ".json");
 
   savepointVector_ = std::make_shared<SavepointVector>();
@@ -122,6 +129,9 @@ void SerializerImpl::checkStorageView(const std::string& name,
 
 void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoint,
                            const StorageView& storageView) {
+  if(SerializerImpl::serializationStatus() < 0)
+    return;
+  
   LOG(info) << "Serializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";
 
   if(mode_ == OpenModeKind::Read)
@@ -173,6 +183,9 @@ void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoi
 
 void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoint,
                           StorageView& storageView) {
+  if(SerializerImpl::serializationStatus() < 0)
+    return;
+  
   LOG(info) << "Deserializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";
 
   if(mode_ != OpenModeKind::Read)

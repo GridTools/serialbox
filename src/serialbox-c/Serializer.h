@@ -28,15 +28,14 @@ extern "C" {
 /**
  * \brief Create a new Serializer
  *
+ * This will read `MetaData-prefix.json` to initialize the Serializer and construct the Archive by
+ * reading the `ArchiveMetaData-prefix.json`.
+ *
  * \param mode         Mode of the Serializer
  * \param directory    Directory of the Archive and Serializer meta-data
  * \param prefix       Prefix of all filenames
  * \param archiveName  Name of Archive (e.g "BinaryArchive")
- *
  * \return refrence to the newly constructed Serializer or NULL if an error occurred
- *
- * This will read `MetaData-prefix.json` to initialize the Serializer and construct the Archive by
- * reading the `ArchiveMetaData-prefix.json`.
  */
 serialboxSerializer_t* serialboxSerializerCreate(serialboxOpenModeKind mode, const char* directory,
                                                  const char* prefix, const char* archive);
@@ -85,8 +84,17 @@ void serialboxSerializerUpdateMetaData(serialboxSerializer_t* serializer);
 
 /**
  * \brief Indicate whether serialization is enabled [default: enabled]
+ * 
+ * The return value can be:
+ *
+ *  0: the variable is not yet initialized -> the serialization is enabled if the environment
+ *     variable `STELLA_SERIALIZATION_DISABLE` or `SERIALBOX_SERIALIZATION_DISABLE` is not set to a 
+ *     positive value. The first Serializer which is initialized has to set this value either to +1
+ *     or to -1 according to the environment.
+ * +1: the serialization is enabled, independently of the environment
+ * -1: the serialization is disabled, independently of the environment
  */
-extern int serialboxSerializationEnabled;
+int serialboxSerializationStatus(void);
 
 /**
  * \brief Enabled serialization
@@ -116,13 +124,23 @@ serialboxMetaInfo_t* serialboxSerializerGetGlobalMetaInfo(serialboxSerializer_t*
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Register savepoint `savepoint` within the serializer
+ * \brief Register `savepoint` within the serializer
  *
  * \param serializer  Serializer to use
  * \param savepoint   Savepoint to add
  * \return 1 if savepoint was added successfully, 0 otherwise
  */
 int serialboxSerializerAddSavepoint(serialboxSerializer_t* serializer,
+                                    const serialboxSavepoint_t* savepoint);
+
+/**
+ * \brief Check if `savepoint` exists within the serializer
+ *
+ * \param serializer  Serializer to use
+ * \param savepoint   Savepoint to search for
+ * \return 1 if savepoint exists, 0 otherwise
+ */
+int serialboxSerializerHasSavepoint(const serialboxSerializer_t* serializer,
                                     const serialboxSavepoint_t* savepoint);
 
 /**

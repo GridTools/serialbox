@@ -18,6 +18,14 @@ from enum import Enum
 import numpy as np
 
 
+class OpenModeKind(Enum):
+    """ Policy for opening files in the Serializer and Archive
+    """
+    Read = 0
+    Write = 1
+    Append = 2
+
+
 class TypeID(Enum):
     """Type-id of types recognized by serialbox.
 
@@ -48,5 +56,5 @@ Float32Types = (np.float32,)
 Float64Types = (float, np.float64,)
 StringTypes = (bytes, str,)
 
-__all__ = ['TypeID', 'BooleanTypes', 'Int32Types', 'Int64Types', 'Float32Types', 'Float64Types',
-           'StringTypes']
+__all__ = ['TypeID', 'OpenModeKind', 'BooleanTypes', 'Int32Types', 'Int64Types', 'Float32Types',
+           'Float64Types', 'StringTypes']

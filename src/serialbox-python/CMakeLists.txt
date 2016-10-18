@@ -17,15 +17,17 @@ if(NOT(SERIALBOX_BUILD_SHARED))
   message(FATAL_ERROR "Python Interface requires shared libraries (set SERIALBOX_BUILD_SHARED=ON)")
 endif()
 
-set(SERIALBOX_PYTHON_SOURCE
-    serialbox/__init__.py
-)
+file(GLOB_RECURSE SERIALBOX_PYTHON_SOURCE 
+     ${CMAKE_SOURCE_DIR}/src/serialbox-python/
+     ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox/*.py)
+   
+message(${SERIALBOX_PYTHON_SOURCE})
 
 # Copy python code to python build dir
 add_custom_target(SerialboxPython
                   COMMAND ${CMAKE_COMMAND} -E copy_directory
                   ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox
                   ${CMAKE_BINARY_DIR}/src/serialbox-python/serialbox
-                  DEPENDS ${SERIALBOX_PYTHON_SOURCE})            
+                  DEPENDS "${SERIALBOX_PYTHON_SOURCE}")            
 add_dependencies(SerialboxCLibraryShared SerialboxPython)
 

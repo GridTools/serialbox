@@ -35,6 +35,20 @@ serialboxMetaInfo_t* serialboxMetaInfoCreate(void) {
   return metaInfo;
 }
 
+serialboxMetaInfo_t* serialboxMetaInfoCreateFromMetaInfo(const serialboxMetaInfo_t* other) {
+  const MetaInfoMap* otherMap = toConstMetaInfoMap(other);
+  serialboxMetaInfo_t* metaInfo = allocate<serialboxMetaInfo_t>();
+  try {
+    metaInfo->impl = new MetaInfoMap(*otherMap);
+    metaInfo->ownsData = 1;
+  } catch(std::exception& e) {
+    std::free(metaInfo);
+    metaInfo = NULL;
+    serialboxFatalError(e.what());
+  }
+  return metaInfo;
+}
+
 void serialboxMetaInfoDestroy(serialboxMetaInfo_t* metaInfo) {
   if(metaInfo) {
     MetaInfoMap* map = toMetaInfoMap(metaInfo);
@@ -61,6 +75,12 @@ int serialboxMetaInfoIsEmpty(const serialboxMetaInfo_t* metaInfo) {
 void serialboxMetaInfoClear(serialboxMetaInfo_t* metaInfo) {
   MetaInfoMap* map = toMetaInfoMap(metaInfo);
   map->clear();
+}
+
+int serialboxMetaInfoEqual(const serialboxMetaInfo_t* m1, const serialboxMetaInfo_t* m2) {
+  const MetaInfoMap* map1 = toConstMetaInfoMap(m1);
+  const MetaInfoMap* map2 = toConstMetaInfoMap(m2);
+  return (*map1 == *map2);
 }
 
 int serialboxMetaInfoHasKey(const serialboxMetaInfo_t* metaInfo, const char* key) {

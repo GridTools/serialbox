@@ -212,14 +212,24 @@ TEST_F(CMetaInfoTest, Test) {
   serialboxMetaInfoDestroyElementInfo(elements);  
 
   //
+  // Copy constructor 
+  //
+  serialboxMetaInfo_t* metaInfoCopy = serialboxMetaInfoCreateFromMetaInfo(metaInfo);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  ASSERT_TRUE(serialboxMetaInfoEqual(metaInfo, metaInfoCopy));
+
+  //
   // Clear map
   //
   serialboxMetaInfoClear(metaInfo);
   ASSERT_TRUE(serialboxMetaInfoIsEmpty(metaInfo));
-
+  ASSERT_FALSE(serialboxMetaInfoIsEmpty(metaInfoCopy)); // no aliasing
+  
   //
   // Release memory
   //
   serialboxMetaInfoDestroy(metaInfo);
   serialboxMetaInfoDestroy(metaInfo2);
+  serialboxMetaInfoDestroy(metaInfoCopy);
+  
 }

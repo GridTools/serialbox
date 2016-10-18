@@ -29,7 +29,7 @@ extern "C" {
  * \brief Construct a Savepoint
  *
  * \param name   Name of the Savepoint
- * \return refrence to the newly constructed Savepoint or NULL if an error occurred
+ * \return pointer to the newly constructed Savepoint or NULL if an error occurred
  */
 serialboxSavepoint_t* serialboxSavepointCreate(const char* name);
 
@@ -37,7 +37,7 @@ serialboxSavepoint_t* serialboxSavepointCreate(const char* name);
  * \brief Copy construct the Savepoint
  *
  * \param other   Savepoint to copy from
- * \return Refrence to the newly constructed Serializer or NULL if an error occured
+ * \return pointer to the newly constructed Savepoint or NULL if an error occurred
  */
 serialboxSavepoint_t* serialboxSavepointCreateFromSavepoint(const serialboxSavepoint_t* other);
 
@@ -53,18 +53,18 @@ void serialboxSavepointDestroy(serialboxSavepoint_t* savepoint);
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Get the name of the savepoint
+ * \brief Get the name of the Savepoint
  *
  * \param savepoint  Savepoint to use
- * \return name of the savepoint
+ * \return name of the Savepoint
  */
 const char* serialboxSavepointGetName(const serialboxSavepoint_t* savepoint);
 
 /**
- * \brief Check if savepoint `s1` is equal to savepoint `s2`
+ * \brief Check if Savepoint `s1` is equal to savepoint `s2`
  *
- * \param s1  First savepoint to use
- * \param s2  Second savepoint to use
+ * \param s1  First Savepoint to use
+ * \param s2  Second Savepoint to use
  * \return 1 if `s1 == s2`, 0 otherwise
  */
 int serialboxSavepointEqual(const serialboxSavepoint_t* s1, const serialboxSavepoint_t* s2);
@@ -88,7 +88,7 @@ char* serialboxSavepointToString(const serialboxSavepoint_t* savepoint);
  * \brief Allocate a new `serialboxMetaInfo_t` which maps to the meta-information of the Savepoint
  *
  * \param savepoint  Savepoint to use
- * \return meta-information of the savepoint
+ * \return meta-information of the Savepoint
  */
 serialboxMetaInfo_t* serialboxSavepointGetMetaInfo(serialboxSavepoint_t* savepoint);
 

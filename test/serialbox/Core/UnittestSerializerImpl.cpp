@@ -91,6 +91,19 @@ TEST_F(SerializerImplUtilityTest, Construction) {
   }
 }
 
+TEST_F(SerializerImplUtilityTest, SerializationStatus) {
+  // Serialization is enabled by default
+  ASSERT_FALSE(SerializerImpl::serializationStatus() < 0);
+  
+  // Disable serialization
+  SerializerImpl::disableSerialization();
+  ASSERT_EQ(SerializerImpl::serializationStatus(), -1);
+  
+  // Enabled serialization
+  SerializerImpl::enableSerialization();
+  ASSERT_EQ(SerializerImpl::serializationStatus(), 1);
+}
+
 TEST_F(SerializerImplUtilityTest, AddMetaInfo) {
   SerializerImpl s(OpenModeKind::Write, directory->path().string(), "Field", "Binary");
 

@@ -103,6 +103,18 @@ void serialboxSerializerUpdateMetaData(serialboxSerializer_t* serializer) {
   }
 }
 
+int serialboxSerializationStatus(void) { 
+  return Serializer::serializationStatus(); 
+}
+
+void serialboxEnableSerialization(void) { 
+  Serializer::enableSerialization(); 
+}
+
+void serialboxDisableSerialization(void) { 
+  Serializer::disableSerialization(); 
+}
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Global Meta-information
 \*===------------------------------------------------------------------------------------------===*/
@@ -124,6 +136,13 @@ int serialboxSerializerAddSavepoint(serialboxSerializer_t* serializer,
   const Savepoint* sp = toConstSavepoint(savepoint);
   Serializer* ser = toSerializer(serializer);
   return ser->registerSavepoint(*sp);
+}
+
+int serialboxSerializerHasSavepoint(const serialboxSerializer_t* serializer,
+                                    const serialboxSavepoint_t* savepoint) {
+  const Savepoint* sp = toConstSavepoint(savepoint);
+  const Serializer* ser = toConstSerializer(serializer);
+  return ser->savepointVector().exists(*sp);
 }
 
 int serialboxSerializerGetNumSavepoints(const serialboxSerializer_t* serializer) {
@@ -157,12 +176,6 @@ void serialboxSerializerDestroySavepointVector(serialboxSavepoint_t** savepointV
     std::free(savepointVector[i]);
   std::free(savepointVector);
 }
-
-int serialboxSerializationEnabled = 1;
-
-void serialboxEnableSerialization(void) { serialboxSerializationEnabled = 1; }
-
-void serialboxDisableSerialization(void) { serialboxSerializationEnabled = 0; }
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Register and Query Fields
@@ -320,9 +333,6 @@ serialbox::StorageView makeStorageView(Serializer* ser, const char* name, void* 
 void serialboxSerializerWrite(serialboxSerializer_t* serializer, const char* name,
                               const serialboxSavepoint_t* savepoint, void* originPtr,
                               const int* strides, int numStrides) {
-  if(!serialboxSerializationEnabled)
-    return;
-
   Serializer* ser = toSerializer(serializer);
   const Savepoint* sp = toConstSavepoint(savepoint);
 
@@ -338,9 +348,6 @@ void serialboxSerializerWrite(serialboxSerializer_t* serializer, const char* nam
 void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name,
                              const serialboxSavepoint_t* savepoint, void* originPtr,
                              const int* strides, int numStrides) {
-  if(!serialboxSerializationEnabled)
-    return;
-
   Serializer* ser = toSerializer(serializer);
   const Savepoint* sp = toConstSavepoint(savepoint);
 

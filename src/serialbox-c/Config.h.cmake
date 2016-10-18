@@ -19,23 +19,26 @@
 #ifndef SERIALBOX_C_CONFIG_H
 #define SERIALBOX_C_CONFIG_H
 
-/* SERIALBOX C compiler string */
-#define SERIALBOX_C_COMPILER_STRING "${SERIALBOX_C_COMPILER}"
 
 /* SERIALBOX C++ compiler string */
 #define SERIALBOX_CXX_COMPILER_STRING "${SERIALBOX_CXX_COMPILER}"
 
-/* SERIALBOX C compiler flags */
-#define SERIALBOX_C_FLAGS "${SERIALBOX_C_FLAGS}"
-
 /* SERIALBOX C++ compiler flags */
 #define SERIALBOX_CXX_FLAGS "${SERIALBOX_CXX_FLAGS}"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * \brief Get null-terminated C-string of configuration options used during compilation represented
  * as a list of key=value pairs sperated by ";"
  */
 char* serialboxConfigOptions(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

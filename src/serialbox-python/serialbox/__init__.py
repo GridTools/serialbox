@@ -35,15 +35,17 @@ except ImportError:
     raise Exception("Serialbox requires numpy")
 
 #
-# Import submodules (the .core has to be imported first)
+# Import submodules (the .core should to be imported first)
 #
 from .core import Config
-from .type import TypeID
+from .type import TypeID, OpenModeKind
 from .error import SerialboxError
 from .logging import Logging
 from .serializer import Serializer
 from .savepoint import Savepoint
 from .metainfomap import MetaInfoMap
+from .fieldmetainfo import FieldMetaInfo
+from .archive import Archive
 
 __all__ = ['Config', 'TypeID', 'SerialboxError', 'Logging', 'Serializer', 'Savepoint',
-           'MetaInfoMap']
+           'MetaInfoMap', 'FieldMetaInfo', 'OpenModeKind', 'Archive']

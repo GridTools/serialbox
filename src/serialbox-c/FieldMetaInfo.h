@@ -31,10 +31,19 @@ extern "C" {
  * \param type            TypeID of the described field
  * \param dimensions      Array of dimensions
  * \param numDimensions   Number of dimensions
- * \return refrence to the newly constructed FieldMetaInfo or NULL if an error occurred
+ * \return pointer to the newly constructed FieldMetaInfo or NULL if an error occurred
  */
 serialboxFieldMetaInfo_t* serialboxFieldMetaInfoCreate(serialboxTypeID type, const int* dimensions,
                                                        int numDimensions);
+
+/**
+ * \brief Copy construct the FieldMetaInfo
+ *
+ * \param other   FieldMetaInfo to copy from
+ * \return pointer to the newly constructed FieldMetaInfo or NULL if an error occurred
+ */
+serialboxFieldMetaInfo_t*
+serialboxFieldMetaInfoCreateFromFieldMetaInfo(const serialboxFieldMetaInfo_t* other);
 
 /**
  * \brief Destroy the field meta-information and deallocate all memory
@@ -56,6 +65,17 @@ void serialboxFieldMetaInfoDestroy(serialboxFieldMetaInfo_t* fieldMetaInfo);
  */
 int serialboxFieldMetaInfoEqual(const serialboxFieldMetaInfo_t* f1,
                                 const serialboxFieldMetaInfo_t* f2);
+
+/**
+ * \brief Convert to string
+ *
+ * The function will allocate a sufficiently large `char` buffer (using malloc()) which needs
+ * be freed by the user using free().
+ *
+ * \param fieldMetaInfo  Field meta-information to use
+ * \return String representation of the FieldMetaInfo
+ */
+char* serialboxFieldMetaInfoToString(const serialboxFieldMetaInfo_t* fieldMetaInfo);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Dimensions and TypeID

@@ -72,6 +72,9 @@ def register_library(library):
     library.serialboxMetaInfoCreate.argtypes = None
     library.serialboxMetaInfoCreate.restype = POINTER(MetaInfoImpl)
 
+    library.serialboxMetaInfoCreateFromMetaInfo.argtypes = [POINTER(MetaInfoImpl)]
+    library.serialboxMetaInfoCreateFromMetaInfo.restype = POINTER(MetaInfoImpl)
+
     library.serialboxMetaInfoDestroy.argtypes = [POINTER(MetaInfoImpl)]
     library.serialboxMetaInfoDestroy.restype = None
 
@@ -87,11 +90,17 @@ def register_library(library):
     library.serialboxMetaInfoClear.argtypes = [POINTER(MetaInfoImpl)]
     library.serialboxMetaInfoClear.restype = None
 
+    library.serialboxMetaInfoEqual.argtypes = [POINTER(MetaInfoImpl), POINTER(MetaInfoImpl)]
+    library.serialboxMetaInfoEqual.restype = c_int
+
     library.serialboxMetaInfoHasKey.argtypes = [POINTER(MetaInfoImpl), c_char_p]
     library.serialboxMetaInfoHasKey.restype = c_int
 
     library.serialboxMetaInfoGetTypeIDOfKey.argtypes = [POINTER(MetaInfoImpl), c_char_p]
     library.serialboxMetaInfoGetTypeIDOfKey.restype = c_int
+
+    library.serialboxMetaInfoToString.argtypes = [POINTER(MetaInfoImpl)]
+    library.serialboxMetaInfoToString.restype = c_char_p
 
     library.serialboxMetaInfoCreateElementInfo.argtypes = [POINTER(MetaInfoImpl)]
     library.serialboxMetaInfoCreateElementInfo.restype = POINTER(MetaInfoElementInfoImpl)
@@ -223,6 +232,32 @@ def register_library(library):
     library.serialboxMetaInfoGetArrayOfString.restype = POINTER(ArrayOfStringImpl)
 
 
+class MetaInfoMapIterator(object):
+    """Iterator of the MetaInfoMap
+
+    TODO
+    """
+
+    def __init__(self, metainfomap):
+        self.__metainfomap = metainfomap
+        self.__idx = 0
+        self.__elements = invoke(lib.serialboxMetaInfoCreateElementInfo, metainfomap.impl())
+
+    def __next__(self):
+        if self.__idx >= self.__elements.contents.len:
+            raise StopIteration
+        else:
+            i = self.__idx
+            self.__idx += 1
+            return (self.__elements.contents.keys[i].decode(),
+                    self.__metainfomap.__getitem__(
+                        self.__elements.contents.keys[i].decode(),
+                        self.__elements.contents.types[i]))
+
+    def __del__(self):
+        invoke(lib.serialboxMetaInfoDestroyElementInfo, self.__elements)
+
+
 class MetaInfoMap(object):
     """Meta-information implementation of the Python Interface.
 
@@ -232,7 +267,7 @@ class MetaInfoMap(object):
     """
 
     def __init__(self, metainfo=None, impl=None):
-        """Initialize the MetaInfo.
+        """Initialize the MetaInfo map.
 
         :param metainfo: dict -- Key-value pair dictionary used for initialization
         :param impl: Directly set the implementation pointer (internal use)
@@ -245,6 +280,14 @@ class MetaInfoMap(object):
         if metainfo:
             for key, value in metainfo.items():
                 self.insert(key, value)
+
+    def clone(self):
+        """Clone the MetaInfo map by performing a deepcopy.
+
+        :return: Clone of the savepoint
+        :rtype: Savepoint
+        """
+        return MetaInfoMap(impl=invoke(lib.serialboxMetaInfoCreateFromMetaInfo, self.__metainfomap))
 
     def insert(self, key, value, typeid=None):
         """Insert a new element in the form `key = value` or `key = {value1, ... valueN}` pair.
@@ -412,7 +455,9 @@ class MetaInfoMap(object):
     def to_dict(self):
         """Convert MetaInfoMap to python builtin dictionary
 
-        :return: Dictionary of key/value pair
+        The MetaInfoMap is `copied` into the dictionary
+
+        :return: copy of the MetaInfo map as a dictionary
         :rtype: dict
         """
         elements = invoke(lib.serialboxMetaInfoCreateElementInfo, self.__metainfomap)
@@ -424,6 +469,22 @@ class MetaInfoMap(object):
 
         invoke(lib.serialboxMetaInfoDestroyElementInfo, elements)
         return dic
+
+    def __eq__(self, other):
+        """Test for equality.
+
+        :return: True if self == other, False otherwise
+        :rtype: bool
+        """
+        return bool(invoke(lib.serialboxMetaInfoEqual, self.__metainfomap, other.__metainfomap))
+
+    def __ne__(self, other):
+        """Test for inequality.
+
+        :return: True if self != other, False otherwise
+        :rtype: bool
+        """
+        return not self.__eq__(other)
 
     def __getitem__(self, key, typeid=None):
         """Get `value` of element given by `key`.
@@ -515,8 +576,27 @@ class MetaInfoMap(object):
         else:
             raise SerialboxError('internal error: unreachable (typeid = %i)' % typeid)
 
+    def __iter__(self):
+        """ Construct the MetaInfoMap iterator.
+
+        :return: Iterator of MetaInfoMap
+        :rtype: MetaInfoMapIterator
+        """
+        return MetaInfoMapIterator(self)
+
+    def impl(self):
+        """Get implementation pointer.
+        """
+        return self.__metainfomap
+
     def __del__(self):
         invoke(lib.serialboxMetaInfoDestroy, self.__metainfomap)
+
+    def __repr__(self):
+        return '<MetaInfoMap {0}>'.format(self.__str__())
+
+    def __str__(self):
+        return invoke(lib.serialboxMetaInfoToString, self.__metainfomap).decode()
 
 
 register_library(lib)

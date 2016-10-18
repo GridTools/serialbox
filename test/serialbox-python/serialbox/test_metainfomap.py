@@ -127,6 +127,19 @@ class TestMetaInfo(unittest.TestCase):
         map.clear()
         self.assertTrue(map.empty())
 
+    def test_clone(self):
+        map_to_clone = MetaInfoMap()
+        map_to_clone.insert("key", 1)
+
+        map_clone = map_to_clone.clone()
+        self.assertEqual(map_clone, map_to_clone)
+
+        # Clear 'map_to_clone', assert 'map_clone' is unaffected
+        map_to_clone.clear()
+        self.assertTrue(map_to_clone.empty())
+        self.assertFalse(map_clone.empty())
+        self.assertEqual(map_clone["key"], 1)
+
     def test_get_dict(self):
         map = MetaInfoMap()
         map.insert("key1", 1)
@@ -138,6 +151,35 @@ class TestMetaInfo(unittest.TestCase):
         self.assertEqual(d["key1"], 1)
         self.assertEqual(d["key2"], 2)
         self.assertEqual(d["key_array"], [1, 2, 3, 4])
+
+    def test_to_string(self):
+        map = MetaInfoMap()
+        map.insert("key1", 1)
+
+        mapstr = str(map)
+        self.assertTrue("MetaInfoMap" in mapstr)
+        self.assertTrue("key" in mapstr)
+        self.assertTrue("1" in mapstr)
+
+    def test_comparison(self):
+        m1 = MetaInfoMap()
+        m2 = MetaInfoMap()
+
+        m1.insert("key1", 1)
+        m2.insert("key1", 2)
+
+        self.assertEqual(m1, m1)
+        self.assertNotEqual(m1, m2)
+
+    def test_iteration(self):
+        dic = {"bool": True,
+               "int": 2,
+               "double": 5.1,
+               "string": "str"}
+
+        map = MetaInfoMap(dic)
+        for key, value in map:
+            self.assertEqual(value, dic[key])
 
 
 if __name__ == "__main__":

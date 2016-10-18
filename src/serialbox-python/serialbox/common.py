@@ -13,10 +13,9 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-import ctypes.util
-import os
 import platform
-from ctypes import cdll, c_char_p
+from ctypes import cdll, c_char_p, util
+from os import path
 
 
 def extract_string(string):
@@ -47,8 +46,8 @@ def get_library():
     # with all possible library names first, then try ctypes.util.find_library().
     names = ['SerialboxC']
 
-    cwd = os.path.dirname(os.path.realpath(__file__))
-    dirs = (cwd, os.path.join(cwd, "../../lib"),)
+    cwd = path.dirname(path.realpath(__file__))
+    dirs = (cwd, path.join(cwd, "../../lib"),)
 
     for d in dirs:
         t = platform.system()
@@ -61,14 +60,14 @@ def get_library():
 
         for i in names:
             try:
-                lib = cdll.LoadLibrary(os.path.join(d, pfx + i + ext))
+                lib = cdll.LoadLibrary(path.join(d, pfx + i + ext))
             except OSError:
                 pass
             else:
                 return lib
 
         for i in names:
-            t = ctypes.util.find_library(i)
+            t = util.find_library(i)
             if t:
                 return cdll.LoadLibrary(t)
 

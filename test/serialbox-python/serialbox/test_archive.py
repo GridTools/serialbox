@@ -4,25 +4,24 @@
 ##
 ##                                   S E R I A L B O X
 ##
-## This file is distributed under terms of BSD license. 
+## This file is distributed under terms of BSD license.
 ## See LICENSE.txt for more information.
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## Unittest of the core utility functions.
+## Unittest of the archive utility functions.
 ##
 ##===------------------------------------------------------------------------------------------===##
 
 import unittest
 
-from serialbox import Config
+from serialbox import Archive
 
 
-class TestCore(unittest.TestCase):
-    def test_config(self):
-        config = Config.to_dict()
-        self.assertTrue("BOOST_VERSION" in config)
-
+class TestArchive(unittest.TestCase):
+    def test_archive(self):
+        archives = Archive.registered_archives()
+        self.assertTrue("Binary" in archives)
 
 if __name__ == "__main__":
     unittest.main()

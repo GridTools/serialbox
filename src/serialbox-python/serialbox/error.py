@@ -24,7 +24,6 @@ def register_library(library):
     library.serialboxStateErrorHandlerHasError.restype = c_int
     library.serialboxStateErrorHandlerGetErrorMessage.restype = c_char_p
 
-
 class SerialboxError(Exception):
     """Raised when an operation results in an error.
 
@@ -46,6 +45,7 @@ def invoke(function, *args):
     ret = function(*args)
     if lib.serialboxStateErrorHandlerHasError():
         error_message = lib.serialboxStateErrorHandlerGetErrorMessage()
+        lib.serialboxStateErrorHandlerResetState()
         raise SerialboxError(error_message.decode())
     return ret
 
