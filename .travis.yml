@@ -20,7 +20,7 @@ install:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew outdated cmake || brew upgrade cmake; fi
   
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install python3; fi
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then pip3 install numpy matplotlib; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then pip3 install numpy matplotlib nose; fi
 
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew tap homebrew/science; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install netcdf; fi
