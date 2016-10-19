@@ -20,8 +20,6 @@ endif()
 file(GLOB_RECURSE SERIALBOX_PYTHON_SOURCE 
      ${CMAKE_SOURCE_DIR}/src/serialbox-python/
      ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox/*.py)
-   
-message(${SERIALBOX_PYTHON_SOURCE})
 
 # Copy python code to python build dir
 add_custom_target(SerialboxPython
