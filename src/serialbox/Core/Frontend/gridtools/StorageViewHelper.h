@@ -80,7 +80,7 @@ bool has_stride_one(unsigned int coord) noexcept {
 
 template <typename LayoutMap, unsigned int Alignment, typename Halo>
 int left_padding_helper(unsigned int coord) noexcept {
-  unsigned int lpad = Halo::get_halo_vector()[coord];
+  unsigned int lpad = Halo::get(coord);
   return (Alignment && has_stride_one<LayoutMap>(coord)) ? (Alignment - lpad) % Alignment : 0;
 }
 
@@ -90,7 +90,7 @@ void* get_origin_ptr(const Storage& storage, unsigned int field_idx) noexcept {
   const auto& strides_array = storage.meta_data().m_strides;
 
   auto* data_ptr = storage.fields()[field_idx].get();
-
+  
   for(int i = 0; i < n_dimensions; ++i) {
     int lpad = left_padding_helper<typename Storage::storage_info_type::layout,
                                    Storage::storage_info_type::s_alignment,

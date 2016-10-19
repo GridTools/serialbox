@@ -18,10 +18,11 @@ from ctypes import c_char_p, c_void_p, c_int, Structure, POINTER
 from .archive import Archive
 from .common import get_library, extract_string
 from .error import invoke, SerialboxError
-from .metainfomap import MetaInfoMap, MetaInfoImpl
-from .savepoint import Savepoint, SavepointImpl
 from .fieldmetainfo import FieldMetaInfo, FieldMetaInfoImpl
+from .metainfomap import MetaInfoMap, MetaInfoImpl, ArrayOfStringImpl
+from .savepoint import Savepoint, SavepointImpl
 from .type import *
+import numpy as np
 
 lib = get_library()
 
@@ -85,9 +86,6 @@ def register_library(library):
     library.serialboxSerializerGetNumSavepoints.argtypes = [POINTER(SerializerImpl)]
     library.serialboxSerializerGetNumSavepoints.restype = c_int
 
-    library.serialboxSavepointCreateFromSavepoint.argtypes = [POINTER(SavepointImpl)]
-    library.serialboxSavepointCreateFromSavepoint.restype = POINTER(SavepointImpl)
-
     library.serialboxSerializerGetSavepointVector.argtypes = [POINTER(SerializerImpl)]
     library.serialboxSerializerGetSavepointVector.restype = POINTER(POINTER(SavepointImpl))
 
@@ -95,17 +93,60 @@ def register_library(library):
                                                                   c_int]
     library.serialboxSerializerDestroySavepointVector.restype = None
 
+    library.serialboxSerializerGetFieldnamesAtSavepoint.argtypes = [POINTER(SerializerImpl),
+                                                                    POINTER(SavepointImpl)]
+    library.serialboxSerializerGetFieldnamesAtSavepoint.restype = POINTER(ArrayOfStringImpl)
+
+    library.serialboxSavepointCreateFromSavepoint.argtypes = [POINTER(SavepointImpl)]
+    library.serialboxSavepointCreateFromSavepoint.restype = POINTER(SavepointImpl)
+
     #
     #  Register and Query Fields
     #
-    library.serialboxSerializerAddField.argtypes = [POINTER(SerializerImpl), c_char_p, POINTER(FieldMetaInfoImpl)]
+    library.serialboxSerializerAddField.argtypes = [POINTER(SerializerImpl), c_char_p,
+                                                    POINTER(FieldMetaInfoImpl)]
     library.serialboxSerializerAddField.restype = c_int
+
+    library.serialboxSerializerHasField.argtypes = [POINTER(SerializerImpl), c_char_p]
+    library.serialboxSerializerHasField.restype = c_int
+
+    library.serialboxSerializerGetFieldMetaInfo.argtypes = [POINTER(SerializerImpl), c_char_p]
+    library.serialboxSerializerGetFieldMetaInfo.restype = POINTER(FieldMetaInfoImpl)
+
+    library.serialboxSerializerGetFieldnames.argtypes = [POINTER(SerializerImpl)]
+    library.serialboxSerializerGetFieldnames.restype = POINTER(ArrayOfStringImpl)
+
+    #
+    # Writing & Reading
+    #
+    library.serialboxSerializerWrite.argtypes = [POINTER(SerializerImpl),
+                                                 c_char_p,
+                                                 POINTER(SavepointImpl),
+                                                 c_void_p,
+                                                 POINTER(c_int),
+                                                 c_int]
+    library.serialboxSerializerWrite.restype = None
+
+    library.serialboxSerializerRead.argtypes = [POINTER(SerializerImpl),
+                                                c_char_p,
+                                                POINTER(SavepointImpl),
+                                                c_void_p,
+                                                POINTER(c_int),
+                                                c_int]
+    library.serialboxSerializerRead.restype = None
+
+    #
+    # Array
+    #
+    library.serialboxArrayOfStringDestroy.argtypes = [POINTER(ArrayOfStringImpl)]
+    library.serialboxArrayOfStringDestroy.restype = None
+
 
 class Serializer(object):
     """Serializer implementation of the Python Interface.
     """
 
-    def __init__(self, mode, directory, prefix, archive):
+    def __init__(self, mode, directory, prefix, archive="Binary"):
         """Initialize the Serializer and prepare it to perform input/output operations.
 
         The serializer is attached to a specific `directory` and to a specific `prefix`, with which
@@ -254,7 +295,7 @@ class Serializer(object):
     #    Register and Query Savepoints
     # ==-----------------------------------------------------------------------------------------===
 
-    def add_savepoint(self, savepoint):
+    def register_savepoint(self, savepoint):
         """Register savepoint `savepoint` within the Serializer.
 
         :param savepoint: Savepoint to add
@@ -276,6 +317,35 @@ class Serializer(object):
         """
         return bool(
             invoke(lib.serialboxSerializerHasSavepoint, self.__serializer, savepoint.impl()))
+
+    def get_savepoint(self, name):
+        """Get a list of Savepoint(s) identified by `name` in the order they were registered
+
+        Savepoints can have the same `name` but their meta-data has to be different.
+
+        :param name: Name of the savepoint(s)
+        :type name: str
+        :return: List of registered Savepoint(s) identified  by `name`
+        :rtype: list[Savepoint]
+        """
+        return [sp for sp in self.savepoints() if sp.name == name]
+
+    def fields_at_savepoint(self, savepoint):
+        """Get a list of the registered fieldnames at `savepoint`.
+
+        :param savepoint: Savepoint to use
+        :type savepoint: Savepoint
+        :return: list of fieldsnames
+        :rtype: list[str]
+        :raises SerialboxError: Savepoint does not exists
+        """
+        array = invoke(lib.serialboxSerializerGetFieldnamesAtSavepoint, self.__serializer,
+                       savepoint.impl())
+        list_array = []
+        for i in range(array.contents.len):
+            list_array += [array.contents.data[i].decode()]
+        invoke(lib.serialboxArrayOfStringDestroy, array)
+        return list_array
 
     def savepoints(self):
         """ Get a list of registered savepoints within the Serializer.
@@ -302,8 +372,7 @@ class Serializer(object):
     # ==-----------------------------------------------------------------------------------------===
 
     def register_field(self, name, fieldmetainfo):
-        """Register field given by `name` with field meta-information `fieldmetainfo` within the
-        Serializer.
+        """Add field given by `name` with field meta-information `fieldmetainfo` to the Serializer.
 
         :param name: Name of the newly registered field
         :type name: str
@@ -313,16 +382,47 @@ class Serializer(object):
         :raises SerialboxError: Field with given name already exists within the Serializer
         """
         namestr = extract_string(name)[0]
-        if not invoke(lib.serialboxSerializerAddField, self.__serializer, namestr, fieldmetainfo.impl()):
+        if not invoke(lib.serialboxSerializerAddField, self.__serializer, namestr,
+                      fieldmetainfo.impl()):
             raise SerialboxError("field '%s' already exists withing the Serializer" % name)
 
-    def has_field(self):
-        """Check if field exists.
+    def has_field(self, field):
+        """Check if `field` is registered within the Serializer.
 
+        :param field: Name of the field to check for
+        :type field: str
         :return: True if field exists, False otherwise
         :rtype: bool
         """
-        pass
+        fieldstr = extract_string(field)[0]
+        return bool(invoke(lib.serialboxSerializerHasField, self.__serializer, fieldstr))
+
+    def get_field_metainfo(self, field):
+        """Get the :class:`FieldMetaInfo` of `field`.
+
+        :param field: Name of the field
+        :type field: str
+        :return: Copy of the field meta-information of `field`
+        :rtype: FieldMetaInfo
+        :raises SerialboxError: `field` does not exist within the Serializer
+        """
+        fieldstr = extract_string(field)[0]
+        return FieldMetaInfo(None, [],
+                             impl=invoke(lib.serialboxSerializerGetFieldMetaInfo, self.__serializer,
+                                         fieldstr))
+
+    def fieldnames(self):
+        """Get a list of registered fieldnames within the Serializer.
+
+        :return: list of fieldsnames
+        :rtype: list[str]
+        """
+        array = invoke(lib.serialboxSerializerGetFieldnames, self.__serializer)
+        list_array = []
+        for i in range(array.contents.len):
+            list_array += [array.contents.data[i].decode()]
+        invoke(lib.serialboxArrayOfStringDestroy, array)
+        return list_array
 
     # ===----------------------------------------------------------------------------------------===
     #    Writing & Reading
@@ -345,9 +445,33 @@ class Serializer(object):
 
         :raises SerialboxError: Serialization failed
         """
-        pass
+        if self.mode == OpenModeKind.Read:
+            raise SerialboxError("write operations are not permitted in OpenModeKind.Read")
 
-    def load(self, name, savepoint):
+        if not self.has_field(name):
+            if register_field:
+                info = FieldMetaInfo(numpy2TypeID(field.dtype), list(field.shape))
+                self.register_field(name, info)
+            else:
+                raise SerialboxError("field '%s' is not registered within the Serializer" % name)
+
+        #
+        # Extract strides and convert to unit-strides
+        #
+        strides = (c_int * len(field.strides))()
+        for i in range(len(field.strides)):
+            strides[i] = int(field.strides[i] / field.dtype.itemsize)
+        num_strides = c_int(len(field.strides))
+
+        #
+        # Write to disk
+        #
+        origin_ptr = c_void_p(field.ctypes.data)
+        namestr = extract_string(name)[0]
+        invoke(lib.serialboxSerializerWrite, self.__serializer, namestr, savepoint.impl(),
+               origin_ptr, strides, num_strides)
+
+    def read(self, name, savepoint):
         """ Deserialize `field` identified by `name` at `savepoint` from disk
 
         The method will allocate a `numpy.array` with the registered dimensions and type and fill it
@@ -363,7 +487,32 @@ class Serializer(object):
 
         :raises SerialboxError: Deserialization failed
         """
-        pass
+        if self.mode != OpenModeKind.Read:
+            raise SerialboxError("read operations are not permitted in OpenModeKind.%s" % self.mode)
+
+        if not self.has_field(name):
+            raise SerialboxError("field '%s' is not registered within the Serializer" % name)
+
+        info = self.get_field_metainfo(name)
+        field = np.ndarray(shape=info.dims, dtype=typeID2numpy(info.type))
+
+        #
+        # Extract strides and convert to unit-strides
+        #
+        strides = (c_int * len(field.strides))()
+        for i in range(len(field.strides)):
+            strides[i] = int(field.strides[i] / field.dtype.itemsize)
+        num_strides = c_int(len(field.strides))
+
+        #
+        # Write to disk
+        #
+        origin_ptr = c_void_p(field.ctypes.data)
+        namestr = extract_string(name)[0]
+        invoke(lib.serialboxSerializerRead, self.__serializer, namestr, savepoint.impl(),
+               origin_ptr, strides, num_strides)
+
+        return field
 
     def __del__(self):
         if self.__serializer:

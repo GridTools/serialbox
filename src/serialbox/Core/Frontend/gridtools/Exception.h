@@ -21,9 +21,10 @@ namespace serialbox {
 
 namespace gridtools {
 
+/// \typedef exception
 /// \brief Exception class which stores a human-readable error description
 ///
-/// Creates a ´std::runtime_error´ with ´std::runtime_error::what()´ set to the formatted
+/// Creates a `std::runtime_error` with `std::runtime_error::what()` set to the formatted
 /// string.
 ///
 /// \see Exception

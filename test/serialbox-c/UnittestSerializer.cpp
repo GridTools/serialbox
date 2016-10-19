@@ -26,6 +26,12 @@ class CSerializerUtilityTest : public serialbox::unittest::CInterfaceTestBase {}
 
 } // anonymous namespace
 
+static bool stringInArray(std::string str, serialboxArrayOfString_t* array) {
+  return std::find_if(array->data, array->data + array->len, [&](const char* s) {
+           return str == std::string(s);
+         }) != (array->data + array->len);
+}
+
 TEST_F(CSerializerUtilityTest, Construction) {
   // -----------------------------------------------------------------------------------------------
   // Write
@@ -172,6 +178,8 @@ TEST_F(CSerializerUtilityTest, RegisterFields) {
   // Register field
   ASSERT_TRUE(serialboxSerializerAddField(ser, "field", info));
   ASSERT_FALSE(serialboxSerializerAddField(ser, "field", info));
+  
+  ASSERT_TRUE(serialboxSerializerHasField(ser, "field"));
 
   // Register field (old version)
   ASSERT_TRUE(
@@ -180,21 +188,13 @@ TEST_F(CSerializerUtilityTest, RegisterFields) {
       serialboxSerializerAddField2(ser, "field2", Int32, 4, 42, 1, 1, 12, 1, 1, 0, 0, 0, 0, 2, 2));
 
   // Query fieldnames
-  int len;
-  char** fieldnames;
-  serialboxSerializerGetFieldnames(ser, &fieldnames, &len);
+  serialboxArrayOfString_t* fieldnames = serialboxSerializerGetFieldnames(ser);
 
-  ASSERT_EQ(len, 2);
-  ASSERT_TRUE(std::find_if(fieldnames, fieldnames + len, [](const char* s) {
-                return (std::memcmp(s, "field", sizeof("field")) == 0);
-              }) != (fieldnames + len));
-  ASSERT_TRUE(std::find_if(fieldnames, fieldnames + len, [](const char* s) {
-                return (std::memcmp(s, "field2", sizeof("field2")) == 0);
-              }) != (fieldnames + len));
+  ASSERT_EQ(fieldnames->len, 2);
+  EXPECT_TRUE(stringInArray("field", fieldnames));
+  EXPECT_TRUE(stringInArray("field2",fieldnames));
 
-  for(int i = 0; i < len; ++i)
-    std::free(fieldnames[i]);
-  std::free(fieldnames);
+  serialboxArrayOfStringDestroy(fieldnames);
 
   //
   // Get FieldMetaInfo of "field"
@@ -458,26 +458,14 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
     serialboxSerializerDestroySavepointVector(savepoints, numSavepoints);
 
     // Check fields at savepoint
-    int len;
-    char** fieldnames;
-    serialboxSerializerGetFieldnamesAtSavepoint(ser_read, savepoint1_t_1, &fieldnames, &len);
+    serialboxArrayOfString_t* fieldsAtSavepoint = serialboxSerializerGetFieldnamesAtSavepoint(ser_read, savepoint1_t_1);
 
-    ASSERT_EQ(len, 2);
+    ASSERT_EQ(fieldsAtSavepoint->len, 2);
+    EXPECT_TRUE(stringInArray("u", fieldsAtSavepoint));
+    EXPECT_TRUE(stringInArray("v",fieldsAtSavepoint));
 
-    // Check u exists
-    EXPECT_TRUE(std::find_if(fieldnames, fieldnames + len, [](const char* s) {
-                  return (std::memcmp(s, "u", sizeof("u")) == 0);
-                }) != (fieldnames + len));
-
-    // Check v exists
-    EXPECT_TRUE(std::find_if(fieldnames, fieldnames + len, [](const char* s) {
-                  return (std::memcmp(s, "v", sizeof("v")) == 0);
-                }) != (fieldnames + len));
-
-    for(int i = 0; i < len; ++i)
-      std::free(fieldnames[i]);
-    std::free(fieldnames);
-
+    serialboxArrayOfStringDestroy(fieldsAtSavepoint);
+    
     // Read
 
     // u_0 at savepoint1_t_1

@@ -16,6 +16,7 @@
 #define SERIALBOX_C_SERIALIZER_H
 
 #include "serialbox-c/Type.h"
+#include "serialbox-c/Array.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -157,6 +158,7 @@ int serialboxSerializerGetNumSavepoints(const serialboxSerializer_t* serializer)
  * To deallocate the vector use `serialboxSerializerDestroySavepointVector`.
  *
  * \param serializer  Serializer to use
+ * \param name        Name of the Savepoint(s)
  * \return Newly allocated array of savepoints of length `serialboxSerializerGetNumSavepoints`
  */
 serialboxSavepoint_t**
@@ -170,6 +172,17 @@ serialboxSerializerGetSavepointVector(const serialboxSerializer_t* serializer);
  *                          allocation via `serialboxSerializerGetNumSavepoints`)
  */
 void serialboxSerializerDestroySavepointVector(serialboxSavepoint_t** savepointVector, int len);
+
+/**
+ * \brief Get an array of C-strings of the field names registered at `savepoint`
+ *
+ * \param serializer  Serializer to use
+ * \param savepoint   Savepoint of intrest
+ * \return Array of C-strings of the names of all registered fields at `savepoint`
+ */
+serialboxArrayOfString_t*
+serialboxSerializerGetFieldnamesAtSavepoint(const serialboxSerializer_t* serializer,
+                                            const serialboxSavepoint_t* savepoint);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Register and Query Fields
@@ -185,6 +198,15 @@ void serialboxSerializerDestroySavepointVector(serialboxSavepoint_t** savepointV
  */
 int serialboxSerializerAddField(serialboxSerializer_t* serializer, const char* name,
                                 const serialboxFieldMetaInfo_t* fieldMetaInfo);
+
+/**
+ * \brief Check if `field` is registered within the serializer
+ *
+ * \param serializer  Serializer to use
+ * \param field       Name of the field to search for
+ * \return 1 if `field` exists, 0 otherwise
+ */
+int serialboxSerializerHasField(serialboxSerializer_t* serializer, const char* field);
 
 /**
  * \brief Register `field` within the serializer
@@ -217,15 +239,10 @@ int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* 
 /**
  * \brief Get an array of C-strings of all names of the registered fields
  *
- * The function will allocate a sufficiently large array of `char*`. Each element (as well as the
- * array itself) needs to be freed by the user using free().
- *
- * \param[in]  serializer  Serializer to use
- * \param[out] fieldnames  Array of length `len` of C-strings of the names of all registered fields
- * \param[out] len         Length of the array
+ * \param serializer  Serializer to use
+ * \return Array of C-strings of the names of all registered fields
  */
-void serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer, char*** fieldnames,
-                                      int* len);
+serialboxArrayOfString_t* serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer);
 
 /**
  * \brief Get FieldMetaInfo of field with name `name`
@@ -236,21 +253,6 @@ void serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer, c
  */
 serialboxFieldMetaInfo_t*
 serialboxSerializerGetFieldMetaInfo(const serialboxSerializer_t* serializer, const char* name);
-
-/**
- * \brief Get an array of C-strings of the field names registered at `savepoint`
- *
- * The function will allocate a sufficiently large array of `char*`. Each element (as well as the
- * array itself) needs to be freed by the user using free().
- *
- * \param[in]  serializer  Serializer to use
- * \param[in]  savepoint   Savepoint of intrest
- * \param[out] fieldnames  Array of length `len` of C-strings of the names of all registered fields
- * \param[out] len         Length of the array
- */
-void serialboxSerializerGetFieldnamesAtSavepoint(const serialboxSerializer_t* serializer,
-                                                 const serialboxSavepoint_t* savepoint,
-                                                 char*** fieldnames, int* len);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Writing & Reading

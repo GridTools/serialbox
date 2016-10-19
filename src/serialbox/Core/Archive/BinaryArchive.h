@@ -54,6 +54,9 @@ public:
 
   /// \brief Table of all fields owned by this archive, each field has a corresponding file
   using FieldTable = std::unordered_map<std::string, FieldOffsetTable>;
+  
+  /// \brief 
+  BinaryArchive();
 
   /// \brief Initialize the archive
   ///

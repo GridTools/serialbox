@@ -155,8 +155,7 @@ serialboxSerializerGetSavepointVector(const serialboxSerializer_t* serializer) {
   const Serializer* ser = toConstSerializer(serializer);
   const auto& savepointVector = ser->savepointVector().savepoints();
 
-  serialboxSavepoint_t** savepoints =
-      (serialboxSavepoint_t**)std::malloc(sizeof(serialboxSavepoint_t*) * savepointVector.size());
+  serialboxSavepoint_t** savepoints = allocate<serialboxSavepoint_t*>(savepointVector.size());
 
   if(!savepoints)
     serialboxFatalError("out of memory");
@@ -177,6 +176,27 @@ void serialboxSerializerDestroySavepointVector(serialboxSavepoint_t** savepointV
   std::free(savepointVector);
 }
 
+serialboxArrayOfString_t*
+serialboxSerializerGetFieldnamesAtSavepoint(const serialboxSerializer_t* serializer,
+                                            const serialboxSavepoint_t* savepoint) {
+  const Savepoint* sp = toConstSavepoint(savepoint);
+  const Serializer* ser = toConstSerializer(serializer);
+  serialboxArrayOfString_t* array = NULL;
+  
+  try {
+    const auto& fieldnameMap = ser->savepointVector().fieldsOf(*sp);
+    array = serialboxArrayOfStringCreate(fieldnameMap.size());
+    
+    int i = 0;
+    for(auto it = fieldnameMap.begin(), end = fieldnameMap.end(); it != end; ++it, ++i)
+      array->data[i] = allocateAndCopyString(it->first);
+
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+  return array;  
+}
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Register and Query Fields
 \*===------------------------------------------------------------------------------------------===*/
@@ -193,6 +213,11 @@ int serialboxSerializerAddField(serialboxSerializer_t* serializer, const char* n
     return 0;
   }
   return 1;
+}
+
+int serialboxSerializerHasField(serialboxSerializer_t* serializer, const char* field) {
+  Serializer* ser = toSerializer(serializer);
+  return ser->hasField(field);
 }
 
 int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* name,
@@ -246,20 +271,25 @@ int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* 
   return 1;
 }
 
-void serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer, char*** fieldnames,
-                                      int* len) {
+
+serialboxArrayOfString_t*
+serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer) {
+
   const Serializer* ser = toConstSerializer(serializer);
+  serialboxArrayOfString_t* array = NULL;
 
-  const auto fieldnameVector = ser->fieldnames();
+  try {
+    const auto fieldnameVector = ser->fieldnames();
+    array = serialboxArrayOfStringCreate(fieldnameVector.size());
 
-  (*len) = (int)fieldnameVector.size();
-  (*fieldnames) = (char**)std::malloc(fieldnameVector.size() * sizeof(char*));
+    for(std::size_t i = 0; i < fieldnameVector.size(); ++i)
+      array->data[i] = allocateAndCopyString(fieldnameVector[i]);
 
-  if(!(*fieldnames))
-    serialboxFatalError("out of memory");
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
 
-  for(std::size_t i = 0; i < fieldnameVector.size(); ++i)
-    (*fieldnames)[i] = allocateAndCopyString(fieldnameVector[i]);
+  return array;
 }
 
 serialboxFieldMetaInfo_t*
@@ -274,30 +304,6 @@ serialboxSerializerGetFieldMetaInfo(const serialboxSerializer_t* serializer, con
     return info;
   }
   return NULL;
-}
-
-void serialboxSerializerGetFieldnamesAtSavepoint(const serialboxSerializer_t* serializer,
-                                                 const serialboxSavepoint_t* savepoint,
-                                                 char*** fieldnames, int* len) {
-  const Savepoint* sp = toConstSavepoint(savepoint);
-  const Serializer* ser = toConstSerializer(serializer);
-
-  try {
-    const auto& fieldnameMap = ser->savepointVector().fieldsOf(*sp);
-
-    (*len) = (int)fieldnameMap.size();
-    (*fieldnames) = (char**)std::malloc(fieldnameMap.size() * sizeof(char*));
-
-    if(!(*fieldnames))
-      serialboxFatalError("out of memory");
-
-    int i = 0;
-    for(auto it = fieldnameMap.begin(), end = fieldnameMap.end(); it != end; ++it, ++i)
-      (*fieldnames)[i] = allocateAndCopyString(it->first);
-
-  } catch(std::exception& e) {
-    serialboxFatalError(e.what());
-  }
 }
 
 /*===------------------------------------------------------------------------------------------===*\

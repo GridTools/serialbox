@@ -28,7 +28,7 @@ namespace gridtools {
 class field_meta_info {
 public:
   /// \brief Default constructor
-  field_meta_info() : fieldMetaInfoImpl_(std::make_shared<FieldMetaInfo>()){};
+  field_meta_info() : field_meta_info_impl_(std::make_shared<FieldMetaInfo>()){};
 
   /// \brief Construct field meta-information
   ///
@@ -37,8 +37,8 @@ public:
   /// \param type      Type of the field
   /// \param dims      Dimension of the field
   /// \param metaInfo  Meta-information of the field
-  field_meta_info(TypeID type, const std::vector<int>& dims, const MetaInfoMap& metaInfo)
-      : fieldMetaInfoImpl_(std::make_shared<FieldMetaInfo>(type, dims, metaInfo)) {}
+  field_meta_info(TypeID type, const std::vector<int>& dims, const meta_info_map& meta_info)
+      : field_meta_info_impl_(std::make_shared<FieldMetaInfo>(type, dims, *meta_info.impl())) {}
 
   /// \brief Construct field meta-information
   ///
@@ -47,7 +47,12 @@ public:
   /// \param type      Type of the field
   /// \param dims      Dimension of the field
   field_meta_info(TypeID type, const std::vector<int>& dims)
-      : fieldMetaInfoImpl_(std::make_shared<FieldMetaInfo>(type, dims)) {}
+      : field_meta_info_impl_(std::make_shared<FieldMetaInfo>(type, dims)) {}
+
+  /// \brief Construct with FieldMetaInfo (internal use)
+  explicit field_meta_info(const std::shared_ptr<FieldMetaInfo>& field_meta_info_ptr) {
+    field_meta_info_impl_ = field_meta_info_ptr;
+  }
 
   /// \brief Copy constructor
   ///
@@ -100,17 +105,17 @@ public:
   ///   assert(m1 != m2); // m1 and m2 are NOT equal as the don't share the same FieldMetaInfo
   /// \endcode
   field_meta_info clone() const {
-    return field_meta_info(std::make_shared<FieldMetaInfo>(*fieldMetaInfoImpl_));
+    return field_meta_info(std::make_shared<FieldMetaInfo>(*field_meta_info_impl_));
   }
 
   /// \brief Swap with other
   void swap(field_meta_info& other) noexcept {
-    fieldMetaInfoImpl_->swap(*other.fieldMetaInfoImpl_);
+    field_meta_info_impl_->swap(*other.field_meta_info_impl_);
   };
 
   /// \brief Test for equality
   bool operator==(const field_meta_info& right) const noexcept {
-    *fieldMetaInfoImpl_ == *right.fieldMetaInfoImpl_;
+    return (*field_meta_info_impl_ == *right.field_meta_info_impl_);
   }
 
   /// \brief Test for inequality
@@ -118,27 +123,32 @@ public:
 
   /// \brief Access TypeID
   /// @{
-  TypeID& type() noexcept { return fieldMetaInfoImpl_->type(); }
-  const TypeID& type() const noexcept { return fieldMetaInfoImpl_->type(); }
+  TypeID& type() noexcept { return field_meta_info_impl_->type(); }
+  const TypeID& type() const noexcept { return field_meta_info_impl_->type(); }
   /// @}
 
   /// \brief Access dimensions
   /// @{
-  std::vector<int>& dims() noexcept { return fieldMetaInfoImpl_->dims(); }
-  const std::vector<int>& dims() const noexcept { return fieldMetaInfoImpl_->dims(); }
+  std::vector<int>& dims() noexcept { return field_meta_info_impl_->dims(); }
+  const std::vector<int>& dims() const noexcept { return field_meta_info_impl_->dims(); }
   /// @}
 
   /// \brief Access meta-info map
-  meta_info_map meta_info() const noexcept { return meta_info(fieldMetaInfoImpl_->metaInfoPtr()); }
+  meta_info_map meta_info() const noexcept {
+    return meta_info_map(field_meta_info_impl_->metaInfoPtr());
+  }
 
   /// \brief Convert to stream
   template <class StreamType>
   friend std::ostream& operator<<(StreamType&& stream, const field_meta_info& f) {
-    return (stream << *f.mapImpl_);
+    return (stream << *f.field_meta_info_impl_);
   }
 
+  /// \brief Get implementation pointer
+  const std::shared_ptr<FieldMetaInfo>& impl() const { return field_meta_info_impl_; }
+
 private:
-  std::shared_ptr<FieldMetaInfo> fieldMetaInfoImpl_;
+  std::shared_ptr<FieldMetaInfo> field_meta_info_impl_;
 };
 
 } // namespace gridtools

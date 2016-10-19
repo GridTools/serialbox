@@ -16,13 +16,14 @@
 #define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_META_INFO_VALUE_H
 
 #include "serialbox/Core/MetaInfoValue.h"
-#include <memory>
 
 namespace serialbox {
 
 namespace gridtools {
 
 /// \brief Represent an immutable meta information value as a type-id and type-erased data
+/// 
+/// \see MetaInfoValue
 using meta_info_value = MetaInfoValue;
 
 } // namespace gridtools

@@ -62,7 +62,7 @@ public:
   /// \throw Exception   No archive with given name exists or is registered
   std::unique_ptr<Archive> create(const std::string& name, OpenModeKind mode,
                                   const std::string& directory, const std::string& prefix);
-
+  
   /// \brief Register an archive (this function is called by ´SERIALBOX_REGISTER_ARCHIVE´)
   void registerArchive(const std::string& name, const CreateArchiveFunction& func);
 
