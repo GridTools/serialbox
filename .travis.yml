@@ -140,10 +140,8 @@ install:
       if ! brew ls --version cmake &>/dev/null; then brew install cmake; fi
     fi
   
-  # Install Python dependencies
+  # Install Python dependencies (Linux)
   - PYTHON_DIR=/opt/python/3.5.0
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then ls $PYTHON_DIR; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then ls $PYTHON_DIR/bin; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then $PYTHON_DIR/bin/pip3 install nose numpy; fi
     
   # Install dependencies for Mac OSX
@@ -166,7 +164,18 @@ before_script:
   - pushd $(pwd)
   - cd build
 
-  - cmake ../
+  # Linux build
+  - |
+    if [ "$TRAVIS_OS_NAME" == "linux" ]; then 
+      cmake ../ -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DPYTHON_EXECUTABLE=${PYTHON_DIR}/bin/python3
+    fi
+  
+  # OSX build
+  - |
+    if [ "$TRAVIS_OS_NAME" == "osx" ]; then 
+      cmake ../ -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+    fi
+  
   - make
   
   - popd
