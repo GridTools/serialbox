@@ -7,8 +7,7 @@ language: cpp
 #===---------------------------------------------------------------------------------------------===
 
 matrix:
-  include:
-
+ include:
   # OSX / Clang
   - os: osx
     osx_image: xcode7.3
@@ -39,6 +38,7 @@ matrix:
         packages: 
           - gcc-4.9
           - g++-4.9
+          - libboost-all-dev
           
   - os: linux
     compiler: gcc
@@ -52,22 +52,23 @@ matrix:
         packages: 
           - gcc-4.9
           - g++-4.9
+          - libboost-all-dev
           
-#  - os: linux
-#    compiler: gcc
-#    env: COMPILER=g++-5
-#    addons:
-#      apt:
-#        sources: ['ubuntu-toolchain-r-test']
-#        packages: g++-5
+#    - os: linux
+#      compiler: gcc
+#      env: COMPILER=g++-5
+#      addons:
+#        apt:
+#          sources: ['ubuntu-toolchain-r-test']
+#          packages: g++-5
 
-#  - os: linux
-#    compiler: gcc
-#    env: COMPILER=g++-6
-#    addons:
-#      apt:
-#        sources: ['ubuntu-toolchain-r-test']
-#        packages: g++-6
+#    - os: linux
+#      compiler: gcc
+#      env: COMPILER=g++-6
+#      addons:
+#        apt:
+#          sources: ['ubuntu-toolchain-r-test']
+#          packages: g++-6
 
   # Linux / Clang
   - os: linux
