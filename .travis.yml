@@ -6,12 +6,6 @@ language: cpp
 #   Build Matrix
 #===---------------------------------------------------------------------------------------------===
 
-addons:
-  apt:
-    sources: ['ubuntu-toolchain-r-test']
-      packages: 
-        - libboost-all-dev
-
 matrix:
   include:
 
@@ -81,24 +75,44 @@ matrix:
       - LLVM_VERSION=3.6.2
       - CONFIG=Release
     compiler: clang
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: 
+          - libboost-all-dev
           
   - os: linux
     env: 
       - LLVM_VERSION=3.6.2
       - CONFIG=Debug
     compiler: clang
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: 
+          - libboost-all-dev
 
   - os: linux
     env: 
       - LLVM_VERSION=3.7.1
       - CONFIG=Release
     compiler: clang
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: 
+          - libboost-all-dev
 
   - os: linux
     env: 
       - LLVM_VERSION=3.8.1
       - CONFIG=Release
     compiler: clang
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: 
+          - libboost-all-dev
     
 # Set directories to cache
 cache:
