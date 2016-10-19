@@ -41,6 +41,20 @@ matrix:
           - g++-4.9
           - libboost-all-dev
           
+  - os: linux
+    compiler: gcc
+    env: 
+      - CXX_COMPILER=g++-4.9
+      - C_COMPILER=gcc-4.9
+      - CONFIG=Debug
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: 
+          - gcc-4.9
+          - g++-4.9
+          - libboost-all-dev
+          
 #  - os: linux
 #    compiler: gcc
 #    env: COMPILER=g++-5
@@ -57,18 +71,17 @@ matrix:
 #        sources: ['ubuntu-toolchain-r-test']
 #        packages: g++-6
 
-#  # Linux / Clang
-#  - os: linux
-#    env: LLVM_VERSION=3.6.2
-#    compiler: clang
-#    addons:
-#      apt:
-#        sources: ['ubuntu-toolchain-r-test']
-#        packages: 
-#          - libboost-all-dev
-#          - python3
-#          - python3-numpy
-#          - python3-nose
+  # Linux / Clang
+  - os: linux
+    env: 
+      - LLVM_VERSION=3.6.2
+      - CONFIG=Release
+    compiler: clang
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: 
+          - libboost-all-dev
 
 #  - os: linux
 #    env: LLVM_VERSION=3.7.1
@@ -79,9 +92,9 @@ matrix:
 #    compiler: clang
     
 # Set directories to cache
-#cache:
-#  directories:
-#    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.6.2
+cache:
+  directories:
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.6.2
 #    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.7.1
 #    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8.1
 
@@ -104,33 +117,36 @@ install:
   # Make sure CMAKE_BUILD_TYPE is correctly set
   - if [[ "${CONFIG}" != "" ]]; then export CMAKE_BUILD_TYPE=${CONFIG}; fi
 
-  # install LLVM/clang when LLVM_VERSION is set
-#  - |
-#     if [[ "${LLVM_VERSION}" != "" ]]; then
-#       LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
-#       if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
-#         travis_retry wget --quiet https://cmake.org/files/v3.6/cmake-3.6.1.tar.gz
-#         tar xfz cmake-3.6.1.tar.gz
-#         (cd cmake-3.6.1 && ./configure --prefix=${LLVM_DIR}/cmake && make install)
-#         export PATH="${LLVM_DIR}/cmake/bin:${PATH}"
-#         LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
-#         LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
-#         LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
-#         CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
-#         mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
-#         travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
-#         travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
-#         travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
-#         travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
-#         (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
-#         (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
-#         (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
-#       fi
-#       export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
-#       export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
-#       export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
-#       export PATH="${LLVM_DIR}/clang/bin:${PATH}"
-#     fi
+  # Install LLVM/clang when LLVM_VERSION is set (check if chached)
+  - |
+     if [[ "${LLVM_VERSION}" != "" ]]; then
+       LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
+       if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
+         travis_retry wget --quiet https://cmake.org/files/v3.6/cmake-3.6.1.tar.gz
+         tar xfz cmake-3.6.1.tar.gz
+         (cd cmake-3.6.1 && ./configure --prefix=${LLVM_DIR}/cmake && make install)
+         export PATH="${LLVM_DIR}/cmake/bin:${PATH}"
+         LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
+         LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
+         LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
+         CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
+         mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
+         travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
+         travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
+         travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
+         travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
+         (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
+         (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
+         (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
+       fi
+       
+       export CC="${LLVM_DIR}/clang/bin/clang"
+       export CXX="${LLVM_DIR}/clang/bin/clang++"
+       export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
+       export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
+       export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
+       export PATH="${LLVM_DIR}/clang/bin:${PATH}"
+     fi
      
   # Install a recent CMake (unless already installed on OS X)
   - |
