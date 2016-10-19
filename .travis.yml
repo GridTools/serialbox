@@ -76,6 +76,7 @@ matrix:
     env: 
       - LLVM_VERSION=3.6.2
       - CONFIG=Release
+      - BOOST_VERSION=1.59.0
     compiler: clang
     addons:
       apt:
@@ -97,6 +98,7 @@ cache:
     - ${TRAVIS_BUILD_DIR}/deps/llvm-3.6.2
 #    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.7.1
 #    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8.1
+    - ${TRAVIS_BUILD_DIR}/deps/boost-1.59.0
 
 
 #===---------------------------------------------------------------------------------------------===
@@ -147,6 +149,29 @@ install:
        export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
        export PATH="${LLVM_DIR}/clang/bin:${PATH}"
      fi
+    
+  # Compile and install Boost 
+  - |
+    if [[ "${BOOST_VERSION}" != "" ]]; then
+      BOOST_DIR=${DEPS_DIR}/boost-${BOOST_VERSION}
+      if [[ -z "$(ls -A ${BOOST_DIR})" ]]; then
+        BOOST_URL="http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/boost_${BOOST_VERSION//\./_}.tar.gz"
+        mkdir -p ${BOOST_DIR}
+        { travis_retry wget --quiet -O - ${BOOST_URL} | tar --strip-components=1 -xz -C ${BOOST_DIR}; } || exit 1
+       
+        pushd $(pwd)
+        cd ${BOOST_DIR}
+        echo "using clang : ${LLVM_VERSION} : ${CXX} ;" > user-config.jam
+        ./bootstrap.sh
+        ./b2 -j2 --toolset=clang-${LLVM_VERSION} --prefix="${BOOST_DIR}" \
+             --user-config=${BOOST_DIR}/user-config.jam --with-filesystem \
+                                                        --with-chrono \
+                                                        --with-system \
+                                                        --with-log --d+2 install
+        popd
+      fi
+      CMAKE_OPTIONS="-DBOOST_ROOT=${BOOST_DIR}"
+    fi
      
   # Install a recent CMake (unless already installed on OS X)
   - |
@@ -192,7 +217,7 @@ before_script:
   # Linux build
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
-      cmake ../ -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DPYTHON_EXECUTABLE=${PYTHON_DIR}/bin/python3
+      cmake ../ -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DPYTHON_EXECUTABLE=${PYTHON_DIR}/bin/python3 ${CMAKE_OPTIONS}
     fi
   
   # OSX build
