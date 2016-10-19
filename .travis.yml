@@ -1,100 +1,278 @@
 sudo: required
 dist: trusty
+language: cpp
+
+#===---------------------------------------------------------------------------------------------===
+#   Build Matrix
+#===---------------------------------------------------------------------------------------------===
+
+env:
+  - CONFIG=Release
+  - CONFIG=Debug
+
+matrix:
+  include:
+
+  # OSX / Clang
+#  - os: osx
+#    osx_image: beta-xcode6.1
+
+#  - os: osx
+#    osx_image: beta-xcode6.2
+
+#  - os: osx
+#    osx_image: beta-xcode6.3
+
+#  - os: osx
+#    osx_image: xcode6.4
+
+#  - os: osx
+#    osx_image: xcode7.1
+
+#  - os: osx
+#    osx_image: xcode7.2
+
+  - os: osx
+    osx_image: xcode7.3
+
+  - os: osx
+    osx_image: xcode8
+
+  # Linux / GCC
+  - os: linux
+    compiler: gcc
+    env: COMPILER=g++-4.9
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: 
+          - g++-4.9
+          - libboost-all-dev
+          - python3-dev
+          - python3-numpy
+          - python3-nose
+          
+#  - os: linux
+#    compiler: gcc
+#    env: COMPILER=g++-5
+#    addons:
+#      apt:
+#        sources: ['ubuntu-toolchain-r-test']
+#        packages: g++-5
+
+#  - os: linux
+#    compiler: gcc
+#    env: COMPILER=g++-6
+#    addons:
+#      apt:
+#        sources: ['ubuntu-toolchain-r-test']
+#        packages: g++-6
+
+#  # Linux / Clang
+#  - os: linux
+#    env: LLVM_VERSION=3.6.2
+#    compiler: clang
+#    addons:
+#      apt:
+#        sources: ['ubuntu-toolchain-r-test']
+#        packages: 
+#          - libboost-all-dev
+#          - python3
+#          - python3-numpy
+#          - python3-nose
+
+#  - os: linux
+#    env: LLVM_VERSION=3.7.1
+#    compiler: clang
+
+#  - os: linux
+#    env: LLVM_VERSION=3.8.1
+#    compiler: clang
+    
+# Set directories to cache
+#cache:
+#  directories:
+#    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.6.2
+#    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.7.1
+#    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8.1
+
 
 install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9"; export CC="gcc-4.9"; fi
-  - if [ "$CXX" = "clang++" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then export CXX="clang++-3.8"; export CC="clang-3.8"; fi
-  
-  # Info about Compiler
-  - echo ${PATH}
-  - echo ${CXX}
-  - ${CXX} --version
-  - ${CXX} -v
-  
-  # Info about OS
-  - uname -a
-  - echo $TRAVIS_OS_NAME
-  
-  # All the dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
-  - DEPS_DIR="$TRAVIS_BUILD_DIR}/deps"
-  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-  
-  # Homebrew (Mac OSX)
+  # create deps dir if not existing
+  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - mkdir -p ${DEPS_DIR}
+
+  # make sure CXX is correctly set
+  - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
+
+  # install LLVM/clang when LLVM_VERSION is set
+#  - |
+#     if [[ "${LLVM_VERSION}" != "" ]]; then
+#       LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
+#       if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
+#         travis_retry wget --quiet https://cmake.org/files/v3.6/cmake-3.6.1.tar.gz
+#         tar xfz cmake-3.6.1.tar.gz
+#         (cd cmake-3.6.1 && ./configure --prefix=${LLVM_DIR}/cmake && make install)
+#         export PATH="${LLVM_DIR}/cmake/bin:${PATH}"
+#         LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
+#         LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
+#         LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
+#         CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
+#         mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
+#         travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
+#         travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
+#         travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
+#         travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
+#         (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
+#         (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
+#         (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
+#       fi
+#       export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
+#       export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
+#       export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
+#       export PATH="${LLVM_DIR}/clang/bin:${PATH}"
+#     fi
+     
+  # Install a recent CMake (unless already installed on OS X)
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      CMAKE_URL="http://www.cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz"
+      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+      export PATH=${DEPS_DIR}/cmake/bin:$PATH
+    else 
+      if ! brew ls --version cmake &>/dev/null; then brew install cmake; fi
+    fi
+    
+  # Install dependencies for Mac OSX
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
-  
+
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install python3; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then pip3 install numpy matplotlib nose; fi
 
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew tap homebrew/science; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install netcdf; fi
-  
+
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export PATH=/usr/local/bin:${PATH}; fi
   
-  # Install a recent CMake (unless already installed on OS X)
+#install:
+#  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9"; export CC="gcc-4.9"; fi
+#  - if [ "$CXX" = "clang++" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then export CXX="clang++-3.8"; export CC="clang-3.8"; fi
+#  
+#  # Info about Compiler
+#  - echo ${PATH}
+#  - echo ${CXX}
+#  - ${CXX} --version
+#  - ${CXX} -v
+#  
+#  # Info about OS
+#  - uname -a
+#  - echo $TRAVIS_OS_NAME
+#  
+#  # All the dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
+#  - DEPS_DIR="$TRAVIS_BUILD_DIR}/deps"
+#  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+#  
+#  # Homebrew (Mac OSX)
+#  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
+#  
+#  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install python3; fi
+#  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then pip3 install numpy matplotlib nose; fi
+
+#  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew tap homebrew/science; fi
+#  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install netcdf; fi
+#  
+#  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export PATH=/usr/local/bin:${PATH}; fi
+#  
+#  # Install a recent CMake (unless already installed on OS X)
 #  - |
-#  if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-#    CMAKE_URL="http://www.cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz"
-#    mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-#    export PATH=${DEPS_DIR}/cmake/bin:$PATH
-#  else 
-#    if ! brew ls --version cmake &>/dev/null; then brew install cmake; fi
-#  fi
+#    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+#      CMAKE_URL="http://www.cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz"
+#      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+#      export PATH=${DEPS_DIR}/cmake/bin:$PATH
+#    else 
+#      if ! brew ls --version cmake &>/dev/null; then brew install cmake; fi
+#    fi
+#    
+#  # make sure CXX is correctly set
+#  - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
+#  
+#  # install LLVM/clang when LLVM_VERSION is set
+#  - |
+#     if [[ "${LLVM_VERSION}" != "" ]]; then
+#       LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
+#       if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
+#         travis_retry wget --quiet https://cmake.org/files/v3.6/cmake-3.6.1.tar.gz
+#         tar xfz cmake-3.6.1.tar.gz
+#         (cd cmake-3.6.1 && ./configure --prefix=${LLVM_DIR}/cmake && make install)
+#         export PATH="${LLVM_DIR}/cmake/bin:${PATH}"
+#         LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
+#         LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
+#         LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
+#         CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
+#         mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
+#         travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
+#         travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
+#         travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
+#         travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
+#         (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
+#         (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
+#         (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
+#       fi
+#       export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
+#       export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
+#       export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
+#       export PATH="${LLVM_DIR}/clang/bin:${PATH}"
+#     fi
   
-# APT (Linux)
-addons:
-  apt:
-    sources:
-      - llvm-toolchain-trusty-3.8
-      - ubuntu-toolchain-r-test
-    packages:
-      - gcc-4.9
-      - g++-4.9
-      - clang-3.8
-      - libboost-all-dev
-      - libssl-dev
-      - python3-dev
-      - python3-nose
-      - python3-numpy
-      - python3-matplotlib
+## APT (Linux)
+#addons:
+#  apt:
+#    sources:
+#      - llvm-toolchain-trusty-3.8
+#      - ubuntu-toolchain-r-test
+#    packages:
+#      - gcc-4.9
+#      - g++-4.9
+#      - clang-3.8
+#      - libboost-all-dev
+#      - libssl-dev
+#      - python3-dev
+#      - python3-nose
+#      - python3-numpy
+#      - python3-matplotlib
 
-os:
-  - linux
-  - osx
-  
-env:
-  - CONFIG=Release
-  - CONFIG=Debug
+#os:
+#  - linux
+#  - osx
+#  
+#env:
+#  - CONFIG=Release
+#  - CONFIG=Debug
 
-language: cpp
+#language: cpp
 
-compiler:
-  - clang
-  - gcc
+#compiler:
+#  - clang
+#  - gcc
 
 
-matrix:
-  exclude:
-    # OSX boost is compiled with Clang (skip gcc builds)
-    - os: osx
-      compiler: gcc
-      env: CONFIG=Release
-      
-    - os: osx
-      compiler: gcc
-      env: CONFIG=Debug
+#matrix:
+#  exclude:
+#    # OSX boost is compiled with Clang (skip gcc builds)
+#    - os: osx
+#      compiler: gcc
+#      env: CONFIG=Release
+#      
+#    - os: osx
+#      compiler: gcc
+#      env: CONFIG=Debug
 
 before_script:
   - mkdir build
   - pushd $(pwd)
   - cd build
 
-  # Build on Linux
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cmake ../; fi
-  
-  # Build on OSX 
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then cmake ../; fi
-  
-  # Build & Install
+  - cmake ../
   - make
   
   - popd
