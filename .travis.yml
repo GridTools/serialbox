@@ -1,4 +1,5 @@
-sudo: false
+sudo: required
+dist: trusty
 
 install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9"; export CC="gcc-4.9"; fi
@@ -14,9 +15,12 @@ install:
   - uname -a
   - echo $TRAVIS_OS_NAME
   
+  # All the dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
+  - DEPS_DIR="$TRAVIS_BUILD_DIR}/deps"
+  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+  
   # Homebrew (Mac OSX)
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew outdated cmake || brew upgrade cmake; fi
   
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install python3; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then pip3 install numpy matplotlib nose; fi
@@ -24,30 +28,35 @@ install:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew tap homebrew/science; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install netcdf; fi
   
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export PATH=/usr/local/bin:$PATH; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export PATH=/usr/local/bin:${PATH}; fi
   
-  # Python (Linux)
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; pip3 install numpy matplotlib nose; fi
+  # Install a recent CMake (unless already installed on OS X)
+  - |
+  if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+    CMAKE_URL="http://www.cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz"
+    mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+    export PATH=${DEPS_DIR}/cmake/bin:$PATH
+  else 
+    if ! brew ls --version cmake &>/dev/null; then brew install cmake; fi
+  fi
   
 # APT (Linux)
 addons:
   apt:
     sources:
+      - llvm-toolchain-trusty-3.8
       - ubuntu-toolchain-r-test
-      - llvm-toolchain-precise-3.8
-      - boost-latest
-      - george-edison55-precise-backports # cmake 3.2.3 / doxygen 1.8.3
     packages:
       - gcc-4.9
       - g++-4.9
       - clang-3.8
-      - cmake
-      - cmake-data
-      - libboost1.54-all-dev
+      - libboost-all-dev
       - libssl-dev
-      - python3
-      - python3-pip
-      
+      - python3-dev
+      - python3-nose
+      - python3-numpy
+      - python3-matplotlib
+
 os:
   - linux
   - osx
