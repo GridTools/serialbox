@@ -9,8 +9,6 @@ install:
   - echo ${CXX}
   - ${CXX} --version
   - ${CXX} -v
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then python3.5 --version; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then pip3.5 --version; fi
   
   # Info about OS
   - uname -a
@@ -28,6 +26,9 @@ install:
   
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export PATH=/usr/local/bin:$PATH; fi
   
+  # Python (Linux)
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; pip3 install numpy matplotlib nose; fi
+  
 # APT (Linux)
 addons:
   apt:
@@ -36,7 +37,6 @@ addons:
       - llvm-toolchain-precise-3.8
       - boost-latest
       - george-edison55-precise-backports # cmake 3.2.3 / doxygen 1.8.3
-      - deadsnakes # Python3.5
     packages:
       - gcc-4.9
       - g++-4.9
@@ -45,7 +45,8 @@ addons:
       - cmake-data
       - libboost1.54-all-dev
       - libssl-dev
-      - python3.5
+      - python3
+      - python3-pip
       
 os:
   - linux
