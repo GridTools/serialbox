@@ -9,8 +9,9 @@ install:
   - echo ${CXX}
   - ${CXX} --version
   - ${CXX} -v
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; python3.5 --version; fi
-
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then python3.5 --version; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then pip3.5 --version; fi
+  
   # Info about OS
   - uname -a
   - echo $TRAVIS_OS_NAME
