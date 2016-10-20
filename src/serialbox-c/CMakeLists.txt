@@ -43,7 +43,7 @@ set(SOURCES
   Type.h
 )
 
-set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})
+set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES} )
 
 set(SYMLINKS_TO ${CMAKE_BINARY_DIR}/src/serialbox-python/serialbox
                 ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox)

@@ -44,7 +44,7 @@ def get_library():
     # To make it possible to run the unit tests without installing the SerialboxC shared
     # library into a default linker search path.  Always Try ctypes.cdll.LoadLibrary()
     # with all possible library names first, then try ctypes.util.find_library().
-    names = ['SerialboxC']
+    name = 'SerialboxC'
 
     cwd = path.dirname(path.realpath(__file__))
     dirs = (cwd, path.join(cwd, "../../lib"),)
@@ -58,17 +58,16 @@ def get_library():
         else:
             pfx, ext = 'lib', '.so'
 
-        for i in names:
-            try:
-                lib = cdll.LoadLibrary(path.join(d, pfx + i + ext))
-            except OSError:
-                pass
-            else:
-                return lib
+        try:
+            lib = cdll.LoadLibrary(path.join(d, pfx + name + ext))
+        except OSError as e:
+            print(e)
+            pass
+        else:
+            return lib
 
-        for i in names:
-            t = util.find_library(i)
-            if t:
-                return cdll.LoadLibrary(t)
+        t = util.find_library(name)
+        if t:
+            return cdll.LoadLibrary(t)
 
     raise Exception("'serialboxC' shared library not found")

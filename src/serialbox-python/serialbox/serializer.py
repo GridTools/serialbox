@@ -191,7 +191,7 @@ class Serializer(object):
         prefixstr = extract_string(prefix)[0]
         archivestr = extract_string(archive)[0]
 
-        self.__serializer = invoke(lib.serialboxSerializerCreate, mode, dirstr, prefixstr,
+        self.__serializer = invoke(lib.serialboxSerializerCreate, modeint, dirstr, prefixstr,
                                    archivestr)
 
     # ===----------------------------------------------------------------------------------------===

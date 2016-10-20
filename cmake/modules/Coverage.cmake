@@ -15,6 +15,8 @@ function(enable_coverage root)
                       # Not fully testable
                       '*/Unreachable.cpp'
                       '*/Logging.cpp'
+                      '*/SHA256.cpp'
+                      '*/MD5.cpp'
   )
 
   add_custom_target(coverage
