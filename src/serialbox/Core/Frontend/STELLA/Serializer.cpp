@@ -40,13 +40,9 @@ SerializerOpenMode Serializer::mode() const {
   }
 }
 
-void Serializer::EnableSerialization() {
-  SerializerImpl::enableSerialization();
-}
+void Serializer::EnableSerialization() { SerializerImpl::enableSerialization(); }
 
-void Serializer::DisableSerialization() {
-  SerializerImpl::disableSerialization();
-}
+void Serializer::DisableSerialization() { SerializerImpl::disableSerialization(); }
 
 std::string Serializer::directory() const { return serializerImpl_->directory().string(); }
 

@@ -64,9 +64,7 @@ void serialboxStateErrorHandler(const char* Reason) {
   internal::errorState.errMsg = Reason;
 }
 
-int serialboxStateErrorHandlerHasError(void) {
-  return internal::errorState.hasError;
-}
+int serialboxStateErrorHandlerHasError(void) { return internal::errorState.hasError; }
 
 char* serialboxStateErrorHandlerGetErrorMessage(void) {
   std::size_t size = internal::errorState.errMsg.size() + 1;
@@ -75,7 +73,7 @@ char* serialboxStateErrorHandlerGetErrorMessage(void) {
   return errorMessage;
 }
 
-//void serialboxStateErrorHandlerGetCurrentError(int* hasError, char** errorMessage) {
+// void serialboxStateErrorHandlerGetCurrentError(int* hasError, char** errorMessage) {
 //  (*hasError) = internal::errorState.hasError;
 //  (*errorMessage) = NULL;
 
@@ -93,7 +91,7 @@ void serialboxStateErrorHandlerResetState(void) {
   internal::errorState.errMsg.clear();
 }
 
-//void serialboxStateErrorHandlerGetCurrentErrorAndReset(int* hasError, char** errorMessage) {
+// void serialboxStateErrorHandlerGetCurrentErrorAndReset(int* hasError, char** errorMessage) {
 //  serialboxStateErrorHandlerGetCurrentError(hasError, errorMessage);
 //  serialboxStateErrorHandlerResetState();
 //}

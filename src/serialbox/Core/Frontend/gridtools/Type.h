@@ -23,13 +23,13 @@ namespace gridtools {
 
 /// \typedef open_mode
 /// \brief Policy for opening files in the serializer
-/// 
+///
 /// \ingroup gridtools
 using open_mode = serialbox::OpenModeKind;
 
 /// \enum type_id
 /// \brief Type-id of types recognized by serialbox
-/// 
+///
 /// \ingroup gridtools
 using type_id = serialbox::TypeID;
 

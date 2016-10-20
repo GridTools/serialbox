@@ -101,7 +101,7 @@ public:
   const FieldMetaInfo& getFieldMetaInfoOf(StringType&& name) const {
     return *getFieldMetaInfoPtrOf(std::forward<StringType>(name));
   }
-  
+
   /// \brief Get pointer to FieldMetaInfo of field `name`
   ///
   /// \param name  Name of the field

@@ -22,7 +22,7 @@ extern "C" {
 /**
  * \ingroup serialboxC
  * @{
- * 
+ *
  * \defgroup logging Logging methods
  * @{
  */

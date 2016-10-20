@@ -29,7 +29,7 @@
 #include <vector>
 
 /// \brief Check return type of NetCDF functions
-/// 
+///
 /// Assumes that there is a variable `int errorCode` in the current or a parent scope.
 #define NETCDF_CHECK(functionCall)                                                                 \
   if((errorCode = functionCall))                                                                   \
@@ -88,16 +88,14 @@ static int dispatchInt64(FunctionForLong&& functionForLong,
 }
 
 /// \brief Wrapper for write method
-static void write(int ncID, int varID, 
-          const std::vector<std::size_t>& startp,
-          const std::vector<std::size_t>& countp, 
-          const std::vector<std::ptrdiff_t>& stridep,
-          const std::vector<std::ptrdiff_t>& imapp, 
-          const StorageView& storageView) { 
+static void write(int ncID, int varID, const std::vector<std::size_t>& startp,
+                  const std::vector<std::size_t>& countp,
+                  const std::vector<std::ptrdiff_t>& stridep,
+                  const std::vector<std::ptrdiff_t>& imapp, const StorageView& storageView) {
   int errorCode;
 
   TypeID type = storageView.type();
-  
+
   switch(type) {
   case TypeID::Boolean:
     NETCDF_CHECK(nc_put_varm_text(ncID, varID, startp.data(), countp.data(), stridep.data(),
@@ -127,16 +125,13 @@ static void write(int ncID, int varID,
 }
 
 /// \brief Wrapper for read method
-static void read(int ncID, int varID, 
-          const std::vector<std::size_t>& startp,
-          const std::vector<std::size_t>& countp, 
-          const std::vector<std::ptrdiff_t>& stridep,
-          const std::vector<std::ptrdiff_t>& imapp, 
-          StorageView& storageView) {
+static void read(int ncID, int varID, const std::vector<std::size_t>& startp,
+                 const std::vector<std::size_t>& countp, const std::vector<std::ptrdiff_t>& stridep,
+                 const std::vector<std::ptrdiff_t>& imapp, StorageView& storageView) {
   int errorCode;
 
   TypeID type = storageView.type();
-  
+
   switch(type) {
   case TypeID::Boolean:
     NETCDF_CHECK(nc_get_varm_text(ncID, varID, startp.data(), countp.data(), stridep.data(),
@@ -289,7 +284,7 @@ FieldID NetCDFArchive::write(const StorageView& storageView, const std::string& 
   TypeID type = storageView.type();
   const std::vector<int>& dims = storageView.dims();
   const std::vector<int>& strides = storageView.strides();
-  
+
   std::size_t numDims = dims.size();
   std::size_t numDimsID = numDims + 1;
 
@@ -342,7 +337,7 @@ FieldID NetCDFArchive::write(const StorageView& storageView, const std::string& 
     countp[i + 1] = dims[i];
     imapp[i + 1] = strides[i];
   }
-  
+
   internal::write(ncID, varID, startp, countp, stridep, imapp, storageView);
 
   // Close file
@@ -401,7 +396,7 @@ void NetCDFArchive::writeToFile(std::string filename, const StorageView& storage
 
 void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID,
                          std::shared_ptr<FieldMetaInfo> info) const throw(Exception) {
-  
+
   if(mode_ != OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Read'");
 
@@ -409,10 +404,10 @@ void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID,
             << ") via NetCDFArchive ... ";
 
   int ncID, varID, errorCode;
-  
+
   const std::vector<int>& dims = storageView.dims();
   const std::vector<int>& strides = storageView.strides();
-  
+
   std::size_t numDims = dims.size();
   std::size_t numDimsID = numDims + 1;
 
@@ -445,7 +440,7 @@ void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID,
     countp[i + 1] = dims[i];
     imapp[i + 1] = strides[i];
   }
-  
+
   internal::read(ncID, varID, startp, countp, stridep, imapp, storageView);
 
   // Close file
@@ -456,10 +451,10 @@ void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID,
 
 void NetCDFArchive::readFromFile(std::string filename, StorageView& storageView,
                                  const std::string& field) {
-  
+
   if(!boost::filesystem::exists(filename))
     throw Exception("cannot open %s: file does not exist", filename);
-  
+
   int ncID, varID, errorCode;
 
   const std::vector<int>& dims = storageView.dims();

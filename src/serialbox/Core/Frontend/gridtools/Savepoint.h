@@ -29,7 +29,7 @@ namespace gridtools {
 /// Savepoints are primarily identified by their `name` and further distinguished by their
 /// `meta_info`. Savepoints are used within the \ref gridtools::serializer "serializer" to
 /// discriminate fields at different points in time.
-/// 
+///
 /// \ingroup gridtools
 class savepoint {
 public:
@@ -49,7 +49,7 @@ public:
   /// \param meta_info   Arguments forwarded to the constructor of meta_info_map
   savepoint(const std::string& name, meta_info_map meta_info)
       : savepointImpl_(std::make_shared<SavepointImpl>(name, *meta_info.impl())){};
-  
+
   /// \brief Copy constructor
   ///
   /// This performs a \i shallow copy, meaning the objects share the same underlying SavepointImpl.

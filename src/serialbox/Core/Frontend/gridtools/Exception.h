@@ -28,7 +28,7 @@ namespace gridtools {
 /// string.
 ///
 /// \see Exception
-/// 
+///
 /// \ingroup gridtools
 using exception = serialbox::Exception;
 

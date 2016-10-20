@@ -25,7 +25,7 @@
 namespace serialbox {
 
 /// \brief Represent an immutable meta information value as a type-id and type-erased data
-/// 
+///
 /// The MetaInfoValue can be implicitly casted to the supported types.
 class MetaInfoValue {
 public:

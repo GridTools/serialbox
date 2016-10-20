@@ -147,8 +147,7 @@ void BinaryArchive::updateMetaData() { writeMetaDataToJson(); }
 //     Writing
 //===------------------------------------------------------------------------------------------===//
 
-FieldID BinaryArchive::write(const StorageView& storageView,
-                             const std::string& field,
+FieldID BinaryArchive::write(const StorageView& storageView, const std::string& field,
                              const std::shared_ptr<FieldMetaInfo> info) throw(Exception) {
   if(mode_ == OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Write' or 'Append'");
@@ -233,7 +232,7 @@ FieldID BinaryArchive::write(const StorageView& storageView,
 
 void BinaryArchive::writeToFile(std::string filename, const StorageView& storageView) {
   // Create binary data buffer
-  std::size_t sizeInBytes = storageView.sizeInBytes();  
+  std::size_t sizeInBytes = storageView.sizeInBytes();
   std::vector<Byte> binaryData(sizeInBytes);
 
   Byte* dataPtr = binaryData.data();
@@ -247,9 +246,9 @@ void BinaryArchive::writeToFile(std::string filename, const StorageView& storage
         ++it, dataPtr += bytesPerElement)
       std::memcpy(dataPtr, it.ptr(), bytesPerElement);
   }
-  
+
   // Write binaryData to disk
-  std::ofstream fs(filename, std::ios::out | std::ios::binary | std::ios::trunc);  
+  std::ofstream fs(filename, std::ios::out | std::ios::binary | std::ios::trunc);
   fs.write(binaryData.data(), sizeInBytes);
   fs.close();
 }
@@ -312,7 +311,7 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID,
 
 void BinaryArchive::readFromFile(std::string filename, StorageView& storageView) {
   boost::filesystem::path filepath(filename);
-  
+
   if(!boost::filesystem::exists(filepath))
     throw Exception("cannot open %s: file does not exist", filepath);
 

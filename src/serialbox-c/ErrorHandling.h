@@ -22,7 +22,7 @@ extern "C" {
 /**
  * \ingroup serialboxC
  * @{
- * 
+ *
  * \defgroup error Error-handling methods
  * @{
  */
@@ -81,10 +81,10 @@ void serialboxStateErrorHandler(const char* Reason);
 
 /**
  * \brief Check the current error state
- * 
- * This function requires to set the ErrorHandler to `serialboxStateErrorHandler`. To obtain the 
+ *
+ * This function requires to set the ErrorHandler to `serialboxStateErrorHandler`. To obtain the
  * associated error message, use `serialboxStateErrorHandlerGetErrorMessage`.
- * 
+ *
  * \return 1 if there was an error, 0 otherwise
  */
 int serialboxStateErrorHandlerHasError(void);
@@ -94,7 +94,7 @@ int serialboxStateErrorHandlerHasError(void);
  *
  * This function requires to set the ErrorHandler to `serialboxStateErrorHandler`.
  *
- * \return newly allocated `char*` with the current error message 
+ * \return newly allocated `char*` with the current error message
  */
 char* serialboxStateErrorHandlerGetErrorMessage(void);
 

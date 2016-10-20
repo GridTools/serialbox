@@ -24,7 +24,7 @@ extern "C" {
 /**
  * \ingroup serialboxC
  * @{
- * 
+ *
  * \defgroup savepoint Savepoint methods
  * @{
  */

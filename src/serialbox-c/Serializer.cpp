@@ -12,9 +12,9 @@
  *
 \*===------------------------------------------------------------------------------------------===*/
 
+#include "serialbox-c/Serializer.h"
 #include "serialbox-c/Logging.h"
 #include "serialbox-c/Savepoint.h"
-#include "serialbox-c/Serializer.h"
 #include "serialbox-c/Utility.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Logging.h"
@@ -103,17 +103,11 @@ void serialboxSerializerUpdateMetaData(serialboxSerializer_t* serializer) {
   }
 }
 
-int serialboxSerializationStatus(void) { 
-  return Serializer::serializationStatus(); 
-}
+int serialboxSerializationStatus(void) { return Serializer::serializationStatus(); }
 
-void serialboxEnableSerialization(void) { 
-  Serializer::enableSerialization(); 
-}
+void serialboxEnableSerialization(void) { Serializer::enableSerialization(); }
 
-void serialboxDisableSerialization(void) { 
-  Serializer::disableSerialization(); 
-}
+void serialboxDisableSerialization(void) { Serializer::disableSerialization(); }
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Global Meta-information
@@ -182,11 +176,11 @@ serialboxSerializerGetFieldnamesAtSavepoint(const serialboxSerializer_t* seriali
   const Savepoint* sp = toConstSavepoint(savepoint);
   const Serializer* ser = toConstSerializer(serializer);
   serialboxArrayOfString_t* array = NULL;
-  
+
   try {
     const auto& fieldnameMap = ser->savepointVector().fieldsOf(*sp);
     array = serialboxArrayOfStringCreate(fieldnameMap.size());
-    
+
     int i = 0;
     for(auto it = fieldnameMap.begin(), end = fieldnameMap.end(); it != end; ++it, ++i)
       array->data[i] = allocateAndCopyString(it->first);
@@ -194,7 +188,7 @@ serialboxSerializerGetFieldnamesAtSavepoint(const serialboxSerializer_t* seriali
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }
-  return array;  
+  return array;
 }
 
 /*===------------------------------------------------------------------------------------------===*\
@@ -270,7 +264,6 @@ int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* 
   }
   return 1;
 }
-
 
 serialboxArrayOfString_t*
 serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer) {

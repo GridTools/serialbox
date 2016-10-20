@@ -22,9 +22,9 @@ namespace serialbox {
 namespace gridtools {
 
 /// \brief Represent an immutable meta information value as a type-id and type-erased data
-/// 
+///
 /// \see MetaInfoValue
-/// 
+///
 /// \ingroup gridtools
 using meta_info_value = serialbox::MetaInfoValue;
 

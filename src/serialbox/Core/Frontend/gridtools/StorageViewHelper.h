@@ -45,7 +45,7 @@ std::vector<int> get_strides(const Storage& storage) {
 
   std::vector<int> strides_vec(n_dimensions);
   for(int i = 0; i < n_dimensions; ++i)
-    strides_vec[i] = 
+    strides_vec[i] =
         internal::get_stride_helper<typename Storage::storage_info_type::layout>(i, strides_array);
 
   return strides_vec;
@@ -63,7 +63,7 @@ std::vector<int> get_dims(const Storage& storage) noexcept {
   std::vector<int> dims_vec(n_dimensions);
   for(int i = 0; i < n_dimensions; ++i)
     dims_vec[i] = unaligned_dims_array[i];
-  
+
   return dims_vec;
 }
 
@@ -90,7 +90,7 @@ void* get_origin_ptr(const Storage& storage, unsigned int field_idx) noexcept {
   const auto& strides_array = storage.meta_data().m_strides;
 
   auto* data_ptr = storage.fields()[field_idx].get();
-  
+
   for(int i = 0; i < n_dimensions; ++i) {
     int lpad = left_padding_helper<typename Storage::storage_info_type::layout,
                                    Storage::storage_info_type::s_alignment,

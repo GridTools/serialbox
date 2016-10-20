@@ -29,7 +29,7 @@ namespace gridtools {
 ///
 /// They keys are strings (std::string), while the values can be booleans, integers (32 and 64 bit),
 /// floating point numbers (32 and 64 bit) or strings.
-/// 
+///
 /// \ingroup gridtools
 class meta_info_map {
 public:
@@ -74,7 +74,7 @@ public:
   /// \b Example
   /// \code
   ///   meta_info_map m1 = {{"key1", meta_info_value(4.0)}, {"key2", meta_info_value(2))}};
-  ///   meta_info_map m2(m1); 
+  ///   meta_info_map m2(m1);
   ///
   ///   m1.clear();
   ///   assert(m2.empty());    // m1 and m2 share the same MetaInfoMap, hence m2 is empty as well
@@ -131,7 +131,7 @@ public:
 
   /// \brief Construct with MetaInfoMap (internal use)
   explicit meta_info_map(const std::shared_ptr<MetaInfoMap>& map) { map_impl_ = map; }
-  
+
   /// \brief Check if key exists in the map
   ///
   /// \param key  Key to be searched for
@@ -215,7 +215,9 @@ public:
   /// @{
   iterator erase(const_iterator position) { return map_impl_->erase(position); }
   size_type erase(const key_type& key) { return map_impl_->erase(key); }
-  iterator erase(const_iterator first, const_iterator last) { return map_impl_->erase(first, last); }
+  iterator erase(const_iterator first, const_iterator last) {
+    return map_impl_->erase(first, last);
+  }
   /// @}
 
   /// \brief Return a reference to mapped value given by key
@@ -268,8 +270,8 @@ public:
   }
 
   /// \brief Get implementation pointer
-  const std::shared_ptr<MetaInfoMap>& impl() const { return map_impl_; } 
-  
+  const std::shared_ptr<MetaInfoMap>& impl() const { return map_impl_; }
+
 private:
   std::shared_ptr<MetaInfoMap> map_impl_;
 };

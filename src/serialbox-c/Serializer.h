@@ -15,18 +15,18 @@
 #ifndef SERIALBOX_C_SERIALIZER_H
 #define SERIALBOX_C_SERIALIZER_H
 
-#include "serialbox-c/Type.h"
 #include "serialbox-c/Array.h"
+#include "serialbox-c/Type.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * \defgroup serialboxC serialbox-c 
+ * \defgroup serialboxC serialbox-c
  * \brief C-Interface of Serialbox
  * @{
- * 
+ *
  * \defgroup serializer Serializer methods
  * @{
  */
@@ -94,11 +94,11 @@ void serialboxSerializerUpdateMetaData(serialboxSerializer_t* serializer);
 
 /**
  * \brief Indicate whether serialization is enabled [default: enabled]
- * 
+ *
  * The return value can be:
  *
  *  0: the variable is not yet initialized -> the serialization is enabled if the environment
- *     variable `STELLA_SERIALIZATION_DISABLE` or `SERIALBOX_SERIALIZATION_DISABLE` is not set to a 
+ *     variable `STELLA_SERIALIZATION_DISABLE` or `SERIALBOX_SERIALIZATION_DISABLE` is not set to a
  *     positive value. The first Serializer which is initialized has to set this value either to +1
  *     or to -1 according to the environment.
  * +1: the serialization is enabled, independently of the environment
@@ -240,10 +240,10 @@ int serialboxSerializerHasField(serialboxSerializer_t* serializer, const char* f
  * \return 1 if field was added successfully, 0 otherwise
  */
 int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* name,
-                                  serialboxTypeID type, int bytesPerElement, int iSize, int jSize,
-                                  int kSize, int lSize, int iMinusHalo, int iPlusHalo,
-                                  int jMinusHalo, int jPlusHalo, int kMinusHalo, int kPlusHalo,
-                                  int lMinusHalo, int lPlusHalo);
+                                 serialboxTypeID type, int bytesPerElement, int iSize, int jSize,
+                                 int kSize, int lSize, int iMinusHalo, int iPlusHalo,
+                                 int jMinusHalo, int jPlusHalo, int kMinusHalo, int kPlusHalo,
+                                 int lMinusHalo, int lPlusHalo);
 
 /**
  * \brief Get an array of C-strings of all names of the registered fields

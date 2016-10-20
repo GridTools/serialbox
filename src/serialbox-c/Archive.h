@@ -24,7 +24,7 @@ extern "C" {
 /**
  * \ingroup serialboxC
  * @{
- * 
+ *
  * \defgroup archive Archive methods
  * @{
  */

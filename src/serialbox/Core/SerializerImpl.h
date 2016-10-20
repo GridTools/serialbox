@@ -103,7 +103,7 @@ public:
 
   /// \brief Access prefix of all filenames
   const std::string& prefix() const noexcept { return prefix_; }
-  
+
   /// \brief Name of the archive in use
   const std::string& archiveName() const noexcept { return archive_->name(); }
 

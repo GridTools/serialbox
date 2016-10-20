@@ -22,16 +22,16 @@ char* serialboxConfigOptions(void) {
   // BOOST_LIB_VERSION
   options += "BOOST_VERSION=" BOOST_LIB_VERSION ";";
 
-  // SERIALBOX_HAS_OPENSSL
+// SERIALBOX_HAS_OPENSSL
 #ifdef SERIALBOX_HAS_OPENSSL
   options += "SERIALBOX_HAS_OPENSSL=" + std::to_string(SERIALBOX_HAS_OPENSSL) + ";";
 #endif
-  
+
 #ifdef SERIALBOX_HAS_NETCDF
   // SERIALBOX_HAS_NETCDF
   options += "SERIALBOX_HAS_NETCDF=" + std::to_string(SERIALBOX_HAS_NETCDF) + ";";
 #endif
-  
+
   // SERIALBOX_CXX_COMPILER
   options += "SERIALBOX_CXX_COMPILER=" SERIALBOX_CXX_COMPILER_STRING ";";
 

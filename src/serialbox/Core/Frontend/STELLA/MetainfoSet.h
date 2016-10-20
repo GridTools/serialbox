@@ -31,7 +31,7 @@ namespace stella {
 /// Objects of this class contain a set of metainformation in form of key = value pair. The keys
 /// are strings, while the values can be integers, booleans, floating point numbers (either single
 /// or double precision) or strings.
-/// 
+///
 /// \ingroup STELLA
 class MetainfoSet {
 public:

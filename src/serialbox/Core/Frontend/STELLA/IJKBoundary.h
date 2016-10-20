@@ -31,7 +31,7 @@ namespace stella {
 ///            |
 ///            v j-minus
 /// \endverbatim
-/// 
+///
 /// \ingroup STELLA
 class IJKBoundary {
 public:

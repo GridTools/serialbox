@@ -22,7 +22,7 @@ namespace serialbox {
 namespace stella {
 
 /// \brief Container for i, j, k Size
-/// 
+///
 /// \ingroup STELLA
 class IJKSize {
 public:

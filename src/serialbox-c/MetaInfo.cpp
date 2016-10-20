@@ -177,7 +177,7 @@ int serialboxMetaInfoAddString(serialboxMetaInfo_t* metaInfo, const char* key, c
 }
 
 int serialboxMetaInfoAddArrayOfString(serialboxMetaInfo_t* metaInfo, const char* key,
-                                     const serialboxArrayOfString_t* array) {
+                                      const serialboxArrayOfString_t* array) {
   MetaInfoMap* map = toMetaInfoMap(metaInfo);
   serialbox::Array<std::string> vec(array->len);
   for(std::size_t i = 0; i < vec.size(); ++i)

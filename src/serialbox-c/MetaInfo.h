@@ -25,7 +25,7 @@ extern "C" {
 /**
  * \ingroup serialboxC
  * @{
- * 
+ *
  * \defgroup metainfo Meta-info methods
  * @{
  */
@@ -180,8 +180,7 @@ int serialboxMetaInfoAddFloat32(serialboxMetaInfo_t* metaInfo, const char* key,
                                 serialboxFloat32_t value);
 int serialboxMetaInfoAddFloat64(serialboxMetaInfo_t* metaInfo, const char* key,
                                 serialboxFloat64_t value);
-int serialboxMetaInfoAddString(serialboxMetaInfo_t* metaInfo, const char* key,
-                               const char* value);
+int serialboxMetaInfoAddString(serialboxMetaInfo_t* metaInfo, const char* key, const char* value);
 /** @} */
 
 /**

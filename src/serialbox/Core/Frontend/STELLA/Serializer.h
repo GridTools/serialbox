@@ -31,12 +31,12 @@ namespace serialbox {
 
 namespace stella {
 
-/// \defgroup STELLA STELLA 
+/// \defgroup STELLA STELLA
 /// \brief STELLA frontend of Serialbox
 
 /// \enum SerializerOpenMode
 /// \brief OpenPolicy of the Serializer
-/// 
+///
 /// \ingroup STELLA
 enum SerializerOpenMode {
   SerializerOpenModeRead,
@@ -45,7 +45,7 @@ enum SerializerOpenMode {
 };
 
 /// \brief Implementation of the STELLA Serializer
-/// 
+///
 /// \ingroup STELLA
 class Serializer {
 public:

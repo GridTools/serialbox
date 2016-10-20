@@ -48,12 +48,12 @@ int SerializerImpl::enabled_ = 0;
 SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
                                const std::string& prefix, const std::string& archiveName)
     : mode_(mode), directory_(directory), prefix_(prefix) {
-  
+
   if(enabled_ == 0) {
     const char* envvar = std::getenv("SERIALBOX_SERIALIZATION_DISABLED");
     enabled_ = (envvar && std::atoi(envvar) > 0) ? -1 : 1;
   }
-  
+
   metaDataFile_ = directory_ / ("MetaData-" + prefix + ".json");
 
   savepointVector_ = std::make_shared<SavepointVector>();
@@ -100,7 +100,7 @@ std::vector<std::string> SerializerImpl::fieldnames() const {
 static inline bool dimsEqual(const std::vector<int>& dims1, const std::vector<int>& dims2) {
   if(dims1.size() != dims2.size())
     return false;
-  
+
   // If a dimensions is negative, 0 or 1 it is ignored. We have to do this as gridtools treats empty
   // dimensions as 0 while STELLA and Frotran usually set them to 1.
   for(std::size_t i = 0; i < dims1.size(); ++i)
@@ -143,7 +143,7 @@ void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoi
                            const StorageView& storageView) {
   if(SerializerImpl::serializationStatus() < 0)
     return;
-  
+
   LOG(info) << "Serializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";
 
   if(mode_ == OpenModeKind::Read)
@@ -197,7 +197,7 @@ void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoin
                           StorageView& storageView) {
   if(SerializerImpl::serializationStatus() < 0)
     return;
-  
+
   LOG(info) << "Deserializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";
 
   if(mode_ != OpenModeKind::Read)

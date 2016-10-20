@@ -25,7 +25,7 @@ namespace serialbox {
 namespace stella {
 
 /// \brief Implementation of the STELLA Savepoint
-/// 
+///
 /// \ingroup STELLA
 class Savepoint {
 public:
