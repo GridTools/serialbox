@@ -16,15 +16,21 @@
 #include "serialbox-c/Utility.h"
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 
-void serialboxArchiveGetRegisteredArchives(char*** archives, int* len) {
-  const auto archiveVector = serialbox::ArchiveFactory::getInstance().registeredArchives();
+using namespace serialboxC;
 
-  (*len) = (int)archiveVector.size();
-  (*archives) = (char**)std::malloc(archiveVector.size() * sizeof(char*));
+serialboxArrayOfString_t* serialboxArchiveGetRegisteredArchives(void) {
+  serialboxArrayOfString_t* array = NULL;
+  try {
+    const auto archiveVector = serialbox::ArchiveFactory::getInstance().registeredArchives();
 
-  if(!(*archives))
-    serialboxFatalError("out of memory");
+    array = allocate<serialboxArrayOfString_t>();
+    array->len = (int)archiveVector.size();
+    array->data = allocate<serialboxString_t>(array->len * sizeof(serialboxString_t));
 
-  for(std::size_t i = 0; i < archiveVector.size(); ++i)
-    (*archives)[i] = serialboxC::allocateAndCopyString(archiveVector[i]);
+    for(std::size_t i = 0; i < archiveVector.size(); ++i)
+      array->data[i] = allocateAndCopyString(archiveVector[i]);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+  return array;
 }

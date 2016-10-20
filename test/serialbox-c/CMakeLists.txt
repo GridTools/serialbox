@@ -11,6 +11,7 @@ cmake_minimum_required(VERSION 3.1)
 
 set(SOURCES 
   UnittestArchive.cpp
+  UnittestConfig.cpp
   UnittestLogging.cpp
   UnittestFieldMetaInfo.cpp
   UnittestErrorHandling.cpp

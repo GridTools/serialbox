@@ -34,16 +34,17 @@ namespace serialbox {
 /// instead.
 class SavepointImpl {
 public:
-  /// \brief Construct an empty savepoint (wihtout ´metaInfo´ i.e this->empty() == true)
+  /// \brief Construct an empty savepoint (wihtout `metaInfo` i.e this->empty() == true)
   template <class StringType,
             class = typename std::enable_if<!std::is_same<StringType, json::json>::value>::type>
   explicit SavepointImpl(const StringType& name)
       : name_(name), metaInfo_(std::make_shared<MetaInfoMap>()){};
 
-  /// \brief Construct savepoint with ´name´ and ´metaInfo´
+  /// \brief Construct savepoint with `name` and `metaInfo`
   template <class StringType, class MetaInfoType>
   SavepointImpl(StringType&& name, MetaInfoType&& metaInfo)
-      : name_(name), metaInfo_(std::make_shared<MetaInfoMap>(metaInfo)){};
+      : name_(name),
+        metaInfo_(std::make_shared<MetaInfoMap>(std::forward<MetaInfoType>(metaInfo))){};
 
   /// \brief Copy constructor
   SavepointImpl(const SavepointImpl& other) { *this = other; };
@@ -60,7 +61,7 @@ public:
   /// \brief Move assignment
   SavepointImpl& operator=(SavepointImpl&&) = default;
 
-  /// \brief Add a new ´key = value´ pair to the ´metaInfo´ of the Savepoint
+  /// \brief Add a new `key = value` pair to the `metaInfo` of the Savepoint
   ///
   /// \param key    Key of the new element
   /// \param value  Object to be copied to (or moved as) the value of the new element
@@ -72,12 +73,12 @@ public:
       throw Exception("cannot add element with key '%s' to metaInfo: element already exists", key);
   }
 
-  /// \brief Query ´metaInfo´ for key ´key´ and retrieve value as type ´T´
+  /// \brief Query `metaInfo` for key `key` and retrieve value as type `T`
   ///
   /// \param key    Key of the requested element
   ///
-  /// \throw Exception  Key ´key´ does not exist in the metaInfo map or value cannot be
-  ///                   converted to type ´T´
+  /// \throw Exception  Key `key` does not exist in the metaInfo map or value cannot be
+  ///                   converted to type `T`
   template <class T, class StringType>
   T getMetaInfoAs(StringType&& key) const {
     try {
@@ -139,7 +140,7 @@ protected:
 
 namespace std {
 
-/// \brief Specialization of ´std::hash<T>´ for [T = serialbox::Savepoint]
+/// \brief Specialization of `std::hash<T>` for [T = serialbox::Savepoint]
 ///
 /// Savepoints are hashed on their name (std::string). Although, the name of a savepoint is not
 /// unique, it is a reasoanble compromise as we assume there are only O(1) savepoints sharing the

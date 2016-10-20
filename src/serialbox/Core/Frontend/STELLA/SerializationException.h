@@ -24,6 +24,8 @@ namespace serialbox {
 namespace stella {
 
 /// \brief Exception of the STELLA frontend
+///
+/// \ingroup STELLA
 class SerializationException : public std::exception {
 public:
   /// \brief Default constructor
@@ -32,7 +34,7 @@ public:
   /// \brief Virtual destructor
   virtual ~SerializationException() throw() {}
 
-  /// \brief Initialize the exception with an explanatory string ´errormsg´
+  /// \brief Initialize the exception with an explanatory string `errormsg`
   void Init(const std::string& errormsg) { message_ = errormsg; }
 
   /// \brief Returns an explanatory string

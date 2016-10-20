@@ -75,8 +75,13 @@ void FieldMetaInfo::fromJSON(const json::json& jsonNode) {
   }
 }
 
+std::string FieldMetaInfo::toString() const {
+  std::string str = toJSON().dump(4);
+  return str;
+}
+
 std::ostream& operator<<(std::ostream& stream, const FieldMetaInfo& f) {
-  return (stream << f.toJSON().dump(4));
+  return (stream << f.toString());
 }
 
 } // namespace serialbox

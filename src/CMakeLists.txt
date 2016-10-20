@@ -51,18 +51,18 @@ function(serialbox_add_library
     set_target_properties(${target}Objects PROPERTIES COMPILE_FLAGS -Wall)
   endif(SERIALBOX_VERBOSE_WARNINGS)
 
-  ## Set properties for code-coverage
-  if(DEFINED COVERAGE_SUPPORTED)
-    set_property(TARGET ${target}Objects PROPERTY COMPILE_FLAGS ${CMAKE_CXX_FLAGS_COVERAGE})
-    set_property(TARGET ${target}Objects PROPERTY LINK_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})
-    set_property(TARGET ${target}Objects PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
-  endif()
-
   if(NOT("${objects}" STREQUAL ""))
     set(OBJECT_SOURCES)
     foreach(object ${objects})
       list(APPEND OBJECT_SOURCES $<TARGET_OBJECTS:${object}>)
     endforeach()
+  endif()
+  
+  ## Set properties for code-coverage
+  if(DEFINED COVERAGE_SUPPORTED)
+    set_property(TARGET ${target}Objects PROPERTY COMPILE_FLAGS ${CMAKE_CXX_FLAGS_COVERAGE})
+    set_property(TARGET ${target}Objects PROPERTY LINK_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})
+    set_property(TARGET ${target}Objects PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
   endif()
 
   ## Build static library
@@ -74,6 +74,10 @@ function(serialbox_add_library
     
     target_link_libraries(${target}Static ${libraries})
     install(TARGETS ${target}Static DESTINATION lib)
+    
+    if(DEFINED COVERAGE_SUPPORTED)
+      set_property(TARGET ${target}Static PROPERTY LINK_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})
+    endif()
   endif()
 
   ## Build shared library
@@ -90,6 +94,10 @@ function(serialbox_add_library
     
     target_link_libraries(${target}Shared ${libraries})
     install(TARGETS ${target}Shared DESTINATION lib)
+    
+    if(DEFINED COVERAGE_SUPPORTED)
+      set_property(TARGET ${target}Shared PROPERTY LINK_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})
+    endif()
   endif()
   
   ## Add symlinks of the shared library to the path "addSymlinksTo"
@@ -107,6 +115,7 @@ function(serialbox_add_library
          ${path}/$<TARGET_FILE_NAME:${target}Shared>)
     endforeach()
   endif()
+  
 endfunction(serialbox_add_library)
 
 ## Add subdirectories

@@ -100,7 +100,7 @@ TEST_F(BinaryArchiveUtilityTest, MetaData) {
   BinaryArchive archiveWrite(OpenModeKind::Write, this->directory->path().string(), "field");
 
   auto sv_u_0_input = u_0_input.toStorageView();
-  archiveWrite.write(sv_u_0_input, "u");
+  archiveWrite.write(sv_u_0_input, "u", nullptr);
   archiveWrite.updateMetaData();
 
   // Read meta data file to get in memory copy
@@ -171,7 +171,7 @@ TEST_F(BinaryArchiveUtilityTest, toString) {
 
   BinaryArchive archive(OpenModeKind::Write, this->directory->path().string(), "field");
   StorageView sv = storage.toStorageView();
-  archive.write(sv, "storage");
+  archive.write(sv, "storage", nullptr);
 
   ss << archive;
   EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "BinaryArchive"));
@@ -180,6 +180,27 @@ TEST_F(BinaryArchiveUtilityTest, toString) {
   EXPECT_NE(ss.str().find("prefix"), std::string::npos);
   EXPECT_NE(ss.str().find("fieldsTable"), std::string::npos);
 }
+
+TEST_F(BinaryArchiveUtilityTest, writeAndRead) {
+  using Storage = Storage<double>;
+  Storage storage_input(Storage::ColMajor, {5, 2, 5}, Storage::random);
+  Storage storage_output(Storage::ColMajor, {5, 2, 5});
+
+  auto sv_input = storage_input.toStorageView();
+  auto sv_output = storage_output.toStorageView();
+  
+  // Write and read from file
+  BinaryArchive::writeToFile((this->directory->path() / "test.dat").string(), sv_input);
+
+  BinaryArchive::readFromFile((this->directory->path() / "test.dat").string(), sv_output);
+
+  ASSERT_TRUE(Storage::verify(storage_input, storage_output));
+
+  // Read from non-existing file -> Exception
+  ASSERT_THROW(BinaryArchive::readFromFile((this->directory->path() / "X.dat").string(), sv_output),
+               Exception);
+}
+
 
 //===------------------------------------------------------------------------------------------===//
 //     Read/Write tests
@@ -243,7 +264,7 @@ TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
     // u: id = 0
     {
       auto sv = u_0_input.toStorageView();
-      FieldID fieldID = archiveWrite.write(sv, "u");
+      FieldID fieldID = archiveWrite.write(sv, "u", nullptr);
       ASSERT_EQ(fieldID.name, "u");
       ASSERT_EQ(fieldID.id, 0);
     }
@@ -251,7 +272,7 @@ TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
     // u:  id = 1
     {
       auto sv = u_1_input.toStorageView();
-      FieldID fieldID = archiveWrite.write(sv, "u");
+      FieldID fieldID = archiveWrite.write(sv, "u", nullptr);
       ASSERT_EQ(fieldID.name, "u");
       ASSERT_EQ(fieldID.id, 1);
     }
@@ -259,7 +280,7 @@ TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
     // u:  id = 2
     {
       auto sv = u_2_input.toStorageView();
-      FieldID fieldID = archiveWrite.write(sv, "u");
+      FieldID fieldID = archiveWrite.write(sv, "u", nullptr);
       ASSERT_EQ(fieldID.name, "u");
       ASSERT_EQ(fieldID.id, 2);
     }
@@ -267,7 +288,7 @@ TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
     // v:  id = 0
     {
       auto sv = v_0_input.toStorageView();
-      FieldID fieldID = archiveWrite.write(sv, "v");
+      FieldID fieldID = archiveWrite.write(sv, "v", nullptr);
       ASSERT_EQ(fieldID.name, "v");
       ASSERT_EQ(fieldID.id, 0);
     }
@@ -275,7 +296,7 @@ TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
     // v:  id = 1
     {
       auto sv = v_1_input.toStorageView();
-      FieldID fieldID = archiveWrite.write(sv, "v");
+      FieldID fieldID = archiveWrite.write(sv, "v", nullptr);
       ASSERT_EQ(fieldID.name, "v");
       ASSERT_EQ(fieldID.id, 1);
     }
@@ -283,32 +304,32 @@ TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
     // v:  id = 2
     {
       auto sv = v_2_input.toStorageView();
-      FieldID fieldID = archiveWrite.write(sv, "v");
+      FieldID fieldID = archiveWrite.write(sv, "v", nullptr);
       ASSERT_EQ(fieldID.name, "v");
       ASSERT_EQ(fieldID.id, 2);
     }
 
     // Try to write already existing data
     auto sv_v_1 = v_1_input.toStorageView();
-    ASSERT_EQ(archiveWrite.write(sv_v_1, "v"), (FieldID{"v", 1}));
+    ASSERT_EQ(archiveWrite.write(sv_v_1, "v", nullptr), (FieldID{"v", 1}));
 
     // storage 2d
     auto sv_2d_0_input = storage_2d_0_input.toStorageView();
-    archiveWrite.write(sv_2d_0_input, "storage_2d");
+    archiveWrite.write(sv_2d_0_input, "storage_2d", nullptr);
 
     auto sv_2d_1_input = storage_2d_1_input.toStorageView();
-    archiveWrite.write(sv_2d_1_input, "storage_2d");
+    archiveWrite.write(sv_2d_1_input, "storage_2d", nullptr);
 
     // storage 7d
     auto sv_7d_0_input = storage_7d_0_input.toStorageView();
-    archiveWrite.write(sv_7d_0_input, "storage_7d");
+    archiveWrite.write(sv_7d_0_input, "storage_7d", nullptr);
 
     auto sv_7d_1_input = storage_7d_1_input.toStorageView();
-    archiveWrite.write(sv_7d_1_input, "storage_7d");
+    archiveWrite.write(sv_7d_1_input, "storage_7d", nullptr);
 
     // Check all exceptional cases
     auto sv_u_2_input = u_2_input.toStorageView();
-    ASSERT_THROW(archiveWrite.read(sv_u_2_input, FieldID{"u", 2}), Exception);
+    ASSERT_THROW(archiveWrite.read(sv_u_2_input, FieldID{"u", 2}, nullptr), Exception);
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -321,42 +342,42 @@ TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
 
     // u
     auto sv_u_0_output = u_0_output.toStorageView();
-    ASSERT_NO_THROW(archiveRead.read(sv_u_0_output, FieldID{"u", 0}));
+    ASSERT_NO_THROW(archiveRead.read(sv_u_0_output, FieldID{"u", 0}, nullptr));
 
     auto sv_u_1_output = u_1_output.toStorageView();
-    ASSERT_NO_THROW(archiveRead.read(sv_u_1_output, FieldID{"u", 1}));
+    ASSERT_NO_THROW(archiveRead.read(sv_u_1_output, FieldID{"u", 1}, nullptr));
 
     auto sv_u_2_output = u_2_output.toStorageView();
-    ASSERT_NO_THROW(archiveRead.read(sv_u_2_output, FieldID{"u", 2}));
+    ASSERT_NO_THROW(archiveRead.read(sv_u_2_output, FieldID{"u", 2}, nullptr));
 
     // v
     auto sv_v_0_output = v_0_output.toStorageView();
-    ASSERT_NO_THROW(archiveRead.read(sv_v_0_output, FieldID{"v", 0}));
+    ASSERT_NO_THROW(archiveRead.read(sv_v_0_output, FieldID{"v", 0}, nullptr));
 
     auto sv_v_1_output = v_1_output.toStorageView();
-    ASSERT_NO_THROW(archiveRead.read(sv_v_1_output, FieldID{"v", 1}));
+    ASSERT_NO_THROW(archiveRead.read(sv_v_1_output, FieldID{"v", 1}, nullptr));
 
     auto sv_v_2_output = v_2_output.toStorageView();
-    ASSERT_NO_THROW(archiveRead.read(sv_v_2_output, FieldID{"v", 2}));
+    ASSERT_NO_THROW(archiveRead.read(sv_v_2_output, FieldID{"v", 2}, nullptr));
 
     // Check all exceptional cases
-    ASSERT_THROW(archiveRead.write(sv_u_2_output, "u"), Exception);
-    ASSERT_THROW(archiveRead.read(sv_u_2_output, FieldID{"u", 1024}), Exception);
-    ASSERT_THROW(archiveRead.read(sv_u_2_output, FieldID{"not-a-field", 0}), Exception);
+    ASSERT_THROW(archiveRead.write(sv_u_2_output, "u", nullptr), Exception);
+    ASSERT_THROW(archiveRead.read(sv_u_2_output, FieldID{"u", 1024}, nullptr), Exception);
+    ASSERT_THROW(archiveRead.read(sv_u_2_output, FieldID{"not-a-field", 0}, nullptr), Exception);
 
     // storage 2d
     auto sv_2d_0_output = storage_2d_0_output.toStorageView();
-    ASSERT_NO_THROW(archiveRead.read(sv_2d_0_output, FieldID{"storage_2d", 0}));
+    ASSERT_NO_THROW(archiveRead.read(sv_2d_0_output, FieldID{"storage_2d", 0}, nullptr));
 
     auto sv_2d_1_output = storage_2d_1_output.toStorageView();
-    ASSERT_NO_THROW(archiveRead.read(sv_2d_1_output, FieldID{"storage_2d", 1}));
+    ASSERT_NO_THROW(archiveRead.read(sv_2d_1_output, FieldID{"storage_2d", 1}, nullptr));
 
     // storage 7d
     auto sv_7d_0_output = storage_7d_0_output.toStorageView();
-    ASSERT_NO_THROW(archiveRead.read(sv_7d_0_output, FieldID{"storage_7d", 0}));
+    ASSERT_NO_THROW(archiveRead.read(sv_7d_0_output, FieldID{"storage_7d", 0}, nullptr));
 
     auto sv_7d_1_output = storage_7d_1_output.toStorageView();
-    ASSERT_NO_THROW(archiveRead.read(sv_7d_1_output, FieldID{"storage_7d", 1}));
+    ASSERT_NO_THROW(archiveRead.read(sv_7d_1_output, FieldID{"storage_7d", 1}, nullptr));
   }
 
   // -----------------------------------------------------------------------------------------------

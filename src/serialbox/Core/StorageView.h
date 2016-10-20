@@ -67,7 +67,7 @@ public:
   /// \name Getter
   /// @{
 
-  /// \brief Get data pointer as type ´T´ of the origin of the data
+  /// \brief Get data pointer as type `T` of the origin of the data
   template <class T>
   T* originPtrAs() noexcept {
     return (T*)(originPtr_);

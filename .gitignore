@@ -6,12 +6,17 @@
 *~
 *.user
 *.project
+.idea
+*/unittest-tmp-dir/*
 
 # Build directories
 build.sh
 build*
 install*
 buildenv*
+
+# HTML docs
+docs/doxygen/*
 
 # External projects
 external/*

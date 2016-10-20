@@ -353,6 +353,9 @@ find_package(Doxygen)
 option(SERIALBOX_DOCUMENTATION 
        "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
 set(DOC_DIR ${PROJECT_SOURCE_DIR}/docs)
+if(SERIALBOX_DOCUMENTATION)
+  add_subdirectory(docs)
+endif()
 
 #---------------------------------------- ClangTools -----------------------------------------------
 find_package(ClangTools)
@@ -412,14 +415,13 @@ endif(SERIALBOX_CODE_COVERAGE)
 #---------------------------------------- Compilation ----------------------------------------------
 
 # Generate serialbox/Support/Config.h
-set(SERIALBOX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/src/serialbox/Core/Config.h.cmake)
-set(SERIALBOX_CONFIG_FILE ${CMAKE_BINARY_DIR}/src/serialbox/Core/Config.h)
 set(SERIALBOX_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
-configure_file(${SERIALBOX_CONFIG_FILE_IN} ${SERIALBOX_CONFIG_FILE})
+set(SERIALBOX_CXX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/src/serialbox/Core/Config.h.cmake)
+set(SERIALBOX_CXX_CONFIG_FILE ${CMAKE_BINARY_DIR}/src/serialbox/Core/Config.h)
+configure_file(${SERIALBOX_CXX_CONFIG_FILE_IN} ${SERIALBOX_CXX_CONFIG_FILE})
+install(FILES ${SERIALBOX_CXX_CONFIG_FILE} 
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox/Core)
 include_directories(${CMAKE_BINARY_DIR}/src)
-install(FILES ${SERIALBOX_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox/Core)
-
-enable_testing()
 
 # Setup include directories and glob the headers (for IDEs)
 set(SERIALBOX_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -447,6 +449,7 @@ add_subdirectory(src)
 
 ## Build unittests
 if(SERIALBOX_TESTING)
+  enable_testing()
   
   if(SERIALBOX_TESTING_DEATH_TESTS)
     add_definitions(-DSERIALBOX_RUN_DEATH_TESTS)

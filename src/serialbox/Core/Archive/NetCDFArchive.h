@@ -59,27 +59,57 @@ public:
   void writeMetaDataToJson();
 
   /// \name Archive implementation
-  /// \see serialbox::Archive "Archive"
+  /// \see Archive
   /// @{
-  virtual FieldID write(const StorageView& storageView,
-                        const std::string& fieldID) throw(Exception) override;
-  virtual void read(StorageView& storageView, const FieldID& fieldID) const
-      throw(Exception) override;
+  virtual FieldID write(const StorageView& storageView, const std::string& fieldID,
+                        const std::shared_ptr<FieldMetaInfo> info) throw(Exception) override;
+
+  virtual void read(StorageView& storageView, const FieldID& fieldID,
+                    std::shared_ptr<FieldMetaInfo> info) const throw(Exception) override;
+
   virtual void updateMetaData() override;
+
   virtual OpenModeKind mode() const override { return mode_; }
+
   virtual const std::string& directory() const override { return directory_.string(); }
+
   virtual const std::string& prefix() const override { return prefix_; }
+
   virtual const std::string& name() const override { return NetCDFArchive::Name; }
+
   virtual const std::string& metaDataFile() const override { return metaDatafile_.string(); }
+
   virtual std::ostream& toStream(std::ostream& stream) const override;
+
   virtual void clear() override;
+
   virtual bool isReadingThreadSafe() const override { return false; }
+
   virtual bool isWritingThreadSafe() const override { return false; }
   /// @}
 
   /// \brief Create a NetCDFArchive
   static std::unique_ptr<Archive> create(OpenModeKind mode, const std::string& directory,
                                          const std::string& prefix);
+
+  /// \brief Directly write field (given by `storageView`) to file
+  ///
+  /// \param filename     Newly created file (if file already exists, it's contents will be
+  ///                     discarded)
+  /// \param storageView  StorageView of the field
+  /// \param field        Name of the field
+  static void writeToFile(std::string filename, const StorageView& storageView,
+                          const std::string& field);
+
+  /// \brief Directly read field (given by `storageView`) from file
+  ///
+  /// This function can be used to implement stateless deserialization methods.
+  ////
+  /// \param filename     File to read from
+  /// \param storageView  StorageView of the field
+  /// \param field        Name of the field
+  static void readFromFile(std::string filename, StorageView& storageView,
+                           const std::string& field);
 
 private:
   OpenModeKind mode_;

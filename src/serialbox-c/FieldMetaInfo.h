@@ -21,6 +21,14 @@
 extern "C" {
 #endif
 
+/**
+ * \ingroup serialboxC
+ * @{
+ *
+ * \defgroup fieldmetainfo Field meta-info methods
+ * @{
+ */
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Construction & Destruction
 \*===------------------------------------------------------------------------------------------===*/
@@ -31,10 +39,19 @@ extern "C" {
  * \param type            TypeID of the described field
  * \param dimensions      Array of dimensions
  * \param numDimensions   Number of dimensions
- * \return refrence to the newly constructed FieldMetaInfo or NULL if an error occurred
+ * \return pointer to the newly constructed FieldMetaInfo or NULL if an error occurred
  */
 serialboxFieldMetaInfo_t* serialboxFieldMetaInfoCreate(serialboxTypeID type, const int* dimensions,
                                                        int numDimensions);
+
+/**
+ * \brief Copy construct the FieldMetaInfo
+ *
+ * \param other   FieldMetaInfo to copy from
+ * \return pointer to the newly constructed FieldMetaInfo or NULL if an error occurred
+ */
+serialboxFieldMetaInfo_t*
+serialboxFieldMetaInfoCreateFromFieldMetaInfo(const serialboxFieldMetaInfo_t* other);
 
 /**
  * \brief Destroy the field meta-information and deallocate all memory
@@ -48,14 +65,25 @@ void serialboxFieldMetaInfoDestroy(serialboxFieldMetaInfo_t* fieldMetaInfo);
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Check if FieldMetaInfo ´f1´ is equal to FieldMetaInfo ´f2´
+ * \brief Check if FieldMetaInfo `f1` is equal to FieldMetaInfo `f2`
  *
  * \param f1  First FieldMetaInfo to use
  * \param f2  Second FieldMetaInfo to use
- * \return 1 if ´f1 == f2´, 0 otherwise
+ * \return 1 if `f1 == f2`, 0 otherwise
  */
 int serialboxFieldMetaInfoEqual(const serialboxFieldMetaInfo_t* f1,
                                 const serialboxFieldMetaInfo_t* f2);
+
+/**
+ * \brief Convert to string
+ *
+ * The function will allocate a sufficiently large `char` buffer (using malloc()) which needs
+ * be freed by the user using free().
+ *
+ * \param fieldMetaInfo  Field meta-information to use
+ * \return String representation of the FieldMetaInfo
+ */
+char* serialboxFieldMetaInfoToString(const serialboxFieldMetaInfo_t* fieldMetaInfo);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Dimensions and TypeID
@@ -74,8 +102,8 @@ serialboxTypeID serialboxFieldMetaInfoGetTypeID(const serialboxFieldMetaInfo_t* 
  *
  *
  * \param fieldMetaInfo  Field meta-information to use
- * \return dimensions of the field as an array of ´int´s of size
- * ´serialboxFieldMetaInfoGetNumDimensions´
+ * \return dimensions of the field as an array of `int`s of size
+ * `serialboxFieldMetaInfoGetNumDimensions`
  */
 const int* serialboxFieldMetaInfoGetDimensions(const serialboxFieldMetaInfo_t* fieldMetaInfo);
 
@@ -92,13 +120,15 @@ int serialboxFieldMetaInfoGetNumDimensions(const serialboxFieldMetaInfo_t* field
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Allocate a new ´serialboxMetaInfo_t´ which maps to the meta-information of the Field
+ * \brief Allocate a new `serialboxMetaInfo_t` which maps to the meta-information of the Field
  * meta-information
  *
  * \param fieldMetaInfo  Field meta-information to use
  * \return meta-information of the field
  */
 serialboxMetaInfo_t* serialboxFieldMetaInfoGetMetaInfo(serialboxFieldMetaInfo_t* fieldMetaInfo);
+
+/** @} @} */
 
 #ifdef __cplusplus
 }

@@ -1,18 +1,18 @@
-//===-- serialbox/Core/Config.h -----------------------------------------------------*- C++ -*-===//
-//
-//                                    S E R I A L B O X
-//
-// This file is distributed under terms of BSD license.
-// See LICENSE.txt for more information
-//
-//===------------------------------------------------------------------------------------------===//
-//
-// ${SERIALBOX_CONFIG_FILE_DISCLAIMER}
-//
-// This generated file is for internal use. Do not include it from other headers, use Compiler.h
-// instead.
-//
-//===------------------------------------------------------------------------------------------===//
+/*===-- serialbox/Core/Config.h -----------------------------------------------------*- C++ -*-===*\
+ *
+ *                                    S E R I A L B O X
+ *
+ * This file is distributed under terms of BSD license.
+ * See LICENSE.txt for more information
+ *
+ *===------------------------------------------------------------------------------------------===//
+ *
+ *! \file
+ *! ${SERIALBOX_CONFIG_FILE_DISCLAIMER}
+ *!
+ *! This generated file contains platform specific definitions.
+ *
+\*===------------------------------------------------------------------------------------------===*/
 
 #ifndef SERIALBOX_CORE_CONFIG_H
 #define SERIALBOX_CORE_CONFIG_H
@@ -45,3 +45,4 @@
 #cmakedefine SERIALBOX_HAS_NETCDF ${SERIALBOX_HAS_NETCDF}
 
 #endif
+

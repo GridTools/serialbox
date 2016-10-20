@@ -18,6 +18,7 @@
 #include "serialbox/Core/FieldMetaInfo.h"
 #include "serialbox/Core/Frontend/gridtools/Exception.h"
 #include "serialbox/Core/Frontend/gridtools/MetaInfoMap.h"
+#include "serialbox/Core/Frontend/gridtools/Type.h"
 #include <memory>
 
 namespace serialbox {
@@ -25,10 +26,12 @@ namespace serialbox {
 namespace gridtools {
 
 /// \brief Meta-information of a data field
+///
+/// \ingroup gridtools
 class field_meta_info {
 public:
   /// \brief Default constructor
-  field_meta_info() : fieldMetaInfoImpl_(std::make_shared<FieldMetaInfo>()){};
+  field_meta_info() : field_meta_info_impl_(std::make_shared<FieldMetaInfo>()){};
 
   /// \brief Construct field meta-information
   ///
@@ -37,8 +40,8 @@ public:
   /// \param type      Type of the field
   /// \param dims      Dimension of the field
   /// \param metaInfo  Meta-information of the field
-  field_meta_info(TypeID type, const std::vector<int>& dims, const MetaInfoMap& metaInfo)
-      : fieldMetaInfoImpl_(std::make_shared<FieldMetaInfo>(type, dims, metaInfo)) {}
+  field_meta_info(type_id type, const std::vector<int>& dims, const meta_info_map& meta_info)
+      : field_meta_info_impl_(std::make_shared<FieldMetaInfo>(type, dims, *meta_info.impl())) {}
 
   /// \brief Construct field meta-information
   ///
@@ -46,8 +49,8 @@ public:
   ///
   /// \param type      Type of the field
   /// \param dims      Dimension of the field
-  field_meta_info(TypeID type, const std::vector<int>& dims)
-      : fieldMetaInfoImpl_(std::make_shared<FieldMetaInfo>(type, dims)) {}
+  field_meta_info(type_id type, const std::vector<int>& dims)
+      : field_meta_info_impl_(std::make_shared<FieldMetaInfo>(type, dims)) {}
 
   /// \brief Copy constructor
   ///
@@ -56,11 +59,11 @@ public:
   ///
   /// \b Example
   /// \code
-  ///   meta_info_map m1(TypeID::Float32, std::vector<int>{10, 23, 30});
-  ///   meta_info_map m2 = m1;
+  ///   field_meta_info f1(type_id::Float32, std::vector<int>{10, 23, 30});
+  ///   field_meta_info f2(f1);
   ///
-  ///   m1.meta_info().insert("key", true);
-  ///   assert(m1 == m2); // m1 and m2 are equal as they share the same FieldMetaInfo
+  ///   f1.meta_info().insert("key", true);
+  ///   assert(f1 == f2); // f1 and f2 are equal as they share the same FieldMetaInfo
   /// \endcode
   ///
   /// \see field_meta_info::clone()
@@ -76,11 +79,11 @@ public:
   ///
   /// \b Example
   /// /// \code
-  ///   meta_info_map m1(TypeID::Float32, std::vector<int>{10, 23, 30});
-  ///   meta_info_map m2 = m1;
+  ///   field_meta_info f1(type_id::Float32, std::vector<int>{10, 23, 30});
+  ///   field_meta_info f2 = f1;
   ///
-  ///   m1.meta_info().insert("key", true);
-  ///   assert(m1 == m2); // m1 and m2 are equal as they share the same FieldMetaInfo
+  ///   f1.meta_info().insert("key", true);
+  ///   assert(f1 == f2); // f1 and f2 are equal as they share the same FieldMetaInfo
   /// \endcode
   ///
   /// \see field_meta_info::clone()
@@ -93,52 +96,61 @@ public:
   ///
   /// \b Example
   /// \code
-  ///   meta_info_map m1(TypeID::Float32, std::vector<int>{10, 23, 30});
-  ///   meta_info_map m2 = m1.clone();
+  ///   field_meta_info f1(type_id::Float32, std::vector<int>{10, 23, 30});
+  ///   field_meta_info f2 = f1.clone();
   ///
-  ///   m1.meta_info().insert("key", true);
-  ///   assert(m1 != m2); // m1 and m2 are NOT equal as the don't share the same FieldMetaInfo
+  ///   f1.meta_info().insert("key", true);
+  ///   assert(f1 != f2); // f1 and f2 are NOT equal as the don't share the same FieldMetaInfo
   /// \endcode
   field_meta_info clone() const {
-    return field_meta_info(std::make_shared<FieldMetaInfo>(*fieldMetaInfoImpl_));
+    return field_meta_info(std::make_shared<FieldMetaInfo>(*field_meta_info_impl_));
+  }
+
+  /// \brief Construct with FieldMetaInfo (internal use)
+  explicit field_meta_info(const std::shared_ptr<FieldMetaInfo>& field_meta_info_ptr) {
+    field_meta_info_impl_ = field_meta_info_ptr;
   }
 
   /// \brief Swap with other
   void swap(field_meta_info& other) noexcept {
-    fieldMetaInfoImpl_->swap(*other.fieldMetaInfoImpl_);
+    field_meta_info_impl_->swap(*other.field_meta_info_impl_);
   };
 
   /// \brief Test for equality
   bool operator==(const field_meta_info& right) const noexcept {
-    *fieldMetaInfoImpl_ == *right.fieldMetaInfoImpl_;
+    return (*field_meta_info_impl_ == *right.field_meta_info_impl_);
   }
 
   /// \brief Test for inequality
   bool operator!=(const field_meta_info& right) const noexcept { return (!(*this == right)); }
 
-  /// \brief Access TypeID
+  /// \brief Access type_id
   /// @{
-  TypeID& type() noexcept { return fieldMetaInfoImpl_->type(); }
-  const TypeID& type() const noexcept { return fieldMetaInfoImpl_->type(); }
+  type_id& type() noexcept { return field_meta_info_impl_->type(); }
+  const type_id& type() const noexcept { return field_meta_info_impl_->type(); }
   /// @}
 
   /// \brief Access dimensions
   /// @{
-  std::vector<int>& dims() noexcept { return fieldMetaInfoImpl_->dims(); }
-  const std::vector<int>& dims() const noexcept { return fieldMetaInfoImpl_->dims(); }
+  std::vector<int>& dims() noexcept { return field_meta_info_impl_->dims(); }
+  const std::vector<int>& dims() const noexcept { return field_meta_info_impl_->dims(); }
   /// @}
 
   /// \brief Access meta-info map
-  meta_info_map meta_info() const noexcept { return meta_info(fieldMetaInfoImpl_->metaInfoPtr()); }
-
-  /// \brief Convert to stream
-  template <class StreamType>
-  friend std::ostream& operator<<(StreamType&& stream, const field_meta_info& f) {
-    return (stream << *f.mapImpl_);
+  meta_info_map meta_info() const noexcept {
+    return meta_info_map(field_meta_info_impl_->metaInfoPtr());
   }
 
+  /// \brief Convert to stream
+  friend std::ostream& operator<<(std::ostream& stream, const field_meta_info& f) {
+    return (stream << *f.field_meta_info_impl_);
+  }
+
+  /// \brief Get implementation pointer
+  const std::shared_ptr<FieldMetaInfo>& impl() const { return field_meta_info_impl_; }
+
 private:
-  std::shared_ptr<FieldMetaInfo> fieldMetaInfoImpl_;
+  std::shared_ptr<FieldMetaInfo> field_meta_info_impl_;
 };
 
 } // namespace gridtools

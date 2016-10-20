@@ -64,12 +64,16 @@ TEST_F(CFieldMetaInfoTest, Test) {
   }
 
   //
+  // Copy construct
+  //
+
+  serialboxFieldMetaInfo_t* info2 = serialboxFieldMetaInfoCreateFromFieldMetaInfo(info);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  
+  //
   // Comparison
   //
-  dimensions[0] = 1024;
-  serialboxFieldMetaInfo_t* info2 = serialboxFieldMetaInfoCreate(type, dimensions, 3);
-  ASSERT_TRUE(serialboxFieldMetaInfoEqual(info, info));
-  ASSERT_FALSE(serialboxFieldMetaInfoEqual(info, info2));
+  ASSERT_TRUE(serialboxFieldMetaInfoEqual(info, info2));
 
   //
   // Release memory

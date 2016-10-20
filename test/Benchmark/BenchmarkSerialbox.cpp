@@ -79,7 +79,8 @@ TEST_P(SerialboxBenchmark, Benchmark) {
     double timingWrite = 0.0;
     {
       for(int n = 0; n < BenchmarkEnvironment::NumRepetitions; ++n) {
-        SerializerImpl ser_write(OpenModeKind::Write, this->directory->path().string(), "field", GetParam());
+        SerializerImpl ser_write(OpenModeKind::Write, this->directory->path().string(), "field",
+                                 GetParam());
 
         timingWrite += writeField(ser_write, "data1", data1, savepoint);
         timingWrite += writeField(ser_write, "data2", data2, savepoint);
@@ -97,7 +98,8 @@ TEST_P(SerialboxBenchmark, Benchmark) {
     double timingRead = 0.0;
     {
       for(int n = 0; n < BenchmarkEnvironment::NumRepetitions; ++n) {
-        SerializerImpl ser_read(OpenModeKind::Read, this->directory->path().string(), "field", GetParam());
+        SerializerImpl ser_read(OpenModeKind::Read, this->directory->path().string(), "field",
+                                GetParam());
 
         timingRead += readField(ser_read, "data1", data1, savepoint);
         timingRead += readField(ser_read, "data2", data2, savepoint);

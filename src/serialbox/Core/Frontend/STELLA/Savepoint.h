@@ -25,9 +25,11 @@ namespace serialbox {
 namespace stella {
 
 /// \brief Implementation of the STELLA Savepoint
+///
+/// \ingroup STELLA
 class Savepoint {
 public:
-  /// \brief Construct empty savepoint with name ´name´
+  /// \brief Construct empty savepoint with name `name`
   Savepoint();
 
   /// \brief Initialize the savepoint

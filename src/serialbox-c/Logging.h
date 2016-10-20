@@ -20,9 +20,17 @@ extern "C" {
 #endif
 
 /**
+ * \ingroup serialboxC
+ * @{
+ *
+ * \defgroup logging Logging methods
+ * @{
+ */
+
+/**
  * \brief Enable logging
  *
- * By default, the logging is disabled. If ´SERIALBOX_DISABLE_LOGGING´ is defined, the function
+ * By default, the logging is disabled. If `SERIALBOX_DISABLE_LOGGING` is defined, the function
  * does nothing.
  */
 void serialboxLoggingEnable(void);
@@ -30,7 +38,7 @@ void serialboxLoggingEnable(void);
 /**
  * \brief Disable logging
  *
- * By default, the logging is disabled. If ´SERIALBOX_DISABLE_LOGGING´ is defined, the function
+ * By default, the logging is disabled. If `SERIALBOX_DISABLE_LOGGING` is defined, the function
  * does nothing.
  */
 void serialboxLoggingDisable(void);
@@ -41,6 +49,8 @@ void serialboxLoggingDisable(void);
  * \return 1 if logging is enabled, 0 otherwise
  */
 int serialboxLoggingIsEnabled(void);
+
+/** @} @} */
 
 #ifdef __cplusplus
 }

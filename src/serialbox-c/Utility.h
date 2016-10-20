@@ -36,7 +36,7 @@ using FieldMetaInfo = serialbox::FieldMetaInfo;
 using Savepoint = serialbox::SavepointImpl;
 using MetaInfoMap = serialbox::MetaInfoMap;
 
-/// \brief Convert ´serialboxSerializer_t´ to ´Serializer´
+/// \brief Convert `serialboxSerializer_t` to `Serializer`
 /// @{
 inline Serializer* toSerializer(serialboxSerializer_t* serializer) {
   if(!serializer->impl)
@@ -51,7 +51,7 @@ inline const Serializer* toConstSerializer(const serialboxSerializer_t* serializ
 }
 /// @}
 
-/// \brief Convert ´serialboxSavepoint_t´ to ´Savepoint´
+/// \brief Convert `serialboxSavepoint_t` to `Savepoint`
 /// @{
 inline Savepoint* toSavepoint(serialboxSavepoint_t* savepoint) {
   if(!savepoint->impl)
@@ -66,7 +66,7 @@ inline const Savepoint* toConstSavepoint(const serialboxSavepoint_t* savepoint) 
 }
 /// @}
 
-/// \brief Convert ´serialboxFieldMetaInfo_t´ to ´FieldMetaInfo´
+/// \brief Convert `serialboxFieldMetaInfo_t` to `FieldMetaInfo`
 /// @{
 inline FieldMetaInfo* toFieldMetaInfo(serialboxFieldMetaInfo_t* fieldMetaInfo) {
   if(!fieldMetaInfo->impl)
@@ -81,7 +81,7 @@ inline const FieldMetaInfo* toConstFieldMetaInfo(const serialboxFieldMetaInfo_t*
 }
 /// @}
 
-/// \brief Convert ´serialboxMetaInfo_t´ to ´MetaInfoMap´
+/// \brief Convert `serialboxMetaInfo_t` to `MetaInfoMap`
 /// @{
 inline MetaInfoMap* toMetaInfoMap(serialboxMetaInfo_t* metaInfo) {
   if(!metaInfo->impl)
@@ -96,7 +96,7 @@ inline const MetaInfoMap* toConstMetaInfoMap(const serialboxMetaInfo_t* metaInfo
 }
 /// @}
 
-/// \brief Copy string into ´char*´ buffer
+/// \brief Copy string into `char*` buffer
 template <class StringType>
 inline char* allocateAndCopyString(StringType&& str) {
   char* buffer = NULL;
@@ -108,10 +108,20 @@ inline char* allocateAndCopyString(StringType&& str) {
   return buffer;
 }
 
-/// \brief Allocate memory for type ´T´ via malloc
+/// \brief Allocate memory for type `T` via malloc
 template <class T>
 T* allocate() noexcept {
   T* data = (T*)std::malloc(sizeof(T));
+  if(!data)
+    serialboxFatalError("out of memory");
+  std::memset(data, 0, sizeof(T));
+  return data;
+}
+
+/// \brief Allocate memory for array of size `n` of type `T` via malloc
+template <class T>
+T* allocate(std::size_t n) noexcept {
+  T* data = (T*)std::malloc(n * sizeof(T));
   if(!data)
     serialboxFatalError("out of memory");
   std::memset(data, 0, sizeof(T));

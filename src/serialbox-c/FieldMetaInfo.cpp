@@ -37,6 +37,21 @@ serialboxFieldMetaInfo_t* serialboxFieldMetaInfoCreate(serialboxTypeID type, con
   return fieldMetaInfo;
 }
 
+serialboxFieldMetaInfo_t*
+serialboxFieldMetaInfoCreateFromFieldMetaInfo(const serialboxFieldMetaInfo_t* other) {
+  const FieldMetaInfo* otherInfo = toConstFieldMetaInfo(other);
+  serialboxFieldMetaInfo_t* fieldMetaInfo = allocate<serialboxFieldMetaInfo_t>();
+  try {
+    fieldMetaInfo->impl = new FieldMetaInfo(*otherInfo);
+    fieldMetaInfo->ownsData = 1;
+  } catch(std::exception& e) {
+    std::free(fieldMetaInfo);
+    fieldMetaInfo = NULL;
+    serialboxFatalError(e.what());
+  }
+  return fieldMetaInfo;
+}
+
 void serialboxFieldMetaInfoDestroy(serialboxFieldMetaInfo_t* fieldMetaInfo) {
   if(fieldMetaInfo) {
     FieldMetaInfo* info = toFieldMetaInfo(fieldMetaInfo);
@@ -55,6 +70,11 @@ int serialboxFieldMetaInfoEqual(const serialboxFieldMetaInfo_t* f1,
   const FieldMetaInfo* info1 = toConstFieldMetaInfo(f1);
   const FieldMetaInfo* info2 = toConstFieldMetaInfo(f2);
   return ((*info1) == (*info2));
+}
+
+char* serialboxFieldMetaInfoToString(const serialboxFieldMetaInfo_t* fieldMetaInfo) {
+  const FieldMetaInfo* info = toConstFieldMetaInfo(fieldMetaInfo);
+  return allocateAndCopyString(info->toString());
 }
 
 /*===------------------------------------------------------------------------------------------===*\

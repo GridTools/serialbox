@@ -32,6 +32,42 @@ namespace serialbox {
 /// instead.
 class SerializerImpl {
 public:
+  /// \brief Get the status of serialization
+  ///
+  /// The status is represented as an integer which can take the following values:
+  ///
+  /// - 0: the variable is not yet initialized -> the serialization is enabled if the environment
+  ///   variable `SERIALBOX_SERIALIZATION_DISABLE` is not set to a positive value. The first
+  ///   Serializer which is initialized has to set this value either to +1 or to -1 according to
+  ///   the environment.
+  /// - +1: the serialization is enabled, independently of the environment
+  /// - -1: the serialization is disabled, independently of the environment
+  ///
+  /// \return serialization status
+  static int serializationStatus() noexcept { return enabled_; }
+
+  /// \brief Enable serialization
+  ///
+  /// Serialization is enabled by default, but it can be disabled either by setting the environment
+  /// variable `SERIALBOX_SERIALIZATION_DISABLE` to a positive value or by calling the function
+  /// disableSerialization. With this function you enable the serialization independently of the
+  /// current environment.
+  ///
+  /// The serialization can only globally enabled or disabled. There is no way to enable or
+  /// disable only a specific serializer.
+  static void enableSerialization() noexcept { enabled_ = 1; }
+
+  /// \brief Disable serialization
+  ///
+  /// Serialization is enabled by default, but it can be disabled either by setting the environment
+  /// variable `SERIALBOX_SERIALIZATION_DISABLE` to a positive value or by calling the funtcion
+  /// disableSerialization. With this function you disable the serialization independently of the
+  /// current environment.
+  ///
+  /// The serialization can only be globally enabled or disabled. There is no way to enable or
+  /// disable only a specific serializer.
+  static void disableSerialization() noexcept { enabled_ = -1; }
+
   /// \brief Copy constructor [deleted]
   SerializerImpl(const SerializerImpl&) = delete;
 
@@ -44,16 +80,16 @@ public:
   /// \brief Move assignment
   SerializerImpl& operator=(SerializerImpl&&) = default;
 
-  /// \brief Construct from JSON meta-data
+  /// \brief Construct Serializer
   ///
   /// \param mode         Mode of the Serializer
   /// \param directory    Directory of the Archive and Serializer meta-data
   /// \param prefix       Prefix of all filenames
   /// \param archiveName  String passed to the ArchiveFactory to construct the Archive
   ///
-  /// This will read ´MetaData-prefix.json´ to initialize the savepoint vector, the fieldMap and
+  /// This will read `MetaData-prefix.json` to initialize the savepoint vector, the fieldMap and
   /// globalMetaInfo. Further, it will construct the Archive by reading the
-  /// ´ArchiveMetaData-prefix.json´.
+  /// `ArchiveMetaData-prefix.json`.
   ///
   /// \throw Exception  Invalid directory or corrupted meta-data files
   SerializerImpl(OpenModeKind mode, const std::string& directory, const std::string& prefix,
@@ -67,6 +103,9 @@ public:
 
   /// \brief Access prefix of all filenames
   const std::string& prefix() const noexcept { return prefix_; }
+
+  /// \brief Name of the archive in use
+  const std::string& archiveName() const noexcept { return archive_->name(); }
 
   /// \brief Access the path to the meta-data file
   const boost::filesystem::path& metaDataFile() const noexcept { return metaDataFile_; }
@@ -93,12 +132,12 @@ public:
                       key);
   }
 
-  /// \brief Query globalMetaInfo map for key ´key´ and retrieve value as type ´T´
+  /// \brief Query globalMetaInfo map for key `key` and retrieve value as type `T`
   ///
   /// \param key    Key of the requested element
   ///
-  /// \throw Exception  Key ´key´ does not exist in the globalMetaInfo map or value cannot be
-  ///                   converted to type ´T´
+  /// \throw Exception  Key `key` does not exist in the globalMetaInfo map or value cannot be
+  ///                   converted to type `T`
   template <class T, class StringType>
   T getGlobalMetainfoAs(StringType&& key) const {
     try {
@@ -132,7 +171,7 @@ public:
       throw Exception("cannot register field '%s': field already exists", name);
   }
 
-  /// \brief Check if field ´name´ has been registred within the Serializer
+  /// \brief Check if field `name` has been registred within the Serializer
   ///
   /// \param name  Name of the the new field
   /// \return True iff the field is present
@@ -141,7 +180,7 @@ public:
     return fieldMap_->hasField(std::forward<StringType>(name));
   }
 
-  /// \brief Add key-value meta-information to field ´name´
+  /// \brief Add `key = value` or `key = {value1, ..., valueN}` meta-information to field `name`
   ///
   /// \param name   Name of the field
   /// \param key    Key of the new element
@@ -155,11 +194,11 @@ public:
                                                  std::forward<ValueType>(value));
   }
 
-  /// \brief Query FieldMap for field with name ´name´ and return refrence to FieldMetaInfo
+  /// \brief Query FieldMap for field with `name` and return a refrence to FieldMetaInfo
   ///
   /// \param name  Name of the field
   ///
-  /// \throw Exception  Field with name `name` does not exist in FieldMap
+  /// \throw Exception  Field `name` does not exist in FieldMap
   template <class StringType>
   const FieldMetaInfo& getFieldMetaInfoOf(StringType&& name) const {
     return fieldMap_->getFieldMetaInfoOf(std::forward<StringType>(name));
@@ -196,10 +235,10 @@ public:
     return savepointVector_->addField(savepoint, fieldID);
   }
 
-  /// \brief Get the FielID of field ´field´ at savepoint ´savepoint´
+  /// \brief Get the FielID of field `field` at savepoint `savepoint`
   ///
   /// \throw Exception  Savepoint or field at savepoint do not exist
-  FieldID getFieldOfSavepoint(const SavepointImpl& savepoint, const std::string& field) const {
+  FieldID getFieldIDAtSavepoint(const SavepointImpl& savepoint, const std::string& field) const {
     return savepointVector_->getFieldID(savepoint, field);
   }
 
@@ -225,32 +264,32 @@ public:
   //     Writing
   //===----------------------------------------------------------------------------------------===//
 
-  /// \brief Serialize field ´name´ (given as ´storageView´) at ´savepoint´ to disk
+  /// \brief Serialize field `name` (given as `storageView`) at `savepoint` to disk
   ///
   /// The method perfoms the following steps:
   ///
-  /// 1) Check if field ´name´ is registred within the Serializer and perform a consistency check
+  /// 1. Check if field `name` is registred within the Serializer and perform a consistency check
   ///    concering the data-type and dimensions of the StorageView compared to to the registered
   ///    field.
   ///
-  /// 2) Locate the ´savepoint´ in the savepoint vector and, if the ´savepoint´ does not exist,
+  /// 2. Locate the `savepoint` in the savepoint vector and, if the `savepoint` does not exist,
   ///    register it within the Serializer.
   ///
-  /// 3) Check if field ´name´ can be added to Savepoint.
+  /// 3. Check if field `name` can be added to Savepoint.
   ///
-  /// 4) Pass the StorageView to the backend Archive and perform actual data-serialization.
+  /// 4. Pass the StorageView to the backend Archive and perform actual data-serialization.
   ///
-  /// 5) Register field ´name´ within the Savepoint.
+  /// 5. Register field `name` within the Savepoint.
   ///
-  /// 6) Update meta-data on disk via SerializerImpl::updateMetaData()
+  /// 6. Update meta-data on disk via SerializerImpl::updateMetaData()
   ///
   /// \param name           Name of the field
-  /// \param savepoint      Savepoint to at which the field will be serialized
+  /// \param savepoint      Savepoint at which the field will be serialized
   /// \param storageView    StorageView of the field
   ///
   /// \throw Exception
   ///
-  /// \see serialbox::Archive::write "Archive::write"
+  /// \see Archive
   void write(const std::string& name, const SavepointImpl& savepoint,
              const StorageView& storageView);
 
@@ -258,25 +297,25 @@ public:
   //     Reading
   //===----------------------------------------------------------------------------------------===//
 
-  /// \brief Deserialize field ´name´ (given as ´storageView´) at ´savepoint´ from disk
+  /// \brief Deserialize field `name` (given as `storageView`) at `savepoint` from disk
   ///
   /// The method perfoms the following steps:
   ///
-  /// 1) Check if field ´name´ is registred within the Serializer and perform a consistency check
+  /// 1. Check if field `name` is registred within the Serializer and perform a consistency check
   ///    concering the data-type and dimensions of the StorageView compared to to the registered
   ///    field.
   ///
-  /// 2) Check if savepoint exists and has a field ´name´.
+  /// 2. Check if savepoint exists and has a field `name`.
   ///
-  /// 3) Pass the StorageView to the backend Archive and perform actual data-deserialization.
+  /// 3. Pass the StorageView to the backend Archive and perform actual data-deserialization.
   ///
   /// \param name           Name of the field
-  /// \param savepoint      Savepoint to at which the field will be serialized
+  /// \param savepoint      Savepoint at which the field will be deserialized
   /// \param storageView    StorageView of the field
   ///
   /// \throw Exception
   ///
-  /// \see serialbox::Archive::write "Archive::read"
+  /// \see Archive
   void read(const std::string& name, const SavepointImpl& savepoint, StorageView& storageView);
 
   //===----------------------------------------------------------------------------------------===//
@@ -310,19 +349,21 @@ protected:
   /// \param archiveName  String passed to the ArchiveFactory to construct the Archive
   void constructArchive(const std::string& archiveName);
 
-  /// \brief Check if ´storageView´ is consistent with the field ´name´
+  /// \brief Check if `storageView` is consistent with the field `name`
   ///
+  /// \return FieldMetaInfo of field `name`
   /// \throw Exception    Inconsistency is detected
-  void checkStorageView(const std::string& name, const StorageView& storageView) const;
+  std::shared_ptr<FieldMetaInfo> checkStorageView(const std::string& name,
+                                                  const StorageView& storageView) const;
 
   /// \brief Check if the current directory contains meta-information of an older version of
   /// serialbox and upgrade it if necessary
   ///
-  /// The function will check if there is a ´prefix.json´ file which is newer than
-  /// ´MetaData-prefix.json´ and, if ture, convert ´prefix.json´ to ´MetaData-prefix.json´ and
-  /// ´ArchiveMetaData.json´.
+  /// The function will check if there is a `prefix.json` file which is newer than
+  /// `MetaData-prefix.json` and, if ture, convert `prefix.json` to `MetaData-prefix.json` and
+  /// `ArchiveMetaData.json`.
   ///
-  /// Older versions of serialbox can only be \b opened in ´OpenModeKind::Read´ and will use the
+  /// Older versions of serialbox can only be \b opened in `OpenModeKind::Read` and will use the
   /// BinaryArchive.
   ///
   /// \return True iff the upgrade was successful
@@ -341,6 +382,18 @@ protected:
   std::shared_ptr<MetaInfoMap> globalMetaInfo_;
 
   std::unique_ptr<Archive> archive_;
+
+  // This variable can take three values:
+  //
+  //  0: the variable is not yet initialized -> the serialization is enabled if the environment
+  //     variable SERIALBOX_SERIALIZATION_DISABLE is not set to  a positive value. The first
+  //     serializer which is initialized has to set this value either to +1 or to -1 according to
+  //     the environment.
+  // +1: the serialization is enabled, independently of the environment
+  // -1: the serialization is disabled, independently of the environment
+  //
+  // The value is initialized to 0
+  static int enabled_;
 };
 
 } // namespace serialbox

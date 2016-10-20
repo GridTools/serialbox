@@ -15,6 +15,7 @@
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Archive/NetCDFArchive.h"
+#include "serialbox/Core/Unreachable.h"
 #include <cstdlib>
 #include <iostream>
 
@@ -28,13 +29,11 @@ ArchiveFactory& ArchiveFactory::getInstance() noexcept {
   if(!instance_) {
     instance_ = new ArchiveFactory();
 
-    //
     // Register Archives
-    //
-    instance_->registerArchive("Binary", BinaryArchive::create);
+    instance_->registerArchive(BinaryArchive::Name, BinaryArchive::create);
 
 #ifdef SERIALBOX_HAS_NETCDF
-    instance_->registerArchive("NetCDF", NetCDFArchive::create);
+    instance_->registerArchive(NetCDFArchive::Name, NetCDFArchive::create);
 #endif
   }
 
@@ -62,6 +61,59 @@ std::vector<std::string> ArchiveFactory::registeredArchives() const {
   for(auto it = registeredArchives_.begin(), end = registeredArchives_.end(); it != end; ++it)
     archives.push_back(it->first);
   return archives;
+}
+
+std::string ArchiveFactory::archiveFromExtension(std::string filename) {
+  std::string extension = boost::filesystem::path(filename).extension().string();
+
+  if(extension == ".dat" || extension == ".bin")
+    return BinaryArchive::Name;
+#ifdef SERIALBOX_HAS_NETCDF
+  else if(extension == ".nc")
+    return NetCDFArchive::Name;
+#endif
+  else
+    throw Exception("cannot deduce Archive from file extension: %s", filename);
+  serialbox_unreachable("invalid file extension");
+}
+
+//===------------------------------------------------------------------------------------------===//
+//     Writing
+//===------------------------------------------------------------------------------------------===//
+
+void ArchiveFactory::writeToFile(std::string filename, const StorageView& storageView,
+                                 std::string archiveName, std::string fieldname) {
+
+  if(archiveName == BinaryArchive::Name) {
+    BinaryArchive::writeToFile(filename, storageView);
+  }
+#ifdef SERIALBOX_HAS_NETCDF
+  else if(archiveName == NetCDFArchive::Name) {
+    NetCDFArchive::writeToFile(filename, storageView, fieldname);
+  }
+#endif
+  else
+    throw Exception("cannot use Archive '%s': archive does not exist or is not registred",
+                    filename);
+}
+
+//===------------------------------------------------------------------------------------------===//
+//     Reading
+//===------------------------------------------------------------------------------------------===//
+
+void ArchiveFactory::readFromFile(std::string filename, StorageView& storageView,
+                                  std::string archiveName, std::string fieldname) {
+  if(archiveName == BinaryArchive::Name) {
+    BinaryArchive::readFromFile(filename, storageView);
+  }
+#ifdef SERIALBOX_HAS_NETCDF
+  else if(archiveName == NetCDFArchive::Name) {
+    NetCDFArchive::readFromFile(filename, storageView, fieldname);
+  }
+#endif
+  else
+    throw Exception("cannot use Archive '%s': archive does not exist or is not registred",
+                    filename);
 }
 
 } // namespace serialbox

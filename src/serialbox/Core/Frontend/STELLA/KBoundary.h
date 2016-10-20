@@ -29,6 +29,8 @@ namespace stella {
 ///     |
 ///     v k-minus
 /// \endverbatim
+///
+/// \ingroup STELLA
 class KBoundary {
 public:
   KBoundary() {

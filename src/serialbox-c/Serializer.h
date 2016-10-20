@@ -15,11 +15,21 @@
 #ifndef SERIALBOX_C_SERIALIZER_H
 #define SERIALBOX_C_SERIALIZER_H
 
+#include "serialbox-c/Array.h"
 #include "serialbox-c/Type.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * \defgroup serialboxC serialbox-c
+ * \brief C-Interface of Serialbox
+ * @{
+ *
+ * \defgroup serializer Serializer methods
+ * @{
+ */
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Construction & Destruction
@@ -28,15 +38,14 @@ extern "C" {
 /**
  * \brief Create a new Serializer
  *
+ * This will read `MetaData-prefix.json` to initialize the Serializer and construct the Archive by
+ * reading the `ArchiveMetaData-prefix.json`.
+ *
  * \param mode         Mode of the Serializer
  * \param directory    Directory of the Archive and Serializer meta-data
  * \param prefix       Prefix of all filenames
  * \param archiveName  Name of Archive (e.g "BinaryArchive")
- *
  * \return refrence to the newly constructed Serializer or NULL if an error occurred
- *
- * This will read ´MetaData-prefix.json´ to initialize the Serializer and construct the Archive by
- * reading the ´ArchiveMetaData-prefix.json´.
  */
 serialboxSerializer_t* serialboxSerializerCreate(serialboxOpenModeKind mode, const char* directory,
                                                  const char* prefix, const char* archive);
@@ -85,8 +94,17 @@ void serialboxSerializerUpdateMetaData(serialboxSerializer_t* serializer);
 
 /**
  * \brief Indicate whether serialization is enabled [default: enabled]
+ *
+ * The return value can be:
+ *
+ *  0: the variable is not yet initialized -> the serialization is enabled if the environment
+ *     variable `STELLA_SERIALIZATION_DISABLE` or `SERIALBOX_SERIALIZATION_DISABLE` is not set to a
+ *     positive value. The first Serializer which is initialized has to set this value either to +1
+ *     or to -1 according to the environment.
+ * +1: the serialization is enabled, independently of the environment
+ * -1: the serialization is disabled, independently of the environment
  */
-extern int serialboxSerializationEnabled;
+int serialboxSerializationStatus(void);
 
 /**
  * \brief Enabled serialization
@@ -103,7 +121,7 @@ void serialboxDisableSerialization(void);
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Allocate a new ´serialboxMetaInfo_t´ which maps to the global meta-information of the
+ * \brief Allocate a new `serialboxMetaInfo_t` which maps to the global meta-information of the
  * Serializer
  *
  * \param serializer  Serializer to use
@@ -116,13 +134,23 @@ serialboxMetaInfo_t* serialboxSerializerGetGlobalMetaInfo(serialboxSerializer_t*
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Register savepoint ´savepoint´ within the serializer
+ * \brief Register `savepoint` within the serializer
  *
  * \param serializer  Serializer to use
  * \param savepoint   Savepoint to add
  * \return 1 if savepoint was added successfully, 0 otherwise
  */
 int serialboxSerializerAddSavepoint(serialboxSerializer_t* serializer,
+                                    const serialboxSavepoint_t* savepoint);
+
+/**
+ * \brief Check if `savepoint` exists within the serializer
+ *
+ * \param serializer  Serializer to use
+ * \param savepoint   Savepoint to search for
+ * \return 1 if savepoint exists, 0 otherwise
+ */
+int serialboxSerializerHasSavepoint(const serialboxSerializer_t* serializer,
                                     const serialboxSavepoint_t* savepoint);
 
 /**
@@ -136,29 +164,41 @@ int serialboxSerializerGetNumSavepoints(const serialboxSerializer_t* serializer)
 /**
  * \brief Get an array of \b refrences to the registered savepoints
  *
- * To deallocate the vector use ´serialboxSerializerDestroySavepointVector´.
+ * To deallocate the vector use `serialboxSerializerDestroySavepointVector`.
  *
  * \param serializer  Serializer to use
- * \return Newly allocated array of savepoints of length ´serialboxSerializerGetNumSavepoints´
+ * \param name        Name of the Savepoint(s)
+ * \return Newly allocated array of savepoints of length `serialboxSerializerGetNumSavepoints`
  */
 serialboxSavepoint_t**
 serialboxSerializerGetSavepointVector(const serialboxSerializer_t* serializer);
 
 /**
- * \brief Deallocate a savepoint vector retrieved via ´serialboxSerializerGetSavepointVector´
+ * \brief Deallocate a savepoint vector retrieved via `serialboxSerializerGetSavepointVector`
  *
  * \param savepointVector   Savepoint vector to deallocate
  * \param len               Length of the savepoint vector (usually obtained at the time of
- *                          allocation via ´serialboxSerializerGetNumSavepoints´)
+ *                          allocation via `serialboxSerializerGetNumSavepoints`)
  */
 void serialboxSerializerDestroySavepointVector(serialboxSavepoint_t** savepointVector, int len);
+
+/**
+ * \brief Get an array of C-strings of the field names registered at `savepoint`
+ *
+ * \param serializer  Serializer to use
+ * \param savepoint   Savepoint of intrest
+ * \return Array of C-strings of the names of all registered fields at `savepoint`
+ */
+serialboxArrayOfString_t*
+serialboxSerializerGetFieldnamesAtSavepoint(const serialboxSerializer_t* serializer,
+                                            const serialboxSavepoint_t* savepoint);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Register and Query Fields
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Register field given as ´fieldMetaInfo´ within the serializer
+ * \brief Register field given as `fieldMetaInfo` within the serializer
  *
  * \param serializer  Serializer to use
  * \param name        Name of the field to register
@@ -169,7 +209,16 @@ int serialboxSerializerAddField(serialboxSerializer_t* serializer, const char* n
                                 const serialboxFieldMetaInfo_t* fieldMetaInfo);
 
 /**
- * \brief Register ´field´ within the serializer
+ * \brief Check if `field` is registered within the serializer
+ *
+ * \param serializer  Serializer to use
+ * \param field       Name of the field to search for
+ * \return 1 if `field` exists, 0 otherwise
+ */
+int serialboxSerializerHasField(serialboxSerializer_t* serializer, const char* field);
+
+/**
+ * \brief Register `field` within the serializer
  *
  * This function behaves the same as in older versions of serialbox.
  *
@@ -191,26 +240,21 @@ int serialboxSerializerAddField(serialboxSerializer_t* serializer, const char* n
  * \return 1 if field was added successfully, 0 otherwise
  */
 int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* name,
-                                  serialboxTypeID type, int bytesPerElement, int iSize, int jSize,
-                                  int kSize, int lSize, int iMinusHalo, int iPlusHalo,
-                                  int jMinusHalo, int jPlusHalo, int kMinusHalo, int kPlusHalo,
-                                  int lMinusHalo, int lPlusHalo);
+                                 serialboxTypeID type, int bytesPerElement, int iSize, int jSize,
+                                 int kSize, int lSize, int iMinusHalo, int iPlusHalo,
+                                 int jMinusHalo, int jPlusHalo, int kMinusHalo, int kPlusHalo,
+                                 int lMinusHalo, int lPlusHalo);
 
 /**
  * \brief Get an array of C-strings of all names of the registered fields
  *
- * The function will allocate a sufficiently large array of ´char*´. Each element (as well as the
- * array itself) needs to be freed by the user using free().
- *
- * \param[in]  serializer  Serializer to use
- * \param[out] fieldnames  Array of length ´len´ of C-strings of the names of all registered fields
- * \param[out] len         Length of the array
+ * \param serializer  Serializer to use
+ * \return Array of C-strings of the names of all registered fields
  */
-void serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer, char*** fieldnames,
-                                      int* len);
+serialboxArrayOfString_t* serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer);
 
 /**
- * \brief Get FieldMetaInfo of field with name ´name´
+ * \brief Get FieldMetaInfo of field with name `name`
  *
  * \param serializer  Serializer to use
  * \param name        Name of the field to search for
@@ -219,35 +263,20 @@ void serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer, c
 serialboxFieldMetaInfo_t*
 serialboxSerializerGetFieldMetaInfo(const serialboxSerializer_t* serializer, const char* name);
 
-/**
- * \brief Get an array of C-strings of the field names registered at ´savepoint´
- *
- * The function will allocate a sufficiently large array of ´char*´. Each element (as well as the
- * array itself) needs to be freed by the user using free().
- *
- * \param[in]  serializer  Serializer to use
- * \param[in]  savepoint   Savepoint of intrest
- * \param[out] fieldnames  Array of length ´len´ of C-strings of the names of all registered fields
- * \param[out] len         Length of the array
- */
-void serialboxSerializerGetFieldnamesAtSavepoint(const serialboxSerializer_t* serializer,
-                                                 const serialboxSavepoint_t* savepoint,
-                                                 char*** fieldnames, int* len);
-
 /*===------------------------------------------------------------------------------------------===*\
  *     Writing & Reading
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Serialize field ´name´ (given by ´originPtr´ and ´strides´) at ´savepoint´ to disk
+ * \brief Serialize field `name` (given by `originPtr` and `strides`) at `savepoint` to disk
  *
- * The ´savepoint´ will be registered at field ´name´ if not yet present. The ´origingPtr´ represent
+ * The `savepoint` will be registered at field `name` if not yet present. The `origingPtr` represent
  * the memory location of the first element in the array i.e skipping all initial padding.
  *
  * \param name         Name of the field
  * \param savepoint    Savepoint to at which the field will be serialized
  * \param originPtr    Pointer to the origin of the data
- * \param strides      Array of strides of length ´numStrides´
+ * \param strides      Array of strides of length `numStrides`
  * \param numStrides   Number of strides
  */
 void serialboxSerializerWrite(serialboxSerializer_t* serializer, const char* name,
@@ -255,20 +284,22 @@ void serialboxSerializerWrite(serialboxSerializer_t* serializer, const char* nam
                               const int* strides, int numStrides);
 
 /**
- * \brief Deserialize field ´name´ (given by ´originPtr´ and ´strides´) at ´savepoint´ from disk
+ * \brief Deserialize field `name` (given by `originPtr` and `strides`) at `savepoint` from disk
  *
- * The ´origingPtr´ represent the memory location of the first element in the array i.e skipping
+ * The `origingPtr` represent the memory location of the first element in the array i.e skipping
  * all initial padding.
  *
  * \param name         Name of the field
  * \param savepoint    Savepoint to at which the field will be serialized
  * \param originPtr    Pointer to the origin of the data
- * \param strides      Array of strides of length ´numStrides´
+ * \param strides      Array of strides of length `numStrides`
  * \param numStrides   Number of strides
  */
 void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name,
                              const serialboxSavepoint_t* savepoint, void* originPtr,
                              const int* strides, int numStrides);
+
+/** @} */
 
 #ifdef __cplusplus
 }

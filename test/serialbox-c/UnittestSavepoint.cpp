@@ -55,7 +55,7 @@ TEST_F(CSavepointTest, Test) {
   }
 
   //
-  // Compare equal
+  // Copy construct & Comparison
   //
   serialboxSavepoint_t* savepoint_not_equal = serialboxSavepointCreate(name);
   serialboxSavepoint_t* savepoint_equal = serialboxSavepointCreateFromSavepoint(savepoint);

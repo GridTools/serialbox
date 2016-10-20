@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 ##===-----------------------------------------------------------------------------*- Python -*-===##
 ##
 ##                                   S E R I A L B O X
@@ -7,23 +9,34 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## Common utility functions to load the serialboxC shared library.
+## This file contains shared utility functions.
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from ctypes import cdll
-
-import ctypes.util
 import platform
-import os
+from ctypes import cdll, c_char_p, util
+from os import path
+
+
+def extract_string(string):
+    """Convert python string to C-string.
+    
+    :param str string: Python string
+    :return: char* and length of the string
+    :rtype: (ctypes.c_char_p, int)
+    """
+    val = string.encode('ascii') if type(string) == str else string
+    return c_char_p(val), len(val)
+
 
 def get_library():
     """Obtain a reference to the SerialboxC shared library.
 
-    :returns: ctypes.CDLL -- refrence to the SerialboxC shared library.
-    :raises: OSError, Exception
+    :return: refrence to the SerialboxC shared library
+    :rtype: ctypes.CDLL
+    :raises Exception: serialboxC shared library could not be loaded or found
     """
-    
+
     # On Linux, ctypes.cdll.LoadLibrary() respects LD_LIBRARY_PATH
     # while ctypes.util.find_library() doesn't.
     # See http://docs.python.org/2/library/ctypes.html#finding-shared-libraries
@@ -31,12 +44,12 @@ def get_library():
     # To make it possible to run the unit tests without installing the SerialboxC shared
     # library into a default linker search path.  Always Try ctypes.cdll.LoadLibrary()
     # with all possible library names first, then try ctypes.util.find_library().
-    names = ['SerialboxC']
-    
-    cwd = os.path.dirname(os.path.realpath(__file__))
-    dirs = (cwd, os.path.join(cwd, "../../lib"), )
-  
-    for d in dirs:  
+    name = 'SerialboxC'
+
+    cwd = path.dirname(path.realpath(__file__))
+    dirs = (cwd, path.join(cwd, "../../lib"),)
+
+    for d in dirs:
         t = platform.system()
         if t == 'Darwin':
             pfx, ext = 'lib', '.dylib'
@@ -45,27 +58,16 @@ def get_library():
         else:
             pfx, ext = 'lib', '.so'
 
-        for i in names:
-            try:
-                print(os.path.join(d, pfx + i + ext))
-                lib = cdll.LoadLibrary(os.path.join(d, pfx + i + ext))
-            except OSError:
-                pass
-            else:
-                return lib
+        try:
+            lib = cdll.LoadLibrary(path.join(d, pfx + name + ext))
+        except OSError as e:
+            print(e)
+            pass
+        else:
+            return lib
 
-        for i in names:
-            t = ctypes.util.find_library(i)
-            if t:
-                return cdll.LoadLibrary(t)
+        t = util.find_library(name)
+        if t:
+            return cdll.LoadLibrary(t)
 
     raise Exception("'serialboxC' shared library not found")
-
-def register_library(library):
-    """Register library functions of SerialboxC
-
-    :param library: refrence to the SerialboxC shared library.
-    :type library: ctypes.CDLL.
-    """
-    print(type(library))
-    

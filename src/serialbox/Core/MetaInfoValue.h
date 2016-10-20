@@ -25,6 +25,8 @@
 namespace serialbox {
 
 /// \brief Represent an immutable meta information value as a type-id and type-erased data
+///
+/// The MetaInfoValue can be implicitly casted to the supported types.
 class MetaInfoValue {
 public:
   /// \brief Default constructor
@@ -58,12 +60,12 @@ public:
   }
   explicit MetaInfoValue(const char* value) : MetaInfoValue(std::string(value)) {}
 
-  /// \brief Convert the value to type ´T´
+  /// \brief Convert the value to type `T`
   ///
-  /// If the type ´T´ is different than the internally stored type, the function does its best to
-  /// convert the value to ´T´ in a meaningful way.
+  /// If the type `T` is different than the internally stored type, the function does its best to
+  /// convert the value to `T` in a meaningful way.
   ///
-  /// \return Copy of the value of the element as type ´T´
+  /// \return Copy of the value of the element as type `T`
   ///
   /// \throw Exception  Conversion error: Conversion would result in truncation of the value or
   ///                   conversions from primitive to array type
@@ -74,7 +76,7 @@ public:
     return T(); // Unreachable
   }
 
-  /// \brief Implicitly convert value to type ´T´
+  /// \brief Implicitly convert value to type `T`
   ///
   /// \see MetaInfoValue::as
   template <class T>

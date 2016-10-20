@@ -12,9 +12,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "Utility/GridTools.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/StorageView.h"
-#include "Utility/GridTools.h"
 #include <gtest/gtest.h>
 #include <memory>
 
@@ -487,8 +487,8 @@ TYPED_TEST(GridToolsStorageViewTest, isMemCopyable) {
   using layout_type = gridtools::layout_map<2, 1, 0>; // stride 1 on i (col-major)
   using meta_data_type = typename GridToolsStorageViewTest<
       TypeParam>::storage_types::storage_traits_type::template meta_storage_type<9, layout_type>;
-  using storage_type = typename GridToolsStorageViewTest<
-      TypeParam>::storage_types::storage_traits_type::template storage_type<TypeParam, meta_data_type>;
+  using storage_type = typename GridToolsStorageViewTest<TypeParam>::storage_types::
+      storage_traits_type::template storage_type<TypeParam, meta_data_type>;
 
   meta_data_type meta_data(this->dim1, this->dim2, this->dim3);
   storage_type storage(meta_data, "storage", -1.0);

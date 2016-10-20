@@ -40,15 +40,20 @@ SerializerOpenMode Serializer::mode() const {
   }
 }
 
+void Serializer::EnableSerialization() { SerializerImpl::enableSerialization(); }
+
+void Serializer::DisableSerialization() { SerializerImpl::disableSerialization(); }
+
 std::string Serializer::directory() const { return serializerImpl_->directory().string(); }
 
 std::string Serializer::prefix() const { return serializerImpl_->prefix(); }
 
 void Serializer::Init(const std::string& directory, const std::string& prefix,
                       SerializerOpenMode mode) {
-  if(enabled_ == 0) {
+  if(SerializerImpl::serializationStatus() == 0) {
     const char* envvar = std::getenv("STELLA_SERIALIZATION_DISABLED");
-    enabled_ = (envvar && std::atoi(envvar) > 0) ? -1 : 1;
+    if(envvar && std::atoi(envvar) > 0)
+      SerializerImpl::disableSerialization();
   }
 
   // Initialize SerializerImpl
@@ -237,7 +242,7 @@ static StorageView makeStorageView(const void* pData, TypeID type, const std::ve
 
 void Serializer::WriteField(const std::string& fieldName, const Savepoint& savepoint,
                             const void* pData, int iStride, int jStride, int kStride, int lStride) {
-  if(enabled_ < 0)
+  if(SerializerImpl::serializationStatus() < 0)
     return;
 
   try {
@@ -262,7 +267,7 @@ void Serializer::WriteField(const std::string& fieldName, const Savepoint& savep
 void Serializer::ReadField(const std::string& fieldName, const Savepoint& savepoint, void* pData,
                            int iStride, int jStride, int kStride, int lStride,
                            bool alsoPrevious) const {
-  if(enabled_ < 0)
+  if(SerializerImpl::serializationStatus() < 0)
     return;
 
   (void)alsoPrevious;

@@ -63,11 +63,38 @@ public:
   std::unique_ptr<Archive> create(const std::string& name, OpenModeKind mode,
                                   const std::string& directory, const std::string& prefix);
 
-  /// \brief Register an archive (this function is called by ´SERIALBOX_REGISTER_ARCHIVE´)
-  void registerArchive(const std::string& name, const CreateArchiveFunction& func);
-
   /// \brief Get a vector of strings of the registered archives
   std::vector<std::string> registeredArchives() const;
+
+  /// \brief Deduce the name of the `archive` according to the extension of the `filename`
+  ///
+  /// Extensions    | Archives
+  /// ------------- | -------------
+  /// .dat, .bin    | BinaryArchive
+  /// .nc           | NetCDFArchive
+  ///
+  static std::string archiveFromExtension(std::string filename);
+
+  /// \brief Directly write field (given by `storageView`) to file
+  ///
+  /// \param filename     Newly created file (if file already exists, it's contents will be
+  ///                     discarded)
+  /// \param storageView  StorageView of the field
+  /// \param archiveName  Archive used to perform serialization
+  static void writeToFile(std::string filename, const StorageView& storageView,
+                          std::string archiveName, std::string fieldname);
+
+  /// \brief Directly read field (given by `storageView`) from file
+  ///
+  /// \param filename     File to read from
+  /// \param storageView  StorageView of the field
+  /// \param archiveName  Archive used to perform serialization
+  static void readFromFile(std::string filename, StorageView& storageView, std::string archiveName,
+                           std::string fieldname);
+
+private:
+  /// \brief Register an archive (this function is called by ´SERIALBOX_REGISTER_ARCHIVE´)
+  void registerArchive(const std::string& name, const CreateArchiveFunction& func);
 
 private:
   std::map<std::string, CreateArchiveFunction> registeredArchives_;

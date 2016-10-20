@@ -9,17 +9,20 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## Unittest of the common utility functions.
+## Unittest of the core utility functions.
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from serialbox import get_library, register_library
 import unittest
 
-class TestCommon(unittest.TestCase):
-    def test_get_library(self):
-        lib = get_library()
-        register_library(lib)
+from serialbox import Config
+
+
+class TestCore(unittest.TestCase):
+    def test_config(self):
+        config = Config.to_dict()
+        self.assertTrue("BOOST_VERSION" in config)
+
 
 if __name__ == "__main__":
     unittest.main()

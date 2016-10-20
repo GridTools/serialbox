@@ -55,6 +55,9 @@ public:
   /// \brief Table of all fields owned by this archive, each field has a corresponding file
   using FieldTable = std::unordered_map<std::string, FieldOffsetTable>;
 
+  /// \brief
+  BinaryArchive();
+
   /// \brief Initialize the archive
   ///
   /// \param mode          Policy to open files in the archive
@@ -86,21 +89,32 @@ public:
   void writeMetaDataToJson();
 
   /// \name Archive implementation
-  /// \see serialbox::Archive "Archive"
+  /// \see Archive
   /// @{
-  virtual FieldID write(const StorageView& storageView,
-                        const std::string& fieldID) throw(Exception) override;
-  virtual void read(StorageView& storageView, const FieldID& fieldID) const
-      throw(Exception) override;
+  virtual FieldID write(const StorageView& storageView, const std::string& fieldID,
+                        const std::shared_ptr<FieldMetaInfo> info) throw(Exception) override;
+
+  virtual void read(StorageView& storageView, const FieldID& fieldID,
+                    std::shared_ptr<FieldMetaInfo> info) const throw(Exception) override;
+
   virtual void updateMetaData() override;
+
   virtual OpenModeKind mode() const override { return mode_; }
+
   virtual const std::string& directory() const override { return directory_.string(); }
+
   virtual const std::string& prefix() const override { return prefix_; }
+
   virtual const std::string& name() const override { return BinaryArchive::Name; }
+
   virtual const std::string& metaDataFile() const override { return metaDatafile_.string(); }
+
   virtual std::ostream& toStream(std::ostream& stream) const override;
+
   virtual void clear() override;
+
   virtual bool isReadingThreadSafe() const override { return true; }
+
   virtual bool isWritingThreadSafe() const override { return false; }
   /// @}
 
@@ -114,6 +128,21 @@ public:
   /// \brief Get field table
   FieldTable& fieldTable() noexcept { return fieldTable_; }
   const FieldTable& fieldTable() const noexcept { return fieldTable_; }
+
+  /// \brief Directly write field (given by `storageView`) to file
+  ///
+  /// \param filename     Newly created file (if file already exists, it's contents will be
+  ///                     discarded)
+  /// \param storageView  StorageView of the field
+  static void writeToFile(std::string filename, const StorageView& storageView);
+
+  /// \brief Directly read field (given by `storageView`) from file
+  ///
+  /// This function can be used to implement stateless deserialization methods.
+  ////
+  /// \param filename     File to read from
+  /// \param storageView  StorageView of the field
+  static void readFromFile(std::string filename, StorageView& storageView);
 
 private:
   OpenModeKind mode_;

@@ -72,15 +72,7 @@ int serialboxSavepointEqual(const serialboxSavepoint_t* s1, const serialboxSavep
 
 char* serialboxSavepointToString(const serialboxSavepoint_t* savepoint) {
   const Savepoint* sp = toConstSavepoint(savepoint);
-  std::string str(sp->toString());
-  char* buffer = NULL;
-  buffer = (char*)std::malloc((str.size() + 1) * sizeof(char));
-
-  if(!buffer)
-    serialboxFatalError("out of memory");
-
-  std::memcpy(buffer, str.c_str(), str.size() + 1);
-  return buffer;
+  return allocateAndCopyString(sp->toString());
 }
 
 /*===------------------------------------------------------------------------------------------===*\

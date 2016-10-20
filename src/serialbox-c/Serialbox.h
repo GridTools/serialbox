@@ -16,6 +16,8 @@
 #define SERIALBOX_C_SERIALBOX_H
 
 #include "serialbox-c/Archive.h"
+#include "serialbox-c/Array.h"
+#include "serialbox-c/Config.h"
 #include "serialbox-c/ErrorHandling.h"
 #include "serialbox-c/FieldMetaInfo.h"
 #include "serialbox-c/Logging.h"

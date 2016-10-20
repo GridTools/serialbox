@@ -147,8 +147,8 @@ void BinaryArchive::updateMetaData() { writeMetaDataToJson(); }
 //     Writing
 //===------------------------------------------------------------------------------------------===//
 
-FieldID BinaryArchive::write(const StorageView& storageView,
-                             const std::string& field) throw(Exception) {
+FieldID BinaryArchive::write(const StorageView& storageView, const std::string& field,
+                             const std::shared_ptr<FieldMetaInfo> info) throw(Exception) {
   if(mode_ == OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Write' or 'Append'");
 
@@ -206,7 +206,7 @@ FieldID BinaryArchive::write(const StorageView& storageView,
   }
   // Field does not exist, create new file and append data
   else {
-    fs.open(filename.string(), std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
+    fs.open(filename.string(), std::ios::out | std::ios::binary | std::ios::trunc);
     fieldID.id = 0;
 
     fieldTable_.insert(
@@ -230,11 +230,35 @@ FieldID BinaryArchive::write(const StorageView& storageView,
   return fieldID;
 }
 
+void BinaryArchive::writeToFile(std::string filename, const StorageView& storageView) {
+  // Create binary data buffer
+  std::size_t sizeInBytes = storageView.sizeInBytes();
+  std::vector<Byte> binaryData(sizeInBytes);
+
+  Byte* dataPtr = binaryData.data();
+  const int bytesPerElement = storageView.bytesPerElement();
+
+  // Copy field into contiguous memory
+  if(storageView.isMemCopyable()) {
+    std::memcpy(dataPtr, storageView.originPtr(), sizeInBytes);
+  } else {
+    for(auto it = storageView.begin(), end = storageView.end(); it != end;
+        ++it, dataPtr += bytesPerElement)
+      std::memcpy(dataPtr, it.ptr(), bytesPerElement);
+  }
+
+  // Write binaryData to disk
+  std::ofstream fs(filename, std::ios::out | std::ios::binary | std::ios::trunc);
+  fs.write(binaryData.data(), sizeInBytes);
+  fs.close();
+}
+
 //===------------------------------------------------------------------------------------------===//
 //     Reading
 //===------------------------------------------------------------------------------------------===//
 
-void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) const throw(Exception) {
+void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID,
+                         std::shared_ptr<FieldMetaInfo> info) const throw(Exception) {
   if(mode_ != OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Read'");
 
@@ -283,6 +307,35 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) const
       std::memcpy(it.ptr(), dataPtr, bytesPerElement);
   }
   LOG(info) << "Successfully read field \"" << fieldID.name << "\" (id = " << fieldID.id << ")";
+}
+
+void BinaryArchive::readFromFile(std::string filename, StorageView& storageView) {
+  boost::filesystem::path filepath(filename);
+
+  if(!boost::filesystem::exists(filepath))
+    throw Exception("cannot open %s: file does not exist", filepath);
+
+  // Create binary data buffer
+  std::size_t sizeInBytes = storageView.sizeInBytes();
+  std::vector<Byte> binaryData(sizeInBytes);
+
+  std::ifstream fs(filepath.string(), std::ios::in | std::ios::binary);
+
+  // Read data into contiguous memory
+  fs.read(binaryData.data(), sizeInBytes);
+  fs.close();
+
+  Byte* dataPtr = binaryData.data();
+  const int bytesPerElement = storageView.bytesPerElement();
+
+  // Copy contiguous memory into field
+  if(storageView.isMemCopyable()) {
+    std::memcpy(storageView.originPtr(), dataPtr, sizeInBytes);
+  } else {
+    for(auto it = storageView.begin(), end = storageView.end(); it != end;
+        ++it, dataPtr += bytesPerElement)
+      std::memcpy(it.ptr(), dataPtr, bytesPerElement);
+  }
 }
 
 std::ostream& BinaryArchive::toStream(std::ostream& stream) const {

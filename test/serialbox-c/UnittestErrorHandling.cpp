@@ -31,20 +31,28 @@ TEST(CErrorHandling, StateErrorHandler) {
   //
   // Initial state: No error
   //
-  serialboxStateErrorHandlerGetCurrentError(&hasError, &errorMessage);
+  hasError = serialboxStateErrorHandlerHasError();
+  errorMessage = serialboxStateErrorHandlerGetErrorMessage();
   ASSERT_FALSE(hasError);
-  ASSERT_EQ(NULL, errorMessage);
+  ASSERT_STREQ("", errorMessage);
+  std::free(errorMessage);
 
   //
   // Raise error
   //
   serialboxFatalError("error");
   
-  serialboxStateErrorHandlerGetCurrentErrorAndReset(&hasError, &errorMessage);
+  hasError = serialboxStateErrorHandlerHasError();
+  errorMessage = serialboxStateErrorHandlerGetErrorMessage();
   ASSERT_TRUE(hasError);
   ASSERT_STREQ(errorMessage, "error");
-  serialboxStateErrorHandlerGetCurrentError(&hasError, &errorMessage);
+  std::free(errorMessage);  
+  
+  serialboxStateErrorHandlerResetState();
+  hasError = serialboxStateErrorHandlerHasError();
+  errorMessage = serialboxStateErrorHandlerGetErrorMessage();
   ASSERT_FALSE(hasError);
-  ASSERT_EQ(NULL, errorMessage);
+  ASSERT_STREQ("", errorMessage);
+  std::free(errorMessage);  
 }
 

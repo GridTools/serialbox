@@ -22,6 +22,8 @@
 #include <iosfwd>
 #include <string>
 
+/// \namespace serialbox
+/// \brief Namespace of the serialbox library
 namespace serialbox {
 
 /// \typedef Byte
@@ -29,7 +31,7 @@ namespace serialbox {
 using Byte = char;
 static_assert(sizeof(Byte) == 1, "invalid size of Byte");
 
-/// \typedef OpenMode
+/// \typedef OpenModeKind
 /// \brief Policy for opening files in the Serializer and Archive
 enum OpenModeKind : std::uint8_t { Read = 0, Write, Append };
 
@@ -43,7 +45,7 @@ std::ostream& operator<<(std::ostream& stream, const OpenModeKind& mode);
 /// \enum TypeID
 /// \brief Type-id of types recognized by serialbox
 ///
-/// This enum is duplicated in ´serialbox-c/Type.h´.
+/// This enum is duplicated in `serialbox-c/Type.h`.
 ///
 /// \see isSupported
 enum class TypeID : int {

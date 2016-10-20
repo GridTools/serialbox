@@ -14,25 +14,35 @@
 
 #include "Utility/CInterfaceTestBase.h"
 #include "serialbox-c/MetaInfo.h"
+#include "serialbox-c/Utility.h"
 #include <gtest/gtest.h>
+
+using namespace serialboxC;
 
 namespace internal {
 
 template <class T>
-testing::AssertionResult arraysAreEqual(T* a1, T* a2, int len) {
-  for(int i = 0; i < len; ++i)
-    if(a1[i] != a2[i])
-      return testing::AssertionFailure() << "array mismatch at i = " << i << " (" << a1[i]
-                                         << " != " << a2[i] << ")";
+testing::AssertionResult arraysAreEqual(T* a1, T* a2) {
+  if(a1->len != a2->len)
+    return testing::AssertionFailure() << "array size mismatch (" << a1->len << " vs. " << a2->len
+                                       << ")";
+  for(int i = 0; i < a1->len; ++i)
+    if(a1->data[i] != a2->data[i])
+      return testing::AssertionFailure() << "array mismatch at i = " << i << " (" << a1->data[i]
+                                         << " != " << a2->data[i] << ")";
   return testing::AssertionSuccess();
 }
 
 template <>
-testing::AssertionResult arraysAreEqual(serialboxArrayOfString_t a1, serialboxArrayOfString_t a2,
-                                        int len) {
-  for(int i = 0; i < len; ++i) {
-    std::string str1(a1[i]);
-    std::string str2(a2[i]);
+testing::AssertionResult arraysAreEqual(serialboxArrayOfString_t* a1,
+                                        serialboxArrayOfString_t* a2) {
+  if(a1->len != a2->len)
+    return testing::AssertionFailure() << "array size mismatch (" << a1->len << " vs. " << a2->len
+                                       << ")";
+
+  for(int i = 0; i < a1->len; ++i) {
+    std::string str1(a1->data[i]);
+    std::string str2(a2->data[i]);
     if(str1 != str2)
       return testing::AssertionFailure() << "array mismatch at i = " << i << " (" << str1
                                          << " != " << str2 << ")";
@@ -57,22 +67,28 @@ TEST_F(CMetaInfoTest, Test) {
   // Add key/value pairs
   //
   ASSERT_TRUE(serialboxMetaInfoAddBoolean(metaInfo, "bool", true));
-  ASSERT_TRUE(serialboxMetaInfoHasKey(metaInfo, "bool"));
+  EXPECT_TRUE(serialboxMetaInfoHasKey(metaInfo, "bool"));
+  EXPECT_EQ(serialboxMetaInfoGetTypeIDOfKey(metaInfo, "bool"), Boolean);  
 
   ASSERT_TRUE(serialboxMetaInfoAddInt32(metaInfo, "int32", 2));
-  ASSERT_TRUE(serialboxMetaInfoHasKey(metaInfo, "int32"));
+  EXPECT_TRUE(serialboxMetaInfoHasKey(metaInfo, "int32"));
+  EXPECT_EQ(serialboxMetaInfoGetTypeIDOfKey(metaInfo, "int32"), Int32);    
 
   ASSERT_TRUE(serialboxMetaInfoAddInt64(metaInfo, "int64", 2));
-  ASSERT_TRUE(serialboxMetaInfoHasKey(metaInfo, "int64"));
+  EXPECT_TRUE(serialboxMetaInfoHasKey(metaInfo, "int64"));
+  EXPECT_EQ(serialboxMetaInfoGetTypeIDOfKey(metaInfo, "int64"), Int64);    
 
   ASSERT_TRUE(serialboxMetaInfoAddFloat32(metaInfo, "float32", float(1.1f)));
-  ASSERT_TRUE(serialboxMetaInfoHasKey(metaInfo, "float32"));
+  EXPECT_TRUE(serialboxMetaInfoHasKey(metaInfo, "float32"));
+  EXPECT_EQ(serialboxMetaInfoGetTypeIDOfKey(metaInfo, "float32"), Float32);    
 
   ASSERT_TRUE(serialboxMetaInfoAddFloat64(metaInfo, "float64", double(1.1)));
-  ASSERT_TRUE(serialboxMetaInfoHasKey(metaInfo, "float64"));
+  EXPECT_TRUE(serialboxMetaInfoHasKey(metaInfo, "float64"));
+  EXPECT_EQ(serialboxMetaInfoGetTypeIDOfKey(metaInfo, "float64"), Float64);    
 
   ASSERT_TRUE(serialboxMetaInfoAddString(metaInfo, "string", "str"));
-  ASSERT_TRUE(serialboxMetaInfoHasKey(metaInfo, "string"));
+  EXPECT_TRUE(serialboxMetaInfoHasKey(metaInfo, "string"));
+  EXPECT_EQ(serialboxMetaInfoGetTypeIDOfKey(metaInfo, "string"), String);    
 
   ASSERT_EQ(serialboxMetaInfoGetSize(metaInfo), 6);
 
@@ -84,23 +100,35 @@ TEST_F(CMetaInfoTest, Test) {
   //
   // Add key/arrays
   //
-  serialboxBoolean_t arrayOfBooleanRef[2] = {true, false};
-  ASSERT_TRUE(serialboxMetaInfoAddArrayOfBoolean(metaInfo, "ArrayOfBoolean", arrayOfBooleanRef, 2));
-
-  serialboxInt32_t arrayOfInt32Ref[2] = {1, 2};
-  ASSERT_TRUE(serialboxMetaInfoAddArrayOfInt32(metaInfo, "ArrayOfInt32", arrayOfInt32Ref, 2));
-
-  serialboxInt64_t arrayOfInt64Ref[2] = {4, 3};
-  ASSERT_TRUE(serialboxMetaInfoAddArrayOfInt64(metaInfo, "ArrayOfInt64", arrayOfInt64Ref, 2));
-
-  serialboxFloat32_t arrayOfFloat32Ref[2] = {1.1f, 1.2f};
-  ASSERT_TRUE(serialboxMetaInfoAddArrayOfFloat32(metaInfo, "ArrayOfFloat32", arrayOfFloat32Ref, 2));
-
-  serialboxFloat64_t arrayOfFloat64Ref[2] = {4.1, 3.2};
-  ASSERT_TRUE(serialboxMetaInfoAddArrayOfFloat64(metaInfo, "ArrayOfFloat64", arrayOfFloat64Ref, 2));
-
-  serialboxString_t arrayOfStringRef[2] = {"str1", "str2"};
-  ASSERT_TRUE(serialboxMetaInfoAddArrayOfString(metaInfo, "ArrayOfString", arrayOfStringRef, 2));
+  auto* arrayOfBooleanRef = serialboxArrayOfBooleanCreate(2);
+  arrayOfBooleanRef->data[0] = true;
+  arrayOfBooleanRef->data[1] = false;
+  ASSERT_TRUE(serialboxMetaInfoAddArrayOfBoolean(metaInfo, "ArrayOfBoolean", arrayOfBooleanRef));
+  
+  auto* arrayOfInt32Ref = serialboxArrayOfInt32Create(2);
+  arrayOfInt32Ref->data[0] = 1;
+  arrayOfInt32Ref->data[1] = 2;
+  ASSERT_TRUE(serialboxMetaInfoAddArrayOfInt32(metaInfo, "ArrayOfInt32", arrayOfInt32Ref));
+  
+  auto* arrayOfInt64Ref = serialboxArrayOfInt64Create(2);
+  arrayOfInt64Ref->data[0] = 3;
+  arrayOfInt64Ref->data[1] = 4;
+  ASSERT_TRUE(serialboxMetaInfoAddArrayOfInt64(metaInfo, "ArrayOfInt64", arrayOfInt64Ref));
+  
+  auto* arrayOfFloat32Ref = serialboxArrayOfFloat32Create(2);
+  arrayOfFloat32Ref->data[0] = 1.1f;
+  arrayOfFloat32Ref->data[1] = 1.2f;
+  ASSERT_TRUE(serialboxMetaInfoAddArrayOfFloat32(metaInfo, "ArrayOfFloat32", arrayOfFloat32Ref));
+  
+  auto* arrayOfFloat64Ref = serialboxArrayOfFloat64Create(2);
+  arrayOfFloat64Ref->data[0] = 4.1;
+  arrayOfFloat64Ref->data[1] = 3.2;
+  ASSERT_TRUE(serialboxMetaInfoAddArrayOfFloat64(metaInfo, "ArrayOfFloat64", arrayOfFloat64Ref));
+  
+  auto* arrayOfStringRef = serialboxArrayOfStringCreate(2);
+  arrayOfStringRef->data[0] = allocateAndCopyString(std::string("str1"));
+  arrayOfStringRef->data[1] = allocateAndCopyString(std::string("str2"));
+  ASSERT_TRUE(serialboxMetaInfoAddArrayOfString(metaInfo, "ArrayOfString", arrayOfStringRef));
 
   //
   // Query values
@@ -115,44 +143,48 @@ TEST_F(CMetaInfoTest, Test) {
   // Key does not exists -> FatalError
   serialboxMetaInfoGetBoolean(metaInfo, "bool-XXX");
   ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  
+  serialboxMetaInfoGetTypeIDOfKey(metaInfo, "bool-XXX");
+  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   //
   // Query arrays
   //
-  int len;
+  auto* arrayOfBoolean = serialboxMetaInfoGetArrayOfBoolean(metaInfo, "ArrayOfBoolean");
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  ASSERT_TRUE(internal::arraysAreEqual(arrayOfBoolean, arrayOfBooleanRef));
+  serialboxArrayOfBooleanDestroy(arrayOfBoolean);
+  serialboxArrayOfBooleanDestroy(arrayOfBooleanRef);
+  
+  auto* arrayOfInt32 = serialboxMetaInfoGetArrayOfInt32(metaInfo, "ArrayOfInt32");
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  ASSERT_TRUE(internal::arraysAreEqual(arrayOfInt32, arrayOfInt32Ref));
+  serialboxArrayOfInt32Destroy(arrayOfInt32);
+  serialboxArrayOfInt32Destroy(arrayOfInt32Ref);
 
-  serialboxArrayOfBoolean_t arrayOfBoolean;
-  serialboxMetaInfoGetArrayOfBoolean(metaInfo, "ArrayOfBoolean", &arrayOfBoolean, &len);
-  ASSERT_TRUE(internal::arraysAreEqual(arrayOfBoolean, arrayOfBooleanRef, len));
-  std::free(arrayOfBoolean);
+  auto* arrayOfInt64 = serialboxMetaInfoGetArrayOfInt64(metaInfo, "ArrayOfInt64");
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  ASSERT_TRUE(internal::arraysAreEqual(arrayOfInt64, arrayOfInt64Ref));
+  serialboxArrayOfInt64Destroy(arrayOfInt64);
+  serialboxArrayOfInt64Destroy(arrayOfInt64Ref);
+  
+  auto* arrayOfFloat32 = serialboxMetaInfoGetArrayOfFloat32(metaInfo, "ArrayOfFloat32");
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();    
+  ASSERT_TRUE(internal::arraysAreEqual(arrayOfFloat32, arrayOfFloat32Ref));
+  serialboxArrayOfFloat32Destroy(arrayOfFloat32);
+  serialboxArrayOfFloat32Destroy(arrayOfFloat32Ref);
+  
+  auto* arrayOfFloat64 = serialboxMetaInfoGetArrayOfFloat64(metaInfo, "ArrayOfFloat64");
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();      
+  ASSERT_TRUE(internal::arraysAreEqual(arrayOfFloat64, arrayOfFloat64Ref));
+  serialboxArrayOfFloat64Destroy(arrayOfFloat64);
+  serialboxArrayOfFloat64Destroy(arrayOfFloat64Ref);
 
-  serialboxArrayOfInt32_t arrayOfInt32;
-  serialboxMetaInfoGetArrayOfInt32(metaInfo, "ArrayOfInt32", &arrayOfInt32, &len);
-  ASSERT_TRUE(internal::arraysAreEqual(arrayOfInt32, arrayOfInt32Ref, len));
-  std::free(arrayOfInt32);
-
-  serialboxArrayOfInt64_t arrayOfInt64;
-  serialboxMetaInfoGetArrayOfInt64(metaInfo, "ArrayOfInt64", &arrayOfInt64, &len);
-  ASSERT_TRUE(internal::arraysAreEqual(arrayOfInt64, arrayOfInt64Ref, len));
-  std::free(arrayOfInt64);
-
-  serialboxArrayOfFloat32_t arrayOfFloat32;
-  serialboxMetaInfoGetArrayOfFloat32(metaInfo, "ArrayOfFloat32", &arrayOfFloat32, &len);
-  ASSERT_TRUE(internal::arraysAreEqual(arrayOfFloat32, arrayOfFloat32Ref, len));
-  std::free(arrayOfFloat32);
-
-  serialboxArrayOfFloat64_t arrayOfFloat64;
-  serialboxMetaInfoGetArrayOfFloat64(metaInfo, "ArrayOfFloat64", &arrayOfFloat64, &len);
-  ASSERT_TRUE(internal::arraysAreEqual(arrayOfFloat64, arrayOfFloat64Ref, len));
-  std::free(arrayOfFloat64);
-
-  serialboxArrayOfString_t arrayOfString;
-  serialboxMetaInfoGetArrayOfString(metaInfo, "ArrayOfString", &arrayOfString, &len);
-  ASSERT_TRUE(internal::arraysAreEqual(arrayOfString, arrayOfStringRef, len));
-
-  for(int i = 0; i < len; ++i)
-    std::free((void*)arrayOfString[i]);
-  std::free(arrayOfString);
+  auto* arrayOfString = serialboxMetaInfoGetArrayOfString(metaInfo, "ArrayOfString");
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();      
+  ASSERT_TRUE(internal::arraysAreEqual(arrayOfString, arrayOfStringRef));
+  serialboxArrayOfStringDestroy(arrayOfString);
+  serialboxArrayOfStringDestroy(arrayOfStringRef);
 
   //
   // ToString
@@ -169,38 +201,35 @@ TEST_F(CMetaInfoTest, Test) {
   EXPECT_NE(str.find("true"), std::string::npos);
 
   //
-  // Keys
+  // ElementInfo
   //
-  char** keys;
-  serialboxMetaInfoGetKeys(metaInfo2, &keys, &len);
+  serialboxMetaInfoElementInfo_t* elements = serialboxMetaInfoCreateElementInfo(metaInfo2);
 
-  ASSERT_EQ(len, 1);
-  ASSERT_STREQ(keys[0], "key");
+  ASSERT_EQ(elements->len, 1);
+  ASSERT_STREQ(elements->keys[0], "key");
+  ASSERT_EQ(elements->types[0], Boolean);
 
-  for(int i = 0; i < len; ++i)
-    std::free(keys[i]);
-  std::free(keys);
+  serialboxMetaInfoDestroyElementInfo(elements);  
 
   //
-  // Types
+  // Copy constructor 
   //
-  serialboxTypeID* types;
-  serialboxMetaInfoGetTypes(metaInfo2, &types, &len);
-
-  ASSERT_EQ(len, 1);
-  ASSERT_EQ(types[0], Boolean);
-
-  std::free(types);
+  serialboxMetaInfo_t* metaInfoCopy = serialboxMetaInfoCreateFromMetaInfo(metaInfo);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();  
+  ASSERT_TRUE(serialboxMetaInfoEqual(metaInfo, metaInfoCopy));
 
   //
   // Clear map
   //
   serialboxMetaInfoClear(metaInfo);
   ASSERT_TRUE(serialboxMetaInfoIsEmpty(metaInfo));
-
+  ASSERT_FALSE(serialboxMetaInfoIsEmpty(metaInfoCopy)); // no aliasing
+  
   //
   // Release memory
   //
   serialboxMetaInfoDestroy(metaInfo);
   serialboxMetaInfoDestroy(metaInfo2);
+  serialboxMetaInfoDestroy(metaInfoCopy);
+  
 }

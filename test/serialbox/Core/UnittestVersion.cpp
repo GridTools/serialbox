@@ -13,7 +13,6 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/Core/Version.h"
-#include "serialbox/Core/StringSwitch.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

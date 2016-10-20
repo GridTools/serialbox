@@ -31,8 +31,13 @@ namespace serialbox {
 
 namespace stella {
 
+/// \defgroup STELLA STELLA
+/// \brief STELLA frontend of Serialbox
+
 /// \enum SerializerOpenMode
 /// \brief OpenPolicy of the Serializer
+///
+/// \ingroup STELLA
 enum SerializerOpenMode {
   SerializerOpenModeRead,
   SerializerOpenModeWrite,
@@ -40,6 +45,8 @@ enum SerializerOpenMode {
 };
 
 /// \brief Implementation of the STELLA Serializer
+///
+/// \ingroup STELLA
 class Serializer {
 public:
   Serializer();
@@ -47,23 +54,24 @@ public:
   /// \brief Enable serialization
   ///
   /// Serialization is enabled by default, but it can be disabled either by setting the environment
-  /// variable ´STELLA_SERIALIZATION_DISABLE´ to a positive value or by calling the funcion
+  /// variable `STELLA_SERIALIZATION_DISABLE` to a positive value or by calling the function
   /// DisableSerialization. With this function you enable the serialization independently of the
   /// current environment.
   ///
-  /// The serialization can be only globally enabled or disabled. There is not way to enable or
+  /// The serialization can be only globally enabled or disabled. There is no way to enable or
   /// disable only a specific serializer.
-  static void EnableSerialization() { enabled_ = 1; }
+  static void EnableSerialization();
 
   /// \brief Disable serialization
   ///
   /// Serialization is enabled by default, but it can be disabled either by setting the environment
-  /// variable ´STELLA_SERIALIZATION_DISABLE´ to a positive value or by calling the funcion
-  /// DisableSerialization.
+  /// variable `STELLA_SERIALIZATION_DISABLE` to a positive value or by calling the funtcion
+  /// DisableSerialization. With this function you disable the serialization independently of the
+  /// current environment.
   ///
-  /// The serialization can be only globally enabled or disabled. There is not way to enable or
+  /// The serialization can be only globally enabled or disabled. There is no way to enable or
   /// disable only a specific serializer.
-  static void DisableSerialization() { enabled_ = -1; }
+  static void DisableSerialization();
 
   /// \brief Open mode
   ///
@@ -168,7 +176,7 @@ public:
   /// The provided field will be initialized with the provided name and with the ize and boundary
   /// present in the serializer.
   ///
-  /// This method requires the STELLA headers (i.e expects ´IJKSize´ and ´KBoundary´ to be present
+  /// This method requires the STELLA headers (i.e expects `IJKSize` and `KBoundary` to be present
   /// in global namespace) and thus requires you to define:
   /// \code
   ///   #define SERIALBOX_HAS_STELLA 1
