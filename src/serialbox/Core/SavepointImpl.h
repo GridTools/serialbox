@@ -43,7 +43,7 @@ public:
   /// \brief Construct savepoint with `name` and `metaInfo`
   template <class StringType, class MetaInfoType>
   SavepointImpl(StringType&& name, MetaInfoType&& metaInfo)
-      : name_(name), metaInfo_(std::make_shared<MetaInfoMap>(metaInfo)){};
+      : name_(name), metaInfo_(std::make_shared<MetaInfoMap>(std::forward<MetaInfoType>(metaInfo))){};
 
   /// \brief Copy constructor
   SavepointImpl(const SavepointImpl& other) { *this = other; };

@@ -20,6 +20,14 @@ extern "C" {
 #endif
 
 /**
+ * \ingroup serialboxC
+ * @{
+ * 
+ * \defgroup error Error-handling methods
+ * @{
+ */
+
+/**
  * \brief Report a fatal error
  *
  * This will function will invoke the installed FatalErrorHandler.
@@ -94,6 +102,8 @@ char* serialboxStateErrorHandlerGetErrorMessage(void);
  * \brief Reset the current error state
  */
 void serialboxStateErrorHandlerResetState(void);
+
+/** @} @} */
 
 #ifdef __cplusplus
 }

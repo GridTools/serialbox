@@ -29,6 +29,8 @@ namespace gridtools {
 ///
 /// They keys are strings (std::string), while the values can be booleans, integers (32 and 64 bit),
 /// floating point numbers (32 and 64 bit) or strings.
+/// 
+/// \ingroup gridtools
 class meta_info_map {
 public:
   /// \brief Type of the underlying hash-map
@@ -61,11 +63,8 @@ public:
   /// \code
   ///   meta_info_map m({{"key1", meta_info_value(4.0)}, {"key2", meta_info_value(2))}});
   /// \endcode
-  explicit meta_info_map(std::initializer_list<value_type> list)
+  meta_info_map(std::initializer_list<value_type> list)
       : map_impl_(std::make_shared<MetaInfoMap>(list)) {}
-
-  /// \brief Construct with MetaInfoMap (internal use)
-  explicit meta_info_map(const std::shared_ptr<MetaInfoMap>& map) { map_impl_ = map; }
 
   /// \brief Copy constructor
   ///
@@ -75,10 +74,10 @@ public:
   /// \b Example
   /// \code
   ///   meta_info_map m1 = {{"key1", meta_info_value(4.0)}, {"key2", meta_info_value(2))}};
-  ///   meta_info_map m2 = m1;
+  ///   meta_info_map m2(m1); 
   ///
   ///   m1.clear();
-  ///   assert(m2.empty()); // m1 and m2 do share the same MetaInfoMap, hence m2 is empty as well
+  ///   assert(m2.empty());    // m1 and m2 share the same MetaInfoMap, hence m2 is empty as well
   /// \endcode
   ///
   /// \see meta_info_map::clone()
@@ -98,7 +97,7 @@ public:
   ///   meta_info_map m2 = m1;
   ///
   ///   m1.clear();
-  ///   assert(m2.empty()); // m1 and m2 do share the same MetaInfoMap, hence m2 is empty as well
+  ///   assert(m2.empty());     // m1 and m2 share the same MetaInfoMap, hence m2 is empty as well
   /// \endcode
   ///
   /// \see meta_info_map::clone
@@ -120,7 +119,7 @@ public:
 
   /// \brief Clone the current meta_info_map object by performing a deep copy
   ///
-  /// \Example: To deep copy a meta_info_map
+  /// \b Example: To deep copy a meta_info_map
   /// \code
   ///   meta_info_map m1 = {{"key1", double(4)}, {"key2", int(2)}};
   ///   meta_info_map m2 = m1.clone();
@@ -130,6 +129,9 @@ public:
   /// \endcode
   meta_info_map clone() const { return meta_info_map(std::make_shared<MetaInfoMap>(*map_impl_)); }
 
+  /// \brief Construct with MetaInfoMap (internal use)
+  explicit meta_info_map(const std::shared_ptr<MetaInfoMap>& map) { map_impl_ = map; }
+  
   /// \brief Check if key exists in the map
   ///
   /// \param key  Key to be searched for
@@ -261,8 +263,7 @@ public:
   bool operator!=(const meta_info_map& right) const noexcept { return (!(*this == right)); }
 
   /// \brief Convert to stream
-  template <class StreamType>
-  friend std::ostream& operator<<(StreamType&& stream, const meta_info_map& s) {
+  friend std::ostream& operator<<(std::ostream& stream, const meta_info_map& s) {
     return (stream << *s.map_impl_);
   }
 

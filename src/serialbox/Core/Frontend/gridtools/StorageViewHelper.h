@@ -43,10 +43,10 @@ std::vector<int> get_strides(const Storage& storage) {
   const auto& strides_array = storage.meta_data().m_strides;
   const int n_dimensions = storage.meta_data().dims().n_dimensions;
 
-  std::vector<int> strides_vec;
+  std::vector<int> strides_vec(n_dimensions);
   for(int i = 0; i < n_dimensions; ++i)
-    strides_vec.push_back(
-        internal::get_stride_helper<typename Storage::storage_info_type::layout>(i, strides_array));
+    strides_vec[i] = 
+        internal::get_stride_helper<typename Storage::storage_info_type::layout>(i, strides_array);
 
   return strides_vec;
 }
@@ -60,10 +60,10 @@ std::vector<int> get_dims(const Storage& storage) noexcept {
   const auto& unaligned_dims_array = storage.meta_data().m_unaligned_dims;
   const int n_dimensions = storage.meta_data().dims().n_dimensions;
 
-  std::vector<int> dims_vec;
+  std::vector<int> dims_vec(n_dimensions);
   for(int i = 0; i < n_dimensions; ++i)
-    dims_vec.push_back(unaligned_dims_array[i]);
-
+    dims_vec[i] = unaligned_dims_array[i];
+  
   return dims_vec;
 }
 

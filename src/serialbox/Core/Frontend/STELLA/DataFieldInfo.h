@@ -26,6 +26,8 @@ namespace serialbox {
 namespace stella {
 
 /// \brief Information of a data-field
+/// 
+/// \ingroup STELLA
 class DataFieldInfo {
 public:
   /// \brief Default constructor

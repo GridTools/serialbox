@@ -24,6 +24,8 @@ namespace serialbox {
 namespace stella {
 
 /// \brief Exception of the STELLA frontend
+/// 
+/// \ingroup STELLA
 class SerializationException : public std::exception {
 public:
   /// \brief Default constructor

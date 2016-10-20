@@ -97,8 +97,20 @@ std::vector<std::string> SerializerImpl::fieldnames() const {
   return fields;
 }
 
-void SerializerImpl::checkStorageView(const std::string& name,
-                                      const StorageView& storageView) const {
+static inline bool dimsEqual(const std::vector<int>& dims1, const std::vector<int>& dims2) {
+  if(dims1.size() != dims2.size())
+    return false;
+  
+  // If a dimensions is negative, 0 or 1 it is ignored. We have to do this as gridtools treats empty
+  // dimensions as 0 while STELLA and Frotran usually set them to 1.
+  for(std::size_t i = 0; i < dims1.size(); ++i)
+    if(dims1[i] != dims2[i] && !(dims1[i] <= 1 && dims2[i] <= 1))
+      return false;
+  return true;
+}
+
+std::shared_ptr<FieldMetaInfo>
+SerializerImpl::checkStorageView(const std::string& name, const StorageView& storageView) const {
 
   // Check if field exists
   auto fieldIt = fieldMap_->findField(name);
@@ -113,14 +125,14 @@ void SerializerImpl::checkStorageView(const std::string& name,
                     TypeUtil::toString(fieldInfo.type()), TypeUtil::toString(storageView.type()));
 
   // Check if dimensions match
-  if(storageView.dims().size() != fieldInfo.dims().size() ||
-     !std::equal(storageView.dims().begin(), storageView.dims().end(), fieldInfo.dims().begin())) {
+  if(!dimsEqual(fieldInfo.dims(), storageView.dims())) {
     throw Exception("dimensions of field '%s' do not match regsitered ones:"
                     "\nRegistred as: [ %s ]"
                     "\nGiven     as: [ %s ]",
                     name, internal::vecToString(fieldInfo.dims()),
                     internal::vecToString(storageView.dims()));
   }
+  return fieldIt->second;
 }
 
 //===------------------------------------------------------------------------------------------===//
@@ -140,7 +152,7 @@ void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoi
   //
   // 1) Check if field is registred within the Serializer and perform some consistency checks
   //
-  checkStorageView(name, storageView);
+  auto info = checkStorageView(name, storageView);
 
   //
   // 2) Locate savepoint and register it if necessary
@@ -162,7 +174,7 @@ void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoi
   //
   // 4) Pass the StorageView to the backend Archive and perform actual data-serialization.
   //
-  FieldID fieldID = archive_->write(storageView, name);
+  FieldID fieldID = archive_->write(storageView, name, info);
 
   //
   // 5) Register FieldID within Savepoint.
@@ -194,7 +206,7 @@ void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoin
   //
   // 1) Check if field is registred within the Serializer and perform some consistency checks
   //
-  checkStorageView(name, storageView);
+  auto info = checkStorageView(name, storageView);
 
   //
   // 2) Check if savepoint exists and obtain fieldID
@@ -209,7 +221,7 @@ void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoin
   //
   // 3) Pass the StorageView to the backend Archive and perform actual data-deserialization.
   //
-  archive_->read(storageView, fieldID);
+  archive_->read(storageView, fieldID, info);
 
   LOG(info) << "Successfully deserialized field \"" << name << "\"";
 }

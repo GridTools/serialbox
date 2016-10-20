@@ -22,6 +22,14 @@
 extern "C" {
 #endif
 
+/**
+ * \ingroup serialboxC
+ * @{
+ * 
+ * \defgroup metainfo Meta-info methods
+ * @{
+ */
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Construction & Destruction
 \*===------------------------------------------------------------------------------------------===*/
@@ -263,6 +271,8 @@ serialboxArrayOfFloat64_t* serialboxMetaInfoGetArrayOfFloat64(const serialboxMet
 serialboxArrayOfString_t* serialboxMetaInfoGetArrayOfString(const serialboxMetaInfo_t* metaInfo,
                                                             const char* key);
 /** @} */
+
+/** @} @} */
 
 #ifdef __cplusplus
 }

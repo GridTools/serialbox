@@ -37,7 +37,9 @@ set(SOURCES
   Frontend/gridtools/UnittestStorageView.cpp
   Frontend/gridtools/UnittestMetaInfoMap.cpp
   Frontend/gridtools/UnittestFieldMetaInfo.cpp  
- 
+  Frontend/gridtools/UnittestSavepoint.cpp    
+  Frontend/gridtools/UnittestSerializer.cpp    
+  
   # Frontend/STELLA/
   Frontend/STELLA/UnittestStorageView.cpp
   Frontend/STELLA/UnittestMetainfoSet.cpp

@@ -21,6 +21,14 @@
 extern "C" {
 #endif
 
+/**
+ * \ingroup serialboxC
+ * @{
+ * 
+ * \defgroup fieldmetainfo Field meta-info methods
+ * @{
+ */
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Construction & Destruction
 \*===------------------------------------------------------------------------------------------===*/
@@ -119,6 +127,8 @@ int serialboxFieldMetaInfoGetNumDimensions(const serialboxFieldMetaInfo_t* field
  * \return meta-information of the field
  */
 serialboxMetaInfo_t* serialboxFieldMetaInfoGetMetaInfo(serialboxFieldMetaInfo_t* fieldMetaInfo);
+
+/** @} @} */
 
 #ifdef __cplusplus
 }

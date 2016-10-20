@@ -148,7 +148,8 @@ void BinaryArchive::updateMetaData() { writeMetaDataToJson(); }
 //===------------------------------------------------------------------------------------------===//
 
 FieldID BinaryArchive::write(const StorageView& storageView,
-                             const std::string& field) throw(Exception) {
+                             const std::string& field,
+                             const std::shared_ptr<FieldMetaInfo> info) throw(Exception) {
   if(mode_ == OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Write' or 'Append'");
 
@@ -234,7 +235,8 @@ FieldID BinaryArchive::write(const StorageView& storageView,
 //     Reading
 //===------------------------------------------------------------------------------------------===//
 
-void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID) const throw(Exception) {
+void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID,
+                         std::shared_ptr<FieldMetaInfo> info) const throw(Exception) {
   if(mode_ != OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Read'");
 

@@ -22,6 +22,14 @@ extern "C" {
 #endif
 
 /**
+ * \ingroup serialboxC
+ * @{
+ * 
+ * \defgroup archive Archive methods
+ * @{
+ */
+
+/**
  * \brief Get an array of C-strings of all registered archives
  *
  * The function will allocate a sufficiently large array of `char*`. Each element (as well as the
@@ -30,6 +38,8 @@ extern "C" {
  * \return Array of C-strings with the names of all registered archives
  */
 serialboxArrayOfString_t* serialboxArchiveGetRegisteredArchives(void);
+
+/** @} @} */
 
 #ifdef __cplusplus
 }

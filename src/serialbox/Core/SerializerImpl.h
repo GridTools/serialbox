@@ -33,19 +33,19 @@ namespace serialbox {
 class SerializerImpl {
 public:
   /// \brief Get the status of serialization
-  /// 
+  ///
   /// The status is represented as an integer which can take the following values:
   ///
   /// - 0: the variable is not yet initialized -> the serialization is enabled if the environment
-  ///   variable `SERIALBOX_SERIALIZATION_DISABLE` is not set to a positive value. The first 
-  ///   Serializer which is initialized has to set this value either to +1 or to -1 according to 
+  ///   variable `SERIALBOX_SERIALIZATION_DISABLE` is not set to a positive value. The first
+  ///   Serializer which is initialized has to set this value either to +1 or to -1 according to
   ///   the environment.
   /// - +1: the serialization is enabled, independently of the environment
   /// - -1: the serialization is disabled, independently of the environment
   ///
   /// \return serialization status
   static int serializationStatus() noexcept { return enabled_; }
-  
+
   /// \brief Enable serialization
   ///
   /// Serialization is enabled by default, but it can be disabled either by setting the environment
@@ -67,7 +67,7 @@ public:
   /// The serialization can only be globally enabled or disabled. There is no way to enable or
   /// disable only a specific serializer.
   static void disableSerialization() noexcept { enabled_ = -1; }
-  
+
   /// \brief Copy constructor [deleted]
   SerializerImpl(const SerializerImpl&) = delete;
 
@@ -103,6 +103,9 @@ public:
 
   /// \brief Access prefix of all filenames
   const std::string& prefix() const noexcept { return prefix_; }
+  
+  /// \brief Name of the archive in use
+  const std::string& archiveName() const noexcept { return archive_->name(); }
 
   /// \brief Access the path to the meta-data file
   const boost::filesystem::path& metaDataFile() const noexcept { return metaDataFile_; }
@@ -177,7 +180,7 @@ public:
     return fieldMap_->hasField(std::forward<StringType>(name));
   }
 
-  /// \brief Add key-value meta-information to field `name`
+  /// \brief Add `key = value` or `key = {value1, ..., valueN}` meta-information to field `name`
   ///
   /// \param name   Name of the field
   /// \param key    Key of the new element
@@ -191,11 +194,11 @@ public:
                                                  std::forward<ValueType>(value));
   }
 
-  /// \brief Query FieldMap for field with name `name` and return refrence to FieldMetaInfo
+  /// \brief Query FieldMap for field with `name` and return a refrence to FieldMetaInfo
   ///
   /// \param name  Name of the field
   ///
-  /// \throw Exception  Field with name `name` does not exist in FieldMap
+  /// \throw Exception  Field `name` does not exist in FieldMap
   template <class StringType>
   const FieldMetaInfo& getFieldMetaInfoOf(StringType&& name) const {
     return fieldMap_->getFieldMetaInfoOf(std::forward<StringType>(name));
@@ -235,7 +238,7 @@ public:
   /// \brief Get the FielID of field `field` at savepoint `savepoint`
   ///
   /// \throw Exception  Savepoint or field at savepoint do not exist
-  FieldID getFieldOfSavepoint(const SavepointImpl& savepoint, const std::string& field) const {
+  FieldID getFieldIDAtSavepoint(const SavepointImpl& savepoint, const std::string& field) const {
     return savepointVector_->getFieldID(savepoint, field);
   }
 
@@ -281,7 +284,7 @@ public:
   /// 6. Update meta-data on disk via SerializerImpl::updateMetaData()
   ///
   /// \param name           Name of the field
-  /// \param savepoint      Savepoint to at which the field will be serialized
+  /// \param savepoint      Savepoint at which the field will be serialized
   /// \param storageView    StorageView of the field
   ///
   /// \throw Exception
@@ -307,7 +310,7 @@ public:
   /// 3. Pass the StorageView to the backend Archive and perform actual data-deserialization.
   ///
   /// \param name           Name of the field
-  /// \param savepoint      Savepoint to at which the field will be serialized
+  /// \param savepoint      Savepoint at which the field will be deserialized
   /// \param storageView    StorageView of the field
   ///
   /// \throw Exception
@@ -348,8 +351,10 @@ protected:
 
   /// \brief Check if `storageView` is consistent with the field `name`
   ///
+  /// \return FieldMetaInfo of field `name`
   /// \throw Exception    Inconsistency is detected
-  void checkStorageView(const std::string& name, const StorageView& storageView) const;
+  std::shared_ptr<FieldMetaInfo> checkStorageView(const std::string& name,
+                                                  const StorageView& storageView) const;
 
   /// \brief Check if the current directory contains meta-information of an older version of
   /// serialbox and upgrade it if necessary
@@ -377,7 +382,7 @@ protected:
   std::shared_ptr<MetaInfoMap> globalMetaInfo_;
 
   std::unique_ptr<Archive> archive_;
-  
+
   // This variable can take three values:
   //
   //  0: the variable is not yet initialized -> the serialization is enabled if the environment
@@ -388,7 +393,7 @@ protected:
   // -1: the serialization is disabled, independently of the environment
   //
   // The value is initialized to 0
-  static int enabled_;  
+  static int enabled_;
 };
 
 } // namespace serialbox

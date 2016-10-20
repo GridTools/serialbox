@@ -8,7 +8,7 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This implements the unittests of the FieldMetaInfo.
+/// This implements the unittests of the gridtools::field_meta_info.
 ///
 //===------------------------------------------------------------------------------------------===//
 
@@ -40,4 +40,32 @@ TEST(GridToolsFieldMetaInfoTest, Construction) {
   ASSERT_EQ(info3.meta_info().size(), map.size());
   ASSERT_EQ(info3.meta_info().at("key1").as<double>(), 4);
   ASSERT_EQ(info3.meta_info().at("key2").as<int>(), 2);
+  
+  // Check aliasing
+  field_meta_info info_alias_of_1(info1);
+  info_alias_of_1.meta_info().insert("int", 5);
+  ASSERT_TRUE(info1.meta_info().has_key("int"));
+  EXPECT_EQ(info1.meta_info().as<int>("int"), 5);
+  
+  // Check cloning
+  field_meta_info info_clone_of_2(info2.clone());  
+  info_clone_of_2.meta_info().insert("int", 5);
+  ASSERT_FALSE(info2.meta_info().has_key("int"));
+  
+  // Swap
+  field_meta_info info_swap = info2.clone();
+  info_swap.meta_info().clear();
+  info2.swap(info_swap);
+  ASSERT_TRUE(info2.meta_info().empty());
+
+  // Comparison
+  field_meta_info info_eq = info3.clone();
+  field_meta_info info_ne = info3.clone();
+  info_ne.meta_info().insert("k", 5);
+  
+  ASSERT_EQ(info_eq, info3);
+  ASSERT_NE(info_ne, info3);
 }
+
+
+

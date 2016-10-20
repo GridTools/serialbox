@@ -88,24 +88,38 @@ public:
     return (map_.find(name));
   }
 
-  /// \brief Get FieldMetaInfo of field with name `name`
+  /// \brief Get FieldMetaInfo of field `name`
   ///
   /// \param name  Name of the field
-  /// \throw Exception Field with name `name` does not exist in FieldMap
+  /// \throw Exception Field `name` does not exist in FieldMap
   template <class StringType>
   FieldMetaInfo& getFieldMetaInfoOf(StringType&& name) {
-    iterator fieldIt = map_.find(name);
-    if(fieldIt != map_.end())
-      return *(fieldIt->second);
-    throw Exception("field '%s' does not exist in FieldMap", name);
+    return *getFieldMetaInfoPtrOf(std::forward<StringType>(name));
   }
 
   template <class StringType>
   const FieldMetaInfo& getFieldMetaInfoOf(StringType&& name) const {
+    return *getFieldMetaInfoPtrOf(std::forward<StringType>(name));
+  }
+  
+  /// \brief Get pointer to FieldMetaInfo of field `name`
+  ///
+  /// \param name  Name of the field
+  /// \throw Exception Field `name` does not exist in FieldMap
+  template <class StringType>
+  std::shared_ptr<FieldMetaInfo>& getFieldMetaInfoPtrOf(StringType&& name) {
+    iterator fieldIt = map_.find(name);
+    if(fieldIt != map_.end())
+      return fieldIt->second;
+    throw Exception("field '%s' does not exist", name);
+  }
+
+  template <class StringType>
+  const std::shared_ptr<FieldMetaInfo>& getFieldMetaInfoPtrOf(StringType&& name) const {
     const_iterator fieldIt = map_.find(name);
     if(fieldIt != map_.end())
-      return *(fieldIt->second);
-    throw Exception("field '%s' does not exist in FieldMap", name);
+      return fieldIt->second;
+    throw Exception("field '%s' does not exis", name);
   }
 
   /// \brief Get MetaInfo of field with name `name`

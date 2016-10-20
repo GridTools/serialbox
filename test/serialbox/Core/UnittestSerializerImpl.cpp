@@ -359,10 +359,10 @@ TEST_F(SerializerImplUtilityTest, JSONSuccess) {
   EXPECT_EQ(sp2.name(), "savepoint");
   EXPECT_EQ(sp3.name(), "different-savepoint");
 
-  EXPECT_EQ(s_read.getFieldOfSavepoint(sp1, "field1"), (FieldID{"field1", 0}));
-  EXPECT_EQ(s_read.getFieldOfSavepoint(sp1, "field2"), (FieldID{"field2", 0}));
-  EXPECT_EQ(s_read.getFieldOfSavepoint(sp2, "field1"), (FieldID{"field1", 1}));
-  EXPECT_EQ(s_read.getFieldOfSavepoint(sp2, "field2"), (FieldID{"field2", 1}));
+  EXPECT_EQ(s_read.getFieldIDAtSavepoint(sp1, "field1"), (FieldID{"field1", 0}));
+  EXPECT_EQ(s_read.getFieldIDAtSavepoint(sp1, "field2"), (FieldID{"field2", 0}));
+  EXPECT_EQ(s_read.getFieldIDAtSavepoint(sp2, "field1"), (FieldID{"field1", 1}));
+  EXPECT_EQ(s_read.getFieldIDAtSavepoint(sp2, "field2"), (FieldID{"field2", 1}));
 
   // FieldMap
   ASSERT_TRUE(s_read.fieldMap().hasField("field1"));

@@ -21,6 +21,14 @@
 extern "C" {
 #endif
 
+/**
+ * \ingroup serialboxC
+ * @{
+ * 
+ * \defgroup savepoint Savepoint methods
+ * @{
+ */
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Construction & Destruction
 \*===------------------------------------------------------------------------------------------===*/
@@ -91,6 +99,8 @@ char* serialboxSavepointToString(const serialboxSavepoint_t* savepoint);
  * \return meta-information of the Savepoint
  */
 serialboxMetaInfo_t* serialboxSavepointGetMetaInfo(serialboxSavepoint_t* savepoint);
+
+/** @} @} */
 
 #ifdef __cplusplus
 }

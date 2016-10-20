@@ -28,7 +28,9 @@
 #include <unordered_map>
 #include <vector>
 
-/// \brief Check return type of NetCDF function calls
+/// \brief Check return type of NetCDF functions
+/// 
+/// Assumes that there is a variable `int errorCode` in the current or a parent scope.
 #define NETCDF_CHECK(functionCall)                                                                 \
   if((errorCode = functionCall))                                                                   \
     throw serialbox::Exception("NetCDFArchive: %s", nc_strerror(errorCode));
@@ -198,8 +200,8 @@ void NetCDFArchive::readMetaDataFromJson() {
 //     Writing
 //===------------------------------------------------------------------------------------------===//
 
-FieldID NetCDFArchive::write(const StorageView& storageView,
-                             const std::string& field) throw(Exception) {
+FieldID NetCDFArchive::write(const StorageView& storageView, const std::string& field,
+                             const std::shared_ptr<FieldMetaInfo> info) throw(Exception) {
   if(mode_ == OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Write' or 'Append'");
 
@@ -306,7 +308,9 @@ FieldID NetCDFArchive::write(const StorageView& storageView,
 //     Reading
 //===------------------------------------------------------------------------------------------===//
 
-void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID) const throw(Exception) {
+void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID,
+                         std::shared_ptr<FieldMetaInfo> info) const throw(Exception) {
+  
   if(mode_ != OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Read'");
 

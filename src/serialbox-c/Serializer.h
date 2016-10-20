@@ -22,6 +22,15 @@
 extern "C" {
 #endif
 
+/**
+ * \defgroup serialboxC serialbox-c 
+ * \brief C-Interface of Serialbox
+ * @{
+ * 
+ * \defgroup serializer Serializer methods
+ * @{
+ */
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Construction & Destruction
 \*===------------------------------------------------------------------------------------------===*/
@@ -289,6 +298,8 @@ void serialboxSerializerWrite(serialboxSerializer_t* serializer, const char* nam
 void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name,
                              const serialboxSavepoint_t* savepoint, void* originPtr,
                              const int* strides, int numStrides);
+
+/** @} */
 
 #ifdef __cplusplus
 }
