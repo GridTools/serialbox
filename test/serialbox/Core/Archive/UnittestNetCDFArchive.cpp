@@ -184,6 +184,27 @@ TEST_F(NetCDFArchiveUtilityTest, toString) {
   EXPECT_NE(ss.str().find("fieldMap"), std::string::npos);
 }
 
+TEST_F(NetCDFArchiveUtilityTest, writeAndRead) {
+  using Storage = Storage<double>;
+  Storage storage_input(Storage::ColMajor, {5, 2, 5}, Storage::random);
+  Storage storage_output(Storage::ColMajor, {5, 2, 5});
+
+  auto sv_input = storage_input.toStorageView();
+  auto sv_output = storage_output.toStorageView();
+
+  // Write and read from file
+  NetCDFArchive::writeToFile((this->directory->path() / "test.nc").string(), sv_input, "field");
+
+  NetCDFArchive::readFromFile((this->directory->path() / "test.nc").string(), sv_output, "field");
+
+  ASSERT_TRUE(Storage::verify(storage_input, storage_output));
+
+  // Read from non-existing file -> Exception
+  ASSERT_THROW(
+      NetCDFArchive::readFromFile((this->directory->path() / "X.nc").string(), sv_output, "field"),
+      Exception);
+}
+
 //===------------------------------------------------------------------------------------------===//
 //     Read/Write tests
 //===------------------------------------------------------------------------------------------===//

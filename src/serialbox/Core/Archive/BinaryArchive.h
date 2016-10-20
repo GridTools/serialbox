@@ -128,6 +128,21 @@ public:
   /// \brief Get field table
   FieldTable& fieldTable() noexcept { return fieldTable_; }
   const FieldTable& fieldTable() const noexcept { return fieldTable_; }
+  
+  /// \brief Directly write field (given by `storageView`) to file
+  ///
+  /// \param filename     Newly created file (if file already exists, it's contents will be 
+  ///                     discarded)
+  /// \param storageView  StorageView of the field
+  static void writeToFile(std::string filename, const StorageView& storageView);  
+  
+  /// \brief Directly read field (given by `storageView`) from file
+  ///
+  /// This function can be used to implement stateless deserialization methods.
+  ////
+  /// \param filename     File to read from
+  /// \param storageView  StorageView of the field
+  static void readFromFile(std::string filename, StorageView& storageView);  
 
 private:
   OpenModeKind mode_;

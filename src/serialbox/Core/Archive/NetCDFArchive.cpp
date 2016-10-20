@@ -87,6 +87,83 @@ static int dispatchInt64(FunctionForLong&& functionForLong,
       std::forward<FunctionForLongLong>(functionForLongLong), std::forward<Args>(args)...);
 }
 
+/// \brief Wrapper for write method
+static void write(int ncID, int varID, 
+          const std::vector<std::size_t>& startp,
+          const std::vector<std::size_t>& countp, 
+          const std::vector<std::ptrdiff_t>& stridep,
+          const std::vector<std::ptrdiff_t>& imapp, 
+          const StorageView& storageView) { 
+  int errorCode;
+
+  TypeID type = storageView.type();
+  
+  switch(type) {
+  case TypeID::Boolean:
+    NETCDF_CHECK(nc_put_varm_text(ncID, varID, startp.data(), countp.data(), stridep.data(),
+                                  imapp.data(), storageView.originPtr()));
+    break;
+  case TypeID::Int32:
+    NETCDF_CHECK(nc_put_varm_int(ncID, varID, startp.data(), countp.data(), stridep.data(),
+                                 imapp.data(), storageView.originPtrAs<int>()));
+    break;
+  case TypeID::Int64: {
+    NETCDF_CHECK(internal::dispatchInt64(nc_put_varm_long, nc_put_varm_longlong, ncID, varID,
+                                         startp.data(), countp.data(), stridep.data(), imapp.data(),
+                                         storageView.originPtrAs<std::int64_t>()));
+    break;
+  }
+  case TypeID::Float32:
+    NETCDF_CHECK(nc_put_varm_float(ncID, varID, startp.data(), countp.data(), stridep.data(),
+                                   imapp.data(), storageView.originPtrAs<float>()));
+    break;
+  case TypeID::Float64:
+    NETCDF_CHECK(nc_put_varm_double(ncID, varID, startp.data(), countp.data(), stridep.data(),
+                                    imapp.data(), storageView.originPtrAs<double>()));
+    break;
+  default:
+    serialbox_unreachable("type not supported");
+  }
+}
+
+/// \brief Wrapper for read method
+static void read(int ncID, int varID, 
+          const std::vector<std::size_t>& startp,
+          const std::vector<std::size_t>& countp, 
+          const std::vector<std::ptrdiff_t>& stridep,
+          const std::vector<std::ptrdiff_t>& imapp, 
+          StorageView& storageView) {
+  int errorCode;
+
+  TypeID type = storageView.type();
+  
+  switch(type) {
+  case TypeID::Boolean:
+    NETCDF_CHECK(nc_get_varm_text(ncID, varID, startp.data(), countp.data(), stridep.data(),
+                                  imapp.data(), storageView.originPtr()));
+    break;
+  case TypeID::Int32:
+    NETCDF_CHECK(nc_get_varm_int(ncID, varID, startp.data(), countp.data(), stridep.data(),
+                                 imapp.data(), storageView.originPtrAs<int>()));
+    break;
+  case TypeID::Int64:
+    NETCDF_CHECK(internal::dispatchInt64(nc_get_varm_long, nc_get_varm_longlong, ncID, varID,
+                                         startp.data(), countp.data(), stridep.data(), imapp.data(),
+                                         storageView.originPtrAs<std::int64_t>()));
+    break;
+  case TypeID::Float32:
+    NETCDF_CHECK(nc_get_varm_float(ncID, varID, startp.data(), countp.data(), stridep.data(),
+                                   imapp.data(), storageView.originPtrAs<float>()));
+    break;
+  case TypeID::Float64:
+    NETCDF_CHECK(nc_get_varm_double(ncID, varID, startp.data(), countp.data(), stridep.data(),
+                                    imapp.data(), storageView.originPtrAs<double>()));
+    break;
+  default:
+    serialbox_unreachable("type not supported");
+  }
+}
+
 } // namespace internal
 
 const std::string NetCDFArchive::Name = "NetCDF";
@@ -212,7 +289,7 @@ FieldID NetCDFArchive::write(const StorageView& storageView, const std::string& 
   TypeID type = storageView.type();
   const std::vector<int>& dims = storageView.dims();
   const std::vector<int>& strides = storageView.strides();
-
+  
   std::size_t numDims = dims.size();
   std::size_t numDimsID = numDims + 1;
 
@@ -265,33 +342,8 @@ FieldID NetCDFArchive::write(const StorageView& storageView, const std::string& 
     countp[i + 1] = dims[i];
     imapp[i + 1] = strides[i];
   }
-
-  switch(type) {
-  case TypeID::Boolean:
-    NETCDF_CHECK(nc_put_varm_text(ncID, varID, startp.data(), countp.data(), stridep.data(),
-                                  imapp.data(), storageView.originPtr()));
-    break;
-  case TypeID::Int32:
-    NETCDF_CHECK(nc_put_varm_int(ncID, varID, startp.data(), countp.data(), stridep.data(),
-                                 imapp.data(), storageView.originPtrAs<int>()));
-    break;
-  case TypeID::Int64: {
-    NETCDF_CHECK(internal::dispatchInt64(nc_put_varm_long, nc_put_varm_longlong, ncID, varID,
-                                         startp.data(), countp.data(), stridep.data(), imapp.data(),
-                                         storageView.originPtrAs<std::int64_t>()));
-    break;
-  }
-  case TypeID::Float32:
-    NETCDF_CHECK(nc_put_varm_float(ncID, varID, startp.data(), countp.data(), stridep.data(),
-                                   imapp.data(), storageView.originPtrAs<float>()));
-    break;
-  case TypeID::Float64:
-    NETCDF_CHECK(nc_put_varm_double(ncID, varID, startp.data(), countp.data(), stridep.data(),
-                                    imapp.data(), storageView.originPtrAs<double>()));
-    break;
-  default:
-    serialbox_unreachable("type not supported");
-  }
+  
+  internal::write(ncID, varID, startp, countp, stridep, imapp, storageView);
 
   // Close file
   NETCDF_CHECK(nc_close(ncID));
@@ -302,6 +354,45 @@ FieldID NetCDFArchive::write(const StorageView& storageView, const std::string& 
   LOG(info) << "Successfully wrote field \"" << fieldID.name << "\" (id = " << fieldID.id << ") to "
             << filename.filename();
   return fieldID;
+}
+
+void NetCDFArchive::writeToFile(std::string filename, const StorageView& storageView,
+                                const std::string& field) {
+  int ncID, varID, errorCode;
+
+  TypeID type = storageView.type();
+  const std::vector<int>& dims = storageView.dims();
+  const std::vector<int>& strides = storageView.strides();
+
+  std::size_t numDims = dims.size();
+
+  // Open new file
+  NETCDF_CHECK(nc_create(filename.c_str(), NC_NETCDF4, &ncID));
+
+  // Create dimensions
+  std::vector<int> dimsID(numDims);
+  for(int i = 0; i < dimsID.size(); ++i)
+    NETCDF_CHECK(nc_def_dim(ncID, ("d" + std::to_string(i)).c_str(), dims[i], &dimsID[i]));
+
+  // Define the variable
+  NETCDF_CHECK(nc_def_var(ncID, field.c_str(), internal::typeID2NcType(type), dimsID.size(),
+                          dimsID.data(), &varID));
+
+  // End define mode
+  NETCDF_CHECK(nc_enddef(ncID));
+
+  // Write data to disk
+  std::vector<std::size_t> startp(numDims, 0), countp(numDims);
+  std::vector<std::ptrdiff_t> stridep(numDims, 1), imapp(numDims);
+  for(int i = 0; i < numDims; ++i) {
+    countp[i] = dims[i];
+    imapp[i] = strides[i];
+  }
+
+  internal::write(ncID, varID, startp, countp, stridep, imapp, storageView);
+
+  // Close file
+  NETCDF_CHECK(nc_close(ncID));
 }
 
 //===------------------------------------------------------------------------------------------===//
@@ -318,11 +409,10 @@ void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID,
             << ") via NetCDFArchive ... ";
 
   int ncID, varID, errorCode;
-
-  TypeID type = storageView.type();
+  
   const std::vector<int>& dims = storageView.dims();
   const std::vector<int>& strides = storageView.strides();
-
+  
   std::size_t numDims = dims.size();
   std::size_t numDimsID = numDims + 1;
 
@@ -355,37 +445,47 @@ void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID,
     countp[i + 1] = dims[i];
     imapp[i + 1] = strides[i];
   }
-
-  switch(type) {
-  case TypeID::Boolean:
-    NETCDF_CHECK(nc_get_varm_text(ncID, varID, startp.data(), countp.data(), stridep.data(),
-                                  imapp.data(), storageView.originPtr()));
-    break;
-  case TypeID::Int32:
-    NETCDF_CHECK(nc_get_varm_int(ncID, varID, startp.data(), countp.data(), stridep.data(),
-                                 imapp.data(), storageView.originPtrAs<int>()));
-    break;
-  case TypeID::Int64:
-    NETCDF_CHECK(internal::dispatchInt64(nc_get_varm_long, nc_get_varm_longlong, ncID, varID,
-                                         startp.data(), countp.data(), stridep.data(), imapp.data(),
-                                         storageView.originPtrAs<std::int64_t>()));
-    break;
-  case TypeID::Float32:
-    NETCDF_CHECK(nc_get_varm_float(ncID, varID, startp.data(), countp.data(), stridep.data(),
-                                   imapp.data(), storageView.originPtrAs<float>()));
-    break;
-  case TypeID::Float64:
-    NETCDF_CHECK(nc_get_varm_double(ncID, varID, startp.data(), countp.data(), stridep.data(),
-                                    imapp.data(), storageView.originPtrAs<double>()));
-    break;
-  default:
-    serialbox_unreachable("type not supported");
-  }
+  
+  internal::read(ncID, varID, startp, countp, stridep, imapp, storageView);
 
   // Close file
   NETCDF_CHECK(nc_close(ncID));
 
   LOG(info) << "Successfully read field \"" << fieldID.name << "\" (id = " << fieldID.id << ")";
+}
+
+void NetCDFArchive::readFromFile(std::string filename, StorageView& storageView,
+                                 const std::string& field) {
+  
+  if(!boost::filesystem::exists(filename))
+    throw Exception("cannot open %s: file does not exist", filename);
+  
+  int ncID, varID, errorCode;
+
+  const std::vector<int>& dims = storageView.dims();
+  const std::vector<int>& strides = storageView.strides();
+
+  std::size_t numDims = dims.size();
+
+  // Open file for reading
+  NETCDF_CHECK(nc_open(filename.c_str(), NC_NOWRITE, &ncID));
+
+  // Get the variable
+  NETCDF_CHECK(nc_inq_varid(ncID, field.c_str(), &varID));
+
+  // Read data from disk
+  std::vector<std::size_t> startp(numDims, 0), countp(numDims);
+  std::vector<std::ptrdiff_t> stridep(numDims, 1), imapp(numDims);
+
+  for(int i = 0; i < numDims; ++i) {
+    countp[i] = dims[i];
+    imapp[i] = strides[i];
+  }
+
+  internal::read(ncID, varID, startp, countp, stridep, imapp, storageView);
+
+  // Close file
+  NETCDF_CHECK(nc_close(ncID));
 }
 
 void NetCDFArchive::clear() {

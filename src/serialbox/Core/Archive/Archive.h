@@ -79,7 +79,7 @@ public:
 
   /// \brief Convert the archive to stream
   virtual std::ostream& toStream(std::ostream& stream) const = 0;
-
+  
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const Archive& archive) {
     return archive.toStream(stream);

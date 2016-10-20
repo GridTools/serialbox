@@ -181,6 +181,27 @@ TEST_F(BinaryArchiveUtilityTest, toString) {
   EXPECT_NE(ss.str().find("fieldsTable"), std::string::npos);
 }
 
+TEST_F(BinaryArchiveUtilityTest, writeAndRead) {
+  using Storage = Storage<double>;
+  Storage storage_input(Storage::ColMajor, {5, 2, 5}, Storage::random);
+  Storage storage_output(Storage::ColMajor, {5, 2, 5});
+
+  auto sv_input = storage_input.toStorageView();
+  auto sv_output = storage_output.toStorageView();
+  
+  // Write and read from file
+  BinaryArchive::writeToFile((this->directory->path() / "test.dat").string(), sv_input);
+
+  BinaryArchive::readFromFile((this->directory->path() / "test.dat").string(), sv_output);
+
+  ASSERT_TRUE(Storage::verify(storage_input, storage_output));
+
+  // Read from non-existing file -> Exception
+  ASSERT_THROW(BinaryArchive::readFromFile((this->directory->path() / "X.dat").string(), sv_output),
+               Exception);
+}
+
+
 //===------------------------------------------------------------------------------------------===//
 //     Read/Write tests
 //===------------------------------------------------------------------------------------------===//
