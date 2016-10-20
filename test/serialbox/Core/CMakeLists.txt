@@ -26,7 +26,6 @@ set(SOURCES
   UnittestUnreachable.cpp
   UnittestUpgradeArchive.cpp
   UnittestVersion.cpp
-  UnittestStringSwitch.cpp
   
   # Archive/  
   Archive/UnittestArchiveFactory.cpp 

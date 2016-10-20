@@ -15,7 +15,6 @@
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Archive/NetCDFArchive.h"
-#include "serialbox/Core/StringSwitch.h"
 #include "serialbox/Core/Unreachable.h"
 #include <cstdlib>
 #include <iostream>
