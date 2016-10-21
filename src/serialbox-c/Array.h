@@ -21,6 +21,15 @@
 extern "C" {
 #endif
 
+
+/**
+ * \ingroup serialboxC
+ * @{
+ * 
+ * \defgroup array Array definitions
+ * @{
+ */
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Array Types
 \*===------------------------------------------------------------------------------------------===*/
@@ -101,6 +110,8 @@ void serialboxArrayOfFloat32Destroy(serialboxArrayOfFloat32_t* array);
 void serialboxArrayOfFloat64Destroy(serialboxArrayOfFloat64_t* array);
 void serialboxArrayOfStringDestroy(serialboxArrayOfString_t* array);
 /** @} */
+
+/** @} @} */
 
 #ifdef __cplusplus
 }

@@ -19,9 +19,13 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief Implementation of MD5 cryptographic hash algorithm
 ///
-/// \see https://en.wikipedia.org/wiki/MD5
+/// \see 
+///   https://www.openssl.org/docs/manmaster/crypto/MD2.html
 struct MD5 {
   MD5() = delete;
 
@@ -38,6 +42,8 @@ struct MD5 {
   /// \return MD5 hash hex representation as string
   static std::string hash(const void* data, int length);
 };
+
+/// @}
 
 } // namespace serialbox
 

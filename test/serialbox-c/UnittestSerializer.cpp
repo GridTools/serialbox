@@ -178,7 +178,7 @@ TEST_F(CSerializerUtilityTest, RegisterFields) {
   // Register field
   ASSERT_TRUE(serialboxSerializerAddField(ser, "field", info));
   ASSERT_FALSE(serialboxSerializerAddField(ser, "field", info));
-  
+
   ASSERT_TRUE(serialboxSerializerHasField(ser, "field"));
 
   // Register field (old version)
@@ -192,7 +192,7 @@ TEST_F(CSerializerUtilityTest, RegisterFields) {
 
   ASSERT_EQ(fieldnames->len, 2);
   EXPECT_TRUE(stringInArray("field", fieldnames));
-  EXPECT_TRUE(stringInArray("field2",fieldnames));
+  EXPECT_TRUE(stringInArray("field2", fieldnames));
 
   serialboxArrayOfStringDestroy(fieldnames);
 
@@ -283,6 +283,27 @@ TEST_F(CSerializerUtilityTest, RegisterFields) {
   serialboxFieldMetaInfoDestroy(info);
   serialboxFieldMetaInfoDestroy(infoField);
   serialboxSerializerDestroy(ser);
+}
+
+TEST_F(CSerializerUtilityTest, StatelessSerialization) {
+  using Storage = serialbox::unittest::Storage<double>;
+  Storage storage_input(Storage::ColMajor, {5, 2, 5}, Storage::random);
+  Storage storage_output(Storage::ColMajor, {5, 2, 5});
+
+  // Create storage views for easier access
+  serialbox::StorageView sv_input = storage_input.toStorageView();
+  serialbox::StorageView sv_output = storage_output.toStorageView();
+
+  // Write and read from file
+  serialboxWriteToFile((directory->path() / "test.dat").c_str(), sv_input.originPtr(), Float64,
+                       sv_input.dims().data(), sv_input.dims().size(), sv_input.strides().data(),
+                       "field", "Binary");
+
+  serialboxReadFromFile((directory->path() / "test.dat").c_str(), sv_output.originPtr(), Float64,
+                        sv_output.dims().data(), sv_output.dims().size(),
+                        sv_output.strides().data(), "field", "Binary");
+
+  ASSERT_TRUE(Storage::verify(storage_input, storage_output));
 }
 
 namespace {
@@ -452,20 +473,21 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
     EXPECT_TRUE(serialboxSavepointEqual(savepoints[2], savepoint_u_1));
     EXPECT_TRUE(serialboxSavepointEqual(savepoints[3], savepoint_v_1));
     EXPECT_TRUE(serialboxSavepointEqual(savepoints[4], savepoint_6d));
-  
+
     EXPECT_TRUE(serialboxSerializerHasSavepoint(ser_read, savepoint1_t_1));
-    
+
     serialboxSerializerDestroySavepointVector(savepoints, numSavepoints);
 
     // Check fields at savepoint
-    serialboxArrayOfString_t* fieldsAtSavepoint = serialboxSerializerGetFieldnamesAtSavepoint(ser_read, savepoint1_t_1);
+    serialboxArrayOfString_t* fieldsAtSavepoint =
+        serialboxSerializerGetFieldnamesAtSavepoint(ser_read, savepoint1_t_1);
 
     ASSERT_EQ(fieldsAtSavepoint->len, 2);
     EXPECT_TRUE(stringInArray("u", fieldsAtSavepoint));
-    EXPECT_TRUE(stringInArray("v",fieldsAtSavepoint));
+    EXPECT_TRUE(stringInArray("v", fieldsAtSavepoint));
 
     serialboxArrayOfStringDestroy(fieldsAtSavepoint);
-    
+
     // Read
 
     // u_0 at savepoint1_t_1

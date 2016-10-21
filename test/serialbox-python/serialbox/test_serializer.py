@@ -63,7 +63,7 @@ class TestSerializer(unittest.TestCase):
         #
         # Write (OpenModeKind as int)
         #
-        ser = Serializer(OpenModeKind(1), self.path, "field", self.archive)
+        ser = Serializer(OpenModeKind.Write.value, self.path, "field", self.archive)
         self.assertEqual(ser.mode, OpenModeKind.Write)
         self.assertEqual(ser.prefix, "field")
         self.assertEqual(ser.directory, self.path)
@@ -101,13 +101,13 @@ class TestSerializer(unittest.TestCase):
         # Disable serialization
         #
         Serializer.disable()
-        self.assertEqual(Serializer.status(), -1)
+        self.assertEqual(Serializer.status(), Serializer.Disabled)
 
         #
         # Enable serialization
         #
         Serializer.enable()
-        self.assertEqual(Serializer.status(), 1)
+        self.assertEqual(Serializer.status(), Serializer.Enabled)
 
     def test_savepoint(self):
         ser = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
@@ -310,6 +310,30 @@ class TestSerializer(unittest.TestCase):
         self.assertTrue(np.allclose(field_int64_output, field_int64))
         self.assertTrue(np.allclose(field_float32_output, field_float32))
         self.assertTrue(np.allclose(field_float64_output, field_float64))
+
+    def test_stateless_serialization(self):
+        field_input = np.random.rand(2, 2, 2)
+        field_output = np.random.rand(2, 2, 2)
+
+        #
+        # Read & write from file (Binary archive)
+        #
+        Serializer.to_file("field", field_input, os.path.join(self.path, "test.dat"))
+        Serializer.from_file("field", field_output, os.path.join(self.path, "test.dat"))
+        self.assertTrue(np.allclose(field_input, field_output))
+
+        #
+        # Read & write from file (NetCDF archive)
+        #
+        if "SERIALBOX_HAS_NETCDF" in Config().compile_options:
+            Serializer.to_file("field", field_input, os.path.join(self.path, "test.nc"))
+            Serializer.from_file("field", field_output, os.path.join(self.path, "test.nc"))
+            self.assertTrue(np.allclose(field_input, field_output))
+
+        #
+        # Invalid file extension
+        #
+        self.assertRaises(SerialboxError, Serializer.to_file, "field", field_input, "test.X")
 
 if __name__ == "__main__":
     unittest.main()

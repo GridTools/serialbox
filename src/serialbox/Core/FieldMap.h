@@ -21,6 +21,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief Hash-map to query the meta-information of the registered fields
 class FieldMap {
 public:
@@ -222,6 +225,8 @@ public:
 private:
   map_type map_;
 };
+
+/// @}
 
 } // namespace serialbox
 

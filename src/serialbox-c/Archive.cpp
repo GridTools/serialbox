@@ -34,3 +34,13 @@ serialboxArrayOfString_t* serialboxArchiveGetRegisteredArchives(void) {
   }
   return array;
 }
+
+char* serialboxArchiveGetArchiveFromExtension(const char* filename) {
+  char* archive = NULL;
+  try {
+    archive = allocateAndCopyString(serialbox::ArchiveFactory::archiveFromExtension(filename));
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+  return archive;
+}

@@ -12,8 +12,15 @@
  *
 \*===------------------------------------------------------------------------------------------===*/
 
-#ifndef SERIALBOX_C_SERIALBOX_H
-#define SERIALBOX_C_SERIALBOX_H
+#ifndef __SERIALBOX_C_SERIALBOX_H__
+#define __SERIALBOX_C_SERIALBOX_H__
+
+/**
+ * \defgroup serialboxC serialbox-c
+ * \brief C-Interface of Serialbox
+ * 
+ * \ingroup frontend
+ */
 
 #include "serialbox-c/Archive.h"
 #include "serialbox-c/Array.h"

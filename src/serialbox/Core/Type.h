@@ -22,6 +22,10 @@
 #include <iosfwd>
 #include <string>
 
+/// \defgroup core Core
+/// \brief Core library of serialbox
+/// @{
+
 /// \namespace serialbox
 /// \brief Namespace of the serialbox library
 namespace serialbox {
@@ -297,6 +301,8 @@ class match_cv_qualifier {
 public:
   using type = typename match::type;
 };
+
+/// @}
 
 } // namespace serialbox
 

@@ -60,6 +60,7 @@ option(SERIALBOX_TESTING_OLD_SERIALBOX "Build compatiblity unitests with old ser
 option(SERIALBOX_TESTING_DEATH_TESTS "Run death-tests" OFF)
 
 option(SERIALBOX_BENCHMARKING "Build benchmark exectuables" OFF)
+option(SERIALBOX_DOCUMENTATION "Create and install the documentation" OFF)
 
 option(SERIALBOX_CODE_COVERAGE "Generate code coverage" OFF)
 option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" ON)
@@ -229,7 +230,15 @@ endif()
 #---------------------------------------- Python ---------------------------------------------------
 if(SERIALBOX_ENABLE_PYTHON)
   find_package(PythonInterp 3)
-  option(SERIALBOX_TESTING_PYTHON "Run Python tests" ${PYTHONINTERP_FOUND})
+  
+  set(ENABLE_PYTHON_TESTS OFF)
+  if(PYTHONINTERP_FOUND)
+    include(FindPythonModule)
+    find_python_module(nose)
+    set(ENABLE_PYTHON_TESTS ON)
+  endif()
+  option(SERIALBOX_TESTING_PYTHON "Run Python tests" ${ENABLE_PYTHON_TESTS})
+  mark_as_advanced(ENABLE_PYTHON_TESTS)
 endif(SERIALBOX_ENABLE_PYTHON)
 
 #---------------------------------------- GridTools ------------------------------------------------
@@ -348,15 +357,6 @@ if(SERIALBOX_TESTING_OLD_SERIALBOX)
   
 endif(SERIALBOX_TESTING_OLD_SERIALBOX)
 
-#---------------------------------------- Doxygen --------------------------------------------------
-find_package(Doxygen)
-option(SERIALBOX_DOCUMENTATION 
-       "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
-set(DOC_DIR ${PROJECT_SOURCE_DIR}/docs)
-if(SERIALBOX_DOCUMENTATION)
-  add_subdirectory(docs)
-endif()
-
 #---------------------------------------- ClangTools -----------------------------------------------
 find_package(ClangTools)
 if("$ENV{CMAKE_EXPORT_COMPILE_COMMANDS}" STREQUAL "1" OR CLANG_TIDY_FOUND)
@@ -429,7 +429,7 @@ include_directories(${SERIALBOX_INCLUDE_DIRS})
 
 file(GLOB_RECURSE SERIALBOX_HEADERS 
      ${CMAKE_CURRENT_SOURCE_DIR}/src
-     ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox/*.h)
+     ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox/*.h*)
    
 # Install serialbox headers
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox DESTINATION include 
@@ -466,4 +466,9 @@ if(SERIALBOX_TESTING)
   
   add_subdirectory(test)
 endif(SERIALBOX_TESTING)
+
+## Build documentation
+if(SERIALBOX_DOCUMENTATION)
+  add_subdirectory(docs)
+endif()
 

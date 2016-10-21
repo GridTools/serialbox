@@ -45,6 +45,7 @@ def get_library():
     # library into a default linker search path.  Always Try ctypes.cdll.LoadLibrary()
     # with all possible library names first, then try ctypes.util.find_library().
     name = 'SerialboxC'
+    errors = []
 
     cwd = path.dirname(path.realpath(__file__))
     dirs = (cwd, path.join(cwd, "../../lib"),)
@@ -61,7 +62,7 @@ def get_library():
         try:
             lib = cdll.LoadLibrary(path.join(d, pfx + name + ext))
         except OSError as e:
-            print(e)
+            errors += [e]
             pass
         else:
             return lib
@@ -70,4 +71,5 @@ def get_library():
         if t:
             return cdll.LoadLibrary(t)
 
+    print(errors)
     raise Exception("'serialboxC' shared library not found")

@@ -15,6 +15,8 @@
 
 from ctypes import c_char_p, c_void_p, c_int, Structure, POINTER
 
+import numpy as np
+
 from .archive import Archive
 from .common import get_library, extract_string
 from .error import invoke, SerialboxError
@@ -22,7 +24,6 @@ from .fieldmetainfo import FieldMetaInfo, FieldMetaInfoImpl
 from .metainfomap import MetaInfoMap, MetaInfoImpl, ArrayOfStringImpl
 from .savepoint import Savepoint, SavepointImpl
 from .type import *
-import numpy as np
 
 lib = get_library()
 
@@ -136,6 +137,29 @@ def register_library(library):
     library.serialboxSerializerRead.restype = None
 
     #
+    # Stateless Serialization
+    #
+    library.serialboxWriteToFile.argtypes = [c_char_p,
+                                             c_void_p,
+                                             c_int,
+                                             POINTER(c_int),
+                                             c_int,
+                                             POINTER(c_int),
+                                             c_char_p,
+                                             c_char_p]
+    library.serialboxWriteToFile.restype = None
+
+    library.serialboxReadFromFile.argtypes = [c_char_p,
+                                              c_void_p,
+                                              c_int,
+                                              POINTER(c_int),
+                                              c_int,
+                                              POINTER(c_int),
+                                              c_char_p,
+                                              c_char_p]
+    library.serialboxReadFromFile.restype = None
+
+    #
     # Array
     #
     library.serialboxArrayOfStringDestroy.argtypes = [POINTER(ArrayOfStringImpl)]
@@ -145,6 +169,8 @@ def register_library(library):
 class Serializer(object):
     """Serializer implementation of the Python Interface.
     """
+    Enabled = 1
+    Disabled = -1
 
     def __init__(self, mode, directory, prefix, archive="Binary"):
         """Initialize the Serializer and prepare it to perform input/output operations.
@@ -428,6 +454,27 @@ class Serializer(object):
     #    Writing & Reading
     # ==-----------------------------------------------------------------------------------------===
 
+    @staticmethod
+    def __extract_strides(field):
+        """Extract strides from a numpy.array and convert to unit-strides, returns a C-Array and its
+           size
+        """
+        strides = (c_int * len(field.strides))()
+        for i in range(len(field.strides)):
+            strides[i] = int(field.strides[i] / field.dtype.itemsize)
+        num_strides = c_int(len(field.strides))
+        return strides, num_strides,
+
+    @staticmethod
+    def __extract_dims(field):
+        """Extract dimensions from a numpy.array, returns a C-Array and its size
+        """
+        dims = (c_int * len(field.shape))()
+        for i in range(len(field.shape)):
+            dims[i] = int(field.shape[i])
+        num_dims = c_int(len(field.shape))
+        return dims, num_dims,
+
     def write(self, name, field, savepoint, register_field=True):
         """ Serialize `field` identified by `name` at `savepoint` to disk
 
@@ -458,10 +505,7 @@ class Serializer(object):
         #
         # Extract strides and convert to unit-strides
         #
-        strides = (c_int * len(field.strides))()
-        for i in range(len(field.strides)):
-            strides[i] = int(field.strides[i] / field.dtype.itemsize)
-        num_strides = c_int(len(field.strides))
+        strides, num_strides = self.__extract_strides(field)
 
         #
         # Write to disk
@@ -499,10 +543,7 @@ class Serializer(object):
         #
         # Extract strides and convert to unit-strides
         #
-        strides = (c_int * len(field.strides))()
-        for i in range(len(field.strides)):
-            strides[i] = int(field.strides[i] / field.dtype.itemsize)
-        num_strides = c_int(len(field.strides))
+        strides, num_strides = self.__extract_strides(field)
 
         #
         # Write to disk
@@ -513,6 +554,75 @@ class Serializer(object):
                origin_ptr, strides, num_strides)
 
         return field
+
+    # ===----------------------------------------------------------------------------------------===
+    #    Stateless Serialization
+    # ==-----------------------------------------------------------------------------------------===
+
+    @staticmethod
+    def to_file(name, field, filename, archive=None):
+        """ Serialize `field` identified by `name` directly to file.
+
+        If a file with `filename` already exists, it's contents will be discarded. If `archive` is
+        None, the method will try to deduce the archive using the extensions of `filename`
+        (See :func:`Archive.archive_from_extension`).
+
+        :param name: Name of the field
+        :type name: str
+        :param field: Field to serialize
+        :type field: numpy.array
+        :param name: Name of the file
+        :type name: str
+
+        :raises SerialboxError: Archive could not be dedcuded or serialization failed
+        """
+        strides, num_strides = Serializer.__extract_strides(field)
+        dims, num_dims = Serializer.__extract_dims(field)
+
+        if not archive:
+            archive = Archive.archive_from_extension(filename)
+
+        origin_ptr = c_void_p(field.ctypes.data)
+        typeint = c_int(numpy2TypeID(field.dtype).value)
+        namestr = extract_string(name)[0]
+        filestr = extract_string(filename)[0]
+        archivestr = extract_string(archive)[0]
+
+        invoke(lib.serialboxWriteToFile, filestr, origin_ptr, typeint, dims, num_dims, strides,
+               namestr, archivestr)
+
+    def from_file(name, field, filename, archive=None):
+        """ Deserialize `field` identified by `name` directly from file.
+
+        If `archive` is None, the method will try to deduce the archive using the extensions of
+        `filename` (See :func:`Archive.archive_from_extension`).
+
+        .. warning::
+
+           This method performs no consistency checks you have to know what you are doing!
+
+        :param name: Name of the field
+        :type name: str
+        :param field: Field to serialize
+        :type field: numpy.array
+        :param name: Name of the file
+        :type name: str
+        :raises SerialboxError: Archive could not be dedcuded or deserialization failed
+        """
+        strides, num_strides = Serializer.__extract_strides(field)
+        dims, num_dims = Serializer.__extract_dims(field)
+
+        if not archive:
+            archive = Archive.archive_from_extension(filename)
+
+        origin_ptr = c_void_p(field.ctypes.data)
+        typeint = c_int(numpy2TypeID(field.dtype).value)
+        namestr = extract_string(name)[0]
+        filestr = extract_string(filename)[0]
+        archivestr = extract_string(archive)[0]
+
+        invoke(lib.serialboxReadFromFile, filestr, origin_ptr, typeint, dims, num_dims, strides,
+               namestr, archivestr)
 
     def __del__(self):
         if self.__serializer:

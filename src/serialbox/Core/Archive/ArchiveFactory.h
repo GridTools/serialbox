@@ -69,9 +69,9 @@ public:
   /// \brief Deduce the name of the `archive` according to the extension of the `filename`
   ///
   /// Extensions    | Archives
-  /// ------------- | -------------
-  /// .dat, .bin    | BinaryArchive
-  /// .nc           | NetCDFArchive
+  /// ------------- | --------
+  /// .dat, .bin    | Binary
+  /// .nc           | NetCDF
   ///
   static std::string archiveFromExtension(std::string filename);
 

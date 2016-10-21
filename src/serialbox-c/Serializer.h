@@ -23,8 +23,7 @@ extern "C" {
 #endif
 
 /**
- * \defgroup serialboxC serialbox-c
- * \brief C-Interface of Serialbox
+ * \ingroup serialboxC
  * @{
  *
  * \defgroup serializer Serializer methods
@@ -298,6 +297,50 @@ void serialboxSerializerWrite(serialboxSerializer_t* serializer, const char* nam
 void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name,
                              const serialboxSavepoint_t* savepoint, void* originPtr,
                              const int* strides, int numStrides);
+
+/*===------------------------------------------------------------------------------------------===*\
+ *     Stateless Serialization
+\*===------------------------------------------------------------------------------------------===*/
+
+/**
+ * \brief Serialize field `name` (given by `originPtr` and `strides`) directly to file
+ *
+ * If a file with `filename` already exists, it's contents will be discarded. The `origingPtr` 
+ * represent the memory location of the first element in the array i.e skipping all initial padding.
+ *
+ * \param filename     Name of the file
+ * \param originPtr    Pointer to the origin of the data
+ * \param typeID       TypeID of the data
+ * \param dims         Array of dimensions of length `numDims`
+ * \param numDims      Number of dimensions
+ * \param strides      Array of strides of length `numDims`
+ * \param fieldname    Name of the field
+ * \param archivename  Name of the archive used for serialization (e.g "Binary")
+ */
+void serialboxWriteToFile(const char* filename, void* originPtr, serialboxTypeID typeID,
+                          const int* dims, int numDims, const int* strides, const char* fieldname,
+                          const char* archivename);
+
+/**
+ * \brief Deserialize field `name` (given by `originPtr` and `strides`) directly from file
+ *
+ * The `origingPtr` represent the memory location of the first element in the array i.e skipping
+ * all initial padding. The file should only contain the requested field.
+ *
+ * \attention This method performs no consistency checks you have to know what you are doing!
+ *
+ * \param filename     Name of the file
+ * \param originPtr    Pointer to the origin of the data
+ * \param typeID       TypeID of the data
+ * \param dims         Array of dimensions of length `numDims`
+ * \param numDims      Number of dimensions
+ * \param strides      Array of strides of length `numDims`
+ * \param fieldname    Name of the field
+ * \param archivename  Name of the archive used for serialization (e.g "Binary")
+ */
+void serialboxReadFromFile(const char* filename, void* originPtr, serialboxTypeID typeID,
+                           const int* dims, int numDims, const int* strides, const char* fieldname,
+                           const char* archivename);
 
 /** @} */
 

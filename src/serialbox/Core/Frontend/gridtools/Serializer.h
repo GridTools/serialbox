@@ -24,9 +24,6 @@
 #include "serialbox/Core/SerializerImpl.h"
 #include <memory>
 
-/// \defgroup gridtools gridtools
-/// \brief GridTools frontend of Serialbox
-
 namespace serialbox {
 
 /// \namespace gridtools

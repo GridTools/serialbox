@@ -19,6 +19,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \fn serialbox_unreachable_internal
 /// \brief This function calls abort() and prints the optional message to stderr
 ///
@@ -42,6 +45,8 @@ SERIALBOX_ATTRIBUTE_NORETURN void serialbox_unreachable_internal(const char* msg
 #else
 #define serialbox_unreachable(msg) ::serialbox::serialbox_unreachable_internal()
 #endif
+
+/// @}
 
 } // namespace serialbox
 

@@ -22,6 +22,14 @@
 extern "C" {
 #endif
 
+/**
+ * \ingroup serialboxC
+ * @{
+ * 
+ * \defgroup type Type definitions
+ * @{
+ */
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Primitive Types
 \*===------------------------------------------------------------------------------------------===*/
@@ -124,6 +132,8 @@ enum serialboxTypeID {
   ArrayOfFloat64 = Array | Float64,
   ArrayOfString = Array | String
 };
+
+/** @} @} */
 
 #ifdef __cplusplus
 }

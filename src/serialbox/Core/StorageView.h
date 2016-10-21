@@ -24,6 +24,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief Represent a mutable view to a multi-dimensional storage
 class StorageView {
 public:
@@ -137,6 +140,8 @@ private:
 /// \fn swap
 /// \brief Swap StorageView \c a with \c b
 void swap(StorageView& a, StorageView& b) noexcept;
+
+/// @}
 
 } // namespace serialbox
 

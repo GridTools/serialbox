@@ -26,6 +26,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief Shared implementation of the Serializer
 ///
 /// Direct usage of this class is discouraged, use the Serializer classes provided by the Frontends
@@ -395,6 +398,8 @@ protected:
   // The value is initialized to 0
   static int enabled_;
 };
+
+/// @}
 
 } // namespace serialbox
 

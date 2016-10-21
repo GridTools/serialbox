@@ -23,6 +23,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief Forward iterator to access the data of a StorageView
 ///
 /// The data is accessed in column-major order using operator++ (pre-increment).
@@ -234,6 +237,8 @@ public:
                            bool beginning)
       : Base(originPtr, bytesPerElement, dims, strides, beginning) {}
 };
+
+/// @}
 
 } // namespace serialbox
 

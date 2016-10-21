@@ -25,22 +25,28 @@ def register_library(library):
 
 
 class Config(object):
-    """Configurations used when compiling the serialboxC library"""
+    """Configurations used when compiling the serialboxC library (Singleton)"""
 
-    @staticmethod
-    def to_dict():
-        """Get configuration options used during compilation
+    instance = None   # Singleton instance
 
-        :return: Dictionary of {key:value} pair of the configuration options
-        :rtype: dict
-        """
-        configstr = lib.serialboxConfigOptions().decode()
-        config_options = dict()
-        for config in configstr.split(";"):
-            key, value = config.split("=", 1)
-            config_options[key] = value
-        return config_options
+    class __Config(object):
+        def __init__(self):
+            self.compile_options = self.get_compile_options()
 
+        def get_compile_options(self):
+            configstr = lib.serialboxConfigOptions().decode()
+            config_options = dict()
+            for config in configstr.split(";"):
+                key, value = config.split("=", 1)
+                config_options[key] = value
+            return config_options
+
+    def __init__(self):
+        if not Config.instance:
+            Config.instance = Config.__Config()
+
+    def __getattr__(self, name):
+        return getattr(self.instance, name)
 
 def init_serialbox():
     """Initialize the SerialboxC library by installing the error handler.

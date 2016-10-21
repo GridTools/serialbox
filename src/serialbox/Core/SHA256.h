@@ -19,9 +19,13 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief Implementation of the SHA-1 (Secure Hash Algorithm 1)
 ///
-/// \see https://en.wikipedia.org/wiki/SHA-1
+/// \see 
+///   https://en.wikipedia.org/wiki/SHA-1
 struct SHA256 {
   SHA256() = delete;
 
@@ -36,6 +40,8 @@ struct SHA256 {
   /// \return SHA-1 hash hex representation as string
   static std::string hash(const void* data, int length) noexcept;
 };
+
+/// @}
 
 } // namespace serialbox
 

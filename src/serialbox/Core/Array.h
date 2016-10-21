@@ -20,6 +20,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \typedef Array
 /// \brief Array class used by serialbox to store meta-information
 template <class T>
@@ -53,6 +56,8 @@ template <class T>
 struct MakePrimitive {
   using type = typename internal::MakePrimitiveImpl<T, IsArray<T>::value>::type;
 };
+
+/// @}
 
 } // namespace serialbox
 

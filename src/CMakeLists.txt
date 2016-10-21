@@ -91,7 +91,7 @@ function(serialbox_add_library
     
     set_target_properties(${target}Shared PROPERTIES OUTPUT_NAME ${name})
     set_target_properties(${target}Shared PROPERTIES INTERPROCEDURAL_OPTIMIZATION True)  
-    
+
     target_link_libraries(${target}Shared ${libraries})
     install(TARGETS ${target}Shared DESTINATION lib)
     
