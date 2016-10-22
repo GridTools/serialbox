@@ -18,7 +18,8 @@ function(serialbox_add_c_example name)
   target_link_libraries(${name} 
                         SerialboxCLibraryStatic 
                         ${Boost_LIBRARIES} 
-                        ${SERIALBOX_EXTERNAL_LIBRARIES})
+                        ${SERIALBOX_EXTERNAL_LIBRARIES}
+                        ${CMAKE_THREAD_LIBS_INIT})
 endfunction(serialbox_add_c_example)
 
 ## Build examples
