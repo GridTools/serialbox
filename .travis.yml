@@ -54,32 +54,33 @@ matrix:
           - g++-4.9
           - libboost-all-dev
     
-    - os: linux
-      compiler: gcc
-      env: 
-        - CXX_COMPILER=g++-5
-        - C_COMPILER=gcc-5
-        - CONFIG=Release
-        - BOOST_VERSION=1.60.0
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: 
-            - g++-5
-            - gcc-5
+  - os: linux
+    compiler: gcc
+    env: 
+      - CXX_COMPILER=g++-5
+      - C_COMPILER=gcc-5
+      - CONFIG=Release
+      - BOOST_VERSION=1.60.0
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: 
+          - g++-5
+          - gcc-5
 
-    - os: linux
-      compiler: gcc
-        - CXX_COMPILER=g++-6
-        - C_COMPILER=gcc-6
-        - CONFIG=Release
-        - BOOST_VERSION=1.60.0
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: 
-            - g++-6
-            - gcc-6
+  - os: linux
+    compiler: gcc
+    env:
+      - CXX_COMPILER=g++-6
+      - C_COMPILER=gcc-6
+      - CONFIG=Release
+      - BOOST_VERSION=1.60.0
+    addons:
+      apt:
+        sources: ['ubuntu-toolchain-r-test']
+        packages: 
+          - g++-6
+          - gcc-6
 
   # Linux / Clang
   - os: linux
