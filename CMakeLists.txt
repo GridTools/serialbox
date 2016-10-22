@@ -52,6 +52,7 @@ option(SERIALBOX_BUILD_SHARED "Build shared libraries" ON)
 option(SERIALBOX_LOGGING "Enable logging" ON)
 option(SERIALBOX_ENABLE_C "Build C Interface" ON)
 option(SERIALBOX_ENABLE_PYTHON "Build Python Interface" ${SERIALBOX_ENABLE_C})
+option(SERIALBOX_EXAMPLES "Build example exectuables" ON)
 
 option(SERIALBOX_TESTING "Build unit-test executables" ON)
 option(SERIALBOX_TESTING_GRIDTOOLS "Build GridTools Unitests" OFF)
@@ -212,16 +213,23 @@ set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
 
 #---------------------------------------- OpenSSL --------------------------------------------------
 find_package(OpenSSL)
-if(${OpenSSL_FOUND})
+option(SERIALBOX_USE_OPENSSL "Use OpenSSL library" ${OpenSSL_FOUND})
+if(${SERIALBOX_USE_OPENSSL})
+  if(NOT(${OpenSSL_FOUND}))
+    message(FATAL_ERROR "OpenSSL library not found!")
+  endif()
   include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
   set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${OPENSSL_LIBRARIES})  
   set(SERIALBOX_HAS_OPENSSL 1)
 endif()
 
 #---------------------------------------- NetCDF ---------------------------------------------------
-set(NETCDF_CXX "YES")
 find_package(NetCDF)
-if(${NetCDF_FOUND})
+option(SERIALBOX_USE_NETCDF "Use NetCDF library" ${NetCDF_FOUND})
+if(${SERIALBOX_USE_NETCDF})
+  if(NOT(${NetCDF_FOUND}))
+    message(FATAL_ERROR "NetCDF library not found!")
+  endif()
   include_directories(SYSTEM ${NETCDF_INCLUDES})
   set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${NETCDF_LIBRARIES})  
   set(SERIALBOX_HAS_NETCDF 1)
@@ -229,14 +237,19 @@ endif()
 
 #---------------------------------------- Python ---------------------------------------------------
 if(SERIALBOX_ENABLE_PYTHON)
-  find_package(PythonInterp 3)
+  find_package(PythonInterp 3.4)
   
+  # Python tests are only enabled by default if we can find "nose" and "numpy"
   set(ENABLE_PYTHON_TESTS OFF)
   if(PYTHONINTERP_FOUND)
     include(FindPythonModule)
     find_python_module(nose)
-    set(ENABLE_PYTHON_TESTS ON)
+    find_python_module(numpy)
+    if(PY_NOSE_FOUND AND PY_NUMPY_FOUND)   
+      set(ENABLE_PYTHON_TESTS ON)
+    endif()
   endif()
+  
   option(SERIALBOX_TESTING_PYTHON "Run Python tests" ${ENABLE_PYTHON_TESTS})
   mark_as_advanced(ENABLE_PYTHON_TESTS)
 endif(SERIALBOX_ENABLE_PYTHON)
@@ -446,6 +459,11 @@ endif()
 
 ## Build Serialbox
 add_subdirectory(src)
+
+## Build examples
+if(SERIALBOX_EXAMPLES)
+  add_subdirectory(examples)
+endif(SERIALBOX_EXAMPLES)
 
 ## Build unittests
 if(SERIALBOX_TESTING)

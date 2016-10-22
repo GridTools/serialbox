@@ -137,7 +137,7 @@ public:
                                        std::forward<ValueType>(value));
   }
 
-  /// \brief Query global meta_info;map for key` and retrieve value as type `T`
+  /// \brief Query global meta_info_map for `key` and retrieve value as type `T`
   ///
   /// \param key    Key of the requested element
   ///
@@ -246,21 +246,21 @@ public:
 
   /// \brief Serialize field `name` given as `storage` at `savepoint` to disk
   ///
-  /// \param name           Name of the field
-  /// \param savepoint      Savepoint at which the field will be serialized
-  /// \param storage        gridtools storage i.e object of type `gridtools::storage_type`
+  /// \param name       Name of the field
+  /// \param sp         Savepoint at which the field will be serialized
+  /// \param storage    gridtools storage i.e object of type `gridtools::storage_type`
   ///
-  /// \throw exception      Serialization failed
+  /// \throw exception  Serialization failed
   ///
   /// \see
   ///   SerializerImpl::write
   template <class StorageType>
-  void write(const std::string& name, const savepoint& savepoint, const StorageType& storage) {
+  void write(const std::string& name, const savepoint& sp, const StorageType& storage) {
     StorageView storageView(
         internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::value_type>::value,
         std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
 
-    serializerImpl_->write(name, *savepoint.impl(), storageView);
+    serializerImpl_->write(name, *sp.impl(), storageView);
   }
 
   //===----------------------------------------------------------------------------------------===//
@@ -269,21 +269,21 @@ public:
 
   /// \brief Deserialize field `name` given as `storage` at `savepoint` to disk
   ///
-  /// \param name           Name of the field
-  /// \param savepoint      Savepoint at which the field will be deserialized
-  /// \param storage        gridtools storage i.e object of type `gridtools::storage_type`
+  /// \param name       Name of the field
+  /// \param sp         Savepoint at which the field will be deserialized
+  /// \param storage    gridtools storage i.e object of type `gridtools::storage_type`
   ///
-  /// \throw exception      Deserialization failed
+  /// \throw exception  Deserialization failed
   ///
   /// \see
   ///   SerializerImpl::read
   template <class StorageType>
-  void read(const std::string& name, const savepoint& savepoint, StorageType& storage) {
+  void read(const std::string& name, const savepoint& sp, StorageType& storage) {
     StorageView storageView(
         internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::value_type>::value,
         std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
 
-    serializerImpl_->read(name, *savepoint.impl(), storageView);
+    serializerImpl_->read(name, *sp.impl(), storageView);
   }
 
 private:

@@ -24,7 +24,7 @@ matrix:
   - os: osx
     osx_image: xcode8
     env: CONFIG=Release
-
+  
   # Linux / GCC
   - os: linux
     compiler: gcc
@@ -39,7 +39,7 @@ matrix:
           - gcc-4.9
           - g++-4.9
           - libboost-all-dev
-          
+  
   - os: linux
     compiler: gcc
     env: 
@@ -53,22 +53,33 @@ matrix:
           - gcc-4.9
           - g++-4.9
           - libboost-all-dev
-          
-#    - os: linux
-#      compiler: gcc
-#      env: COMPILER=g++-5
-#      addons:
-#        apt:
-#          sources: ['ubuntu-toolchain-r-test']
-#          packages: g++-5
+    
+    - os: linux
+      compiler: gcc
+      env: 
+        - CXX_COMPILER=g++-5
+        - C_COMPILER=gcc-5
+        - CONFIG=Release
+        - BOOST_VERSION=1.60.0
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: 
+            - g++-5
+            - gcc-5
 
-#    - os: linux
-#      compiler: gcc
-#      env: COMPILER=g++-6
-#      addons:
-#        apt:
-#          sources: ['ubuntu-toolchain-r-test']
-#          packages: g++-6
+    - os: linux
+      compiler: gcc
+        - CXX_COMPILER=g++-6
+        - C_COMPILER=gcc-6
+        - CONFIG=Release
+        - BOOST_VERSION=1.60.0
+      addons:
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: 
+            - g++-6
+            - gcc-6
 
   # Linux / Clang
   - os: linux
@@ -121,6 +132,8 @@ cache:
     - ${TRAVIS_BUILD_DIR}/deps/llvm-3.6.2
     - ${TRAVIS_BUILD_DIR}/deps/llvm-3.7.1
     - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8.1
+    - ${TRAVIS_BUILD_DIR}/deps/boost-1.60.0-gcc-5
+    - ${TRAVIS_BUILD_DIR}/deps/boost-1.60.0-gcc-6
 
 #===---------------------------------------------------------------------------------------------===
 #   Installation
@@ -140,7 +153,7 @@ install:
   # Make sure CMAKE_BUILD_TYPE is correctly set
   - if [[ "${CONFIG}" != "" ]]; then export CMAKE_BUILD_TYPE=${CONFIG}; fi
 
-  # Install LLVM/clang when LLVM_VERSION is set (check if chached)
+  # Install LLVM/clang when LLVM_VERSION is set (this may use the cached version)
   - |
      if [[ "${LLVM_VERSION}" != "" ]]; then
        LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
@@ -167,19 +180,22 @@ install:
        export CXX="${LLVM_DIR}/clang/bin/clang++"
      fi
     
-  # Compile and install Boost 
+  # Compile and install Boost when BOOST_VERSION is set (only works with gcc at the moment) 
+  # this may use the cached version
   - |
     if [[ "${BOOST_VERSION}" != "" ]]; then
-      BOOST_DIR=${DEPS_DIR}/boost-${BOOST_VERSION}
+      BOOST_DIR=${DEPS_DIR}/boost-${BOOST_VERSION}-${C_COMPILER}
       BOOST_URL="http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/boost_${BOOST_VERSION//\./_}.tar.gz"
       mkdir -p ${BOOST_DIR}
       { travis_retry wget --quiet -O - ${BOOST_URL} | tar --strip-components=1 -xz -C ${BOOST_DIR}; } || exit 1
-     
+      
+      GCC_VERSION=$(${CXX} -dumpversion)
+      
       pushd $(pwd)
       cd ${BOOST_DIR}
-      echo "using clang : ${LLVM_VERSION} : ${CXX} ;" > user-config.jam
+      echo "using gcc : ${GCC_VERSION} : ${CXX} ;" > user-config.jam
       ./bootstrap.sh
-      ./b2 -j2 --toolset=clang-${LLVM_VERSION} --prefix="${BOOST_DIR}" \
+      ./b2 -j2 --toolset=gcc-${GCC_VERSION} --prefix="${BOOST_DIR}" \
            --user-config=${BOOST_DIR}/user-config.jam --with-filesystem \
                                                       --with-chrono \
                                                       --with-system \

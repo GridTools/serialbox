@@ -46,8 +46,9 @@ extern "C" {
  * \param archiveName  Name of Archive (e.g "BinaryArchive")
  * \return refrence to the newly constructed Serializer or NULL if an error occurred
  */
-serialboxSerializer_t* serialboxSerializerCreate(serialboxOpenModeKind mode, const char* directory,
-                                                 const char* prefix, const char* archive);
+serialboxSerializer_t* serialboxSerializerCreate(enum serialboxOpenModeKind mode,
+                                                 const char* directory, const char* prefix,
+                                                 const char* archive);
 
 /**
  * \brief Destroy the serializer and deallocate all memory
@@ -66,7 +67,7 @@ void serialboxSerializerDestroy(serialboxSerializer_t* serializer);
  * \param serializer  Serializer to use
  * \return mode of the Serializer
  */
-serialboxOpenModeKind serialboxSerializerGetMode(const serialboxSerializer_t* serializer);
+enum serialboxOpenModeKind serialboxSerializerGetMode(const serialboxSerializer_t* serializer);
 
 /**
  * \brief Return the directory of the Serializer
@@ -239,8 +240,8 @@ int serialboxSerializerHasField(serialboxSerializer_t* serializer, const char* f
  * \return 1 if field was added successfully, 0 otherwise
  */
 int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* name,
-                                 serialboxTypeID type, int bytesPerElement, int iSize, int jSize,
-                                 int kSize, int lSize, int iMinusHalo, int iPlusHalo,
+                                 enum serialboxTypeID type, int bytesPerElement, int iSize,
+                                 int jSize, int kSize, int lSize, int iMinusHalo, int iPlusHalo,
                                  int jMinusHalo, int jPlusHalo, int kMinusHalo, int kPlusHalo,
                                  int lMinusHalo, int lPlusHalo);
 
@@ -305,7 +306,7 @@ void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name
 /**
  * \brief Serialize field `name` (given by `originPtr` and `strides`) directly to file
  *
- * If a file with `filename` already exists, it's contents will be discarded. The `origingPtr` 
+ * If a file with `filename` already exists, it's contents will be discarded. The `origingPtr`
  * represent the memory location of the first element in the array i.e skipping all initial padding.
  *
  * \param filename     Name of the file
@@ -317,7 +318,7 @@ void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name
  * \param fieldname    Name of the field
  * \param archivename  Name of the archive used for serialization (e.g "Binary")
  */
-void serialboxWriteToFile(const char* filename, void* originPtr, serialboxTypeID typeID,
+void serialboxWriteToFile(const char* filename, void* originPtr, enum serialboxTypeID typeID,
                           const int* dims, int numDims, const int* strides, const char* fieldname,
                           const char* archivename);
 
@@ -338,7 +339,7 @@ void serialboxWriteToFile(const char* filename, void* originPtr, serialboxTypeID
  * \param fieldname    Name of the field
  * \param archivename  Name of the archive used for serialization (e.g "Binary")
  */
-void serialboxReadFromFile(const char* filename, void* originPtr, serialboxTypeID typeID,
+void serialboxReadFromFile(const char* filename, void* originPtr, enum serialboxTypeID typeID,
                            const int* dims, int numDims, const int* strides, const char* fieldname,
                            const char* archivename);
 

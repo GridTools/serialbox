@@ -29,17 +29,18 @@ add_custom_target(SerialboxPython
                   DEPENDS "${SERIALBOX_PYTHON_SOURCE}")            
 add_dependencies(SerialboxCLibraryShared SerialboxPython)
 
-## Install python and create symlinks
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox/ DESTINATION python/serialbox
-        FILES_MATCHING PATTERN "*.py")
+## Install python source
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox/ 
+        DESTINATION python/serialbox
+        FILES_MATCHING PATTERN "*.py"
+        PATTERN "*/__pycache__" EXCLUDE)
 
-#install(CODE "
-#  EXECUTE_PROCESS(COMMAND ln -sf ${CMAKE_INSTALL_PREFIX}/lib/$<TARGET_FILE_NAME:SerialboxCLibraryShared> ${CMAKE_INSTALL_PREFIX}/python/serialbox/$<TARGET_FILE_NAME:SerialboxCLibraryShared>)
-#")
-#add_custom_target(SerialboxPythonInstallScript
-#                  COMMAND echo "ln -sf ${CMAKE_INSTALL_PREFIX}/lib/$<TARGET_FILE_NAME:SerialboxCLibraryShared> ${CMAKE_INSTALL_PREFIX}/python/serialbox/$<TARGET_FILE_NAME:SerialboxCLibraryShared>"
-#)
-#add_dependencies(SerialboxPythonInstallScript install SerialboxCLibraryShared)
-
-#install(SCRIPT ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE:${target}Shared> ${path}/$<TARGET_FILE_NAME:${target}Shared>)        
+## Create a symlink to the serialboxC sharedlibrary (this is NOT good code but it turns out creating
+## symlinks to installed targets is really hard to to do with CMake... I tried ...) 
+install(CODE "
+  EXECUTE_PROCESS(COMMAND 
+    ln -sf 
+    ${CMAKE_INSTALL_PREFIX}/lib/libSerialboxC${CMAKE_SHARED_LIBRARY_SUFFIX} 
+    ${CMAKE_INSTALL_PREFIX}/python/serialbox/libSerialboxC${CMAKE_SHARED_LIBRARY_SUFFIX})
+")
 
