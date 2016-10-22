@@ -52,6 +52,7 @@ option(SERIALBOX_BUILD_SHARED "Build shared libraries" ON)
 option(SERIALBOX_LOGGING "Enable logging" ON)
 option(SERIALBOX_ENABLE_C "Build C Interface" ON)
 option(SERIALBOX_ENABLE_PYTHON "Build Python Interface" ${SERIALBOX_ENABLE_C})
+option(SERIALBOX_ENABLE_FORTRAN "Build Fortran Interface" OFF)
 option(SERIALBOX_EXAMPLES "Build example exectuables" ON)
 
 option(SERIALBOX_TESTING "Build unit-test executables" ON)
@@ -96,7 +97,7 @@ endif()
 # Set build type to RelWithDebInfo if nothing was specified (instead of Debug)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING 
-      "Choose the type of build, options are: Debug Release RelWithDebInfo " FORCE)
+      "Choose the type of build, options are: Debug Release RelWithDebInfo" FORCE)
   message(STATUS "Setting build type to 'RelWithDebInfo' as none was specified")
 endif(NOT CMAKE_BUILD_TYPE)
 
@@ -141,6 +142,12 @@ if(SERIALBOX_BUILD_SHARED)
   if("${isSystemDir}" STREQUAL "-1")
      SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
   endif("${isSystemDir}" STREQUAL "-1")
+endif()
+
+# If we build the Fortran Interface, we need a Fortran compiler
+if(SERIALBOX_ENABLE_FORTRAN)
+  enable_language(Fortran)
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -cpp")
 endif()
 
 if(NOT(SERIALBOX_LOGGING))
