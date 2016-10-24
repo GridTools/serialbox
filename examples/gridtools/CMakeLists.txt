@@ -9,5 +9,4 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-serialbox_add_c_example(example-01-laplacian-c example-01-laplacian.c)
-
+serialbox_add_gridtools_example(example-01-laplacian-cpp example-01-laplacian.cpp)

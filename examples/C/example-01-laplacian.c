@@ -318,7 +318,7 @@ static void read() {
     for(i = 1; i < N - 1; ++i)
       for(j = 1; j < M - 1; ++j)
         if(lap[i * N + j] != lap_reference[i * N + j])
-          printf("ERROR: at (%i,%i) of lap and lap_refrence: %f vs. %f\n", i, j, lap[i * N + j],
+          printf("ERROR: at (%i,%i) of lap and lap_reference: %f vs. %f\n", i, j, lap[i * N + j],
                  lap_reference[i * N + j]);
   }
 
@@ -340,8 +340,14 @@ static void read() {
 \*===------------------------------------------------------------------------------------------===*/
 int main() {
   
+  /*
+   *  Write some data ...
+   */  
   write();
 
+  /*
+   * ... and read it.
+   */ 
   read();
 
   return 0;

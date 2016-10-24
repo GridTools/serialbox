@@ -205,9 +205,9 @@ class TestSerializer(unittest.TestCase):
         #
         # Write fields (implicitly register savepoint and fields)
         #
-        ser_write.write("field1", field1_input, sp)
-        ser_write.write("field2", field2_input, sp)
-        ser_write.write("field3", field3_input, sp)
+        ser_write.write("field1", sp, field1_input)
+        ser_write.write("field2", sp, field2_input)
+        ser_write.write("field3", sp, field3_input)
 
         #
         # Read fields
@@ -286,11 +286,11 @@ class TestSerializer(unittest.TestCase):
         #
         # Write
         #
-        ser_write.write("field_bool", field_bool, sp_bool, False)
-        ser_write.write("field_int32", field_int32, sp_ints, False)
-        ser_write.write("field_int64", field_int64, sp_ints, False)
-        ser_write.write("field_float32", field_float32, sp_floats, False)
-        ser_write.write("field_float64", field_float64, sp_floats, False)
+        ser_write.write("field_bool", sp_bool, field_bool, False)
+        ser_write.write("field_int32", sp_ints, field_int32, False)
+        ser_write.write("field_int64", sp_ints, field_int64, False)
+        ser_write.write("field_float32", sp_floats, field_float32, False)
+        ser_write.write("field_float64", sp_floats, field_float64, False)
 
         #
         # Read fields

@@ -475,7 +475,7 @@ class Serializer(object):
         num_dims = c_int(len(field.shape))
         return dims, num_dims,
 
-    def write(self, name, field, savepoint, register_field=True):
+    def write(self, name, savepoint, field, register_field=True):
         """ Serialize `field` identified by `name` at `savepoint` to disk
 
         The `savepoint` will be registered at field `name` if not yet present. If `register_field`
@@ -483,10 +483,10 @@ class Serializer(object):
 
         :param name: Name of the field
         :type name: str
-        :param field: Field to serialize
-        :type field: numpy.array
         :param savepoint: Savepoint to at which the field will be serialized
         :type savepoint: Savepoint
+        :param field: Field to serialize
+        :type field: numpy.array
         :param register_field: Register the field if not present
         :type register: bool
 

@@ -73,7 +73,7 @@ def write():
 
     #
     # Register the field within the Serializer. Note that for the Python Interface this step is not
-    # strictly necessary as it can be done implicitly in the write method.
+    # strictly necessary as it can be done implicitly in the write method (see below).
     #
     fieldmetainfo = ser.FieldMetaInfo(ser.TypeID.Float64, phi.shape)
     serializer.register_field('phi', fieldmetainfo)
@@ -87,9 +87,9 @@ def write():
 
     #
     # Up to this point nothing has been written to disk. Using update_meta_data() will force a write
-    # all meta-information to the corresponding JSON files. Note that the meta-data is updated after
-    # each call and thus a manual update of the meta-data is seldom required. If you are curious you
-    # can inspect the files './laplacian/MetaData-field.json' and
+    # of all meta-information to the corresponding JSON files. Note that the meta-data is updated 
+    # after each call and thus a manual update of the meta-data is seldom required. If you are 
+    # curious you can inspect the files './laplacian/MetaData-field.json' and
     # './laplacian/ArchiveMetaData-field.json'
     #
     serializer.update_meta_data()
@@ -117,7 +117,7 @@ def write():
         # Write phi to disk at our input savepoint. This will create the file `field_phi.dat` upon
         # first invocation and afterwards the data is appended.
         #
-        serializer.write('phi', phi, savepoint_in)
+        serializer.write('phi', savepoint_in, phi)
 
         #
         # Apply the laplacian_stencil to phi
@@ -134,7 +134,7 @@ def write():
         # Write lap to disk. Note that here we implicitly register the field `lap` upon first
         # invocation. Same goes for the output savepoint.
         #
-        serializer.write('lap', lap, savepoint_out)
+        serializer.write('lap', savepoint_out, lap)
 
         #
         # Finally, we swap phi with lap

@@ -121,6 +121,13 @@ public:
   /// This will also call Archive::clear() which may \b remove all related files on the disk.
   void clear() noexcept { serializerImpl_->clear(); }
 
+  /// \brief Convert meta-data to JSON and serialize to MetaData-prefix.json and
+  /// ArchiveMetaData-prefix.json
+  ///
+  /// This will ensure MetaData-prefix.json is up-to-date with the in-memory version of the
+  /// Serializer data-structures. This method is implicitly called by serializer::write().
+  void update_meta_data() { serializerImpl_->updateMetaData(); }
+
   //===----------------------------------------------------------------------------------------===//
   //     Global Meta-Information
   //===----------------------------------------------------------------------------------------===//
@@ -246,16 +253,22 @@ public:
 
   /// \brief Serialize field `name` given as `storage` at `savepoint` to disk
   ///
-  /// \param name       Name of the field
-  /// \param sp         Savepoint at which the field will be serialized
-  /// \param storage    gridtools storage i.e object of type `gridtools::storage_type`
+  /// \param name             Name of the field
+  /// \param sp               Savepoint at which the field will be serialized
+  /// \param storage          gridtools storage i.e object of type `gridtools::storage_type`
+  /// \param register_field   Register field if not yet present
   ///
   /// \throw exception  Serialization failed
   ///
   /// \see
   ///   SerializerImpl::write
   template <class StorageType>
-  void write(const std::string& name, const savepoint& sp, const StorageType& storage) {
+  void write(const std::string& name, const savepoint& sp, const StorageType& storage,
+             bool register_field = true) {
+
+    if(register_field && !serializerImpl_->fieldMap().hasField(name))
+      this->register_field(name, storage);
+
     StorageView storageView(
         internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::value_type>::value,
         std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));

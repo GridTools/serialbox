@@ -103,7 +103,6 @@ inline char* allocateAndCopyString(StringType&& str) {
   buffer = (char*)std::malloc((str.size() + 1) * sizeof(char));
   if(!buffer)
     serialboxFatalError("out of memory");
-
   std::memcpy(buffer, str.c_str(), str.size() + 1);
   return buffer;
 }

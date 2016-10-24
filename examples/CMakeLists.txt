@@ -9,7 +9,7 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-## \brief Create C example
+## \brief Create a C example
 ##
 ## \param name    STRING: Name of target and executable
 ## \param ARGN    LIST OF STRINGS: List of source files
@@ -22,8 +22,24 @@ function(serialbox_add_c_example name)
                         ${CMAKE_THREAD_LIBS_INIT})
 endfunction(serialbox_add_c_example)
 
+## \brief Create a gridtools example
+##
+## \param name    STRING: Name of target and executable
+## \param ARGN    LIST OF STRINGS: List of source files
+function(serialbox_add_gridtools_example name)
+  add_executable(${name} ${ARGN} ${SERIALBOX_HEADERS})
+  target_link_libraries(${name} 
+                        SerialboxCoreLibraryStatic 
+                        ${Boost_LIBRARIES} 
+                        ${SERIALBOX_EXTERNAL_LIBRARIES}
+                        ${CMAKE_THREAD_LIBS_INIT})
+endfunction(serialbox_add_gridtools_example)
+
 ## Build examples
 if(SERIALBOX_ENABLE_C)
   add_subdirectory(C)
 endif()
 
+if(SERIALBOX_TESTING_GRIDTOOLS)
+  add_subdirectory(gridtools)
+endif()

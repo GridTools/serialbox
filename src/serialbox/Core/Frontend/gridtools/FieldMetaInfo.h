@@ -18,6 +18,7 @@
 #include "serialbox/Core/FieldMetaInfo.h"
 #include "serialbox/Core/Frontend/gridtools/Exception.h"
 #include "serialbox/Core/Frontend/gridtools/MetaInfoMap.h"
+#include "serialbox/Core/Frontend/gridtools/StorageViewHelper.h"
 #include "serialbox/Core/Frontend/gridtools/Type.h"
 #include <memory>
 
@@ -51,6 +52,17 @@ public:
   /// \param dims      Dimension of the field
   field_meta_info(type_id type, const std::vector<int>& dims)
       : field_meta_info_impl_(std::make_shared<FieldMetaInfo>(type, dims)) {}
+
+  /// \brief Construct field meta-information with a gridtools storage
+  ///
+  /// \param storage  gridtools storage
+  template <class StorageType,
+            class = typename std::enable_if<!std::is_same<typename std::decay<StorageType>::type,
+                                                          field_meta_info>::value>::type>
+  field_meta_info(const StorageType& storage) {
+    TypeID typeID = ToTypeID<typename StorageType::value_type>::value;
+    field_meta_info_impl_ = std::make_shared<FieldMetaInfo>(typeID, internal::get_dims(storage));
+  }
 
   /// \brief Copy constructor
   ///
