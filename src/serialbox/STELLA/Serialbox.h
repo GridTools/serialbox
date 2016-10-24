@@ -12,12 +12,12 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef __SERIALBOX_STELLA_SERIALBOX_H__
-#define __SERIALBOX_STELLA_SERIALBOX_H__
+#ifndef SERIALBOX_STELLA_SERIALBOX_H
+#define SERIALBOX_STELLA_SERIALBOX_H
 
 /// \defgroup STELLA STELLA
 /// \brief STELLA frontend of Serialbox
-/// 
+///
 /// \ingroup frontend
 
 #include "serialbox/Core/Config.h"
@@ -33,4 +33,3 @@
 #include "serialbox/Core/Frontend/STELLA/TypeName.h"
 
 #endif
-

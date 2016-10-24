@@ -17,6 +17,8 @@
 #define SERIALBOX_CORE_STORAGEVIEW_H
 
 #include "serialbox/Core/Logging.h"
+#include "serialbox/Core/STLExtras.h"
+#include "serialbox/Core/Slice.h"
 #include "serialbox/Core/StorageViewIterator.h"
 #include "serialbox/Core/Type.h"
 #include <utility>
@@ -52,18 +54,18 @@ public:
 
   /// \brief Iterator to the beginning of the data
   StorageViewIterator begin() noexcept {
-    return StorageViewIterator(originPtr_, bytesPerElement(), dims_, strides_, true);
+    return StorageViewIterator(originPtr_, bytesPerElement(), dims_, strides_, slice_, true);
   }
   ConstStorageViewIterator begin() const noexcept {
-    return ConstStorageViewIterator(originPtr_, bytesPerElement(), dims_, strides_, true);
+    return ConstStorageViewIterator(originPtr_, bytesPerElement(), dims_, strides_, slice_, true);
   }
 
   /// \brief Iterator to the end of the data
   StorageViewIterator end() noexcept {
-    return StorageViewIterator(originPtr_, bytesPerElement(), dims_, strides_, false);
+    return StorageViewIterator(originPtr_, bytesPerElement(), dims_, strides_, slice_, false);
   }
   ConstStorageViewIterator end() const noexcept {
-    return ConstStorageViewIterator(originPtr_, bytesPerElement(), dims_, strides_, false);
+    return ConstStorageViewIterator(originPtr_, bytesPerElement(), dims_, strides_, slice_, false);
   }
 
   /// @}
@@ -120,21 +122,36 @@ public:
 
   /// @}
 
+  /// \brief Set the slice of the `StorageView`
+  void setSlice(Slice slice);
+
+  /// \brief Get the slice of the `StorageView`
+  Slice& getSlice() noexcept { return slice_; }
+  const Slice& getSlice() const noexcept { return slice_; }
+
   /// \brief Return true if the storage is contiguous in memory (i.e no padding) and is column-major
   /// ordered
   bool isMemCopyable() const noexcept;
 
-  /// \brief Size of the allocated data (without padding)
+  /// \brief Size of the allocated, sliced data (without padding)
   std::size_t size() const noexcept;
 
-  /// \brief Size of the allocated data (without padding) in Bytes
+  /// \brief Size of the allocated, sliced data (without padding) in Bytes
   std::size_t sizeInBytes() const noexcept;
 
+  /// \brief Compute the size of the buffer (in Bytes) which is needed to copy the `StorageView` to 
+  /// a contiguous buffer which only takes slicing in the slowest varying (i.e last) dimension into 
+  /// account.
+  /// 
+  /// If the slice is empty, the function returns StorageView::sizeInBytes().
+  std::size_t computeBufferSizeInBytes() const noexcept;
+  
 private:
   Byte* originPtr_;          ///< Pointer to the origin of the data (i.e skipping initial padding)
   TypeID type_;              ///< TypeID of the storage
   std::vector<int> dims_;    ///< Unaligned dimensions (including the halos)
   std::vector<int> strides_; ///< Total strides including all padding
+  Slice slice_;              ///< Slicing of the data
 };
 
 /// \fn swap

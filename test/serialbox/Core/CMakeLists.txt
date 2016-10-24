@@ -22,6 +22,7 @@ set(SOURCES
   UnittestSavepointImpl.cpp
   UnittestSavepointVector.cpp
   UnittestSerializerImpl.cpp
+  UnittestSlice.cpp
   UnittestType.cpp
   UnittestUnreachable.cpp
   UnittestUpgradeArchive.cpp

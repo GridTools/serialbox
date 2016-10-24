@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef __SERIALBOX_GRIDTOOLS_SERIALBOX_HPP__
-#define __SERIALBOX_GRIDTOOLS_SERIALBOX_HPP__
+#ifndef SERIALBOX_GRIDTOOLS_SERIALBOX_HPP
+#define SERIALBOX_GRIDTOOLS_SERIALBOX_HPP
 
 /// \defgroup frontend Frontend
 /// \brief Frontends of Serialbox
@@ -32,6 +32,7 @@
 #include "serialbox/Core/Frontend/gridtools/MetaInfoValue.h"
 #include "serialbox/Core/Frontend/gridtools/Savepoint.h"
 #include "serialbox/Core/Frontend/gridtools/Serializer.h"
+#include "serialbox/Core/Frontend/gridtools/Slice.h"
 #include "serialbox/Core/Frontend/gridtools/Type.h"
 
 #endif
