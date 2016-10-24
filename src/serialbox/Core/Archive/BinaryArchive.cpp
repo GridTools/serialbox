@@ -249,6 +249,10 @@ void BinaryArchive::writeToFile(std::string filename, const StorageView& storage
 
   // Write binaryData to disk
   std::ofstream fs(filename, std::ios::out | std::ios::binary | std::ios::trunc);
+  
+  if(!fs.is_open())
+    throw Exception("cannot open file: '%s'", filename);
+  
   fs.write(binaryData.data(), sizeInBytes);
   fs.close();
 }

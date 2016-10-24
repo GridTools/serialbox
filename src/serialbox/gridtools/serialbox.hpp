@@ -20,13 +20,14 @@
 
 /// \defgroup gridtools gridtools
 /// \brief GridTools frontend of Serialbox
-/// 
+///
 /// \ingroup frontend
 
 #include "serialbox/Core/Config.h"
 
 #include "serialbox/Core/Frontend/gridtools/Exception.h"
 #include "serialbox/Core/Frontend/gridtools/FieldMetaInfo.h"
+#include "serialbox/Core/Frontend/gridtools/Logging.h"
 #include "serialbox/Core/Frontend/gridtools/MetaInfoMap.h"
 #include "serialbox/Core/Frontend/gridtools/MetaInfoValue.h"
 #include "serialbox/Core/Frontend/gridtools/Savepoint.h"
@@ -34,4 +35,3 @@
 #include "serialbox/Core/Frontend/gridtools/Type.h"
 
 #endif
-

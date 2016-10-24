@@ -81,6 +81,7 @@ public:
   ///                     discarded)
   /// \param storageView  StorageView of the field
   /// \param archiveName  Archive used to perform serialization
+  /// \param fieldname    Name of the field (might be unused for certain archives)
   static void writeToFile(std::string filename, const StorageView& storageView,
                           std::string archiveName, std::string fieldname);
 
@@ -89,6 +90,7 @@ public:
   /// \param filename     File to read from
   /// \param storageView  StorageView of the field
   /// \param archiveName  Archive used to perform serialization
+  /// \param fieldname    Name of the field (might be unused for certain archives)
   static void readFromFile(std::string filename, StorageView& storageView, std::string archiveName,
                            std::string fieldname);
 

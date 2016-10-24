@@ -15,6 +15,7 @@
 #ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_SERIALIZER_H
 #define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_SERIALIZER_H
 
+#include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Frontend/gridtools/Exception.h"
 #include "serialbox/Core/Frontend/gridtools/FieldMetaInfo.h"
 #include "serialbox/Core/Frontend/gridtools/MetaInfoMap.h"
@@ -251,7 +252,7 @@ public:
   //     Writing
   //===----------------------------------------------------------------------------------------===//
 
-  /// \brief Serialize field `name` given as `storage` at `savepoint` to disk
+  /// \brief Serialize gridtools field `name` given as `storage` at `savepoint` to disk
   ///
   /// \param name             Name of the field
   /// \param sp               Savepoint at which the field will be serialized
@@ -276,11 +277,51 @@ public:
     serializerImpl_->write(name, *sp.impl(), storageView);
   }
 
+  /// \brief Serialize field `name` given as `origin_ptr` and `strides` at `savepoint` to disk
+  ///
+  /// \param name             Name of the field
+  /// \param sp               Savepoint at which the field will be serialized
+  /// \param origin_ptr       Pointer to the origin of the data i.e skipping all initial padding
+  /// \param strides          Vector of strides
+  ///
+  /// \throw exception  Serialization failed
+  ///
+  /// \see
+  ///   SerializerImpl::write
+  template <class T>
+  void write(const std::string& name, const savepoint& sp, T* origin_ptr,
+             const std::vector<int>& strides) {
+    const auto& dims = get_field_meta_info(name).dims();
+    StorageView storageView(origin_ptr, ToTypeID<T>::value, dims, strides);
+    serializerImpl_->write(name, *sp.impl(), storageView);
+  }
+
+  /// \brief Directly write gridools field, given by `storage`, to `file`
+  ///
+  /// Certain archives require a fieldname, in this case the name of the storage will be used.
+  ///
+  /// \param file           Newly created file (if file already exists, it's contents will be
+  ///                       discarded)
+  /// \param storage        gridtools storage i.e object of type `gridtools::storage_type`
+  /// \param archive_name   Archive used to perform serialization. If empty, the archive will be
+  ///                       deduced from the `file` extension.
+  template <class StorageType>
+  static void to_file(std::string file, const StorageType& storage, std::string archive_name = "") {
+    StorageView storageView(
+        internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::value_type>::value,
+        std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
+
+    if(archive_name.empty())
+      archive_name = ArchiveFactory::archiveFromExtension(file);    
+    
+    ArchiveFactory::writeToFile(file, storageView, archive_name, storage.get_name());
+  }
+
   //===----------------------------------------------------------------------------------------===//
   //     Reading
   //===----------------------------------------------------------------------------------------===//
 
-  /// \brief Deserialize field `name` given as `storage` at `savepoint` to disk
+  /// \brief Deserialize gridtools field `name` given as `storage` at `savepoint` to disk
   ///
   /// \param name       Name of the field
   /// \param sp         Savepoint at which the field will be deserialized
@@ -297,6 +338,47 @@ public:
         std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
 
     serializerImpl_->read(name, *sp.impl(), storageView);
+  }
+
+  /// \brief Deserialize field `name` given as `origin_ptr` and `strides` at `savepoint` to disk
+  ///
+  /// \param name             Name of the field
+  /// \param sp               Savepoint at which the field will be deserialized
+  /// \param origin_ptr       Pointer to the origin of the data i.e skipping all initial padding
+  /// \param strides          Vector of strides
+  ///
+  /// \throw exception  Deserialization failed
+  ///
+  /// \see
+  ///   SerializerImpl::write
+  template <class T>
+  void read(const std::string& name, const savepoint& sp, T* origin_ptr,
+            const std::vector<int>& strides) {
+    const auto& dims = get_field_meta_info(name).dims();
+    StorageView storageView(origin_ptr, ToTypeID<T>::value, dims, strides);
+    serializerImpl_->read(name, *sp.impl(), storageView);
+  }
+
+  /// \brief Directly read a gridools field, given by `storage`, from `file`
+  ///
+  /// Certain archives require a fieldname, in this case the name of the storage will be used.
+  ///
+  /// \param file           File to read from
+  /// \param storage        gridtools storage i.e object of type `gridtools::storage_type`
+  /// \param archive_name   Archive used to perform deserialization. If empty, the archive will be
+  ///                       deduced from the `file` extension.
+  /// 
+  /// \throw exception  Deserialization failed
+  template <class StorageType>
+  static void from_file(std::string file, StorageType& storage, std::string archive_name = "") {
+    StorageView storageView(
+        internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::value_type>::value,
+        std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
+  
+    if(archive_name.empty())
+      archive_name = ArchiveFactory::archiveFromExtension(file);
+    
+    ArchiveFactory::readFromFile(file, storageView, archive_name, storage.get_name());
   }
 
 private:

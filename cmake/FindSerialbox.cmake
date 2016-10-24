@@ -21,10 +21,12 @@
 #
 # Variables defined by this module:
 #
-#   SERIALBOX_FOUND           System has Serialbox libraries and headers
-#   SERIALBOX_LIBRARIES       The Serialbox library
-#   SERIALBOX_INCLUDE_DIRS    The location of Serialbox headers
-#   SERIALBOX_VERSION         Version of Serialbox
+#   SERIALBOX_FOUND               System has Serialbox libraries and headers
+#   SERIALBOX_CXX_LIBRARIES       The libraries required by the C++ interface of Serialbox
+#   SERIALBOX_C_LIBRARIES         The libraries required by the C interface of Serialbox
+#   SERIALBOX_FORTRAN_LIBRARIES   The libraries required by the Fortran interface of Serialbox
+#   SERIALBOX_INCLUDE_DIRS        The location of Serialbox headers
+#   SERIALBOX_VERSION             Version of Serialbox
 #
 ##===------------------------------------------------------------------------------------------===##
 
