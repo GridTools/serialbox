@@ -145,6 +145,14 @@ def register_library(library):
                                                       POINTER(c_int)]
     library.serialboxSerializerReadSliced.restype = None
 
+    library.serialboxSerializerReadAsync.argtypes = [POINTER(SerializerImpl),
+                                                      c_char_p,
+                                                      POINTER(SavepointImpl),
+                                                      c_void_p,
+                                                      POINTER(c_int),
+                                                      c_int]
+    library.serialboxSerializerReadAsync.restype = None
+
     #
     # Stateless Serialization
     #
@@ -576,6 +584,69 @@ class Serializer(object):
         origin_ptr = c_void_p(field.ctypes.data)
         namestr = extract_string(name)[0]
         invoke(lib.serialboxSerializerRead, self.__serializer, namestr, savepoint.impl(),
+               origin_ptr, strides, num_strides)
+
+        return field
+
+    def read_async(self, name, savepoint, field=None):
+        """ Asynchronously deserialize field `name` (given as `storageView`) at `savepoint` from
+        disk using std::async.
+
+        If `field` is a `numpy.array` it will be filled with data from disk. If `field` is None,
+        a new `numpy.array` will be allocated with the registered dimensions and type.
+
+        This method runs the `read` function asynchronously (potentially in a separate thread which
+        may be part of a thread pool) meaning this function immediately returns. To synchronize all
+        threads, use :class:`Serializer.wait_for_all()`.
+
+        If the archive is not thread-safe, the method falls back to synchronous execution
+
+        :param name: Name of the field
+        :type name: str
+        :param savepoint: Savepoint to at which the field will be serialized
+        :type savepoint: Savepoint
+        :param field: Field to serialize
+        :type field: numpy.array
+
+        :return: Newly allocated and deserialized field
+        :rtype: numpy.array
+
+        :raises SerialboxError: Deserialization failed
+        """
+        if self.mode != OpenModeKind.Read:
+            raise SerialboxError("read operations are not permitted in OpenModeKind.%s" % self.mode)
+
+        if not self.has_field(name):
+            raise SerialboxError("field '%s' is not registered within the Serializer" % name)
+
+        #
+        # Allocate or check the field
+        #
+        info = self.get_field_metainfo(name)
+        if field is None:
+            field = np.ndarray(shape=info.dims, dtype=typeID2numpy(info.type))
+        else:
+            if list(field.shape) != list(info.dims):
+                raise SerialboxError(
+                    "registered dimensions %s does not match dimensions of field %s" % (
+                        field.shape, info.dims))
+
+            if numpy2TypeID(field.dtype) != info.type:
+                raise SerialboxError(
+                    "registered type %s does not match type of field %s" % (
+                        numpy2TypeID(field.dtype), info.type))
+
+        #
+        # Extract strides and convert to unit-strides
+        #
+        strides, num_strides = self.__extract_strides(field)
+
+        #
+        # Read from disk
+        #
+        origin_ptr = c_void_p(field.ctypes.data)
+        namestr = extract_string(name)[0]
+        invoke(lib.serialboxSerializerReadAsync, self.__serializer, namestr, savepoint.impl(),
                origin_ptr, strides, num_strides)
 
         return field

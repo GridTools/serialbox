@@ -383,6 +383,30 @@ void serialboxSerializerReadSliced(serialboxSerializer_t* serializer, const char
   }
 }
 
+void serialboxSerializerReadAsync(serialboxSerializer_t* serializer, const char* name,
+                                  const serialboxSavepoint_t* savepoint, void* originPtr,
+                                  const int* strides, int numStrides) {
+  Serializer* ser = toSerializer(serializer);
+  const Savepoint* sp = toConstSavepoint(savepoint);
+
+  try {
+    serialbox::StorageView storageView(
+        internal::makeStorageView(ser, name, originPtr, strides, numStrides));
+    ser->readAsync(name, *sp, storageView);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
+void serialboxSerializerWaitForAll(serialboxSerializer_t* serializer) {
+  Serializer* ser = toSerializer(serializer);
+  try {
+    ser->waitForAll();
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Stateless Serialization
 \*===------------------------------------------------------------------------------------------===*/

@@ -10,7 +10,7 @@
 ##===------------------------------------------------------------------------------------------===##
 ##
 ## This example demonstrates how to only load parts (slices) of a serialized field. This can improve
-## performance if one is only intrested in a small part of the data.
+## performance if one is only interested in a small part of the data.
 ##
 ## This example is also available in all other languages supported by Serialbox.
 ##
@@ -62,9 +62,9 @@ def main():
     serializer_read = ser.Serializer(ser.OpenModeKind.Read, "./slice", "field", "Binary")
     
     #
-    # Assume we are only interested in a certain layer of the data (k = 50), we can construct a 
-    # slice object (ser.Slice) to encode this information and instruct the serializer to only load
-    # the desired data. Note that you still need to allocate memory for whole field!
+    # Assume we are only interested in a certain layer of the data (k = 50), we can use the slice  
+    # object (ser.Slice) to encode this information and instruct the serializer to only load
+    # the desired data. Note that you still need to allocate memory for the whole field!
     #
     start = time.time()
     
@@ -74,8 +74,8 @@ def main():
     assert(np.allclose(field_in[:, :, 50], field_out[:, :, 50]))
     
     #
-    # Note that this is of course equivalent to loading the full data and slicing it afterwards with
-    # numpy
+    # You can of course load the full data and slice it afterwards with numpy which yields the same
+    # result.
     #
     start = time.time()
     
@@ -88,7 +88,7 @@ def main():
     # Remove directory
     #
     import shutil
-    #shutil.rmtree("./slice")
+    shutil.rmtree("./slice")
 
 if __name__ == '__main__':
     main()

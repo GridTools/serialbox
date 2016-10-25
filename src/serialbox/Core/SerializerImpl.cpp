@@ -12,11 +12,11 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/STLExtras.h"
+#include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Type.h"
 #include "serialbox/Core/Unreachable.h"
 #include "serialbox/Core/Version.h"
@@ -230,9 +230,35 @@ void SerializerImpl::readSliced(const std::string& name, const SavepointImpl& sa
                                 StorageView& storageView, Slice slice) {
   if(!archive_->isSlicedReadingSupported())
     throw Exception("archive '%s' does not support sliced reading", archive_->name());
-  
+
   storageView.setSlice(slice);
   this->read(name, savepoint, storageView);
+}
+
+int SerializerImpl::readAsyncImpl(const std::string& name, const SavepointImpl& savepoint,
+                                  StorageView& storageView) {
+  this->read(name, savepoint, storageView);
+  return 1;
+}
+
+void SerializerImpl::readAsync(const std::string& name, const SavepointImpl& savepoint,
+                               StorageView& storageView) {
+  if(!archive_->isReadingThreadSafe())
+    this->read(name, savepoint, storageView);
+  else
+    tasks_.push_back(std::async(std::launch::async, &SerializerImpl::readAsyncImpl, this,
+                                std::ref(name), std::ref(savepoint), std::ref(storageView)));
+}
+
+void SerializerImpl::waitForAll() {
+  try {
+    for(auto& task : tasks_)
+      task.get();
+  } catch(std::exception& e) {
+    tasks_.clear();
+    throw Exception(e.what());
+  }
+  tasks_.clear();
 }
 
 //===------------------------------------------------------------------------------------------===//

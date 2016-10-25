@@ -504,6 +504,48 @@ TEST_F(SerializerImplUtilityTest, toString) {
   EXPECT_NE(ss.str().find("SavepointVector"), std::string::npos);
 }
 
+TEST_F(SerializerImplUtilityTest, AsyncRead) {
+  using Storage = Storage<double>;
+  Storage storage(Storage::ColMajor, {10, 15, 20}, Storage::random);
+ 
+  Storage storage_1(Storage::ColMajor, {10, 15, 20});
+  Storage storage_2(Storage::ColMajor, {10, 15, 20});
+  Storage storage_3(Storage::ColMajor, {10, 15, 20});
+  
+  SavepointImpl sp("sp");  
+  
+  // Write
+  {
+    SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "Binary");
+    auto sv = storage.toStorageView();
+    s_write.registerField("field", sv.type(), sv.dims());
+    s_write.write("field", sp, sv);
+  }
+  
+  // Read
+  {
+    SerializerImpl s_read(OpenModeKind::Read, directory->path().string(), "Field", "Binary");
+    
+    auto sv_1 = storage_1.toStorageView();
+    auto sv_2 = storage_2.toStorageView();
+    auto sv_3 = storage_3.toStorageView();
+
+    s_read.readAsync("field", sp, sv_1);
+    s_read.readAsync("field", sp, sv_2);
+    s_read.readAsync("field", sp, sv_3);
+    s_read.waitForAll();
+    
+    ASSERT_TRUE(Storage::verify(storage_1, storage));
+    ASSERT_TRUE(Storage::verify(storage_2, storage));
+    ASSERT_TRUE(Storage::verify(storage_3, storage));
+
+    s_read.readAsync("field", sp, sv_1);
+    s_read.readAsync("field", sp, sv_2);
+    s_read.readAsync("field-XXX", sp, sv_3);
+    ASSERT_THROW(s_read.waitForAll(), Exception);
+  }
+}
+
 //===------------------------------------------------------------------------------------------===//
 //     Read/Write tests
 //===------------------------------------------------------------------------------------------===//
@@ -694,6 +736,7 @@ TYPED_TEST(SerializerImplReadWriteTest, SliceWriteAndRead) {
     }
   }
 
+#ifdef SERIALBOX_HAS_NETCDF
   // Only Binary currently supports slicing
   {
     SerializerImpl s_write(OpenModeKind::Write, this->directory->path().string(), "Field2",
@@ -705,4 +748,5 @@ TYPED_TEST(SerializerImplReadWriteTest, SliceWriteAndRead) {
 
     ASSERT_THROW(s_read.readSliced("1d", sp, sv, Slice()), Exception);
   }
+#endif
 }

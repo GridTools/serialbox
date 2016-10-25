@@ -168,13 +168,13 @@ int serialboxSerializerGetNumSavepoints(const serialboxSerializer_t* serializer)
  *
  * \param serializer  Serializer to use
  * \param name        Name of the Savepoint(s)
- * \return Newly allocated array of savepoints of length `serialboxSerializerGetNumSavepoints`
+ * \return Newly allocated array of savepoints of length  \ref serialboxSerializerGetNumSavepoints
  */
 serialboxSavepoint_t**
 serialboxSerializerGetSavepointVector(const serialboxSerializer_t* serializer);
 
 /**
- * \brief Deallocate a savepoint vector retrieved via `serialboxSerializerGetSavepointVector`
+ * \brief Deallocate a savepoint vector retrieved via  \ref serialboxSerializerGetSavepointVector
  *
  * \param savepointVector   Savepoint vector to deallocate
  * \param len               Length of the savepoint vector (usually obtained at the time of
@@ -318,6 +318,34 @@ void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name
 void serialboxSerializerReadSliced(serialboxSerializer_t* serializer, const char* name,
                                    const serialboxSavepoint_t* savepoint, void* originPtr,
                                    const int* strides, int numStrides, const int* slice);
+
+/**
+ * \brief Asynchronously deserialize field `name` (given as `storageView`) at `savepoint` from
+ * disk using std::async
+ *
+ * The `origingPtr` represent the memory location of the first element in the array i.e skipping
+ * all initial padding.  This method runs the `read` function (SerializerImpl::read) asynchronously 
+ * (potentially in a separate thread which may be part of a thread pool) meaning this function 
+ * immediately returns. To synchronize all threads, use \ref serialboxSerializerWaitForAll.
+ * 
+ * If the archive is not thread-safe, the method falls back to synchronous execution
+ *
+ * \param name         Name of the field
+ * \param savepoint    Savepoint to at which the field will be serialized
+ * \param originPtr    Pointer to the origin of the data
+ * \param strides      Array of strides of length `numStrides`
+ * \param numStrides   Number of strides
+ * 
+ * \see
+ *    serialbox::SerializerImpl::readAsync
+ */
+void serialboxSerializerReadAsync(serialboxSerializer_t* serializer, const char* name,
+                                  const serialboxSavepoint_t* savepoint, void* originPtr,
+                                  const int* strides, int numStrides);
+/** 
+ * \brief Wait for all pending asynchronous read operations and reset the internal queue
+ */
+void serialboxSerializerWaitForAll(serialboxSerializer_t* serializer);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Stateless Serialization
