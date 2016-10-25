@@ -21,6 +21,143 @@
 
 namespace serialbox {
 
+//===------------------------------------------------------------------------------------------===//
+//     BinaryBuffer
+//===------------------------------------------------------------------------------------------===//
+
+/// \brief Contiguous buffer with support for sliced loading
+class BinaryBuffer {
+public:
+  /// \brief Allocate the buffer
+  BinaryBuffer(const StorageView& storageView) {
+    const auto& slice = storageView.getSlice();
+
+    if(slice.empty()) {
+      buffer_.resize(storageView.sizeInBytes());
+      offset_ = 0;
+    } else {
+      const auto& dims = storageView.dims();
+      const auto& triple = slice.sliceTriples().back();
+      const int bytesPerElement = storageView.bytesPerElement();
+
+      // Allocate a buffer which can be efficently loaded. The buffer will treat the
+      // dimensions dim_{1}, ..., dim_{N-1} as full while last the dimension dim_{N} as sliced but
+      // without incorporating the step. This is necessary as we only want to call ::write once.
+
+      // Compute dimensions
+      dims_ = dims;
+      dims_.back() = triple.stop - triple.start;
+
+      // Compute strides (col-major)
+      strides_.resize(dims_.size());
+
+      int stride = 1;
+      strides_[0] = stride;
+
+      for(int i = 1; i < dims_.size(); ++i) {
+        stride *= dims_[i - 1];
+        strides_[i] = stride;
+      }
+
+      // Compute size
+      std::size_t size = 1;
+      for(std::size_t i = 0; i < dims_.size(); ++i)
+        size *= (dims_[i] == 0 ? 1 : dims_[i]);
+
+      // Compute initial offset in bytes
+      offset_ = (strides_.back() * triple.start) * bytesPerElement;
+
+      buffer_.resize(size * bytesPerElement);
+    }
+  }
+
+  /// \brief Copy data from buffer to `storageView` while handling slicing
+  void copyBufferToStorageView(StorageView& storageView) {
+    const auto& slice = storageView.getSlice();
+
+    if(slice.empty()) {
+      Byte* dataPtr = buffer_.data();
+      const int bytesPerElement = storageView.bytesPerElement();
+
+      if(storageView.isMemCopyable()) {
+        std::memcpy(storageView.originPtr(), dataPtr, buffer_.size());
+      } else {
+        for(auto it = storageView.begin(), end = storageView.end(); it != end;
+            ++it, dataPtr += bytesPerElement)
+          std::memcpy(it.ptr(), dataPtr, bytesPerElement);
+      }
+
+    } else {
+      const int numDims = dims_.size();
+      const auto& triples = slice.sliceTriples();
+      const int bytesPerElement = storageView.bytesPerElement();
+      Byte* dataPtr = buffer_.data();
+
+      // Compute intial indices in the buffer
+      std::vector<int> index(numDims);
+      for(int i = 0; i < numDims - 1; ++i)
+        index[i] = triples[i].start;
+      index.back() = 0;
+
+      // Iterate over the the storageView and the Buffer
+      Byte* curPtr = buffer_.data();
+      for(auto it = storageView.begin(), end = storageView.end(); it != end; ++it) {
+
+        // Compute position of current element
+        int pos = 0;
+        for(int i = 0; i < numDims; ++i)
+          pos += bytesPerElement * (strides_[i] * index[i]);
+        curPtr = dataPtr + pos;
+
+        // Memcopy the current elemment to the storageView
+        std::memcpy(it.ptr(), curPtr, bytesPerElement);
+
+        // Compute the index of the next element in the buffer
+        for(int i = 0; i < numDims; ++i)
+          if((index[i] += triples[i].step) < triples[i].stop)
+            break;
+          else
+            index[i] = triples[i].start;
+      }
+    }
+  }
+
+  /// \brief Copy data from `storageView` to buffer
+  void copyStorageViewToBuffer(const StorageView& storageView) {
+    Byte* dataPtr = buffer_.data();
+    const int bytesPerElement = storageView.bytesPerElement();
+
+    if(storageView.isMemCopyable()) {
+      std::memcpy(dataPtr, storageView.originPtr(), buffer_.size());
+    } else {
+      for(auto it = storageView.begin(), end = storageView.end(); it != end;
+          ++it, dataPtr += bytesPerElement)
+        std::memcpy(dataPtr, it.ptr(), bytesPerElement);
+    }
+  }
+
+  /// \brief Get Buffer size
+  std::size_t size() const noexcept { return buffer_.size(); }
+
+  /// \brief Get pointer to the beginning of the buffer
+  Byte* data() noexcept { return buffer_.data(); }
+  const Byte* data() const noexcept { return buffer_.data(); }
+
+  /// \brief Get initial offset of the data on disk in bytes
+  std::size_t offset() const noexcept { return offset_; }
+
+private:
+  std::vector<Byte> buffer_;
+
+  std::vector<int> strides_;
+  std::vector<int> dims_;
+  std::size_t offset_;
+};
+
+//===------------------------------------------------------------------------------------------===//
+//     BinaryArchive
+//===------------------------------------------------------------------------------------------===//
+
 const std::string BinaryArchive::Name = "Binary";
 
 const int BinaryArchive::Version = 0;
@@ -158,23 +295,11 @@ FieldID BinaryArchive::write(const StorageView& storageView, const std::string& 
   std::ofstream fs;
 
   // Create binary data buffer
-  std::size_t sizeInBytes = storageView.sizeInBytes();
-  std::vector<Byte> binaryData(sizeInBytes);
-
-  Byte* dataPtr = binaryData.data();
-  const int bytesPerElement = storageView.bytesPerElement();
-
-  // Copy field into contiguous memory
-  if(storageView.isMemCopyable()) {
-    std::memcpy(dataPtr, storageView.originPtr(), sizeInBytes);
-  } else {
-    for(auto it = storageView.begin(), end = storageView.end(); it != end;
-        ++it, dataPtr += bytesPerElement)
-      std::memcpy(dataPtr, it.ptr(), bytesPerElement);
-  }
+  BinaryBuffer binaryBuffer(storageView);
+  binaryBuffer.copyStorageViewToBuffer(storageView);
 
   // Compute hash
-  std::string checksum(HashAlgorithm::hash(binaryData.data(), sizeInBytes));
+  std::string checksum(HashAlgorithm::hash(binaryBuffer.data(), binaryBuffer.size()));
 
   // Check if field already exists
   auto it = fieldTable_.find(field);
@@ -220,7 +345,7 @@ FieldID BinaryArchive::write(const StorageView& storageView, const std::string& 
     throw Exception("cannot open file: '%s'", filename.string());
 
   // Write binaryData to disk
-  fs.write(binaryData.data(), sizeInBytes);
+  fs.write(binaryBuffer.data(), binaryBuffer.size());
   fs.close();
 
   updateMetaData();
@@ -232,28 +357,16 @@ FieldID BinaryArchive::write(const StorageView& storageView, const std::string& 
 
 void BinaryArchive::writeToFile(std::string filename, const StorageView& storageView) {
   // Create binary data buffer
-  std::size_t sizeInBytes = storageView.sizeInBytes();
-  std::vector<Byte> binaryData(sizeInBytes);
+  BinaryBuffer binaryBuffer(storageView);
+  binaryBuffer.copyStorageViewToBuffer(storageView);
 
-  Byte* dataPtr = binaryData.data();
-  const int bytesPerElement = storageView.bytesPerElement();
-
-  // Copy field into contiguous memory
-  if(storageView.isMemCopyable()) {
-    std::memcpy(dataPtr, storageView.originPtr(), sizeInBytes);
-  } else {
-    for(auto it = storageView.begin(), end = storageView.end(); it != end;
-        ++it, dataPtr += bytesPerElement)
-      std::memcpy(dataPtr, it.ptr(), bytesPerElement);
-  }
-
-  // Write binaryData to disk
+  // Write data to disk
   std::ofstream fs(filename, std::ios::out | std::ios::binary | std::ios::trunc);
-  
+
   if(!fs.is_open())
     throw Exception("cannot open file: '%s'", filename);
-  
-  fs.write(binaryData.data(), sizeInBytes);
+
+  fs.write(binaryBuffer.data(), binaryBuffer.size());
   fs.close();
 }
 
@@ -281,8 +394,7 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID,
     throw Exception("invalid id '%i' of field '%s'", fieldID.id, fieldID.name);
 
   // Create binary data buffer
-  std::size_t sizeInBytes = storageView.sizeInBytes();
-  std::vector<Byte> binaryData(sizeInBytes);
+  BinaryBuffer binaryBuffer(storageView);
 
   // Open file & read into binary buffer
   std::string filename((directory_ / (prefix_ + "_" + fieldID.name + ".dat")).string());
@@ -291,25 +403,16 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID,
   if(!fs.is_open())
     throw Exception("cannot open file: '%s'", filename);
 
-  // Set position in the steram
-  auto offset = fieldOffsetTable[fieldID.id].offset;
+  // Set position in the stream
+  auto offset = fieldOffsetTable[fieldID.id].offset + binaryBuffer.offset();
   fs.seekg(offset);
 
   // Read data into contiguous memory
-  fs.read(binaryData.data(), sizeInBytes);
+  fs.read(binaryBuffer.data(), binaryBuffer.size());
   fs.close();
 
-  Byte* dataPtr = binaryData.data();
-  const int bytesPerElement = storageView.bytesPerElement();
+  binaryBuffer.copyBufferToStorageView(storageView);
 
-  // Copy contiguous memory into field
-  if(storageView.isMemCopyable()) {
-    std::memcpy(storageView.originPtr(), dataPtr, sizeInBytes);
-  } else {
-    for(auto it = storageView.begin(), end = storageView.end(); it != end;
-        ++it, dataPtr += bytesPerElement)
-      std::memcpy(it.ptr(), dataPtr, bytesPerElement);
-  }
   LOG(info) << "Successfully read field \"" << fieldID.name << "\" (id = " << fieldID.id << ")";
 }
 
@@ -320,26 +423,18 @@ void BinaryArchive::readFromFile(std::string filename, StorageView& storageView)
     throw Exception("cannot open %s: file does not exist", filepath);
 
   // Create binary data buffer
-  std::size_t sizeInBytes = storageView.sizeInBytes();
-  std::vector<Byte> binaryData(sizeInBytes);
+  BinaryBuffer binaryBuffer(storageView);
 
   std::ifstream fs(filepath.string(), std::ios::in | std::ios::binary);
 
+  if(!fs.is_open())
+    throw Exception("cannot open file: '%s'", filename);
+
   // Read data into contiguous memory
-  fs.read(binaryData.data(), sizeInBytes);
+  fs.read(binaryBuffer.data(), binaryBuffer.size());
   fs.close();
 
-  Byte* dataPtr = binaryData.data();
-  const int bytesPerElement = storageView.bytesPerElement();
-
-  // Copy contiguous memory into field
-  if(storageView.isMemCopyable()) {
-    std::memcpy(storageView.originPtr(), dataPtr, sizeInBytes);
-  } else {
-    for(auto it = storageView.begin(), end = storageView.end(); it != end;
-        ++it, dataPtr += bytesPerElement)
-      std::memcpy(it.ptr(), dataPtr, bytesPerElement);
-  }
+  binaryBuffer.copyBufferToStorageView(storageView);
 }
 
 std::ostream& BinaryArchive::toStream(std::ostream& stream) const {

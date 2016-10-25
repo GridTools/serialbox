@@ -136,6 +136,15 @@ def register_library(library):
                                                 c_int]
     library.serialboxSerializerRead.restype = None
 
+    library.serialboxSerializerReadSliced.argtypes = [POINTER(SerializerImpl),
+                                                      c_char_p,
+                                                      POINTER(SavepointImpl),
+                                                      c_void_p,
+                                                      POINTER(c_int),
+                                                      c_int,
+                                                      POINTER(c_int)]
+    library.serialboxSerializerReadSliced.restype = None
+
     #
     # Stateless Serialization
     #
@@ -515,16 +524,18 @@ class Serializer(object):
         invoke(lib.serialboxSerializerWrite, self.__serializer, namestr, savepoint.impl(),
                origin_ptr, strides, num_strides)
 
-    def read(self, name, savepoint):
+    def read(self, name, savepoint, field=None):
         """ Deserialize `field` identified by `name` at `savepoint` from disk
 
-        The method will allocate a `numpy.array` with the registered dimensions and type and fill it
-        with the specified data from disk.
+        If `field` is a `numpy.array` it will be filled with data from disk. If `field` is None,
+        a new `numpy.array` will be allocated with the registered dimensions and type.
 
         :param name: Name of the field
         :type name: str
         :param savepoint: Savepoint to at which the field will be serialized
         :type savepoint: Savepoint
+        :param field: Field to serialize
+        :type field: numpy.array
 
         :return: Newly allocated and deserialized field
         :rtype: numpy.array
@@ -537,8 +548,22 @@ class Serializer(object):
         if not self.has_field(name):
             raise SerialboxError("field '%s' is not registered within the Serializer" % name)
 
+        #
+        # Allocate or check the field
+        #
         info = self.get_field_metainfo(name)
-        field = np.ndarray(shape=info.dims, dtype=typeID2numpy(info.type))
+        if field is None:
+            field = np.ndarray(shape=info.dims, dtype=typeID2numpy(info.type))
+        else:
+            if list(field.shape) != list(info.dims):
+                raise SerialboxError(
+                    "registered dimensions %s does not match dimensions of field %s" % (
+                        field.shape, info.dims))
+
+            if numpy2TypeID(field.dtype) != info.type:
+                raise SerialboxError(
+                    "registered type %s does not match type of field %s" % (
+                        numpy2TypeID(field.dtype), info.type))
 
         #
         # Extract strides and convert to unit-strides
@@ -546,12 +571,120 @@ class Serializer(object):
         strides, num_strides = self.__extract_strides(field)
 
         #
-        # Write to disk
+        # Read from disk
         #
         origin_ptr = c_void_p(field.ctypes.data)
         namestr = extract_string(name)[0]
         invoke(lib.serialboxSerializerRead, self.__serializer, namestr, savepoint.impl(),
                origin_ptr, strides, num_strides)
+
+        return field
+
+    def read_slice(self, name, savepoint, slice_obj, field=None):
+        """ Deserialize sliced `field` identified by `name`  and `slice` at `savepoint` from disk
+
+        The method will allocate a `numpy.array` with the registered dimensions and type and fill it
+        at specified positions (given by `slice_obj`) with data from disk.
+
+        :param name: Name of the field
+        :type name: str
+        :param savepoint: Savepoint to at which the field will be serialized
+        :type savepoint: Savepoint
+        :param slice_obj: Slice of the data to load
+        :type slice_obj: serialbox.slice
+        :param field: Field to deserialize
+        :type field: numpy.array
+
+        :return: Newly allocated and deserialized field
+        :rtype: numpy.array
+
+        :raises SerialboxError: Deserialization failed
+        """
+
+        if self.mode != OpenModeKind.Read:
+            raise SerialboxError("read operations are not permitted in OpenModeKind.%s" % self.mode)
+
+        if not self.has_field(name):
+            raise SerialboxError("field '%s' is not registered within the Serializer" % name)
+
+        #
+        # Allocate or check the field
+        #
+        info = self.get_field_metainfo(name)
+        if field is None:
+            field = np.ndarray(shape=info.dims, dtype=typeID2numpy(info.type))
+        else:
+            if list(field.shape) != list(info.dims):
+                raise SerialboxError(
+                    "registered dimensions %s does not match dimensions of field %s" % (
+                        field.shape, info.dims))
+
+            if numpy2TypeID(field.dtype) != info.type:
+                raise SerialboxError(
+                    "registered type %s does not match type of field %s" % (
+                        numpy2TypeID(field.dtype), info.type))
+
+        #
+        # Extract strides and convert to unit-strides
+        #
+        strides, num_strides = self.__extract_strides(field)
+
+        #
+        # Construct slice array
+        #
+        dims = info.dims
+        num_dims = len(info.dims)
+
+        c_slice_array = (c_int * (3 * num_dims))()
+
+        # Convert slice_obj to list
+        slice_array = []
+        if isinstance(slice_obj, slice):
+            slice_array += [slice_obj]
+        else:
+            slice_array = list(slice_obj)
+
+        if len(slice_array) > num_dims:
+            raise SerialboxError("number of slices (%i) exceeds number of dimensions (%i)" % (
+                len(slice_array), num_dims))
+
+        while len(slice_array) != num_dims:
+            slice_array += [slice(None, None, None)]
+
+        for i in range(num_dims):
+            slice_triple = slice_array[i]
+
+            if isinstance(slice_triple, int):
+                # start
+                c_slice_array[3 * i] = slice_triple
+
+                # stop
+                c_slice_array[3 * i + 1] = slice_triple + 1
+
+                # end
+                c_slice_array[3 * i + 2] = 1
+            else:
+                # start
+                c_slice_array[3 * i] = 0 if slice_triple.start is None else slice_triple.start
+
+                # stop (expand negative values)
+                if slice_triple.stop is None:
+                    c_slice_array[3 * i + 1] = dims[i]
+                elif slice_triple.stop >= 0:
+                    c_slice_array[3 * i + 1] = slice_triple.stop
+                else:
+                    c_slice_array[3 * i + 1] = dims[i] + slice_triple.stop
+
+                # end
+                c_slice_array[3 * i + 2] = 1 if slice_triple.step is None else slice_triple.step
+
+        #
+        # Read from disk
+        #
+        origin_ptr = c_void_p(field.ctypes.data)
+        namestr = extract_string(name)[0]
+        invoke(lib.serialboxSerializerReadSliced, self.__serializer, namestr, savepoint.impl(),
+               origin_ptr, strides, num_strides, c_slice_array)
 
         return field
 

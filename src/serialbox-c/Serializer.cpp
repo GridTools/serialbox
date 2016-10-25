@@ -19,6 +19,8 @@
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Logging.h"
+#include "serialbox/Core/SerializerImpl.h"
+#include "serialbox/Core/Slice.h"
 #include "serialbox/Core/StorageView.h"
 
 using namespace serialboxC;
@@ -354,6 +356,27 @@ void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name
   try {
     serialbox::StorageView storageView(
         internal::makeStorageView(ser, name, originPtr, strides, numStrides));
+    ser->read(name, *sp, storageView);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
+void serialboxSerializerReadSliced(serialboxSerializer_t* serializer, const char* name,
+                                   const serialboxSavepoint_t* savepoint, void* originPtr,
+                                   const int* strides, int numStrides, const int* slice) {
+  Serializer* ser = toSerializer(serializer);
+  const Savepoint* sp = toConstSavepoint(savepoint);
+
+  try {
+    serialbox::StorageView storageView(
+        internal::makeStorageView(ser, name, originPtr, strides, numStrides));
+
+    serialbox::Slice sliceObj((serialbox::Slice::Empty()));
+    for(int i = 0; i < numStrides; ++i)
+      sliceObj.sliceTriples().push_back({slice[3 * i], slice[3 * i + 1], slice[3 * i + 2]});
+    storageView.setSlice(sliceObj);
+    
     ser->read(name, *sp, storageView);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());

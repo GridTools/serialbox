@@ -28,6 +28,8 @@ namespace serialbox {
 /// \brief Factory to create Archives
 ///
 /// Archives are registered at runtime via the first call to ArchiveFactory::getInstance.
+/// 
+/// \ingroup core
 class ArchiveFactory {
   ArchiveFactory();
 

@@ -226,6 +226,15 @@ void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoin
   LOG(info) << "Successfully deserialized field \"" << name << "\"";
 }
 
+void SerializerImpl::readSliced(const std::string& name, const SavepointImpl& savepoint,
+                                StorageView& storageView, Slice slice) {
+  if(!archive_->isSlicedReadingSupported())
+    throw Exception("archive '%s' does not support sliced reading", archive_->name());
+  
+  storageView.setSlice(slice);
+  this->read(name, savepoint, storageView);
+}
+
 //===------------------------------------------------------------------------------------------===//
 //     JSON Serialization
 //===------------------------------------------------------------------------------------------===//

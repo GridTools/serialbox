@@ -47,6 +47,7 @@ from .savepoint import Savepoint
 from .metainfomap import MetaInfoMap
 from .fieldmetainfo import FieldMetaInfo
 from .archive import Archive
+from .slice import Slice
 
 __all__ = ['Config', 'TypeID', 'SerialboxError', 'Logging', 'Serializer', 'Savepoint',
-           'MetaInfoMap', 'FieldMetaInfo', 'OpenModeKind', 'Archive']
+           'MetaInfoMap', 'FieldMetaInfo', 'OpenModeKind', 'Archive', 'Slice']

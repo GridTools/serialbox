@@ -28,6 +28,8 @@
 namespace serialbox {
 
 /// \brief Non-portable binary archive
+/// 
+/// \ingroup core
 class BinaryArchive : public Archive {
 public:
   /// \brief Name of the binary archive
@@ -116,6 +118,9 @@ public:
   virtual bool isReadingThreadSafe() const override { return true; }
 
   virtual bool isWritingThreadSafe() const override { return false; }
+  
+  virtual bool isSlicedReadingSupported() const override { return true; }
+  
   /// @}
 
   /// \brief Clear fieldTable

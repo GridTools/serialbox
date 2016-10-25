@@ -292,7 +292,8 @@ public:
   ///
   /// \throw Exception
   ///
-  /// \see Archive
+  /// \see 
+  ///   Archive::write
   void write(const std::string& name, const SavepointImpl& savepoint,
              const StorageView& storageView);
 
@@ -318,9 +319,26 @@ public:
   ///
   /// \throw Exception
   ///
-  /// \see Archive
+  /// \see 
+  ///   Archive::read
   void read(const std::string& name, const SavepointImpl& savepoint, StorageView& storageView);
 
+
+  /// \brief Deserialize sliced field `name` (given as `storageView` and `slice`) at `savepoint` 
+  /// from disk.
+  /// 
+  /// \param name           Name of the field
+  /// \param savepoint      Savepoint at which the field will be deserialized
+  /// \param storageView    StorageView of the field
+  /// \param slice          Slice of the data to load
+  ///
+  /// \throw Exception
+  /// 
+  /// \see 
+  ///   SerializerImpl::read
+  void readSliced(const std::string& name, const SavepointImpl& savepoint, StorageView& storageView, 
+                  Slice slice);
+  
   //===----------------------------------------------------------------------------------------===//
   //     JSON Serialization
   //===----------------------------------------------------------------------------------------===//

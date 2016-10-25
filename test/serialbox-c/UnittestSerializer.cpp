@@ -541,3 +541,66 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
   serialboxSavepointDestroy(savepoint_v_1);
   serialboxSavepointDestroy(savepoint_6d);
 }
+
+TYPED_TEST(CSerializerReadWriteTest, SliceWriteAndRead) {
+  using Storage = serialbox::unittest::Storage<TypeParam>;
+
+  int dim1 = 5;
+  Storage storage_1d_input(Storage::RowMajor, {dim1}, Storage::sequential);
+  Storage storage_1d_output(Storage::RowMajor, {dim1}, Storage::random);
+
+  serialboxSavepoint_t* sp = serialboxSavepointCreate("sp");
+
+  // Write
+  {
+    serialboxSerializer_t* ser_write =
+        serialboxSerializerCreate(Write, this->directory->path().c_str(), "Field", "Binary");
+
+    auto sv = storage_1d_input.toStorageView();
+
+    // Register field
+    serialboxTypeID type = static_cast<serialboxTypeID>((int)serialbox::ToTypeID<TypeParam>::value);
+    serialboxFieldMetaInfo_t* info_storage_1d = serialboxFieldMetaInfoCreate(
+        type, storage_1d_input.dims().data(), storage_1d_input.dims().size());
+    ASSERT_TRUE(serialboxSerializerAddField(ser_write, "1d", info_storage_1d));
+
+    // Write field
+    serialboxSerializerWrite(ser_write, "1d", sp, (void*)sv.originPtr(), sv.strides().data(),
+                             sv.strides().size());
+    ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  }
+
+  // Read
+  {
+    serialboxSerializer_t* ser_read =
+        serialboxSerializerCreate(Read, this->directory->path().c_str(), "Field", "Binary");
+
+    {
+      auto sv = storage_1d_output.toStorageView();
+      
+      int slice[] = {0, -1, 1};
+      serialboxSerializerReadSliced(ser_read, "1d", sp, (void*)storage_1d_output.originPtr(),
+                                    storage_1d_output.strides().data(),
+                                    storage_1d_output.strides().size(),
+                                    slice);
+      ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+      ASSERT_TRUE(Storage::verify(storage_1d_input, storage_1d_output));
+    }
+
+    storage_1d_output.forEach(Storage::random);
+    
+    {
+      auto sv = storage_1d_output.toStorageView();
+      
+      int slice[] = {0, -1, 2};
+      serialboxSerializerReadSliced(ser_read, "1d", sp, (void*)storage_1d_output.originPtr(),
+                                    storage_1d_output.strides().data(),
+                                    storage_1d_output.strides().size(),
+                                    slice);
+      ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+      ASSERT_EQ(storage_1d_input(0), storage_1d_output(0));
+      ASSERT_EQ(storage_1d_input(2), storage_1d_output(2));
+      ASSERT_EQ(storage_1d_input(4), storage_1d_output(4));
+    }
+  }
+}

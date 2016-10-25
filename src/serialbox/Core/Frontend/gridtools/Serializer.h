@@ -20,6 +20,7 @@
 #include "serialbox/Core/Frontend/gridtools/FieldMetaInfo.h"
 #include "serialbox/Core/Frontend/gridtools/MetaInfoMap.h"
 #include "serialbox/Core/Frontend/gridtools/Savepoint.h"
+#include "serialbox/Core/Frontend/gridtools/Slice.h"
 #include "serialbox/Core/Frontend/gridtools/StorageViewHelper.h"
 #include "serialbox/Core/Frontend/gridtools/Type.h"
 #include "serialbox/Core/SerializerImpl.h"
@@ -312,8 +313,8 @@ public:
         std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
 
     if(archive_name.empty())
-      archive_name = ArchiveFactory::archiveFromExtension(file);    
-    
+      archive_name = ArchiveFactory::archiveFromExtension(file);
+
     ArchiveFactory::writeToFile(file, storageView, archive_name, storage.get_name());
   }
 
@@ -337,6 +338,29 @@ public:
         internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::value_type>::value,
         std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
 
+    serializerImpl_->read(name, *sp.impl(), storageView);
+  }
+
+  /// \brief Deserialize sliced field `name` (given as `storageView` and `slice`) at `savepoint`
+  /// from disk.
+  ///
+  /// \param name         Name of the field
+  /// \param savepoint    Savepoint at which the field will be deserialized
+  /// \param storage      gridtools storage i.e object of type `gridtools::storage_type`
+  /// \param slice        Slice of the data to load
+  ///
+  /// \throw exception  Deserialization failed
+  ///
+  /// \see
+  ///   serializer::read
+  ///
+  template <class StorageType>
+  void read_sliced(const std::string& name, const savepoint& sp, StorageType& storage,
+                   Slice slice) {
+    StorageView storageView(
+        internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::value_type>::value,
+        std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
+    storageView.setSlice(slice);
     serializerImpl_->read(name, *sp.impl(), storageView);
   }
 
@@ -367,17 +391,17 @@ public:
   /// \param storage        gridtools storage i.e object of type `gridtools::storage_type`
   /// \param archive_name   Archive used to perform deserialization. If empty, the archive will be
   ///                       deduced from the `file` extension.
-  /// 
+  ///
   /// \throw exception  Deserialization failed
   template <class StorageType>
   static void from_file(std::string file, StorageType& storage, std::string archive_name = "") {
     StorageView storageView(
         internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::value_type>::value,
         std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
-  
+
     if(archive_name.empty())
       archive_name = ArchiveFactory::archiveFromExtension(file);
-    
+
     ArchiveFactory::readFromFile(file, storageView, archive_name, storage.get_name());
   }
 

@@ -299,6 +299,26 @@ void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name
                              const serialboxSavepoint_t* savepoint, void* originPtr,
                              const int* strides, int numStrides);
 
+/**
+ * \brief Deserialize sliced field `name` (given by `originPtr`, `strides` and `slice`) at 
+ * `savepoint` from disk
+ *
+ * The `origingPtr` represent the memory location of the first element in the array i.e skipping
+ * all initial padding. The `slice` is a `N = 3 * numStrides` array which contains the slice for 
+ * each dimensions, meaning: `{start1, stop1, step1,  ... ,startN, stopN, stepN}`.
+ *
+ * \param name         Name of the field
+ * \param savepoint    Savepoint to at which the field will be serialized
+ * \param originPtr    Pointer to the origin of the data
+ * \param strides      Array of strides of length `numStrides`
+ * \param numStrides   Number of strides
+ * \param slice        Array of slices (i.e {start, stop, step}) of each dimension of length 
+ *                     `3 * numStrides`
+ */
+void serialboxSerializerReadSliced(serialboxSerializer_t* serializer, const char* name,
+                                   const serialboxSavepoint_t* savepoint, void* originPtr,
+                                   const int* strides, int numStrides, const int* slice);
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Stateless Serialization
 \*===------------------------------------------------------------------------------------------===*/

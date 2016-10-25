@@ -77,16 +77,22 @@ void StorageView::setSlice(Slice slice) {
   while(slice.sliceTriples().size() != dims_.size())
     slice();
 
-  // Expand Slice::end
-  for(std::size_t i = 0; i < slice.sliceTriples().size(); ++i)
+  // Expand negative Slice.stop
+  for(std::size_t i = 0; i < slice.sliceTriples().size(); ++i) {
+  
     slice.sliceTriples()[i].stop =
-        (slice.sliceTriples()[i].stop == Slice::end ? dims_[i] : slice.sliceTriples()[i].stop);
-
+        (slice.sliceTriples()[i].stop < 0 ? dims_[i] + 1 + slice.sliceTriples()[i].stop : 
+                                            slice.sliceTriples()[i].stop);
+  }
   assert(slice.sliceTriples().size() == dims_.size());
-  slice_ = slice;
+  slice_ = std::move(slice);
 }
 
 bool StorageView::isMemCopyable() const noexcept {
+  // Check if data is sliced
+  if(!slice_.empty())
+    return false;
+  
   // Check if data is col-major
   int stride = 1;
   if(strides_[0] != 1)
@@ -103,37 +109,9 @@ bool StorageView::isMemCopyable() const noexcept {
 
 std::size_t StorageView::size() const noexcept {
   std::size_t size = 1;
-  if(!slice_.empty()) {
-    for(std::size_t i = 0; i < slice_.sliceTriples().size(); ++i) {
-      const auto& triple = slice_.sliceTriples()[i];
-      int sizeOfDim = (triple.stop - triple.start + (triple.step != 1)) / triple.step;
-
-      assert(sizeOfDim >= 0);
-      size *= (sizeOfDim == 0 ? 1 : sizeOfDim);
-    }
-  } else {
-    for(std::size_t i = 0; i < dims_.size(); ++i)
-      size *= (dims_[i] == 0 ? 1 : dims_[i]);
-  }
-  return size;
-}
-
-std::size_t StorageView::computeBufferSizeInBytes() const noexcept {
-  if(slice_.empty())
-    return sizeInBytes();
-
-  std::size_t size = 1;  
-  
-  // Treat dimensions as full
-  for(std::size_t i = 0; i < dims_.size() - 1; ++i)
+  for(std::size_t i = 0; i < dims_.size(); ++i)
     size *= (dims_[i] == 0 ? 1 : dims_[i]);
-  
-  // Treat last dimensions sliced
-  const auto& triple = slice_.sliceTriples()[dims_.size() - 1];
-  int sizeOfDim = (triple.stop - triple.start + (triple.step != 1)) / triple.step;
-  size *= (sizeOfDim == 0 ? 1 : sizeOfDim);
-  
-  return size * bytesPerElement();
+  return size;
 }
 
 std::size_t StorageView::sizeInBytes() const noexcept { return size() * bytesPerElement(); }

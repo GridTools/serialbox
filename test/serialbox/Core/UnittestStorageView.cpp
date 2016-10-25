@@ -406,79 +406,6 @@ TYPED_TEST(StorageViewTest, toString) {
   EXPECT_NE(ss.str().find("bytesPerElement"), std::string::npos);
 }
 
-TEST(StorageViewSliceTest, Construction) {
-  using Storage = Storage<double>;
-
-  int dim1 = 10, dim2 = 15, dim3 = 20;
-
-  Storage storage_1d(Storage::RowMajor, {dim1}, Storage::sequential);
-  Storage storage_2d(Storage::RowMajor, {dim1, dim2}, Storage::sequential);
-  Storage storage_3d(Storage::RowMajor, {dim1, dim2, dim3}, {{3, 3}, {3, 3}, {3, 3}},
-                     Storage::sequential);
-
-  auto sv_1d = storage_1d.toStorageView();
-  auto sv_2d = storage_2d.toStorageView();
-  auto sv_3d = storage_3d.toStorageView();
-
-  // -----------------------------------------------------------------------------------------------
-  // 1D
-  // -----------------------------------------------------------------------------------------------
-  sv_1d.setSlice(Slice());
-  ASSERT_EQ(sv_1d.size(), storage_1d.size());
-  ASSERT_EQ(sv_1d.computeBufferSizeInBytes(), 8 * storage_1d.size());  
-
-  sv_1d.setSlice(Slice(0, 5));
-  ASSERT_EQ(sv_1d.size(), 5);
-
-  sv_1d.setSlice(Slice(0, 4, 2));
-  ASSERT_EQ(sv_1d.size(), 2);
-
-  sv_1d.setSlice(Slice(0, 1, 2));
-  ASSERT_EQ(sv_1d.size(), 1);
-  ASSERT_EQ(sv_1d.computeBufferSizeInBytes(), 8 * 1);  
-  
-  // To many slices -> Exception
-  ASSERT_THROW(sv_1d.setSlice(Slice()()), Exception);
-
-  // -----------------------------------------------------------------------------------------------
-  // 2D
-  // -----------------------------------------------------------------------------------------------
-  sv_2d.setSlice(Slice());
-  ASSERT_EQ(sv_2d.size(), storage_2d.size());
-
-  sv_2d.setSlice(Slice()());
-  ASSERT_EQ(sv_2d.size(), storage_2d.size());
-
-  sv_2d.setSlice(Slice(0, 5)());
-  ASSERT_EQ(sv_2d.size(), 5 * dim2);
-
-  sv_2d.setSlice(Slice(0, 5));
-  ASSERT_EQ(sv_2d.size(), 5 * dim2);
-
-  sv_2d.setSlice(Slice()(0, 5));
-  ASSERT_EQ(sv_2d.size(), dim1 * 5);
-
-  sv_2d.setSlice(Slice(0, 5)(5, 10));
-  ASSERT_EQ(sv_2d.size(), 5 * 5);
-
-  sv_2d.setSlice(Slice(0, 5, 2)(5, 10, 2));
-  ASSERT_EQ(sv_2d.size(), 3 * 3);
-  ASSERT_EQ(sv_2d.computeBufferSizeInBytes(), 8 * dim1  * 3);  
-
-  // -----------------------------------------------------------------------------------------------
-  // 3D
-  // -----------------------------------------------------------------------------------------------
-  sv_3d.setSlice(Slice());
-  ASSERT_EQ(sv_3d.size(), dim1 * dim2 * dim3);
-
-  sv_3d.setSlice(Slice()()());
-  ASSERT_EQ(sv_3d.size(), dim1 * dim2 * dim3);
-  
-  sv_3d.setSlice(Slice()()(5, 6));
-  ASSERT_EQ(sv_3d.size(), dim1 * dim2 * 1);
-  ASSERT_EQ(sv_3d.computeBufferSizeInBytes(), 8 * dim1 * dim2 * 1);  
-}
-
 TEST(StorageViewSliceTest, Iteration) {
   using Storage = Storage<double>;
 
@@ -492,7 +419,7 @@ TEST(StorageViewSliceTest, Iteration) {
   auto sv_1d = storage_1d.toStorageView();
   auto sv_2d = storage_2d.toStorageView();
   auto sv_3d = storage_3d.toStorageView();
-
+  
   // -----------------------------------------------------------------------------------------------
   // 1D
   // -----------------------------------------------------------------------------------------------
@@ -501,6 +428,9 @@ TEST(StorageViewSliceTest, Iteration) {
     auto it = sv_1d.begin();
     for(int i = 0; i < dim1; ++i, ++it)
       ASSERT_EQ(it.as<double>(), storage_1d(i)) << "(i) = (" << i << ")";
+    
+    // Sliced StorageView are always treated as uncopyable
+    ASSERT_FALSE(sv_1d.isMemCopyable());
   }
 
   {
@@ -561,7 +491,7 @@ TEST(StorageViewSliceTest, Iteration) {
   }
 
   {
-    sv_3d.setSlice(Slice(2, Slice::end, 1)(2, 3)(5, 10));
+    sv_3d.setSlice(Slice(2, -1, 1)(2, 3)(5, 10));
     auto it = sv_3d.begin();
     for(int k = 5; k < 10; ++k)
       for(int j = 2; j < 3; ++j)

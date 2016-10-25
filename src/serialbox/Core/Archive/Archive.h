@@ -24,7 +24,9 @@
 
 namespace serialbox {
 
-/// Abstract interface for Archives
+/// \brief Abstract interface for Archives
+/// 
+/// \ingroup core
 class Archive {
 public:
   /// \brief Vritual destructor
@@ -72,10 +74,13 @@ public:
   virtual void clear() = 0;
 
   /// \brief Indicate whether it's safe for multiple threads to call Archive::read
-  virtual bool isReadingThreadSafe() const = 0;
+  virtual bool isReadingThreadSafe() const { return false; }
 
-  /// \brief Indicate whether it's safe for multiple threads to call Archive::read
-  virtual bool isWritingThreadSafe() const = 0;
+  /// \brief Indicate whether it's safe for multiple threads to call Archive::write
+  virtual bool isWritingThreadSafe() const { return false; }
+  
+  /// \brief Indicate whether the archive supports `StorageViews` with attached \ref Slice "slices"
+  virtual bool isSlicedReadingSupported() const { return false; }
 
   /// \brief Convert the archive to stream
   virtual std::ostream& toStream(std::ostream& stream) const = 0;

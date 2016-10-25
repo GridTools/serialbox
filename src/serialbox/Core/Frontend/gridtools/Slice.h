@@ -24,17 +24,20 @@ namespace gridtools {
 /// \brief Specification of the slice indices which is used for partial loading of serialized data
 ///
 /// The syntax follows closely the slicing syntax used in Python, the equivalent of
-/// `[start1:stop1:step1] ... [startN, stopN, stepN]` is
-/// `slice(start1, stop1, step1) ... (startN, stopN, stepN)`
+/// `[start1:stop1:step1, ... ,startN:stopN:stepN]` is
+/// `Slice(start1, stop1, step1) ... (startN, stopN, stepN)`
+/// 
+/// with one notable \b exception: The full dimensions `[:]` is represented as `Slice(0, -1)` this 
+/// means `[:-1]` corresponds to `Slice(0, -2)`
 ///
 /// Consider the follwoing examples:
 ///
-/// Python            | C++
-/// ------            | -----
-/// `[:]`             | `slice(0, slice::end, 1)` or `Slice()`
-/// `[0:3][0:3]`      | `slice(0, 3)(0, 3)`
-/// `[1:10:2]`        | `slice(1, 10, 2)`
-/// `[:][1:5:2][:]`   | `slice()(1, 5, 2)()`
+/// Python              | C++
+/// ------              | -----
+/// `[:]`               | `Slice(0, -1, 1)` or `Slice()`
+/// `[0:3, 0:3]`        | `Slice(0, 3)(0, 3)`
+/// `[1:10:2]`          | `Slice(1, 10, 2)`
+/// `[:, 1:5:2, 1:-2]`  | `Slice()(1, 5, 2)(1, -3)`
 ///
 /// \ingroup gridtools
 using slice = serialbox::Slice;

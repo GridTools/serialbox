@@ -181,14 +181,14 @@ TEST_F(BinaryArchiveUtilityTest, toString) {
   EXPECT_NE(ss.str().find("fieldsTable"), std::string::npos);
 }
 
-TEST_F(BinaryArchiveUtilityTest, writeAndRead) {
+TEST_F(BinaryArchiveUtilityTest, ToAndFromFile) {
   using Storage = Storage<double>;
   Storage storage_input(Storage::ColMajor, {5, 2, 5}, Storage::random);
   Storage storage_output(Storage::ColMajor, {5, 2, 5});
 
   auto sv_input = storage_input.toStorageView();
   auto sv_output = storage_output.toStorageView();
-  
+
   // Write and read from file
   BinaryArchive::writeToFile((this->directory->path() / "test.dat").string(), sv_input);
 
@@ -201,6 +201,152 @@ TEST_F(BinaryArchiveUtilityTest, writeAndRead) {
                Exception);
 }
 
+TEST_F(BinaryArchiveUtilityTest, SliceWriteAndRead) {
+  using Storage = Storage<double>;
+
+  int dim1 = 5, dim2 = 10, dim3 = 15;
+
+  Storage storage_1d_input(Storage::RowMajor, {dim1}, Storage::sequential);
+  Storage storage_2d_input(Storage::RowMajor, {dim1, dim2}, Storage::sequential);
+  Storage storage_3d_input(Storage::ColMajor, {dim1, dim2, dim3}, {{3, 3}, {3, 3}, {3, 3}},
+                           Storage::sequential);
+
+  Storage storage_1d_output(Storage::RowMajor, {dim1}, Storage::random);
+  Storage storage_2d_output(Storage::RowMajor, {dim1, dim2}, Storage::random);
+  Storage storage_3d_output(Storage::ColMajor, {dim1, dim2, dim3}, {{3, 3}, {3, 3}, {3, 3}},
+                            Storage::random);
+
+  // Writing
+  {
+    BinaryArchive archiveWrite(OpenModeKind::Write, directory->path().string(), "field");
+
+    auto sv_1d = storage_1d_input.toStorageView();
+    archiveWrite.write(sv_1d, "1d", nullptr);
+
+    auto sv_2d = storage_2d_input.toStorageView();
+    archiveWrite.write(sv_2d, "2d", nullptr);
+
+    auto sv_3d = storage_3d_input.toStorageView();
+    archiveWrite.write(sv_3d, "3d", nullptr);
+  }
+
+  // Sliced reading
+  {
+    BinaryArchive archiveRead(OpenModeKind::Read, directory->path().string(), "field");
+
+    // ---------------------------------------------------------------------------------------------
+    // 1D
+    // ---------------------------------------------------------------------------------------------
+    {
+      auto sv_1d = storage_1d_output.toStorageView();
+      sv_1d.setSlice(Slice());
+      archiveRead.read(sv_1d, FieldID{"1d", 0}, nullptr);
+      ASSERT_TRUE(Storage::verify(storage_1d_input, storage_1d_output));
+    }
+
+    storage_1d_output.forEach(Storage::random);
+
+    {
+      auto sv_1d = storage_1d_output.toStorageView();
+      sv_1d.setSlice(Slice(2, 3));
+      archiveRead.read(sv_1d, FieldID{"1d", 0}, nullptr);
+      ASSERT_EQ(storage_1d_input(2), storage_1d_output(2));
+    }
+
+    storage_1d_output.forEach(Storage::random);
+
+    {
+      auto sv_1d = storage_1d_output.toStorageView();
+      sv_1d.setSlice(Slice(0, -1, 2));
+      archiveRead.read(sv_1d, FieldID{"1d", 0}, nullptr);
+      ASSERT_EQ(storage_1d_input(0), storage_1d_output(0));
+      ASSERT_EQ(storage_1d_input(2), storage_1d_output(2));
+      ASSERT_EQ(storage_1d_input(4), storage_1d_output(4));
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // 2D
+    // ---------------------------------------------------------------------------------------------
+    {
+      auto sv_2d = storage_2d_output.toStorageView();
+      sv_2d.setSlice(Slice()());
+      archiveRead.read(sv_2d, FieldID{"2d", 0}, nullptr);
+      ASSERT_TRUE(Storage::verify(storage_2d_input, storage_2d_output));
+    }
+
+    storage_2d_output.forEach(Storage::random);
+
+    {
+      auto sv_2d = storage_2d_output.toStorageView();
+      sv_2d.setSlice(Slice()(1, 2));
+      archiveRead.read(sv_2d, FieldID{"2d", 0}, nullptr);
+      for(int j = 1; j < 2; ++j)
+        for(int i = 0; i < dim1; ++i)
+          ASSERT_EQ(storage_2d_input(i, j), storage_2d_output(i, j)) << "(i,j) = (" << i << "," << j
+                                                                     << ")";
+    }
+
+    storage_2d_output.forEach(Storage::random);
+
+    {
+      auto sv_2d = storage_2d_output.toStorageView();
+      sv_2d.setSlice(Slice(0, -1, 2)(1, 2));
+      archiveRead.read(sv_2d, FieldID{"2d", 0}, nullptr);
+      for(int j = 1; j < 2; ++j)
+        for(int i = 0; i < dim1; i += 2)
+          ASSERT_EQ(storage_2d_input(i, j), storage_2d_output(i, j)) << "(i,j) = (" << i << "," << j
+                                                                     << ")";
+    }
+
+    storage_2d_output.forEach(Storage::random);
+
+    {
+      auto sv_2d = storage_2d_output.toStorageView();
+      sv_2d.setSlice(Slice(0, -1, 2)(1, 4, 2));
+      archiveRead.read(sv_2d, FieldID{"2d", 0}, nullptr);
+      for(int j = 1; j < 4; j += 2)
+        for(int i = 0; i < dim1; i += 2)
+          ASSERT_EQ(storage_2d_input(i, j), storage_2d_output(i, j)) << "(i,j) = (" << i << "," << j
+                                                                     << ")";
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // 3D
+    // ---------------------------------------------------------------------------------------------
+    {
+      auto sv_3d = storage_3d_output.toStorageView();
+      sv_3d.setSlice(Slice()()());
+      archiveRead.read(sv_3d, FieldID{"3d", 0}, nullptr);
+      ASSERT_TRUE(Storage::verify(storage_3d_input, storage_3d_output));
+    }
+
+    storage_3d_output.forEach(Storage::random);
+
+    {
+      auto sv_3d = storage_3d_output.toStorageView();
+      sv_3d.setSlice(Slice()()(5, 7));
+      archiveRead.read(sv_3d, FieldID{"3d", 0}, nullptr);
+      for(int k = 5; k < 7; ++k)
+        for(int j = 0; j < dim2; ++j)
+          for(int i = 0; i < dim1; ++i)
+            ASSERT_EQ(storage_3d_input(i, j, k), storage_3d_output(i, j, k))
+                << "(i,j,k) = (" << i << "," << j << "," << k << ")";
+    }
+
+    storage_3d_output.forEach(Storage::random);
+
+    {
+      auto sv_3d = storage_3d_output.toStorageView();
+      sv_3d.setSlice(Slice(1, -1, 3)(0, -3, 2)(5, 10, 3));
+      archiveRead.read(sv_3d, FieldID{"3d", 0}, nullptr);
+      for(int k = 5; k < 10; k += 3)
+        for(int j = 0; j < dim2 - 2; j += 2)
+          for(int i = 1; i < dim1; i += 3)
+            ASSERT_EQ(storage_3d_input(i, j, k), storage_3d_output(i, j, k))
+                << "(i,j,k) = (" << i << "," << j << "," << k << ")";
+    }
+  }
+}
 
 //===------------------------------------------------------------------------------------------===//
 //     Read/Write tests

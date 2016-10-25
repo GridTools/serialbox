@@ -18,6 +18,7 @@
 
 #include <cassert>
 #include <vector>
+#include <limits>
 
 namespace serialbox {
 
@@ -34,25 +35,24 @@ struct SliceTriple {
 /// \brief Specification of the slice indices which is used for partial loading of serialized data
 ///
 /// The syntax follows closely the slicing syntax used in Python, the equivalent of
-/// `[start1:stop1:step1] ... [startN, stopN, stepN]` is
+/// `[start1:stop1:step1, ... ,startN:stopN:stepN]` is
 /// `Slice(start1, stop1, step1) ... (startN, stopN, stepN)`
+/// 
+/// with one notable \b exception: The full dimensions `[:]` is represented as `Slice(0, -1)` this 
+/// means `[:-1]` corresponds to `Slice(0, -2)`
 ///
 /// Consider the follwoing examples:
 ///
-/// Python            | C++
-/// ------            | -----
-/// `[:]`             | `Slice(0, Slice::end, 1)` or `Slice()`
-/// `[0:3][0:3]`      | `Slice(0, 3)(0, 3)`
-/// `[1:10:2]`        | `Slice(1, 10, 2)`
-/// `[:][1:5:2][:]`   | `Slice()(1, 5, 2)()`
-///
+/// Python              | C++
+/// ------              | -----
+/// `[:]`               | `Slice(0, -1, 1)` or `Slice()`
+/// `[0:3, 0:3]`        | `Slice(0, 3)(0, 3)`
+/// `[1:10:2]`          | `Slice(1, 10, 2)`
+/// `[:, 1:5:2, 1:-2]`  | `Slice()(1, 5, 2)(1, -3)`
 class Slice {
 public:
   struct Empty {};
-
-  /// \brief Special position in the data
-  enum SpecialPositionKind { end = -1 };
-
+  
   /// \brief Initialize the slice of the first dimension
   ///
   /// The default arguments correspond to the full dimension (i.e no slicing in the first
@@ -63,9 +63,9 @@ public:
   /// \param start    Starting index of the slice
   /// \param stop     Stopping index of the slice (index `stop` is \b not included)
   /// \param step     Step of the slice
-  Slice(int start = 0, int stop = end, int step = 1) noexcept {
+  Slice(int start = 0, int stop = -1, int step = 1) noexcept {
     assert(start >= 0);
-    assert(stop == end || stop >= start);
+    assert(stop < 0 || stop >= start);
     assert(step > 0);
     sliceTriples_.push_back({start, stop, step});
   }
@@ -87,9 +87,9 @@ public:
   /// \param start    Starting index of the slice
   /// \param stop     Stopping index of the slice (index `stop` is \b not included)
   /// \param step     Step of the slice
-  Slice& operator()(int start = 0, int stop = end, int step = 1) noexcept {
+  Slice& operator()(int start = 0, int stop = -1, int step = 1) noexcept {
     assert(start >= 0);
-    assert(stop == end || stop >= start);
+    assert(stop < 0 || stop >= start);
     assert(step > 0);
     sliceTriples_.push_back({start, stop, step});
     return *this;

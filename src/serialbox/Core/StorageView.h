@@ -138,13 +138,6 @@ public:
 
   /// \brief Size of the allocated, sliced data (without padding) in Bytes
   std::size_t sizeInBytes() const noexcept;
-
-  /// \brief Compute the size of the buffer (in Bytes) which is needed to copy the `StorageView` to 
-  /// a contiguous buffer which only takes slicing in the slowest varying (i.e last) dimension into 
-  /// account.
-  /// 
-  /// If the slice is empty, the function returns StorageView::sizeInBytes().
-  std::size_t computeBufferSizeInBytes() const noexcept;
   
 private:
   Byte* originPtr_;          ///< Pointer to the origin of the data (i.e skipping initial padding)

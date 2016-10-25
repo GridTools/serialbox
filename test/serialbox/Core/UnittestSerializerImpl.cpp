@@ -43,8 +43,7 @@ TEST_F(SerializerImplUtilityTest, Construction) {
   {
     // Directory does not exists (should be created by the Archive)
     SerializerImpl s(OpenModeKind::Append,
-                     (directory->path() / "dir-is-created-from-write").string(), "Field",
-                     "Binary");
+                     (directory->path() / "dir-is-created-from-write").string(), "Field", "Binary");
     ASSERT_TRUE(boost::filesystem::exists(directory->path() / "dir-is-created-from-write"));
     s.updateMetaData();
   }
@@ -94,11 +93,11 @@ TEST_F(SerializerImplUtilityTest, Construction) {
 TEST_F(SerializerImplUtilityTest, SerializationStatus) {
   // Serialization is enabled by default
   ASSERT_FALSE(SerializerImpl::serializationStatus() < 0);
-  
+
   // Disable serialization
   SerializerImpl::disableSerialization();
   ASSERT_EQ(SerializerImpl::serializationStatus(), -1);
-  
+
   // Enabled serialization
   SerializerImpl::enableSerialization();
   ASSERT_EQ(SerializerImpl::serializationStatus(), 1);
@@ -114,7 +113,7 @@ TEST_F(SerializerImplUtilityTest, AddMetaInfo) {
   s.addGlobalMetaInfo("float32", float(32.0f));
   s.addGlobalMetaInfo("float64", double(64.0f));
   s.addGlobalMetaInfo("string", "str"); // This has to go through the const char* specialization
-  
+
   // MetaInfo already exists -> Exception
   EXPECT_THROW(s.addGlobalMetaInfo("string", "str"), Exception);
 
@@ -264,8 +263,7 @@ TEST_F(SerializerImplUtilityTest, ReadExceptions) {
   StorageView sv = storage.toStorageView();
 
   {
-    SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field",
-                           "Binary");
+    SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "Binary");
     s_write.registerField("field", sv.type(), sv.dims());
     s_write.updateMetaData();
   }
@@ -391,9 +389,8 @@ TEST_F(SerializerImplUtilityTest, JSONFailEmpty) {
   ofs.close();
 
   // Open with empty MetaData-preifx.json
-  ASSERT_THROW(
-      SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "Binary"),
-      Exception);
+  ASSERT_THROW(SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "Binary"),
+               Exception);
 }
 
 TEST_F(SerializerImplUtilityTest, JSONFailCorruputedVersion) {
@@ -415,9 +412,8 @@ TEST_F(SerializerImplUtilityTest, JSONFailCorruputedVersion) {
   ofs.close();
 
   // Open with corruputed MetaData.json
-  ASSERT_THROW(
-      SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "Binary"),
-      Exception);
+  ASSERT_THROW(SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "Binary"),
+               Exception);
 }
 
 TEST_F(SerializerImplUtilityTest, JSONFailWrongPrefix) {
@@ -448,9 +444,8 @@ TEST_F(SerializerImplUtilityTest, JSONFailNoVersion) {
   ofs.close();
 
   // Open with corruputed MetaData.json
-  ASSERT_THROW(
-      SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "Binary"),
-      Exception);
+  ASSERT_THROW(SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "Binary"),
+               Exception);
 }
 
 TEST_F(SerializerImplUtilityTest, JSONFailNoPrefix) {
@@ -472,9 +467,8 @@ TEST_F(SerializerImplUtilityTest, JSONFailNoPrefix) {
   ofs.close();
 
   // Open with corruputed MetaData-prefix.json
-  ASSERT_THROW(
-      SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "Binary"),
-      Exception);
+  ASSERT_THROW(SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "Binary"),
+               Exception);
 }
 
 TEST_F(SerializerImplUtilityTest, JSONFailCorruptedPrefix) {
@@ -495,9 +489,8 @@ TEST_F(SerializerImplUtilityTest, JSONFailCorruptedPrefix) {
   ofs.close();
 
   // Open with corruputed MetaData-prefix.json
-  ASSERT_THROW(
-      SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "Binary"),
-      Exception);
+  ASSERT_THROW(SerializerImpl(OpenModeKind::Read, directory->path().string(), "Field", "Binary"),
+               Exception);
 }
 
 TEST_F(SerializerImplUtilityTest, toString) {
@@ -597,8 +590,7 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
 
   // Reopen serializer and append a data field
   {
-    SerializerImpl s_app(OpenModeKind::Append, this->directory->path().string(), "Field",
-                         "Binary");
+    SerializerImpl s_app(OpenModeKind::Append, this->directory->path().string(), "Field", "Binary");
 
     auto sv_field_6d = field_6d_input.toStorageView();
     s_app.registerField("field_6d", sv_field_6d.type(), sv_field_6d.dims());
@@ -611,8 +603,7 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
   // Reading
   // -----------------------------------------------------------------------------------------------
   {
-    SerializerImpl s_read(OpenModeKind::Read, this->directory->path().string(), "Field",
-                          "Binary");
+    SerializerImpl s_read(OpenModeKind::Read, this->directory->path().string(), "Field", "Binary");
 
     // StorageViews
     auto sv_u_0 = u_0_output.toStorageView();
@@ -633,7 +624,7 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
 
     // Check order of savepoints is correct
     ASSERT_EQ(s_read.savepoints().size(), 5);
-    
+
     EXPECT_EQ(*s_read.savepoints()[0], savepoint1_t_1);
     EXPECT_EQ(*s_read.savepoints()[1], savepoint1_t_2);
     EXPECT_EQ(*s_read.savepoints()[2], savepoint_u_1);
@@ -661,5 +652,57 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
 
     s_read.read("field_6d", savepoint_6d, sv_field_6d);
     ASSERT_TRUE(Storage::verify(field_6d_output, field_6d_input));
+  }
+}
+
+TYPED_TEST(SerializerImplReadWriteTest, SliceWriteAndRead) {
+  using Storage = Storage<TypeParam>;
+
+  int dim1 = 5;
+  Storage storage_1d_input(Storage::RowMajor, {dim1}, Storage::sequential);
+  Storage storage_1d_output(Storage::RowMajor, {dim1}, Storage::random);
+  SavepointImpl sp("sp");
+
+  // Write
+  {
+    SerializerImpl s_write(OpenModeKind::Write, this->directory->path().string(), "Field",
+                           "Binary");
+
+    auto sv = storage_1d_input.toStorageView();
+    s_write.registerField("1d", sv.type(), sv.dims());
+    s_write.write("1d", sp, sv);
+  }
+
+  // Read
+  {
+    SerializerImpl s_read(OpenModeKind::Read, this->directory->path().string(), "Field", "Binary");
+
+    {
+      auto sv = storage_1d_output.toStorageView();
+      s_read.readSliced("1d", sp, sv, Slice());
+      ASSERT_TRUE(Storage::verify(storage_1d_input, storage_1d_output));
+    }
+
+    storage_1d_output.forEach(Storage::random);
+
+    {
+      auto sv = storage_1d_output.toStorageView();
+      s_read.readSliced("1d", sp, sv, Slice(0, -1, 2));
+      ASSERT_EQ(storage_1d_input(0), storage_1d_output(0));
+      ASSERT_EQ(storage_1d_input(2), storage_1d_output(2));
+      ASSERT_EQ(storage_1d_input(4), storage_1d_output(4));
+    }
+  }
+
+  // Only Binary currently supports slicing
+  {
+    SerializerImpl s_write(OpenModeKind::Write, this->directory->path().string(), "Field2",
+                           "NetCDF");
+    s_write.updateMetaData();
+
+    SerializerImpl s_read(OpenModeKind::Read, this->directory->path().string(), "Field2", "NetCDF");
+    auto sv = storage_1d_output.toStorageView();
+
+    ASSERT_THROW(s_read.readSliced("1d", sp, sv, Slice()), Exception);
   }
 }

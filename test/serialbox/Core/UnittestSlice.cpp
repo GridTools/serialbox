@@ -31,7 +31,7 @@ TEST(SliceTest, Construction) {
 
   ASSERT_EQ(slice1.sliceTriples().size(), 1);
   ASSERT_EQ(slice1.sliceTriples()[0].start, 0);
-  ASSERT_EQ(slice1.sliceTriples()[0].stop, Slice::end);
+  ASSERT_EQ(slice1.sliceTriples()[0].stop, -1);
   ASSERT_EQ(slice1.sliceTriples()[0].step, 1);
 
   //
@@ -50,7 +50,7 @@ TEST(SliceTest, Construction) {
   ASSERT_EQ(slice3.sliceTriples().size(), 4);
   
   ASSERT_EQ(slice3.sliceTriples()[0].start, 0);
-  ASSERT_EQ(slice3.sliceTriples()[0].stop, Slice::end);
+  ASSERT_EQ(slice3.sliceTriples()[0].stop, -1);
   ASSERT_EQ(slice3.sliceTriples()[0].step, 1);
   
   ASSERT_EQ(slice3.sliceTriples()[1].start, 1);
@@ -58,7 +58,7 @@ TEST(SliceTest, Construction) {
   ASSERT_EQ(slice3.sliceTriples()[1].step, 1);
   
   ASSERT_EQ(slice3.sliceTriples()[2].start, 0);
-  ASSERT_EQ(slice3.sliceTriples()[2].stop, Slice::end);
+  ASSERT_EQ(slice3.sliceTriples()[2].stop, -1);
   ASSERT_EQ(slice3.sliceTriples()[2].step, 1);
   
   ASSERT_EQ(slice3.sliceTriples()[3].start, 1);

@@ -200,6 +200,8 @@ class TestSerializer(unittest.TestCase):
         field1_input = np.random.rand(16)
         field2_input = np.random.rand(4, 4)
         field3_input = np.random.rand(2, 2, 2)
+        field3_output_allocted = np.random.rand(2, 2, 2)
+
         sp = Savepoint("sp")
 
         #
@@ -216,6 +218,7 @@ class TestSerializer(unittest.TestCase):
         field1_output = ser_read.read("field1", sp)
         field2_output = ser_read.read("field2", sp)
         field3_output = ser_read.read("field3", sp)
+        ser_read.read("field3", sp, field3_output_allocted)
 
         #
         # Validate
@@ -223,6 +226,7 @@ class TestSerializer(unittest.TestCase):
         self.assertTrue(np.allclose(field1_input, field1_output))
         self.assertTrue(np.allclose(field2_input, field2_output))
         self.assertTrue(np.allclose(field3_input, field3_output))
+        self.assertTrue(np.allclose(field3_input, field3_output_allocted))
 
         #
         # Failures
@@ -239,6 +243,14 @@ class TestSerializer(unittest.TestCase):
 
         # Read at non-existent savepoint -> Error
         self.assertRaises(SerialboxError, ser_read.read, "field1", Savepoint('sp2'))
+
+        # Read with field but wrong dimensions -> Error
+        self.assertRaises(SerialboxError, ser_read.read, "field1", sp,
+                          np.ndarray(shape=[16, 15], dtype=np.float64))
+
+        # Read with field but wrong type -> Error
+        self.assertRaises(SerialboxError, ser_read.read, "field1", sp,
+                          np.ndarray(shape=[16], dtype=np.int32))
 
     def test_write_and_read_explict(self):
         ser_write = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
@@ -334,6 +346,39 @@ class TestSerializer(unittest.TestCase):
         # Invalid file extension
         #
         self.assertRaises(SerialboxError, Serializer.to_file, "field", field_input, "test.X")
+
+    def test_sliced_serialization(self):
+        field_input = np.random.rand(10, 15, 20)
+
+        #
+        # Write
+        #
+        ser_write = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
+        ser_write.write("field", Savepoint("sp"), field_input)
+
+        #
+        # Read
+        #
+        ser_read = Serializer(OpenModeKind.Read, self.path, "field", self.archive)
+
+        field_output = ser_read.read_slice("field", Savepoint("sp"), Slice[:])
+        self.assertTrue(np.allclose(field_output[:], field_input[:]))
+
+        field_output = ser_read.read_slice("field", Savepoint("sp"), Slice[:, :, 0])
+        self.assertTrue(np.allclose(field_output[:, :, 0], field_input[:, :, 0]))
+
+        field_output = ser_read.read_slice("field", Savepoint("sp"), Slice[2:, 1:-1:2, 1:5])
+        self.assertTrue(np.allclose(field_output[2:, 1:-1:2, 1:5], field_input[2:, 1:-1:2, 1:5]))
+
+        field_output = ser_read.read_slice("field", Savepoint("sp"), Slice[:-1, 1::2])
+        self.assertTrue(np.allclose(field_output[:-1, 1::2],
+                                    field_input[:-1, 1::2]))
+
+        #
+        # To many slices -> Error
+        #
+        self.assertRaises(SerialboxError, ser_read.read_slice, "field", Savepoint("sp"),
+                          Slice[:, :, :, :])
 
 if __name__ == "__main__":
     unittest.main()
