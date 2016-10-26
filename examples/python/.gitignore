@@ -1,5 +1,7 @@
 laplacian/*
 slice/*
+MetaData-*.json
+ArchiveMetaData-*.json
 *.nc
 *.dat
 
