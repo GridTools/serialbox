@@ -146,12 +146,15 @@ def register_library(library):
     library.serialboxSerializerReadSliced.restype = None
 
     library.serialboxSerializerReadAsync.argtypes = [POINTER(SerializerImpl),
-                                                      c_char_p,
-                                                      POINTER(SavepointImpl),
-                                                      c_void_p,
-                                                      POINTER(c_int),
-                                                      c_int]
+                                                     c_char_p,
+                                                     POINTER(SavepointImpl),
+                                                     c_void_p,
+                                                     POINTER(c_int),
+                                                     c_int]
     library.serialboxSerializerReadAsync.restype = None
+
+    library.serialboxSerializerWaitForAll.argtypes = [POINTER(SerializerImpl)]
+    library.serialboxSerializerWaitForAll.restype = None
 
     #
     # Stateless Serialization
@@ -492,6 +495,28 @@ class Serializer(object):
         num_dims = c_int(len(field.shape))
         return dims, num_dims,
 
+    def __allocate_or_check_field(self, name, field):
+        """Allocate or check the numpy field for consistency
+        """
+        if not self.has_field(name):
+            raise SerialboxError("field '%s' is not registered within the Serializer" % name)
+
+        info = self.get_field_metainfo(name)
+        if field is None:
+            field = np.ndarray(shape=info.dims, dtype=typeID2numpy(info.type))
+        else:
+            if list(field.shape) != list(info.dims):
+                raise SerialboxError(
+                    "registered dimensions %s do not match dimensions of field (%s) %s" % (
+                        field.shape, name, info.dims))
+
+            if numpy2TypeID(field.dtype) != info.type:
+                raise SerialboxError(
+                    "registered type %s does not match type of field (%s) %s" % (
+                        numpy2TypeID(field.dtype), name, info.type))
+
+        return (field, info,)
+
     def write(self, name, savepoint, field, register_field=True):
         """ Serialize `field` identified by `name` at `savepoint` to disk
 
@@ -553,25 +578,10 @@ class Serializer(object):
         if self.mode != OpenModeKind.Read:
             raise SerialboxError("read operations are not permitted in OpenModeKind.%s" % self.mode)
 
-        if not self.has_field(name):
-            raise SerialboxError("field '%s' is not registered within the Serializer" % name)
-
         #
         # Allocate or check the field
         #
-        info = self.get_field_metainfo(name)
-        if field is None:
-            field = np.ndarray(shape=info.dims, dtype=typeID2numpy(info.type))
-        else:
-            if list(field.shape) != list(info.dims):
-                raise SerialboxError(
-                    "registered dimensions %s does not match dimensions of field %s" % (
-                        field.shape, info.dims))
-
-            if numpy2TypeID(field.dtype) != info.type:
-                raise SerialboxError(
-                    "registered type %s does not match type of field %s" % (
-                        numpy2TypeID(field.dtype), info.type))
+        field = self.__allocate_or_check_field(name, field)[0]
 
         #
         # Extract strides and convert to unit-strides
@@ -597,9 +607,10 @@ class Serializer(object):
 
         This method runs the `read` function asynchronously (potentially in a separate thread which
         may be part of a thread pool) meaning this function immediately returns. To synchronize all
-        threads, use :class:`Serializer.wait_for_all()`.
+        threads, use :func:`Serializer.wait_for_all()`.
 
-        If the archive is not thread-safe, the method falls back to synchronous execution
+        If the archive is not thread-safe or if the library was not configured with
+        `SERIALBOX_ASYNC_API` the method falls back to synchronous execution.
 
         :param name: Name of the field
         :type name: str
@@ -616,25 +627,10 @@ class Serializer(object):
         if self.mode != OpenModeKind.Read:
             raise SerialboxError("read operations are not permitted in OpenModeKind.%s" % self.mode)
 
-        if not self.has_field(name):
-            raise SerialboxError("field '%s' is not registered within the Serializer" % name)
-
         #
         # Allocate or check the field
         #
-        info = self.get_field_metainfo(name)
-        if field is None:
-            field = np.ndarray(shape=info.dims, dtype=typeID2numpy(info.type))
-        else:
-            if list(field.shape) != list(info.dims):
-                raise SerialboxError(
-                    "registered dimensions %s does not match dimensions of field %s" % (
-                        field.shape, info.dims))
-
-            if numpy2TypeID(field.dtype) != info.type:
-                raise SerialboxError(
-                    "registered type %s does not match type of field %s" % (
-                        numpy2TypeID(field.dtype), info.type))
+        field = self.__allocate_or_check_field(name, field)[0]
 
         #
         # Extract strides and convert to unit-strides
@@ -650,6 +646,11 @@ class Serializer(object):
                origin_ptr, strides, num_strides)
 
         return field
+
+    def wait_for_all(self):
+        """ Wait for all pending asynchronous read operations and reset the internal queue.
+        """
+        invoke(lib.serialboxSerializerWaitForAll, self.__serializer)
 
     def read_slice(self, name, savepoint, slice_obj, field=None):
         """ Deserialize sliced `field` identified by `name`  and `slice` at `savepoint` from disk
@@ -675,25 +676,10 @@ class Serializer(object):
         if self.mode != OpenModeKind.Read:
             raise SerialboxError("read operations are not permitted in OpenModeKind.%s" % self.mode)
 
-        if not self.has_field(name):
-            raise SerialboxError("field '%s' is not registered within the Serializer" % name)
-
         #
         # Allocate or check the field
         #
-        info = self.get_field_metainfo(name)
-        if field is None:
-            field = np.ndarray(shape=info.dims, dtype=typeID2numpy(info.type))
-        else:
-            if list(field.shape) != list(info.dims):
-                raise SerialboxError(
-                    "registered dimensions %s does not match dimensions of field %s" % (
-                        field.shape, info.dims))
-
-            if numpy2TypeID(field.dtype) != info.type:
-                raise SerialboxError(
-                    "registered type %s does not match type of field %s" % (
-                        numpy2TypeID(field.dtype), info.type))
+        field, info = self.__allocate_or_check_field(name, field)
 
         #
         # Extract strides and convert to unit-strides
@@ -811,7 +797,7 @@ class Serializer(object):
         :type field: numpy.array
         :param name: Name of the file
         :type name: str
-        :raises SerialboxError: Archive could not be dedcuded or deserialization failed
+        :raises SerialboxError: Archive could not be deduced or deserialization failed
         """
         strides, num_strides = Serializer.__extract_strides(field)
         dims, num_dims = Serializer.__extract_dims(field)

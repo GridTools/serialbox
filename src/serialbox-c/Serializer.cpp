@@ -391,7 +391,7 @@ void serialboxSerializerReadAsync(serialboxSerializer_t* serializer, const char*
 
   try {
     serialbox::StorageView storageView(
-        internal::makeStorageView(ser, name, originPtr, strides, numStrides));
+        internal::makeStorageView(ser, name, originPtr, strides, numStrides)); 
     ser->readAsync(name, *sp, storageView);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());

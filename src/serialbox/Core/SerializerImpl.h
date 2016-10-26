@@ -22,9 +22,12 @@
 #include "serialbox/Core/SavepointVector.h"
 #include "serialbox/Core/StorageView.h"
 #include <boost/filesystem.hpp>
-#include <future>
 #include <iosfwd>
+
+#ifdef SERIALBOX_ASYNC_API
+#include <future>
 #include <thread>
+#endif
 
 namespace serialbox {
 
@@ -347,7 +350,8 @@ public:
   /// separate thread which may be part of a thread pool) meaning this function immediately returns.
   /// To synchronize all threads, use SerializerImpl::waitForAll.
   ///
-  /// If the archive is not thread-safe, the method falls back to synchronous execution
+  /// If the archive is not thread-safe or if the library was not configured with
+  /// `SERIALBOX_ASYNC_API` the method falls back to synchronous execution.
   ///
   /// \param name           Name of the field
   /// \param savepoint      Savepoint at which the field will be deserialized
@@ -418,8 +422,8 @@ protected:
   bool upgradeMetaData();
 
   /// \brief Implementation of SerializerImpl::readAsync
-  int readAsyncImpl(const std::string& name, const SavepointImpl& savepoint,
-                    StorageView& storageView);
+  void readAsyncImpl(const std::string name, const SavepointImpl savepoint,
+                     StorageView storageView);
 
 protected:
   OpenModeKind mode_;
@@ -433,8 +437,6 @@ protected:
 
   std::unique_ptr<Archive> archive_;
 
-  std::vector<std::future<int>> tasks_;
-
   // This variable can take three values:
   //
   //  0: the variable is not yet initialized -> the serialization is enabled if the environment
@@ -446,6 +448,10 @@ protected:
   //
   // The value is initialized to 0
   static int enabled_;
+
+#ifdef SERIALBOX_ASYNC_API
+  std::vector<std::future<void>> tasks_;
+#endif
 };
 
 /// @}

@@ -504,6 +504,7 @@ TEST_F(SerializerImplUtilityTest, toString) {
   EXPECT_NE(ss.str().find("SavepointVector"), std::string::npos);
 }
 
+#ifdef SERIALBOX_ASYNC_API
 TEST_F(SerializerImplUtilityTest, AsyncRead) {
   using Storage = Storage<double>;
   Storage storage(Storage::ColMajor, {10, 15, 20}, Storage::random);
@@ -538,13 +539,14 @@ TEST_F(SerializerImplUtilityTest, AsyncRead) {
     ASSERT_TRUE(Storage::verify(storage_1, storage));
     ASSERT_TRUE(Storage::verify(storage_2, storage));
     ASSERT_TRUE(Storage::verify(storage_3, storage));
-
+    
     s_read.readAsync("field", sp, sv_1);
     s_read.readAsync("field", sp, sv_2);
     s_read.readAsync("field-XXX", sp, sv_3);
     ASSERT_THROW(s_read.waitForAll(), Exception);
   }
 }
+#endif
 
 //===------------------------------------------------------------------------------------------===//
 //     Read/Write tests

@@ -235,22 +235,28 @@ void SerializerImpl::readSliced(const std::string& name, const SavepointImpl& sa
   this->read(name, savepoint, storageView);
 }
 
-int SerializerImpl::readAsyncImpl(const std::string& name, const SavepointImpl& savepoint,
-                                  StorageView& storageView) {
+void SerializerImpl::readAsyncImpl(const std::string name, const SavepointImpl savepoint,
+                                   StorageView storageView) {
   this->read(name, savepoint, storageView);
-  return 1;
 }
 
 void SerializerImpl::readAsync(const std::string& name, const SavepointImpl& savepoint,
                                StorageView& storageView) {
+#ifdef SERIALBOX_ASYNC_API
   if(!archive_->isReadingThreadSafe())
     this->read(name, savepoint, storageView);
   else
-    tasks_.push_back(std::async(std::launch::async, &SerializerImpl::readAsyncImpl, this,
-                                std::ref(name), std::ref(savepoint), std::ref(storageView)));
+    // Bad things can happen if we forward the refrences and directly call the SerializerImpl::read,
+    // we thus just make a copy of the arguments.
+    tasks_.emplace_back(std::async(std::launch::async, &SerializerImpl::readAsyncImpl, this,
+                                   name, savepoint, storageView));
+#else
+  this->read(name, savepoint, storageView);
+#endif
 }
 
 void SerializerImpl::waitForAll() {
+#ifdef SERIALBOX_ASYNC_API
   try {
     for(auto& task : tasks_)
       task.get();
@@ -259,6 +265,7 @@ void SerializerImpl::waitForAll() {
     throw Exception(e.what());
   }
   tasks_.clear();
+#endif
 }
 
 //===------------------------------------------------------------------------------------------===//

@@ -328,7 +328,8 @@ void serialboxSerializerReadSliced(serialboxSerializer_t* serializer, const char
  * (potentially in a separate thread which may be part of a thread pool) meaning this function 
  * immediately returns. To synchronize all threads, use \ref serialboxSerializerWaitForAll.
  * 
- * If the archive is not thread-safe, the method falls back to synchronous execution
+ * If the archive is not thread-safe or if the library was not configured with `SERIALBOX_ASYNC_API`
+ * the method falls back to synchronous execution.
  *
  * \param name         Name of the field
  * \param savepoint    Savepoint to at which the field will be serialized

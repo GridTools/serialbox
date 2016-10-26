@@ -49,10 +49,11 @@ message(STATUS "Git HEAD revision: ${GIT_SHA1}")
 #---------------------------------------- User options ---------------------------------------------
 
 option(SERIALBOX_BUILD_SHARED "Build shared libraries" ON)
-option(SERIALBOX_LOGGING "Enable logging" ON)
 option(SERIALBOX_ENABLE_C "Build C Interface" ON)
 option(SERIALBOX_ENABLE_PYTHON "Build Python Interface" ${SERIALBOX_ENABLE_C})
 option(SERIALBOX_ENABLE_FORTRAN "Build Fortran Interface" OFF)
+option(SERIALBOX_LOGGING "Enable logging" ON)
+option(SERIALBOX_ASYNC_API "Enable the asynchronous API" ON)
 option(SERIALBOX_EXAMPLES "Build example exectuables" ON)
 
 option(SERIALBOX_TESTING "Build unit-test executables" ON)
@@ -153,6 +154,10 @@ endif()
 if(NOT(SERIALBOX_LOGGING))
   add_definitions(-DSERIALBOX_DISABLE_LOGGING)
 endif()
+
+if(SERIALBOX_ASYNC_API)
+  add_definitions(-DSERIALBOX_ASYNC_API)
+endif(SERIALBOX_ASYNC_API)
 
 ## Third party libraries
 set(SERIALBOX_EXTERNAL_LIBRARIES)
@@ -430,6 +435,9 @@ endif()
 if(SERIALBOX_CODE_COVERAGE)
   include(Coverage)
   enable_coverage(${CMAKE_BINARY_DIR})
+
+  set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} 
+                                   ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})
 endif(SERIALBOX_CODE_COVERAGE)
 
 #---------------------------------------- Compilation ----------------------------------------------

@@ -323,31 +323,40 @@ class TestSerializer(unittest.TestCase):
         self.assertTrue(np.allclose(field_float32_output, field_float32))
         self.assertTrue(np.allclose(field_float64_output, field_float64))
 
-    def test_stateless_serialization(self):
-        field_input = np.random.rand(2, 2, 2)
-        field_output = np.random.rand(2, 2, 2)
+    def test_write_and_read_async(self):
+        ser_write = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
+
+        Logging.enable()
 
         #
-        # Read & write from file (Binary archive)
+        # Setup fields
         #
-        Serializer.to_file("field", field_input, os.path.join(self.path, "test.dat"))
-        Serializer.from_file("field", field_output, os.path.join(self.path, "test.dat"))
-        self.assertTrue(np.allclose(field_input, field_output))
+        field = np.random.rand(5, 6, 7)
+        sp = Savepoint("sp")
 
         #
-        # Read & write from file (NetCDF archive)
+        # Write field
         #
-        if "SERIALBOX_HAS_NETCDF" in Config().compile_options:
-            Serializer.to_file("field", field_input, os.path.join(self.path, "test.nc"))
-            Serializer.from_file("field", field_output, os.path.join(self.path, "test.nc"))
-            self.assertTrue(np.allclose(field_input, field_output))
+        ser_write.write("field", sp, field)
 
         #
-        # Invalid file extension
+        # Read fields asynchronously
         #
-        self.assertRaises(SerialboxError, Serializer.to_file, "field", field_input, "test.X")
+        ser_read = Serializer(OpenModeKind.Read, self.path, "field", self.archive)
+        field_1 = ser_read.read_async("field", sp)
+        field_2 = ser_read.read_async("field", sp)
+        field_3 = ser_read.read_async("field", sp)
+        ser_read.wait_for_all()
 
-    def test_sliced_serialization(self):
+        #
+        # Validate
+        #
+        self.assertTrue(np.allclose(field, field_1))
+        self.assertTrue(np.allclose(field, field_2))
+        self.assertTrue(np.allclose(field, field_3))
+
+
+    def test_write_and_read_sliced(self):
         field_input = np.random.rand(10, 15, 20)
 
         #
@@ -379,6 +388,30 @@ class TestSerializer(unittest.TestCase):
         #
         self.assertRaises(SerialboxError, ser_read.read_slice, "field", Savepoint("sp"),
                           Slice[:, :, :, :])
+
+    def test_write_and_read_stateless(self):
+        field_input = np.random.rand(2, 2, 2)
+        field_output = np.random.rand(2, 2, 2)
+
+        #
+        # Read & write from file (Binary archive)
+        #
+        Serializer.to_file("field", field_input, os.path.join(self.path, "test.dat"))
+        Serializer.from_file("field", field_output, os.path.join(self.path, "test.dat"))
+        self.assertTrue(np.allclose(field_input, field_output))
+
+        #
+        # Read & write from file (NetCDF archive)
+        #
+        if "SERIALBOX_HAS_NETCDF" in Config().compile_options:
+            Serializer.to_file("field", field_input, os.path.join(self.path, "test.nc"))
+            Serializer.from_file("field", field_output, os.path.join(self.path, "test.nc"))
+            self.assertTrue(np.allclose(field_input, field_output))
+
+        #
+        # Invalid file extension
+        #
+        self.assertRaises(SerialboxError, Serializer.to_file, "field", field_input, "test.X")
 
 if __name__ == "__main__":
     unittest.main()
