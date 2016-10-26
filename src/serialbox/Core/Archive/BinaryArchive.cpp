@@ -162,6 +162,43 @@ const std::string BinaryArchive::Name = "Binary";
 
 const int BinaryArchive::Version = 0;
 
+BinaryArchive::BinaryArchive(OpenModeKind mode, const std::string& directory,
+                             const std::string& prefix, bool skipMetaData)
+    : mode_(mode), directory_(directory), prefix_(prefix), hashAlgorithmName_(HashAlgorithm::Name),
+      json_() {
+
+  LOG(info) << "Creating BinaryArchive (mode = " << mode_ << ") from directory " << directory_;
+
+  metaDatafile_ = directory_ / ("ArchiveMetaData-" + prefix_ + ".json");
+
+  try {
+    bool isDir = boost::filesystem::is_directory(directory_);
+
+    switch(mode_) {
+    // We are reading, the directory needs to exist
+    case OpenModeKind::Read:
+      if(!isDir)
+        throw Exception("no such directory: '%s'", directory_.string());
+      break;
+    // We are writing or appending, create directories if it they don't exist
+    case OpenModeKind::Write:
+    case OpenModeKind::Append:
+      if(!isDir)
+        boost::filesystem::create_directories(directory_);
+      break;
+    }
+  } catch(boost::filesystem::filesystem_error& e) {
+    throw Exception(e.what());
+  }
+
+  if(!skipMetaData)
+    readMetaDataFromJson();
+
+  // Remove all files
+  if(mode_ == OpenModeKind::Write)
+    clear();
+}
+
 BinaryArchive::~BinaryArchive() {}
 
 void BinaryArchive::readMetaDataFromJson() {
@@ -197,9 +234,9 @@ void BinaryArchive::readMetaDataFromJson() {
                     archiveVersion, BinaryArchive::Version);
 
   // Appending with different hash algorithms doesn't work
-  if(mode_ == OpenModeKind::Append && hashAlgorithm != HashAlgorithm::Name)
+  if(mode_ == OpenModeKind::Append && hashAlgorithm != hashAlgorithmName_)
     throw Exception("binary archive uses hash algorithm '%s' but library was compiled with '%s'",
-                    hashAlgorithm, HashAlgorithm::Name);
+                    hashAlgorithm, hashAlgorithmName_);
 
   // Deserialize FieldTable
   for(auto it = json_["fields_table"].begin(); it != json_["fields_table"].end(); ++it) {
@@ -223,7 +260,7 @@ void BinaryArchive::writeMetaDataToJson() {
       100 * SERIALBOX_VERSION_MAJOR + 10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
   json_["archive_name"] = BinaryArchive::Name;
   json_["archive_version"] = BinaryArchive::Version;
-  json_["hash_algorithm"] = HashAlgorithm::Name;
+  json_["hash_algorithm"] = hashAlgorithmName_;
 
   // FieldsTable
   for(auto it = fieldTable_.begin(), end = fieldTable_.end(); it != end; ++it) {
@@ -240,42 +277,6 @@ void BinaryArchive::writeMetaDataToJson() {
 
   fs << json_.dump(2) << std::endl;
   fs.close();
-}
-
-BinaryArchive::BinaryArchive(OpenModeKind mode, const std::string& directory,
-                             const std::string& prefix, bool skipMetaData)
-    : mode_(mode), directory_(directory), prefix_(prefix), json_() {
-
-  LOG(info) << "Creating BinaryArchive (mode = " << mode_ << ") from directory " << directory_;
-
-  metaDatafile_ = directory_ / ("ArchiveMetaData-" + prefix_ + ".json");
-
-  try {
-    bool isDir = boost::filesystem::is_directory(directory_);
-
-    switch(mode_) {
-    // We are reading, the directory needs to exist
-    case OpenModeKind::Read:
-      if(!isDir)
-        throw Exception("no such directory: '%s'", directory_.string());
-      break;
-    // We are writing or appending, create directories if it they don't exist
-    case OpenModeKind::Write:
-    case OpenModeKind::Append:
-      if(!isDir)
-        boost::filesystem::create_directories(directory_);
-      break;
-    }
-  } catch(boost::filesystem::filesystem_error& e) {
-    throw Exception(e.what());
-  }
-
-  if(!skipMetaData)
-    readMetaDataFromJson();
-
-  // Remove all files
-  if(mode_ == OpenModeKind::Write)
-    clear();
 }
 
 void BinaryArchive::updateMetaData() { writeMetaDataToJson(); }

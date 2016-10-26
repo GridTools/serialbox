@@ -56,14 +56,15 @@ std::string SavepointImpl::toString() const {
 }
 
 std::ostream& operator<<(std::ostream& stream, const SavepointImpl& s) {
-  stream << s.name_;
-  if(!s.metaInfo().empty()) {
-    stream << " [ ";
-    for(auto it = s.metaInfo_->begin(), end = s.metaInfo_->end(); it != end; ++it)
-      stream << it->first << " = " << it->second.toString() << " ";
-    stream << "]";
-  }
-  return stream;
+  std::stringstream ss;
+  ss << s.name_;
+  ss << " [ ";
+  for(auto it = s.metaInfo_->begin(), end = s.metaInfo_->end(); it != end; ++it)
+    ss << it->first << " = " << it->second.toString() << ", ";
+  std::string str = ss.str();
+  str[str.size() - 2] = ' ';
+  str[str.size() - 1] = ']';
+  return (stream << str);
 }
 
 } // namespace serialbox

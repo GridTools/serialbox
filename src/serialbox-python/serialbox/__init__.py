@@ -31,6 +31,7 @@ if version_info < (3, 4):
 #
 try:
     import numpy
+
     del numpy
 except ImportError:
     raise Exception("Serialbox requires numpy")
@@ -43,11 +44,12 @@ from .type import TypeID, OpenModeKind
 from .error import SerialboxError
 from .logging import Logging
 from .serializer import Serializer
-from .savepoint import Savepoint
+from .savepoint import Savepoint, SavepointCollection
 from .metainfomap import MetaInfoMap
 from .fieldmetainfo import FieldMetaInfo
 from .archive import Archive
 from .slice import Slice
 
 __all__ = ['Config', 'TypeID', 'SerialboxError', 'Logging', 'Serializer', 'Savepoint',
-           'MetaInfoMap', 'FieldMetaInfo', 'OpenModeKind', 'Archive', 'Slice']
+           'SavepointCollection', 'MetaInfoMap', 'FieldMetaInfo', 'OpenModeKind', 'Archive',
+           'Slice']

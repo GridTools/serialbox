@@ -12,4 +12,5 @@ cmake_minimum_required(VERSION 3.1)
 serialbox_add_python_example(example-01-laplacian.py)
 serialbox_add_python_example(example-02-stateless.py)
 serialbox_add_python_example(example-03-slice.py)
-
+serialbox_add_python_example(example-04-savepoints.py)
+serialbox_add_python_example(Field.json)

@@ -109,7 +109,7 @@ class TestSerializer(unittest.TestCase):
         Serializer.enable()
         self.assertEqual(Serializer.status(), Serializer.Enabled)
 
-    def test_savepoint(self):
+    def test_savepoint_list(self):
         ser = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
 
         #
@@ -128,7 +128,7 @@ class TestSerializer(unittest.TestCase):
         #
         # Get savepoint vector
         #
-        savepoints = ser.savepoints()
+        savepoints = ser.savepoint_list()
         self.assertEqual(savepoints[0], sp1)
         self.assertEqual(savepoints[1], sp2)
         self.assertEqual(savepoints[2], sp3)
@@ -143,6 +143,92 @@ class TestSerializer(unittest.TestCase):
         savepoints_with_name = ser.get_savepoint("sp")
         self.assertTrue(sp2 in savepoints_with_name)
         self.assertTrue(sp3 in savepoints_with_name)
+        ser.update_meta_data()
+
+        #
+        # Check savepoint list gets cached
+        #
+        ser = Serializer(OpenModeKind.Read, self.path, "field", self.archive)
+
+        savepoint_list_1 = ser.savepoint_list()
+        savepoint_list_2 = ser.savepoint_list()
+        self.assertEqual(id(savepoint_list_1), id(savepoint_list_2))
+
+    def test_savepoint(self):
+        ser = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
+        ser.register_savepoint(Savepoint('sp', {"key": 1}))
+        ser.register_savepoint(Savepoint('sp', {"key": 2}))
+        ser.register_savepoint(Savepoint('sp', {"key": 2, "key2": 5.0}))
+
+        ser.register_savepoint(Savepoint('sp-2', {"key": "value", "meta info": True}))
+        ser.register_savepoint(Savepoint('sp-2', {"key": "value", "1": 1}))
+
+        # Check type
+        self.assertTrue(isinstance(ser.savepoint, SavepointCollection))
+
+        #
+        # Query savepoint: Case 1 : Access via __getattr__
+        #
+
+        # Access sp
+        self.assertEqual(ser.savepoint.sp.key[1].as_savepoint(), Savepoint('sp', {"key": 1}))
+        self.assertEqual(ser.savepoint.sp.key[2].key2[5.0].as_savepoint(),
+                         Savepoint('sp',  {"key": 2, "key2": 5.0}))
+        self.assertEqual(ser.savepoint[0], Savepoint('sp', {"key": 1}))
+
+        # Access sp-2
+        self.assertEqual(ser.savepoint.sp_2.key["value"].meta_info[True].as_savepoint(),
+                         Savepoint('sp-2', {"key": "value", "meta info": True}))
+
+        self.assertEqual(ser.savepoint.sp_2.key["value"]._1[1].as_savepoint(),
+                         Savepoint('sp-2', {"key": "value", "1": 1}))
+
+        # Mixed
+        self.assertEqual(ser.savepoint['sp-2'].key["value"]["1"][1].as_savepoint(),
+                         Savepoint('sp-2', {"key": "value", "1": 1}))
+
+        #
+        # Query savepoint: Case 2: Access only with __getitem__
+        #
+
+        # Access sp
+        self.assertEqual(ser.savepoint['sp']['key'][1].as_savepoint(), Savepoint('sp', {"key": 1}))
+        self.assertEqual(ser.savepoint['sp']['key'][2]['key2'][5.0].as_savepoint(),
+                         Savepoint('sp',  {"key": 2, "key2": 5.0}))
+        self.assertEqual(ser.savepoint[0], Savepoint('sp', {"key": 1}))
+
+        # Access sp-2
+        self.assertEqual(ser.savepoint['sp-2']['key']['value']['meta info'][True].as_savepoint(),
+                         Savepoint('sp-2', {"key": "value", "meta info": True}))
+        self.assertEqual(ser.savepoint['sp-2']['key']['value']['1'][1].as_savepoint(),
+                         Savepoint('sp-2', {"key": "value", "1": 1}))
+
+        #
+        # Errors
+        #
+
+        # Ambiguous match
+        self.assertRaises(SerialboxError, ser.savepoint.sp.key[2].as_savepoint)
+        self.assertEqual(len(ser.savepoint.sp.key[2].savepoints()), 2)
+
+        # TopCollection not unqique -> Error
+        self.assertRaises(SerialboxError, ser.savepoint.as_savepoint)
+
+        # NamedCollection not unqique -> Error
+        self.assertRaises(SerialboxError, ser.savepoint.sp.as_savepoint)
+
+        # Savepoint no existing -> Error
+        self.assertRaises(SerialboxError, ser.savepoint.__getattr__, 'spX')
+
+        # MetaInfo key not existing -> Error
+        self.assertRaises(SerialboxError, ser.savepoint.sp.__getattr__, 'keyX')
+
+        # MetaInfo value not existing -> Error
+        self.assertRaises(SerialboxError, ser.savepoint.sp.key.__getitem__, 3)
+
+        # Indexing not supported -> Error
+        self.assertRaises(SerialboxError, ser.savepoint.sp.key[1].__getitem__, 3)
+
 
     def test_field(self):
         ser_write = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
@@ -217,7 +303,7 @@ class TestSerializer(unittest.TestCase):
         ser_read = Serializer(OpenModeKind.Read, self.path, "field", self.archive)
         field1_output = ser_read.read("field1", sp)
         field2_output = ser_read.read("field2", sp)
-        field3_output = ser_read.read("field3", sp)
+        field3_output = ser_read.read("field3", ser_read.savepoint.sp)
         ser_read.read("field3", sp, field3_output_allocted)
 
         #
@@ -325,8 +411,6 @@ class TestSerializer(unittest.TestCase):
 
     def test_write_and_read_async(self):
         ser_write = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
-
-        Logging.enable()
 
         #
         # Setup fields

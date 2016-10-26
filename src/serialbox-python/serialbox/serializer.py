@@ -22,7 +22,7 @@ from .common import get_library, extract_string
 from .error import invoke, SerialboxError
 from .fieldmetainfo import FieldMetaInfo, FieldMetaInfoImpl
 from .metainfomap import MetaInfoMap, MetaInfoImpl, ArrayOfStringImpl
-from .savepoint import Savepoint, SavepointImpl
+from .savepoint import Savepoint, SavepointImpl, SavepointTopCollection, SavepointCollection
 from .type import *
 
 lib = get_library()
@@ -240,6 +240,11 @@ class Serializer(object):
         self.__serializer = invoke(lib.serialboxSerializerCreate, modeint, dirstr, prefixstr,
                                    archivestr)
 
+        #
+        # Savepoint list
+        #
+        self.__savepoint_list = None
+
     # ===----------------------------------------------------------------------------------------===
     #   Utility
     # ==-----------------------------------------------------------------------------------------===
@@ -348,6 +353,9 @@ class Serializer(object):
         :type savepoint: Savepoint
         :raises SerialboxError: Savepoint already exists within the Serializer
         """
+        if self.mode == OpenModeKind.Read:
+            raise SerialboxError("registering savepoints is not permitted in OpenModeKind.Read")
+
         if not invoke(lib.serialboxSerializerAddSavepoint, self.__serializer, savepoint.impl()):
             raise SerialboxError(
                 "savepoint '%s' already exists withing the Serializer" % (savepoint.__str__()))
@@ -374,7 +382,7 @@ class Serializer(object):
         :return: List of registered Savepoint(s) identified  by `name`
         :rtype: list[Savepoint]
         """
-        return [sp for sp in self.savepoints() if sp.name == name]
+        return [sp for sp in self.savepoint_list() if sp.name == name]
 
     def fields_at_savepoint(self, savepoint):
         """Get a list of the registered fieldnames at `savepoint`.
@@ -393,7 +401,7 @@ class Serializer(object):
         invoke(lib.serialboxArrayOfStringDestroy, array)
         return list_array
 
-    def savepoints(self):
+    def savepoint_list(self):
         """ Get a list of registered savepoints within the Serializer.
 
         The Savepoints in the list are copy-constructed from the Savepoints in the Serializer and
@@ -402,16 +410,47 @@ class Serializer(object):
         :return: List of registered savepoints
         :rtype: list[Savepoint]
         """
-        vec_savepoint = lib.serialboxSerializerGetSavepointVector(self.__serializer)
-        num_savepoints = lib.serialboxSerializerGetNumSavepoints(self.__serializer)
 
-        list_savepoint = []
-        for i in range(num_savepoints):
-            list_savepoint += [Savepoint('',
-                                         impl=invoke(lib.serialboxSavepointCreateFromSavepoint,
-                                                     vec_savepoint[i].contents))]
-        invoke(lib.serialboxSerializerDestroySavepointVector, vec_savepoint, num_savepoints)
-        return list_savepoint
+        if self.__savepoint_list:
+            return self.__savepoint_list
+        else:
+            #
+            # Query the savepoint vector
+            #
+            vec_savepoint = lib.serialboxSerializerGetSavepointVector(self.__serializer)
+            num_savepoints = lib.serialboxSerializerGetNumSavepoints(self.__serializer)
+
+            #
+            # Copy the savepoint vector
+            #
+            list_of_savepoints = []
+            for i in range(num_savepoints):
+                list_of_savepoints += [Savepoint('',
+                                                 impl=invoke(lib.serialboxSavepointCreateFromSavepoint,
+                                                             vec_savepoint[i].contents))]
+            #
+            # Destroy the savepoint vector
+            #
+            invoke(lib.serialboxSerializerDestroySavepointVector, vec_savepoint, num_savepoints)
+
+            #
+            # If we are in Read mode, we can safely cache the savepoint list
+            #
+            if self.mode == OpenModeKind.Read:
+                self.__savepoint_list = list_of_savepoints
+
+            return list_of_savepoints
+
+    @property
+    def savepoint(self):
+        """ Access the savepoint collection of this Serializer
+
+        TODO: Describe the mapping etc..
+
+        :return: Collection of all savepoints
+        :rtype: SavepointCollection
+        """
+        return SavepointTopCollection(self.savepoint_list())
 
     # ===----------------------------------------------------------------------------------------===
     #    Register and Query Fields
@@ -427,6 +466,9 @@ class Serializer(object):
 
         :raises SerialboxError: Field with given name already exists within the Serializer
         """
+        if self.mode == OpenModeKind.Read:
+            raise SerialboxError("registering fields is not permitted in OpenModeKind.Read")
+
         namestr = extract_string(name)[0]
         if not invoke(lib.serialboxSerializerAddField, self.__serializer, namestr,
                       fieldmetainfo.impl()):
@@ -495,6 +537,15 @@ class Serializer(object):
         num_dims = c_int(len(field.shape))
         return dims, num_dims,
 
+    @staticmethod
+    def __extract_savepoint(savepoint):
+        """Extract the savepoint of a savepoint collection
+        """
+        if isinstance(savepoint, SavepointCollection):
+            return savepoint.as_savepoint()
+        else:
+            return savepoint
+
     def __allocate_or_check_field(self, name, field):
         """Allocate or check the numpy field for consistency
         """
@@ -537,6 +588,8 @@ class Serializer(object):
         if self.mode == OpenModeKind.Read:
             raise SerialboxError("write operations are not permitted in OpenModeKind.Read")
 
+        savepoint = self.__extract_savepoint(savepoint)
+
         if not self.has_field(name):
             if register_field:
                 info = FieldMetaInfo(numpy2TypeID(field.dtype), list(field.shape))
@@ -577,6 +630,8 @@ class Serializer(object):
         """
         if self.mode != OpenModeKind.Read:
             raise SerialboxError("read operations are not permitted in OpenModeKind.%s" % self.mode)
+
+        savepoint = self.__extract_savepoint(savepoint)
 
         #
         # Allocate or check the field
@@ -627,6 +682,8 @@ class Serializer(object):
         if self.mode != OpenModeKind.Read:
             raise SerialboxError("read operations are not permitted in OpenModeKind.%s" % self.mode)
 
+        savepoint = self.__extract_savepoint(savepoint)
+
         #
         # Allocate or check the field
         #
@@ -672,6 +729,7 @@ class Serializer(object):
 
         :raises SerialboxError: Deserialization failed
         """
+        savepoint = self.__extract_savepoint(savepoint)
 
         if self.mode != OpenModeKind.Read:
             raise SerialboxError("read operations are not permitted in OpenModeKind.%s" % self.mode)

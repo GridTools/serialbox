@@ -538,6 +538,10 @@ bool SerializerImpl::upgradeMetaData() {
 
   // Construct archive but don't parse the meta-data (we will do it ourselves below)
   archive_ = std::make_unique<BinaryArchive>(mode_, directory_.string(), prefix_, true);
+  
+  // Old serialbox always uses SHA256
+  static_cast<BinaryArchive*>(archive_.get())->setHashAlgorithmName(SHA256::Name);
+  
   BinaryArchive::FieldTable& fieldTable = static_cast<BinaryArchive*>(archive_.get())->fieldTable();
 
   if(oldJson.count("OffsetTable")) {

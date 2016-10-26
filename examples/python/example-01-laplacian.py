@@ -179,7 +179,7 @@ def read():
     # Access the savepoints. The savepoints are ordered in the order they were inserted. For a more
     # elaborate example on how to query savepoints, see example-04-savepoints.py.
     #
-    savepoints = serializer.savepoints()
+    savepoints = serializer.savepoint_list()
     print("Savepoints:")
     for sp in savepoints:
         print(" ", sp)

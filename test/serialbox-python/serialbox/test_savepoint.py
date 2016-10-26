@@ -81,6 +81,5 @@ class TestSavepoint(unittest.TestCase):
         sp_to_clone.metainfo.clear()
         self.assertEqual(sp_clone.metainfo.to_dict(), {"key1": 5.0})
 
-
 if __name__ == "__main__":
     unittest.main()
