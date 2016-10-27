@@ -187,32 +187,30 @@ def register_library(library):
 
 
 class Serializer(object):
-    """Serializer implementation of the Python Interface.
+    """Initialize the Serializer and prepare it to perform input/output operations.
+
+    The serializer is attached to a specific `directory` and to a specific `prefix`, with which
+    all files read and written will start. There are three modes to open a serializer: `Read`,
+    `Write` and `Append` (see :class:`OpenModeKind`). `Read` will give a read-only access to the
+    serialized data; `Write` will erase all files of a previous run of a serializer with same
+    `directory` and `prefix`; `Append` will import all existing information and allow the user
+    to add more data.
+
+    :param mode: Mode of the Serializer
+    :type mode: OpenModeKind
+    :param directory: The directory where the files will be stored (will be created if
+                      necessary)
+    :type directory: str
+    :param prefix: The prefix of the files
+    :type prefix: str
+    :param archive: String used to construct the Archive
+                    (see :func:`serialbox.Archive.registered_archives`)
+    :type archive: str
     """
     Enabled = 1
     Disabled = -1
 
     def __init__(self, mode, directory, prefix, archive="Binary"):
-        """Initialize the Serializer and prepare it to perform input/output operations.
-
-        The serializer is attached to a specific `directory` and to a specific `prefix`, with which
-        all files read and written will start. There are three modes to open a serializer: `Read`,
-        `Write` and `Append` (see :class:`OpenModeKind`). `Read` will give a read-only access to the
-        serialized data; `Write` will erase all files of a previous run of a serializer with same
-        `directory` and `prefix`; `Append` will import all existing information and allow the user
-        to add more data.
-
-        :param mode: Mode of the Serializer
-        :type mode: OpenModeKind
-        :param directory: The directory where the files will be stored (will be created if
-                          necessary)
-        :type directory: str
-        :param prefix: The prefix of the files
-        :type prefix: str
-        :param archive: String used to construct the Archive
-                        (see :func:`serialbox.Archive.registered_archives`)
-        :type archive: str
-        """
         self.__serializer = None
 
         #

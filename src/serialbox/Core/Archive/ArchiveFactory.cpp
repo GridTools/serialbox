@@ -104,7 +104,7 @@ void ArchiveFactory::writeToFile(std::string filename, const StorageView& storag
   else
     throw Exception("cannot use Archive '%s': archive does not exist or is not registred",
                     filename);
-  
+
   LOG(info) << "Successfully wrote field \"" << fieldname << "\" to " << filename;
 }
 
@@ -114,10 +114,10 @@ void ArchiveFactory::writeToFile(std::string filename, const StorageView& storag
 
 void ArchiveFactory::readFromFile(std::string filename, StorageView& storageView,
                                   std::string archiveName, std::string fieldname) {
-  
+
   LOG(info) << "Attempting to read field \"" << fieldname << "\" via \"" << archiveName
             << "\" archive from " << filename;
-  
+
   if(archiveName == BinaryArchive::Name) {
     BinaryArchive::readFromFile(filename, storageView);
   }
@@ -129,8 +129,8 @@ void ArchiveFactory::readFromFile(std::string filename, StorageView& storageView
   else
     throw Exception("cannot use Archive '%s': archive does not exist or is not registred",
                     filename);
-  
-  LOG(info) << "Successfully read field \"" << fieldname << "\" to " << filename;  
+
+  LOG(info) << "Successfully read field \"" << fieldname << "\" to " << filename;
 }
 
 } // namespace serialbox

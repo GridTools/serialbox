@@ -18,7 +18,7 @@
 /**
  * \defgroup serialboxC serialbox-c
  * \brief C-Interface of Serialbox
- * 
+ *
  * \ingroup frontend
  */
 

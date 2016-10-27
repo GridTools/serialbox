@@ -21,11 +21,10 @@
 extern "C" {
 #endif
 
-
 /**
  * \ingroup serialboxC
  * @{
- * 
+ *
  * \defgroup array Array definitions
  * @{
  */

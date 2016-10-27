@@ -24,7 +24,7 @@ namespace serialbox {
 
 /// \brief Implementation of MD5 cryptographic hash algorithm
 ///
-/// \see 
+/// \see
 ///   https://www.openssl.org/docs/manmaster/crypto/MD2.html
 struct MD5 {
   MD5() = delete;

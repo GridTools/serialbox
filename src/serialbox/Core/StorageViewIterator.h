@@ -69,7 +69,7 @@ public:
 
       if(slice_.empty())
         index_.resize(dims_.size(), 0);
-      else 
+      else
         for(const auto& triple : slice.sliceTriples())
           index_.push_back(triple.start);
 
@@ -125,7 +125,7 @@ public:
         // Consecutively increment the dimensions (column-major order) with associated step
         int size = index_.size();
         const auto& triples = slice_.sliceTriples();
-        
+
         for(int i = 0; i < size; ++i)
           if((index_[i] += triples[i].step) < triples[i].stop)
             break;
@@ -135,7 +135,7 @@ public:
             if(SERIALBOX_BUILTIN_UNLIKELY(i == size - 1))
               end_ = true;
           }
-        }
+      }
 
       // Compute the current data pointer
       curPtr_ = originPtr_ + computeCurrentIndex();

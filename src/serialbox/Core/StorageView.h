@@ -138,7 +138,7 @@ public:
 
   /// \brief Size of the allocated, sliced data (without padding) in Bytes
   std::size_t sizeInBytes() const noexcept;
-  
+
 private:
   Byte* originPtr_;          ///< Pointer to the origin of the data (i.e skipping initial padding)
   TypeID type_;              ///< TypeID of the storage

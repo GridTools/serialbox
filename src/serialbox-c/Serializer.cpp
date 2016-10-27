@@ -12,9 +12,9 @@
  *
 \*===------------------------------------------------------------------------------------------===*/
 
+#include "serialbox-c/Serializer.h"
 #include "serialbox-c/Logging.h"
 #include "serialbox-c/Savepoint.h"
-#include "serialbox-c/Serializer.h"
 #include "serialbox-c/Utility.h"
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Exception.h"
@@ -376,7 +376,7 @@ void serialboxSerializerReadSliced(serialboxSerializer_t* serializer, const char
     for(int i = 0; i < numStrides; ++i)
       sliceObj.sliceTriples().push_back({slice[3 * i], slice[3 * i + 1], slice[3 * i + 2]});
     storageView.setSlice(sliceObj);
-    
+
     ser->read(name, *sp, storageView);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
@@ -391,7 +391,7 @@ void serialboxSerializerReadAsync(serialboxSerializer_t* serializer, const char*
 
   try {
     serialbox::StorageView storageView(
-        internal::makeStorageView(ser, name, originPtr, strides, numStrides)); 
+        internal::makeStorageView(ser, name, originPtr, strides, numStrides));
     ser->readAsync(name, *sp, storageView);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());

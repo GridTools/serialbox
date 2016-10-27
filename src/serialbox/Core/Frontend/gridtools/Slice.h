@@ -25,7 +25,7 @@ namespace gridtools {
 ///
 /// The syntax follows closely the slicing syntax used in Python, the equivalent of
 /// `[start1:stop1:step1, ... ,startN:stopN:stepN]` is
-/// `Slice(start1, stop1, step1) ... (startN, stopN, stepN)` with one notable \b exception: The 
+/// `Slice(start1, stop1, step1) ... (startN, stopN, stepN)` with one notable \b exception: The
 /// full dimension `[:]` is represented as `Slice(0, -1)` this
 /// means `[:-1]` corresponds to `Slice(0, -2)`.
 ///

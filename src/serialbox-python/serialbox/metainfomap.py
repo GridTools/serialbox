@@ -593,7 +593,7 @@ class MetaInfoMap(object):
         invoke(lib.serialboxMetaInfoDestroy, self.__metainfomap)
 
     def __repr__(self):
-        return '<MetaInfoMap {0}>'.format(self.__str__())
+        return "<MetaInfoMap {0}>".format(self.__str__())
 
     def __str__(self):
         return invoke(lib.serialboxMetaInfoToString, self.__metainfomap).decode()
