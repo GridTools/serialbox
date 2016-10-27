@@ -355,7 +355,7 @@ public:
   ///   serializer::read
   ///
   template <class StorageType>
-  void read_sliced(const std::string& name, const savepoint& sp, StorageType& storage,
+  void read_slice(const std::string& name, const savepoint& sp, StorageType& storage,
                    Slice slice) {
     StorageView storageView(
         internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::value_type>::value,

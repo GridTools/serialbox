@@ -17,7 +17,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 //
-// Include gridtools headers
+// Include gridtools headers (Serialbox only supports C++11)
 //
 #define CXX11_ENABLED
 #define STRUCTURED_GRIDS
@@ -65,15 +65,16 @@ int main() {
     storage_t field_out(meta_data, "storage", -1);
 
     std::default_random_engine gen;
-    std::normal_distribution<double> dist(0.0, 1.0);
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
     for(int i = 0; i < N; ++i)
       for(int j = 0; j < M; ++j)
         for(int k = 0; k < K; ++k)
           field_in(i, j, k) = dist(gen);
 
     //
-    // Write the gridtools storage to disk. The archive will be deduced from the file extension.
-    // The written data can know also be read in C, Python and Fortran.
+    // Write the gridtools storage to disk. The archive will be deduced from the file extension 
+    // (here ".dat" implies the Binary archive). The written data can know also be read in C, Python
+    // and Fortran.
     //
     ser::serializer::to_file("field.dat", field_in);
 
@@ -99,3 +100,4 @@ int main() {
   }
   return 0;
 }
+

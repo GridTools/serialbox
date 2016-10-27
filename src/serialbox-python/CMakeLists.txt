@@ -21,8 +21,10 @@ file(GLOB_RECURSE SERIALBOX_PYTHON_SOURCE
      ${CMAKE_SOURCE_DIR}/src/serialbox-python/
      ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox/*.py)
 
-## Copy python code to python build dir
+## Copy python code to python build dir (this will fail if there are "dead" symlinks in the source 
+## tree from other builds, that's why we scan for broken links first)
 add_custom_target(SerialboxPython
+                  COMMAND find -L ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox -type l -delete
                   COMMAND ${CMAKE_COMMAND} -E copy_directory
                   ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox
                   ${CMAKE_BINARY_DIR}/src/serialbox-python/serialbox
@@ -33,7 +35,7 @@ add_dependencies(SerialboxCLibraryShared SerialboxPython)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox/ 
         DESTINATION python/serialbox
         FILES_MATCHING PATTERN "*.py"
-        PATTERN "*/__pycache__" EXCLUDE)
+        PATTERN "*__pycache__*" EXCLUDE)
 
 ## Create a symlink to the serialboxC sharedlibrary (this is NOT good code but it turns out creating
 ## symlinks to installed targets is really hard to to do with CMake... I tried ...) 

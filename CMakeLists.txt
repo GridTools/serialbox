@@ -56,21 +56,24 @@ option(SERIALBOX_LOGGING "Enable logging" ON)
 option(SERIALBOX_ASYNC_API "Enable the asynchronous API" ON)
 option(SERIALBOX_EXAMPLES "Build example exectuables" ON)
 
-option(SERIALBOX_TESTING "Build unit-test executables" ON)
-option(SERIALBOX_TESTING_GRIDTOOLS "Build GridTools Unitests" OFF)
-option(SERIALBOX_TESTING_STELLA "Build STELLA Unitests" OFF)
-option(SERIALBOX_TESTING_OLD_SERIALBOX "Build compatiblity unitests with old serialbox" OFF)
+option(SERIALBOX_TESTING "Build unittest executables" OFF)
+option(SERIALBOX_TESTING_GRIDTOOLS "Build gridtools unitests and examples" OFF)
+option(SERIALBOX_TESTING_STELLA "Build STELLA unitests" OFF)
+option(SERIALBOX_TESTING_OLD_SERIALBOX "Build compatiblity unitests against old serialbox" OFF)
 option(SERIALBOX_TESTING_DEATH_TESTS "Run death-tests" OFF)
 
 option(SERIALBOX_BENCHMARKING "Build benchmark exectuables" OFF)
-option(SERIALBOX_DOCUMENTATION "Create and install the documentation" OFF)
+option(SERIALBOX_DOCUMENTATION "Build and install the documentation" OFF)
 
 option(SERIALBOX_CODE_COVERAGE "Generate code coverage" OFF)
-option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" ON)
+option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" OFF)
   
 #---------------------------------------- CMake options --------------------------------------------
+
+## Perform checks to make sure we support the current compiler
+include(CheckCxxCompilerSupport)
  
-# Set C++ standard to C++11
+## Set C++ standard to C++11
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Cray")
   set(CXX11_FLAG "-h std=c++11")
 else()
@@ -92,14 +95,14 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -wd488")
 endif()
 
-# Set build type to RelWithDebInfo if nothing was specified (instead of Debug)
+# Set build type to Release if nothing was specified (instead of Debug)
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING 
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING 
       "Choose the type of build, options are: Debug Release RelWithDebInfo" FORCE)
-  message(STATUS "Setting build type to 'RelWithDebInfo' as none was specified")
+  message(STATUS "Setting build type to 'Release' as none was specified")
 endif(NOT CMAKE_BUILD_TYPE)
 
 # Clear all cmake generated files
@@ -161,6 +164,14 @@ endif(SERIALBOX_ASYNC_API)
 
 ## Third party libraries
 set(SERIALBOX_EXTERNAL_LIBRARIES)
+
+## Enable testing if a SERIALBOX_TESTING_* is set
+if(SERIALBOX_TESTING_GRIDTOOLS OR 
+   SERIALBOX_TESTING_STELLA OR 
+   SERIALBOX_TESTING_OLD_SERIALBOX OR 
+   SERIALBOX_TESTING_DEATH_TESTS)
+ set(SERIALBOX_TESTING ON)
+endif()
 
 #---------------------------------------- GTest ----------------------------------------------------
 if(SERIALBOX_TESTING)
@@ -253,7 +264,7 @@ if(SERIALBOX_ENABLE_PYTHON)
   
   # Python tests are only enabled by default if we can find "nose" and "numpy"
   set(ENABLE_PYTHON_TESTS OFF)
-  if(PYTHONINTERP_FOUND)
+  if(SERIALBOX_TESTING AND PYTHONINTERP_FOUND)
     include(FindPythonModule)
     find_python_module(nose)
     find_python_module(numpy)

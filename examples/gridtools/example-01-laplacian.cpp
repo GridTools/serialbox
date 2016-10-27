@@ -21,7 +21,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 //
-// Include gridtools headers
+// Include gridtools headers (Serialbox only supports C++11)
 //
 #define CXX11_ENABLED
 #define STRUCTURED_GRIDS
@@ -86,7 +86,7 @@ void write() {
   namespace ser = serialbox::gridtools;
 
   //
-  // Create a Serializer for writing. Besides the open-policy we have to specify the `directory`
+  // Create a Serializer for writing. Besides the open-policy, we have to specify the `directory`
   // in which the Serializer is created and the `prefix` of all files. In case the directory does
   // not exist, it will be created. In addition, if the directory is not empty, all fields with the
   // same `prefix` will be erased (this behaviour can be inhibited using the Append mode).
@@ -102,14 +102,14 @@ void write() {
   storage_t lap(meta_data, "lap", -1);
 
   std::default_random_engine gen;
-  std::normal_distribution<double> dist(0.0, 1.0);
+  std::uniform_real_distribution<double> dist(0.0, 1.0);
   for(int i = 0; i < N; ++i)
     for(int j = 0; j < M; ++j)
       phi(i, j, 0) = dist(gen);
   
   //
-  // Create the field meta-information of `phi` with the gridtools storage and register it within
-  // the Serializer. Note that for the gridtools interface this can also be done implicitly in the
+  // Create the field meta-information of `phi` directly with the gridtools storage and register it 
+  // within the Serializer. For the gridtools interface this can also be done implicitly in the
   // write method (see below).
   //
   ser::field_meta_info fieldmetainfo(phi);
@@ -190,7 +190,7 @@ void write() {
     // Create the output savepoint. This time we directly initialize the meta-information of the
     // savepoint.
     //
-     ser::savepoint savepoint_out("laplacian-out", {{"time", ser::meta_info_value(t)}});
+    ser::savepoint savepoint_out("laplacian-out", {{"time", ser::meta_info_value(t)}});
   
     //
     // Write lap to disk. Note that here we implicitly register the field `lap` upon first
@@ -223,14 +223,14 @@ std::string vec_to_string(VectorType&& vec) {
 //===------------------------------------------------------------------------------------------===//
 //  read()
 //
-// In this function we initialize the Serializer for reading with our serialized data from the
-// write() method. First, we query some meta-data, like the global meta-information, the
-// dimensions of field `phi` or the vector of savepoints.
-// Afterwards, we apply the same three time steps of the `laplacianStencil` to `phi` to compute
-// `lap` but this time we compare the result (i.e the content of `lap`) to the  to the reference
-// loaded from disk `lap_reference` which we computed in the write() method. Obviously, the results
-// will match as we apply the exact same stencil but in a real world scenario you might use a
-// different implementations of the stencil and this is where Serialbox has it's use case.
+// In this function we initialize the Serializer for reading with our serialized data from the 
+// write() method. First, we query some meta-data, like the global meta-information, the 
+// dimensions of field `phi` or the vector of savepoints. 
+// Afterwards, we apply the same three time steps of the `laplacianStencil` to `phi` to compute 
+// `lap`. However, this time we compare the result (i.e the content of `lap`) to the reference 
+// loaded from disk (`lap_reference`) which we computed in the write() method. Obviously, the 
+// results will match as we apply the exact same stencil but in a real world scenario you might use
+// a different implementations of the stencil and this is where Serialbox has it's use case. 
 //
 //===------------------------------------------------------------------------------------------===//
 void read() {

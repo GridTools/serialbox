@@ -51,7 +51,7 @@ static void write() {
   int i, j, t;
 
   /*
-   * Create a Serializer for writing. Besides the open-policy we have to specify the `directory`
+   * Create a Serializer for writing. Besides the open-policy, we have to specify the `directory`
    * in which the Serializer is created and the `prefix` of all files. In case the directory does
    * not exist, it will be created. In addition, if the directory is not empty, all fields with the
    * same `prefix` will be erased (this behaviour can be inhibited using the Append mode).
@@ -78,7 +78,7 @@ static void write() {
   serialboxFieldMetaInfo_t* lapFieldMetaInfo = serialboxFieldMetaInfoCreate(Float64, dims, 2);
 
   /*
-   *  ... and register them within the Serializer ...
+   *  ... register them within the Serializer ...
    */
   serialboxSerializerAddField(serializer, "phi", phiFieldMetaInfo);
   serialboxSerializerAddField(serializer, "lap", lapFieldMetaInfo);
@@ -92,7 +92,7 @@ static void write() {
   /*
    * Next, we add some global meta-information to the serializer. Besides the usual `key = value`
    * pair, you can also add `key = {value1, ..., valueN}` pairs. Note that the same API can also be
-   * used to meta-information to the fields.
+   * used to meta-information to fields and savepoints.
    * We first obtain a refrence to the global meta-information of the serializer ...
    */
   serialboxMetaInfo_t* globalMetaInfo = serialboxSerializerGetGlobalMetaInfo(serializer);
@@ -103,7 +103,7 @@ static void write() {
   serialboxMetaInfoAddInt32(globalMetaInfo, "answer", 42);
 
   /*
-   * ... an array of ints (halos) ...
+   * ... and an array of ints ...
    */
   serialboxArrayOfInt32_t* haloArray = serialboxArrayOfInt32Create(4);
   haloArray->data[0] = haloArray->data[1] = haloArray->data[2] = haloArray->data[3] = 1;
@@ -119,17 +119,17 @@ static void write() {
 
   /*
    * Up to this point nothing has been written to disk. Using update_meta_data() will force a write
-   * all meta-information to the corresponding JSON files. Note that the meta-data is updated after
-   * each call and thus a manual update of the meta-data is seldom required. If you are curious you
-   * can inspect the files './laplacian/MetaData-field.json' and
+   * of the meta-information to the corresponding JSON files. Note that the meta-data is updated 
+   * after each call and thus a manual update of the meta-data is seldom required. If you are 
+   * curious you can inspect the files './laplacian/MetaData-field.json' and
    * './laplacian/ArchiveMetaData-field.json'
    */
   serialboxSerializerUpdateMetaData(serializer);
 
   /*
-   * We now apply the `laplacian_stencil` three times to phi. In each iteration we will create an
-   * input and output savepoint where we save the current `phi` field (input) and `lap` field
-   * (output)
+   * We now continue by applying the `laplacian_stencil` three times to phi. In each iteration we 
+   * will create an input and output savepoint where we save the current `phi` field (input) and 
+   * `lap` field (output)
    */
   for(t = 0; t < 3; ++t) {
     /*
@@ -159,7 +159,7 @@ static void write() {
     /*
      * Apply the laplacian_stencil to phi
      */
-    laplacianStencil(phi, lap, N, N);
+    laplacianStencil(phi, lap, N, M);
 
     /*
      * Create the output savepoint.
@@ -175,11 +175,14 @@ static void write() {
     serialboxSerializerWrite(serializer, "lap", savepoint_out, lap, strides, 2);
 
     /*
-     * Finally, we swap phi with lap
+     * Finally, we swap phi with lap and destroy the savepoints
      */
     double* tmp = phi;
     phi = lap;
     lap = tmp;
+    
+    serialboxSavepointDestroy(savepoint_in);
+    serialboxSavepointDestroy(savepoint_out);
   }
 
   /*
@@ -197,10 +200,10 @@ static void write() {
  * write() method. First, we query some meta-data, like the global meta-information, the 
  * dimensions of field `phi` or the vector of savepoints. 
  * Afterwards, we apply the same three time steps of the `laplacianStencil` to `phi` to compute 
- * `lap` but this time we compare the result (i.e the content of `lap`) to the  to the reference 
- * loaded from disk `lap_reference` which we computed in the write() method. Obviously, the results 
- * will match as we apply the exact same stencil but in a real world scenario you might use a 
- * different implementations of the stencil and this is where Serialbox has it's use case. 
+ * `lap`. However, this time we compare the result (i.e the content of `lap`) to the reference 
+ * loaded from disk (`lap_reference`) which we computed in the write() method. Obviously, the 
+ * results will match as we apply the exact same stencil but in a real world scenario you might use
+ * a different implementations of the stencil and this is where Serialbox has it's use case. 
  *
 \*===------------------------------------------------------------------------------------------===*/
 static void read() {
@@ -231,7 +234,7 @@ static void read() {
   printf("The answer is %i\n", answer);
 
   /*
-   * .. and the "halos" as an array of ints (halos) ...
+   * .. and the "halos" as an array of ints ...
    */
   serialboxArrayOfInt32_t* halos = serialboxMetaInfoGetArrayOfInt32(globalMetaInfo, "halos");
   printf("The halo boundaries are [ ");
@@ -246,8 +249,8 @@ static void read() {
   serialboxMetaInfoDestroy(globalMetaInfo);
 
   /*
-   * Access the registered fields (Note that the individual elements (i.e char*) need to be freed
-   * manually).
+   * Now, we access the registered fields. Note that the individual elements (i.e char*) need to be 
+   * freed manually.
    */
   serialboxArrayOfString_t* fieldnames = serialboxSerializerGetFieldnames(serializer);
 
@@ -304,7 +307,7 @@ static void read() {
     /*
      * Apply the laplacian_stencil to phi
      */
-    laplacianStencil(phi, lap, N, N);
+    laplacianStencil(phi, lap, N, M);
 
     /*
      * Load the reference output of lap ...

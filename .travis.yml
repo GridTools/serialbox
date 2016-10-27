@@ -230,7 +230,7 @@ install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
       brew update
       brew install python3
-      pip3 install numpy matplotlib nose
+      pip3 install numpy nose
       
       brew tap homebrew/science
       brew install netcdf
@@ -252,13 +252,17 @@ before_script:
   # Linux build
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
-      cmake ../ -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DPYTHON_EXECUTABLE=${PYTHON_DIR}/bin/python3 ${CMAKE_OPTIONS}
+      cmake ../ -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
+                -DPYTHON_EXECUTABLE=${PYTHON_DIR}/bin/python3 \
+                -DSERIALBOX_TESTING=ON \
+                ${CMAKE_OPTIONS}
     fi
   
   # OSX build
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
-      cmake ../ -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+      cmake ../ -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
+                -DSERIALBOX_TESTING=ON
     fi
   
   - make

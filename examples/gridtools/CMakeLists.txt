@@ -11,4 +11,5 @@ cmake_minimum_required(VERSION 3.1)
 
 serialbox_add_gridtools_example(example-01-laplacian-cpp example-01-laplacian.cpp)
 serialbox_add_gridtools_example(example-02-stateless-cpp example-02-stateless.cpp)
+serialbox_add_gridtools_example(example-03-slice-cpp example-03-slice.cpp)
 

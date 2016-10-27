@@ -21,8 +21,8 @@
 #
 import os
 import sys
-sys.path.append(os.path.dirname(__file__) + '../../src/serialbox-python')
-sys.path.append(os.path.dirname(__file__) + '../../python')
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../python')
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../../src/serialbox-python')
 
 #
 # Import Serialbox
@@ -40,16 +40,17 @@ def main():
     serializer = ser.Serializer(ser.OpenModeKind.Read, ".", "Field", "Binary")
 
     #
-    # The canonical way of accessing the Savepoints is to directly access the vector of Savepoints. 
-    # Note that the order of the Savepoints is the order in which they were inserted.  
+    # The canonical way of accessing the Savepoints is to directly access the vector of Savepoints 
+    # (given as a list in Python). Note that the order of the Savepoints is the order in which they
+    # were inserted.  
     #
     savepoint_list = serializer.savepoint_list()
     print("There are", len(savepoint_list), "savepoints registered.")
 
     #
     # Savepoints are primarily identified by their `name` and further distinguished by their 
-    # `meta_info` but they are unique within the Serializer. For example to access all savepoints 
-    # with the name `CoriolisUnittest-in` ...
+    # `meta_info` but they are unique within the Serializer. For example to get a collection of 
+    # all savepoints with the name `CoriolisUnittest-in` ...
     #
     savepoint_collection = serializer.savepoint['CoriolisUnittest.Apply-in']
     
@@ -65,17 +66,18 @@ def main():
     #
     # Most of the time you will be interested in a particular Savepoint. This requires you to 
     # specify the meta-information key=value pairs. There are two ways of doing this. But first, 
-    # recall that there is NO ordering in the  meta-information, hence it does not matter in which 
+    # recall that there is NO ordering in the meta-information, hence it does not matter in which 
     # sequence you specify them! To access the savepoint with LargeTimeStep=1 of 
     # `CoriolisUnittest.Apply-in` ...
     #   
     savepoint = serializer.savepoint['CoriolisUnittest.Apply-in']['LargeTimeStep'][1]
 
     #
-    # The second case uses the member access of python. Note that this case has some downsides if 
-    # you don't use savepoint names or keys which can be mapped to valid Python identifiers. 
-    # For example instead of using a '.' you can use '_', same goes for '-' (See the documentation 
-    # of Serializer.savepoint for further information). Thus we can also write ...  
+    # The second way uses the member access of python which can be more convenient. Note that this 
+    # way has some downsides if you don't use savepoint names or keys which can be mapped to valid 
+    # Python identifiers. For example instead of using a '.' you can use '_', same goes for '-' 
+    # (See the documentation of Serializer.savepoint for further information). 
+    # Thus we can also write ...  
     #    
     savepoint = serializer.savepoint.CoriolisUnittest_Apply_in.LargeTimeStep[1]
 

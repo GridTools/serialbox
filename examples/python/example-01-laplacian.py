@@ -27,8 +27,8 @@
 #
 import os
 import sys
-sys.path.append(os.path.dirname(__file__) + '../../src/serialbox-python')
-sys.path.append(os.path.dirname(__file__) + '../../python')
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../python')
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../../src/serialbox-python')
 
 #
 # Import Serialbox and numpy
@@ -59,7 +59,7 @@ def laplacian_stencil(phi):
 def write():
 
     #
-    # Create a Serializer for writing. Besides the open-policy we have to specify the `directory`
+    # Create a Serializer for writing. Besides the open-policy, we have to specify the `directory`
     # in which the Serializer is created and the `prefix` of all files. In case the directory does
     # not exist, it will be created. In addition, if the directory is not empty, all fields with the 
     # same `prefix` will be erased (this behaviour can be inhibited using the Append mode). 
@@ -150,10 +150,10 @@ def write():
 ## write() method. First, we query some meta-data, like the global meta-information, the 
 ## dimensions of field `phi` or the vector of savepoints. 
 ## Afterwards, we apply the same three time steps of the `laplacianStencil` to `phi` to compute 
-## `lap` but this time we compare the result (i.e the content of `lap`) to the  to the reference 
-## loaded from disk `lap_reference` which we computed in the write() method. Obviously, the results 
-## will match as we apply the exact same stencil but in a real world scenario you might use a 
-## different implementations of the stencil and this is where Serialbox has it's use case. 
+## `lap`. However, this time we compare the result (i.e the content of `lap`) to the reference 
+## loaded from disk (`lap_reference`) which we computed in the write() method. Obviously, the 
+## results will match as we apply the exact same stencil but in a real world scenario you might use
+## a different implementations of the stencil and this is where Serialbox has it's use case. 
 ##
 ##===------------------------------------------------------------------------------------------===##
 def read():
@@ -216,7 +216,7 @@ def read():
         #
         # ... and compare the results.
         #
-        assert (np.allclose(lap, lap_reference))
+        assert(np.allclose(lap, lap_reference))
 
 
 ##===------------------------------------------------------------------------------------------===##
@@ -227,8 +227,14 @@ def read():
 ##===------------------------------------------------------------------------------------------===##
 def main():
 
+    #
+    # Write some data ...
+    #
     write()
 
+    #
+    # ... and read it.
+    #
     read()
 
 if __name__ == '__main__':

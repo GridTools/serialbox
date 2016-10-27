@@ -23,8 +23,8 @@
 #
 import os
 import sys
-sys.path.append(os.path.dirname(__file__) + '../../src/serialbox-python')
-sys.path.append(os.path.dirname(__file__) + '../../python')
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../python')
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../../src/serialbox-python')
 
 #
 # Import Serialbox and numpy
@@ -46,9 +46,9 @@ def main():
     ser.Logging.enable()
 
     #
-    # Write the numpy array to disk. The archive will be deduced from the file extension.
-    # This method has the same purpose as the built-in numpy method numpy.save but the written data 
-    # can be used in C, C++ and Fortran.
+    # Write the numpy array to disk. The archive will be deduced from the file extension (here 
+    # ".dat" implies the Binary archive). This method has the same purpose as the built-in numpy 
+    # method numpy.save but the written data can be used in C, C++ and Fortran.
     #
     ser.Serializer.to_file("field", field_in, "field.dat")
     

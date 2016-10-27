@@ -34,5 +34,6 @@
 #include "serialbox/Core/Frontend/gridtools/Serializer.h"
 #include "serialbox/Core/Frontend/gridtools/Slice.h"
 #include "serialbox/Core/Frontend/gridtools/Type.h"
+#include "serialbox/Core/Frontend/gridtools/Timer.h"
 
 #endif

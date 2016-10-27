@@ -9,8 +9,8 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## This example demonstrates how to only load parts (slices) of a serialized field. This can improve
-## performance if one is only interested in a small part of the data.
+## This example demonstrates how to only load parts (slices) of a serialized field. This can
+## significantly improve performance if one is only interested in a small part of the data.
 ##
 ## This example is also available in all other languages supported by Serialbox.
 ##
@@ -22,8 +22,8 @@
 #
 import os
 import sys
-sys.path.append(os.path.dirname(__file__) + '../../src/serialbox-python')
-sys.path.append(os.path.dirname(__file__) + '../../python')
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../python')
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../../src/serialbox-python')
 
 #
 # Import Serialbox and numpy
@@ -75,7 +75,7 @@ def main():
     
     #
     # You can of course load the full data and slice it afterwards with numpy which yields the same
-    # result.
+    # result, though most likely slower.
     #
     start = time.time()
     
