@@ -20,6 +20,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief Uniquely identifiy a field
 struct FieldID {
   std::string name; ///< Name of the field
@@ -34,6 +37,8 @@ bool operator!=(const FieldID& left, const FieldID& right);
 
 /// \brief Convert FieldID to stream
 std::ostream& operator<<(std::ostream& stream, const FieldID& f);
+
+/// @}
 
 } // namespace serialbox
 

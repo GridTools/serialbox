@@ -49,24 +49,31 @@ message(STATUS "Git HEAD revision: ${GIT_SHA1}")
 #---------------------------------------- User options ---------------------------------------------
 
 option(SERIALBOX_BUILD_SHARED "Build shared libraries" ON)
-option(SERIALBOX_LOGGING "Enable logging" ON)
 option(SERIALBOX_ENABLE_C "Build C Interface" ON)
 option(SERIALBOX_ENABLE_PYTHON "Build Python Interface" ${SERIALBOX_ENABLE_C})
+option(SERIALBOX_ENABLE_FORTRAN "Build Fortran Interface" OFF)
+option(SERIALBOX_LOGGING "Enable logging" ON)
+option(SERIALBOX_ASYNC_API "Enable the asynchronous API" ON)
+option(SERIALBOX_EXAMPLES "Build example exectuables" ON)
 
-option(SERIALBOX_TESTING "Build unit-test executables" ON)
-option(SERIALBOX_TESTING_GRIDTOOLS "Build GridTools Unitests" OFF)
-option(SERIALBOX_TESTING_STELLA "Build STELLA Unitests" OFF)
-option(SERIALBOX_TESTING_OLD_SERIALBOX "Build compatiblity unitests with old serialbox" OFF)
+option(SERIALBOX_TESTING "Build unittest executables" OFF)
+option(SERIALBOX_TESTING_GRIDTOOLS "Build gridtools unitests and examples" OFF)
+option(SERIALBOX_TESTING_STELLA "Build STELLA unitests" OFF)
+option(SERIALBOX_TESTING_OLD_SERIALBOX "Build compatiblity unitests against old serialbox" OFF)
 option(SERIALBOX_TESTING_DEATH_TESTS "Run death-tests" OFF)
 
 option(SERIALBOX_BENCHMARKING "Build benchmark exectuables" OFF)
+option(SERIALBOX_DOCUMENTATION "Build and install the documentation" OFF)
 
 option(SERIALBOX_CODE_COVERAGE "Generate code coverage" OFF)
-option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" ON)
+option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" OFF)
   
 #---------------------------------------- CMake options --------------------------------------------
+
+## Perform checks to make sure we support the current compiler
+include(CheckCxxCompilerSupport)
  
-# Set C++ standard to C++11
+## Set C++ standard to C++11
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Cray")
   set(CXX11_FLAG "-h std=c++11")
 else()
@@ -88,14 +95,14 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -wd488")
 endif()
 
-# Set build type to RelWithDebInfo if nothing was specified (instead of Debug)
+# Set build type to Release if nothing was specified (instead of Debug)
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING 
-      "Choose the type of build, options are: Debug Release RelWithDebInfo " FORCE)
-  message(STATUS "Setting build type to 'RelWithDebInfo' as none was specified")
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING 
+      "Choose the type of build, options are: Debug Release RelWithDebInfo" FORCE)
+  message(STATUS "Setting build type to 'Release' as none was specified")
 endif(NOT CMAKE_BUILD_TYPE)
 
 # Clear all cmake generated files
@@ -141,12 +148,30 @@ if(SERIALBOX_BUILD_SHARED)
   endif("${isSystemDir}" STREQUAL "-1")
 endif()
 
+# If we build the Fortran Interface, we need a Fortran compiler
+if(SERIALBOX_ENABLE_FORTRAN)
+  enable_language(Fortran)
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -cpp")
+endif()
+
 if(NOT(SERIALBOX_LOGGING))
   add_definitions(-DSERIALBOX_DISABLE_LOGGING)
 endif()
 
+if(SERIALBOX_ASYNC_API)
+  add_definitions(-DSERIALBOX_ASYNC_API)
+endif(SERIALBOX_ASYNC_API)
+
 ## Third party libraries
 set(SERIALBOX_EXTERNAL_LIBRARIES)
+
+## Enable testing if a SERIALBOX_TESTING_* is set
+if(SERIALBOX_TESTING_GRIDTOOLS OR 
+   SERIALBOX_TESTING_STELLA OR 
+   SERIALBOX_TESTING_OLD_SERIALBOX OR 
+   SERIALBOX_TESTING_DEATH_TESTS)
+ set(SERIALBOX_TESTING ON)
+endif()
 
 #---------------------------------------- GTest ----------------------------------------------------
 if(SERIALBOX_TESTING)
@@ -211,16 +236,23 @@ set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
 
 #---------------------------------------- OpenSSL --------------------------------------------------
 find_package(OpenSSL)
-if(${OpenSSL_FOUND})
+option(SERIALBOX_USE_OPENSSL "Use OpenSSL library" ${OpenSSL_FOUND})
+if(${SERIALBOX_USE_OPENSSL})
+  if(NOT(${OpenSSL_FOUND}))
+    message(FATAL_ERROR "OpenSSL library not found!")
+  endif()
   include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
   set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${OPENSSL_LIBRARIES})  
   set(SERIALBOX_HAS_OPENSSL 1)
 endif()
 
 #---------------------------------------- NetCDF ---------------------------------------------------
-set(NETCDF_CXX "YES")
 find_package(NetCDF)
-if(${NetCDF_FOUND})
+option(SERIALBOX_USE_NETCDF "Use NetCDF library" ${NetCDF_FOUND})
+if(${SERIALBOX_USE_NETCDF})
+  if(NOT(${NetCDF_FOUND}))
+    message(FATAL_ERROR "NetCDF library not found!")
+  endif()
   include_directories(SYSTEM ${NETCDF_INCLUDES})
   set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${NETCDF_LIBRARIES})  
   set(SERIALBOX_HAS_NETCDF 1)
@@ -228,8 +260,21 @@ endif()
 
 #---------------------------------------- Python ---------------------------------------------------
 if(SERIALBOX_ENABLE_PYTHON)
-  find_package(PythonInterp 3)
-  option(SERIALBOX_TESTING_PYTHON "Run Python tests" ${PYTHONINTERP_FOUND})
+  find_package(PythonInterp 3.4)
+  
+  # Python tests are only enabled by default if we can find "nose" and "numpy"
+  set(ENABLE_PYTHON_TESTS OFF)
+  if(SERIALBOX_TESTING AND PYTHONINTERP_FOUND)
+    include(FindPythonModule)
+    find_python_module(nose)
+    find_python_module(numpy)
+    if(PY_NOSE_FOUND AND PY_NUMPY_FOUND)   
+      set(ENABLE_PYTHON_TESTS ON)
+    endif()
+  endif()
+  
+  option(SERIALBOX_TESTING_PYTHON "Run Python tests" ${ENABLE_PYTHON_TESTS})
+  mark_as_advanced(ENABLE_PYTHON_TESTS)
 endif(SERIALBOX_ENABLE_PYTHON)
 
 #---------------------------------------- GridTools ------------------------------------------------
@@ -348,15 +393,6 @@ if(SERIALBOX_TESTING_OLD_SERIALBOX)
   
 endif(SERIALBOX_TESTING_OLD_SERIALBOX)
 
-#---------------------------------------- Doxygen --------------------------------------------------
-find_package(Doxygen)
-option(SERIALBOX_DOCUMENTATION 
-       "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
-set(DOC_DIR ${PROJECT_SOURCE_DIR}/docs)
-if(SERIALBOX_DOCUMENTATION)
-  add_subdirectory(docs)
-endif()
-
 #---------------------------------------- ClangTools -----------------------------------------------
 find_package(ClangTools)
 if("$ENV{CMAKE_EXPORT_COMPILE_COMMANDS}" STREQUAL "1" OR CLANG_TIDY_FOUND)
@@ -410,6 +446,9 @@ endif()
 if(SERIALBOX_CODE_COVERAGE)
   include(Coverage)
   enable_coverage(${CMAKE_BINARY_DIR})
+
+  set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} 
+                                   ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})
 endif(SERIALBOX_CODE_COVERAGE)
 
 #---------------------------------------- Compilation ----------------------------------------------
@@ -429,7 +468,7 @@ include_directories(${SERIALBOX_INCLUDE_DIRS})
 
 file(GLOB_RECURSE SERIALBOX_HEADERS 
      ${CMAKE_CURRENT_SOURCE_DIR}/src
-     ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox/*.h)
+     ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox/*.h*)
    
 # Install serialbox headers
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox DESTINATION include 
@@ -446,6 +485,11 @@ endif()
 
 ## Build Serialbox
 add_subdirectory(src)
+
+## Build examples
+if(SERIALBOX_EXAMPLES)
+  add_subdirectory(examples)
+endif(SERIALBOX_EXAMPLES)
 
 ## Build unittests
 if(SERIALBOX_TESTING)
@@ -466,4 +510,9 @@ if(SERIALBOX_TESTING)
   
   add_subdirectory(test)
 endif(SERIALBOX_TESTING)
+
+## Build documentation
+if(SERIALBOX_DOCUMENTATION)
+  add_subdirectory(docs)
+endif()
 

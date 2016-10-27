@@ -63,7 +63,7 @@ class TestSerializer(unittest.TestCase):
         #
         # Write (OpenModeKind as int)
         #
-        ser = Serializer(OpenModeKind(1), self.path, "field", self.archive)
+        ser = Serializer(OpenModeKind.Write.value, self.path, "field", self.archive)
         self.assertEqual(ser.mode, OpenModeKind.Write)
         self.assertEqual(ser.prefix, "field")
         self.assertEqual(ser.directory, self.path)
@@ -101,15 +101,15 @@ class TestSerializer(unittest.TestCase):
         # Disable serialization
         #
         Serializer.disable()
-        self.assertEqual(Serializer.status(), -1)
+        self.assertEqual(Serializer.status(), Serializer.Disabled)
 
         #
         # Enable serialization
         #
         Serializer.enable()
-        self.assertEqual(Serializer.status(), 1)
+        self.assertEqual(Serializer.status(), Serializer.Enabled)
 
-    def test_savepoint(self):
+    def test_savepoint_list(self):
         ser = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
 
         #
@@ -128,7 +128,7 @@ class TestSerializer(unittest.TestCase):
         #
         # Get savepoint vector
         #
-        savepoints = ser.savepoints()
+        savepoints = ser.savepoint_list()
         self.assertEqual(savepoints[0], sp1)
         self.assertEqual(savepoints[1], sp2)
         self.assertEqual(savepoints[2], sp3)
@@ -143,6 +143,92 @@ class TestSerializer(unittest.TestCase):
         savepoints_with_name = ser.get_savepoint("sp")
         self.assertTrue(sp2 in savepoints_with_name)
         self.assertTrue(sp3 in savepoints_with_name)
+        ser.update_meta_data()
+
+        #
+        # Check savepoint list gets cached
+        #
+        ser = Serializer(OpenModeKind.Read, self.path, "field", self.archive)
+
+        savepoint_list_1 = ser.savepoint_list()
+        savepoint_list_2 = ser.savepoint_list()
+        self.assertEqual(id(savepoint_list_1), id(savepoint_list_2))
+
+    def test_savepoint(self):
+        ser = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
+        ser.register_savepoint(Savepoint('sp', {"key": 1}))
+        ser.register_savepoint(Savepoint('sp', {"key": 2}))
+        ser.register_savepoint(Savepoint('sp', {"key": 2, "key2": 5.0}))
+
+        ser.register_savepoint(Savepoint('sp-2', {"key": "value", "meta info": True}))
+        ser.register_savepoint(Savepoint('sp-2', {"key": "value", "1": 1}))
+
+        # Check type
+        self.assertTrue(isinstance(ser.savepoint, SavepointCollection))
+
+        #
+        # Query savepoint: Case 1 : Access via __getattr__
+        #
+
+        # Access sp
+        self.assertEqual(ser.savepoint.sp.key[1].as_savepoint(), Savepoint('sp', {"key": 1}))
+        self.assertEqual(ser.savepoint.sp.key[2].key2[5.0].as_savepoint(),
+                         Savepoint('sp',  {"key": 2, "key2": 5.0}))
+        self.assertEqual(ser.savepoint[0], Savepoint('sp', {"key": 1}))
+
+        # Access sp-2
+        self.assertEqual(ser.savepoint.sp_2.key["value"].meta_info[True].as_savepoint(),
+                         Savepoint('sp-2', {"key": "value", "meta info": True}))
+
+        self.assertEqual(ser.savepoint.sp_2.key["value"]._1[1].as_savepoint(),
+                         Savepoint('sp-2', {"key": "value", "1": 1}))
+
+        # Mixed
+        self.assertEqual(ser.savepoint['sp-2'].key["value"]["1"][1].as_savepoint(),
+                         Savepoint('sp-2', {"key": "value", "1": 1}))
+
+        #
+        # Query savepoint: Case 2: Access only with __getitem__
+        #
+
+        # Access sp
+        self.assertEqual(ser.savepoint['sp']['key'][1].as_savepoint(), Savepoint('sp', {"key": 1}))
+        self.assertEqual(ser.savepoint['sp']['key'][2]['key2'][5.0].as_savepoint(),
+                         Savepoint('sp',  {"key": 2, "key2": 5.0}))
+        self.assertEqual(ser.savepoint[0], Savepoint('sp', {"key": 1}))
+
+        # Access sp-2
+        self.assertEqual(ser.savepoint['sp-2']['key']['value']['meta info'][True].as_savepoint(),
+                         Savepoint('sp-2', {"key": "value", "meta info": True}))
+        self.assertEqual(ser.savepoint['sp-2']['key']['value']['1'][1].as_savepoint(),
+                         Savepoint('sp-2', {"key": "value", "1": 1}))
+
+        #
+        # Errors
+        #
+
+        # Ambiguous match
+        self.assertRaises(SerialboxError, ser.savepoint.sp.key[2].as_savepoint)
+        self.assertEqual(len(ser.savepoint.sp.key[2].savepoints()), 2)
+
+        # TopCollection not unqique -> Error
+        self.assertRaises(SerialboxError, ser.savepoint.as_savepoint)
+
+        # NamedCollection not unqique -> Error
+        self.assertRaises(SerialboxError, ser.savepoint.sp.as_savepoint)
+
+        # Savepoint no existing -> Error
+        self.assertRaises(SerialboxError, ser.savepoint.__getattr__, 'spX')
+
+        # MetaInfo key not existing -> Error
+        self.assertRaises(SerialboxError, ser.savepoint.sp.__getattr__, 'keyX')
+
+        # MetaInfo value not existing -> Error
+        self.assertRaises(SerialboxError, ser.savepoint.sp.key.__getitem__, 3)
+
+        # Indexing not supported -> Error
+        self.assertRaises(SerialboxError, ser.savepoint.sp.key[1].__getitem__, 3)
+
 
     def test_field(self):
         ser_write = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
@@ -200,14 +286,16 @@ class TestSerializer(unittest.TestCase):
         field1_input = np.random.rand(16)
         field2_input = np.random.rand(4, 4)
         field3_input = np.random.rand(2, 2, 2)
+        field3_output_allocted = np.random.rand(2, 2, 2)
+
         sp = Savepoint("sp")
 
         #
         # Write fields (implicitly register savepoint and fields)
         #
-        ser_write.write("field1", field1_input, sp)
-        ser_write.write("field2", field2_input, sp)
-        ser_write.write("field3", field3_input, sp)
+        ser_write.write("field1", sp, field1_input)
+        ser_write.write("field2", sp, field2_input)
+        ser_write.write("field3", sp, field3_input)
 
         #
         # Read fields
@@ -215,7 +303,8 @@ class TestSerializer(unittest.TestCase):
         ser_read = Serializer(OpenModeKind.Read, self.path, "field", self.archive)
         field1_output = ser_read.read("field1", sp)
         field2_output = ser_read.read("field2", sp)
-        field3_output = ser_read.read("field3", sp)
+        field3_output = ser_read.read("field3", ser_read.savepoint.sp)
+        ser_read.read("field3", sp, field3_output_allocted)
 
         #
         # Validate
@@ -223,6 +312,7 @@ class TestSerializer(unittest.TestCase):
         self.assertTrue(np.allclose(field1_input, field1_output))
         self.assertTrue(np.allclose(field2_input, field2_output))
         self.assertTrue(np.allclose(field3_input, field3_output))
+        self.assertTrue(np.allclose(field3_input, field3_output_allocted))
 
         #
         # Failures
@@ -239,6 +329,14 @@ class TestSerializer(unittest.TestCase):
 
         # Read at non-existent savepoint -> Error
         self.assertRaises(SerialboxError, ser_read.read, "field1", Savepoint('sp2'))
+
+        # Read with field but wrong dimensions -> Error
+        self.assertRaises(SerialboxError, ser_read.read, "field1", sp,
+                          np.ndarray(shape=[16, 15], dtype=np.float64))
+
+        # Read with field but wrong type -> Error
+        self.assertRaises(SerialboxError, ser_read.read, "field1", sp,
+                          np.ndarray(shape=[16], dtype=np.int32))
 
     def test_write_and_read_explict(self):
         ser_write = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
@@ -286,11 +384,11 @@ class TestSerializer(unittest.TestCase):
         #
         # Write
         #
-        ser_write.write("field_bool", field_bool, sp_bool, False)
-        ser_write.write("field_int32", field_int32, sp_ints, False)
-        ser_write.write("field_int64", field_int64, sp_ints, False)
-        ser_write.write("field_float32", field_float32, sp_floats, False)
-        ser_write.write("field_float64", field_float64, sp_floats, False)
+        ser_write.write("field_bool", sp_bool, field_bool, False)
+        ser_write.write("field_int32", sp_ints, field_int32, False)
+        ser_write.write("field_int64", sp_ints, field_int64, False)
+        ser_write.write("field_float32", sp_floats, field_float32, False)
+        ser_write.write("field_float64", sp_floats, field_float64, False)
 
         #
         # Read fields
@@ -310,6 +408,94 @@ class TestSerializer(unittest.TestCase):
         self.assertTrue(np.allclose(field_int64_output, field_int64))
         self.assertTrue(np.allclose(field_float32_output, field_float32))
         self.assertTrue(np.allclose(field_float64_output, field_float64))
+
+    def test_write_and_read_async(self):
+        ser_write = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
+
+        #
+        # Setup fields
+        #
+        field = np.random.rand(5, 6, 7)
+        sp = Savepoint("sp")
+
+        #
+        # Write field
+        #
+        ser_write.write("field", sp, field)
+
+        #
+        # Read fields asynchronously
+        #
+        ser_read = Serializer(OpenModeKind.Read, self.path, "field", self.archive)
+        field_1 = ser_read.read_async("field", sp)
+        field_2 = ser_read.read_async("field", sp)
+        field_3 = ser_read.read_async("field", sp)
+        ser_read.wait_for_all()
+
+        #
+        # Validate
+        #
+        self.assertTrue(np.allclose(field, field_1))
+        self.assertTrue(np.allclose(field, field_2))
+        self.assertTrue(np.allclose(field, field_3))
+
+
+    def test_write_and_read_sliced(self):
+        field_input = np.random.rand(10, 15, 20)
+
+        #
+        # Write
+        #
+        ser_write = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
+        ser_write.write("field", Savepoint("sp"), field_input)
+
+        #
+        # Read
+        #
+        ser_read = Serializer(OpenModeKind.Read, self.path, "field", self.archive)
+
+        field_output = ser_read.read_slice("field", Savepoint("sp"), Slice[:])
+        self.assertTrue(np.allclose(field_output[:], field_input[:]))
+
+        field_output = ser_read.read_slice("field", Savepoint("sp"), Slice[:, :, 0])
+        self.assertTrue(np.allclose(field_output[:, :, 0], field_input[:, :, 0]))
+
+        field_output = ser_read.read_slice("field", Savepoint("sp"), Slice[2:, 1:-1:2, 1:5])
+        self.assertTrue(np.allclose(field_output[2:, 1:-1:2, 1:5], field_input[2:, 1:-1:2, 1:5]))
+
+        field_output = ser_read.read_slice("field", Savepoint("sp"), Slice[:-1, 1::2])
+        self.assertTrue(np.allclose(field_output[:-1, 1::2],
+                                    field_input[:-1, 1::2]))
+
+        #
+        # To many slices -> Error
+        #
+        self.assertRaises(SerialboxError, ser_read.read_slice, "field", Savepoint("sp"),
+                          Slice[:, :, :, :])
+
+    def test_write_and_read_stateless(self):
+        field_input = np.random.rand(2, 2, 2)
+        field_output = np.random.rand(2, 2, 2)
+
+        #
+        # Read & write from file (Binary archive)
+        #
+        Serializer.to_file("field", field_input, os.path.join(self.path, "test.dat"))
+        Serializer.from_file("field", field_output, os.path.join(self.path, "test.dat"))
+        self.assertTrue(np.allclose(field_input, field_output))
+
+        #
+        # Read & write from file (NetCDF archive)
+        #
+        if "SERIALBOX_HAS_NETCDF" in Config().compile_options:
+            Serializer.to_file("field", field_input, os.path.join(self.path, "test.nc"))
+            Serializer.from_file("field", field_output, os.path.join(self.path, "test.nc"))
+            self.assertTrue(np.allclose(field_input, field_output))
+
+        #
+        # Invalid file extension
+        #
+        self.assertRaises(SerialboxError, Serializer.to_file, "field", field_input, "test.X")
 
 if __name__ == "__main__":
     unittest.main()

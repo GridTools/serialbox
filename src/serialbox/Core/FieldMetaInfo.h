@@ -21,6 +21,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief Meta-information of a data field
 class FieldMetaInfo {
 public:
@@ -94,6 +97,8 @@ private:
   std::vector<int> dims_;
   std::shared_ptr<MetaInfoMap> metaInfo_;
 };
+
+/// @}
 
 } // namespace serialbox
 

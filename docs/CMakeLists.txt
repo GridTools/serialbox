@@ -7,6 +7,10 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
+set(DOC_DIR ${PROJECT_SOURCE_DIR}/docs)
+
+## Find doxygen
+find_package(Doxygen)
 if(NOT DOXYGEN_FOUND)
   message(FATAL_ERROR "Doxygen is needed to build the documentation.")
 endif()
@@ -20,3 +24,11 @@ add_custom_target(docs
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Generating API documentation with Doxygen" VERBATIM
 )
+
+## Find sphinx
+find_package(Sphinx)
+if(NOT SPHINX_FOUND)
+  message(FATAL_ERROR "Sphinx is needed to build the documentation.")
+endif()
+
+## Find breathe

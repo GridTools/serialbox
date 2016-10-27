@@ -27,6 +27,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief Hash-map of meta-information of the form `key = value` pair or
 /// `key = {value1, ..., valueN}`
 ///
@@ -205,6 +208,8 @@ public:
 private:
   map_type map_;
 };
+
+/// @}
 
 } // namespace serialbox
 

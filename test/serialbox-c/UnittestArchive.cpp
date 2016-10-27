@@ -23,7 +23,7 @@ class CArchiveTest : public serialbox::unittest::CInterfaceTestBase {};
 
 } // anonymous namespace
 
-TEST_F(CArchiveTest, Test) {
+TEST_F(CArchiveTest, RegisteredArchives) {
   serialboxArrayOfString_t* archives = serialboxArchiveGetRegisteredArchives();
 
   ASSERT_GE(archives->len, 1);
@@ -32,4 +32,13 @@ TEST_F(CArchiveTest, Test) {
               }) != (archives->data + archives->len));
 
   serialboxArrayOfStringDestroy(archives);
+}
+
+TEST_F(CArchiveTest, ArchiveFromExtension) {
+  char* archive = serialboxArchiveGetArchiveFromExtension("file.dat");
+  ASSERT_STREQ(archive, "Binary");
+  std::free(archive);
+
+  serialboxArchiveGetArchiveFromExtension("file.X");
+  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 }

@@ -24,7 +24,15 @@
 #include <boost/filesystem.hpp>
 #include <iosfwd>
 
+#ifdef SERIALBOX_ASYNC_API
+#include <future>
+#include <thread>
+#endif
+
 namespace serialbox {
+
+/// \addtogroup core
+/// @{
 
 /// \brief Shared implementation of the Serializer
 ///
@@ -289,7 +297,8 @@ public:
   ///
   /// \throw Exception
   ///
-  /// \see Archive
+  /// \see
+  ///   Archive::write
   void write(const std::string& name, const SavepointImpl& savepoint,
              const StorageView& storageView);
 
@@ -315,8 +324,49 @@ public:
   ///
   /// \throw Exception
   ///
-  /// \see Archive
+  /// \see
+  ///   Archive::read
   void read(const std::string& name, const SavepointImpl& savepoint, StorageView& storageView);
+
+  /// \brief Deserialize sliced field `name` (given as `storageView` and `slice`) at `savepoint`
+  /// from disk.
+  ///
+  /// \param name           Name of the field
+  /// \param savepoint      Savepoint at which the field will be deserialized
+  /// \param storageView    StorageView of the field
+  /// \param slice          Slice of the data to load
+  ///
+  /// \throw Exception
+  ///
+  /// \see
+  ///   SerializerImpl::read
+  void readSliced(const std::string& name, const SavepointImpl& savepoint, StorageView& storageView,
+                  Slice slice);
+
+  /// \brief Asynchronously deserialize field `name` (given as `storageView`) at `savepoint` from
+  /// disk using std::async.
+  ///
+  /// This method runs the `read` function (SerializerImpl::read) asynchronously (potentially in a
+  /// separate thread which may be part of a thread pool) meaning this function immediately returns.
+  /// To synchronize all threads, use SerializerImpl::waitForAll.
+  ///
+  /// If the archive is not thread-safe or if the library was not configured with
+  /// `SERIALBOX_ASYNC_API` the method falls back to synchronous execution.
+  ///
+  /// \param name           Name of the field
+  /// \param savepoint      Savepoint at which the field will be deserialized
+  /// \param storageView    StorageView of the field
+  ///
+  /// \throw Exception
+  ///
+  /// \see
+  ///   SerializerImpl::read
+  /// \see
+  ///   http://en.cppreference.com/w/cpp/thread/async
+  void readAsync(const std::string& name, const SavepointImpl& savepoint, StorageView& storageView);
+
+  /// \brief Wait for all pending asynchronous read operations and reset the internal queue
+  void waitForAll();
 
   //===----------------------------------------------------------------------------------------===//
   //     JSON Serialization
@@ -371,6 +421,10 @@ protected:
   /// \throw Exception
   bool upgradeMetaData();
 
+  /// \brief Implementation of SerializerImpl::readAsync
+  void readAsyncImpl(const std::string name, const SavepointImpl savepoint,
+                     StorageView storageView);
+
 protected:
   OpenModeKind mode_;
   boost::filesystem::path directory_;
@@ -394,7 +448,13 @@ protected:
   //
   // The value is initialized to 0
   static int enabled_;
+
+#ifdef SERIALBOX_ASYNC_API
+  std::vector<std::future<void>> tasks_;
+#endif
 };
+
+/// @}
 
 } // namespace serialbox
 

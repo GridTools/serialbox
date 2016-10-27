@@ -39,6 +39,20 @@ extern "C" {
  */
 serialboxArrayOfString_t* serialboxArchiveGetRegisteredArchives(void);
 
+
+/** 
+ * \brief Deduce the name of the `archive` according to the extension of the `filename`
+ *
+ * Extensions    | Archives
+ * ------------- | --------
+ * .dat, .bin    | Binary
+ * .nc           | NetCDF
+ * 
+ * \param filename    Path or name of the file
+ * \return C-String of the archive or NULL if an error occured
+ */
+char* serialboxArchiveGetArchiveFromExtension(const char* filename);
+
 /** @} @} */
 
 #ifdef __cplusplus

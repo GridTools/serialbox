@@ -20,6 +20,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief Utility to deal with Serialbox versions
 struct Version {
   Version() = delete;
@@ -53,6 +56,9 @@ struct Version {
   }
   /// @}
 };
-}
+
+/// @}
+
+} // namespace serialbox
 
 #endif

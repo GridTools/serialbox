@@ -46,7 +46,13 @@ std::unique_ptr<Archive> ArchiveFactory::create(const std::string& name, OpenMod
   auto it = registeredArchives_.find(name);
   if(it != registeredArchives_.end())
     return it->second(mode, directory, prefix);
-  throw Exception("cannot create Archive '%s': archive does not exist or is not registred", name);
+
+  std::stringstream ss;
+  ss << "cannot create Archive '" << name << "': archive does not exist or is not registred.\n";
+  ss << "Registered archives:\n";
+  for(auto archive : registeredArchives_)
+    ss << " " << archive.first << "\n";
+  throw Exception(ss.str().c_str());
 }
 
 void ArchiveFactory::registerArchive(const std::string& name, const CreateArchiveFunction& func) {
@@ -84,6 +90,9 @@ std::string ArchiveFactory::archiveFromExtension(std::string filename) {
 void ArchiveFactory::writeToFile(std::string filename, const StorageView& storageView,
                                  std::string archiveName, std::string fieldname) {
 
+  LOG(info) << "Attempting to write field \"" << fieldname << "\" via \"" << archiveName
+            << "\" archive from " << filename;
+
   if(archiveName == BinaryArchive::Name) {
     BinaryArchive::writeToFile(filename, storageView);
   }
@@ -95,6 +104,8 @@ void ArchiveFactory::writeToFile(std::string filename, const StorageView& storag
   else
     throw Exception("cannot use Archive '%s': archive does not exist or is not registred",
                     filename);
+  
+  LOG(info) << "Successfully wrote field \"" << fieldname << "\" to " << filename;
 }
 
 //===------------------------------------------------------------------------------------------===//
@@ -103,6 +114,10 @@ void ArchiveFactory::writeToFile(std::string filename, const StorageView& storag
 
 void ArchiveFactory::readFromFile(std::string filename, StorageView& storageView,
                                   std::string archiveName, std::string fieldname) {
+  
+  LOG(info) << "Attempting to read field \"" << fieldname << "\" via \"" << archiveName
+            << "\" archive from " << filename;
+  
   if(archiveName == BinaryArchive::Name) {
     BinaryArchive::readFromFile(filename, storageView);
   }
@@ -114,6 +129,8 @@ void ArchiveFactory::readFromFile(std::string filename, StorageView& storageView
   else
     throw Exception("cannot use Archive '%s': archive does not exist or is not registred",
                     filename);
+  
+  LOG(info) << "Successfully read field \"" << fieldname << "\" to " << filename;  
 }
 
 } // namespace serialbox

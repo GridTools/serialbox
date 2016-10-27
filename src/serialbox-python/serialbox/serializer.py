@@ -15,14 +15,15 @@
 
 from ctypes import c_char_p, c_void_p, c_int, Structure, POINTER
 
+import numpy as np
+
 from .archive import Archive
 from .common import get_library, extract_string
 from .error import invoke, SerialboxError
 from .fieldmetainfo import FieldMetaInfo, FieldMetaInfoImpl
 from .metainfomap import MetaInfoMap, MetaInfoImpl, ArrayOfStringImpl
-from .savepoint import Savepoint, SavepointImpl
+from .savepoint import Savepoint, SavepointImpl, SavepointTopCollection, SavepointCollection
 from .type import *
-import numpy as np
 
 lib = get_library()
 
@@ -135,6 +136,49 @@ def register_library(library):
                                                 c_int]
     library.serialboxSerializerRead.restype = None
 
+    library.serialboxSerializerReadSliced.argtypes = [POINTER(SerializerImpl),
+                                                      c_char_p,
+                                                      POINTER(SavepointImpl),
+                                                      c_void_p,
+                                                      POINTER(c_int),
+                                                      c_int,
+                                                      POINTER(c_int)]
+    library.serialboxSerializerReadSliced.restype = None
+
+    library.serialboxSerializerReadAsync.argtypes = [POINTER(SerializerImpl),
+                                                     c_char_p,
+                                                     POINTER(SavepointImpl),
+                                                     c_void_p,
+                                                     POINTER(c_int),
+                                                     c_int]
+    library.serialboxSerializerReadAsync.restype = None
+
+    library.serialboxSerializerWaitForAll.argtypes = [POINTER(SerializerImpl)]
+    library.serialboxSerializerWaitForAll.restype = None
+
+    #
+    # Stateless Serialization
+    #
+    library.serialboxWriteToFile.argtypes = [c_char_p,
+                                             c_void_p,
+                                             c_int,
+                                             POINTER(c_int),
+                                             c_int,
+                                             POINTER(c_int),
+                                             c_char_p,
+                                             c_char_p]
+    library.serialboxWriteToFile.restype = None
+
+    library.serialboxReadFromFile.argtypes = [c_char_p,
+                                              c_void_p,
+                                              c_int,
+                                              POINTER(c_int),
+                                              c_int,
+                                              POINTER(c_int),
+                                              c_char_p,
+                                              c_char_p]
+    library.serialboxReadFromFile.restype = None
+
     #
     # Array
     #
@@ -145,6 +189,8 @@ def register_library(library):
 class Serializer(object):
     """Serializer implementation of the Python Interface.
     """
+    Enabled = 1
+    Disabled = -1
 
     def __init__(self, mode, directory, prefix, archive="Binary"):
         """Initialize the Serializer and prepare it to perform input/output operations.
@@ -193,6 +239,11 @@ class Serializer(object):
 
         self.__serializer = invoke(lib.serialboxSerializerCreate, modeint, dirstr, prefixstr,
                                    archivestr)
+
+        #
+        # Savepoint list
+        #
+        self.__savepoint_list = None
 
     # ===----------------------------------------------------------------------------------------===
     #   Utility
@@ -302,6 +353,9 @@ class Serializer(object):
         :type savepoint: Savepoint
         :raises SerialboxError: Savepoint already exists within the Serializer
         """
+        if self.mode == OpenModeKind.Read:
+            raise SerialboxError("registering savepoints is not permitted in OpenModeKind.Read")
+
         if not invoke(lib.serialboxSerializerAddSavepoint, self.__serializer, savepoint.impl()):
             raise SerialboxError(
                 "savepoint '%s' already exists withing the Serializer" % (savepoint.__str__()))
@@ -328,7 +382,7 @@ class Serializer(object):
         :return: List of registered Savepoint(s) identified  by `name`
         :rtype: list[Savepoint]
         """
-        return [sp for sp in self.savepoints() if sp.name == name]
+        return [sp for sp in self.savepoint_list() if sp.name == name]
 
     def fields_at_savepoint(self, savepoint):
         """Get a list of the registered fieldnames at `savepoint`.
@@ -347,7 +401,7 @@ class Serializer(object):
         invoke(lib.serialboxArrayOfStringDestroy, array)
         return list_array
 
-    def savepoints(self):
+    def savepoint_list(self):
         """ Get a list of registered savepoints within the Serializer.
 
         The Savepoints in the list are copy-constructed from the Savepoints in the Serializer and
@@ -356,16 +410,47 @@ class Serializer(object):
         :return: List of registered savepoints
         :rtype: list[Savepoint]
         """
-        vec_savepoint = lib.serialboxSerializerGetSavepointVector(self.__serializer)
-        num_savepoints = lib.serialboxSerializerGetNumSavepoints(self.__serializer)
 
-        list_savepoint = []
-        for i in range(num_savepoints):
-            list_savepoint += [Savepoint('',
-                                         impl=invoke(lib.serialboxSavepointCreateFromSavepoint,
-                                                     vec_savepoint[i].contents))]
-        invoke(lib.serialboxSerializerDestroySavepointVector, vec_savepoint, num_savepoints)
-        return list_savepoint
+        if self.__savepoint_list:
+            return self.__savepoint_list
+        else:
+            #
+            # Query the savepoint vector
+            #
+            vec_savepoint = lib.serialboxSerializerGetSavepointVector(self.__serializer)
+            num_savepoints = lib.serialboxSerializerGetNumSavepoints(self.__serializer)
+
+            #
+            # Copy the savepoint vector
+            #
+            list_of_savepoints = []
+            for i in range(num_savepoints):
+                list_of_savepoints += [Savepoint('',
+                                                 impl=invoke(lib.serialboxSavepointCreateFromSavepoint,
+                                                             vec_savepoint[i].contents))]
+            #
+            # Destroy the savepoint vector
+            #
+            invoke(lib.serialboxSerializerDestroySavepointVector, vec_savepoint, num_savepoints)
+
+            #
+            # If we are in Read mode, we can safely cache the savepoint list
+            #
+            if self.mode == OpenModeKind.Read:
+                self.__savepoint_list = list_of_savepoints
+
+            return list_of_savepoints
+
+    @property
+    def savepoint(self):
+        """ Access the savepoint collection of this Serializer
+
+        TODO: Describe the mapping etc..
+
+        :return: Collection of all savepoints
+        :rtype: SavepointCollection
+        """
+        return SavepointTopCollection(self.savepoint_list())
 
     # ===----------------------------------------------------------------------------------------===
     #    Register and Query Fields
@@ -381,6 +466,9 @@ class Serializer(object):
 
         :raises SerialboxError: Field with given name already exists within the Serializer
         """
+        if self.mode == OpenModeKind.Read:
+            raise SerialboxError("registering fields is not permitted in OpenModeKind.Read")
+
         namestr = extract_string(name)[0]
         if not invoke(lib.serialboxSerializerAddField, self.__serializer, namestr,
                       fieldmetainfo.impl()):
@@ -428,7 +516,59 @@ class Serializer(object):
     #    Writing & Reading
     # ==-----------------------------------------------------------------------------------------===
 
-    def write(self, name, field, savepoint, register_field=True):
+    @staticmethod
+    def __extract_strides(field):
+        """Extract strides from a numpy.array and convert to unit-strides, returns a C-Array and its
+           size
+        """
+        strides = (c_int * len(field.strides))()
+        for i in range(len(field.strides)):
+            strides[i] = int(field.strides[i] / field.dtype.itemsize)
+        num_strides = c_int(len(field.strides))
+        return strides, num_strides,
+
+    @staticmethod
+    def __extract_dims(field):
+        """Extract dimensions from a numpy.array, returns a C-Array and its size
+        """
+        dims = (c_int * len(field.shape))()
+        for i in range(len(field.shape)):
+            dims[i] = int(field.shape[i])
+        num_dims = c_int(len(field.shape))
+        return dims, num_dims,
+
+    @staticmethod
+    def __extract_savepoint(savepoint):
+        """Extract the savepoint of a savepoint collection
+        """
+        if isinstance(savepoint, SavepointCollection):
+            return savepoint.as_savepoint()
+        else:
+            return savepoint
+
+    def __allocate_or_check_field(self, name, field):
+        """Allocate or check the numpy field for consistency
+        """
+        if not self.has_field(name):
+            raise SerialboxError("field '%s' is not registered within the Serializer" % name)
+
+        info = self.get_field_metainfo(name)
+        if field is None:
+            field = np.ndarray(shape=info.dims, dtype=typeID2numpy(info.type))
+        else:
+            if list(field.shape) != list(info.dims):
+                raise SerialboxError(
+                    "registered dimensions %s do not match dimensions of field (%s) %s" % (
+                        field.shape, name, info.dims))
+
+            if numpy2TypeID(field.dtype) != info.type:
+                raise SerialboxError(
+                    "registered type %s does not match type of field (%s) %s" % (
+                        numpy2TypeID(field.dtype), name, info.type))
+
+        return (field, info,)
+
+    def write(self, name, savepoint, field, register_field=True):
         """ Serialize `field` identified by `name` at `savepoint` to disk
 
         The `savepoint` will be registered at field `name` if not yet present. If `register_field`
@@ -436,10 +576,10 @@ class Serializer(object):
 
         :param name: Name of the field
         :type name: str
-        :param field: Field to serialize
-        :type field: numpy.array
         :param savepoint: Savepoint to at which the field will be serialized
         :type savepoint: Savepoint
+        :param field: Field to serialize
+        :type field: numpy.array
         :param register_field: Register the field if not present
         :type register: bool
 
@@ -447,6 +587,8 @@ class Serializer(object):
         """
         if self.mode == OpenModeKind.Read:
             raise SerialboxError("write operations are not permitted in OpenModeKind.Read")
+
+        savepoint = self.__extract_savepoint(savepoint)
 
         if not self.has_field(name):
             if register_field:
@@ -458,10 +600,7 @@ class Serializer(object):
         #
         # Extract strides and convert to unit-strides
         #
-        strides = (c_int * len(field.strides))()
-        for i in range(len(field.strides)):
-            strides[i] = int(field.strides[i] / field.dtype.itemsize)
-        num_strides = c_int(len(field.strides))
+        strides, num_strides = self.__extract_strides(field)
 
         #
         # Write to disk
@@ -471,16 +610,18 @@ class Serializer(object):
         invoke(lib.serialboxSerializerWrite, self.__serializer, namestr, savepoint.impl(),
                origin_ptr, strides, num_strides)
 
-    def read(self, name, savepoint):
+    def read(self, name, savepoint, field=None):
         """ Deserialize `field` identified by `name` at `savepoint` from disk
 
-        The method will allocate a `numpy.array` with the registered dimensions and type and fill it
-        with the specified data from disk.
+        If `field` is a `numpy.array` it will be filled with data from disk. If `field` is None,
+        a new `numpy.array` will be allocated with the registered dimensions and type.
 
         :param name: Name of the field
         :type name: str
         :param savepoint: Savepoint to at which the field will be serialized
         :type savepoint: Savepoint
+        :param field: Field to serialize
+        :type field: numpy.array
 
         :return: Newly allocated and deserialized field
         :rtype: numpy.array
@@ -490,22 +631,20 @@ class Serializer(object):
         if self.mode != OpenModeKind.Read:
             raise SerialboxError("read operations are not permitted in OpenModeKind.%s" % self.mode)
 
-        if not self.has_field(name):
-            raise SerialboxError("field '%s' is not registered within the Serializer" % name)
+        savepoint = self.__extract_savepoint(savepoint)
 
-        info = self.get_field_metainfo(name)
-        field = np.ndarray(shape=info.dims, dtype=typeID2numpy(info.type))
+        #
+        # Allocate or check the field
+        #
+        field = self.__allocate_or_check_field(name, field)[0]
 
         #
         # Extract strides and convert to unit-strides
         #
-        strides = (c_int * len(field.strides))()
-        for i in range(len(field.strides)):
-            strides[i] = int(field.strides[i] / field.dtype.itemsize)
-        num_strides = c_int(len(field.strides))
+        strides, num_strides = self.__extract_strides(field)
 
         #
-        # Write to disk
+        # Read from disk
         #
         origin_ptr = c_void_p(field.ctypes.data)
         namestr = extract_string(name)[0]
@@ -513,6 +652,225 @@ class Serializer(object):
                origin_ptr, strides, num_strides)
 
         return field
+
+    def read_async(self, name, savepoint, field=None):
+        """ Asynchronously deserialize field `name` (given as `storageView`) at `savepoint` from
+        disk using std::async.
+
+        If `field` is a `numpy.array` it will be filled with data from disk. If `field` is None,
+        a new `numpy.array` will be allocated with the registered dimensions and type.
+
+        This method runs the `read` function asynchronously (potentially in a separate thread which
+        may be part of a thread pool) meaning this function immediately returns. To synchronize all
+        threads, use :func:`Serializer.wait_for_all()`.
+
+        If the archive is not thread-safe or if the library was not configured with
+        `SERIALBOX_ASYNC_API` the method falls back to synchronous execution.
+
+        :param name: Name of the field
+        :type name: str
+        :param savepoint: Savepoint to at which the field will be serialized
+        :type savepoint: Savepoint
+        :param field: Field to serialize
+        :type field: numpy.array
+
+        :return: Newly allocated and deserialized field
+        :rtype: numpy.array
+
+        :raises SerialboxError: Deserialization failed
+        """
+        if self.mode != OpenModeKind.Read:
+            raise SerialboxError("read operations are not permitted in OpenModeKind.%s" % self.mode)
+
+        savepoint = self.__extract_savepoint(savepoint)
+
+        #
+        # Allocate or check the field
+        #
+        field = self.__allocate_or_check_field(name, field)[0]
+
+        #
+        # Extract strides and convert to unit-strides
+        #
+        strides, num_strides = self.__extract_strides(field)
+
+        #
+        # Read from disk
+        #
+        origin_ptr = c_void_p(field.ctypes.data)
+        namestr = extract_string(name)[0]
+        invoke(lib.serialboxSerializerReadAsync, self.__serializer, namestr, savepoint.impl(),
+               origin_ptr, strides, num_strides)
+
+        return field
+
+    def wait_for_all(self):
+        """ Wait for all pending asynchronous read operations and reset the internal queue.
+        """
+        invoke(lib.serialboxSerializerWaitForAll, self.__serializer)
+
+    def read_slice(self, name, savepoint, slice_obj, field=None):
+        """ Deserialize sliced `field` identified by `name`  and `slice` at `savepoint` from disk
+
+        The method will allocate a `numpy.array` with the registered dimensions and type and fill it
+        at specified positions (given by `slice_obj`) with data from disk.
+
+        :param name: Name of the field
+        :type name: str
+        :param savepoint: Savepoint to at which the field will be serialized
+        :type savepoint: Savepoint
+        :param slice_obj: Slice of the data to load
+        :type slice_obj: serialbox.slice
+        :param field: Field to deserialize
+        :type field: numpy.array
+
+        :return: Newly allocated and deserialized field
+        :rtype: numpy.array
+
+        :raises SerialboxError: Deserialization failed
+        """
+        savepoint = self.__extract_savepoint(savepoint)
+
+        if self.mode != OpenModeKind.Read:
+            raise SerialboxError("read operations are not permitted in OpenModeKind.%s" % self.mode)
+
+        #
+        # Allocate or check the field
+        #
+        field, info = self.__allocate_or_check_field(name, field)
+
+        #
+        # Extract strides and convert to unit-strides
+        #
+        strides, num_strides = self.__extract_strides(field)
+
+        #
+        # Construct slice array
+        #
+        dims = info.dims
+        num_dims = len(info.dims)
+
+        c_slice_array = (c_int * (3 * num_dims))()
+
+        # Convert slice_obj to list
+        slice_array = []
+        if isinstance(slice_obj, slice):
+            slice_array += [slice_obj]
+        else:
+            slice_array = list(slice_obj)
+
+        if len(slice_array) > num_dims:
+            raise SerialboxError("number of slices (%i) exceeds number of dimensions (%i)" % (
+                len(slice_array), num_dims))
+
+        while len(slice_array) != num_dims:
+            slice_array += [slice(None, None, None)]
+
+        for i in range(num_dims):
+            slice_triple = slice_array[i]
+
+            if isinstance(slice_triple, int):
+                # start
+                c_slice_array[3 * i] = slice_triple
+
+                # stop
+                c_slice_array[3 * i + 1] = slice_triple + 1
+
+                # end
+                c_slice_array[3 * i + 2] = 1
+            else:
+                # start
+                c_slice_array[3 * i] = 0 if slice_triple.start is None else slice_triple.start
+
+                # stop (expand negative values)
+                if slice_triple.stop is None:
+                    c_slice_array[3 * i + 1] = dims[i]
+                elif slice_triple.stop >= 0:
+                    c_slice_array[3 * i + 1] = slice_triple.stop
+                else:
+                    c_slice_array[3 * i + 1] = dims[i] + slice_triple.stop
+
+                # end
+                c_slice_array[3 * i + 2] = 1 if slice_triple.step is None else slice_triple.step
+
+        #
+        # Read from disk
+        #
+        origin_ptr = c_void_p(field.ctypes.data)
+        namestr = extract_string(name)[0]
+        invoke(lib.serialboxSerializerReadSliced, self.__serializer, namestr, savepoint.impl(),
+               origin_ptr, strides, num_strides, c_slice_array)
+
+        return field
+
+    # ===----------------------------------------------------------------------------------------===
+    #    Stateless Serialization
+    # ==-----------------------------------------------------------------------------------------===
+
+    @staticmethod
+    def to_file(name, field, filename, archive=None):
+        """ Serialize `field` identified by `name` directly to file.
+
+        If a file with `filename` already exists, it's contents will be discarded. If `archive` is
+        None, the method will try to deduce the archive using the extensions of `filename`
+        (See :func:`Archive.archive_from_extension`).
+
+        :param name: Name of the field
+        :type name: str
+        :param field: Field to serialize
+        :type field: numpy.array
+        :param name: Name of the file
+        :type name: str
+
+        :raises SerialboxError: Archive could not be dedcuded or serialization failed
+        """
+        strides, num_strides = Serializer.__extract_strides(field)
+        dims, num_dims = Serializer.__extract_dims(field)
+
+        if not archive:
+            archive = Archive.archive_from_extension(filename)
+
+        origin_ptr = c_void_p(field.ctypes.data)
+        typeint = c_int(numpy2TypeID(field.dtype).value)
+        namestr = extract_string(name)[0]
+        filestr = extract_string(filename)[0]
+        archivestr = extract_string(archive)[0]
+
+        invoke(lib.serialboxWriteToFile, filestr, origin_ptr, typeint, dims, num_dims, strides,
+               namestr, archivestr)
+
+    def from_file(name, field, filename, archive=None):
+        """ Deserialize `field` identified by `name` directly from file.
+
+        If `archive` is None, the method will try to deduce the archive using the extensions of
+        `filename` (See :func:`Archive.archive_from_extension`).
+
+        .. warning::
+
+           This method performs no consistency checks you have to know what you are doing!
+
+        :param name: Name of the field
+        :type name: str
+        :param field: Field to serialize
+        :type field: numpy.array
+        :param name: Name of the file
+        :type name: str
+        :raises SerialboxError: Archive could not be deduced or deserialization failed
+        """
+        strides, num_strides = Serializer.__extract_strides(field)
+        dims, num_dims = Serializer.__extract_dims(field)
+
+        if not archive:
+            archive = Archive.archive_from_extension(filename)
+
+        origin_ptr = c_void_p(field.ctypes.data)
+        typeint = c_int(numpy2TypeID(field.dtype).value)
+        namestr = extract_string(name)[0]
+        filestr = extract_string(filename)[0]
+        archivestr = extract_string(archive)[0]
+
+        invoke(lib.serialboxReadFromFile, filestr, origin_ptr, typeint, dims, num_dims, strides,
+               namestr, archivestr)
 
     def __del__(self):
         if self.__serializer:

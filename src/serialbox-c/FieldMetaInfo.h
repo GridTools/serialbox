@@ -41,8 +41,8 @@ extern "C" {
  * \param numDimensions   Number of dimensions
  * \return pointer to the newly constructed FieldMetaInfo or NULL if an error occurred
  */
-serialboxFieldMetaInfo_t* serialboxFieldMetaInfoCreate(serialboxTypeID type, const int* dimensions,
-                                                       int numDimensions);
+serialboxFieldMetaInfo_t* serialboxFieldMetaInfoCreate(enum serialboxTypeID type,
+                                                       const int* dimensions, int numDimensions);
 
 /**
  * \brief Copy construct the FieldMetaInfo
@@ -95,7 +95,7 @@ char* serialboxFieldMetaInfoToString(const serialboxFieldMetaInfo_t* fieldMetaIn
  * \param fieldMetaInfo  Field meta-information to use
  * \return type-id the field
  */
-serialboxTypeID serialboxFieldMetaInfoGetTypeID(const serialboxFieldMetaInfo_t* fieldMetaInfo);
+enum serialboxTypeID serialboxFieldMetaInfoGetTypeID(const serialboxFieldMetaInfo_t* fieldMetaInfo);
 
 /**
  * \brief Get dimensions

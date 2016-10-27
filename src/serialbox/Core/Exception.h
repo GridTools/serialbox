@@ -20,6 +20,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief Exception class which stores a human-readable error description
 ///
 /// Creates a `std::runtime_error` with `std::runtime_error::what()` set to the formatted
@@ -43,6 +46,8 @@ private:
     return boost::str(f);
   }
 };
+
+/// @}
 
 } // namespace serialbox
 

@@ -24,6 +24,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief Represent an immutable meta information value as a type-id and type-erased data
 ///
 /// The MetaInfoValue can be implicitly casted to the supported types.
@@ -152,6 +155,8 @@ Array<double> MetaInfoValue::as() const;
 
 template <>
 Array<std::string> MetaInfoValue::as() const;
+
+/// @}
 
 } // namespace serialbox
 

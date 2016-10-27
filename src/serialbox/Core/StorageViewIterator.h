@@ -16,12 +16,16 @@
 #define SERIALBOX_CORE_STORAGEVIEWITERATOR_H
 
 #include "serialbox/Core/Compiler.h"
+#include "serialbox/Core/Slice.h"
 #include "serialbox/Core/Type.h"
 #include <iterator>
 #include <type_traits>
 #include <vector>
 
 namespace serialbox {
+
+/// \addtogroup core
+/// @{
 
 /// \brief Forward iterator to access the data of a StorageView
 ///
@@ -55,13 +59,20 @@ public:
   /// \param bytesPerElement  Number of bytes of the underlying data-type
   /// \param dims             Vector of dimensions
   /// \param strides          Vector of strides
+  /// \param slice            Slice of the data
   /// \param beginning        Indicate whether the iterator has reached the end
   StorageViewIteratorBase(value_type* originPtr, int bytesPerElement, const std::vector<int>& dims,
-                          const std::vector<int>& strides, bool beginning)
-      : dims_(dims), strides_(strides), bytesPerElement_(bytesPerElement) {
+                          const std::vector<int>& strides, const Slice& slice, bool beginning)
+      : dims_(dims), strides_(strides), bytesPerElement_(bytesPerElement), slice_(slice) {
 
     if(!(end_ = !beginning)) {
-      index_.resize(dims_.size(), 0);
+
+      if(slice_.empty())
+        index_.resize(dims_.size(), 0);
+      else 
+        for(const auto& triple : slice.sliceTriples())
+          index_.push_back(triple.start);
+
       originPtr_ = originPtr;
       curPtr_ = originPtr_ + computeCurrentIndex();
     }
@@ -88,16 +99,42 @@ public:
   /// \brief Pre-increment
   iterator& operator++() noexcept {
     if(!end_) {
-      // Consecutively increment the dimensions (column-major order)
-      int size = index_.size();
-      for(int i = 0; i < size; ++i)
-        if(SERIALBOX_BUILTIN_LIKELY(++index_[i] < dims_[i]))
-          break;
-        else {
-          index_[i] = 0;
-          // If we overflow in the last dimension we reached the end
-          if(SERIALBOX_BUILTIN_UNLIKELY(i == size - 1))
-            end_ = true;
+
+      //
+      // Unsliced increment
+      //
+      if(slice_.empty()) {
+
+        // Consecutively increment the dimensions (column-major order)
+        int size = index_.size();
+        for(int i = 0; i < size; ++i)
+          if(SERIALBOX_BUILTIN_LIKELY(++index_[i] < dims_[i]))
+            break;
+          else {
+            index_[i] = 0;
+            // If we overflow in the last dimension we reached the end
+            if(SERIALBOX_BUILTIN_UNLIKELY(i == size - 1))
+              end_ = true;
+          }
+
+        //
+        // Sliced increment
+        //
+      } else {
+
+        // Consecutively increment the dimensions (column-major order) with associated step
+        int size = index_.size();
+        const auto& triples = slice_.sliceTriples();
+        
+        for(int i = 0; i < size; ++i)
+          if((index_[i] += triples[i].step) < triples[i].stop)
+            break;
+          else {
+            index_[i] = triples[i].start;
+            // If we overflow in the last dimension we reached the end
+            if(SERIALBOX_BUILTIN_UNLIKELY(i == size - 1))
+              end_ = true;
+          }
         }
 
       // Compute the current data pointer
@@ -117,6 +154,7 @@ public:
     std::swap(originPtr_, other.originPtr_);
     dims_.swap(other.dims_);
     strides_.swap(other.strides_);
+    slice_.swap(other.slice_);
     std::swap(bytesPerElement_, other.bytesPerElement_);
   }
 
@@ -182,6 +220,7 @@ protected:
   std::vector<int> dims_;
   std::vector<int> strides_;
   int bytesPerElement_;
+  Slice slice_;
 };
 
 /// \brief Mutable forward iterator to access the data of a StorageView
@@ -203,10 +242,12 @@ public:
   /// \param bytesPerElement  Number of bytes of the underlying data-type
   /// \param dims             Vector of dimensions
   /// \param strides          Vector of strides
+  /// \param slice            Slice of the data
   /// \param beginning        Indicate whether the iterator has reached the end
   StorageViewIterator(Base::value_type* originPtr, int bytesPerElement,
-                      const std::vector<int>& dims, const std::vector<int>& strides, bool beginning)
-      : Base(originPtr, bytesPerElement, dims, strides, beginning) {}
+                      const std::vector<int>& dims, const std::vector<int>& strides,
+                      const Slice& slice, bool beginning)
+      : Base(originPtr, bytesPerElement, dims, strides, slice, beginning) {}
 };
 
 /// \brief Non-mutable forward iterator to access the data of a StorageView
@@ -228,12 +269,15 @@ public:
   /// \param bytesPerElement  Number of bytes of the underlying data-type
   /// \param dims             Vector of dimensions
   /// \param strides          Vector of strides
+  /// \param slice            Slice of the data
   /// \param beginning        Indicate whether the iterator has reached the end
   ConstStorageViewIterator(Base::value_type* originPtr, int bytesPerElement,
                            const std::vector<int>& dims, const std::vector<int>& strides,
-                           bool beginning)
-      : Base(originPtr, bytesPerElement, dims, strides, beginning) {}
+                           const Slice& slice, bool beginning)
+      : Base(originPtr, bytesPerElement, dims, strides, slice, beginning) {}
 };
+
+/// @}
 
 } // namespace serialbox
 

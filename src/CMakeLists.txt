@@ -91,7 +91,7 @@ function(serialbox_add_library
     
     set_target_properties(${target}Shared PROPERTIES OUTPUT_NAME ${name})
     set_target_properties(${target}Shared PROPERTIES INTERPROCEDURAL_OPTIMIZATION True)  
-    
+
     target_link_libraries(${target}Shared ${libraries})
     install(TARGETS ${target}Shared DESTINATION lib)
     
@@ -100,7 +100,7 @@ function(serialbox_add_library
     endif()
   endif()
   
-  ## Add symlinks of the shared library to the path "addSymlinksTo"
+  ## Add symlinks of the shared library to the paths in "addSymlinksTo"
   if(NOT("${addSymlinksTo}" STREQUAL ""))
   
     if(NOT(buildShared))
@@ -123,6 +123,10 @@ add_subdirectory(serialbox)
 
 if(SERIALBOX_ENABLE_C)
   add_subdirectory(serialbox-c)
+endif()
+
+if(SERIALBOX_ENABLE_FORTRAN)
+  add_subdirectory(serialbox-fortran)
 endif()
 
 if(SERIALBOX_ENABLE_PYTHON)

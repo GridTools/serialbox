@@ -20,7 +20,7 @@ from serialbox import Config
 
 class TestCore(unittest.TestCase):
     def test_config(self):
-        config = Config.to_dict()
+        config = Config().compile_options
         self.assertTrue("BOOST_VERSION" in config)
 
 

@@ -16,7 +16,7 @@
 """'Serialbox Python Interface'"""
 
 __versioninfo__ = (2, 0, 1)
-__version__ = '.'.join(str(v) for v in __versioninfo__) + '-dev'
+__version__ = '.'.join(str(v) for v in __versioninfo__)
 
 #
 # Check python version
@@ -30,7 +30,9 @@ if version_info < (3, 4):
 # Check if numpy is available
 #
 try:
-    from numpy import __version__
+    import numpy
+
+    del numpy
 except ImportError:
     raise Exception("Serialbox requires numpy")
 
@@ -42,10 +44,12 @@ from .type import TypeID, OpenModeKind
 from .error import SerialboxError
 from .logging import Logging
 from .serializer import Serializer
-from .savepoint import Savepoint
+from .savepoint import Savepoint, SavepointCollection
 from .metainfomap import MetaInfoMap
 from .fieldmetainfo import FieldMetaInfo
 from .archive import Archive
+from .slice import Slice
 
 __all__ = ['Config', 'TypeID', 'SerialboxError', 'Logging', 'Serializer', 'Savepoint',
-           'MetaInfoMap', 'FieldMetaInfo', 'OpenModeKind', 'Archive']
+           'SavepointCollection', 'MetaInfoMap', 'FieldMetaInfo', 'OpenModeKind', 'Archive',
+           'Slice']

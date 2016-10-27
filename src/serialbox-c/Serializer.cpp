@@ -12,12 +12,15 @@
  *
 \*===------------------------------------------------------------------------------------------===*/
 
-#include "serialbox-c/Serializer.h"
 #include "serialbox-c/Logging.h"
 #include "serialbox-c/Savepoint.h"
+#include "serialbox-c/Serializer.h"
 #include "serialbox-c/Utility.h"
+#include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Logging.h"
+#include "serialbox/Core/SerializerImpl.h"
+#include "serialbox/Core/Slice.h"
 #include "serialbox/Core/StorageView.h"
 
 using namespace serialboxC;
@@ -354,6 +357,85 @@ void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name
     serialbox::StorageView storageView(
         internal::makeStorageView(ser, name, originPtr, strides, numStrides));
     ser->read(name, *sp, storageView);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
+void serialboxSerializerReadSliced(serialboxSerializer_t* serializer, const char* name,
+                                   const serialboxSavepoint_t* savepoint, void* originPtr,
+                                   const int* strides, int numStrides, const int* slice) {
+  Serializer* ser = toSerializer(serializer);
+  const Savepoint* sp = toConstSavepoint(savepoint);
+
+  try {
+    serialbox::StorageView storageView(
+        internal::makeStorageView(ser, name, originPtr, strides, numStrides));
+
+    serialbox::Slice sliceObj((serialbox::Slice::Empty()));
+    for(int i = 0; i < numStrides; ++i)
+      sliceObj.sliceTriples().push_back({slice[3 * i], slice[3 * i + 1], slice[3 * i + 2]});
+    storageView.setSlice(sliceObj);
+    
+    ser->read(name, *sp, storageView);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
+void serialboxSerializerReadAsync(serialboxSerializer_t* serializer, const char* name,
+                                  const serialboxSavepoint_t* savepoint, void* originPtr,
+                                  const int* strides, int numStrides) {
+  Serializer* ser = toSerializer(serializer);
+  const Savepoint* sp = toConstSavepoint(savepoint);
+
+  try {
+    serialbox::StorageView storageView(
+        internal::makeStorageView(ser, name, originPtr, strides, numStrides)); 
+    ser->readAsync(name, *sp, storageView);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
+void serialboxSerializerWaitForAll(serialboxSerializer_t* serializer) {
+  Serializer* ser = toSerializer(serializer);
+  try {
+    ser->waitForAll();
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
+/*===------------------------------------------------------------------------------------------===*\
+ *     Stateless Serialization
+\*===------------------------------------------------------------------------------------------===*/
+
+void serialboxWriteToFile(const char* filename, void* originPtr, serialboxTypeID typeID,
+                          const int* dims, int numDims, const int* strides, const char* fieldname,
+                          const char* archivename) {
+
+  try {
+    std::vector<int> dimsVec(dims, dims + numDims);
+    std::vector<int> stridesVec(strides, strides + numDims);
+    serialbox::StorageView storageView(originPtr, (serialbox::TypeID)typeID, dimsVec, stridesVec);
+
+    serialbox::ArchiveFactory::writeToFile(filename, storageView, archivename, fieldname);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
+void serialboxReadFromFile(const char* filename, void* originPtr, serialboxTypeID typeID,
+                           const int* dims, int numDims, const int* strides, const char* fieldname,
+                           const char* archivename) {
+
+  try {
+    std::vector<int> dimsVec(dims, dims + numDims);
+    std::vector<int> stridesVec(strides, strides + numDims);
+    serialbox::StorageView storageView(originPtr, (serialbox::TypeID)typeID, dimsVec, stridesVec);
+
+    serialbox::ArchiveFactory::readFromFile(filename, storageView, archivename, fieldname);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }

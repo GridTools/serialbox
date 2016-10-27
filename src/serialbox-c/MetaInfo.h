@@ -108,8 +108,8 @@ int serialboxMetaInfoHasKey(const serialboxMetaInfo_t* metaInfo, const char* key
  * \param key       Key used for lookup
  * \return TypeID of the element
  */
-serialboxTypeID serialboxMetaInfoGetTypeIDOfKey(const serialboxMetaInfo_t* metaInfo,
-                                                const char* key);
+enum serialboxTypeID serialboxMetaInfoGetTypeIDOfKey(const serialboxMetaInfo_t* metaInfo,
+                                                     const char* key);
 
 /**
  * \brief Convert to string

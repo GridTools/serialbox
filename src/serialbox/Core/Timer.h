@@ -19,6 +19,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief High resolution timer
 class Timer {
 public:
@@ -37,6 +40,8 @@ public:
 private:
   std::chrono::time_point<std::chrono::high_resolution_clock> start_;
 };
+
+/// @}
 
 } // namespace serialbox
 

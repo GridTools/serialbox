@@ -13,8 +13,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/StorageView.h"
+#include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Logging.h"
+#include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/StorageViewIterator.h"
 #include <algorithm>
 #include <cassert>
@@ -23,16 +24,20 @@ namespace serialbox {
 
 StorageView::StorageView(void* originPtr, TypeID type, const std::vector<int>& dims,
                          const std::vector<int>& strides)
-    : originPtr_(reinterpret_cast<Byte*>(originPtr)), type_(type), dims_(dims), strides_(strides) {
+    : originPtr_(reinterpret_cast<Byte*>(originPtr)), type_(type), dims_(dims), strides_(strides),
+      slice_((Slice::Empty())) {
   assert(!dims_.empty() && "empty dimension");
   assert(dims_.size() == strides_.size() && "dimension mismatch");
+  assert(slice_.empty());
 }
 
 StorageView::StorageView(void* originPtr, TypeID type, std::vector<int>&& dims,
                          std::vector<int>&& strides)
-    : originPtr_(reinterpret_cast<Byte*>(originPtr)), type_(type), dims_(dims), strides_(strides) {
+    : originPtr_(reinterpret_cast<Byte*>(originPtr)), type_(type), dims_(dims), strides_(strides),
+      slice_((Slice::Empty())) {
   assert(!dims_.empty() && "empty dimension");
   assert(dims_.size() == strides_.size() && "dimension mismatch");
+  assert(slice_.empty());
 }
 
 void StorageView::swap(StorageView& other) noexcept {
@@ -63,9 +68,31 @@ std::ostream& operator<<(std::ostream& stream, const StorageView& s) {
   return stream;
 }
 
-void swap(StorageView& a, StorageView& b) noexcept { a.swap(b); }
+void StorageView::setSlice(Slice slice) {
+  if(slice.sliceTriples().size() > dims_.size())
+    throw Exception("number of slices (%i) exceeds number of dimensions (%i)",
+                    slice.sliceTriples().size(), dims_.size());
+
+  // Append un-sliced dimensions
+  while(slice.sliceTriples().size() != dims_.size())
+    slice();
+
+  // Expand negative Slice.stop
+  for(std::size_t i = 0; i < slice.sliceTriples().size(); ++i) {
+  
+    slice.sliceTriples()[i].stop =
+        (slice.sliceTriples()[i].stop < 0 ? dims_[i] + 1 + slice.sliceTriples()[i].stop : 
+                                            slice.sliceTriples()[i].stop);
+  }
+  assert(slice.sliceTriples().size() == dims_.size());
+  slice_ = std::move(slice);
+}
 
 bool StorageView::isMemCopyable() const noexcept {
+  // Check if data is sliced
+  if(!slice_.empty())
+    return false;
+  
   // Check if data is col-major
   int stride = 1;
   if(strides_[0] != 1)
@@ -88,5 +115,7 @@ std::size_t StorageView::size() const noexcept {
 }
 
 std::size_t StorageView::sizeInBytes() const noexcept { return size() * bytesPerElement(); }
+
+void swap(StorageView& a, StorageView& b) noexcept { a.swap(b); }
 
 } // namespace serialbox

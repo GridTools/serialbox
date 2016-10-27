@@ -28,6 +28,8 @@
 namespace serialbox {
 
 /// \brief Non-portable binary archive
+///
+/// \ingroup core
 class BinaryArchive : public Archive {
 public:
   /// \brief Name of the binary archive
@@ -116,6 +118,9 @@ public:
   virtual bool isReadingThreadSafe() const override { return true; }
 
   virtual bool isWritingThreadSafe() const override { return false; }
+
+  virtual bool isSlicedReadingSupported() const override { return true; }
+
   /// @}
 
   /// \brief Clear fieldTable
@@ -139,16 +144,21 @@ public:
   /// \brief Directly read field (given by `storageView`) from file
   ///
   /// This function can be used to implement stateless deserialization methods.
-  ////
+  ///
   /// \param filename     File to read from
   /// \param storageView  StorageView of the field
   static void readFromFile(std::string filename, StorageView& storageView);
+
+  /// \brief Set the name of the Hash algorithm (used in the upgrade functionality of
+  /// SerializerImpl to assure it is SHA256)
+  void setHashAlgorithmName(std::string name) { hashAlgorithmName_ = name; }
 
 private:
   OpenModeKind mode_;
   boost::filesystem::path directory_;
   std::string prefix_;
   boost::filesystem::path metaDatafile_;
+  std::string hashAlgorithmName_;
 
   json::json json_;
   FieldTable fieldTable_;

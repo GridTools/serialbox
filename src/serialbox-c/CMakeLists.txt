@@ -9,7 +9,7 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-# Generate serialbox-c/Config.h
+## Generate serialbox-c/Config.h
 set(SERIALBOX_CXX_COMPILER ${CMAKE_C_COMPILER})
 set(SERIALBOX_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 if(CMAKE_BUILD_TYPE MATCHES "Release")
@@ -28,6 +28,7 @@ set(SERIALBOX_C_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file w
 configure_file(${SERIALBOX_C_CONFIG_FILE_IN} ${SERIALBOX_C_CONFIG_FILE})
 install(FILES ${SERIALBOX_C_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox-c)
 
+## Compile serialboxC
 set(SOURCES
   Archive.h
   Archive.cpp
@@ -43,7 +44,7 @@ set(SOURCES
   Type.h
 )
 
-set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES} )
+set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})
 
 set(SYMLINKS_TO ${CMAKE_BINARY_DIR}/src/serialbox-python/serialbox
                 ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox)

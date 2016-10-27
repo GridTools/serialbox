@@ -15,13 +15,17 @@
 
 import unittest
 
-from serialbox import Archive
+from serialbox import Archive, SerialboxError
 
 
 class TestArchive(unittest.TestCase):
-    def test_archive(self):
+    def test_registered_archives(self):
         archives = Archive.registered_archives()
         self.assertTrue("Binary" in archives)
+
+    def test_archive_from_extension(self):
+        self.assertEqual(Archive.archive_from_extension("file.dat"), "Binary")
+        self.assertRaises(SerialboxError, Archive.archive_from_extension, "file.X")
 
 if __name__ == "__main__":
     unittest.main()

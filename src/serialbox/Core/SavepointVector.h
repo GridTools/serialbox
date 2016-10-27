@@ -25,6 +25,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief The SavepointVector manages the registered savepoints and their mapping to the stored
 /// fields
 ///
@@ -168,6 +171,8 @@ private:
   savepoint_vector_type savepoints_;        ///< Vector of stored savepoints
   fields_per_savepoint_vector_type fields_; ///< Fields of each savepoint
 };
+
+/// @}
 
 } // namespace serialbox
 

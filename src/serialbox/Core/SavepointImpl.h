@@ -25,6 +25,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 /// \brief Shared implementation of the Savepoint
 ///
 /// Savepoints have a specialization of std::hash and can thus be used in hash-maps such as
@@ -135,6 +138,8 @@ protected:
   std::string name_;                      ///< Name of this savepoint
   std::shared_ptr<MetaInfoMap> metaInfo_; ///< Meta-information of this savepoint
 };
+
+/// @}
 
 } // namespace serialbox
 

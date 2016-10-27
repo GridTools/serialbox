@@ -12,11 +12,11 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/STLExtras.h"
+#include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Type.h"
 #include "serialbox/Core/Unreachable.h"
 #include "serialbox/Core/Version.h"
@@ -224,6 +224,48 @@ void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoin
   archive_->read(storageView, fieldID, info);
 
   LOG(info) << "Successfully deserialized field \"" << name << "\"";
+}
+
+void SerializerImpl::readSliced(const std::string& name, const SavepointImpl& savepoint,
+                                StorageView& storageView, Slice slice) {
+  if(!archive_->isSlicedReadingSupported())
+    throw Exception("archive '%s' does not support sliced reading", archive_->name());
+
+  storageView.setSlice(slice);
+  this->read(name, savepoint, storageView);
+}
+
+void SerializerImpl::readAsyncImpl(const std::string name, const SavepointImpl savepoint,
+                                   StorageView storageView) {
+  this->read(name, savepoint, storageView);
+}
+
+void SerializerImpl::readAsync(const std::string& name, const SavepointImpl& savepoint,
+                               StorageView& storageView) {
+#ifdef SERIALBOX_ASYNC_API
+  if(!archive_->isReadingThreadSafe())
+    this->read(name, savepoint, storageView);
+  else
+    // Bad things can happen if we forward the refrences and directly call the SerializerImpl::read,
+    // we thus just make a copy of the arguments.
+    tasks_.emplace_back(std::async(std::launch::async, &SerializerImpl::readAsyncImpl, this,
+                                   name, savepoint, storageView));
+#else
+  this->read(name, savepoint, storageView);
+#endif
+}
+
+void SerializerImpl::waitForAll() {
+#ifdef SERIALBOX_ASYNC_API
+  try {
+    for(auto& task : tasks_)
+      task.get();
+  } catch(std::exception& e) {
+    tasks_.clear();
+    throw Exception(e.what());
+  }
+  tasks_.clear();
+#endif
 }
 
 //===------------------------------------------------------------------------------------------===//
@@ -496,6 +538,10 @@ bool SerializerImpl::upgradeMetaData() {
 
   // Construct archive but don't parse the meta-data (we will do it ourselves below)
   archive_ = std::make_unique<BinaryArchive>(mode_, directory_.string(), prefix_, true);
+  
+  // Old serialbox always uses SHA256
+  static_cast<BinaryArchive*>(archive_.get())->setHashAlgorithmName(SHA256::Name);
+  
   BinaryArchive::FieldTable& fieldTable = static_cast<BinaryArchive*>(archive_.get())->fieldTable();
 
   if(oldJson.count("OffsetTable")) {

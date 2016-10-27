@@ -28,6 +28,8 @@ namespace serialbox {
 /// \brief Factory to create Archives
 ///
 /// Archives are registered at runtime via the first call to ArchiveFactory::getInstance.
+/// 
+/// \ingroup core
 class ArchiveFactory {
   ArchiveFactory();
 
@@ -69,9 +71,9 @@ public:
   /// \brief Deduce the name of the `archive` according to the extension of the `filename`
   ///
   /// Extensions    | Archives
-  /// ------------- | -------------
-  /// .dat, .bin    | BinaryArchive
-  /// .nc           | NetCDFArchive
+  /// ------------- | --------
+  /// .dat, .bin    | Binary
+  /// .nc           | NetCDF
   ///
   static std::string archiveFromExtension(std::string filename);
 
@@ -81,6 +83,7 @@ public:
   ///                     discarded)
   /// \param storageView  StorageView of the field
   /// \param archiveName  Archive used to perform serialization
+  /// \param fieldname    Name of the field (might be unused for certain archives)
   static void writeToFile(std::string filename, const StorageView& storageView,
                           std::string archiveName, std::string fieldname);
 
@@ -89,6 +92,7 @@ public:
   /// \param filename     File to read from
   /// \param storageView  StorageView of the field
   /// \param archiveName  Archive used to perform serialization
+  /// \param fieldname    Name of the field (might be unused for certain archives)
   static void readFromFile(std::string filename, StorageView& storageView, std::string archiveName,
                            std::string fieldname);
 

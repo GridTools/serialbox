@@ -21,6 +21,9 @@
 
 namespace serialbox {
 
+/// \addtogroup core
+/// @{
+
 namespace internal {
 
 class NullLogger {
@@ -82,6 +85,8 @@ public:
   if(serialbox::Logging::isEnabled())                                                              \
   BOOST_LOG_TRIVIAL(severity)
 #endif
+
+/// @}
 
 } // namespace serialbox
 
