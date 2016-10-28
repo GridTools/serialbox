@@ -317,9 +317,9 @@ TEST(FieldMetaInfoTest, toString) {
   FieldMetaInfo map(type, dims, metaInfo);
 
   ss << map;
-  EXPECT_NE(ss.str().find("type_id"), std::string::npos);
+  EXPECT_NE(ss.str().find("type"), std::string::npos);
   EXPECT_NE(ss.str().find("dims"), std::string::npos);
-  EXPECT_NE(ss.str().find("meta_info"), std::string::npos);
+  EXPECT_NE(ss.str().find("metainfo"), std::string::npos);
   EXPECT_NE(ss.str().find("key1"), std::string::npos);
   EXPECT_NE(ss.str().find("key2"), std::string::npos);
 }

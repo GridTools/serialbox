@@ -233,7 +233,7 @@ std::ostream& operator<<(std::ostream& stream, const MetaInfoMap& s) {
     ss << "\"" << it->first << "\": ";
 
     if(TypeUtil::isArray(it->second.type()))
-      ss << ArrayUtil::toString(it->second.as<Array<std::string>>());
+      ss << "[" << ArrayUtil::toString(it->second.as<Array<std::string>>()) << "]";
     else
       ss << it->second.as<std::string>();
 

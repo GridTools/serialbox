@@ -23,7 +23,27 @@ Serializer
 .. autoclass:: serialbox.Serializer
   :members:
 
-         
+
+.. _MetaInfoMap:
+        
+MetaInfoMap
+-----------
+
+.. autoclass:: serialbox.MetaInfoMap
+  :members:
+  :special-members:
+  :exclude-members: __weakref__
+  
+.. _FieldMetaInfo:
+  
+FieldMetaInfo
+-------------
+
+.. autoclass:: serialbox.FieldMetaInfo
+  :members:
+  :special-members:
+  :exclude-members: __weakref__
+
 .. _Savepoint:
         
 Savepoint
@@ -36,15 +56,30 @@ Savepoint
   
 .. autoclass:: serialbox.SavepointCollection
   :members:
-
-.. _MetaInfoMap:
+  
+.. _Logging:
         
-MetaInfoMap
------------
+Archive
+-------
 
-Objects of this class contain a map of meta-information in form of key = value or key = {value1, ... valueN} pair. The keys are strings and unique, while the values can be integers, booleans, floating point numbers (either single or double precision) or strings.
+.. autoclass:: serialbox.Archive
+  :members:
+  
+  .. _Logging:
+        
+Logging
+-------
 
-.. autoclass:: serialbox.MetaInfoMap
+.. autoclass:: serialbox.Logging
+  :members:
+  
+  
+.. _Config:
+
+Config
+------
+
+.. autoclass:: serialbox.Config
   :members:
 
 .. _OpenModeKind:
@@ -61,6 +96,29 @@ Mode        Value
 ``Write``   1    
 ``Append``  2     
 ==========  =====
+
+.. _TypeID:
+
+TypeID
+------
+
+.. autoclass:: serialbox.TypeID
+
++-------------------------+-----------------------------------------------------------------+----------------------------------------+
+| TypeID                  | Python Type                                                     | C++ Type                               |
++=========================+=================================================================+========================================+
+| ``TypeID.Boolean``      | :class:`bool`                                                   | ``bool``                               |
++-------------------------+-----------------------------------------------------------------+----------------------------------------+
+| ``TypeID.Int32``        | :class:`int`, np.int32                                          | ``int``                                |
++-------------------------+-----------------------------------------------------------------+----------------------------------------+
+| ``TypeID.Int64``        | :class:`int`, np.int64                                          | ``std::int64_t``                       |
++-------------------------+-----------------------------------------------------------------+----------------------------------------+
+| ``TypeID.Float32``      | :class:`float`, np.float32                                      | ``float``                              |
++-------------------------+-----------------------------------------------------------------+----------------------------------------+
+| ``TypeID.Float64``      | :class:`float`, np.float64                                      | ``double``                             |
++-------------------------+-----------------------------------------------------------------+----------------------------------------+
+| ``TypeID.String``       | :class:`str`                                                    | ``std::string``                        |
++-------------------------+-----------------------------------------------------------------+----------------------------------------+
 
 .. _SerialboxError:
 

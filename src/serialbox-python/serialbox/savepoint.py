@@ -125,6 +125,9 @@ class Savepoint(object):
             5
             >>> type(s.metainfo)
             <class 'serialbox.metainfomap.MetaInfoMap'>
+            >>> s.metainfo.insert('key2', 'str')
+            >>> s
+            <MetaInfoMap {"key": 5, "key2": str}>
             >>>
 
         :return: Refrence to the meta-information map
@@ -160,7 +163,7 @@ class Savepoint(object):
             False
             >>>
 
-        :return: ``True`` if self == other, False otherwise
+        :return: `True` if self == other, `False` otherwise
         :rtype: bool
         """
         return bool(invoke(lib.serialboxSavepointEqual, self.__savepoint, other.__savepoint))
@@ -177,7 +180,7 @@ class Savepoint(object):
             True
             >>>
 
-        :return: True if self != other, ``False`` otherwise
+        :return: `True` if self != other, `False` otherwise
         :rtype: bool
         """
         return not self.__eq__(other)
@@ -211,7 +214,7 @@ class SavepointCollection(object, metaclass=ABCMeta):
         >>> isinstance(ser.savepoint, SavepointCollection)
         True
         >>> ser.savpoint.savepoints()
-        [<Savepoint s1>, <Savepoint s2>]
+        [<Savepoint s1 {}>, <Savepoint s2 {}>]
         >>> ser.savepoint.as_savepoint()
         Traceback (most recent call last):
           File "<stdin>", line 1, in ?
@@ -229,7 +232,7 @@ class SavepointCollection(object, metaclass=ABCMeta):
         they were inserted.
 
         :return: List of savepoints in the collection.
-        :rtype: list[Savepoint]
+        :rtype: :class:`list` [:class:`Savepoint <serialbox.Savepoint>`]
         """
         raise NotImplementedError()
 
@@ -306,20 +309,20 @@ class SavepointTopCollection(SavepointCollection):
         return SavepointNamedCollection(savepoint_list, None)
 
     def __getattr__(self, name):
-        """ Access a collection of savepoints identified by ``name``
+        """ Access a collection of savepoints identified by `name`
 
         :param name: Name of the savepoint
         :type name: str
-        :return: Collection of savepoints sharing the same ``name``
+        :return: Collection of savepoints sharing the same `name`
         :rtype: SavepointNamedCollection
         """
         return self.__make_savepoint_collection(name, False)
 
     def __getitem__(self, index):
-        """ Access a collection of savepoints identified by ``index``
+        """ Access a collection of savepoints identified by `index`
 
-        If ``index`` is an integer (``isinstance(index, int``), the method returns the unique Savepoint
-        at poisition ``index`` in the savepoint list. Otherwise,
+        If `index` is an integer (`isinstance(index, int`), the method returns the unique Savepoint
+        at poisition `index` in the savepoint list. Otherwise,
 
         :param index: Name or index of the savepoint
         :type index: str, int
@@ -338,7 +341,7 @@ class SavepointTopCollection(SavepointCollection):
 
 
 class SavepointNamedCollection(SavepointCollection):
-    """ Collection of Savepoints which all share the same ``name``.
+    """ Collection of Savepoints which all share the same `name`.
     """
 
     def __init__(self, savepoint_list, prev_key):
@@ -392,10 +395,10 @@ class SavepointNamedCollection(SavepointCollection):
 
     def __getitem__(self, index):
         #
-        # If ``self.__prev_key`` is not None, we have a query of the form
-        # ``serializer.savepoint.key[1]`` meaning we access the meta-info key=value pair with
+        # If `self.__prev_key` is not None, we have a query of the form
+        # `serializer.savepoint.key[1]` meaning we access the meta-info key=value pair with
         # key=self.__prev_key and value=index. Otherwise, we have a query of the form
-        # ``serializer.savepoint['key1']``.
+        # `serializer.savepoint['key1']`.
         #
         if self.__prev_key:
             savepoint_list = []

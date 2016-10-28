@@ -25,31 +25,29 @@ def register_library(library):
 
 
 class Logging(object):
-    """Logging infastrucutre"""
+    """Logging infastrucutre
+
+    By default, logging is disabled. If ``SERIALBOX_DISABLE_LOGGING`` was used during
+    compilation of the library, the functions do nothing (see :class:`Config <serialbox.Config>`).
+    """
 
     @staticmethod
     def enable():
-        """Enable logging
-
-        By default, the logging is disabled. If `SERIALBOX_DISABLE_LOGGING` is defined, the function
-        does nothing.
+        """Enable logging.
         """
         lib.serialboxLoggingEnable()
 
     @staticmethod
     def disable():
-        """Disable logging
-
-        By default, the logging is disabled. If `SERIALBOX_DISABLE_LOGGING` is defined, the function
-        does nothing.
+        """Disable logging.
         """
         lib.serialboxLoggingDisable()
 
     @staticmethod
     def is_enabled():
-        """Check if logging is enabled
+        """Check if logging is enabled.
 
-        :return: True if logging is enabled, False otherwise
+        :return: `True` if logging is enabled, `False` otherwise
         :rtype: bool
         """
         return bool(lib.serialboxLoggingIsEnabled)

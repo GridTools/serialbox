@@ -76,8 +76,10 @@ void FieldMetaInfo::fromJSON(const json::json& jsonNode) {
 }
 
 std::string FieldMetaInfo::toString() const {
-  std::string str = toJSON().dump(4);
-  return str;
+  std::stringstream ss;
+  ss << "type = " << TypeUtil::toString(type_) << ", dims = [" << ArrayUtil::toString(dims_)
+     << "], " << "metainfo = " << *metaInfo_;
+  return ss.str();
 }
 
 std::ostream& operator<<(std::ostream& stream, const FieldMetaInfo& f) {
