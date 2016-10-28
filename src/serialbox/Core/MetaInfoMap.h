@@ -142,7 +142,7 @@ public:
   ///
   /// \return Copy of the value of the element as type `T`
   ///
-  /// \throw Exception  Key `key` does not exist or conversion results in truncation of the value
+  /// \throw Exception  `Key` does not exist or conversion results in truncation of the value
   ///
   /// \see MetaInfoValue::as
   template <class ValueType, class KeyType>
@@ -157,6 +157,8 @@ public:
   iterator erase(const_iterator first, const_iterator last) { return map_.erase(first, last); }
 
   /// \brief Return a reference to mapped value given by key
+  /// 
+  /// \throw Exception  `Key` does not exist
   mapped_type& operator[](const key_type& key) noexcept { return map_[key]; }
   mapped_type& operator[](key_type&& key) noexcept { return map_[key]; }
 

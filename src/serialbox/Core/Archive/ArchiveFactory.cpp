@@ -15,57 +15,36 @@
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Archive/NetCDFArchive.h"
+#include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Unreachable.h"
-#include <cstdlib>
-#include <iostream>
 
 namespace serialbox {
-
-ArchiveFactory* ArchiveFactory::instance_ = nullptr;
-
-ArchiveFactory::ArchiveFactory() : registeredArchives_() {}
-
-ArchiveFactory& ArchiveFactory::getInstance() noexcept {
-  if(!instance_) {
-    instance_ = new ArchiveFactory();
-
-    // Register Archives
-    instance_->registerArchive(BinaryArchive::Name, BinaryArchive::create);
-
-#ifdef SERIALBOX_HAS_NETCDF
-    instance_->registerArchive(NetCDFArchive::Name, NetCDFArchive::create);
-#endif
-  }
-
-  return (*instance_);
-}
 
 std::unique_ptr<Archive> ArchiveFactory::create(const std::string& name, OpenModeKind mode,
                                                 const std::string& directory,
                                                 const std::string& prefix) {
-  auto it = registeredArchives_.find(name);
-  if(it != registeredArchives_.end())
-    return it->second(mode, directory, prefix);
-
-  std::stringstream ss;
-  ss << "cannot create Archive '" << name << "': archive does not exist or is not registred.\n";
-  ss << "Registered archives:\n";
-  for(auto archive : registeredArchives_)
-    ss << " " << archive.first << "\n";
-  throw Exception(ss.str().c_str());
-}
-
-void ArchiveFactory::registerArchive(const std::string& name, const CreateArchiveFunction& func) {
-  if(!registeredArchives_.insert({name, func}).second) {
-    std::cerr << "serialbox error: multiple registration of archive '" << name << "'" << std::endl;
-    std::abort();
+  if(name == BinaryArchive::Name) {
+    return std::make_unique<BinaryArchive>(mode, directory, prefix);
+#ifdef SERIALBOX_HAS_NETCDF
+  } else if(name == NetCDFArchive::Name) {
+    return std::make_unique<NetCDFArchive>(mode, directory, prefix);
+#endif
+  } else {
+    std::stringstream ss;
+    ss << "cannot create Archive '" << name << "': archive does not exist or is not registred.\n";
+    ss << "Registered archives:\n";
+    for(const auto& archive : ArchiveFactory::registeredArchives())
+      ss << " " << archive << "\n";
+    throw Exception(ss.str().c_str());
   }
 }
 
-std::vector<std::string> ArchiveFactory::registeredArchives() const {
-  std::vector<std::string> archives;
-  for(auto it = registeredArchives_.begin(), end = registeredArchives_.end(); it != end; ++it)
-    archives.push_back(it->first);
+std::vector<std::string> ArchiveFactory::registeredArchives() {
+  std::vector<std::string> archives{BinaryArchive::Name
+#ifdef SERIALBOX_HAS_NETCDF
+                                    , NetCDFArchive::Name
+#endif
+  };
   return archives;
 }
 

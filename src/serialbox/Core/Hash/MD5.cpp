@@ -1,4 +1,4 @@
-//===-- serialbox/Core/MD5.cpp ------------------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/Has/MD5.cpp --------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,9 +12,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/MD5.h"
 #include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/Exception.h"
+#include "serialbox/Core/Hash/MD5.h"
 #include <algorithm>
 #include <iomanip>
 #include <iterator>

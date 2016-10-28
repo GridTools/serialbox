@@ -1,4 +1,4 @@
-//===-- serialbox/Core/SHA256.h -----------------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/Hash/SHA256.h ------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,36 +12,37 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_SHA256_H
-#define SERIALBOX_CORE_SHA256_H
+#ifndef SERIALBOX_CORE_HASH_SHA256_H
+#define SERIALBOX_CORE_HASH_SHA256_H
 
-#include <string>
+#include "serialbox/Core/Hash/Hash.h"
 
 namespace serialbox {
-
-/// \addtogroup core
-/// @{
 
 /// \brief Implementation of the SHA-1 (Secure Hash Algorithm 1)
 ///
 /// \see
 ///   https://en.wikipedia.org/wiki/SHA-1
-struct SHA256 {
-  SHA256() = delete;
-
+/// 
+/// \ingroup core
+class SHA256 : public Hash {
+public:
   /// \brief Identifier of the hash
   static const char* Name;
 
+  /// \brief Get identifier of the hash as used in the HashFactory
+  ///
+  /// \return Name of the Hash
+  virtual const char* name() const noexcept override { return Name; }
+  
   /// \brief Compute 256 bit hash using SHA-1
   ///
   /// \param data     Binary data
   /// \param length   Lenght of the binary data
   ///
   /// \return SHA-1 hash hex representation as string
-  static std::string hash(const void* data, int length) noexcept;
+  virtual std::string hash(const void* data, int length) override;
 };
-
-/// @}
 
 } // namespace serialbox
 

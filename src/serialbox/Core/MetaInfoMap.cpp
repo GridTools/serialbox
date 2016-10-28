@@ -225,14 +225,6 @@ void MetaInfoMap::fromJSON(const json::json& jsonNode) {
   }
 }
 
-template <class T, class IteratorType>
-static void toStringStream(std::stringstream& ss, IteratorType&& it) {
-  if(TypeUtil::isArray(it->second.type()))
-    ss << "[" << ArrayUtil::toString(it->second.template as<std::vector<T>>()) << "]";
-  else
-    ss << it->second.template as<T>();
-}
-
 std::ostream& operator<<(std::ostream& stream, const MetaInfoMap& s) {
   std::stringstream ss;
   ss << "{";
@@ -240,29 +232,10 @@ std::ostream& operator<<(std::ostream& stream, const MetaInfoMap& s) {
   for(auto it = s.begin(), end = s.end(); it != end; ++it) {
     ss << "\"" << it->first << "\": ";
 
-    auto type = it->second.type();
-    switch(TypeUtil::getPrimitive(type)) {
-    case TypeID::Boolean:
-      toStringStream<bool>(ss, it);
-      break;
-    case TypeID::Int32:
-      toStringStream<int>(ss, it);
-      break;
-    case TypeID::Int64:
-      toStringStream<std::int64_t>(ss, it);
-      break;
-    case TypeID::Float32:
-      toStringStream<float>(ss, it);
-      break;
-    case TypeID::Float64:
-      toStringStream<double>(ss, it);
-      break;
-    case TypeID::String:
-      toStringStream<std::string>(ss, it);
-      break;
-    default:
-      serialbox_unreachable("Invalid TypeID");
-    }
+    if(TypeUtil::isArray(it->second.type()))
+      ss << ArrayUtil::toString(it->second.as<Array<std::string>>());
+    else
+      ss << it->second.as<std::string>();
 
     auto itCp = it;
     if(++itCp != s.end())

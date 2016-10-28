@@ -28,7 +28,7 @@ class ArchiveFactoryTest : public SerializerUnittestBase,
 } // anonymous namespace
 
 TEST_P(ArchiveFactoryTest, registerdArchives) {
-  std::vector<std::string> archives(ArchiveFactory::getInstance().registeredArchives());
+  std::vector<std::string> archives(ArchiveFactory::registeredArchives());
 
   // BinaryArchive is always present
   EXPECT_GE(archives.size(), 1);
@@ -37,10 +37,10 @@ TEST_P(ArchiveFactoryTest, registerdArchives) {
 
 TEST_P(ArchiveFactoryTest, Extension) {
   ASSERT_EQ(ArchiveFactory::archiveFromExtension("test.dat"), "Binary");
-  
+
   if(GetParam() == "NetCDF")
-    ASSERT_EQ(ArchiveFactory::archiveFromExtension("test.nc"), "NetCDF");    
-  
+    ASSERT_EQ(ArchiveFactory::archiveFromExtension("test.nc"), "NetCDF");
+
   ASSERT_THROW(ArchiveFactory::archiveFromExtension("test.X").c_str(), Exception);
 }
 
@@ -69,4 +69,4 @@ TEST_P(ArchiveFactoryTest, writeAndRead) {
 }
 
 INSTANTIATE_TEST_CASE_P(ArchiveTest, ArchiveFactoryTest,
-                        ::testing::ValuesIn(ArchiveFactory::getInstance().registeredArchives()));
+                        ::testing::ValuesIn(ArchiveFactory::registeredArchives()));

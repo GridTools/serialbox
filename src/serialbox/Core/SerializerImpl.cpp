@@ -12,11 +12,12 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Compiler.h"
+#include "serialbox/Core/Hash/HashFactory.h"
 #include "serialbox/Core/STLExtras.h"
+#include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Type.h"
 #include "serialbox/Core/Unreachable.h"
 #include "serialbox/Core/Version.h"
@@ -367,7 +368,7 @@ void SerializerImpl::updateMetaData() {
 }
 
 void SerializerImpl::constructArchive(const std::string& archiveName) {
-  archive_ = ArchiveFactory::getInstance().create(archiveName, mode_, directory_.string(), prefix_);
+  archive_ = ArchiveFactory::create(archiveName, mode_, directory_.string(), prefix_);
 }
 
 //===------------------------------------------------------------------------------------------===//
@@ -525,7 +526,7 @@ bool SerializerImpl::upgradeMetaData() {
   archive_ = std::make_unique<BinaryArchive>(mode_, directory_.string(), prefix_, true);
 
   // Old serialbox always uses SHA256
-  static_cast<BinaryArchive*>(archive_.get())->setHashAlgorithmName(SHA256::Name);
+  static_cast<BinaryArchive*>(archive_.get())->setHash(HashFactory::create("SHA256"));
 
   BinaryArchive::FieldTable& fieldTable = static_cast<BinaryArchive*>(archive_.get())->fieldTable();
 

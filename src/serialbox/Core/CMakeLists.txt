@@ -14,16 +14,18 @@ set(SOURCES
   FieldMetaInfo.cpp
   FieldID.cpp
   Logging.cpp
-  MD5.cpp
   MetaInfoMap.cpp
   MetaInfoValue.cpp
   SavepointImpl.cpp
   SavepointVector.cpp
   SerializerImpl.cpp
   StorageView.cpp
-  SHA256.cpp
   Type.cpp
   Unreachable.cpp
+  
+  Hash/HashFactory.cpp
+  Hash/SHA256.cpp
+  Hash/MD5.cpp
   
   Archive/ArchiveFactory.cpp
   Archive/BinaryArchive.cpp

@@ -16,6 +16,7 @@
 #include "serialbox/Core/Logging.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/Version.h"
+#include "serialbox/Core/Hash/HashFactory.h"
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 
@@ -164,13 +165,13 @@ const int BinaryArchive::Version = 0;
 
 BinaryArchive::BinaryArchive(OpenModeKind mode, const std::string& directory,
                              const std::string& prefix, bool skipMetaData)
-    : mode_(mode), directory_(directory), prefix_(prefix), hashAlgorithmName_(HashAlgorithm::Name),
-      json_() {
+    : mode_(mode), directory_(directory), prefix_(prefix), json_() {
 
   LOG(info) << "Creating BinaryArchive (mode = " << mode_ << ") from directory " << directory_;
 
   metaDatafile_ = directory_ / ("ArchiveMetaData-" + prefix_ + ".json");
-
+  hash_ = HashFactory::create(HashFactory::defaultHash());
+  
   try {
     bool isDir = boost::filesystem::is_directory(directory_);
 
@@ -233,10 +234,8 @@ void BinaryArchive::readMetaDataFromJson() {
     throw Exception("binary archive version (%s) does not match the version of the library (%s)",
                     archiveVersion, BinaryArchive::Version);
 
-  // Appending with different hash algorithms doesn't work
-  if(mode_ == OpenModeKind::Append && hashAlgorithm != hashAlgorithmName_)
-    throw Exception("binary archive uses hash algorithm '%s' but library was compiled with '%s'",
-                    hashAlgorithm, hashAlgorithmName_);
+  // Set the correct hash algorithm
+  hash_ = HashFactory::create(hashAlgorithm);
 
   // Deserialize FieldTable
   for(auto it = json_["fields_table"].begin(); it != json_["fields_table"].end(); ++it) {
@@ -260,7 +259,7 @@ void BinaryArchive::writeMetaDataToJson() {
       100 * SERIALBOX_VERSION_MAJOR + 10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
   json_["archive_name"] = BinaryArchive::Name;
   json_["archive_version"] = BinaryArchive::Version;
-  json_["hash_algorithm"] = hashAlgorithmName_;
+  json_["hash_algorithm"] = hash_->name();
 
   // FieldsTable
   for(auto it = fieldTable_.begin(), end = fieldTable_.end(); it != end; ++it) {
@@ -300,7 +299,7 @@ FieldID BinaryArchive::write(const StorageView& storageView, const std::string& 
   binaryBuffer.copyStorageViewToBuffer(storageView);
 
   // Compute hash
-  std::string checksum(HashAlgorithm::hash(binaryBuffer.data(), binaryBuffer.size()));
+  std::string checksum(hash_->hash(binaryBuffer.data(), binaryBuffer.size()));
 
   // Check if field already exists
   auto it = fieldTable_.find(field);

@@ -21,7 +21,7 @@ using namespace serialboxC;
 serialboxArrayOfString_t* serialboxArchiveGetRegisteredArchives(void) {
   serialboxArrayOfString_t* array = NULL;
   try {
-    const auto archiveVector = serialbox::ArchiveFactory::getInstance().registeredArchives();
+    const auto archiveVector = serialbox::ArchiveFactory::registeredArchives();
 
     array = allocate<serialboxArrayOfString_t>();
     array->len = (int)archiveVector.size();
