@@ -18,8 +18,7 @@
 #include "serialbox/Core/Archive/Archive.h"
 #include "serialbox/Core/Compiler.h"
 #include "serialbox/Core/Json.h"
-#include "serialbox/Core/MD5.h"
-#include "serialbox/Core/SHA256.h"
+#include "serialbox/Core/Hash/Hash.h"
 #include <boost/filesystem.hpp>
 #include <string>
 #include <unordered_map>
@@ -37,13 +36,6 @@ public:
 
   /// \brief Revision of the binary archive
   static const int Version;
-
-/// \brief Hash algorithm
-#ifdef SERIALBOX_HAS_OPENSSL
-  using HashAlgorithm = MD5;
-#else
-  using HashAlgorithm = SHA256;
-#endif
 
   /// \brief Offset within a file
   struct FileOffsetType {
@@ -149,17 +141,19 @@ public:
   /// \param storageView  StorageView of the field
   static void readFromFile(std::string filename, StorageView& storageView);
 
-  /// \brief Set the name of the Hash algorithm (used in the upgrade functionality of
-  /// SerializerImpl to assure it is SHA256)
-  void setHashAlgorithmName(std::string name) { hashAlgorithmName_ = name; }
+  /// \brief Set the hash algorithm
+  void setHash(std::unique_ptr<Hash> hash) noexcept { hash_ = std::move(hash); }
+
+  /// \brief Get the hash algorithm
+  const std::unique_ptr<Hash>& hash() const noexcept { return hash_; }
 
 private:
   OpenModeKind mode_;
   boost::filesystem::path directory_;
   std::string prefix_;
-  boost::filesystem::path metaDatafile_;
-  std::string hashAlgorithmName_;
 
+  boost::filesystem::path metaDatafile_;
+  std::unique_ptr<Hash> hash_;
   json::json json_;
   FieldTable fieldTable_;
 };

@@ -74,19 +74,28 @@ class FieldMetaInfo(object):
     """FieldMetaInfo implementation of the Python Interface.
 
     FieldMetaInfos store the meta-information of fields. Each FieldMetaInfo stores the type
-    (:class:`TypeID`) and dimension of the corresponding field and, optionally, arbitrary
-    meta-information in the form of a :class:`MetaInfoMap`.
+    (:class:`TypeID <serialbox.TypeID>`) and dimension of the corresponding field and, optionally,
+    arbitrary meta-information in the form of a :class:`MetaInfoMap <serialbox.MetaInfoMap>`.
+
+        >>> f = FieldMetaInfo(TypeID.Float64, [256, 256, 80])
+        >>> f
+        <FieldMetaInfo type = double, dims = [256, 256, 80], metainfo = {}>
+        >>> f.metainfo.insert('key', 5)
+        >>> f
+        <FieldMetaInfo type = double, dims = [256, 256, 80], metainfo = {"key": 5}>
+        >>>
     """
 
     def __init__(self, type, dims, metainfo=None, impl=None):
         """Initialize the FieldMetaInfo.
 
-        :param type: TypeID, int -- Type of the field. Either given as a :class:`TypeID` or an
-                                    integer.
-        :param dims: list -- List of dimensions.
+        :param type: Type of the field.
+        :type type: :class:`TypeID <serialbox.TypeID>`, int
+        :param dims: List of dimensions.
+        :type dims: :class:`list` [:class:`int`]
         :param metainfo: Key-value pair dictionary used to set the meta-information
         :type metainfo: dict, MetaInfoMap
-        :param impl: Directly set the implementation pointer (internal use)
+        :param impl: Directly set the implementation pointer [internal use]
         """
         if impl:
             self.__fieldmetainfo = impl
@@ -115,6 +124,13 @@ class FieldMetaInfo(object):
     def clone(self):
         """Clone the FieldMetaInfo map by performing a deepcopy.
 
+            >>> f = FieldMetaInfo(TypeID.Float64, [256, 256, 80])
+            >>> f_clone = f.clone()
+            >>> del f
+            >>> f_clone
+            <FieldMetaInfo type = double, dims = [256, 256, 80], metainfo = {}>
+            >>>
+
         :return: Clone of the FieldMetaInfo
         :rtype: FieldMetaInfo
         """
@@ -127,7 +143,7 @@ class FieldMetaInfo(object):
         """Type of the associated field
 
         :return: Type of the field
-        :rtype: TypeID
+        :rtype: :class:`TypeID <serialbox.TypeID>`
         """
         return TypeID(invoke(lib.serialboxFieldMetaInfoGetTypeID, self.__fieldmetainfo))
 
@@ -136,7 +152,7 @@ class FieldMetaInfo(object):
         """ Dimensions of the associated field.
 
         :return: Dimensions of the field
-        :rtype: list
+        :rtype: :class:`list` [:class:`int`]
         """
         num_dims = invoke(lib.serialboxFieldMetaInfoGetNumDimensions, self.__fieldmetainfo)
         dims_array = invoke(lib.serialboxFieldMetaInfoGetDimensions, self.__fieldmetainfo)
@@ -149,17 +165,17 @@ class FieldMetaInfo(object):
     def metainfo(self):
         """Meta-information of the associated field.
 
-        :return: Refrence to the meta-information map
-        :rtype: MetaInfoMap
+        :return: Refrence to the meta-info map
+        :rtype: :class:`MetaInfoMap <serialbox.MetaInfoMap>`
         """
         return MetaInfoMap(impl=invoke(lib.serialboxFieldMetaInfoGetMetaInfo, self.__fieldmetainfo))
 
     def __eq__(self, other):
         """Test for equality.
 
-        Savepoints compare equal if their names and meta-infor compare equal.
+        FieldMetaInfos compare equal if their type, dimensions and meta-infos compare equal.
 
-        :return: True if self == other, False otherwise
+        :return: `True` if self == other, `False` otherwise
         :rtype: bool
         """
         return bool(
@@ -168,14 +184,14 @@ class FieldMetaInfo(object):
     def __ne__(self, other):
         """Test for inequality.
 
-        :return: True if self != other, False otherwise
+        FieldMetaInfos compare equal if their type, dimensions and meta-infos compare equal.
+
+        :return: `True` if self != other, `False` otherwise
         :rtype: bool
         """
         return not self.__eq__(other)
 
     def impl(self):
-        """Get implementation pointer.
-        """
         return self.__fieldmetainfo
 
     def __del__(self):
@@ -186,5 +202,6 @@ class FieldMetaInfo(object):
 
     def __repr__(self):
         return '<FieldMetaInfo {0}>'.format(self.__str__())
+
 
 register_library(lib)

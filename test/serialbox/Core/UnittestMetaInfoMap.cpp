@@ -312,9 +312,10 @@ TEST(MetaInfoMapTest, toString) {
   MetaInfoMap map;
   map.insert("key1", std::string("value2"));
   map.insert("key2", double(5.1));
-
+  map.insert("array", std::vector<int>{1,2,3});
+  
   ss << map;
-  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "MetaInfoMap"));
   EXPECT_NE(ss.str().find("key1"), std::string::npos);
   EXPECT_NE(ss.str().find("key2"), std::string::npos);
+  EXPECT_NE(ss.str().find("array"), std::string::npos);  
 }

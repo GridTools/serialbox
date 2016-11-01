@@ -15,6 +15,8 @@
 #ifndef SERIALBOX_CORE_ARRAY_H
 #define SERIALBOX_CORE_ARRAY_H
 
+#include <sstream>
+#include <string>
 #include <type_traits>
 #include <vector>
 
@@ -27,6 +29,22 @@ namespace serialbox {
 /// \brief Array class used by serialbox to store meta-information
 template <class T>
 using Array = std::vector<T>;
+
+/// \brief Utilites for Array
+struct ArrayUtil {
+
+  /// \brief Convert to string
+  template <class T>
+  static std::string toString(const Array<T>& array) {
+    std::stringstream ss;
+    if(!array.empty()) {
+      for(std::size_t i = 0; i < array.size() - 1; ++i)
+        ss << array[i] << ", ";
+      ss << array.back();
+    }
+    return ss.str();
+  }
+};
 
 /// \brief Check if type `T` is an Array
 /// @{

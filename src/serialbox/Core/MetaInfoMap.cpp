@@ -12,6 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/Core/Array.h"
 #include "serialbox/Core/MetaInfoMap.h"
 #include "serialbox/Core/Unreachable.h"
 #include <iostream>
@@ -225,12 +226,23 @@ void MetaInfoMap::fromJSON(const json::json& jsonNode) {
 }
 
 std::ostream& operator<<(std::ostream& stream, const MetaInfoMap& s) {
-  json::json j(s.toJSON());
-  json::json jDump;
-  for(auto it = j.begin(), end = j.end(); it != end; ++it)
-    jDump[it.key()] = it.value()["value"];
-  stream << "MetaInfoMap = " << jDump.dump(4);
-  return stream;
+  std::stringstream ss;
+  ss << "{";
+
+  for(auto it = s.begin(), end = s.end(); it != end; ++it) {
+    ss << "\"" << it->first << "\": ";
+
+    if(TypeUtil::isArray(it->second.type()))
+      ss << "[" << ArrayUtil::toString(it->second.as<Array<std::string>>()) << "]";
+    else
+      ss << it->second.as<std::string>();
+
+    auto itCp = it;
+    if(++itCp != s.end())
+      ss << ", ";
+  }
+  ss << "}";
+  return (stream << ss.str());
 }
 
 } // namespace serialbox

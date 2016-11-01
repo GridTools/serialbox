@@ -13,9 +13,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Logging.h"
-#include "serialbox/Core/StorageView.h"
 #include "serialbox/Core/StorageViewIterator.h"
 #include <algorithm>
 #include <cassert>
@@ -79,10 +79,10 @@ void StorageView::setSlice(Slice slice) {
 
   // Expand negative Slice.stop
   for(std::size_t i = 0; i < slice.sliceTriples().size(); ++i) {
-  
+
     slice.sliceTriples()[i].stop =
-        (slice.sliceTriples()[i].stop < 0 ? dims_[i] + 1 + slice.sliceTriples()[i].stop : 
-                                            slice.sliceTriples()[i].stop);
+        (slice.sliceTriples()[i].stop < 0 ? dims_[i] + 1 + slice.sliceTriples()[i].stop
+                                          : slice.sliceTriples()[i].stop);
   }
   assert(slice.sliceTriples().size() == dims_.size());
   slice_ = std::move(slice);
@@ -92,7 +92,7 @@ bool StorageView::isMemCopyable() const noexcept {
   // Check if data is sliced
   if(!slice_.empty())
     return false;
-  
+
   // Check if data is col-major
   int stride = 1;
   if(strides_[0] != 1)

@@ -38,7 +38,7 @@ class Archive(object):
         """Get a list of strings of the registered archives.
 
         :return: Registered archives
-        :rtype: list[str]
+        :rtype: :class:`list` [:class:`str`]
         """
         array = invoke(lib.serialboxArchiveGetRegisteredArchives)
         list_array = []
@@ -52,18 +52,20 @@ class Archive(object):
     def archive_from_extension(filename):
         """ Deduce the name of the `archive` according to the extension of the `filename`.
 
-        Only the registred archives are taken into account!
+        Only the registered archives are taken into account!
 
-         Extensions    | Archives
-         ------------- | --------
-         .dat, .bin    | Binary
-         .nc           | NetCDF
+        ===========  ========
+        Extensions   Archives
+        ===========  ========
+         .dat, .bin  Binary
+         .nc         NetCDF
+        ===========  ========
 
         :param filename: Name of the file
         :type filename: str
         :return: Name of the registered archive matching the file extension
         :rtype: str
-        :raises SerialboxError: Extensions is invalid or no registered archive supports it.
+        :raises SerialboxError: if extensions is invalid or no registered archive supports it.
         """
         filestr = extract_string(filename)[0]
         return invoke(lib.serialboxArchiveGetArchiveFromExtension, filestr).decode()

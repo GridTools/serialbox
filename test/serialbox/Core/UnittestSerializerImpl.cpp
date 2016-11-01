@@ -495,12 +495,13 @@ TEST_F(SerializerImplUtilityTest, JSONFailCorruptedPrefix) {
 
 TEST_F(SerializerImplUtilityTest, toString) {
   SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "Binary");
+  s_write.addGlobalMetaInfo("key", 5);
   std::stringstream ss;
   ss << s_write;
   EXPECT_NE(ss.str().find("mode"), std::string::npos);
   EXPECT_NE(ss.str().find("directory"), std::string::npos);
   EXPECT_NE(ss.str().find("FieldMap"), std::string::npos);
-  EXPECT_NE(ss.str().find("MetaInfoMap"), std::string::npos);
+  EXPECT_NE(ss.str().find("key"), std::string::npos);
   EXPECT_NE(ss.str().find("SavepointVector"), std::string::npos);
 }
 

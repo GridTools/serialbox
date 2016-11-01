@@ -17,8 +17,8 @@
 #define SERIALBOX_CORE_SLICE_H
 
 #include <cassert>
-#include <vector>
 #include <limits>
+#include <vector>
 
 namespace serialbox {
 
@@ -36,7 +36,7 @@ struct SliceTriple {
 ///
 /// The syntax follows closely the slicing syntax used in Python, the equivalent of
 /// `[start1:stop1:step1, ... ,startN:stopN:stepN]` is
-/// `Slice(start1, stop1, step1) ... (startN, stopN, stepN)` with one notable \b exception: The 
+/// `Slice(start1, stop1, step1) ... (startN, stopN, stepN)` with one notable \b exception: The
 /// full dimension `[:]` is represented as `Slice(0, -1)` this
 /// means `[:-1]` corresponds to `Slice(0, -2)`.
 ///
@@ -53,7 +53,7 @@ struct SliceTriple {
 class Slice {
 public:
   struct Empty {};
-  
+
   /// \brief Initialize the slice of the first dimension
   ///
   /// The default arguments correspond to the full dimension (i.e no slicing in the first
@@ -98,7 +98,7 @@ public:
 
   /// \brief Check if slice is empty
   bool empty() const noexcept { return sliceTriples_.empty(); }
-  
+
   /// \brief Swap with `other`
   void swap(Slice& other) noexcept { sliceTriples_.swap(other.sliceTriples_); }
 

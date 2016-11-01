@@ -19,10 +19,10 @@ set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
 set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 configure_file(${doxyfile_in} ${doxyfile} @ONLY)
 
-add_custom_target(docs
+add_custom_target(doxygen
   COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  COMMENT "Generating API documentation with Doxygen" VERBATIM
+  COMMENT "Generating doxygen documentation" VERBATIM
 )
 
 ## Find sphinx
@@ -31,4 +31,21 @@ if(NOT SPHINX_FOUND)
   message(FATAL_ERROR "Sphinx is needed to build the documentation.")
 endif()
 
+add_custom_target(sphinx
+  COMMAND ${SPHINX_EXECUTABLE} -b html -d ${CMAKE_CURRENT_SOURCE_DIR}/sphinx/_build/doctrees 
+          ${CMAKE_CURRENT_SOURCE_DIR}/sphinx/ ${CMAKE_CURRENT_SOURCE_DIR}/sphinx/_build/html
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  COMMENT "Generating sphinx documentation" VERBATIM
+)
+
 ## Find breathe
+
+
+## Generate documentation
+add_custom_target(docs
+  COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
+  COMMAND ${SPHINX_EXECUTABLE} -b html -d ${CMAKE_CURRENT_SOURCE_DIR}/sphinx/_build/doctrees 
+          ${CMAKE_CURRENT_SOURCE_DIR}/sphinx/ ${CMAKE_CURRENT_SOURCE_DIR}/sphinx/_build/html
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  COMMENT "Generating documentation" VERBATIM
+)

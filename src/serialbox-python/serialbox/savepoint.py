@@ -58,25 +58,35 @@ def register_library(library):
 # ==---------------------------------------------------------------------------------------------===
 
 class Savepoint(object):
-    """Savepoint implementation of the Python Interface.
+    """Savepoints are used within the :class:`Serializer <serialbox.Serializer>` to discriminate
+    fields at different points in time. Savepoints in the :class:`Serializer <serialbox.Serializer>`
+    are unique and primarily identified by their :attr:`name <serialbox.Savepoint.name>`
 
-    Savepoints are primarily identified by their `name` and further distinguished by their
-    `meta_info`. Savepoints are used within the :class:`Serializer` to discriminate fields
-    at different points in time.
+        >>> savepoint = Savepoint('savepoint')
+        >>> savepoint.name
+        'savepoint'
+        >>>
+
+    and further distinguished by their :attr:`metainfo <serialbox.Savepoint.metainfo>`
+
+        >>> savepoint = Savepoint('savepoint', {'key': 5})
+        >>> savepoint.metainfo
+        <MetaInfoMap {"key": 5}>
+        >>>
     """
 
     def __init__(self, name, metainfo=None, impl=None):
         """Initialize the Savepoint.
 
-        This method prepares the savepoint for usage and gives a name, which is the only required
+        This method prepares the Savepoint for usage and gives a name, which is the only required
         information for the savepoint to be usable. Meta-information can be added after the
         initialization has been performed.
 
-        :param name: str -- Name of the savepoint
-        :param metainfo: dict -- {Key:value} pair dictionary used for initializing the
-                                 meta-information of the Savepont
-        :param impl: Directly set the implementation pointer (internal use)
-        :raises: SerialboxError -- Savepoint could not be initialized
+        :param str name: Name of the savepoint
+        :param dict metainfo: {Key:value} pair dictionary used for initializing the meta-information
+                              of the Savepont
+        :param SavepointImpl impl: Directly set the implementation pointer [internal use]
+        :raises serialbox.SerialboxError: if Savepoint could not be initialized
         """
         if impl:
             self.__savepoint = impl
@@ -96,22 +106,44 @@ class Savepoint(object):
     def name(self):
         """Name of the Savepoint.
 
-        :return: Name of the savepoint
+            >>> s = Savepoint('savepoint')
+            >>> s.name
+            'savepoint'
+            >>>
+
+        :return str: Name of the savepoint
         :rtype: str
         """
         return invoke(lib.serialboxSavepointGetName, self.__savepoint).decode()
 
     @property
     def metainfo(self):
-        """Meta-information of the Savepoint.
+        """Refrence to the meta-information of the Savepoint.
+
+            >>> s = Savepoint('savepoint', {'key': 5})
+            >>> s.metainfo['key']
+            5
+            >>> type(s.metainfo)
+            <class 'serialbox.metainfomap.MetaInfoMap'>
+            >>> s.metainfo.insert('key2', 'str')
+            >>> s
+            <MetaInfoMap {"key": 5, "key2": str}>
+            >>>
 
         :return: Refrence to the meta-information map
-        :rtype: MetaInfoMap
+        :rtype: :class:`MetaInfoMap <serialbox.MetaInfoMap>`
         """
         return MetaInfoMap(impl=invoke(lib.serialboxSavepointGetMetaInfo, self.__savepoint))
 
     def clone(self):
         """Clone the Savepoint by performing a deepcopy.
+
+            >>> s = Savepoint('savepoint', {'key': 5})
+            >>> s_clone = s.clone()
+            >>> s.metainfo.clear()
+            >>> s_clone
+            <Savepoint sp {"key": 5}>
+            >>>
 
         :return: Clone of the savepoint
         :rtype: Savepoint
@@ -122,9 +154,16 @@ class Savepoint(object):
     def __eq__(self, other):
         """Test for equality.
 
-        Savepoints compare equal if their names and meta-infor compare equal.
+        Savepoints compare equal if their :attr:`names <serialbox.Savepoint.name>` and
+        :attr:`metainfos <serialbox.Savepoint.metainfo>` compare equal.
 
-        :return: True if self == other, False otherwise
+            >>> s1 = Savepoint('savepoint', {'key': 'str'})
+            >>> s2 = Savepoint('savepoint', {'key': 5})
+            >>> s1 == s2
+            False
+            >>>
+
+        :return: `True` if self == other, `False` otherwise
         :rtype: bool
         """
         return bool(invoke(lib.serialboxSavepointEqual, self.__savepoint, other.__savepoint))
@@ -132,14 +171,21 @@ class Savepoint(object):
     def __ne__(self, other):
         """Test for inequality.
 
-        :return: True if self != other, False otherwise
+        Savepoints compare equal if their :attr:`names <serialbox.Savepoint.name>` and
+        :attr:`metainfos <serialbox.Savepoint.metainfo>` compare equal.
+
+            >>> s1 = Savepoint('savepoint', {'key': 'str'})
+            >>> s2 = Savepoint('savepoint', {'key': 5})
+            >>> s1 != s2
+            True
+            >>>
+
+        :return: `True` if self != other, `False` otherwise
         :rtype: bool
         """
         return not self.__eq__(other)
 
     def impl(self):
-        """Get implementation pointer.
-        """
         return self.__savepoint
 
     def __del__(self):
@@ -157,28 +203,53 @@ class Savepoint(object):
 # ==---------------------------------------------------------------------------------------------===
 
 class SavepointCollection(object, metaclass=ABCMeta):
+    """Collection of savepoints. A collection can be obtained by using the
+    :attr:`savepoint <serialbox.Serializer.savepoint>` attribute of the
+    :class:`Serializer <serialbox.Serializer>`.
+
+
+        >>> ser = Serializer(OpenModeKind.Write, '.', 'field')
+        >>> ser.register_savepoint(Savepoint('s1'))
+        >>> ser.register_savepoint(Savepoint('s2'))
+        >>> isinstance(ser.savepoint, SavepointCollection)
+        True
+        >>> ser.savpoint.savepoints()
+        [<Savepoint s1 {}>, <Savepoint s2 {}>]
+        >>> ser.savepoint.as_savepoint()
+        Traceback (most recent call last):
+          File "<stdin>", line 1, in ?
+          File "savepoint.py", line 227, in as_savepoint
+            raise SerialboxError(errstr)
+        serialbox.error.SerialboxError: Savepoint is ambiguous. Candidates are:
+          s1 {}
+          s2 {}
+        >>>
+
+    """
+
     def savepoints(self):
-        """ Get the list of savepoints in this collection.
+        """ Get the list of savepoints in this collection. The savepoints are ordered in the way
+        they were inserted.
 
         :return: List of savepoints in the collection.
-        :rtype: list[Savepoint]
+        :rtype: :class:`list` [:class:`Savepoint <serialbox.Savepoint>`]
         """
         raise NotImplementedError()
 
     def as_savepoint(self):
-        """ Return the unqiue savepoint in the list or raise an Error if list has more than 1
-        element.
+        """ Return the unique savepoint in the list or raise an
+        :class:`SerialboxError <serialbox.SerialboxError>` if list has more than 1 element.
 
-        :return: Savepoint in this collection.
+        :return: Unique savepoint in this collection.
         :rtype: Savepoint
-        :raises SerialboxError: List has more than one savepoint
+        :raises serialbox.SerialboxError: if list has more than one Savepoint
         """
         num_savepoints = len(self.savepoints())
         if num_savepoints == 1:
             return self.savepoints()[0]
 
         if num_savepoints > 1:
-            errstr = "Savepoint is ambiguous. Candiates are:\n"
+            errstr = "Savepoint is ambiguous. Candidates are:\n"
             for sp in self.savepoints():
                 errstr += "  {0}\n".format(str(sp))
             raise SerialboxError(errstr)
@@ -187,10 +258,10 @@ class SavepointCollection(object, metaclass=ABCMeta):
 
 
 def transformed_equal(name, key):
-    """ Return True if `name` can be mapped to the transformed `key` such that `key` is a valid
+    """ Return True if ``name`` can be mapped to the transformed ``key`` such that ``key`` is a valid
     python identifier.
 
-    The following transformation of `key` will be considered:
+    The following transformation of ``key`` will be considered:
         ' '     ==>  '_'
         '-'     ==>  '_'
         '.'     ==>  '_'
@@ -255,7 +326,7 @@ class SavepointTopCollection(SavepointCollection):
 
         :param index: Name or index of the savepoint
         :type index: str, int
-        :return: Collection of savepoints sharing the same `name` or unique savepoint.
+        :return: Collection of savepoints sharing the same ``name`` or unique savepoint.
         :rtype: SavepointNamedCollection, Savepoint
         """
         if isinstance(index, int):
@@ -339,7 +410,7 @@ class SavepointNamedCollection(SavepointCollection):
 
             # Nothing found.. list the available savepoints and raise
             if not savepoint_list:
-                errstr = "no savepoint named '%s' has meta-info: {\"%s\": %s}. Candiates are:\n" % (
+                errstr = "no savepoint named '%s' has meta-info: {\"%s\": %s}. Candidates are:\n" % (
                     self.__savepoint_list[0].name, self.__prev_key, index)
                 for sp in self.savepoints():
                     errstr += "  {0}\n".format(str(sp))

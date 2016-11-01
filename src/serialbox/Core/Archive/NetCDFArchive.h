@@ -30,7 +30,7 @@ namespace serialbox {
 /// \brief Archive based on NetCDF
 ///
 /// \see https://github.com/Unidata/netcdf-c
-/// 
+///
 /// \ingroup core
 class NetCDFArchive : public Archive {
 public:
@@ -88,9 +88,9 @@ public:
   virtual bool isReadingThreadSafe() const override { return false; }
 
   virtual bool isWritingThreadSafe() const override { return false; }
-  
+
   virtual bool isSlicedReadingSupported() const override { return false; }
-  
+
   /// @}
 
   /// \brief Create a NetCDFArchive

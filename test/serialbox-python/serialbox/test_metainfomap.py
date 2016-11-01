@@ -157,7 +157,6 @@ class TestMetaInfo(unittest.TestCase):
         map.insert("key1", 1)
 
         mapstr = str(map)
-        self.assertTrue("MetaInfoMap" in mapstr)
         self.assertTrue("key" in mapstr)
         self.assertTrue("1" in mapstr)
 

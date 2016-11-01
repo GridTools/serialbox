@@ -300,11 +300,11 @@ void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name
                              const int* strides, int numStrides);
 
 /**
- * \brief Deserialize sliced field `name` (given by `originPtr`, `strides` and `slice`) at 
+ * \brief Deserialize sliced field `name` (given by `originPtr`, `strides` and `slice`) at
  * `savepoint` from disk
  *
  * The `origingPtr` represent the memory location of the first element in the array i.e skipping
- * all initial padding. The `slice` is a `N = 3 * numStrides` array which contains the slice for 
+ * all initial padding. The `slice` is a `N = 3 * numStrides` array which contains the slice for
  * each dimensions, meaning: `{start1, stop1, step1,  ... ,startN, stopN, stepN}`.
  *
  * \param name         Name of the field
@@ -312,7 +312,7 @@ void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name
  * \param originPtr    Pointer to the origin of the data
  * \param strides      Array of strides of length `numStrides`
  * \param numStrides   Number of strides
- * \param slice        Array of slices (i.e {start, stop, step}) of each dimension of length 
+ * \param slice        Array of slices (i.e {start, stop, step}) of each dimension of length
  *                     `3 * numStrides`
  */
 void serialboxSerializerReadSliced(serialboxSerializer_t* serializer, const char* name,
@@ -324,10 +324,10 @@ void serialboxSerializerReadSliced(serialboxSerializer_t* serializer, const char
  * disk using std::async
  *
  * The `origingPtr` represent the memory location of the first element in the array i.e skipping
- * all initial padding.  This method runs the `read` function (SerializerImpl::read) asynchronously 
- * (potentially in a separate thread which may be part of a thread pool) meaning this function 
+ * all initial padding.  This method runs the `read` function (SerializerImpl::read) asynchronously
+ * (potentially in a separate thread which may be part of a thread pool) meaning this function
  * immediately returns. To synchronize all threads, use \ref serialboxSerializerWaitForAll.
- * 
+ *
  * If the archive is not thread-safe or if the library was not configured with `SERIALBOX_ASYNC_API`
  * the method falls back to synchronous execution.
  *
@@ -336,14 +336,14 @@ void serialboxSerializerReadSliced(serialboxSerializer_t* serializer, const char
  * \param originPtr    Pointer to the origin of the data
  * \param strides      Array of strides of length `numStrides`
  * \param numStrides   Number of strides
- * 
+ *
  * \see
  *    serialbox::SerializerImpl::readAsync
  */
 void serialboxSerializerReadAsync(serialboxSerializer_t* serializer, const char* name,
                                   const serialboxSavepoint_t* savepoint, void* originPtr,
                                   const int* strides, int numStrides);
-/** 
+/**
  * \brief Wait for all pending asynchronous read operations and reset the internal queue
  */
 void serialboxSerializerWaitForAll(serialboxSerializer_t* serializer);

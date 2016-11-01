@@ -18,7 +18,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/SHA256.h"
+#include "serialbox/Core/Hash/SHA256.h"
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
@@ -203,7 +203,7 @@ static void sha256(const void* data, int size, byte_t hash[32]) {
 
 const char* SHA256::Name = "SHA256";
 
-std::string SHA256::hash(const void* data, int length) noexcept {
+std::string SHA256::hash(const void* data, int length) {
   sha256::byte_t hash[32];
   sha256::sha256(data, length, hash);
 

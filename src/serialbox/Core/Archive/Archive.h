@@ -25,7 +25,7 @@
 namespace serialbox {
 
 /// \brief Abstract interface for Archives
-/// 
+///
 /// \ingroup core
 class Archive {
 public:
@@ -78,7 +78,7 @@ public:
 
   /// \brief Indicate whether it's safe for multiple threads to call Archive::write
   virtual bool isWritingThreadSafe() const { return false; }
-  
+
   /// \brief Indicate whether the archive supports `StorageViews` with attached \ref Slice "slices"
   virtual bool isSlicedReadingSupported() const { return false; }
 

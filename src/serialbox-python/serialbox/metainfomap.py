@@ -234,8 +234,6 @@ def register_library(library):
 
 class MetaInfoMapIterator(object):
     """Iterator of the MetaInfoMap
-
-    TODO
     """
 
     def __init__(self, metainfomap):
@@ -264,13 +262,26 @@ class MetaInfoMap(object):
     Objects of this class contain a map of meta-information in form of `key = value` or
     `key = {value1, ... valueN}` pair. The keys are strings and unique, while the values can be
     integers, booleans, floating point numbers (either single or double precision) or strings.
+
+    The elements are internally stored as a hash-map and thus the order of insertion is irrelevant.
+    The MetaInfoMaps can be constrcuted from python dictionary :class:`dict`.
+
+        >>> m = MetaInfoMap({'key1': 1, 'key2': 'str'})
+        >>> m
+        <MetaInfoMap {"key2": str, "key": 5}>
+        >>>
+
     """
 
     def __init__(self, metainfo=None, impl=None):
         """Initialize the MetaInfo map.
 
-        :param metainfo: dict -- Key-value pair dictionary used for initialization
-        :param impl: Directly set the implementation pointer (internal use)
+        If `metainfo` is None, an empty map is created. Elements can be added later with
+        :func:`MetaInfoMap.insert <serialbox.MetaInfoMap.insert>`.
+
+        :param metainfo: Key-value pair dictionary used for initialization
+        :type metainfo: dict
+        :param impl: Directly set the implementation pointer [internal use]
         """
         if impl:
             self.__metainfomap = impl
@@ -284,25 +295,47 @@ class MetaInfoMap(object):
     def clone(self):
         """Clone the MetaInfo map by performing a deepcopy.
 
-        :return: Clone of the savepoint
-        :rtype: Savepoint
+            >>> m = MetaInfoMap({'key1': 1, 'key2': 'str'})
+            >>> m_clone = m.clone()
+            >>> m.clear()
+            >>> m
+            <MetaInfoMap {}>
+            >>> m_clone
+            <MetaInfoMap {"key2": str, "key": 5}>
+
+        :return: Clone of the map
+        :rtype: MetaInfoMap
         """
         return MetaInfoMap(impl=invoke(lib.serialboxMetaInfoCreateFromMetaInfo, self.__metainfomap))
 
     def insert(self, key, value, typeid=None):
         """Insert a new element in the form `key = value` or `key = {value1, ... valueN}` pair.
 
-        The element is inserted only if its key is not equivalent to the key of any other element
-        already in the map (i.e keys must be unique).
+        The element is inserted only if its `key` is not equivalent to the `key` of any other
+        element already in the map (i.e keys must be unique). If the optional parameter `typeid` is
+        omitted, the function will try it's best effort to deduce the typeid, otherwise the value
+        will be converted to match the type of `typeid` (see :class:`TypeID <serialbox.TypeID>`).
 
-        If the optional parameter `typeid` is omitted, the function will try it's best effort to
-        deduce the typeid, otherwise the value will be converted to match the type of `typeid`.
+            >>> m = MetaInfoMap()
+            >>> m.insert('key', 5)
+            >>> m
+            <MetaInfoMap {"key": 5}>
+            >>> m.insert('Array', [1, 2, 3, 4])
+            >>> m
+            <MetaInfoMap {"Array": [1, 2, 3, 4], "key": 5}>
+            >>> m.insert('Float', 5.0, TypeID.Float32)
+            >>> m
+            <MetaInfoMap {"Array": [1, 2, 3, 4], "Float": 5.000000, "key": 5}>
+            >>> type(m['Float'])
+            <class 'float'>
 
-        :param key: str -- Key of the new element
+        :param key: Key of the new element
+        :type key: str
         :param value: Object to be copied to the value of the new element
-        :param typeid: serialbox.TypeID, int -- Type-id to use (optional)
-        :raises: SerialboxError -- Element with key already exists or typeid could not be deduced
-        :raises: TypeError -- typeid is not a serialbox.TypeID or int
+        :param typeid: Type-id to use
+        :type typeid: serialbox.TypeID
+        :raises SerialboxError: if element with key already exists or typeid could not be deduced
+        :raises TypeError: if `typeid` is not a serialbox.TypeID or int
         """
         isArray = False
         keystr = extract_string(key)[0]
@@ -419,17 +452,17 @@ class MetaInfoMap(object):
             raise SerialboxError("cannot insert key '%s': key already exists" % key)
 
     def size(self):
-        """Get number of elements in the meta-information.
+        """Get number of elements in the map.
 
-        :return: Number of elements in the meta-information
+        :return: Number of elements in the map
         :rtype: int
         """
         return invoke(lib.serialboxMetaInfoGetSize, self.__metainfomap)
 
     def empty(self):
-        """Check if meta information is empty.
+        """Check if mao is empty.
 
-        :return: True if map is empty, False otherwise
+        :return: `True` if map is empty, `False` otherwise
         :rtype: bool
         """
         return bool(invoke(lib.serialboxMetaInfoIsEmpty, self.__metainfomap))
@@ -437,7 +470,8 @@ class MetaInfoMap(object):
     def has_key(self, key):
         """Check if and element with key `key` exists.
 
-        :param key: str -- Key of the element
+        :param key: Key of the element
+        :type key: str
         :return: True if element with `key` exists, False otherwise
         :rtype: bool
         """
@@ -453,9 +487,17 @@ class MetaInfoMap(object):
         invoke(lib.serialboxMetaInfoClear, self.__metainfomap)
 
     def to_dict(self):
-        """Convert MetaInfoMap to python builtin dictionary
+        """Convert MetaInfoMap to a python dictionary :class:`dict`.
 
-        The MetaInfoMap is `copied` into the dictionary
+        The MetaInfoMap is `copied` into the dictionary.
+
+            >>> d = {'key': 5, 'string': 'str'}
+            >>> m = MetaInfoMap(d)
+            >>> map_as_dict = m.to_dict()
+            >>> map_as_dict
+            {'key': 5, 'string': 'str'}
+            >>> d == map_as_dict
+            True
 
         :return: copy of the MetaInfo map as a dictionary
         :rtype: dict
@@ -473,7 +515,9 @@ class MetaInfoMap(object):
     def __eq__(self, other):
         """Test for equality.
 
-        :return: True if self == other, False otherwise
+        MetaInfoMaps are equal if all their elements are equal.
+
+        :return: `True` if self == other, `False` otherwise
         :rtype: bool
         """
         return bool(invoke(lib.serialboxMetaInfoEqual, self.__metainfomap, other.__metainfomap))
@@ -481,18 +525,28 @@ class MetaInfoMap(object):
     def __ne__(self, other):
         """Test for inequality.
 
-        :return: True if self != other, False otherwise
+        MetaInfoMaps are equal if all their elements are equal.
+
+        :return: `True` if self != other, `False` otherwise
         :rtype: bool
         """
         return not self.__eq__(other)
 
     def __getitem__(self, key, typeid=None):
-        """Get `value` of element given by `key`.
+        """Get `value` of element given by `key`. The correct type will be inferred.
 
-        :param key: str -- Key of the element
-        :param typeid: int -- Type-id (internal use)
+            >>> m = MetaInfoMap()
+            >>> m.insert('key', 5)
+            >>> m['key']
+            5
+            >>>
+
+        :param key: Key of the element
+        :type key: str
+        :param typeid: Type-id [internal use]
+        :type typeid: int
         :return: Copy of the value of the element
-        :raises: SerialboxError -- Element with `key` does not exist
+        :raises serialbox.SerialboxError: if Element with `key` does not exist
         """
         if type(key) not in StringTypes:
             raise TypeError("parameter 'key' is not a string (type: %s)" % type(key))
@@ -577,7 +631,14 @@ class MetaInfoMap(object):
             raise SerialboxError('internal error: unreachable (typeid = %i)' % typeid)
 
     def __iter__(self):
-        """ Construct the MetaInfoMap iterator.
+        """ Iterate the MetaInfoMap.
+
+            >>> m = MetaInfoMap({'key1': 5, 'key2': 6})
+            >>> for elements in m:
+                ...     print(elements)
+                ('key1', 5)
+                ('key2', 6)
+            >>>
 
         :return: Iterator of MetaInfoMap
         :rtype: MetaInfoMapIterator
@@ -585,15 +646,13 @@ class MetaInfoMap(object):
         return MetaInfoMapIterator(self)
 
     def impl(self):
-        """Get implementation pointer.
-        """
         return self.__metainfomap
 
     def __del__(self):
         invoke(lib.serialboxMetaInfoDestroy, self.__metainfomap)
 
     def __repr__(self):
-        return '<MetaInfoMap {0}>'.format(self.__str__())
+        return "<MetaInfoMap {0}>".format(self.__str__())
 
     def __str__(self):
         return invoke(lib.serialboxMetaInfoToString, self.__metainfomap).decode()

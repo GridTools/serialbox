@@ -1,4 +1,4 @@
-//===-- serialbox/Core/MD5.h --------------------------------------------------------*- C++ -*-===//
+//===-- serialbox/Core/Hash/MD5.h ---------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,25 +12,28 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_MD5_H
-#define SERIALBOX_CORE_MD5_H
+#ifndef SERIALBOX_CORE_HASH_MD5_H
+#define SERIALBOX_CORE_HASH_MD5_H
 
-#include <string>
+#include "serialbox/Core/Hash/Hash.h"
 
 namespace serialbox {
 
-/// \addtogroup core
-/// @{
-
 /// \brief Implementation of MD5 cryptographic hash algorithm
 ///
-/// \see 
+/// \see
 ///   https://www.openssl.org/docs/manmaster/crypto/MD2.html
-struct MD5 {
-  MD5() = delete;
-
+///
+/// \ingroup core
+class MD5 : public Hash {
+public:
   /// \brief Identifier of the hash
   static const char* Name;
+
+  /// \brief Get identifier of the hash as used in the HashFactory
+  ///
+  /// \return Name of the Hash
+  virtual const char* name() const noexcept override { return Name; }
 
   /// \brief Compute 128 bit hash using MD5
   ///
@@ -40,10 +43,8 @@ struct MD5 {
   /// \param length   Lenght of the binary data
   ///
   /// \return MD5 hash hex representation as string
-  static std::string hash(const void* data, int length);
+  virtual std::string hash(const void* data, int length) override;
 };
-
-/// @}
 
 } // namespace serialbox
 

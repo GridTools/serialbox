@@ -25,7 +25,7 @@ extern "C" {
 /**
  * \ingroup serialboxC
  * @{
- * 
+ *
  * \defgroup type Type definitions
  * @{
  */

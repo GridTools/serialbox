@@ -15,6 +15,7 @@
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Compiler.h"
+#include "serialbox/Core/Hash/HashFactory.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/SerializerImpl.h"
 #include "serialbox/Core/Type.h"
@@ -27,21 +28,6 @@
 #include <type_traits>
 
 namespace serialbox {
-
-namespace internal {
-
-template <class VecType>
-static std::string vecToString(VecType&& vec) {
-  std::stringstream ss;
-  if(!vec.empty()) {
-    for(std::size_t i = 0; i < vec.size() - 1; ++i)
-      ss << vec[i] << ", ";
-    ss << vec.back();
-  }
-  return ss.str();
-}
-
-} // namespace internal
 
 int SerializerImpl::enabled_ = 0;
 
@@ -129,8 +115,8 @@ SerializerImpl::checkStorageView(const std::string& name, const StorageView& sto
     throw Exception("dimensions of field '%s' do not match regsitered ones:"
                     "\nRegistred as: [ %s ]"
                     "\nGiven     as: [ %s ]",
-                    name, internal::vecToString(fieldInfo.dims()),
-                    internal::vecToString(storageView.dims()));
+                    name, ArrayUtil::toString(fieldInfo.dims()),
+                    ArrayUtil::toString(storageView.dims()));
   }
   return fieldIt->second;
 }
@@ -248,8 +234,8 @@ void SerializerImpl::readAsync(const std::string& name, const SavepointImpl& sav
   else
     // Bad things can happen if we forward the refrences and directly call the SerializerImpl::read,
     // we thus just make a copy of the arguments.
-    tasks_.emplace_back(std::async(std::launch::async, &SerializerImpl::readAsyncImpl, this,
-                                   name, savepoint, storageView));
+    tasks_.emplace_back(std::async(std::launch::async, &SerializerImpl::readAsyncImpl, this, name,
+                                   savepoint, storageView));
 #else
   this->read(name, savepoint, storageView);
 #endif
@@ -382,7 +368,7 @@ void SerializerImpl::updateMetaData() {
 }
 
 void SerializerImpl::constructArchive(const std::string& archiveName) {
-  archive_ = ArchiveFactory::getInstance().create(archiveName, mode_, directory_.string(), prefix_);
+  archive_ = ArchiveFactory::create(archiveName, mode_, directory_.string(), prefix_);
 }
 
 //===------------------------------------------------------------------------------------------===//
@@ -538,10 +524,10 @@ bool SerializerImpl::upgradeMetaData() {
 
   // Construct archive but don't parse the meta-data (we will do it ourselves below)
   archive_ = std::make_unique<BinaryArchive>(mode_, directory_.string(), prefix_, true);
-  
+
   // Old serialbox always uses SHA256
-  static_cast<BinaryArchive*>(archive_.get())->setHashAlgorithmName(SHA256::Name);
-  
+  static_cast<BinaryArchive*>(archive_.get())->setHash(HashFactory::create("SHA256"));
+
   BinaryArchive::FieldTable& fieldTable = static_cast<BinaryArchive*>(archive_.get())->fieldTable();
 
   if(oldJson.count("OffsetTable")) {
