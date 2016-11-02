@@ -12,12 +12,8 @@ cmake_minimum_required(VERSION 3.1)
 ## Compile serialboxFortran
 set(SOURCES m_serialize.f90)
 
-serialbox_add_library(SerialboxFortran 
-                      SerialboxFortranLibrary 
-                      ""
-                      TRUE
-                      FALSE
-                      ""
-                      ""
-                      ${SOURCES})
+serialbox_add_library(NAME SerialboxFortran 
+                      TARGET SerialboxFortranLibrary 
+                      BUILD_STATIC 
+                      SOURCES ${SOURCES})
 

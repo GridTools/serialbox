@@ -26,21 +26,6 @@ namespace serialbox {
 
 namespace internal {
 
-class NullLogger {
-public:
-  NullLogger() = default;
-
-  static NullLogger& getInstance() noexcept;
-
-  template <class T>
-  NullLogger& operator<<(T&& t) noexcept {
-    return (*this);
-  }
-
-private:
-  static NullLogger* instance_;
-};
-
 extern bool LoggingIsEnabled;
 
 } // namespace internal
@@ -65,15 +50,18 @@ public:
 /// \macro LOG
 /// \brief Logging infrastructure based on trivial logger of Boost.Log
 ///
-/// The macro is used to initiate logging. The \c lvl argument of the macro specifies one of the
-/// following severity levels: \c trace, \c debug, \c info, \c warning, \c error or \c fatal
-/// (see Boost.Log documentation).
+/// The macro is used to initiate logging. The `lvl` argument of the macro specifies one of the
+/// following severity levels: `trace`, `debug`, `info`, `warning`, `error` or `fatal`.
 ///
-/// The logging can be completely turned off by defining SERIALBOX_DISABLE_LOGGING.
+/// The logging can be completely turned off by defining `SERIALBOX_DISABLE_LOGGING`.
 ///
 /// \code
 ///   LOG(info) << "Hello, world!";
 /// \endcode
+/// 
+/// \see
+///   http://www.boost.org/doc/libs/1_62_0/libs/log/doc/html/index.html
+/// 
 #define LOG(severity) SERIALBOX_INTERNAL_LOG(severity)
 
 #ifdef SERIALBOX_DISABLE_LOGGING

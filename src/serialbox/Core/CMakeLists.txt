@@ -30,6 +30,7 @@ set(SOURCES
   Archive/ArchiveFactory.cpp
   Archive/BinaryArchive.cpp
   Archive/NetCDFArchive.cpp
+  Archive/MockArchive.cpp
   
   Frontend/STELLA/MetainfoSet.cpp
   Frontend/STELLA/Savepoint.cpp
@@ -39,11 +40,8 @@ set(SOURCES
 
 set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})
 
-serialbox_add_library(SerialboxCore 
-                      SerialboxCoreLibrary 
-                      ""
-                      TRUE
-                      FALSE
-                      ""
-                      "${EXTERNAL_LIBRARIES}"
-                      ${SOURCES})
+serialbox_add_library(NAME SerialboxCore 
+                      TARGET SerialboxCoreLibrary 
+                      BUILD_STATIC
+                      LIBRARIES ${EXTERNAL_LIBRARIES}
+                      SOURCES ${SOURCES})

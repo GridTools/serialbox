@@ -20,14 +20,6 @@ namespace internal {
 
 bool LoggingIsEnabled = false;
 
-NullLogger* NullLogger::instance_ = nullptr;
-
-NullLogger& NullLogger::getInstance() noexcept {
-  if(instance_)
-    instance_ = new NullLogger();
-  return (*instance_);
-}
-
 } // namespace internal
 
 } // namespace serialbox
