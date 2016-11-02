@@ -28,6 +28,19 @@ using serialbox::Exception;
  *     Serializer
 \*===------------------------------------------------------------------------------------------===*/
 
+void serialboxFortranSerializerWrite(void* serializer, const void* savepoint,
+                                    const char* name, void* originPtr,
+                                    int istride, int jstride, int kstride, int lstride) {
+
+}
+
+
+void serialboxFortranSerializerRead(void* serializer, const void* savepoint,
+                                    const char* name, void* originPtr,
+                                    int istride, int jstride, int kstride, int lstrides) {
+
+}
+
 void serialboxFortranSerializerAddMetaInfoBoolean(void* serializer, const char* key, int value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {

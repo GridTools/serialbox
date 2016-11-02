@@ -31,6 +31,13 @@ extern "C" {
  *     Serializer
 \*===------------------------------------------------------------------------------------------===*/
 
+void serialboxFortranSerializerWrite(void* serializer, const void* savepoint,
+                                    const char* name, void* originPtr,
+                                    int istride, int jstride, int kstride, int lstride);
+
+void serialboxFortranSerializerRead(void* serializer, const void* savepoint,
+                                    const char* name, void* originPtr,
+                                    int istride, int jstride, int kstride, int lstrides);
 /**
  * \brief Add a global meta-information `key=value` pair to the Serializer
  *
@@ -63,7 +70,7 @@ void serialboxFortranSerializerAddMetaInfoString(void* serializer, const char* k
  * \param kSize             The size of the third dimension
  * \param lsize             The size of the fourth dimension
  */
-void serialboxFortranSerializerRegisterField(void* serializer, const char* name, int type,
+void serialboxFrotranSerializerRegisterField(void* serializer, const char* name, int type,
                                              int bytesPerElement, int iSize, int jSize, int kSize,
                                              int lSize);
 
