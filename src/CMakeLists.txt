@@ -9,43 +9,56 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-## \brief Create an object library with target "<target>Objects" and convert them to a static and/or 
-## shared library with name "<name>.a" and <name>.so" respectively
-## 
-## \param name          STRING: Name of the library (e.g SerialboxCore)
-## \param target        STRING: Target used by CMkae (e.g SerialboxCoreLibrary)
-## \param objects       LIST OF STRINGS: Object libraries to include (e.g 
-##                      SerialboxCoreLibraryObjects)
-## \param buildStatic   BOOL: Convert object library to static library
-## \param buildShared   BOOL: Convert object library to shared library (requires 
-##                      SERIALBOX_BUILD_SHARED)
-## \param addSymlinksTo LIST OF STRING: Add symlinks of the shared library to the specified paths
-## \param libraries     LIST OF STRINGS: Specify external libraries or flags to be use when linking 
-##                      the target
-## \param ARGN          LIST OF STRINGS: List of source files
-##
-## Note: To pass in a list of elements you have to *quote* the variable i.e call 
-##
-## set(EXTERNAL_LIBRARIES ${libA} ${libB})
-## serialbox_add_library(Serialbox 
-##                       SerialboxLibrary 
-##                       ""
-##                       TRUE
-##                       FALSE
-##                       ""
-##                       "${EXTERNAL_LIBRARIES}"
-##                       SourceA.cpp SoureB.cpp SourceC.cpp)
-##
-function(serialbox_add_library 
-         name 
-         target 
-         objects
-         buildStatic
-         buildShared
-         addSymlinksTo
-         libraries)
+include(CMakeParseArguments)
 
-  add_library(${target}Objects OBJECT ${ARGN} ${SERIALBOX_HEADERS} ${SERIALBOX_C_HEADERS})
+## \brief Create an object library with target "<TARGET>Objects" and convert them to a static and/or 
+## shared library with name "<NAME>.a" and <NAME>.so" respectively.
+## 
+## NAME          
+##    STRING: Name of the library (e.g SerialboxCore)
+## TARGET        
+##    STRING: Target used by CMake (e.g SerialboxCoreLibrary)
+## OBJECTS       
+##    LIST OF STRINGS: Object libraries to include (e.g SerialboxCoreLibraryObjects)
+## BUILD_STATIC  
+##    BOOL: Convert object library to static library
+## BUILD_SHARED  
+##    BOOL: Convert object library to shared library (requires SERIALBOX_BUILD_SHARED)
+## SYMLINKS
+##    LIST OF STRING: Add symlinks of the shared library to the specified paths
+## LIBRARIES
+##    LIST OF STRINGS: Specify external libraries or flags to be use when linking the target
+## SOURCES
+##    LIST OF STRINGS: List of source files
+##
+function(serialbox_add_library)
+
+  #
+  # Parse arguments
+  #
+  set(options BUILD_SHARED BUILD_STATIC)
+  set(oneValueArgs NAME TARGET)
+  set(multiValueArgs OBJECTS SYMLINKS LIBRARIES SOURCES)
+  cmake_parse_arguments(serialbox_add_library "${options}" "${oneValueArgs}" "${multiValueArgs}" 
+                        ${ARGN})
+                        
+  set(name ${serialbox_add_library_NAME})
+  set(target ${serialbox_add_library_TARGET})
+  set(objects ${serialbox_add_library_OBJECTS})
+  set(buildStatic ${serialbox_add_library_BUILD_STATIC})
+  set(buildShared ${serialbox_add_library_BUILD_SHARED})
+  set(addSymlinksTo ${serialbox_add_library_SYMLINKS})
+  set(libraries ${serialbox_add_library_LIBRARIES})
+  set(sources ${serialbox_add_library_SOURCES})
+  
+  if(NOT("${serialbox_add_library_UNPARSED_ARGUMENTS}" STREQUAL ""))
+    message(FATAL_ERROR "invalid argument ${serialbox_add_library_UNPARSED_ARGUMENTS}")
+  endif()
+  
+  #
+  # Add object library
+  #
+  add_library(${target}Objects OBJECT ${sources} ${SERIALBOX_HEADERS} ${SERIALBOX_C_HEADERS})
 
   if(SERIALBOX_VERBOSE_WARNINGS)
     set_target_properties(${target}Objects PROPERTIES COMPILE_FLAGS -Wall)
@@ -58,14 +71,18 @@ function(serialbox_add_library
     endforeach()
   endif()
   
-  ## Set properties for code-coverage
+  #
+  # Set properties for code-coverage
+  #
   if(DEFINED COVERAGE_SUPPORTED)
     set_property(TARGET ${target}Objects PROPERTY COMPILE_FLAGS ${CMAKE_CXX_FLAGS_COVERAGE})
     set_property(TARGET ${target}Objects PROPERTY LINK_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})
     set_property(TARGET ${target}Objects PROPERTY RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
   endif()
 
-  ## Build static library
+  #
+  # Build static library
+  #
   if(buildStatic)
     add_library(${target}Static STATIC $<TARGET_OBJECTS:${target}Objects> ${OBJECT_SOURCES})
     
@@ -79,8 +96,10 @@ function(serialbox_add_library
       set_property(TARGET ${target}Static PROPERTY LINK_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})
     endif()
   endif()
-
-  ## Build shared library
+  
+  #
+  # Build shared library
+  #
   if(buildShared)
 
     if(NOT(SERIALBOX_BUILD_SHARED))
@@ -100,7 +119,9 @@ function(serialbox_add_library
     endif()
   endif()
   
-  ## Add symlinks of the shared library to the paths in "addSymlinksTo"
+  #
+  # Add symlinks of the shared library to the paths in "addSymlinksTo"
+  #
   if(NOT("${addSymlinksTo}" STREQUAL ""))
   
     if(NOT(buildShared))
@@ -115,7 +136,7 @@ function(serialbox_add_library
          ${path}/$<TARGET_FILE_NAME:${target}Shared>)
     endforeach()
   endif()
-  
+
 endfunction(serialbox_add_library)
 
 ## Add subdirectories

@@ -32,6 +32,7 @@ set(SOURCES
   Archive/UnittestArchiveFactory.cpp 
   Archive/UnittestBinaryArchive.cpp
   Archive/UnittestNetCDFArchive.cpp
+  Archive/UnittestMockArchive.cpp
   
   # Frontend/gridtools/
   Frontend/gridtools/UnittestStorageView.cpp

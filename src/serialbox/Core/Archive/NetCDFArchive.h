@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifndef SERIALBOX_CORE_ARCHIVE_NETCDF_H
-#define SERIALBOX_CORE_ARCHIVE_NETCDF_H
+#ifndef SERIALBOX_CORE_ARCHIVE_NETCDFARCHIVE_H
+#define SERIALBOX_CORE_ARCHIVE_NETCDFARCHIVE_H
 
 #include "serialbox/Core/Compiler.h"
 #ifdef SERIALBOX_HAS_NETCDF

@@ -116,4 +116,4 @@ TEST_P(SerialboxBenchmark, Benchmark) {
 }
 
 INSTANTIATE_TEST_CASE_P(BenchmarkTest, SerialboxBenchmark,
-                        ::testing::ValuesIn(ArchiveFactory::getInstance().registeredArchives()));
+                        ::testing::ValuesIn(ArchiveFactory::registeredArchives()));

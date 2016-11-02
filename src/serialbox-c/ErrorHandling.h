@@ -67,7 +67,7 @@ void serialboxResetFatalErrorHandler(void);
 /**
  * \brief Emit the last error string to stderr and call exit(1)
  */
-void serialboxDefaultFatalErrorHandler(const char* Reason);
+void serialboxDefaultFatalErrorHandler(const char* reason);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     State Error Handler
@@ -75,15 +75,15 @@ void serialboxDefaultFatalErrorHandler(const char* Reason);
 
 /**
  * \brief Store the the current state of the error which can be queried via
- * serialboxStateErrorHandlerGetLastError()
+ * \ref serialboxStateErrorHandlerGetLastError.
  */
-void serialboxStateErrorHandler(const char* Reason);
+void serialboxStateErrorHandler(const char* reason);
 
 /**
  * \brief Check the current error state
  *
- * This function requires to set the ErrorHandler to `serialboxStateErrorHandler`. To obtain the
- * associated error message, use `serialboxStateErrorHandlerGetErrorMessage`.
+ * This function requires to set the ErrorHandler to  \ref serialboxStateErrorHandler. To obtain the
+ * associated error message, use \ref serialboxStateErrorHandlerGetErrorMessage.
  *
  * \return 1 if there was an error, 0 otherwise
  */
@@ -92,7 +92,7 @@ int serialboxStateErrorHandlerHasError(void);
 /**
  * \brief Query the current error state
  *
- * This function requires to set the ErrorHandler to `serialboxStateErrorHandler`.
+ * This function requires to set the ErrorHandler to \ref serialboxStateErrorHandler.
  *
  * \return newly allocated `char*` with the current error message
  */

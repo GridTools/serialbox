@@ -37,10 +37,7 @@
 // Typedefs of the gridtools library
 //
 using storage_traits_t = gridtools::storage_traits<gridtools::enumtype::Host>;
-using layout_t = gridtools::layout_map<0, 1, 2>;
-using backend_t = gridtools::backend<gridtools::enumtype::Host, gridtools::enumtype::structured,
-                                     gridtools::enumtype::Naive>;
-using meta_data_t = storage_traits_t::meta_storage_type<0, layout_t>;
+using meta_data_t = storage_traits_t::meta_storage_type<0, gridtools::layout_map<0, 1, 2>>;
 using storage_t = storage_traits_t::storage_type<double, meta_data_t>;
 
 int main() {
