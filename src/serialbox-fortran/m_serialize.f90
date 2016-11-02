@@ -45,6 +45,9 @@ PUBLIC :: &
   fs_field_exists, fs_register_field, fs_add_field_metainfo, fs_write_field, fs_read_field,        &
   fs_enable_serialization, fs_disable_serialization, fs_print_debuginfo, fs_read_and_perturb_field
 
+  INTEGER, PARAMETER :: MODE_READ = 0
+  INTEGER, PARAMETER :: MODE_WRITE = 1
+  INTEGER, PARAMETER :: MODE_APPEND = 2
 PRIVATE
 
   TYPE :: t_serializer
@@ -112,14 +115,14 @@ PRIVATE
 
   INTERFACE
      SUBROUTINE fs_enable_serialization() &
-          BIND(c, name='fs_enable_serialization')
+          BIND(c, name='serialboxEnableSerialization')
        USE, INTRINSIC :: iso_c_binding
      END SUBROUTINE fs_enable_serialization
   END INTERFACE
 
   INTERFACE
      SUBROUTINE fs_disable_serialization() &
-          BIND(c, name='fs_disable_serialization')
+          BIND(c, name='serialboxDisableSerialization')
        USE, INTRINSIC :: iso_c_binding
      END SUBROUTINE fs_disable_serialization
   END INTERFACE
@@ -275,28 +278,37 @@ SUBROUTINE fs_create_serializer(directory, prefix, mode, serializer)
   TYPE(t_serializer), INTENT(OUT) :: serializer
 
   ! external functions
+
   INTERFACE
-    FUNCTION fs_create_serializer_(directory, directory_length, prefix, prefix_length, openmode) &
-         BIND(c, name='fs_create_serializer')
+    FUNCTION fs_create_serializer_(openmode, directory, prefix, archive) &
+         BIND(c, name='serialboxSerializerCreate')
       USE, INTRINSIC :: iso_c_binding
       TYPE(C_PTR)                           :: fs_create_serializer_
-      CHARACTER(KIND=C_CHAR), DIMENSION(*)  :: directory, prefix
-      INTEGER(C_INT), VALUE                 :: directory_length, prefix_length
-      CHARACTER(KIND=C_CHAR), VALUE         :: openmode
+      INTEGER(KIND=C_INT)        :: openmode
+      CHARACTER(KIND=C_CHAR), DIMENSION(*)  :: directory, prefix, archive
     END FUNCTION fs_create_serializer_
   END INTERFACE
 
   ! Local variables
-  CHARACTER(C_CHAR) :: c_mode
+  INTEGER :: c_mode
   TYPE(C_PTR) :: c_serializer
-
-  c_mode = mode
 
   ! Destroy any pre-existing serializer
   CALL fs_destroy_serializer(serializer)
 
-  c_serializer = fs_create_serializer_(TRIM(directory), LEN_TRIM(directory), &
-                                       TRIM(prefix), LEN_TRIM(prefix), c_mode)
+  SELECT CASE(mode)
+  CASE('r')
+    c_mode = MODE_READ
+  CASE('w')
+    c_mode = MODE_WRITE
+  CASE('a')
+    c_mode = MODE_APPEND
+  END SELECT
+
+  c_serializer = fs_create_serializer_(c_mode,                       &
+                                       TRIM(directory)//C_NULL_CHAR, &
+                                       TRIM(prefix)//C_NULL_CHAR,    &
+                                       C_CHAR_"Binary"//C_NULL_CHAR)
   serializer%serializer_ptr = c_serializer
 
 END SUBROUTINE fs_create_serializer
@@ -313,7 +325,7 @@ SUBROUTINE fs_destroy_serializer(serializer)
   ! External function
   INTERFACE
      SUBROUTINE fs_destroy_serializer_(serializer) &
-          BIND(c, name='fs_destroy_serializer')
+          BIND(c, name='serialboxSerializerDestroy')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), VALUE :: serializer
      END SUBROUTINE fs_destroy_serializer_
@@ -337,6 +349,8 @@ FUNCTION fs_serializer_openmode(serializer)
   CHARACTER(KIND=C_CHAR)         :: fs_serializer_openmode
   TYPE(t_serializer), INTENT(IN) :: serializer
 
+  ! Old: char fs_serializer_openmode(void* serializer)
+  ! New: enum serialboxOpenModeKind serialboxSerializerGetMode(const serialboxSerializer_t* serializer);
   ! External function
   INTERFACE
      FUNCTION fs_serializer_openmode_(serializer) &
@@ -357,6 +371,9 @@ SUBROUTINE fs_add_serializer_metainfo_b(serializer, key, val)
   CHARACTER(LEN=*)               :: key
   LOGICAL, VALUE    :: val
 
+  ! Old: void fs_add_serializer_metainfo_b(void* serializer, const char* name, int name_length,   bool value)
+  ! New: int serialboxMetaInfoAddBoolean(serialboxMetaInfo_t* metaInfo, const char* key,
+  !                                      serialboxBoolean_t value);
   ! External function
   INTERFACE
      SUBROUTINE fs_add_serializer_metainfo_b_(serializer, key, key_length, val) &
