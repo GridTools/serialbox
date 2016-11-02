@@ -63,7 +63,7 @@ void serialboxFortranSerializerAddMetaInfoString(void* serializer, const char* k
  * \param kSize             The size of the third dimension
  * \param lsize             The size of the fourth dimension
  */
-void serialboxFrotranSerializerRegisterField(void* serializer, const char* name, int type,
+void serialboxFortranSerializerRegisterField(void* serializer, const char* name, int type,
                                              int bytesPerElement, int iSize, int jSize, int kSize,
                                              int lSize);
 
