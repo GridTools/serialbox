@@ -221,8 +221,9 @@ int serialboxSerializerHasField(serialboxSerializer_t* serializer, const char* f
  *
  * This function behaves the same as in older versions of serialbox.
  *
+ * \param serializer        Serializer to use
  * \param name              The name of the field
- * \param type              TypeID of the field
+ * \param type              TypeID of the field (\ref serialboxTypeID)
  * \param bytesPerElement   The size in bytes of a scalar value (e.g. 8 for doubles)
  * \param iSize             The size of the first dimension
  * \param jSize             The size of the second dimension

@@ -30,9 +30,7 @@ install(FILES ${SERIALBOX_C_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_PREFIX}/inc
 
 ## Compile serialboxC
 set(SOURCES
-  Archive.h
   Archive.cpp
-  Array.h
   Array.cpp
   Config.cpp
   ErrorHandling.cpp
@@ -41,7 +39,7 @@ set(SOURCES
   MetaInfo.cpp
   Savepoint.cpp
   Serializer.cpp
-  Type.h
+  FortranWrapper.cpp
 )
 
 set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})

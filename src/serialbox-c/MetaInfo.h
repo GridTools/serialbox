@@ -249,8 +249,8 @@ serialboxString_t serialboxMetaInfoGetString(const serialboxMetaInfo_t* metaInfo
  *
  * The allocated array should be freed using the corresponding `serialboxArrayOfXDestroy` methods.
  *
- * \param[in] metaInfo   Meta-information to use
- * \param[in] key        Key of the element
+ * \param metaInfo   Meta-information to use
+ * \param key        Key of the element
  * \return pointer to the newly allocated array
  *
  * \exception FatalError   Key `key` does not exist, conversion results in truncation of the value
