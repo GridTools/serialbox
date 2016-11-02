@@ -74,7 +74,7 @@ void serialboxFortranSerializerAddMetaInfoString(void* serializer, const char* k
   }
 }
 
-void serialboxFrotranSerializerRegisterField(void* serializer, const char* name, int type,
+void serialboxFortranSerializerRegisterField(void* serializer, const char* name, int type,
                                              int bytesPerElement, int iSize, int jSize, int kSize,
                                              int lSize) {
   serialboxSerializerAddField2(static_cast<serialboxSerializer_t*>(serializer), name, type,
