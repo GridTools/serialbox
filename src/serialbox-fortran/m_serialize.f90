@@ -48,7 +48,16 @@ PUBLIC :: &
   INTEGER, PARAMETER :: MODE_READ = 0
   INTEGER, PARAMETER :: MODE_WRITE = 1
   INTEGER, PARAMETER :: MODE_APPEND = 2
+
+
 PRIVATE
+
+  INTEGER, PARAMETER :: SERIALBOX_FIELD_TYPE_BOOLEAN = 1
+  INTEGER, PARAMETER :: SERIALBOX_FIELD_TYPE_INT32 = 2
+  INTEGER, PARAMETER :: SERIALBOX_FIELD_TYPE_INT64 = 3
+  INTEGER, PARAMETER :: SERIALBOX_FIELD_TYPE_FLOAT32 = 4
+  INTEGER, PARAMETER :: SERIALBOX_FIELD_TYPE_FLOAT64 = 5
+  INTEGER, PARAMETER :: SERIALBOX_FIELD_TYPE_STRING = 6
 
   TYPE :: t_serializer
     TYPE(C_PTR) :: serializer_ptr = C_NULL_PTR
@@ -384,17 +393,12 @@ SUBROUTINE fs_add_serializer_metainfo_b(serializer, key, val)
   CHARACTER(LEN=*)               :: key
   LOGICAL, VALUE    :: val
 
-  ! Old: void fs_add_serializer_metainfo_b(void* serializer, const char* name, int name_length,   bool value)
-  ! New: int serialboxMetaInfoAddBoolean(serialboxMetaInfo_t* metaInfo, const char* key,
-  !                                      serialboxBoolean_t value);
-  ! External function
   INTERFACE
-     SUBROUTINE fs_add_serializer_metainfo_b_(serializer, key, key_length, val) &
-          BIND(c, name='fs_add_serializer_metainfo_b')
+     SUBROUTINE fs_add_serializer_metainfo_b_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerAddMetaInfoBoolean')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
-       INTEGER(KIND=C_INT), VALUE           :: key_length
        LOGICAL(KIND=C_BOOL), VALUE          :: val
      END SUBROUTINE fs_add_serializer_metainfo_b_
   END INTERFACE
@@ -402,7 +406,7 @@ SUBROUTINE fs_add_serializer_metainfo_b(serializer, key, val)
   LOGICAL(KIND=C_BOOL) :: c_val
   c_val = val
 
-  CALL fs_add_serializer_metainfo_b_(serializer%serializer_ptr, TRIM(key), LEN_TRIM(key), c_val)
+  CALL fs_add_serializer_metainfo_b_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, c_val)
 END SUBROUTINE fs_add_serializer_metainfo_b
 
 
@@ -413,17 +417,16 @@ SUBROUTINE fs_add_serializer_metainfo_i(serializer, key, val)
 
   ! External function
   INTERFACE
-     SUBROUTINE fs_add_serializer_metainfo_i_(serializer, key, key_length, val) &
-          BIND(c, name='fs_add_serializer_metainfo_i')
+     SUBROUTINE fs_add_serializer_metainfo_i_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerAddMetaInfoInt32')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
-       INTEGER(KIND=C_INT), VALUE           :: key_length
        INTEGER(KIND=C_INT), VALUE           :: val
      END SUBROUTINE fs_add_serializer_metainfo_i_
   END INTERFACE
 
-  CALL fs_add_serializer_metainfo_i_(serializer%serializer_ptr, TRIM(key), LEN_TRIM(key), val)
+  CALL fs_add_serializer_metainfo_i_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
 END SUBROUTINE fs_add_serializer_metainfo_i
 
 
@@ -434,17 +437,16 @@ SUBROUTINE fs_add_serializer_metainfo_f(serializer, key, val)
 
   ! External function
   INTERFACE
-     SUBROUTINE fs_add_serializer_metainfo_f_(serializer, key, key_length, val) &
-          BIND(c, name='fs_add_serializer_metainfo_f')
+     SUBROUTINE fs_add_serializer_metainfo_f_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerAddMetaInfoFloat32')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
-       INTEGER(KIND=C_INT), VALUE           :: key_length
        REAL(KIND=C_FLOAT), VALUE            :: val
      END SUBROUTINE fs_add_serializer_metainfo_f_
   END INTERFACE
 
-  CALL fs_add_serializer_metainfo_f_(serializer%serializer_ptr, TRIM(key), LEN_TRIM(key), val)
+  CALL fs_add_serializer_metainfo_f_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
 END SUBROUTINE fs_add_serializer_metainfo_f
 
 
@@ -455,17 +457,16 @@ SUBROUTINE fs_add_serializer_metainfo_d(serializer, key, val)
 
   ! External function
   INTERFACE
-     SUBROUTINE fs_add_serializer_metainfo_d_(serializer, key, key_length, val) &
-          BIND(c, name='fs_add_serializer_metainfo_d')
+     SUBROUTINE fs_add_serializer_metainfo_d_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerAddMetaInfoFloat64')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
-       INTEGER(KIND=C_INT), VALUE           :: key_length
        REAL(KIND=C_DOUBLE), VALUE           :: val
      END SUBROUTINE fs_add_serializer_metainfo_d_
   END INTERFACE
 
-  CALL fs_add_serializer_metainfo_d_(serializer%serializer_ptr, TRIM(key), LEN_TRIM(key), val)
+  CALL fs_add_serializer_metainfo_d_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
 END SUBROUTINE fs_add_serializer_metainfo_d
 
 
@@ -475,17 +476,17 @@ SUBROUTINE fs_add_serializer_metainfo_s(serializer, key, val)
 
   ! External function
   INTERFACE
-     SUBROUTINE fs_add_serializer_metainfo_s_(serializer, key, key_length, val, val_length) &
-          BIND(c, name='fs_add_serializer_metainfo_s')
+     SUBROUTINE fs_add_serializer_metainfo_s_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerAddMetaInfoString')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key, val
-       INTEGER(KIND=C_INT), VALUE           :: key_length, val_length
      END SUBROUTINE fs_add_serializer_metainfo_s_
   END INTERFACE
 
-  CALL fs_add_serializer_metainfo_s_(serializer%serializer_ptr, TRIM(key), LEN_TRIM(key), &
-                                     TRIM(val), LEN_TRIM(val))
+  CALL fs_add_serializer_metainfo_s_(serializer%serializer_ptr, &
+                                     TRIM(key)//C_NULL_CHAR,    &
+                                     TRIM(val)//C_NULL_CHAR)
 END SUBROUTINE fs_add_serializer_metainfo_s
 
 !=============================================================================
@@ -517,39 +518,41 @@ END SUBROUTINE fs_print_debuginfo
 !  the execution is stopped with an error message.
 !------------------------------------------------------------------------------
 SUBROUTINE fs_register_field(serializer, fieldname, data_type, bytes_per_element, &
-                          isize, jsize, ksize, lsize, &
-                          iminushalo, iplushalo, jminushalo, jplushalo, &
-                          kminushalo, kplushalo, lminushalo, lplushalo)
+                          isize, jsize, ksize, lsize)
 
   TYPE(t_serializer), INTENT(IN) :: serializer
   CHARACTER(LEN=*)               :: fieldname, data_type
-  INTEGER, INTENT(IN)            :: bytes_per_element, isize, jsize, ksize, lsize, &
-                                    iminushalo, iplushalo, jminushalo, jplushalo, &
-                                    kminushalo, kplushalo, lminushalo, lplushalo
+  INTEGER, INTENT(IN)            :: bytes_per_element, isize, jsize, ksize, lsize
 
   ! External function
   INTERFACE
-     SUBROUTINE fs_register_field_(serializer, fieldname, fieldname_length, &
-                                  datatype, datatype_length, bytes_per_element, &
-                                  isize, jsize, ksize, lsize, &
-                                  iminushalo, iplushalo, jminushalo, jplushalo, &
-                                  kminushalo, kplushalo, lminushalo, lplushalo) &
-          BIND(c, name='fs_register_field')
+     SUBROUTINE fs_register_field_(serializer, fieldname, datatype, bytes_per_element, &
+                                  isize, jsize, ksize, lsize)                          &
+          BIND(c, name='serialboxFrotranSerializerRegisterField')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), VALUE                    :: serializer
-       CHARACTER(KIND=C_CHAR), DIMENSION(*)  :: fieldname, datatype
-       INTEGER(C_INT), VALUE                 :: fieldname_length, datatype_length, &
-                                                bytes_per_element, isize, jsize, ksize, lsize, &
-                                                iminushalo, iplushalo, jminushalo, jplushalo, &
-                                                kminushalo, kplushalo, lminushalo, lplushalo
+       CHARACTER(KIND=C_CHAR), DIMENSION(*)  :: fieldname
+       INTEGER(C_INT), VALUE                 :: datatype, bytes_per_element, &
+                                                isize, jsize, ksize, lsize
      END SUBROUTINE fs_register_field_
   END INTERFACE
 
-  CALL fs_register_field_(serializer%serializer_ptr, TRIM(fieldname), LEN_TRIM(fieldname), &
-                         TRIM(data_type), LEN_TRIM(data_type), &
-                         bytes_per_element, isize, jsize, ksize, lsize, &
-                         iminushalo, iplushalo, jminushalo, jplushalo, &
-                         kminushalo, kplushalo, lminushalo, lplushalo)
+  INTEGER :: c_type
+
+  c_type = SERIALBOX_FIELD_TYPE_INT32
+  SELECT CASE(data_type)
+  CASE('bool')
+    c_type = SERIALBOX_FIELD_TYPE_BOOLEAN
+  CASE('int')
+    c_type = SERIALBOX_FIELD_TYPE_INT32
+  CASE('float')
+    c_type = SERIALBOX_FIELD_TYPE_FLOAT32
+  CASE('double')
+    c_type = SERIALBOX_FIELD_TYPE_FLOAT64
+  END SELECT
+
+  CALL fs_register_field_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, &
+                         c_type, bytes_per_element, isize, jsize, ksize, lsize)
 
 END SUBROUTINE fs_register_field
 
@@ -756,7 +759,7 @@ SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, is
   ! Else register field
   ELSE IF(fs_serializer_openmode(serializer) /= 'r') THEN
     CALL fs_register_field(serializer, fieldname, data_type, bytes_per_element, &
-                        isize, jsize, ksize, lsize, 0, 0, 0, 0, 0, 0, 0, 0)
+                        isize, jsize, ksize, lsize)
   ELSE
     WRITE(*,*) "Error: field ", fieldname, " does not exist in the serializer"
     WRITE(*,*) "Aborting"
