@@ -1,7 +1,6 @@
 #define ACC_PREFIX !$acc
 MODULE m_ser
 
-#ifdef SERIALIZE
 USE m_serialize, ONLY: &
   fs_add_savepoint_metainfo, &
   fs_read_field, &
@@ -19,8 +18,6 @@ USE utils_ppser, ONLY:  &
   ppser_reallength, &
   ppser_realtype, &
   ppser_zrperturb
-#endif
-
 
   IMPLICIT NONE
 
@@ -30,16 +27,12 @@ USE utils_ppser, ONLY:  &
     IMPLICIT NONE
     REAL(KIND=8), DIMENSION(:,:,:) :: a
 
-#ifdef SERIALIZE
-PRINT *, '>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<'
-PRINT *, '>>> WARNING: SERIALIZATION IS ON <<<'
-PRINT *, '>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<'
 
 ! setup serialization environment
 call ppser_initialize(directory='.',prefix='SerialboxTest')
 call fs_create_savepoint('sp1', ppser_savepoint)
 call ppser_set_mode(0)
-! file: /Volumes/MeteoSwissCode/serialbox2/examples/Fortran/with_pp_ser/m_ser.f90 lineno: #14
+
 SELECT CASE ( ppser_get_mode() )
   CASE(0)
     call fs_write_field(ppser_serializer, ppser_savepoint, 'ser_a', a)
@@ -48,24 +41,17 @@ SELECT CASE ( ppser_get_mode() )
   CASE(2)
     call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a, ppser_zrperturb)
 END SELECT
-#endif
 
   END SUBROUTINE serialize
 
   SUBROUTINE deserialize(a)
     IMPLICIT NONE
     REAL(KIND=8), DIMENSION(:,:,:) :: a
-
-#ifdef SERIALIZE
-PRINT *, '>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<'
-PRINT *, '>>> WARNING: SERIALIZATION IS ON <<<'
-PRINT *, '>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<'
-
 ! setup serialization environment
 call ppser_initialize(directory='.',prefix='SerialboxTest-output',prefix_ref='SerialboxTest')
 call fs_create_savepoint('sp1', ppser_savepoint)
 call ppser_set_mode(1)
-! file: /Volumes/MeteoSwissCode/serialbox2/examples/Fortran/with_pp_ser/m_ser.f90 lineno: #25
+
 SELECT CASE ( ppser_get_mode() )
   CASE(0)
     call fs_write_field(ppser_serializer, ppser_savepoint, 'ser_a', a)
@@ -75,7 +61,7 @@ SELECT CASE ( ppser_get_mode() )
     call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a, ppser_zrperturb)
 END SELECT
 call ppser_set_mode(0)
-! file: /Volumes/MeteoSwissCode/serialbox2/examples/Fortran/with_pp_ser/m_ser.f90 lineno: #27
+
 SELECT CASE ( ppser_get_mode() )
   CASE(0)
     call fs_write_field(ppser_serializer, ppser_savepoint, 'ser_a', a)
@@ -84,7 +70,6 @@ SELECT CASE ( ppser_get_mode() )
   CASE(2)
     call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a, ppser_zrperturb)
 END SELECT
-#endif
 
   END SUBROUTINE deserialize
 
@@ -94,7 +79,6 @@ END SELECT
     REAL(KIND=8) :: rprecision
     rprecision = 10.0**(-PRECISION(1.0))
 
-#ifdef SERIALIZE
 PRINT *, '>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<'
 PRINT *, '>>> WARNING: SERIALIZATION IS ON <<<'
 PRINT *, '>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<'
@@ -112,7 +96,6 @@ SELECT CASE ( ppser_get_mode() )
   CASE(2)
     call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a, ppser_zrperturb)
 END SELECT
-#endif
 
   END SUBROUTINE deserialize_with_perturb
 
