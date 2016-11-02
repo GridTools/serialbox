@@ -46,9 +46,8 @@ extern "C" {
  * \param archiveName  Name of Archive (e.g "BinaryArchive")
  * \return refrence to the newly constructed Serializer or NULL if an error occurred
  */
-serialboxSerializer_t* serialboxSerializerCreate(enum serialboxOpenModeKind mode,
-                                                 const char* directory, const char* prefix,
-                                                 const char* archive);
+serialboxSerializer_t* serialboxSerializerCreate(int mode, const char* directory,
+                                                 const char* prefix, const char* archive);
 
 /**
  * \brief Destroy the serializer and deallocate all memory
@@ -67,7 +66,7 @@ void serialboxSerializerDestroy(serialboxSerializer_t* serializer);
  * \param serializer  Serializer to use
  * \return mode of the Serializer
  */
-enum serialboxOpenModeKind serialboxSerializerGetMode(const serialboxSerializer_t* serializer);
+int serialboxSerializerGetMode(const serialboxSerializer_t* serializer);
 
 /**
  * \brief Return the directory of the Serializer
@@ -239,11 +238,10 @@ int serialboxSerializerHasField(serialboxSerializer_t* serializer, const char* f
  * \param lPlusHalo         The dimension of the halo in positive l-direction
  * \return 1 if field was added successfully, 0 otherwise
  */
-int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* name,
-                                 enum serialboxTypeID type, int bytesPerElement, int iSize,
-                                 int jSize, int kSize, int lSize, int iMinusHalo, int iPlusHalo,
-                                 int jMinusHalo, int jPlusHalo, int kMinusHalo, int kPlusHalo,
-                                 int lMinusHalo, int lPlusHalo);
+int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* name, int type,
+                                 int bytesPerElement, int iSize, int jSize, int kSize, int lSize,
+                                 int iMinusHalo, int iPlusHalo, int jMinusHalo, int jPlusHalo,
+                                 int kMinusHalo, int kPlusHalo, int lMinusHalo, int lPlusHalo);
 
 /**
  * \brief Get an array of C-strings of all names of the registered fields
@@ -367,8 +365,8 @@ void serialboxSerializerWaitForAll(serialboxSerializer_t* serializer);
  * \param fieldname    Name of the field
  * \param archivename  Name of the archive used for serialization (e.g "Binary")
  */
-void serialboxWriteToFile(const char* filename, void* originPtr, enum serialboxTypeID typeID,
-                          const int* dims, int numDims, const int* strides, const char* fieldname,
+void serialboxWriteToFile(const char* filename, void* originPtr, int typeID, const int* dims,
+                          int numDims, const int* strides, const char* fieldname,
                           const char* archivename);
 
 /**
@@ -388,8 +386,8 @@ void serialboxWriteToFile(const char* filename, void* originPtr, enum serialboxT
  * \param fieldname    Name of the field
  * \param archivename  Name of the archive used for serialization (e.g "Binary")
  */
-void serialboxReadFromFile(const char* filename, void* originPtr, enum serialboxTypeID typeID,
-                           const int* dims, int numDims, const int* strides, const char* fieldname,
+void serialboxReadFromFile(const char* filename, void* originPtr, int typeID, const int* dims,
+                           int numDims, const int* strides, const char* fieldname,
                            const char* archivename);
 
 /** @} */

@@ -44,7 +44,7 @@ static std::string vecToString(VecType&& vec) {
  *     Construction & Destruction
 \*===------------------------------------------------------------------------------------------===*/
 
-serialboxSerializer_t* serialboxSerializerCreate(serialboxOpenModeKind mode, const char* directory,
+serialboxSerializer_t* serialboxSerializerCreate(int mode, const char* directory,
                                                  const char* prefix, const char* archive) {
   serialboxSerializer_t* serializer = allocate<serialboxSerializer_t>();
   try {
@@ -82,9 +82,9 @@ void serialboxSerializerDestroy(serialboxSerializer_t* serializer) {
  *     Utility
 \*===------------------------------------------------------------------------------------------===*/
 
-serialboxOpenModeKind serialboxSerializerGetMode(const serialboxSerializer_t* serializer) {
+int serialboxSerializerGetMode(const serialboxSerializer_t* serializer) {
   const Serializer* ser = toConstSerializer(serializer);
-  return static_cast<serialboxOpenModeKind>(static_cast<int>(ser->mode()));
+  return static_cast<int>(ser->mode());
 }
 
 const char* serialboxSerializerGetDirectory(const serialboxSerializer_t* serializer) {
@@ -218,7 +218,7 @@ int serialboxSerializerHasField(serialboxSerializer_t* serializer, const char* f
 }
 
 int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* name,
-                                 serialboxTypeID type, int bytesPerElement, int iSize, int jSize,
+                                 int type, int bytesPerElement, int iSize, int jSize,
                                  int kSize, int lSize, int iMinusHalo, int iPlusHalo,
                                  int jMinusHalo, int jPlusHalo, int kMinusHalo, int kPlusHalo,
                                  int lMinusHalo, int lPlusHalo) {
@@ -411,7 +411,7 @@ void serialboxSerializerWaitForAll(serialboxSerializer_t* serializer) {
  *     Stateless Serialization
 \*===------------------------------------------------------------------------------------------===*/
 
-void serialboxWriteToFile(const char* filename, void* originPtr, serialboxTypeID typeID,
+void serialboxWriteToFile(const char* filename, void* originPtr, int typeID,
                           const int* dims, int numDims, const int* strides, const char* fieldname,
                           const char* archivename) {
 
@@ -426,7 +426,7 @@ void serialboxWriteToFile(const char* filename, void* originPtr, serialboxTypeID
   }
 }
 
-void serialboxReadFromFile(const char* filename, void* originPtr, serialboxTypeID typeID,
+void serialboxReadFromFile(const char* filename, void* originPtr, int typeID,
                            const int* dims, int numDims, const int* strides, const char* fieldname,
                            const char* archivename) {
 
