@@ -7,6 +7,6 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-#serialbox_add_fortran_example(fortran_producer m_ser.f90 main_producer.f90)
-#serialbox_add_fortran_example(fortran_consumer m_ser.f90 main_consumer.f90)
+serialbox_add_fortran_example(fortran_producer main_producer.f90 m_ser.f90)
+serialbox_add_fortran_example(fortran_consumer main_consumer.f90 m_ser.f90)
 
