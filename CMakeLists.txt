@@ -151,7 +151,7 @@ endif()
 # If we build the Fortran Interface, we need a Fortran compiler
 if(SERIALBOX_ENABLE_FORTRAN)
   enable_language(Fortran)
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -cpp")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -cpp -ffree-form -ffree-line-length-180 -J.")
 endif()
 
 if(NOT(SERIALBOX_LOGGING))
