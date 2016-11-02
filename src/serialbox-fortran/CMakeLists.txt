@@ -10,7 +10,7 @@
 cmake_minimum_required(VERSION 3.1)
 
 ## Compile serialboxFortran
-set(SOURCES m_serialize.f90)
+set(SOURCES m_serialize.f90 m_ser_perturb.f90 utils_ppser.f90)
 
 serialbox_add_library(SerialboxFortran 
                       SerialboxFortranLibrary 
