@@ -49,6 +49,11 @@ if(SERIALBOX_ENABLE_C)
   add_subdirectory(C)
 endif()
 
+if(SERIALBOX_ENABLE_FORTRAN)
+  add_subdirectory(Fortran)
+endif()
+
+
 if(SERIALBOX_ENABLE_PYTHON)
   add_subdirectory(python)
 endif()
