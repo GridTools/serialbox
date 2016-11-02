@@ -354,14 +354,27 @@ FUNCTION fs_serializer_openmode(serializer)
   ! External function
   INTERFACE
      FUNCTION fs_serializer_openmode_(serializer) &
-          BIND(c, name='fs_serializer_openmode')
+          BIND(c, name='serialboxSerializerGetMode')
        USE, INTRINSIC :: iso_c_binding
-       CHARACTER(KIND=C_CHAR) :: fs_serializer_openmode_
-       TYPE(C_PTR), VALUE     :: serializer
+       INTEGER(KIND=C_INT) :: fs_serializer_openmode_
+       TYPE(C_PTR), VALUE  :: serializer
      END FUNCTION fs_serializer_openmode_
   END INTERFACE
 
-  fs_serializer_openmode = fs_serializer_openmode_(serializer%serializer_ptr)
+  ! Local variables
+  INTEGER :: c_mode
+
+  c_mode = fs_serializer_openmode_(serializer%serializer_ptr)
+
+  fs_serializer_openmode = 'r'
+  SELECT CASE(c_mode)
+  CASE(MODE_READ)
+    fs_serializer_openmode = 'r'
+  CASE(MODE_WRITE)
+    fs_serializer_openmode = 'w'
+  CASE(MODE_APPEND)
+    fs_serializer_openmode = 'a'
+  END SELECT
 
 END FUNCTION fs_serializer_openmode
 
