@@ -12,8 +12,8 @@
  *
 \*===------------------------------------------------------------------------------------------===*/
 
-#ifndef __SERIALBOX_C_SERIALBOX_H__
-#define __SERIALBOX_C_SERIALBOX_H__
+#ifndef SERIALBOX_C_SERIALBOX_H
+#define SERIALBOX_C_SERIALBOX_H
 
 /**
  * \defgroup serialboxC serialbox-c
@@ -32,5 +32,6 @@
 #include "serialbox-c/Savepoint.h"
 #include "serialbox-c/Serializer.h"
 #include "serialbox-c/Type.h"
+#include "serialbox-c/FortranWrapper.h"
 
 #endif

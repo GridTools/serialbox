@@ -22,6 +22,7 @@
 #
 import os
 import sys
+import time
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../python')
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../../src/serialbox-python')
 
@@ -31,7 +32,6 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../../src/serial
 import serialbox as ser
 import numpy as np
 
-import time
 
 def main():
     #

@@ -15,6 +15,7 @@
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Archive/NetCDFArchive.h"
+#include "serialbox/Core/Archive/MockArchive.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Unreachable.h"
 
@@ -25,6 +26,8 @@ std::unique_ptr<Archive> ArchiveFactory::create(const std::string& name, OpenMod
                                                 const std::string& prefix) {
   if(name == BinaryArchive::Name) {
     return std::make_unique<BinaryArchive>(mode, directory, prefix);
+  } else if(name == MockArchive::Name) {
+    return std::make_unique<MockArchive>(mode);
 #ifdef SERIALBOX_HAS_NETCDF
   } else if(name == NetCDFArchive::Name) {
     return std::make_unique<NetCDFArchive>(mode, directory, prefix);

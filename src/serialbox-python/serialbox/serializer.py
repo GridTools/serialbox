@@ -579,7 +579,7 @@ class Serializer(object):
         :param field: Field to serialize
         :type field: numpy.array
         :param register_field: Register the field if not present
-        :type register: bool
+        :type register_field: bool
 
         :raises SerialboxError: Serialization failed
         """

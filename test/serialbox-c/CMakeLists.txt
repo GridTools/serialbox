@@ -18,6 +18,7 @@ set(SOURCES
   UnittestSavepoint.cpp
   UnittestSerializer.cpp
   UnittestMetaInfo.cpp
+  UnittestFortranWrapper.cpp
 )
 
 # Setup external libraries
