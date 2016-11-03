@@ -28,6 +28,40 @@ using serialbox::Exception;
  *     Serializer
 \*===------------------------------------------------------------------------------------------===*/
 
+void serialboxFortranSerializerWrite(void* serializer, const void* savepoint,
+                                    const char* name, void* originPtr,
+                                    int istride, int jstride, int kstride, int lstride) {
+
+}
+
+
+void serialboxFortranSerializerRead(void* serializer, const void* savepoint,
+                                    const char* name, void* originPtr,
+                                    int istride, int jstride, int kstride, int lstrides) {
+
+}
+
+void serialboxFortranSerializerPrint(void* serializer) {
+ // Debug info
+}
+
+void serialboxFortranSerializerFieldExists(void* serializer, const char* name) {
+
+}
+
+int serialboxFortranSerializerCheckField(void* serializer, const char* name, int type,
+                                          int istride, int jstride, int kstride, int lstride) {
+
+}
+
+void serialboxFortranComputeStrides(void* serializer, const char* fieldname,
+                                    const void* base_ptr,
+                                    const void* iplus1, const void* jplus1, const void* kplus1, const void* lplus1,
+                                    int* istride, int* jstride, int* kstride, int* lstride) {
+
+}
+
+
 void serialboxFortranSerializerAddMetaInfoBoolean(void* serializer, const char* key, int value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {

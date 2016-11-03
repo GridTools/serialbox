@@ -51,6 +51,7 @@ function(serialbox_add_fortran_example name)
   add_executable(${name} ${ARGN} ${SERIALBOX_HEADERS})
   target_link_libraries(${name} 
                         SerialboxFortranLibraryStatic 
+                        SerialboxCLibraryStatic
                         ${Boost_LIBRARIES} 
                         ${SERIALBOX_EXTERNAL_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT})

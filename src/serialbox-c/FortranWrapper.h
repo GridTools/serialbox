@@ -31,6 +31,25 @@ extern "C" {
  *     Serializer
 \*===------------------------------------------------------------------------------------------===*/
 
+void serialboxFortranSerializerWrite(void* serializer, const void* savepoint,
+                                    const char* name, void* originPtr,
+                                    int istride, int jstride, int kstride, int lstride);
+
+void serialboxFortranSerializerRead(void* serializer, const void* savepoint,
+                                    const char* name, void* originPtr,
+                                    int istride, int jstride, int kstride, int lstrides);
+
+void serialboxFortranSerializerPrint(void* serializer);
+
+void serialboxFortranSerializerFieldExists(void* serializer, const char* name);
+int serialboxFortranSerializerCheckField(void* serializer, const char* name, int type,
+                                          int istride, int jstride, int kstride, int lstride);
+
+void serialboxFortranComputeStrides(void* serializer, const char* fieldname,
+                                    const void* base_ptr,
+                                    const void* iplus1, const void* jplus1, const void* kplus1, const void* lplus1,
+                                    int* istride, int* jstride, int* kstride, int* lstride);
+
 /**
  * \brief Add a global meta-information `key=value` pair to the Serializer
  *
