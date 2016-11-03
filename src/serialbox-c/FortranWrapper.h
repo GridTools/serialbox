@@ -38,6 +38,18 @@ void serialboxFortranSerializerWrite(void* serializer, const void* savepoint,
 void serialboxFortranSerializerRead(void* serializer, const void* savepoint,
                                     const char* name, void* originPtr,
                                     int istride, int jstride, int kstride, int lstrides);
+
+void serialboxFortranSerializerPrint(void* serializer);
+
+void serialboxFortranSerializerFieldExists(void* serializer, const char* name);
+int serialboxFortranSerializerCheckField(void* serializer, const char* name, int type,
+                                          int istride, int jstride, int kstride, int lstride);
+
+void serialboxFortranComputeStrides(void* serializer, const char* fieldname,
+                                    const void* base_ptr,
+                                    const void* iplus1, const void* jplus1, const void* kplus1, const void* lplus1,
+                                    int* istride, int* jstride, int* kstride, int* lstride);
+
 /**
  * \brief Add a global meta-information `key=value` pair to the Serializer
  *
@@ -70,7 +82,7 @@ void serialboxFortranSerializerAddMetaInfoString(void* serializer, const char* k
  * \param kSize             The size of the third dimension
  * \param lsize             The size of the fourth dimension
  */
-void serialboxFrotranSerializerRegisterField(void* serializer, const char* name, int type,
+void serialboxFortranSerializerRegisterField(void* serializer, const char* name, int type,
                                              int bytesPerElement, int iSize, int jSize, int kSize,
                                              int lSize);
 
