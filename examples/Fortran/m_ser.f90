@@ -1,3 +1,13 @@
+!------------------------------------------------------------*- Fortran -*-----
+!
+!                              S E R I A L B O X
+!
+! This file is distributed under terms of BSD license. 
+! See LICENSE.txt for more information.
+!
+!------------------------------------------------------------------------------
+
+
 #define ACC_PREFIX !$acc
 MODULE m_ser
 
@@ -31,7 +41,7 @@ USE utils_ppser, ONLY:  &
     call ppser_initialize(directory='.',prefix='SerialboxTest')
     call fs_create_savepoint('sp1', ppser_savepoint)
     call ppser_set_mode(0)
-
+    
     SELECT CASE ( ppser_get_mode() )
       CASE(0)
         call fs_write_field(ppser_serializer, ppser_savepoint, 'ser_a', a)

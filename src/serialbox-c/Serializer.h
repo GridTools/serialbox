@@ -275,7 +275,7 @@ serialboxSerializerGetFieldMetaInfo(const serialboxSerializer_t* serializer, con
  * \param name         Name of the field
  * \param savepoint    Savepoint to at which the field will be serialized
  * \param originPtr    Pointer to the origin of the data
- * \param strides      Array of strides of length `numStrides`
+ * \param strides      Array of strides of length `numStrides` (in unit-strides)
  * \param numStrides   Number of strides
  */
 void serialboxSerializerWrite(serialboxSerializer_t* serializer, const char* name,
@@ -291,7 +291,7 @@ void serialboxSerializerWrite(serialboxSerializer_t* serializer, const char* nam
  * \param name         Name of the field
  * \param savepoint    Savepoint to at which the field will be serialized
  * \param originPtr    Pointer to the origin of the data
- * \param strides      Array of strides of length `numStrides`
+ * \param strides      Array of strides of length `numStrides` (in unit-strides)
  * \param numStrides   Number of strides
  */
 void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name,
@@ -309,7 +309,7 @@ void serialboxSerializerRead(serialboxSerializer_t* serializer, const char* name
  * \param name         Name of the field
  * \param savepoint    Savepoint to at which the field will be serialized
  * \param originPtr    Pointer to the origin of the data
- * \param strides      Array of strides of length `numStrides`
+ * \param strides      Array of strides of length `numStrides` (in unit-strides)
  * \param numStrides   Number of strides
  * \param slice        Array of slices (i.e {start, stop, step}) of each dimension of length
  *                     `3 * numStrides`
@@ -333,7 +333,7 @@ void serialboxSerializerReadSliced(serialboxSerializer_t* serializer, const char
  * \param name         Name of the field
  * \param savepoint    Savepoint to at which the field will be serialized
  * \param originPtr    Pointer to the origin of the data
- * \param strides      Array of strides of length `numStrides`
+ * \param strides      Array of strides of length `numStrides` (in unit-strides)
  * \param numStrides   Number of strides
  *
  * \see
@@ -362,7 +362,7 @@ void serialboxSerializerWaitForAll(serialboxSerializer_t* serializer);
  * \param typeID       TypeID of the data
  * \param dims         Array of dimensions of length `numDims`
  * \param numDims      Number of dimensions
- * \param strides      Array of strides of length `numDims`
+ * \param strides      Array of strides of length `numDims` (in unit-strides)
  * \param fieldname    Name of the field
  * \param archivename  Name of the archive used for serialization (e.g "Binary")
  */
@@ -383,7 +383,7 @@ void serialboxWriteToFile(const char* filename, void* originPtr, int typeID, con
  * \param typeID       TypeID of the data
  * \param dims         Array of dimensions of length `numDims`
  * \param numDims      Number of dimensions
- * \param strides      Array of strides of length `numDims`
+ * \param strides      Array of strides of length `numDims` (in unit-strides)
  * \param fieldname    Name of the field
  * \param archivename  Name of the archive used for serialization (e.g "Binary")
  */

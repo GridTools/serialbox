@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 3.1)
 
 include(CMakeParseArguments)
 
-## \brief Create an object library with target "<TARGET>Objects" and convert them to a static and/or 
+## Create an object library with target "<TARGET>Objects" and convert them to a static and/or 
 ## shared library with name "<NAME>.a" and <NAME>.so" respectively.
 ## 
 ## NAME          
@@ -87,7 +87,6 @@ function(serialbox_add_library)
     add_library(${target}Static STATIC $<TARGET_OBJECTS:${target}Objects> ${OBJECT_SOURCES})
     
     set_target_properties(${target}Static PROPERTIES OUTPUT_NAME ${name})
-    set_target_properties(${target}Static PROPERTIES INTERPROCEDURAL_OPTIMIZATION True)  
     
     target_link_libraries(${target}Static ${libraries})
     install(TARGETS ${target}Static DESTINATION lib)
@@ -109,7 +108,6 @@ function(serialbox_add_library)
     add_library(${target}Shared SHARED $<TARGET_OBJECTS:${target}Objects> ${OBJECT_SOURCES})
     
     set_target_properties(${target}Shared PROPERTIES OUTPUT_NAME ${name})
-    set_target_properties(${target}Shared PROPERTIES INTERPROCEDURAL_OPTIMIZATION True)  
 
     target_link_libraries(${target}Shared ${libraries})
     install(TARGETS ${target}Shared DESTINATION lib)

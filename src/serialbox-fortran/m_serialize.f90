@@ -102,7 +102,7 @@ PRIVATE
   INTERFACE
      SUBROUTINE fs_compute_strides(serializer, fieldname, field, iplus1, jplus1, kplus1, lplus1, &
                            istride, jstride, kstride, lstride) &
-          BIND(c, name='serialboxFortranSerializerRegisterField')
+          BIND(c, name='serialboxFortranComputeStrides')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE :: serializer, field, iplus1, jplus1, kplus1, lplus1
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: fieldname
@@ -112,7 +112,7 @@ PRIVATE
 
   INTERFACE
      SUBROUTINE print_debuginfo(serializer) &
-          BIND(c, name='serialboxFortranSerializerPrint')
+          BIND(c, name='serialboxFortranSerializerPrintDebugInfo')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE :: serializer
      END SUBROUTINE print_debuginfo
@@ -289,13 +289,14 @@ SUBROUTINE fs_create_serializer(directory, prefix, mode, serializer)
          BIND(c, name='serialboxSerializerCreate')
       USE, INTRINSIC :: iso_c_binding
       TYPE(C_PTR)                           :: fs_create_serializer_
-      INTEGER(KIND=C_INT)        :: openmode
+      INTEGER(KIND=C_INT), VALUE            :: openmode
       CHARACTER(KIND=C_CHAR), DIMENSION(*)  :: directory, prefix, archive
     END FUNCTION fs_create_serializer_
   END INTERFACE
 
+
   ! Local variables
-  INTEGER :: c_mode
+  INTEGER(KIND=C_INT) :: c_mode
   TYPE(C_PTR) :: c_serializer
 
   ! Destroy any pre-existing serializer
@@ -309,7 +310,7 @@ SUBROUTINE fs_create_serializer(directory, prefix, mode, serializer)
   CASE('a')
     c_mode = MODE_APPEND
   END SELECT
-
+  
   c_serializer = fs_create_serializer_(c_mode,                       &
                                        TRIM(directory)//C_NULL_CHAR, &
                                        TRIM(prefix)//C_NULL_CHAR,    &
@@ -494,7 +495,7 @@ SUBROUTINE fs_print_debuginfo(serializer)
   ! External function
   INTERFACE
      SUBROUTINE print_debuginfo(serializer) &
-          BIND(c, name='serialboxFortranSerializerPrint')
+          BIND(c, name='serialboxFortranSerializerPrintDebugInfo')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
      END SUBROUTINE print_debuginfo
@@ -687,6 +688,7 @@ FUNCTION fs_field_exists(serializer, fieldname)
   CHARACTER(LEN=*)   :: fieldname
   LOGICAL            :: fs_field_exists
 
+
   fs_field_exists = fs_field_exists_(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR) > 0
 
 END FUNCTION fs_field_exists
@@ -706,18 +708,16 @@ SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, is
 
   ! External functions
   INTERFACE
-
-    FUNCTION fs_check_field(serializer, name, fieldtype, isize, jsize, ksize, lsize) &
+    SUBROUTINE fs_check_field(serializer, name, fieldtype, isize, jsize, ksize, lsize) &
          BIND(c, name='serialboxFortranSerializerCheckField')
       USE, INTRINSIC :: iso_c_binding
-      LOGICAL(KIND=C_BOOL)                  :: fs_check_field
       TYPE(C_PTR), INTENT(IN), VALUE        :: serializer
       CHARACTER(KIND=C_CHAR), DIMENSION(*)  :: name
       INTEGER(C_INT), INTENT(IN)            :: fieldtype, isize, jsize, ksize, lsize
-    END FUNCTION fs_check_field
+    END SUBROUTINE fs_check_field
 
   END INTERFACE
-
+  
   ! Local variables
   INTEGER(KIND=C_INT) :: c_type
 
@@ -732,22 +732,18 @@ SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, is
   CASE('double')
     c_type = SERIALBOX_FIELD_TYPE_FLOAT64
   END SELECT
-
+  
   ! If it does, do checks
   IF (fs_field_exists(serializer, fieldname)) THEN
-    ! Check size
-    IF (.NOT. fs_check_field(serializer%serializer_ptr , TRIM(fieldname)//C_NULL_CHAR, c_type, isize, jsize, ksize, lsize)) THEN
-      write(*,*) "Error: field ", fieldname, " registered with different data type or fieldsize."
-      STOP
-    END IF
+    CALL fs_check_field(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, c_type, &
+                        isize, jsize, ksize, lsize)
 
   ! Else register field
   ELSE IF(fs_serializer_openmode(serializer) /= 'r') THEN
     CALL fs_register_field(serializer, fieldname, data_type, bytes_per_element, &
-                        isize, jsize, ksize, lsize)
+                           isize, jsize, ksize, lsize)
   ELSE
-    WRITE(*,*) "Error: field ", fieldname, " does not exist in the serializer"
-    WRITE(*,*) "Aborting"
+    WRITE(*,*) "Serialbox: ERROR: field ", fieldname, " does not exist in the serializer"
     STOP
   END IF
 
@@ -1283,6 +1279,7 @@ SUBROUTINE fs_write_double_3d(serializer, savepoint, fieldname, field)
   padd=>field
 
   CALL fs_check_size(serializer, fieldname, "double", fs_doublesize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1)), &
@@ -1290,6 +1287,7 @@ SUBROUTINE fs_write_double_3d(serializer, savepoint, fieldname, field)
                        C_LOC(padd(1, 1, MIN(2, SIZE(field, 3)))), &
                        C_LOC(padd(1, 1, 1)), &
                        istride, jstride, kstride, lstride)
+  
   CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
                         TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1,1,1)), istride, jstride, kstride, lstride)

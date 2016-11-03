@@ -31,24 +31,38 @@ extern "C" {
  *     Serializer
 \*===------------------------------------------------------------------------------------------===*/
 
+/**
+ * \brief Wrapper for \ref serialboxSerializerWrite
+ */
 void serialboxFortranSerializerWrite(void* serializer, const void* savepoint,
                                     const char* name, void* originPtr,
                                     int istride, int jstride, int kstride, int lstride);
 
+/**
+ * \brief Wrapper for \ref serialboxSerializerRead
+ */
 void serialboxFortranSerializerRead(void* serializer, const void* savepoint,
                                     const char* name, void* originPtr,
-                                    int istride, int jstride, int kstride, int lstrides);
+                                    int istride, int jstride, int kstride, int lstride);
 
-void serialboxFortranSerializerPrint(void* serializer);
+/**
+ * \brief Print debug information (i.e convert serializer to string)
+ */
+void serialboxFortranSerializerPrintDebugInfo(void* serializer);
 
-void serialboxFortranSerializerFieldExists(void* serializer, const char* name);
-int serialboxFortranSerializerCheckField(void* serializer, const char* name, int type,
-                                          int istride, int jstride, int kstride, int lstride);
+/**
+ * \brief Perform consistency checks concerning dimensions and type of the field `name`
+ */
+void serialboxFortranSerializerCheckField(const void* serializer, const char* name, int* type,
+                                          int* isize, int* jsize, int* ksize, int* lsize);
 
-void serialboxFortranComputeStrides(void* serializer, const char* fieldname,
-                                    const void* base_ptr,
-                                    const void* iplus1, const void* jplus1, const void* kplus1, const void* lplus1,
-                                    int* istride, int* jstride, int* kstride, int* lstride);
+/**
+ * \brief Compute unit-strides of registered field `fieldname`
+ */
+void serialboxFortranComputeStrides(void* serializer, const char* fieldname, const void* basePtr,
+                                    const void* iplus1, const void* jplus1, const void* kplus1,
+                                    const void* lplus1, int* istride, int* jstride, int* kstride,
+                                    int* lstride);
 
 /**
  * \brief Add a global meta-information `key=value` pair to the Serializer

@@ -1,7 +1,14 @@
-!This file is released under terms of BSD license`
-!See LICENSE.txt for more information
+!------------------------------------------------------------*- Fortran -*-----
 !
-!+ Module containing procedures for input/output to/from disk
+!                              S E R I A L B O X
+!
+! This file is distributed under terms of BSD license. 
+! See LICENSE.txt for more information.
+!
+!------------------------------------------------------------------------------
+!
+!+ Module containing procedures for input/output to/from disk.
+!
 !------------------------------------------------------------------------------
 
 MODULE utils_ppser

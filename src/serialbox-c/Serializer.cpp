@@ -16,6 +16,7 @@
 #include "serialbox-c/Logging.h"
 #include "serialbox-c/Savepoint.h"
 #include "serialbox-c/Utility.h"
+#include "serialbox/Core/Unreachable.h"
 #include "serialbox/Core/Archive/ArchiveFactory.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Logging.h"
@@ -47,6 +48,7 @@ static std::string vecToString(VecType&& vec) {
 serialboxSerializer_t* serialboxSerializerCreate(int mode, const char* directory,
                                                  const char* prefix, const char* archive) {
   serialboxSerializer_t* serializer = allocate<serialboxSerializer_t>();
+  
   try {
     switch(mode) {
     case Read:
@@ -59,6 +61,8 @@ serialboxSerializer_t* serialboxSerializerCreate(int mode, const char* directory
       serializer->impl =
           new Serializer(serialbox::OpenModeKind::Append, directory, prefix, archive);
       break;
+    default:
+        serialbox_unreachable((boost::format("invalid mode (%i)") % mode).str().c_str());
     }
     serializer->ownsData = 1;
   } catch(std::exception& e) {

@@ -31,6 +31,7 @@ matrix:
     env: 
       - CXX_COMPILER=g++-4.9
       - C_COMPILER=gcc-4.9
+      - FC_COMPILER=gfortran-4.9
       - CONFIG=Release
     addons:
       apt:
@@ -38,6 +39,7 @@ matrix:
         packages: 
           - gcc-4.9
           - g++-4.9
+          - gfortran-4.9
           - libboost-all-dev
   
   - os: linux
@@ -45,6 +47,7 @@ matrix:
     env: 
       - CXX_COMPILER=g++-4.9
       - C_COMPILER=gcc-4.9
+      - FC_COMPILER=gfortran-4.9
       - CONFIG=Debug
     addons:
       apt:
@@ -52,6 +55,7 @@ matrix:
         packages: 
           - gcc-4.9
           - g++-4.9
+          - gfortran-4.9
           - libboost-all-dev
     
   - os: linux
@@ -151,6 +155,9 @@ install:
   - if [[ "${CXX_COMPILER}" != "" ]]; then export CXX=${CXX_COMPILER}; fi
   - if [[ "${C_COMPILER}" != "" ]]; then export CC=${C_COMPILER}; fi
   
+  # Make sure FC is correctly set
+  - if [[ "${FC_COMPILER}" != "" ]]; then export FC=${FC_COMPILER}; fi
+  
   # Make sure CMAKE_BUILD_TYPE is correctly set
   - if [[ "${CONFIG}" != "" ]]; then export CMAKE_BUILD_TYPE=${CONFIG}; fi
 
@@ -248,6 +255,13 @@ before_script:
   - mkdir build
   - pushd $(pwd)
   - cd build
+  
+  - |
+    if [[ "${FC_COMPILER}" != "" ]]; then
+      SERIALBOX_ENABLE_FORTRAN=ON
+    else
+      SERIALBOX_ENABLE_FORTRAN=OFF
+    fi
 
   # Linux build
   - |
@@ -255,6 +269,7 @@ before_script:
       cmake ../ -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
                 -DPYTHON_EXECUTABLE=${PYTHON_DIR}/bin/python3 \
                 -DSERIALBOX_TESTING=ON \
+                -DSERIALBOX_ENABLE_FORTRAN=${SERIALBOX_ENABLE_FORTRAN} \
                 ${CMAKE_OPTIONS}
     fi
   
