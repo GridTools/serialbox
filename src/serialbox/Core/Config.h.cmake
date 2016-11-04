@@ -35,7 +35,7 @@
 /* SERIALBOX version string */
 #define SERIALBOX_VERSION_STRING "${SERIALBOX_VERSION_MAJOR}.${SERIALBOX_VERSION_MINOR}.${SERIALBOX_VERSION_PATCH}"
 
-/* Boost version used for compilation */
+/* Boost version used during compilation */
 #define SERIALBOX_BOOST_VERSION ${SERIALBOX_BOOST_VERSION} 
 
 /* Define if OpenSSL is available */
@@ -43,6 +43,9 @@
 
 /* Define if NetCDF is available */
 #cmakedefine SERIALBOX_HAS_NETCDF ${SERIALBOX_HAS_NETCDF}
+
+/* SERIALBOX was compiled with logging support (requires Boost.Log) */
+#cmakedefine SERIALBOX_HAS_LOGGING ${SERIALBOX_HAS_LOGGING}
 
 #endif
 

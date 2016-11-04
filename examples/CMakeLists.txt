@@ -74,7 +74,7 @@ if(SERIALBOX_ENABLE_C)
 endif()
 
 if(SERIALBOX_ENABLE_FORTRAN)
-  add_subdirectory(Fortran)
+  add_subdirectory(fortran)
 endif()
 
 

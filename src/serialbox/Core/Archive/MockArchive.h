@@ -24,7 +24,7 @@ namespace serialbox {
 ///
 /// This archive does not actually write or read any data from disk, instead it fills the
 /// fields with random data. A simple multiplicative congruential pseudo-random number generator
-/// (`std::minstd_rand`) is used and seeded with current time and the returned random variables
+/// (`std::minstd_rand`) is used and seeded with current time. The returned random variables
 /// range from -1.0 to 1.0 (floating point) or 0 to 100 for integers.
 ///
 /// This archive is only supported in OpenModeKind::Read.

@@ -152,3 +152,6 @@ if(SERIALBOX_ENABLE_PYTHON)
   add_subdirectory(serialbox-python)
 endif()
 
+## Install ppser
+install(FILES ${CMAKE_SOURCE_DIR}/src/serialbox-python/pp_ser.py DESTINATION python/)
+

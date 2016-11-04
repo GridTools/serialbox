@@ -56,6 +56,9 @@ option(SERIALBOX_LOGGING "Enable logging" ON)
 option(SERIALBOX_ASYNC_API "Enable the asynchronous API" ON)
 option(SERIALBOX_EXAMPLES "Build example exectuables" ON)
 
+option(SERIALBOX_USE_OPENSSL "Use OpenSSL library" OFF)
+option(SERIALBOX_USE_NETCDF "Use NetCDF library" OFF)
+
 option(SERIALBOX_TESTING "Build unittest executables" OFF)
 option(SERIALBOX_TESTING_GRIDTOOLS "Build gridtools unitests and examples" OFF)
 option(SERIALBOX_TESTING_STELLA "Build STELLA unitests" OFF)
@@ -159,6 +162,8 @@ endif()
 
 if(NOT(SERIALBOX_LOGGING))
   add_definitions(-DSERIALBOX_DISABLE_LOGGING)
+else()
+  set(SERIALBOX_HAS_LOGGING 1)
 endif()
 
 if(SERIALBOX_ASYNC_API)
@@ -220,27 +225,9 @@ if(SERIALBOX_TESTING)
   endif(SERIALBOX_ENABLE_C)
 endif(SERIALBOX_TESTING)
 
-#---------------------------------------- Boost ----------------------------------------------------
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_STATIC_RUNTIME OFF)
-set(Boost_USE_MULTITHREADED ON)  
-add_definitions(-DBOOST_LOG_DYN_LINK)  
-add_definitions(-DBOOST_ALL_DYN_LINK)
-
-find_package(Boost 1.54 REQUIRED system chrono filesystem log)
-
-if(NOT(${Boost_FOUND}))
-  message(FATAL_ERROR "Boost not found or insufficient version.")
-endif(NOT(${Boost_FOUND}))
-
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
-link_directories(${Boost_LIBRARY_DIRS})
-set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
-
 #---------------------------------------- OpenSSL --------------------------------------------------
-find_package(OpenSSL)
-option(SERIALBOX_USE_OPENSSL "Use OpenSSL library" ${OpenSSL_FOUND})
 if(${SERIALBOX_USE_OPENSSL})
+  find_package(OpenSSL REQUIRED)
   if(NOT(${OpenSSL_FOUND}))
     message(FATAL_ERROR "OpenSSL library not found!")
   endif()
@@ -250,9 +237,8 @@ if(${SERIALBOX_USE_OPENSSL})
 endif()
 
 #---------------------------------------- NetCDF ---------------------------------------------------
-find_package(NetCDF)
-option(SERIALBOX_USE_NETCDF "Use NetCDF library" ${NetCDF_FOUND})
 if(${SERIALBOX_USE_NETCDF})
+  find_package(NetCDF REQUIRED)
   if(NOT(${NetCDF_FOUND}))
     message(FATAL_ERROR "NetCDF library not found!")
   endif()
@@ -296,6 +282,33 @@ if(SERIALBOX_TESTING_GRIDTOOLS)
   set(SERIALBOX_HAS_GRIDTOOLS 1)
   
 endif(SERIALBOX_TESTING_GRIDTOOLS)
+
+#---------------------------------------- Boost ----------------------------------------------------
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_STATIC_RUNTIME OFF)
+set(Boost_USE_MULTITHREADED ON)  
+add_definitions(-DBOOST_LOG_DYN_LINK)  
+add_definitions(-DBOOST_ALL_DYN_LINK)
+
+set(REQUIRED_BOOST_COMPONENTS filesystem)
+
+if(SERIALBOX_HAS_GRIDTOOLS)
+  list(APPEND REQUIRED_BOOST_COMPONENTS system chrono)
+endif()
+
+if(SERIALBOX_LOGGING)
+  list(APPEND REQUIRED_BOOST_COMPONENTS log)
+endif()
+
+find_package(Boost 1.54 REQUIRED ${REQUIRED_BOOST_COMPONENTS})
+
+if(NOT(${Boost_FOUND}))
+  message(FATAL_ERROR "Boost not found or insufficient version.")
+endif(NOT(${Boost_FOUND}))
+
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
+set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
 
 #---------------------------------------- STELLA ---------------------------------------------------
 if(SERIALBOX_TESTING_STELLA)
@@ -493,6 +506,9 @@ add_subdirectory(src)
 if(SERIALBOX_EXAMPLES)
   add_subdirectory(examples)
 endif(SERIALBOX_EXAMPLES)
+
+## Install FindSerialbox.cmake
+add_subdirectory(cmake)
 
 ## Build unittests
 if(SERIALBOX_TESTING)

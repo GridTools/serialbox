@@ -43,5 +43,6 @@ set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})
 serialbox_add_library(NAME SerialboxCore 
                       TARGET SerialboxCoreLibrary 
                       BUILD_STATIC
+                      BUILD_SHARED
                       LIBRARIES ${EXTERNAL_LIBRARIES}
                       SOURCES ${SOURCES})

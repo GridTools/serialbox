@@ -7,7 +7,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
- 
-## Add subdirectories
-add_subdirectory(Core)
+cmake_minimum_required(VERSION 3.1)
+
+add_subdirectory(simple)
 

@@ -26,6 +26,21 @@ namespace serialbox {
 
 namespace internal {
 
+class NullLogger {
+public:
+  NullLogger() = default;
+
+  static NullLogger& getInstance() noexcept;
+
+  template <class T>
+  NullLogger& operator<<(T&& t) noexcept {
+    return (*this);
+  }
+
+private:
+  static NullLogger* instance_;
+};
+
 extern bool LoggingIsEnabled;
 
 } // namespace internal

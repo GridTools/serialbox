@@ -63,6 +63,7 @@ matrix:
     env: 
       - CXX_COMPILER=g++-5
       - C_COMPILER=gcc-5
+      - FC_COMPILER=gfortran-5
       - CONFIG=Release
       - BOOST_VERSION=1.60.0
     addons:
@@ -71,12 +72,14 @@ matrix:
         packages: 
           - g++-5
           - gcc-5
+          - gfortran-5
 
   - os: linux
     compiler: gcc
     env:
       - CXX_COMPILER=g++-6
       - C_COMPILER=gcc-6
+      - FC_COMPILER=gfortran-6
       - CONFIG=Release
       - BOOST_VERSION=1.60.0
     addons:
@@ -85,6 +88,7 @@ matrix:
         packages: 
           - g++-6
           - gcc-6
+          - gfortran-6
 
   # Linux / Clang
   - os: linux
@@ -281,6 +285,7 @@ before_script:
     fi
   
   - make
+  - make install
   
   - popd
 
@@ -294,6 +299,8 @@ script:
 
   # Run Python, C and C++ unittests
   - ctest --output-on-failure --force-new-ctest-process
+
+  # Run stand-alone Fortran examples
 
   - popd
  
