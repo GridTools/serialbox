@@ -288,6 +288,17 @@ before_script:
   - make install
   
   - popd
+  
+  # Build standalone fortran examples
+  - pushd $(pwd)
+  - |
+    if [[ "${FC_COMPILER}" != "" ]]; then
+      cd examples/fortran/perturbation
+      mkdir build && cd build
+      cmake ../
+      make
+    fi
+  - popd
 
 #===---------------------------------------------------------------------------------------------===
 #   Testing
@@ -300,10 +311,15 @@ script:
   # Run Python, C and C++ unittests
   - ctest --output-on-failure --force-new-ctest-process
 
-  # Run stand-alone Fortran examples
-
   - popd
- 
+
+  # Run stand-alone Fortran examples
+  - |
+    if [[ "${FC_COMPILER}" != "" ]]; then
+      cd examples/fortran/perturbation/build
+      bash run.sh
+    fi
+
 notifications:
   email:
     recipients:

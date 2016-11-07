@@ -70,7 +70,7 @@ endfunction(serialbox_add_python_example)
 
 ## Build examples
 if(SERIALBOX_ENABLE_C)
-  add_subdirectory(C)
+  add_subdirectory(c)
 endif()
 
 if(SERIALBOX_ENABLE_FORTRAN)
