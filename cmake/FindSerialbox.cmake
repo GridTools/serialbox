@@ -119,7 +119,7 @@ if(SERIALBOX_ROOT)
   set(SERIALBOX_VERSION 
       "${SERIALBOX_MAJOR_VERSION}.${SERIALBOX_MINOR_VERSION}.${SERIALBOX_PATCH_VERSION}")
 
-  # Get for Boost version
+  # Get Boost version
   #
   #   BOOST_VERSION % 100 is the patch level
   #   BOOST_VERSION / 100 % 1000 is the minor version

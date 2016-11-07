@@ -295,7 +295,7 @@ before_script:
     if [[ "${FC_COMPILER}" != "" ]]; then
       cd examples/fortran/perturbation
       mkdir build && cd build
-      cmake ../
+      cmake ../ ${CMAKE_OPTIONS}
       make
     fi
   - popd

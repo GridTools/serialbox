@@ -8,9 +8,19 @@
 ##===------------------------------------------------------------------------------------------===##
 
 #.rst:
-# run_pp_ser
-# ----------
+# SerialboxTooling
+# ----------------
+# 
+# This module contains the `serialbox_run_pp_ser` function which is used to preprocess Fortran
+# source code using the pp_ser.py script.
 #
+# Function arguments:
+#
+#   SOURCES       - Sources to preprocess
+#   OUTPUT_DIR    - Output directory of the the source files. If nothing is specified 
+#                   `${CMAKE_BINARY_DIR}/pp` is used. 
+#
+
 include(CMakeParseArguments)
 
 function(serialbox_run_pp_ser)
@@ -29,11 +39,11 @@ function(serialbox_run_pp_ser)
   
   set(unparsed ${serialbox_add_serialized_executable_UNPARSED_ARGUMENTS})
   if(unparsed)
-    message(WARNING "serialbox_add_serialized_executable: unparsed arguments: ${unparsed}")
+    message(WARNING "serialbox_run_pp_ser: unparsed arguments: ${unparsed}")
   endif()
   
   if(NOT(sources))
-    message(FATAL_ERROR "serialbox_add_serialized_executable: no source files provided")
+    message(FATAL_ERROR "serialbox_run_pp_ser: no source files provided")
   endif()
   
   if(NOT(output_dir))
