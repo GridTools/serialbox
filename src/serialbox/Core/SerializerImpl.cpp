@@ -221,6 +221,16 @@ void SerializerImpl::readSliced(const std::string& name, const SavepointImpl& sa
   this->read(name, savepoint, storageView);
 }
 
+// This is the global task vector. If we would put the tasks inside SerializerImpl, we would have a 
+// conditional member in a class (i.e depending on a macro) which can cause trouble if someone
+// compiled the library with SERIALBOX_ASYNC_API but doesn't use it when linking the library which
+// will smash the stack!
+#ifdef SERIALBOX_ASYNC_API
+namespace global {
+static std::vector<std::future<void>> tasks;
+}
+#endif
+
 void SerializerImpl::readAsyncImpl(const std::string name, const SavepointImpl savepoint,
                                    StorageView storageView) {
   this->read(name, savepoint, storageView);
@@ -234,8 +244,8 @@ void SerializerImpl::readAsync(const std::string& name, const SavepointImpl& sav
   else
     // Bad things can happen if we forward the refrences and directly call the SerializerImpl::read,
     // we thus just make a copy of the arguments.
-    tasks_.emplace_back(std::async(std::launch::async, &SerializerImpl::readAsyncImpl, this, name,
-                                   savepoint, storageView));
+    global::tasks.emplace_back(std::async(std::launch::async, &SerializerImpl::readAsyncImpl, this,
+                                          name, savepoint, storageView));
 #else
   this->read(name, savepoint, storageView);
 #endif
@@ -244,13 +254,13 @@ void SerializerImpl::readAsync(const std::string& name, const SavepointImpl& sav
 void SerializerImpl::waitForAll() {
 #ifdef SERIALBOX_ASYNC_API
   try {
-    for(auto& task : tasks_)
+    for(auto& task : global::tasks)
       task.get();
   } catch(std::exception& e) {
-    tasks_.clear();
+    global::tasks.clear();
     throw Exception(e.what());
   }
-  tasks_.clear();
+  global::tasks.clear();
 #endif
 }
 

@@ -448,10 +448,6 @@ protected:
   //
   // The value is initialized to 0
   static int enabled_;
-
-#ifdef SERIALBOX_ASYNC_API
-  std::vector<std::future<void>> tasks_;
-#endif
 };
 
 /// @}
