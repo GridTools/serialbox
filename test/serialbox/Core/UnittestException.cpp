@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestException.cpp ----------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestException.cpp ----------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Exception.h"
+#include "serialbox/core/Exception.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

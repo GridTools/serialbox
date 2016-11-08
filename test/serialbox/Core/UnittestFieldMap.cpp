@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestFieldMap.cpp -----------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestFieldMap.cpp -----------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,24 +12,24 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/FieldMap.h"
+#include "serialbox/core/FieldMap.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 
 using namespace serialbox;
 
-static FieldMetaInfo constructFieldMetaInfo(double value_key2 = 5.0) {
+static FieldMetainfoImpl constructFieldMetainfoImpl(double value_key2 = 5.0) {
   TypeID type(TypeID::Float64);
   std::vector<int> dims{20, 15, 20};
-  MetaInfoMap metaInfo(std::initializer_list<MetaInfoMap::value_type>{
-      {"key1", MetaInfoValue(std::string("str"))}, {"key2", MetaInfoValue(value_key2)}});
-  return FieldMetaInfo(type, dims, metaInfo);
+  MetainfoMapImpl metaInfo(std::initializer_list<MetainfoMapImpl::value_type>{
+      {"key1", MetainfoValueImpl(std::string("str"))}, {"key2", MetainfoValueImpl(value_key2)}});
+  return FieldMetainfoImpl(type, dims, metaInfo);
 }
 
 TEST(FieldMapTest, Construction) {
   TypeID type(TypeID::Float64);
   std::vector<int> dims{20, 15, 20};
-  MetaInfoMap metaInfo;
+  MetainfoMapImpl metaInfo;
 
   FieldMap map;
   const FieldMap& const_map = map;
@@ -38,7 +38,7 @@ TEST(FieldMapTest, Construction) {
   EXPECT_EQ(map.size(), 0);
 
   // Insert a field
-  ASSERT_TRUE(map.insert("field1", constructFieldMetaInfo()));
+  ASSERT_TRUE(map.insert("field1", constructFieldMetainfoImpl()));
   ASSERT_TRUE(map.hasField("field1"));
   ASSERT_TRUE(const_map.hasField("field1"));
 
@@ -72,22 +72,22 @@ TEST(FieldMapTest, Construction) {
   // Query meta information of the field
   EXPECT_EQ(map.findField("field1")->second->metaInfo().at("key1").as<std::string>(), "str");
 
-  EXPECT_EQ(map.getFieldMetaInfoOf("field1").metaInfo().at("key1").as<std::string>(), "str");
-  EXPECT_THROW(map.getFieldMetaInfoOf("X").metaInfo().at("key1").as<std::string>(), Exception);
+  EXPECT_EQ(map.getFieldMetainfoImplOf("field1").metaInfo().at("key1").as<std::string>(), "str");
+  EXPECT_THROW(map.getFieldMetainfoImplOf("X").metaInfo().at("key1").as<std::string>(), Exception);
 
-  EXPECT_EQ(map.getMetaInfoOf("field1").at("key1").as<std::string>(), "str");
-  EXPECT_THROW(map.getMetaInfoOf("X").at("key1").as<std::string>(), Exception);
+  EXPECT_EQ(map.getMetainfoOf("field1").at("key1").as<std::string>(), "str");
+  EXPECT_THROW(map.getMetainfoOf("X").at("key1").as<std::string>(), Exception);
 
   EXPECT_EQ(const_map.findField("field1")->second->metaInfo().at("key1").as<std::string>(), "str");
 
-  EXPECT_EQ(const_map.getFieldMetaInfoOf("field1").metaInfo().at("key1").as<std::string>(), "str");
-  EXPECT_THROW(const_map.getFieldMetaInfoOf("X").metaInfo().at("key1").as<std::string>(), Exception);
+  EXPECT_EQ(const_map.getFieldMetainfoImplOf("field1").metaInfo().at("key1").as<std::string>(), "str");
+  EXPECT_THROW(const_map.getFieldMetainfoImplOf("X").metaInfo().at("key1").as<std::string>(), Exception);
 
-  EXPECT_EQ(const_map.getMetaInfoOf("field1").at("key1").as<std::string>(), "str");
-  EXPECT_THROW(const_map.getMetaInfoOf("X").at("key1").as<std::string>(), Exception);
+  EXPECT_EQ(const_map.getMetainfoOf("field1").at("key1").as<std::string>(), "str");
+  EXPECT_THROW(const_map.getMetainfoOf("X").at("key1").as<std::string>(), Exception);
 
   // Reinsert same field but with diffrent meta information (should do nothing)
-  FieldMetaInfo f1(constructFieldMetaInfo());
+  FieldMetainfoImpl f1(constructFieldMetainfoImpl());
   f1.metaInfo()["key1"].as<std::string>() = "strXXX";
 
   ASSERT_FALSE(map.insert("field1", f1));
@@ -101,8 +101,8 @@ TEST(FieldMapTest, Construction) {
   // map2 : { field1 with (key2 = 2.0)
   //
   FieldMap map2;
-  ASSERT_TRUE(map2.insert("field1", constructFieldMetaInfo(2.0)));
-  ASSERT_TRUE(map.insert("field2", constructFieldMetaInfo(2.0)));
+  ASSERT_TRUE(map2.insert("field1", constructFieldMetainfoImpl(2.0)));
+  ASSERT_TRUE(map.insert("field2", constructFieldMetainfoImpl(2.0)));
 
   EXPECT_TRUE(map == const_map);
   EXPECT_FALSE(map == map2);
@@ -118,7 +118,7 @@ TEST(FieldMapTest, Construction) {
   ASSERT_TRUE(map2.empty());
 
   // Iterate values
-  std::vector<FieldMetaInfo> fieldMetaVec;
+  std::vector<FieldMetainfoImpl> fieldMetaVec;
   for(const auto& map_element : map)
     fieldMetaVec.push_back(*map_element.second);
   EXPECT_EQ(fieldMetaVec.size(), map.size());
@@ -131,12 +131,12 @@ TEST(FieldMapTest, Construction) {
 
 TEST(FieldMapTest, toJSON) {
   FieldMap map;
-  ASSERT_TRUE(map.insert("field1", constructFieldMetaInfo(1.0)));
-  ASSERT_TRUE(map.insert("field2", constructFieldMetaInfo(2.0)));
+  ASSERT_TRUE(map.insert("field1", constructFieldMetainfoImpl(1.0)));
+  ASSERT_TRUE(map.insert("field2", constructFieldMetainfoImpl(2.0)));
 
   json::json j = map.toJSON();
 
-  // The correct serialization of the FieldMetaInfo is tested elsewhere
+  // The correct serialization of the FieldMetainfoImpl is tested elsewhere
   ASSERT_TRUE(j.count("field1"));
   ASSERT_TRUE(j.count("field2"));
 }
@@ -198,11 +198,11 @@ TEST(FieldMapTest, fromJSON) {
     EXPECT_EQ(map.getDimsOf("field2"), (std::vector<int>{20, 55, 1992}));
     
     // meta-info
-    EXPECT_EQ(map.getMetaInfoOf("field1").at("key1").as<std::string>(), "field1_meta_info_str");
-    EXPECT_EQ(map.getMetaInfoOf("field2").at("key1").as<std::string>(), "field2_meta_info_str");
+    EXPECT_EQ(map.getMetainfoOf("field1").at("key1").as<std::string>(), "field1_meta_info_str");
+    EXPECT_EQ(map.getMetainfoOf("field2").at("key1").as<std::string>(), "field2_meta_info_str");
 
-    EXPECT_EQ(map.getMetaInfoOf("field1").at("key2").as<double>(), 1.0);
-    EXPECT_EQ(map.getMetaInfoOf("field2").at("key2").as<double>(), 2.0);
+    EXPECT_EQ(map.getMetainfoOf("field1").at("key2").as<double>(), 1.0);
+    EXPECT_EQ(map.getMetainfoOf("field2").at("key2").as<double>(), 2.0);
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -290,7 +290,7 @@ TEST(FieldMapTest, fromJSON) {
 
 TEST(FieldMapTest, toString) {
   FieldMap map;
-  ASSERT_TRUE(map.insert("field1", constructFieldMetaInfo(1.0)));
+  ASSERT_TRUE(map.insert("field1", constructFieldMetainfoImpl(1.0)));
 
   std::stringstream ss;
   ss << map;

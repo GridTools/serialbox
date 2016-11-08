@@ -13,7 +13,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "Utility/BenchmarkEnvironment.h"
-#include "serialbox/Core/Logging.h"
+#include "serialbox/core/Logging.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

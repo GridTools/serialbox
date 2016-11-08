@@ -34,16 +34,16 @@ extern "C" {
 /**
  * \brief Wrapper for \ref serialboxSerializerWrite
  */
-void serialboxFortranSerializerWrite(void* serializer, const void* savepoint,
-                                    const char* name, void* originPtr,
-                                    int istride, int jstride, int kstride, int lstride);
+void serialboxFortranSerializerWrite(void* serializer, const void* savepoint, const char* name,
+                                     void* originPtr, int istride, int jstride, int kstride,
+                                     int lstride);
 
 /**
  * \brief Wrapper for \ref serialboxSerializerRead
  */
-void serialboxFortranSerializerRead(void* serializer, const void* savepoint,
-                                    const char* name, void* originPtr,
-                                    int istride, int jstride, int kstride, int lstride);
+void serialboxFortranSerializerRead(void* serializer, const void* savepoint, const char* name,
+                                    void* originPtr, int istride, int jstride, int kstride,
+                                    int lstride);
 
 /**
  * \brief Print debug information (i.e convert serializer to string)
@@ -74,11 +74,11 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
  * \param value       Object to be copied to the value of the new element
  * @{
  */
-void serialboxFortranSerializerAddMetaInfoBoolean(void* serializer, const char* key, int value);
-void serialboxFortranSerializerAddMetaInfoInt32(void* serializer, const char* key, int value);
-void serialboxFortranSerializerAddMetaInfoFloat32(void* serializer, const char* key, float value);
-void serialboxFortranSerializerAddMetaInfoFloat64(void* serializer, const char* key, double value);
-void serialboxFortranSerializerAddMetaInfoString(void* serializer, const char* key,
+void serialboxFortranSerializerAddMetainfoBoolean(void* serializer, const char* key, int value);
+void serialboxFortranSerializerAddMetainfoInt32(void* serializer, const char* key, int value);
+void serialboxFortranSerializerAddMetainfoFloat32(void* serializer, const char* key, float value);
+void serialboxFortranSerializerAddMetainfoFloat64(void* serializer, const char* key, double value);
+void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* key,
                                                  const char* value);
 /** @} */
 
@@ -101,7 +101,7 @@ void serialboxFortranSerializerRegisterField(void* serializer, const char* name,
                                              int lSize);
 
 /*===------------------------------------------------------------------------------------------===*\
- *     FieldMetaInfo
+ *     FieldMetainfoImpl
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
@@ -115,15 +115,15 @@ void serialboxFortranSerializerRegisterField(void* serializer, const char* name,
  * \param value       Object to be copied to the value of the new element
  * @{
  */
-void serialboxFortranSerializerAddFieldMetaInfoBoolean(void* serializer, const char* field,
+void serialboxFortranSerializerAddFieldMetainfoBoolean(void* serializer, const char* field,
                                                        const char* key, int value);
-void serialboxFortranSerializerAddFieldMetaInfoInt32(void* serializer, const char* field,
+void serialboxFortranSerializerAddFieldMetainfoInt32(void* serializer, const char* field,
                                                      const char* key, int value);
-void serialboxFortranSerializerAddFieldMetaInfoFloat32(void* serializer, const char* field,
+void serialboxFortranSerializerAddFieldMetainfoFloat32(void* serializer, const char* field,
                                                        const char* key, float value);
-void serialboxFortranSerializerAddFieldMetaInfoFloat64(void* serializer, const char* field,
+void serialboxFortranSerializerAddFieldMetainfoFloat64(void* serializer, const char* field,
                                                        const char* key, double value);
-void serialboxFortranSerializerAddFieldMetaInfoString(void* serializer, const char* field,
+void serialboxFortranSerializerAddFieldMetainfoString(void* serializer, const char* field,
                                                       const char* key, const char* value);
 /** @} */
 
@@ -141,11 +141,11 @@ void serialboxFortranSerializerAddFieldMetaInfoString(void* serializer, const ch
  * \param value       Object to be copied to the value of the new element
  * @{
  */
-void serialboxFortranSavepointAddMetaInfoBoolean(void* savepoint, const char* key, int value);
-void serialboxFortranSavepointAddMetaInfoInt32(void* savepoint, const char* key, int value);
-void serialboxFortranSavepointAddMetaInfoFloat32(void* savepoint, const char* key, float value);
-void serialboxFortranSavepointAddMetaInfoFloat64(void* savepoint, const char* key, double value);
-void serialboxFortranSavepointAddMetaInfoString(void* savepoint, const char* key,
+void serialboxFortranSavepointAddMetainfoBoolean(void* savepoint, const char* key, int value);
+void serialboxFortranSavepointAddMetainfoInt32(void* savepoint, const char* key, int value);
+void serialboxFortranSavepointAddMetainfoFloat32(void* savepoint, const char* key, float value);
+void serialboxFortranSavepointAddMetainfoFloat64(void* savepoint, const char* key, double value);
+void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key,
                                                 const char* value);
 /** @} */
 

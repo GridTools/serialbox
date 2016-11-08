@@ -93,12 +93,12 @@ char* serialboxSavepointToString(const serialboxSavepoint_t* savepoint);
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Allocate a new `serialboxMetaInfo_t` which maps to the meta-information of the Savepoint
+ * \brief Allocate a new `serialboxMetainfo_t` which maps to the meta-information of the Savepoint
  *
  * \param savepoint  Savepoint to use
  * \return meta-information of the Savepoint
  */
-serialboxMetaInfo_t* serialboxSavepointGetMetaInfo(serialboxSavepoint_t* savepoint);
+serialboxMetainfo_t* serialboxSavepointGetMetainfo(serialboxSavepoint_t* savepoint);
 
 /** @} @} */
 

@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/STELLA/UnittestSerializer.cpp -----------------------*- C++ -*-===//
+//===-- serialbox/core/frontend/stella/UnittestSerializer.cpp -----------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -15,9 +15,9 @@
 #include "utility/STELLA.h"
 #include "utility/SerializerTestBase.h"
 #include "utility/Storage.h"
-#include "serialbox/Core/Frontend/STELLA/SerializationException.h"
-#include "serialbox/Core/Frontend/STELLA/Serializer.h"
-#include "serialbox/Core/SerializerImpl.h"
+#include "serialbox/core/frontend/stella/SerializationException.h"
+#include "serialbox/core/frontend/stella/Serializer.h"
+#include "serialbox/core/SerializerImpl.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;
@@ -60,7 +60,7 @@ TEST_F(STELLASerializerUtilityTest, ConstructionOfEmptySerializer) {
   }
 }
 
-TEST_F(STELLASerializerUtilityTest, AddMetaInfo) {
+TEST_F(STELLASerializerUtilityTest, AddMetainfo) {
   ser::Serializer s;
   s.Init(directory->path().string(), "Field", ser::SerializerOpenModeWrite);
 
@@ -146,7 +146,7 @@ TEST_F(STELLASerializerUtilityTest, RegisterField) {
   ASSERT_THROW(ser.FindField("field3"), ser::SerializationException);
 }
 
-TEST_F(STELLASerializerUtilityTest, FieldMetaInfo) {
+TEST_F(STELLASerializerUtilityTest, FieldMetainfoImpl) {
   ser::Serializer ser;
   ser.Init(directory->path().string(), "Field", ser::SerializerOpenModeWrite);
 

@@ -13,7 +13,7 @@
 \*===------------------------------------------------------------------------------------------===*/
 
 #include "serialbox-c/Logging.h"
-#include "serialbox/Core/Logging.h"
+#include "serialbox/core/Logging.h"
 
 void serialboxLoggingEnable(void) { serialbox::Logging::enable(); }
 

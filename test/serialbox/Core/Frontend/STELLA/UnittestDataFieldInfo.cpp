@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/STELLA/UnittestDataFieldInfo.cpp --------------------*- C++ -*-===//
+//===-- serialbox/core/frontend/stella/UnittestDataFieldInfo.cpp --------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Frontend/STELLA/DataFieldInfo.h"
+#include "serialbox/core/frontend/stella/DataFieldInfo.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 

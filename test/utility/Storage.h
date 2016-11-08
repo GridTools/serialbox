@@ -15,9 +15,9 @@
 #ifndef SERIALBOX_UTILITY_STORAGE_H
 #define SERIALBOX_UTILITY_STORAGE_H
 
-#include "serialbox/Core/Logging.h"
-#include "serialbox/Core/STLExtras.h"
-#include "serialbox/Core/StorageView.h"
+#include "serialbox/core/Logging.h"
+#include "serialbox/core/STLExtras.h"
+#include "serialbox/core/StorageView.h"
 #include <array>
 #include <cstdlib>
 #include <functional>

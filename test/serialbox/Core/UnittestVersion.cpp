@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestVersion.cpp ------------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestVersion.cpp ------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Version.h"
+#include "serialbox/core/Version.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

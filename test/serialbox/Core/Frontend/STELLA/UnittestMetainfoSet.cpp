@@ -1,4 +1,4 @@
-//===--serialbox/Core/Frontend/STELLA/UnittestserMetainfoSet.cpp --------------------*- C++ -*-===//
+//===--serialbox/core/frontend/stella/UnittestserMetainfoSet.cpp --------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,9 +12,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Frontend/STELLA/MetainfoSet.h"
-#include "serialbox/Core/Frontend/STELLA/SerializationException.h"
-#include "serialbox/Core/MetaInfoMap.h"
+#include "serialbox/core/frontend/stella/MetainfoSet.h"
+#include "serialbox/core/frontend/stella/SerializationException.h"
+#include "serialbox/core/MetainfoMapImpl.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <gtest/gtest.h>
@@ -141,7 +141,7 @@ TEST(STELLAMetainfoSetTest, Construction) {
   //
   // Assignment
   //
-  boost::shared_ptr<MetaInfoMap> map2 = boost::make_shared<MetaInfoMap>();
+  boost::shared_ptr<MetainfoMapImpl> map2 = boost::make_shared<MetainfoMapImpl>();
   ser::MetainfoSet set2(map2);
   set2 = set;
   ASSERT_EQ(set2.size(), 7);

@@ -18,7 +18,7 @@ from ctypes import c_char_p, c_void_p, c_int, Structure, POINTER
 
 from .common import get_library, extract_string
 from .error import invoke, SerialboxError
-from .metainfomap import MetaInfoMap, MetaInfoImpl
+from .metainfomap import MetainfoMap, MetainfoImpl
 from .type import StringTypes
 from .util import levenshtein
 
@@ -49,8 +49,8 @@ def register_library(library):
     library.serialboxSavepointToString.argtypes = [POINTER(SavepointImpl)]
     library.serialboxSavepointToString.restype = c_char_p
 
-    library.serialboxSavepointGetMetaInfo.argtypes = [POINTER(SavepointImpl)]
-    library.serialboxSavepointGetMetaInfo.restype = POINTER(MetaInfoImpl)
+    library.serialboxSavepointGetMetainfo.argtypes = [POINTER(SavepointImpl)]
+    library.serialboxSavepointGetMetainfo.restype = POINTER(MetainfoImpl)
 
 
 # ===--------------------------------------------------------------------------------------------===
@@ -71,7 +71,7 @@ class Savepoint(object):
 
         >>> savepoint = Savepoint('savepoint', {'key': 5})
         >>> savepoint.metainfo
-        <MetaInfoMap {"key": 5}>
+        <MetainfoMap {"key": 5}>
         >>>
     """
 
@@ -95,7 +95,7 @@ class Savepoint(object):
             self.__savepoint = invoke(lib.serialboxSavepointCreate, namestr)
 
         if metainfo:
-            if isinstance(metainfo, MetaInfoMap):
+            if isinstance(metainfo, MetainfoMap):
                 metainfo = metainfo.to_dict()
 
             metainfomap = self.metainfo
@@ -124,16 +124,16 @@ class Savepoint(object):
             >>> s.metainfo['key']
             5
             >>> type(s.metainfo)
-            <class 'serialbox.metainfomap.MetaInfoMap'>
+            <class 'serialbox.metainfomap.MetainfoMap'>
             >>> s.metainfo.insert('key2', 'str')
             >>> s
-            <MetaInfoMap {"key": 5, "key2": str}>
+            <MetainfoMap {"key": 5, "key2": str}>
             >>>
 
         :return: Refrence to the meta-information map
-        :rtype: :class:`MetaInfoMap <serialbox.MetaInfoMap>`
+        :rtype: :class:`MetainfoMap <serialbox.MetainfoMap>`
         """
-        return MetaInfoMap(impl=invoke(lib.serialboxSavepointGetMetaInfo, self.__savepoint))
+        return MetainfoMap(impl=invoke(lib.serialboxSavepointGetMetainfo, self.__savepoint))
 
     def clone(self):
         """Clone the Savepoint by performing a deepcopy.

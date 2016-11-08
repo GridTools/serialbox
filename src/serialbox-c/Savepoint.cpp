@@ -79,9 +79,9 @@ char* serialboxSavepointToString(const serialboxSavepoint_t* savepoint) {
  *     Meta-information
 \*===------------------------------------------------------------------------------------------===*/
 
-serialboxMetaInfo_t* serialboxSavepointGetMetaInfo(serialboxSavepoint_t* savepoint) {
+serialboxMetainfo_t* serialboxSavepointGetMetainfo(serialboxSavepoint_t* savepoint) {
   Savepoint* sp = toSavepoint(savepoint);
-  serialboxMetaInfo_t* metaInfo = allocate<serialboxMetaInfo_t>();
+  serialboxMetainfo_t* metaInfo = allocate<serialboxMetainfo_t>();
   metaInfo->impl = sp->metaInfoPtr().get();
   metaInfo->ownsData = 0;
   return metaInfo;

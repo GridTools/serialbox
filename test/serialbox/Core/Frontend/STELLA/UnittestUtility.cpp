@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/STELLA/UnittestUtility.cpp --------------------------*- C++ -*-===//
+//===-- serialbox/core/frontend/stella/UnittestUtility.cpp --------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Frontend/STELLA/Utility.h"
+#include "serialbox/core/frontend/stella/Utility.h"
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 #include <gtest/gtest.h>

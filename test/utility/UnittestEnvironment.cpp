@@ -13,9 +13,9 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "utility/UnittestEnvironment.h"
-#include "serialbox/Core/Exception.h"
-#include "serialbox/Core/Logging.h"
-#include "serialbox/Core/STLExtras.h"
+#include "serialbox/core/Exception.h"
+#include "serialbox/core/Logging.h"
+#include "serialbox/core/STLExtras.h"
 
 namespace serialbox {
 

@@ -16,13 +16,13 @@
 #include "serialbox-c/Logging.h"
 #include "serialbox-c/Savepoint.h"
 #include "serialbox-c/Utility.h"
-#include "serialbox/Core/Unreachable.h"
-#include "serialbox/Core/Archive/ArchiveFactory.h"
-#include "serialbox/Core/Exception.h"
-#include "serialbox/Core/Logging.h"
-#include "serialbox/Core/SerializerImpl.h"
-#include "serialbox/Core/Slice.h"
-#include "serialbox/Core/StorageView.h"
+#include "serialbox/core/Unreachable.h"
+#include "serialbox/core/archive/ArchiveFactory.h"
+#include "serialbox/core/Exception.h"
+#include "serialbox/core/Logging.h"
+#include "serialbox/core/SerializerImpl.h"
+#include "serialbox/core/Slice.h"
+#include "serialbox/core/StorageView.h"
 
 using namespace serialboxC;
 
@@ -120,10 +120,10 @@ void serialboxDisableSerialization(void) { Serializer::disableSerialization(); }
  *     Global Meta-information
 \*===------------------------------------------------------------------------------------------===*/
 
-serialboxMetaInfo_t* serialboxSerializerGetGlobalMetaInfo(serialboxSerializer_t* serializer) {
+serialboxMetainfo_t* serialboxSerializerGetGlobalMetainfo(serialboxSerializer_t* serializer) {
   Serializer* ser = toSerializer(serializer);
-  serialboxMetaInfo_t* metaInfo = allocate<serialboxMetaInfo_t>();
-  metaInfo->impl = ser->globalMetaInfoPtr().get();
+  serialboxMetainfo_t* metaInfo = allocate<serialboxMetainfo_t>();
+  metaInfo->impl = ser->globalMetainfoPtr().get();
   metaInfo->ownsData = 0;
   return metaInfo;
 }
@@ -203,9 +203,9 @@ serialboxSerializerGetFieldnamesAtSavepoint(const serialboxSerializer_t* seriali
 \*===------------------------------------------------------------------------------------------===*/
 
 int serialboxSerializerAddField(serialboxSerializer_t* serializer, const char* name,
-                                const serialboxFieldMetaInfo_t* fieldMetaInfo) {
+                                const serialboxFieldMetainfo_t* fieldMetainfo) {
   Serializer* ser = toSerializer(serializer);
-  const FieldMetaInfo* info = toConstFieldMetaInfo(fieldMetaInfo);
+  const FieldMetainfo* info = toConstFieldMetainfo(fieldMetainfo);
 
   try {
     ser->registerField(name, *info);
@@ -241,7 +241,7 @@ int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* 
         (iSize != 1 ? 1 : 0) + (jSize != 1 ? 1 : 0) + (kSize != 1 ? 1 : 0) + (lSize != 1 ? 1 : 0);
 
     std::vector<int> dims{iSize, jSize, kSize, lSize};
-    MetaInfoMap metaInfo;
+    MetainfoMap metaInfo;
     metaInfo.insert("__name", name);
     metaInfo.insert("__elementtype", typeName);
     metaInfo.insert("__bytesperelement", bytesPerElement);
@@ -259,13 +259,13 @@ int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* 
     metaInfo.insert("__lminushalosize", lMinusHalo);
     metaInfo.insert("__lplushalosize", lPlusHalo);
 
-    FieldMetaInfo fieldMetaInfo(typeID, dims, metaInfo);
+    FieldMetainfo fieldMetainfo(typeID, dims, metaInfo);
 
     // Field was already registered with the same meta-data
-    if(ser->hasField(name) && (ser->getFieldMetaInfoOf(name) == fieldMetaInfo))
+    if(ser->hasField(name) && (ser->getFieldMetainfoImplOf(name) == fieldMetainfo))
       return 0;
 
-    ser->registerField(name, fieldMetaInfo);
+    ser->registerField(name, fieldMetainfo);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }
@@ -292,13 +292,13 @@ serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer) {
   return array;
 }
 
-serialboxFieldMetaInfo_t*
-serialboxSerializerGetFieldMetaInfo(const serialboxSerializer_t* serializer, const char* name) {
+serialboxFieldMetainfo_t*
+serialboxSerializerGetFieldMetainfo(const serialboxSerializer_t* serializer, const char* name) {
   const Serializer* ser = toConstSerializer(serializer);
 
   auto it = ser->fieldMap().findField(name);
   if(it != ser->fieldMap().end()) {
-    serialboxFieldMetaInfo_t* info = allocate<serialboxFieldMetaInfo_t>();
+    serialboxFieldMetainfo_t* info = allocate<serialboxFieldMetainfo_t>();
     info->impl = it->second.get();
     info->ownsData = 0;
     return info;

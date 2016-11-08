@@ -13,7 +13,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "utility/CInterfaceTestBase.h"
-#include "serialbox-c/MetaInfo.h"
+#include "serialbox-c/Metainfo.h"
 #include "serialbox-c/Savepoint.h"
 #include <gtest/gtest.h>
 
@@ -37,21 +37,21 @@ TEST_F(CSavepointTest, Test) {
   // Add meta-information
   //
   {
-    serialboxMetaInfo_t* metaInfo = serialboxSavepointGetMetaInfo(savepoint);
+    serialboxMetainfo_t* metaInfo = serialboxSavepointGetMetainfo(savepoint);
     ASSERT_FALSE(metaInfo->ownsData);
-    ASSERT_TRUE(serialboxMetaInfoAddBoolean(metaInfo, "key", true));
-    serialboxMetaInfoDestroy(metaInfo);
+    ASSERT_TRUE(serialboxMetainfoAddBoolean(metaInfo, "key", true));
+    serialboxMetainfoDestroy(metaInfo);
   }
 
   //
   // Query meta-information
   //
   {
-    serialboxMetaInfo_t* metaInfo = serialboxSavepointGetMetaInfo(savepoint);
+    serialboxMetainfo_t* metaInfo = serialboxSavepointGetMetainfo(savepoint);
     ASSERT_FALSE(metaInfo->ownsData);    
-    ASSERT_TRUE(serialboxMetaInfoHasKey(metaInfo, "key"));
-    EXPECT_EQ(serialboxMetaInfoGetBoolean(metaInfo, "key"), true);
-    serialboxMetaInfoDestroy(metaInfo); 
+    ASSERT_TRUE(serialboxMetainfoHasKey(metaInfo, "key"));
+    EXPECT_EQ(serialboxMetainfoGetBoolean(metaInfo, "key"), true);
+    serialboxMetainfoDestroy(metaInfo); 
   }
 
   //

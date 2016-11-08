@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestSavepointImpl.cpp ------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestSavepointImpl.cpp ------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/SavepointImpl.h"
+#include "serialbox/core/SavepointImpl.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 #include <unordered_map>
@@ -21,8 +21,8 @@ using namespace serialbox;
 
 TEST(SavepointImplTest, Construction) {
   std::string name("savepoint");
-  MetaInfoMap metaInfo(std::initializer_list<MetaInfoMap::value_type>{
-      {"key1", MetaInfoValue(std::string("str"))}, {"key2", MetaInfoValue(double(5))}});
+  MetainfoMapImpl metaInfo(std::initializer_list<MetainfoMapImpl::value_type>{
+      {"key1", MetainfoValueImpl(std::string("str"))}, {"key2", MetainfoValueImpl(double(5))}});
 
   // -----------------------------------------------------------------------------------------------
   //  Empty constructor
@@ -47,22 +47,22 @@ TEST(SavepointImplTest, Construction) {
 
     ASSERT_TRUE(s.metaInfo().hasKey("key1"));
     EXPECT_EQ(s.metaInfo().at("key1").as<std::string>(), "str");
-    EXPECT_EQ(s.getMetaInfoAs<std::string>("key1"), "str");
+    EXPECT_EQ(s.getMetainfoAs<std::string>("key1"), "str");
 
     ASSERT_TRUE(s.metaInfo().hasKey("key2"));
     EXPECT_EQ(s.metaInfo().at("key2").as<double>(), double(5));
-    EXPECT_EQ(s.getMetaInfoAs<double>("key2"), double(5));
+    EXPECT_EQ(s.getMetainfoAs<double>("key2"), double(5));
 
     // Non-existent key -> Exception
-    EXPECT_THROW(s.getMetaInfoAs<double>("key3"), Exception);
+    EXPECT_THROW(s.getMetainfoAs<double>("key3"), Exception);
 
     // Add meta-info
-    s.addMetaInfo("key3", bool(true));
+    s.addMetainfo("key3", bool(true));
     EXPECT_EQ(s.metaInfo().at("key3").as<bool>(), bool(true));
-    EXPECT_EQ(s.getMetaInfoAs<bool>("key3"), bool(true));
+    EXPECT_EQ(s.getMetainfoAs<bool>("key3"), bool(true));
 
     // Add meta-info with existent key -> Exception
-    EXPECT_THROW(s.addMetaInfo("key3", bool(false)), Exception);
+    EXPECT_THROW(s.addMetainfo("key3", bool(false)), Exception);
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ TEST(SavepointImplTest, Construction) {
   {
     SavepointImpl s(name, metaInfo);
     SavepointImpl s_swap("savepoint-swap", metaInfo);
-    s_swap.metaInfo()["key1"] = MetaInfoValue(std::string("changed-value"));
+    s_swap.metaInfo()["key1"] = MetainfoValueImpl(std::string("changed-value"));
 
     s.swap(s_swap);
     EXPECT_EQ(s.name(), "savepoint-swap");
@@ -165,8 +165,8 @@ TEST(SavepointImplTest, Comparison) {
     EXPECT_TRUE(s1 != s2);
 
     // ... even if they have the same meta-data
-    s1.addMetaInfo("key1", double(5));
-    s2.addMetaInfo("key1", double(5));
+    s1.addMetainfo("key1", double(5));
+    s2.addMetainfo("key1", double(5));
     EXPECT_FALSE(s1 == s2);
     EXPECT_TRUE(s1 != s2);
   }
@@ -179,22 +179,22 @@ TEST(SavepointImplTest, Comparison) {
     EXPECT_TRUE(s1 == s2);
 
     // Savepoints are equal when their metainfo is equal
-    s1.addMetaInfo("key1", double(5));
-    s2.addMetaInfo("key1", double(5));
+    s1.addMetainfo("key1", double(5));
+    s2.addMetainfo("key1", double(5));
     EXPECT_TRUE(s1 == s2);
 
     // Savepoints are unequal if their metainfos are not equal
-    s1.addMetaInfo("key2", std::string("str-1"));
-    s2.addMetaInfo("key2", std::string("str-2"));
+    s1.addMetainfo("key2", std::string("str-1"));
+    s2.addMetainfo("key2", std::string("str-2"));
     EXPECT_FALSE(s1 == s2);
   }
 }
 
 TEST(SavepointImplTest, Hash) {
   SavepointImpl s1("savepoint");
-  s1.addMetaInfo("key1", double(5));
+  s1.addMetainfo("key1", double(5));
   SavepointImpl s2("savepoint");
-  s2.addMetaInfo("key1", bool(true));
+  s2.addMetainfo("key1", bool(true));
 
   std::hash<SavepointImpl> hash;
 
@@ -216,13 +216,13 @@ TEST(SavepointImplTest, Hash) {
 
 TEST(SavepointImplTest, HashMap) {
   SavepointImpl s1("savepoint");
-  s1.addMetaInfo("key1", double(5));
+  s1.addMetainfo("key1", double(5));
 
   SavepointImpl s2("savepoint");
-  s2.addMetaInfo("key1", bool(true));
+  s2.addMetainfo("key1", bool(true));
 
   SavepointImpl s3("diffrent-savepoint");
-  s3.addMetaInfo("key1", bool(true));
+  s3.addMetainfo("key1", bool(true));
 
   std::unordered_map<SavepointImpl, int> hashMap;
   using value_type = std::unordered_map<SavepointImpl, int>::value_type;
@@ -244,8 +244,8 @@ TEST(SavepointImplTest, HashMap) {
 
 TEST(SavepointImplTest, toJSON) {
   std::string name("savepoint");
-  MetaInfoMap metaInfo(std::initializer_list<MetaInfoMap::value_type>{
-      {"key1", MetaInfoValue(std::string("str"))}, {"key2", MetaInfoValue(double(5))}});
+  MetainfoMapImpl metaInfo(std::initializer_list<MetainfoMapImpl::value_type>{
+      {"key1", MetainfoValueImpl(std::string("str"))}, {"key2", MetainfoValueImpl(double(5))}});
 
   SavepointImpl s(name, metaInfo);
   json::json j = s.toJSON();
@@ -254,7 +254,7 @@ TEST(SavepointImplTest, toJSON) {
   ASSERT_TRUE(j.count("name"));
   EXPECT_EQ(name, j["name"]);
 
-  // Meta-info (this is properly tested in the MetaInfoMap unittests)
+  // Meta-info (this is properly tested in the MetainfoMapImpl unittests)
   ASSERT_TRUE(j.count("meta_info"));
 
   ASSERT_TRUE(j["meta_info"].count("key1"));
@@ -269,8 +269,8 @@ TEST(SavepointImplTest, toJSON) {
 
 TEST(SavepointImplTest, fromJSON) {
   std::string name("savepoint");
-  MetaInfoMap metaInfo(std::initializer_list<MetaInfoMap::value_type>{
-      {"key1", MetaInfoValue(std::string("str"))}, {"key2", MetaInfoValue(double(5))}});
+  MetainfoMapImpl metaInfo(std::initializer_list<MetainfoMapImpl::value_type>{
+      {"key1", MetainfoValueImpl(std::string("str"))}, {"key2", MetainfoValueImpl(double(5))}});
 
   // -----------------------------------------------------------------------------------------------
   //  Success
@@ -349,8 +349,8 @@ TEST(SavepointImplTest, fromJSON) {
 
 TEST(SavepointImplTest, toString) {
   std::string name("savepoint");
-  MetaInfoMap metaInfo(std::initializer_list<MetaInfoMap::value_type>{
-      {"key1", MetaInfoValue(std::string("str"))}, {"key2", MetaInfoValue(double(5))}});
+  MetainfoMapImpl metaInfo(std::initializer_list<MetainfoMapImpl::value_type>{
+      {"key1", MetainfoValueImpl(std::string("str"))}, {"key2", MetainfoValueImpl(double(5))}});
 
   std::stringstream ss;
   SavepointImpl savepoint(name, metaInfo);

@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestVersion.cpp ------------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestVersion.cpp ------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -15,9 +15,9 @@
 #include "Utility/Serialbox.h"
 #include "Utility/SerializerTestBase.h"
 #include "Utility/Storage.h"
-#include "serialbox/Core/StorageView.h"
-#include "serialbox/Core/Timer.h"
-#include "serialbox/Core/Unreachable.h"
+#include "serialbox/core/StorageView.h"
+#include "serialbox/core/Timer.h"
+#include "serialbox/core/Unreachable.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

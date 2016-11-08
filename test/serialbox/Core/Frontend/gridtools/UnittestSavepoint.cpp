@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestSavepoint.cpp ----------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestSavepoint.cpp ----------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Frontend/gridtools/Savepoint.h"
+#include "serialbox/core/frontend/gridtools/Savepoint.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

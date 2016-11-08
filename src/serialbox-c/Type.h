@@ -15,7 +15,7 @@
 #ifndef SERIALBOX_C_TYPE_H
 #define SERIALBOX_C_TYPE_H
 
-#include "serialbox/Core/Config.h"
+#include "serialbox/core/Config.h"
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -85,20 +85,20 @@ typedef struct {
 } serialboxSavepoint_t;
 
 /**
- * \brief Refrence to a MetaInfo
+ * \brief Refrence to a Metainfo
  */
 typedef struct {
   void* impl;
   int ownsData;
-} serialboxMetaInfo_t;
+} serialboxMetainfo_t;
 
 /**
- * \brief Refrence to a FieldMetaInfo
+ * \brief Refrence to a FieldMetainfoImpl
  */
 typedef struct {
   void* impl;
   int ownsData;
-} serialboxFieldMetaInfo_t;
+} serialboxFieldMetainfo_t;
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Enumtypes

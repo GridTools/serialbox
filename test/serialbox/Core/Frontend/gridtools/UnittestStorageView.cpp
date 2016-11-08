@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/gridtools/UnittestStorageView.cpp -------------------*- C++ -*-===//
+//===-- serialbox/core/frontend/gridtools/UnittestStorageView.cpp -------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -13,14 +13,14 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "utility/GridTools.h"
-#include "serialbox/Core/STLExtras.h"
-#include "serialbox/Core/StorageView.h"
+#include "serialbox/core/STLExtras.h"
+#include "serialbox/core/StorageView.h"
 #include <gtest/gtest.h>
 #include <memory>
 
 #ifdef SERIALBOX_HAS_GRIDTOOLS
 
-#include "serialbox/Core/Frontend/gridtools/StorageViewHelper.h"
+#include "serialbox/core/frontend/gridtools/StorageViewHelper.h"
 
 namespace {
 

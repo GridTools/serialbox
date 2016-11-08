@@ -13,10 +13,10 @@ set(SOURCES
   UnittestArray.cpp
   UnittestException.cpp
   UnittestFieldMap.cpp
-  UnittestFieldMetaInfo.cpp
+  UnittestFieldMetainfoImpl.cpp
   UnittestFieldID.cpp
-  UnittestMetaInfoMap.cpp
-  UnittestMetaInfoValue.cpp
+  UnittestMetainfoMap.cpp
+  UnittestMetainfoValue.cpp
   UnittestStorage.cpp
   UnittestStorageView.cpp
   UnittestSavepointImpl.cpp
@@ -36,7 +36,7 @@ set(SOURCES
   
   # Frontend/gridtools/
   Frontend/gridtools/UnittestStorageView.cpp
-  Frontend/gridtools/UnittestMetaInfoMap.cpp
+  Frontend/gridtools/UnittestMetainfoMap.cpp
   Frontend/gridtools/UnittestFieldMetaInfo.cpp  
   Frontend/gridtools/UnittestSavepoint.cpp    
   Frontend/gridtools/UnittestSerializer.cpp    

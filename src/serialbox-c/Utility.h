@@ -22,19 +22,19 @@
 
 #include "serialbox-c/ErrorHandling.h"
 #include "serialbox-c/Type.h"
-#include "serialbox/Core/FieldMetaInfo.h"
-#include "serialbox/Core/MetaInfoMap.h"
-#include "serialbox/Core/SavepointImpl.h"
-#include "serialbox/Core/SerializerImpl.h"
+#include "serialbox/core/FieldMetainfoImpl.h"
+#include "serialbox/core/MetainfoMapImpl.h"
+#include "serialbox/core/SavepointImpl.h"
+#include "serialbox/core/SerializerImpl.h"
 #include <cstdlib>
 #include <cstring>
 
 namespace serialboxC {
 
 using Serializer = serialbox::SerializerImpl;
-using FieldMetaInfo = serialbox::FieldMetaInfo;
+using FieldMetainfo = serialbox::FieldMetainfoImpl;
 using Savepoint = serialbox::SavepointImpl;
-using MetaInfoMap = serialbox::MetaInfoMap;
+using MetainfoMap = serialbox::MetainfoMapImpl;
 
 /// \brief Convert `serialboxSerializer_t` to `Serializer`
 /// @{
@@ -66,33 +66,33 @@ inline const Savepoint* toConstSavepoint(const serialboxSavepoint_t* savepoint) 
 }
 /// @}
 
-/// \brief Convert `serialboxFieldMetaInfo_t` to `FieldMetaInfo`
+/// \brief Convert `serialboxFieldMetainfo_t` to `FieldMetainfoImpl`
 /// @{
-inline FieldMetaInfo* toFieldMetaInfo(serialboxFieldMetaInfo_t* fieldMetaInfo) {
-  if(!fieldMetaInfo->impl)
-    serialboxFatalError("uninitialized FieldMetaInfo");
-  return reinterpret_cast<FieldMetaInfo*>(fieldMetaInfo->impl);
+inline FieldMetainfo* toFieldMetainfo(serialboxFieldMetainfo_t* fieldMetainfo) {
+  if(!fieldMetainfo->impl)
+    serialboxFatalError("uninitialized FieldMetainfo");
+  return reinterpret_cast<FieldMetainfo*>(fieldMetainfo->impl);
 }
 
-inline const FieldMetaInfo* toConstFieldMetaInfo(const serialboxFieldMetaInfo_t* fieldMetaInfo) {
-  if(!fieldMetaInfo->impl)
-    serialboxFatalError("uninitialized FieldMetaInfo");
-  return reinterpret_cast<const FieldMetaInfo*>(fieldMetaInfo->impl);
+inline const FieldMetainfo* toConstFieldMetainfo(const serialboxFieldMetainfo_t* fieldMetainfo) {
+  if(!fieldMetainfo->impl)
+    serialboxFatalError("uninitialized FieldMetainfo");
+  return reinterpret_cast<const FieldMetainfo*>(fieldMetainfo->impl);
 }
 /// @}
 
-/// \brief Convert `serialboxMetaInfo_t` to `MetaInfoMap`
+/// \brief Convert `serialboxMetainfo_t` to `MetainfoMapImpl`
 /// @{
-inline MetaInfoMap* toMetaInfoMap(serialboxMetaInfo_t* metaInfo) {
+inline MetainfoMap* toMetainfoMap(serialboxMetainfo_t* metaInfo) {
   if(!metaInfo->impl)
-    serialboxFatalError("uninitialized MetaInfo");
-  return reinterpret_cast<MetaInfoMap*>(metaInfo->impl);
+    serialboxFatalError("uninitialized Metainfo");
+  return reinterpret_cast<MetainfoMap*>(metaInfo->impl);
 }
 
-inline const MetaInfoMap* toConstMetaInfoMap(const serialboxMetaInfo_t* metaInfo) {
+inline const MetainfoMap* toConstMetainfoMap(const serialboxMetainfo_t* metaInfo) {
   if(!metaInfo->impl)
-    serialboxFatalError("uninitialized MetaInfo");
-  return reinterpret_cast<const MetaInfoMap*>(metaInfo->impl);
+    serialboxFatalError("uninitialized Metainfo");
+  return reinterpret_cast<const MetainfoMap*>(metaInfo->impl);
 }
 /// @}
 

@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestUnreachable.cpp --------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestUnreachable.cpp --------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Type.h"
-#include "serialbox/Core/Unreachable.h"
+#include "serialbox/core/Type.h"
+#include "serialbox/core/Unreachable.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

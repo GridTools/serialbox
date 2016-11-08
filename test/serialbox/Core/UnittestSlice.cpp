@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestSlice.cpp --------------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestSlice.cpp --------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Slice.h"
+#include "serialbox/core/Slice.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

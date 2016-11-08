@@ -14,8 +14,8 @@
 
 #include "utility/CInterfaceTestBase.h"
 #include "utility/Storage.h"
-#include "serialbox-c/FieldMetaInfo.h"
-#include "serialbox-c/MetaInfo.h"
+#include "serialbox-c/FieldMetainfo.h"
+#include "serialbox-c/Metainfo.h"
 #include "serialbox-c/Savepoint.h"
 #include "serialbox-c/Serializer.h"
 #include <gtest/gtest.h>
@@ -115,25 +115,25 @@ TEST_F(CSerializerUtilityTest, Construction) {
   }
 }
 
-TEST_F(CSerializerUtilityTest, AddMetaInfo) {
+TEST_F(CSerializerUtilityTest, AddMetainfo) {
   serialboxSerializer_t* ser =
       serialboxSerializerCreate(Write, directory->path().c_str(), "Field", "Binary");
 
   // Add meta-information
   {
-    serialboxMetaInfo_t* metaInfo = serialboxSerializerGetGlobalMetaInfo(ser);
+    serialboxMetainfo_t* metaInfo = serialboxSerializerGetGlobalMetainfo(ser);
     ASSERT_FALSE(metaInfo->ownsData);
-    ASSERT_TRUE(serialboxMetaInfoAddBoolean(metaInfo, "key", true));
-    serialboxMetaInfoDestroy(metaInfo);
+    ASSERT_TRUE(serialboxMetainfoAddBoolean(metaInfo, "key", true));
+    serialboxMetainfoDestroy(metaInfo);
   }
 
   // Query meta-information
   {
-    serialboxMetaInfo_t* metaInfo = serialboxSerializerGetGlobalMetaInfo(ser);
+    serialboxMetainfo_t* metaInfo = serialboxSerializerGetGlobalMetainfo(ser);
     ASSERT_FALSE(metaInfo->ownsData);
-    ASSERT_TRUE(serialboxMetaInfoHasKey(metaInfo, "key"));
-    EXPECT_EQ(serialboxMetaInfoGetBoolean(metaInfo, "key"), true);
-    serialboxMetaInfoDestroy(metaInfo);
+    ASSERT_TRUE(serialboxMetainfoHasKey(metaInfo, "key"));
+    EXPECT_EQ(serialboxMetainfoGetBoolean(metaInfo, "key"), true);
+    serialboxMetainfoDestroy(metaInfo);
   }
 
   serialboxSerializerDestroy(ser);
@@ -145,7 +145,7 @@ TEST_F(CSerializerUtilityTest, RegisterSavepoints) {
 
   // Create Savepoints
   serialboxSavepoint_t* savepoint1 = serialboxSavepointCreate("savepoint1");
-  serialboxMetaInfoAddBoolean(serialboxSavepointGetMetaInfo(savepoint1), "key", true);
+  serialboxMetainfoAddBoolean(serialboxSavepointGetMetainfo(savepoint1), "key", true);
 
   serialboxSavepoint_t* savepoint2 = serialboxSavepointCreate("savepoint2");
 
@@ -171,9 +171,9 @@ TEST_F(CSerializerUtilityTest, RegisterFields) {
   serialboxSerializer_t* ser =
       serialboxSerializerCreate(Write, directory->path().c_str(), "Field", "Binary");
 
-  // Create FieldMetaInfo
+  // Create FieldMetainfoImpl
   int dims[3] = {10, 15, 20};
-  serialboxFieldMetaInfo_t* info = serialboxFieldMetaInfoCreate(Float64, dims, 3);
+  serialboxFieldMetainfo_t* info = serialboxFieldMetainfoCreate(Float64, dims, 3);
 
   // Register field
   ASSERT_TRUE(serialboxSerializerAddField(ser, "field", info));
@@ -197,25 +197,25 @@ TEST_F(CSerializerUtilityTest, RegisterFields) {
   serialboxArrayOfStringDestroy(fieldnames);
 
   //
-  // Get FieldMetaInfo of "field"
+  // Get FieldMetainfoImpl of "field"
   //
-  serialboxFieldMetaInfo_t* infoField = serialboxSerializerGetFieldMetaInfo(ser, "field");
+  serialboxFieldMetainfo_t* infoField = serialboxSerializerGetFieldMetainfo(ser, "field");
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-  ASSERT_TRUE(serialboxFieldMetaInfoEqual(info, infoField));
+  ASSERT_TRUE(serialboxFieldMetainfoEqual(info, infoField));
 
   //
-  // Get FieldMetaInfo of "field2"
+  // Get FieldMetainfoImpl of "field2"
   //
-  serialboxFieldMetaInfo_t* infoField2 = serialboxSerializerGetFieldMetaInfo(ser, "field2");
+  serialboxFieldMetainfo_t* infoField2 = serialboxSerializerGetFieldMetainfo(ser, "field2");
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   // Number of dimension
-  int numDimension = serialboxFieldMetaInfoGetNumDimensions(infoField2);
+  int numDimension = serialboxFieldMetainfoGetNumDimensions(infoField2);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_EQ(numDimension, 4);
 
   // Dimensions
-  const int* dimension = serialboxFieldMetaInfoGetDimensions(infoField2);
+  const int* dimension = serialboxFieldMetainfoGetDimensions(infoField2);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_EQ(dimension[0], 42);
   EXPECT_EQ(dimension[1], 1);
@@ -223,65 +223,65 @@ TEST_F(CSerializerUtilityTest, RegisterFields) {
   EXPECT_EQ(dimension[3], 12);
 
   // Type
-  serialboxTypeID type = serialboxFieldMetaInfoGetTypeID(infoField2);
+  serialboxTypeID type = serialboxFieldMetainfoGetTypeID(infoField2);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_EQ(type, Int32);
 
   // Meta information
-  serialboxMetaInfo_t* metaInfo = serialboxFieldMetaInfoGetMetaInfo(infoField2);
+  serialboxMetainfo_t* metaInfo = serialboxFieldMetainfoGetMetainfo(infoField2);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  serialboxString_t name = serialboxMetaInfoGetString(metaInfo, "__name");
+  serialboxString_t name = serialboxMetainfoGetString(metaInfo, "__name");
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_STREQ(name, "field2");
   std::free(name);
 
-  serialboxString_t typeName = serialboxMetaInfoGetString(metaInfo, "__elementtype");
+  serialboxString_t typeName = serialboxMetainfoGetString(metaInfo, "__elementtype");
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_STREQ(typeName, "int");
   std::free(typeName);
 
-  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__bytesperelement"), 4);
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__bytesperelement"), 4);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__rank"), 2);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__isize"), 42);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__jsize"), 1);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__ksize"), 1);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__lsize"), 12);
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__rank"), 2);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__iminushalosize"), 1);
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__isize"), 42);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__iplushalosize"), 1);
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__jsize"), 1);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__jminushalosize"), 0);
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__ksize"), 1);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__jplushalosize"), 0);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__kminushalosize"), 0);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__kplushalosize"), 0);
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__lsize"), 12);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__lminushalosize"), 2);
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__iminushalosize"), 1);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-  EXPECT_EQ(serialboxMetaInfoGetInt32(metaInfo, "__lplushalosize"), 2);
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__iplushalosize"), 1);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  serialboxMetaInfoDestroy(metaInfo);
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__jminushalosize"), 0);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__jplushalosize"), 0);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  // Get FieldMetaInfo of non-existing field -> NULL
-  ASSERT_EQ(NULL, serialboxSerializerGetFieldMetaInfo(ser, "X"));
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__kminushalosize"), 0);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__kplushalosize"), 0);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  serialboxFieldMetaInfoDestroy(info);
-  serialboxFieldMetaInfoDestroy(infoField);
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__lminushalosize"), 2);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__lplushalosize"), 2);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxMetainfoDestroy(metaInfo);
+
+  // Get FieldMetainfoImpl of non-existing field -> NULL
+  ASSERT_EQ(NULL, serialboxSerializerGetFieldMetainfo(ser, "X"));
+
+  serialboxFieldMetainfoDestroy(info);
+  serialboxFieldMetainfoDestroy(infoField);
   serialboxSerializerDestroy(ser);
 }
 
@@ -353,10 +353,10 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
 
   // Savepoints
   serialboxSavepoint_t* savepoint1_t_1 = serialboxSavepointCreate("savepoint1");
-  serialboxMetaInfoAddBoolean(serialboxSavepointGetMetaInfo(savepoint1_t_1), "time", int(1));
+  serialboxMetainfoAddBoolean(serialboxSavepointGetMetainfo(savepoint1_t_1), "time", int(1));
 
   serialboxSavepoint_t* savepoint1_t_2 = serialboxSavepointCreate("savepoint2");
-  serialboxMetaInfoAddBoolean(serialboxSavepointGetMetaInfo(savepoint1_t_2), "time", int(2));
+  serialboxMetainfoAddBoolean(serialboxSavepointGetMetainfo(savepoint1_t_2), "time", int(2));
 
   serialboxSavepoint_t* savepoint_u_1 = serialboxSavepointCreate("savepoint_u_1");
   serialboxSavepoint_t* savepoint_v_1 = serialboxSavepointCreate("savepoint_v_1");
@@ -380,10 +380,10 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
 
     // Register fields
     serialboxTypeID type = static_cast<serialboxTypeID>((int)serialbox::ToTypeID<TypeParam>::value);
-    serialboxFieldMetaInfo_t* info_u =
-        serialboxFieldMetaInfoCreate(type, u_0_input.dims().data(), u_0_input.dims().size());
-    serialboxFieldMetaInfo_t* info_v =
-        serialboxFieldMetaInfoCreate(type, v_0_input.dims().data(), v_0_input.dims().size());
+    serialboxFieldMetainfo_t* info_u =
+        serialboxFieldMetainfoCreate(type, u_0_input.dims().data(), u_0_input.dims().size());
+    serialboxFieldMetainfo_t* info_v =
+        serialboxFieldMetainfoCreate(type, v_0_input.dims().data(), v_0_input.dims().size());
 
     ASSERT_TRUE(serialboxSerializerAddField(ser_write, "u", info_u));
     ASSERT_TRUE(serialboxSerializerAddField(ser_write, "v", info_v));
@@ -430,8 +430,8 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
                              field_6d_input.strides().data(), field_6d_input.strides().size());
     ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-    serialboxFieldMetaInfoDestroy(info_u);
-    serialboxFieldMetaInfoDestroy(info_v);
+    serialboxFieldMetainfoDestroy(info_u);
+    serialboxFieldMetainfoDestroy(info_v);
     serialboxSerializerDestroy(ser_write);
   }
 
@@ -441,7 +441,7 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
         serialboxSerializerCreate(Append, this->directory->path().c_str(), "Field", "Binary");
 
     serialboxTypeID type = static_cast<serialboxTypeID>((int)serialbox::ToTypeID<TypeParam>::value);
-    serialboxFieldMetaInfo_t* info_field_6d = serialboxFieldMetaInfoCreate(
+    serialboxFieldMetainfo_t* info_field_6d = serialboxFieldMetainfoCreate(
         type, field_6d_input.dims().data(), field_6d_input.dims().size());
     ASSERT_TRUE(serialboxSerializerAddField(ser_append, "field_6d", info_field_6d));
 
@@ -451,7 +451,7 @@ TYPED_TEST(CSerializerReadWriteTest, WriteAndRead) {
                              field_6d_input.strides().size());
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-    serialboxFieldMetaInfoDestroy(info_field_6d);
+    serialboxFieldMetainfoDestroy(info_field_6d);
     serialboxSerializerDestroy(ser_append);
   }
 
@@ -560,7 +560,7 @@ TYPED_TEST(CSerializerReadWriteTest, SliceWriteAndRead) {
 
     // Register field
     serialboxTypeID type = static_cast<serialboxTypeID>((int)serialbox::ToTypeID<TypeParam>::value);
-    serialboxFieldMetaInfo_t* info_storage_1d = serialboxFieldMetaInfoCreate(
+    serialboxFieldMetainfo_t* info_storage_1d = serialboxFieldMetainfoCreate(
         type, storage_1d_input.dims().data(), storage_1d_input.dims().size());
     ASSERT_TRUE(serialboxSerializerAddField(ser_write, "1d", info_storage_1d));
 

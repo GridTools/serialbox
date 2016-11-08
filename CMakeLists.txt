@@ -467,8 +467,8 @@ endif(SERIALBOX_CODE_COVERAGE)
 
 # Generate serialbox/Support/Config.h
 set(SERIALBOX_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
-set(SERIALBOX_CXX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/src/serialbox/Core/Config.h.cmake)
-set(SERIALBOX_CXX_CONFIG_FILE ${CMAKE_BINARY_DIR}/src/serialbox/Core/Config.h)
+set(SERIALBOX_CXX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/src/serialbox/core/Config.h.cmake)
+set(SERIALBOX_CXX_CONFIG_FILE ${CMAKE_BINARY_DIR}/src/serialbox/core/Config.h)
 configure_file(${SERIALBOX_CXX_CONFIG_FILE_IN} ${SERIALBOX_CXX_CONFIG_FILE})
 install(FILES ${SERIALBOX_CXX_CONFIG_FILE} 
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox/Core)

@@ -74,20 +74,20 @@ static void write() {
    * Create the field meta-information of `phi` and `lap` ...
    */
   int dims[] = {N, M};
-  serialboxFieldMetaInfo_t* phiFieldMetaInfo = serialboxFieldMetaInfoCreate(Float64, dims, 2);
-  serialboxFieldMetaInfo_t* lapFieldMetaInfo = serialboxFieldMetaInfoCreate(Float64, dims, 2);
+  serialboxFieldMetainfo_t* phiFieldMetainfo = serialboxFieldMetainfoCreate(Float64, dims, 2);
+  serialboxFieldMetainfo_t* lapFieldMetainfo = serialboxFieldMetainfoCreate(Float64, dims, 2);
 
   /*
    *  ... register them within the Serializer ...
    */
-  serialboxSerializerAddField(serializer, "phi", phiFieldMetaInfo);
-  serialboxSerializerAddField(serializer, "lap", lapFieldMetaInfo);
+  serialboxSerializerAddField(serializer, "phi", phiFieldMetainfo);
+  serialboxSerializerAddField(serializer, "lap", lapFieldMetainfo);
 
   /*
    * ... and deallocate the field meta-information objects
    */
-  serialboxFieldMetaInfoDestroy(phiFieldMetaInfo);
-  serialboxFieldMetaInfoDestroy(lapFieldMetaInfo);
+  serialboxFieldMetainfoDestroy(phiFieldMetainfo);
+  serialboxFieldMetainfoDestroy(lapFieldMetainfo);
 
   /*
    * Next, we add some global meta-information to the serializer. Besides the usual `key = value`
@@ -95,12 +95,12 @@ static void write() {
    * used to meta-information to fields and savepoints.
    * We first obtain a refrence to the global meta-information of the serializer ...
    */
-  serialboxMetaInfo_t* globalMetaInfo = serialboxSerializerGetGlobalMetaInfo(serializer);
+  serialboxMetainfo_t* globalMetainfo = serialboxSerializerGetGlobalMetainfo(serializer);
 
   /*
    * ... add our meta-information in the form of an int ...
    */
-  serialboxMetaInfoAddInt32(globalMetaInfo, "answer", 42);
+  serialboxMetainfoAddInt32(globalMetainfo, "answer", 42);
 
   /*
    * ... and an array of ints ...
@@ -108,14 +108,14 @@ static void write() {
   serialboxArrayOfInt32_t* haloArray = serialboxArrayOfInt32Create(4);
   haloArray->data[0] = haloArray->data[1] = haloArray->data[2] = haloArray->data[3] = 1;
 
-  serialboxMetaInfoAddArrayOfInt32(globalMetaInfo, "halos", haloArray);
+  serialboxMetainfoAddArrayOfInt32(globalMetainfo, "halos", haloArray);
 
   serialboxArrayOfInt32Destroy(haloArray);
 
   /*
    * ... and finally deallocate the meta-info reference
    */
-  serialboxMetaInfoDestroy(globalMetaInfo);
+  serialboxMetainfoDestroy(globalMetainfo);
 
   /*
    * Up to this point nothing has been written to disk. Using update_meta_data() will force a write
@@ -140,9 +140,9 @@ static void write() {
      * reference to the meta-info object, add the information, destroy the reference.
      */
     serialboxSavepoint_t* savepoint_in = serialboxSavepointCreate("laplacian-in");
-    serialboxMetaInfo_t* metaInfo_in = serialboxSavepointGetMetaInfo(savepoint_in);
-    serialboxMetaInfoAddInt32(metaInfo_in, "time", t);
-    serialboxMetaInfoDestroy(metaInfo_in);
+    serialboxMetainfo_t* metaInfo_in = serialboxSavepointGetMetainfo(savepoint_in);
+    serialboxMetainfoAddInt32(metaInfo_in, "time", t);
+    serialboxMetainfoDestroy(metaInfo_in);
 
     /*
      * Register the Savepoint.
@@ -165,9 +165,9 @@ static void write() {
      * Create the output savepoint.
      */
     serialboxSavepoint_t* savepoint_out = serialboxSavepointCreate("laplacian-out");
-    serialboxMetaInfo_t* metaInfo_out = serialboxSavepointGetMetaInfo(savepoint_out);
-    serialboxMetaInfoAddInt32(metaInfo_out, "time", t);
-    serialboxMetaInfoDestroy(metaInfo_out);
+    serialboxMetainfo_t* metaInfo_out = serialboxSavepointGetMetainfo(savepoint_out);
+    serialboxMetainfoAddInt32(metaInfo_out, "time", t);
+    serialboxMetainfoDestroy(metaInfo_out);
 
     /*
      * Write lap to disk. Note that here we implicitly register the output savepoint.
@@ -225,18 +225,18 @@ static void read() {
   /*
    * We first obtain a refrence to the global meta-information of the serializer ...
    */
-  serialboxMetaInfo_t* globalMetaInfo = serialboxSerializerGetGlobalMetaInfo(serializer);
+  serialboxMetainfo_t* globalMetainfo = serialboxSerializerGetGlobalMetainfo(serializer);
 
   /*
    * ... get the meta-information of "answer" as an int ...
    */
-  int answer = serialboxMetaInfoGetInt32(globalMetaInfo, "answer");
+  int answer = serialboxMetainfoGetInt32(globalMetainfo, "answer");
   printf("The answer is %i\n", answer);
 
   /*
    * .. and the "halos" as an array of ints ...
    */
-  serialboxArrayOfInt32_t* halos = serialboxMetaInfoGetArrayOfInt32(globalMetaInfo, "halos");
+  serialboxArrayOfInt32_t* halos = serialboxMetainfoGetArrayOfInt32(globalMetainfo, "halos");
   printf("The halo boundaries are [ ");
   for(i = 0; i < halos->len; ++i)
     printf("%i ", halos->data[i]);
@@ -246,7 +246,7 @@ static void read() {
   /*
    * ... and finally deallocate the meta-info refrence
    */
-  serialboxMetaInfoDestroy(globalMetaInfo);
+  serialboxMetainfoDestroy(globalMetainfo);
 
   /*
    * Now, we access the registered fields. Note that the individual elements (i.e char*) need to be 
@@ -266,10 +266,10 @@ static void read() {
   /*
    * Access the dimensions of phi via the field meta-information.
    */
-  serialboxFieldMetaInfo_t* info = serialboxSerializerGetFieldMetaInfo(serializer, "phi");
+  serialboxFieldMetainfo_t* info = serialboxSerializerGetFieldMetainfo(serializer, "phi");
 
-  int numDims = serialboxFieldMetaInfoGetNumDimensions(info);
-  const int* dims = serialboxFieldMetaInfoGetDimensions(info);
+  int numDims = serialboxFieldMetainfoGetNumDimensions(info);
+  const int* dims = serialboxFieldMetainfoGetDimensions(info);
 
   printf("Dimensions of phi: [ ");
   for(i = 0; i < numDims; ++i)

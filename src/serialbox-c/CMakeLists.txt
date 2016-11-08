@@ -35,9 +35,9 @@ if(SERIALBOX_ENABLE_C)
     Array.cpp
     Config.cpp
     ErrorHandling.cpp
-    FieldMetaInfo.cpp
+    FieldMetainfo.cpp
     Logging.cpp
-    MetaInfo.cpp
+    Metainfo.cpp
     Savepoint.cpp
     Serializer.cpp
     FortranWrapper.cpp

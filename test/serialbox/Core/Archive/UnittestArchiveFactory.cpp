@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Archive/UnittestArchiveFactory.cpp ---------------------------*- C++ -*-===//
+//===-- serialbox/core/archive/UnittestArchiveFactory.cpp ---------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -14,7 +14,7 @@
 
 #include "utility/SerializerTestBase.h"
 #include "utility/Storage.h"
-#include "serialbox/Core/Archive/ArchiveFactory.h"
+#include "serialbox/core/archive/ArchiveFactory.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

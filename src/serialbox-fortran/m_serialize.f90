@@ -392,7 +392,7 @@ SUBROUTINE fs_add_serializer_metainfo_b(serializer, key, val)
 
   INTERFACE
      SUBROUTINE fs_add_serializer_metainfo_b_(serializer, key, val) &
-          BIND(c, name='serialboxFortranSerializerAddMetaInfoBoolean')
+          BIND(c, name='serialboxFortranSerializerAddMetainfoBoolean')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
@@ -415,7 +415,7 @@ SUBROUTINE fs_add_serializer_metainfo_i(serializer, key, val)
   ! External function
   INTERFACE
      SUBROUTINE fs_add_serializer_metainfo_i_(serializer, key, val) &
-          BIND(c, name='serialboxFortranSerializerAddMetaInfoInt32')
+          BIND(c, name='serialboxFortranSerializerAddMetainfoInt32')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
@@ -435,7 +435,7 @@ SUBROUTINE fs_add_serializer_metainfo_f(serializer, key, val)
   ! External function
   INTERFACE
      SUBROUTINE fs_add_serializer_metainfo_f_(serializer, key, val) &
-          BIND(c, name='serialboxFortranSerializerAddMetaInfoFloat32')
+          BIND(c, name='serialboxFortranSerializerAddMetainfoFloat32')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
@@ -455,7 +455,7 @@ SUBROUTINE fs_add_serializer_metainfo_d(serializer, key, val)
   ! External function
   INTERFACE
      SUBROUTINE fs_add_serializer_metainfo_d_(serializer, key, val) &
-          BIND(c, name='serialboxFortranSerializerAddMetaInfoFloat64')
+          BIND(c, name='serialboxFortranSerializerAddMetainfoFloat64')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
@@ -474,7 +474,7 @@ SUBROUTINE fs_add_serializer_metainfo_s(serializer, key, val)
   ! External function
   INTERFACE
      SUBROUTINE fs_add_serializer_metainfo_s_(serializer, key, val) &
-          BIND(c, name='serialboxFortranSerializerAddMetaInfoString')
+          BIND(c, name='serialboxFortranSerializerAddMetainfoString')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key, val
@@ -562,7 +562,7 @@ SUBROUTINE fs_add_field_metainfo_b(serializer, fieldname, key, val)
   ! External function
   INTERFACE
      SUBROUTINE fs_add_field_metainfo_b_(serializer, fieldname, key, val) &
-          BIND(c, name='serialboxFortranSerializerAddFieldMetaInfoBoolean')
+          BIND(c, name='serialboxFortranSerializerAddFieldMetainfoBoolean')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: fieldname
@@ -592,7 +592,7 @@ SUBROUTINE fs_add_field_metainfo_i(serializer, fieldname, key, val)
   ! External function
   INTERFACE
      SUBROUTINE fs_add_field_metainfo_i_(serializer, fieldname, key, val) &
-          BIND(c, name='serialboxFortranSerializerAddFieldMetaInfoInt32')
+          BIND(c, name='serialboxFortranSerializerAddFieldMetainfoInt32')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: fieldname
@@ -615,7 +615,7 @@ SUBROUTINE fs_add_field_metainfo_f(serializer, fieldname, key, val)
   ! External function
   INTERFACE
      SUBROUTINE fs_add_field_metainfo_f_(serializer, fieldname, key, val) &
-          BIND(c, name='serialboxFortranSerializerAddFieldMetaInfoFloat32')
+          BIND(c, name='serialboxFortranSerializerAddFieldMetainfoFloat32')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: fieldname
@@ -638,7 +638,7 @@ SUBROUTINE fs_add_field_metainfo_d(serializer, fieldname, key, val)
   ! External function
   INTERFACE
      SUBROUTINE fs_add_field_metainfo_d_(serializer, fieldname, key, val) &
-          BIND(c, name='serialboxFortranSerializerAddFieldMetaInfoFloat64')
+          BIND(c, name='serialboxFortranSerializerAddFieldMetainfoFloat64')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: fieldname
@@ -660,7 +660,7 @@ SUBROUTINE fs_add_field_metainfo_s(serializer, fieldname, key, val)
   ! External function
   INTERFACE
      SUBROUTINE fs_add_field_metainfo_s_(serializer, fieldname, key, val) &
-          BIND(c, name='serialboxFortranSerializerAddFieldMetaInfoString')
+          BIND(c, name='serialboxFortranSerializerAddFieldMetainfoString')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: fieldname
@@ -815,7 +815,7 @@ SUBROUTINE fs_add_savepoint_metainfo_b(savepoint, key, val)
   ! External function
   INTERFACE
      SUBROUTINE fs_add_savepoint_metainfo_b_(savepoint, key, val) &
-          BIND(c, name='serialboxFortranSavepointAddMetaInfoBoolean')
+          BIND(c, name='serialboxFortranSavepointAddMetainfoBoolean')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: savepoint
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
@@ -843,7 +843,7 @@ SUBROUTINE fs_add_savepoint_metainfo_i(savepoint, key, val)
   ! External function
   INTERFACE
      SUBROUTINE fs_add_savepoint_metainfo_i_(savepoint, key, val) &
-          BIND(c, name='serialboxFortranSavepointAddMetaInfoInt32')
+          BIND(c, name='serialboxFortranSavepointAddMetainfoInt32')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: savepoint
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
@@ -864,7 +864,7 @@ SUBROUTINE fs_add_savepoint_metainfo_f(savepoint, key, val)
   ! External function
   INTERFACE
      SUBROUTINE fs_add_savepoint_metainfo_f_(savepoint, key, val) &
-          BIND(c, name='serialboxFortranSavepointAddMetaInfoFloat32')
+          BIND(c, name='serialboxFortranSavepointAddMetainfoFloat32')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: savepoint
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
@@ -885,7 +885,7 @@ SUBROUTINE fs_add_savepoint_metainfo_d(savepoint, key, val)
   ! External function
   INTERFACE
      SUBROUTINE fs_add_savepoint_metainfo_d_(savepoint, key, val) &
-          BIND(c, name='serialboxFortranSavepointAddMetaInfoFloat64')
+          BIND(c, name='serialboxFortranSavepointAddMetainfoFloat64')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: savepoint
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
@@ -905,7 +905,7 @@ SUBROUTINE fs_add_savepoint_metainfo_s(savepoint, key, val)
   ! External function
   INTERFACE
      SUBROUTINE fs_add_savepoint_metainfo_s_(savepoint, key, val) &
-          BIND(c, name='serialboxFortranSavepointAddMetaInfoString')
+          BIND(c, name='serialboxFortranSavepointAddMetainfoString')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE       :: savepoint
        CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key, val

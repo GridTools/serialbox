@@ -15,11 +15,11 @@
 #include "serialbox-c/FortranWrapper.h"
 #include "serialbox-c/Serializer.h"
 #include "serialbox-c/Utility.h"
-#include "serialbox/Core/Exception.h"
-#include "serialbox/Core/FieldMetaInfo.h"
-#include "serialbox/Core/MetaInfoMap.h"
-#include "serialbox/Core/SavepointImpl.h"
-#include "serialbox/Core/SerializerImpl.h"
+#include "serialbox/core/Exception.h"
+#include "serialbox/core/FieldMetainfoImpl.h"
+#include "serialbox/core/MetainfoMapImpl.h"
+#include "serialbox/core/SavepointImpl.h"
+#include "serialbox/core/SerializerImpl.h"
 
 using namespace serialboxC;
 using serialbox::Exception;
@@ -71,7 +71,7 @@ void serialboxFortranSerializerCheckField(const void* serializer, const char* na
   const Serializer* ser = toConstSerializer(static_cast<const serialboxSerializer_t*>(serializer));
 
   try {
-    const auto& info = ser->getFieldMetaInfoOf(name);
+    const auto& info = ser->getFieldMetainfoImplOf(name);
 
     if(info.dims().size() != 4)
       throw Exception("number of dimensions is %i, required are 4");
@@ -118,7 +118,7 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
 
   try {
-    const auto& info = ser->getFieldMetaInfoOf(fieldname);
+    const auto& info = ser->getFieldMetainfoImplOf(fieldname);
 
     std::array<long, 4> strides{
         {reinterpret_cast<const char*>(iplus1) - reinterpret_cast<const char*>(basePtr),
@@ -158,47 +158,47 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
   }
 }
 
-void serialboxFortranSerializerAddMetaInfoBoolean(void* serializer, const char* key, int value) {
+void serialboxFortranSerializerAddMetainfoBoolean(void* serializer, const char* key, int value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {
-    ser->addGlobalMetaInfo(key, (bool)value);
+    ser->addGlobalMetainfo(key, (bool)value);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }
 }
 
-void serialboxFortranSerializerAddMetaInfoInt32(void* serializer, const char* key, int value) {
+void serialboxFortranSerializerAddMetainfoInt32(void* serializer, const char* key, int value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {
-    ser->addGlobalMetaInfo(key, value);
+    ser->addGlobalMetainfo(key, value);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }
 }
 
-void serialboxFortranSerializerAddMetaInfoFloat32(void* serializer, const char* key, float value) {
+void serialboxFortranSerializerAddMetainfoFloat32(void* serializer, const char* key, float value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {
-    ser->addGlobalMetaInfo(key, value);
+    ser->addGlobalMetainfo(key, value);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }
 }
 
-void serialboxFortranSerializerAddMetaInfoFloat64(void* serializer, const char* key, double value) {
+void serialboxFortranSerializerAddMetainfoFloat64(void* serializer, const char* key, double value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {
-    ser->addGlobalMetaInfo(key, value);
+    ser->addGlobalMetainfo(key, value);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }
 }
 
-void serialboxFortranSerializerAddMetaInfoString(void* serializer, const char* key,
+void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* key,
                                                  const char* value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {
-    ser->addGlobalMetaInfo(key, value);
+    ser->addGlobalMetainfo(key, value);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }
@@ -212,14 +212,14 @@ void serialboxFortranSerializerRegisterField(void* serializer, const char* name,
 }
 
 /*===------------------------------------------------------------------------------------------===*\
- *     FieldMetaInfo
+ *     FieldMetainfoImpl
 \*===------------------------------------------------------------------------------------------===*/
 
-void serialboxFortranSerializerAddFieldMetaInfoBoolean(void* serializer, const char* field,
+void serialboxFortranSerializerAddFieldMetainfoBoolean(void* serializer, const char* field,
                                                        const char* key, int value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {
-    if(!ser->addFieldMetaInfo(field, key, (bool)value))
+    if(!ser->addFieldMetainfoImpl(field, key, (bool)value))
       throw Exception(
           "cannot add element with key '%s' to field meta-info of '%s': element already exists",
           key, field);
@@ -228,11 +228,11 @@ void serialboxFortranSerializerAddFieldMetaInfoBoolean(void* serializer, const c
   }
 }
 
-void serialboxFortranSerializerAddFieldMetaInfoInt32(void* serializer, const char* field,
+void serialboxFortranSerializerAddFieldMetainfoInt32(void* serializer, const char* field,
                                                      const char* key, int value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {
-    if(!ser->addFieldMetaInfo(field, key, value))
+    if(!ser->addFieldMetainfoImpl(field, key, value))
       throw Exception(
           "cannot add element with key '%s' to field meta-info of '%s': element already exists",
           key, field);
@@ -241,11 +241,11 @@ void serialboxFortranSerializerAddFieldMetaInfoInt32(void* serializer, const cha
   }
 }
 
-void serialboxFortranSerializerAddFieldMetaInfoFloat32(void* serializer, const char* field,
+void serialboxFortranSerializerAddFieldMetainfoFloat32(void* serializer, const char* field,
                                                        const char* key, float value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {
-    if(!ser->addFieldMetaInfo(field, key, value))
+    if(!ser->addFieldMetainfoImpl(field, key, value))
       throw Exception(
           "cannot add element with key '%s' to field meta-info of '%s': element already exists",
           key, field);
@@ -254,11 +254,11 @@ void serialboxFortranSerializerAddFieldMetaInfoFloat32(void* serializer, const c
   }
 }
 
-void serialboxFortranSerializerAddFieldMetaInfoFloat64(void* serializer, const char* field,
+void serialboxFortranSerializerAddFieldMetainfoFloat64(void* serializer, const char* field,
                                                        const char* key, double value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {
-    if(!ser->addFieldMetaInfo(field, key, value))
+    if(!ser->addFieldMetainfoImpl(field, key, value))
       throw Exception(
           "cannot add element with key '%s' to field meta-info of '%s': element already exists",
           key, field);
@@ -267,11 +267,11 @@ void serialboxFortranSerializerAddFieldMetaInfoFloat64(void* serializer, const c
   }
 }
 
-void serialboxFortranSerializerAddFieldMetaInfoString(void* serializer, const char* field,
+void serialboxFortranSerializerAddFieldMetainfoString(void* serializer, const char* field,
                                                       const char* key, const char* value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {
-    if(!ser->addFieldMetaInfo(field, key, value))
+    if(!ser->addFieldMetainfoImpl(field, key, value))
       throw Exception(
           "cannot add element with key '%s' to field meta-info of '%s': element already exists",
           key, field);
@@ -284,47 +284,47 @@ void serialboxFortranSerializerAddFieldMetaInfoString(void* serializer, const ch
  *     Savepoint
 \*===------------------------------------------------------------------------------------------===*/
 
-void serialboxFortranSavepointAddMetaInfoBoolean(void* savepoint, const char* key, int value) {
+void serialboxFortranSavepointAddMetainfoBoolean(void* savepoint, const char* key, int value) {
   Savepoint* sp = toSavepoint(static_cast<serialboxSavepoint_t*>(savepoint));
   try {
-    sp->addMetaInfo(key, (bool)value);
+    sp->addMetainfo(key, (bool)value);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }
 }
 
-void serialboxFortranSavepointAddMetaInfoInt32(void* savepoint, const char* key, int value) {
+void serialboxFortranSavepointAddMetainfoInt32(void* savepoint, const char* key, int value) {
   Savepoint* sp = toSavepoint(static_cast<serialboxSavepoint_t*>(savepoint));
   try {
-    sp->addMetaInfo(key, value);
+    sp->addMetainfo(key, value);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }
 }
 
-void serialboxFortranSavepointAddMetaInfoFloat32(void* savepoint, const char* key, float value) {
+void serialboxFortranSavepointAddMetainfoFloat32(void* savepoint, const char* key, float value) {
   Savepoint* sp = toSavepoint(static_cast<serialboxSavepoint_t*>(savepoint));
   try {
-    sp->addMetaInfo(key, value);
+    sp->addMetainfo(key, value);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }
 }
 
-void serialboxFortranSavepointAddMetaInfoFloat64(void* savepoint, const char* key, double value) {
+void serialboxFortranSavepointAddMetainfoFloat64(void* savepoint, const char* key, double value) {
   Savepoint* sp = toSavepoint(static_cast<serialboxSavepoint_t*>(savepoint));
   try {
-    sp->addMetaInfo(key, value);
+    sp->addMetainfo(key, value);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }
 }
 
-void serialboxFortranSavepointAddMetaInfoString(void* savepoint, const char* key,
+void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key,
                                                 const char* value) {
   Savepoint* sp = toSavepoint(static_cast<serialboxSavepoint_t*>(savepoint));
   try {
-    sp->addMetaInfo(key, value);
+    sp->addMetainfo(key, value);
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }

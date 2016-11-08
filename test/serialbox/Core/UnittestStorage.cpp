@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestStorage.cpp ------------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestStorage.cpp ------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/STLExtras.h"
+#include "serialbox/core/STLExtras.h"
 #include "utility/Storage.h"
 #include <gtest/gtest.h>
 

@@ -14,7 +14,7 @@
 
 #include "serialbox-c/Archive.h"
 #include "serialbox-c/Utility.h"
-#include "serialbox/Core/Archive/ArchiveFactory.h"
+#include "serialbox/core/archive/ArchiveFactory.h"
 
 using namespace serialboxC;
 

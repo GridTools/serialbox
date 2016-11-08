@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/STELLA/UnittestSavepoint.cpp ------------------------*- C++ -*-===//
+//===-- serialbox/core/frontend/stella/UnittestSavepoint.cpp ------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,9 +12,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Frontend/STELLA/Savepoint.h"
-#include "serialbox/Core/Frontend/STELLA/SerializationException.h"
-#include "serialbox/Core/SavepointImpl.h"
+#include "serialbox/core/frontend/stella/Savepoint.h"
+#include "serialbox/core/frontend/stella/SerializationException.h"
+#include "serialbox/core/SavepointImpl.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>

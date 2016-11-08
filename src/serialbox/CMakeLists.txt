@@ -9,5 +9,5 @@
 
  
 ## Add subdirectories
-add_subdirectory(Core)
+add_subdirectory(core)
 

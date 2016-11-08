@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestMain.cpp ---------------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestMain.cpp ---------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -13,7 +13,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "utility/UnittestEnvironment.h"
-#include "serialbox/Core/Logging.h"
+#include "serialbox/core/Logging.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

@@ -20,8 +20,8 @@ import numpy as np
 from .archive import Archive
 from .common import get_library, extract_string
 from .error import invoke, SerialboxError
-from .fieldmetainfo import FieldMetaInfo, FieldMetaInfoImpl
-from .metainfomap import MetaInfoMap, MetaInfoImpl, ArrayOfStringImpl
+from .fieldmetainfo import FieldMetainfo, FieldMetainfoImpl
+from .metainfomap import MetainfoMap, MetainfoImpl, ArrayOfStringImpl
 from .savepoint import Savepoint, SavepointImpl, SavepointTopCollection, SavepointCollection
 from .type import *
 
@@ -70,8 +70,8 @@ def register_library(library):
     #
     # Global Meta-information
     #
-    library.serialboxSerializerGetGlobalMetaInfo.argtypes = [POINTER(SerializerImpl)]
-    library.serialboxSerializerGetGlobalMetaInfo.restype = POINTER(MetaInfoImpl)
+    library.serialboxSerializerGetGlobalMetainfo.argtypes = [POINTER(SerializerImpl)]
+    library.serialboxSerializerGetGlobalMetainfo.restype = POINTER(MetainfoImpl)
 
     #
     #  Register and Query Savepoints
@@ -105,14 +105,14 @@ def register_library(library):
     #  Register and Query Fields
     #
     library.serialboxSerializerAddField.argtypes = [POINTER(SerializerImpl), c_char_p,
-                                                    POINTER(FieldMetaInfoImpl)]
+                                                    POINTER(FieldMetainfoImpl)]
     library.serialboxSerializerAddField.restype = c_int
 
     library.serialboxSerializerHasField.argtypes = [POINTER(SerializerImpl), c_char_p]
     library.serialboxSerializerHasField.restype = c_int
 
-    library.serialboxSerializerGetFieldMetaInfo.argtypes = [POINTER(SerializerImpl), c_char_p]
-    library.serialboxSerializerGetFieldMetaInfo.restype = POINTER(FieldMetaInfoImpl)
+    library.serialboxSerializerGetFieldMetainfo.argtypes = [POINTER(SerializerImpl), c_char_p]
+    library.serialboxSerializerGetFieldMetainfo.restype = POINTER(FieldMetainfoImpl)
 
     library.serialboxSerializerGetFieldnames.argtypes = [POINTER(SerializerImpl)]
     library.serialboxSerializerGetFieldnames.restype = POINTER(ArrayOfStringImpl)
@@ -336,9 +336,9 @@ class Serializer(object):
         """Global meta-information of the serializer.
 
         :return: Refrence to the meta-information map
-        :rtype: MetaInfoMap
+        :rtype: MetainfoMap
         """
-        return MetaInfoMap(impl=invoke(lib.serialboxSerializerGetGlobalMetaInfo, self.__serializer))
+        return MetainfoMap(impl=invoke(lib.serialboxSerializerGetGlobalMetainfo, self.__serializer))
 
     # ===----------------------------------------------------------------------------------------===
     #    Register and Query Savepoints
@@ -460,7 +460,7 @@ class Serializer(object):
         :param name: Name of the newly registered field
         :type name: str
         :param fieldmetainfo: Field meta-information of the newly registered field
-        :type fieldmetainfo: FieldMetaInfo
+        :type fieldmetainfo: FieldMetainfo
 
         :raises SerialboxError: Field with given name already exists within the Serializer
         """
@@ -484,17 +484,17 @@ class Serializer(object):
         return bool(invoke(lib.serialboxSerializerHasField, self.__serializer, fieldstr))
 
     def get_field_metainfo(self, field):
-        """Get the :class:`FieldMetaInfo` of `field`.
+        """Get the :class:`FieldMetainfo` of `field`.
 
         :param field: Name of the field
         :type field: str
         :return: Copy of the field meta-information of `field`
-        :rtype: FieldMetaInfo
+        :rtype: FieldMetainfo
         :raises SerialboxError: `field` does not exist within the Serializer
         """
         fieldstr = extract_string(field)[0]
-        return FieldMetaInfo(None, [],
-                             impl=invoke(lib.serialboxSerializerGetFieldMetaInfo, self.__serializer,
+        return FieldMetainfo(None, [],
+                             impl=invoke(lib.serialboxSerializerGetFieldMetainfo, self.__serializer,
                                          fieldstr))
 
     def fieldnames(self):
@@ -590,7 +590,7 @@ class Serializer(object):
 
         if not self.has_field(name):
             if register_field:
-                info = FieldMetaInfo(numpy2TypeID(field.dtype), list(field.shape))
+                info = FieldMetainfo(numpy2TypeID(field.dtype), list(field.shape))
                 self.register_field(name, info)
             else:
                 raise SerialboxError("field '%s' is not registered within the Serializer" % name)

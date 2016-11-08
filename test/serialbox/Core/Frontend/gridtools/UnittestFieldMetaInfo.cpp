@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestFieldMetaInfo.cpp ------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestFieldMetainfoImpl.cpp ------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -13,12 +13,12 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "utility/GridTools.h"
-#include "serialbox/Core/Frontend/gridtools/FieldMetaInfo.h"
+#include "serialbox/core/frontend/gridtools/FieldMetainfo.h"
 #include <gtest/gtest.h>
 
 namespace ser = serialbox::gridtools;
 
-TEST(GridToolsFieldMetaInfoTest, Construction) {
+TEST(GridToolsFieldMetainfoImplTest, Construction) {
   serialbox::TypeID type(ser::type_id::Float64);
   std::vector<int> dims{20, 15, 20};
   ser::meta_info_map map{{"key1", ser::meta_info_value(double(4))},
@@ -70,7 +70,7 @@ TEST(GridToolsFieldMetaInfoTest, Construction) {
 
 #ifdef SERIALBOX_HAS_GRIDTOOLS
 
-TEST(GridToolsFieldMetaInfoTest, ConstructionWithGridToolsStorage) {
+TEST(GridToolsFieldMetainfoImplTest, ConstructionWithGridToolsStorage) {
   using types = serialbox::unittest::gridtools_storage_types<double>;
 
   types::cpu_3d_meta_data_type meta_data(4, 5, 6);

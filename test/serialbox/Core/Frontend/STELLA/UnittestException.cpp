@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/STELLA/UnittestException.cpp ------------------------*- C++ -*-===//
+//===-- serialbox/core/frontend/stella/UnittestException.cpp ------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/Frontend/STELLA/SerializationException.h"
-#include "serialbox/Core/Frontend/STELLA/Utility.h"
+#include "serialbox/core/frontend/stella/SerializationException.h"
+#include "serialbox/core/frontend/stella/Utility.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

@@ -9,28 +9,28 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## Unittest of the MetaInfo.
+## Unittest of the Metainfo.
 ##
 ##===------------------------------------------------------------------------------------------===##
 
 import unittest
 
-from serialbox import MetaInfoMap, TypeID, SerialboxError
+from serialbox import MetainfoMap, TypeID, SerialboxError
 
 
-class TestMetaInfo(unittest.TestCase):
+class TestMetainfo(unittest.TestCase):
     def test_init(self):
         #
         # Default constructor
         #
-        map1 = MetaInfoMap()
+        map1 = MetainfoMap()
         self.assertTrue(map1.empty())
         self.assertEqual(map1.size(), 0)
 
         #
         # Dictionary constructor
         #
-        map2 = MetaInfoMap({"bool": True,
+        map2 = MetainfoMap({"bool": True,
                             "int": 2,
                             "double": 5.1,
                             "string": "str"})
@@ -48,7 +48,7 @@ class TestMetaInfo(unittest.TestCase):
         self.assertEqual(map2["string"], "str")
 
     def test_insert(self):
-        map = MetaInfoMap()
+        map = MetainfoMap()
 
         #
         # Insert keys (deduced typeid)
@@ -120,7 +120,7 @@ class TestMetaInfo(unittest.TestCase):
         self.assertRaises(TypeError, map.insert, "key2", "value2", "not-a-typeid")
 
     def test_clear(self):
-        map = MetaInfoMap()
+        map = MetainfoMap()
         map.insert("key", 1)
 
         self.assertFalse(map.empty())
@@ -128,7 +128,7 @@ class TestMetaInfo(unittest.TestCase):
         self.assertTrue(map.empty())
 
     def test_clone(self):
-        map_to_clone = MetaInfoMap()
+        map_to_clone = MetainfoMap()
         map_to_clone.insert("key", 1)
 
         map_clone = map_to_clone.clone()
@@ -141,7 +141,7 @@ class TestMetaInfo(unittest.TestCase):
         self.assertEqual(map_clone["key"], 1)
 
     def test_get_dict(self):
-        map = MetaInfoMap()
+        map = MetainfoMap()
         map.insert("key1", 1)
         map.insert("key2", 2)
         map.insert("key_array", [1, 2, 3, 4])
@@ -153,7 +153,7 @@ class TestMetaInfo(unittest.TestCase):
         self.assertEqual(d["key_array"], [1, 2, 3, 4])
 
     def test_to_string(self):
-        map = MetaInfoMap()
+        map = MetainfoMap()
         map.insert("key1", 1)
 
         mapstr = str(map)
@@ -161,8 +161,8 @@ class TestMetaInfo(unittest.TestCase):
         self.assertTrue("1" in mapstr)
 
     def test_comparison(self):
-        m1 = MetaInfoMap()
-        m2 = MetaInfoMap()
+        m1 = MetainfoMap()
+        m2 = MetainfoMap()
 
         m1.insert("key1", 1)
         m2.insert("key1", 2)
@@ -176,7 +176,7 @@ class TestMetaInfo(unittest.TestCase):
                "double": 5.1,
                "string": "str"}
 
-        map = MetaInfoMap(dic)
+        map = MetainfoMap(dic)
         for key, value in map:
             self.assertEqual(value, dic[key])
 

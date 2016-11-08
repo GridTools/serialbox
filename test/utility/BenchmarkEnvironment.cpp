@@ -13,8 +13,8 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "utility/BenchmarkEnvironment.h"
-#include "serialbox/Core/Logging.h"
-#include "serialbox/Core/STLExtras.h"
+#include "serialbox/core/Logging.h"
+#include "serialbox/core/STLExtras.h"
 #include <boost/format.hpp>
 #include <iostream>
 

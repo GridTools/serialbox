@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UpgradeArchive.cpp -------------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UpgradeArchive.cpp -------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -15,7 +15,7 @@
 #include "utility/FileUtility.h"
 #include "utility/Serialbox.h"
 #include "utility/Storage.h"
-#include "serialbox/Core/SerializerImpl.h"
+#include "serialbox/core/SerializerImpl.h"
 #include <gtest/gtest.h>
 
 #if SERIALBOX_HAS_SERIALBOX_OLD
@@ -163,17 +163,17 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
     ASSERT_TRUE(ser_read.hasField("v"));
 
     TypeID type = ToTypeID<TypeParam>::value;
-    EXPECT_EQ(ser_read.getFieldMetaInfoOf("u").type(), type);
-    EXPECT_EQ(ser_read.getFieldMetaInfoOf("v").type(), type);
+    EXPECT_EQ(ser_read.getFieldMetainfoImplOf("u").type(), type);
+    EXPECT_EQ(ser_read.getFieldMetainfoImplOf("v").type(), type);
 
-    EXPECT_EQ(ser_read.getFieldMetaInfoOf("u").dims(), (std::vector<int>{5, 6, 7}));
-    EXPECT_EQ(ser_read.getFieldMetaInfoOf("v").dims(), (std::vector<int>{5, 1, 1}));
+    EXPECT_EQ(ser_read.getFieldMetainfoImplOf("u").dims(), (std::vector<int>{5, 6, 7}));
+    EXPECT_EQ(ser_read.getFieldMetainfoImplOf("v").dims(), (std::vector<int>{5, 1, 1}));
 
-    EXPECT_EQ(ser_read.getFieldMetaInfoOf("u").metaInfo().at("Day").as<int>(), 29);
-    EXPECT_EQ(ser_read.getFieldMetaInfoOf("u").metaInfo().at("Month").as<std::string>(), "March");
-    EXPECT_EQ(ser_read.getFieldMetaInfoOf("u").metaInfo().at("Year").as<TypeParam>(),
+    EXPECT_EQ(ser_read.getFieldMetainfoImplOf("u").metaInfo().at("Day").as<int>(), 29);
+    EXPECT_EQ(ser_read.getFieldMetainfoImplOf("u").metaInfo().at("Month").as<std::string>(), "March");
+    EXPECT_EQ(ser_read.getFieldMetainfoImplOf("u").metaInfo().at("Year").as<TypeParam>(),
               TypeParam(2016.10));
-    EXPECT_EQ(ser_read.getFieldMetaInfoOf("v").metaInfo().at("boolean").as<bool>(), true);
+    EXPECT_EQ(ser_read.getFieldMetainfoImplOf("v").metaInfo().at("boolean").as<bool>(), true);
 
     // Check order and meto-info of savepoints is correct
     ASSERT_EQ(ser_read.savepoints().size(), 4);

@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestSerializerImpl.cpp -----------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestSerializerImpl.cpp -----------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -14,7 +14,7 @@
 
 #include "utility/SerializerTestBase.h"
 #include "utility/Storage.h"
-#include "serialbox/Core/SerializerImpl.h"
+#include "serialbox/core/SerializerImpl.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;
@@ -103,23 +103,23 @@ TEST_F(SerializerImplUtilityTest, SerializationStatus) {
   ASSERT_EQ(SerializerImpl::serializationStatus(), 1);
 }
 
-TEST_F(SerializerImplUtilityTest, AddMetaInfo) {
+TEST_F(SerializerImplUtilityTest, AddMetainfo) {
   SerializerImpl s(OpenModeKind::Write, directory->path().string(), "Field", "Binary");
 
   // Add some meta-info
-  s.addGlobalMetaInfo("bool", bool(true));
-  s.addGlobalMetaInfo("int32", int(32));
-  s.addGlobalMetaInfo("int64", std::int64_t(64));
-  s.addGlobalMetaInfo("float32", float(32.0f));
-  s.addGlobalMetaInfo("float64", double(64.0f));
-  s.addGlobalMetaInfo("string", "str"); // This has to go through the const char* specialization
+  s.addGlobalMetainfo("bool", bool(true));
+  s.addGlobalMetainfo("int32", int(32));
+  s.addGlobalMetainfo("int64", std::int64_t(64));
+  s.addGlobalMetainfo("float32", float(32.0f));
+  s.addGlobalMetainfo("float64", double(64.0f));
+  s.addGlobalMetainfo("string", "str"); // This has to go through the const char* specialization
 
-  // MetaInfo already exists -> Exception
-  EXPECT_THROW(s.addGlobalMetaInfo("string", "str"), Exception);
+  // Metainfo already exists -> Exception
+  EXPECT_THROW(s.addGlobalMetainfo("string", "str"), Exception);
 
   // Query meta-info
   EXPECT_EQ(s.getGlobalMetainfoAs<bool>("bool"), bool(true));
-  EXPECT_EQ(s.globalMetaInfo().at("bool").as<bool>(), bool(true));
+  EXPECT_EQ(s.globalMetainfo().at("bool").as<bool>(), bool(true));
   ASSERT_THROW(s.getGlobalMetainfoAs<bool>("bool-not-present"), Exception);
 
   EXPECT_EQ(s.getGlobalMetainfoAs<int>("int32"), int(32));
@@ -133,7 +133,7 @@ TEST_F(SerializerImplUtilityTest, RegisterSavepoints) {
   SerializerImpl s(OpenModeKind::Write, directory->path().string(), "Field", "Binary");
 
   SavepointImpl savepoint1("savepoint1");
-  ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
+  ASSERT_NO_THROW(savepoint1.addMetainfo("key1", "s1"));
 
   // Add savepoint by copying/moving
   ASSERT_TRUE(s.registerSavepoint(savepoint1));
@@ -150,7 +150,7 @@ TEST_F(SerializerImplUtilityTest, RegisterSavepoints) {
   EXPECT_EQ(*s.savepoints()[1], SavepointImpl("savepoint2"));
 
   // Add savepoint given by name and metainfo
-  MetaInfoMap metaInfo;
+  MetainfoMapImpl metaInfo;
   metaInfo.insert("key1", float(3));
   ASSERT_TRUE(s.registerSavepoint("savepoint3", metaInfo));
   EXPECT_EQ(s.savepoints().size(), 3);
@@ -170,43 +170,43 @@ TEST_F(SerializerImplUtilityTest, RegisterFields) {
   SerializerImpl s(OpenModeKind::Write, directory->path().string(), "Field", "Binary");
 
   // Perfect forwarding
-  MetaInfoMap metaInfoField1(std::initializer_list<MetaInfoMap::value_type>{
-      {"key1", MetaInfoValue(std::string("field1_key1_str"))}, {"key2", MetaInfoValue(double(3))}});
+  MetainfoMapImpl metaInfoField1(std::initializer_list<MetainfoMapImpl::value_type>{
+      {"key1", MetainfoValueImpl(std::string("field1_key1_str"))}, {"key2", MetainfoValueImpl(double(3))}});
   s.registerField("field1", TypeID::Float64, std::vector<int>{20, 15, 20}, metaInfoField1);
 
   // Copy constructor
-  MetaInfoMap metaInfoField2(std::initializer_list<MetaInfoMap::value_type>{
-      {"key1", MetaInfoValue(std::string("field2_key1_str"))}, {"key2", MetaInfoValue(double(4))}});
+  MetainfoMapImpl metaInfoField2(std::initializer_list<MetainfoMapImpl::value_type>{
+      {"key1", MetainfoValueImpl(std::string("field2_key1_str"))}, {"key2", MetainfoValueImpl(double(4))}});
   s.registerField("field2",
-                  FieldMetaInfo(TypeID::Float32, std::vector<int>{20, 15}, metaInfoField2));
+                  FieldMetainfoImpl(TypeID::Float32, std::vector<int>{20, 15}, metaInfoField2));
 
   // Check field1
   ASSERT_TRUE(s.hasField("field1"));
   ASSERT_TRUE(s.fieldMap().hasField("field1"));
   EXPECT_EQ(s.fieldMap().getTypeOf("field1"), TypeID::Float64);
   EXPECT_EQ(s.fieldMap().getDimsOf("field1"), (std::vector<int>{20, 15, 20}));
-  EXPECT_EQ(s.getFieldMetaInfoOf("field1").metaInfo().at("key1").as<std::string>(),
+  EXPECT_EQ(s.getFieldMetainfoImplOf("field1").metaInfo().at("key1").as<std::string>(),
             "field1_key1_str");
-  EXPECT_EQ(s.getFieldMetaInfoOf("field1").metaInfo().at("key2").as<double>(), 3);
+  EXPECT_EQ(s.getFieldMetainfoImplOf("field1").metaInfo().at("key2").as<double>(), 3);
 
   // Add additional meta-information to field1
-  s.addFieldMetaInfo("field1", "key3", float(2));
-  EXPECT_EQ(s.getFieldMetaInfoOf("field1").metaInfo().at("key3").as<float>(), float(2));
+  s.addFieldMetainfoImpl("field1", "key3", float(2));
+  EXPECT_EQ(s.getFieldMetainfoImplOf("field1").metaInfo().at("key3").as<float>(), float(2));
 
   // Add additional meta-information to field1 with existing key -> Fail
-  ASSERT_FALSE(s.addFieldMetaInfo("field1", "key3", int(5)));
+  ASSERT_FALSE(s.addFieldMetainfoImpl("field1", "key3", int(5)));
 
   // Add additional meta-information to non-existing field -> Exception
-  ASSERT_THROW(s.addFieldMetaInfo("fieldXXX", "key1", int(5)), Exception);
+  ASSERT_THROW(s.addFieldMetainfoImpl("fieldXXX", "key1", int(5)), Exception);
 
   // Check field2
   ASSERT_TRUE(s.hasField("field2"));
   ASSERT_TRUE(s.fieldMap().hasField("field2"));
   EXPECT_EQ(s.fieldMap().getTypeOf("field2"), TypeID::Float32);
   EXPECT_EQ(s.fieldMap().getDimsOf("field2"), (std::vector<int>{20, 15}));
-  EXPECT_EQ(s.getFieldMetaInfoOf("field2").metaInfo().at("key1").as<std::string>(),
+  EXPECT_EQ(s.getFieldMetainfoImplOf("field2").metaInfo().at("key1").as<std::string>(),
             "field2_key1_str");
-  EXPECT_EQ(s.getFieldMetaInfoOf("field2").metaInfo().at("key2").as<double>(), 4);
+  EXPECT_EQ(s.getFieldMetainfoImplOf("field2").metaInfo().at("key2").as<double>(), 4);
 
   // Check fieldnames
   const auto& fields = s.fieldnames();
@@ -286,28 +286,28 @@ TEST_F(SerializerImplUtilityTest, JSONSuccess) {
   SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "Binary");
 
   // Add some meta-info
-  s_write.addGlobalMetaInfo("bool", bool(true));
-  s_write.addGlobalMetaInfo("int32", int(32));
-  s_write.addGlobalMetaInfo("int64", std::int64_t(64));
-  s_write.addGlobalMetaInfo("float32", float(32.0f));
-  s_write.addGlobalMetaInfo("float64", double(64.0f));
-  s_write.addGlobalMetaInfo("string", "str");
+  s_write.addGlobalMetainfo("bool", bool(true));
+  s_write.addGlobalMetainfo("int32", int(32));
+  s_write.addGlobalMetainfo("int64", std::int64_t(64));
+  s_write.addGlobalMetainfo("float32", float(32.0f));
+  s_write.addGlobalMetainfo("float64", double(64.0f));
+  s_write.addGlobalMetainfo("string", "str");
 
   // Register fields
-  MetaInfoMap metaInfoField1(std::initializer_list<MetaInfoMap::value_type>{
-      {"key1", MetaInfoValue(std::string("field1_key1_str"))}, {"key2", MetaInfoValue(double(3))}});
+  MetainfoMapImpl metaInfoField1(std::initializer_list<MetainfoMapImpl::value_type>{
+      {"key1", MetainfoValueImpl(std::string("field1_key1_str"))}, {"key2", MetainfoValueImpl(double(3))}});
   s_write.registerField("field1", TypeID::Float64, std::vector<int>{20, 15, 20}, metaInfoField1);
 
-  MetaInfoMap metaInfoField2(std::initializer_list<MetaInfoMap::value_type>{
-      {"key1", MetaInfoValue(std::string("field2_key1_str"))}, {"key2", MetaInfoValue(double(4))}});
+  MetainfoMapImpl metaInfoField2(std::initializer_list<MetainfoMapImpl::value_type>{
+      {"key1", MetainfoValueImpl(std::string("field2_key1_str"))}, {"key2", MetainfoValueImpl(double(4))}});
   s_write.registerField("field2",
-                        FieldMetaInfo(TypeID::Float32, std::vector<int>{20, 15}, metaInfoField2));
+                        FieldMetainfoImpl(TypeID::Float32, std::vector<int>{20, 15}, metaInfoField2));
 
   // Add savepoints
   SavepointImpl savepoint1("savepoint");
-  ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "savepoint_key1_first"));
+  ASSERT_NO_THROW(savepoint1.addMetainfo("key1", "savepoint_key1_first"));
   SavepointImpl savepoint2("savepoint");
-  ASSERT_NO_THROW(savepoint2.addMetaInfo("key1", "savepoint_key1_second"));
+  ASSERT_NO_THROW(savepoint2.addMetainfo("key1", "savepoint_key1_second"));
 
   ASSERT_TRUE(s_write.registerSavepoint(savepoint1));
   ASSERT_TRUE(s_write.registerSavepoint(savepoint2));
@@ -329,23 +329,23 @@ TEST_F(SerializerImplUtilityTest, JSONSuccess) {
   SerializerImpl s_read(OpenModeKind::Read, directory->path().string(), "Field", "Binary");
 
   // Global meta-info
-  ASSERT_TRUE(s_read.globalMetaInfo().hasKey("bool"));
-  EXPECT_EQ(bool(s_read.globalMetaInfo()["bool"]), true);
+  ASSERT_TRUE(s_read.globalMetainfo().hasKey("bool"));
+  EXPECT_EQ(bool(s_read.globalMetainfo()["bool"]), true);
 
-  ASSERT_TRUE(s_read.globalMetaInfo().hasKey("int32"));
-  EXPECT_EQ(int(s_read.globalMetaInfo()["int32"]), int(32));
+  ASSERT_TRUE(s_read.globalMetainfo().hasKey("int32"));
+  EXPECT_EQ(int(s_read.globalMetainfo()["int32"]), int(32));
 
-  ASSERT_TRUE(s_read.globalMetaInfo().hasKey("int64"));
-  EXPECT_EQ(std::int64_t(s_read.globalMetaInfo()["int64"]), 64);
+  ASSERT_TRUE(s_read.globalMetainfo().hasKey("int64"));
+  EXPECT_EQ(std::int64_t(s_read.globalMetainfo()["int64"]), 64);
 
-  ASSERT_TRUE(s_read.globalMetaInfo().hasKey("float32"));
-  EXPECT_EQ(float(s_read.globalMetaInfo()["float32"]), 32.0f);
+  ASSERT_TRUE(s_read.globalMetainfo().hasKey("float32"));
+  EXPECT_EQ(float(s_read.globalMetainfo()["float32"]), 32.0f);
 
-  ASSERT_TRUE(s_read.globalMetaInfo().hasKey("float64"));
-  EXPECT_EQ(double(s_read.globalMetaInfo()["float64"]), 64.0);
+  ASSERT_TRUE(s_read.globalMetainfo().hasKey("float64"));
+  EXPECT_EQ(double(s_read.globalMetainfo()["float64"]), 64.0);
 
-  ASSERT_TRUE(s_read.globalMetaInfo().hasKey("string"));
-  EXPECT_EQ(s_read.globalMetaInfo().at("string").as<std::string>(), "str");
+  ASSERT_TRUE(s_read.globalMetainfo().hasKey("string"));
+  EXPECT_EQ(s_read.globalMetainfo().at("string").as<std::string>(), "str");
 
   // Savepoints
   ASSERT_EQ(s_read.savepoints().size(), 3);
@@ -372,12 +372,12 @@ TEST_F(SerializerImplUtilityTest, JSONSuccess) {
   ASSERT_EQ(s_read.fieldMap().getDimsOf("field1"), (std::vector<int>{20, 15, 20}));
   ASSERT_EQ(s_read.fieldMap().getDimsOf("field2"), (std::vector<int>{20, 15}));
 
-  ASSERT_EQ(s_read.fieldMap().getMetaInfoOf("field1").at("key1").as<std::string>(),
+  ASSERT_EQ(s_read.fieldMap().getMetainfoOf("field1").at("key1").as<std::string>(),
             "field1_key1_str");
-  ASSERT_EQ(s_read.fieldMap().getMetaInfoOf("field1").at("key2").as<double>(), 3.0);
-  ASSERT_EQ(s_read.fieldMap().getMetaInfoOf("field2").at("key1").as<std::string>(),
+  ASSERT_EQ(s_read.fieldMap().getMetainfoOf("field1").at("key2").as<double>(), 3.0);
+  ASSERT_EQ(s_read.fieldMap().getMetainfoOf("field2").at("key1").as<std::string>(),
             "field2_key1_str");
-  ASSERT_EQ(s_read.fieldMap().getMetaInfoOf("field2").at("key2").as<double>(), 4.0);
+  ASSERT_EQ(s_read.fieldMap().getMetainfoOf("field2").at("key2").as<double>(), 4.0);
 }
 
 TEST_F(SerializerImplUtilityTest, JSONFailEmpty) {
@@ -495,7 +495,7 @@ TEST_F(SerializerImplUtilityTest, JSONFailCorruptedPrefix) {
 
 TEST_F(SerializerImplUtilityTest, toString) {
   SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "Binary");
-  s_write.addGlobalMetaInfo("key", 5);
+  s_write.addGlobalMetainfo("key", 5);
   std::stringstream ss;
   ss << s_write;
   EXPECT_NE(ss.str().find("mode"), std::string::npos);
@@ -591,9 +591,9 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
 
   // Savepoints
   SavepointImpl savepoint1_t_1("savepoint1");
-  savepoint1_t_1.addMetaInfo("time", int(1));
+  savepoint1_t_1.addMetainfo("time", int(1));
   SavepointImpl savepoint1_t_2("savepoint1");
-  savepoint1_t_2.addMetaInfo("time", int(2));
+  savepoint1_t_2.addMetainfo("time", int(2));
   SavepointImpl savepoint_u_1("savepoint_u_1");
   SavepointImpl savepoint_v_1("savepoint_v_1");
   SavepointImpl savepoint_6d("savepoint_6d");
@@ -659,13 +659,13 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
 
     // Check fields exists
     ASSERT_TRUE(s_read.hasField("u"));
-    ASSERT_EQ(s_read.getFieldMetaInfoOf("u").dims(), (std::vector<int>{5, 6, 7}));
+    ASSERT_EQ(s_read.getFieldMetainfoImplOf("u").dims(), (std::vector<int>{5, 6, 7}));
 
     ASSERT_TRUE(s_read.hasField("v"));
-    ASSERT_EQ(s_read.getFieldMetaInfoOf("v").dims(), (std::vector<int>{5, 1, 1}));
+    ASSERT_EQ(s_read.getFieldMetainfoImplOf("v").dims(), (std::vector<int>{5, 1, 1}));
 
     ASSERT_TRUE(s_read.hasField("field_6d"));
-    ASSERT_EQ(s_read.getFieldMetaInfoOf("field_6d").dims(), (std::vector<int>{2, 2, 1, 2, 1, 2}));
+    ASSERT_EQ(s_read.getFieldMetainfoImplOf("field_6d").dims(), (std::vector<int>{2, 2, 1, 2, 1, 2}));
 
     // Check order of savepoints is correct
     ASSERT_EQ(s_read.savepoints().size(), 5);

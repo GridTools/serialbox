@@ -1,4 +1,4 @@
-//===-- serialbox/Core/BenchmarkSerialbox.cpp ---------------------------------------*- C++ -*-===//
+//===-- serialbox/core/BenchmarkSerialbox.cpp ---------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -14,10 +14,10 @@
 
 #include "Utility/SerializerTestBase.h"
 #include "Utility/Storage.h"
-#include "serialbox/Core/Archive/ArchiveFactory.h"
-#include "serialbox/Core/SerializerImpl.h"
-#include "serialbox/Core/Timer.h"
-#include "serialbox/Core/Type.h"
+#include "serialbox/core/archive/ArchiveFactory.h"
+#include "serialbox/core/SerializerImpl.h"
+#include "serialbox/core/Timer.h"
+#include "serialbox/core/Type.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;

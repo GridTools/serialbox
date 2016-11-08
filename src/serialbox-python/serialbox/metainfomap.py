@@ -23,13 +23,13 @@ from .type import *
 lib = get_library()
 
 
-class MetaInfoImpl(Structure):
-    """ Mapping of serialboxMetaInfo_t """
+class MetainfoImpl(Structure):
+    """ Mapping of serialboxMetainfo_t """
     _fields_ = [("impl", c_void_p), ("ownsData", c_int)]
 
 
-class MetaInfoElementInfoImpl(Structure):
-    """ Mapping of serialboxMetaInfoElementInfo_t """
+class MetainfoElementInfoImpl(Structure):
+    """ Mapping of serialboxMetainfoElementInfo_t """
     _fields_ = [("keys", POINTER(c_char_p)),
                 ("types", POINTER(c_int)),
                 ("len", c_int)]
@@ -69,44 +69,44 @@ def register_library(library):
     #
     # Construction & Destruction
     #
-    library.serialboxMetaInfoCreate.argtypes = None
-    library.serialboxMetaInfoCreate.restype = POINTER(MetaInfoImpl)
+    library.serialboxMetainfoCreate.argtypes = None
+    library.serialboxMetainfoCreate.restype = POINTER(MetainfoImpl)
 
-    library.serialboxMetaInfoCreateFromMetaInfo.argtypes = [POINTER(MetaInfoImpl)]
-    library.serialboxMetaInfoCreateFromMetaInfo.restype = POINTER(MetaInfoImpl)
+    library.serialboxMetainfoCreateFromMetainfo.argtypes = [POINTER(MetainfoImpl)]
+    library.serialboxMetainfoCreateFromMetainfo.restype = POINTER(MetainfoImpl)
 
-    library.serialboxMetaInfoDestroy.argtypes = [POINTER(MetaInfoImpl)]
-    library.serialboxMetaInfoDestroy.restype = None
+    library.serialboxMetainfoDestroy.argtypes = [POINTER(MetainfoImpl)]
+    library.serialboxMetainfoDestroy.restype = None
 
     #
     # Utility
     #
-    library.serialboxMetaInfoGetSize.argtypes = [POINTER(MetaInfoImpl)]
-    library.serialboxMetaInfoGetSize.restype = c_int
+    library.serialboxMetainfoGetSize.argtypes = [POINTER(MetainfoImpl)]
+    library.serialboxMetainfoGetSize.restype = c_int
 
-    library.serialboxMetaInfoIsEmpty.argtypes = [POINTER(MetaInfoImpl)]
-    library.serialboxMetaInfoIsEmpty.restype = c_int
+    library.serialboxMetainfoIsEmpty.argtypes = [POINTER(MetainfoImpl)]
+    library.serialboxMetainfoIsEmpty.restype = c_int
 
-    library.serialboxMetaInfoClear.argtypes = [POINTER(MetaInfoImpl)]
-    library.serialboxMetaInfoClear.restype = None
+    library.serialboxMetainfoClear.argtypes = [POINTER(MetainfoImpl)]
+    library.serialboxMetainfoClear.restype = None
 
-    library.serialboxMetaInfoEqual.argtypes = [POINTER(MetaInfoImpl), POINTER(MetaInfoImpl)]
-    library.serialboxMetaInfoEqual.restype = c_int
+    library.serialboxMetainfoEqual.argtypes = [POINTER(MetainfoImpl), POINTER(MetainfoImpl)]
+    library.serialboxMetainfoEqual.restype = c_int
 
-    library.serialboxMetaInfoHasKey.argtypes = [POINTER(MetaInfoImpl), c_char_p]
-    library.serialboxMetaInfoHasKey.restype = c_int
+    library.serialboxMetainfoHasKey.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoHasKey.restype = c_int
 
-    library.serialboxMetaInfoGetTypeIDOfKey.argtypes = [POINTER(MetaInfoImpl), c_char_p]
-    library.serialboxMetaInfoGetTypeIDOfKey.restype = c_int
+    library.serialboxMetainfoGetTypeIDOfKey.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoGetTypeIDOfKey.restype = c_int
 
-    library.serialboxMetaInfoToString.argtypes = [POINTER(MetaInfoImpl)]
-    library.serialboxMetaInfoToString.restype = c_char_p
+    library.serialboxMetainfoToString.argtypes = [POINTER(MetainfoImpl)]
+    library.serialboxMetainfoToString.restype = c_char_p
 
-    library.serialboxMetaInfoCreateElementInfo.argtypes = [POINTER(MetaInfoImpl)]
-    library.serialboxMetaInfoCreateElementInfo.restype = POINTER(MetaInfoElementInfoImpl)
+    library.serialboxMetainfoCreateElementInfo.argtypes = [POINTER(MetainfoImpl)]
+    library.serialboxMetainfoCreateElementInfo.restype = POINTER(MetainfoElementInfoImpl)
 
-    library.serialboxMetaInfoDestroyElementInfo.argtypes = [POINTER(MetaInfoElementInfoImpl)]
-    library.serialboxMetaInfoDestroyElementInfo.restype = None
+    library.serialboxMetainfoDestroyElementInfo.argtypes = [POINTER(MetainfoElementInfoImpl)]
+    library.serialboxMetainfoDestroyElementInfo.restype = None
 
     #
     # Arrays
@@ -150,96 +150,96 @@ def register_library(library):
     #
     # Add meta-information
     #
-    library.serialboxMetaInfoAddBoolean.argtypes = [POINTER(MetaInfoImpl), c_char_p, c_bool]
-    library.serialboxMetaInfoAddBoolean.restype = c_int
+    library.serialboxMetainfoAddBoolean.argtypes = [POINTER(MetainfoImpl), c_char_p, c_bool]
+    library.serialboxMetainfoAddBoolean.restype = c_int
 
-    library.serialboxMetaInfoAddInt32.argtypes = [POINTER(MetaInfoImpl), c_char_p, c_int32]
-    library.serialboxMetaInfoAddInt32.restype = c_int
+    library.serialboxMetainfoAddInt32.argtypes = [POINTER(MetainfoImpl), c_char_p, c_int32]
+    library.serialboxMetainfoAddInt32.restype = c_int
 
-    library.serialboxMetaInfoAddInt64.argtypes = [POINTER(MetaInfoImpl), c_char_p, c_int64]
-    library.serialboxMetaInfoAddInt64.restype = c_int
+    library.serialboxMetainfoAddInt64.argtypes = [POINTER(MetainfoImpl), c_char_p, c_int64]
+    library.serialboxMetainfoAddInt64.restype = c_int
 
-    library.serialboxMetaInfoAddFloat32.argtypes = [POINTER(MetaInfoImpl), c_char_p, c_float]
-    library.serialboxMetaInfoAddFloat32.restype = c_int
+    library.serialboxMetainfoAddFloat32.argtypes = [POINTER(MetainfoImpl), c_char_p, c_float]
+    library.serialboxMetainfoAddFloat32.restype = c_int
 
-    library.serialboxMetaInfoAddFloat64.argtypes = [POINTER(MetaInfoImpl), c_char_p, c_double]
-    library.serialboxMetaInfoAddFloat64.restype = c_int
+    library.serialboxMetainfoAddFloat64.argtypes = [POINTER(MetainfoImpl), c_char_p, c_double]
+    library.serialboxMetainfoAddFloat64.restype = c_int
 
-    library.serialboxMetaInfoAddString.argtypes = [POINTER(MetaInfoImpl), c_char_p, c_char_p]
-    library.serialboxMetaInfoAddString.restype = c_int
+    library.serialboxMetainfoAddString.argtypes = [POINTER(MetainfoImpl), c_char_p, c_char_p]
+    library.serialboxMetainfoAddString.restype = c_int
 
-    library.serialboxMetaInfoAddArrayOfBoolean.argtypes = [POINTER(MetaInfoImpl), c_char_p,
+    library.serialboxMetainfoAddArrayOfBoolean.argtypes = [POINTER(MetainfoImpl), c_char_p,
                                                            POINTER(ArrayOfBooleanImpl)]
-    library.serialboxMetaInfoAddArrayOfBoolean.restype = c_int
+    library.serialboxMetainfoAddArrayOfBoolean.restype = c_int
 
-    library.serialboxMetaInfoAddArrayOfInt32.argtypes = [POINTER(MetaInfoImpl), c_char_p,
+    library.serialboxMetainfoAddArrayOfInt32.argtypes = [POINTER(MetainfoImpl), c_char_p,
                                                          POINTER(ArrayOfInt32Impl)]
-    library.serialboxMetaInfoAddArrayOfInt32.restype = c_int
+    library.serialboxMetainfoAddArrayOfInt32.restype = c_int
 
-    library.serialboxMetaInfoAddArrayOfInt64.argtypes = [POINTER(MetaInfoImpl), c_char_p,
+    library.serialboxMetainfoAddArrayOfInt64.argtypes = [POINTER(MetainfoImpl), c_char_p,
                                                          POINTER(ArrayOfInt64Impl)]
-    library.serialboxMetaInfoAddArrayOfInt64.restype = c_int
+    library.serialboxMetainfoAddArrayOfInt64.restype = c_int
 
-    library.serialboxMetaInfoAddArrayOfFloat32.argtypes = [POINTER(MetaInfoImpl), c_char_p,
+    library.serialboxMetainfoAddArrayOfFloat32.argtypes = [POINTER(MetainfoImpl), c_char_p,
                                                            POINTER(ArrayOfFloat32Impl)]
-    library.serialboxMetaInfoAddArrayOfFloat32.restype = c_int
+    library.serialboxMetainfoAddArrayOfFloat32.restype = c_int
 
-    library.serialboxMetaInfoAddArrayOfFloat64.argtypes = [POINTER(MetaInfoImpl), c_char_p,
+    library.serialboxMetainfoAddArrayOfFloat64.argtypes = [POINTER(MetainfoImpl), c_char_p,
                                                            POINTER(ArrayOfFloat64Impl)]
-    library.serialboxMetaInfoAddArrayOfFloat64.restype = c_int
+    library.serialboxMetainfoAddArrayOfFloat64.restype = c_int
 
-    library.serialboxMetaInfoAddArrayOfString.argtypes = [POINTER(MetaInfoImpl), c_char_p,
+    library.serialboxMetainfoAddArrayOfString.argtypes = [POINTER(MetainfoImpl), c_char_p,
                                                           POINTER(ArrayOfStringImpl)]
-    library.serialboxMetaInfoAddArrayOfString.restype = c_int
+    library.serialboxMetainfoAddArrayOfString.restype = c_int
 
     #
     # Query meta-information
     #
-    library.serialboxMetaInfoGetBoolean.argtypes = [POINTER(MetaInfoImpl), c_char_p]
-    library.serialboxMetaInfoGetBoolean.restype = c_int
+    library.serialboxMetainfoGetBoolean.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoGetBoolean.restype = c_int
 
-    library.serialboxMetaInfoGetInt32.argtypes = [POINTER(MetaInfoImpl), c_char_p]
-    library.serialboxMetaInfoGetInt32.restype = c_int32
+    library.serialboxMetainfoGetInt32.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoGetInt32.restype = c_int32
 
-    library.serialboxMetaInfoGetInt64.argtypes = [POINTER(MetaInfoImpl), c_char_p]
-    library.serialboxMetaInfoGetInt64.restype = c_int64
+    library.serialboxMetainfoGetInt64.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoGetInt64.restype = c_int64
 
-    library.serialboxMetaInfoGetFloat32.argtypes = [POINTER(MetaInfoImpl), c_char_p]
-    library.serialboxMetaInfoGetFloat32.restype = c_float
+    library.serialboxMetainfoGetFloat32.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoGetFloat32.restype = c_float
 
-    library.serialboxMetaInfoGetFloat64.argtypes = [POINTER(MetaInfoImpl), c_char_p]
-    library.serialboxMetaInfoGetFloat64.restype = c_double
+    library.serialboxMetainfoGetFloat64.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoGetFloat64.restype = c_double
 
-    library.serialboxMetaInfoGetString.argtypes = [POINTER(MetaInfoImpl), c_char_p]
-    library.serialboxMetaInfoGetString.restype = c_char_p
+    library.serialboxMetainfoGetString.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoGetString.restype = c_char_p
 
-    library.serialboxMetaInfoGetArrayOfBoolean.argtypes = [POINTER(MetaInfoImpl), c_char_p]
-    library.serialboxMetaInfoGetArrayOfBoolean.restype = POINTER(ArrayOfBooleanImpl)
+    library.serialboxMetainfoGetArrayOfBoolean.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoGetArrayOfBoolean.restype = POINTER(ArrayOfBooleanImpl)
 
-    library.serialboxMetaInfoGetArrayOfInt32.argtypes = [POINTER(MetaInfoImpl), c_char_p]
-    library.serialboxMetaInfoGetArrayOfInt32.restype = POINTER(ArrayOfInt32Impl)
+    library.serialboxMetainfoGetArrayOfInt32.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoGetArrayOfInt32.restype = POINTER(ArrayOfInt32Impl)
 
-    library.serialboxMetaInfoGetArrayOfInt64.argtypes = [POINTER(MetaInfoImpl), c_char_p]
-    library.serialboxMetaInfoGetArrayOfInt64.restype = POINTER(ArrayOfInt64Impl)
+    library.serialboxMetainfoGetArrayOfInt64.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoGetArrayOfInt64.restype = POINTER(ArrayOfInt64Impl)
 
-    library.serialboxMetaInfoGetArrayOfFloat32.argtypes = [POINTER(MetaInfoImpl), c_char_p]
-    library.serialboxMetaInfoGetArrayOfFloat32.restype = POINTER(ArrayOfFloat32Impl)
+    library.serialboxMetainfoGetArrayOfFloat32.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoGetArrayOfFloat32.restype = POINTER(ArrayOfFloat32Impl)
 
-    library.serialboxMetaInfoGetArrayOfFloat64.argtypes = [POINTER(MetaInfoImpl), c_char_p]
-    library.serialboxMetaInfoGetArrayOfFloat64.restype = POINTER(ArrayOfFloat64Impl)
+    library.serialboxMetainfoGetArrayOfFloat64.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoGetArrayOfFloat64.restype = POINTER(ArrayOfFloat64Impl)
 
-    library.serialboxMetaInfoGetArrayOfString.argtypes = [POINTER(MetaInfoImpl), c_char_p]
-    library.serialboxMetaInfoGetArrayOfString.restype = POINTER(ArrayOfStringImpl)
+    library.serialboxMetainfoGetArrayOfString.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoGetArrayOfString.restype = POINTER(ArrayOfStringImpl)
 
 
-class MetaInfoMapIterator(object):
-    """Iterator of the MetaInfoMap
+class MetainfoMapIterator(object):
+    """Iterator of the MetainfoMap
     """
 
     def __init__(self, metainfomap):
         self.__metainfomap = metainfomap
         self.__idx = 0
-        self.__elements = invoke(lib.serialboxMetaInfoCreateElementInfo, metainfomap.impl())
+        self.__elements = invoke(lib.serialboxMetainfoCreateElementInfo, metainfomap.impl())
 
     def __next__(self):
         if self.__idx >= self.__elements.contents.len:
@@ -253,10 +253,10 @@ class MetaInfoMapIterator(object):
                         self.__elements.contents.types[i]))
 
     def __del__(self):
-        invoke(lib.serialboxMetaInfoDestroyElementInfo, self.__elements)
+        invoke(lib.serialboxMetainfoDestroyElementInfo, self.__elements)
 
 
-class MetaInfoMap(object):
+class MetainfoMap(object):
     """Meta-information implementation of the Python Interface.
 
     Objects of this class contain a map of meta-information in form of `key = value` or
@@ -264,20 +264,20 @@ class MetaInfoMap(object):
     integers, booleans, floating point numbers (either single or double precision) or strings.
 
     The elements are internally stored as a hash-map and thus the order of insertion is irrelevant.
-    The MetaInfoMaps can be constrcuted from python dictionary :class:`dict`.
+    The MetainfoMaps can be constrcuted from python dictionary :class:`dict`.
 
-        >>> m = MetaInfoMap({'key1': 1, 'key2': 'str'})
+        >>> m = MetainfoMap({'key1': 1, 'key2': 'str'})
         >>> m
-        <MetaInfoMap {"key2": str, "key": 5}>
+        <MetainfoMap {"key2": str, "key": 5}>
         >>>
 
     """
 
     def __init__(self, metainfo=None, impl=None):
-        """Initialize the MetaInfo map.
+        """Initialize the Metainfo map.
 
         If `metainfo` is None, an empty map is created. Elements can be added later with
-        :func:`MetaInfoMap.insert <serialbox.MetaInfoMap.insert>`.
+        :func:`MetainfoMap.insert <serialbox.MetainfoMap.insert>`.
 
         :param metainfo: Key-value pair dictionary used for initialization
         :type metainfo: dict
@@ -286,27 +286,27 @@ class MetaInfoMap(object):
         if impl:
             self.__metainfomap = impl
         else:
-            self.__metainfomap = invoke(lib.serialboxMetaInfoCreate)
+            self.__metainfomap = invoke(lib.serialboxMetainfoCreate)
 
         if metainfo:
             for key, value in metainfo.items():
                 self.insert(key, value)
 
     def clone(self):
-        """Clone the MetaInfo map by performing a deepcopy.
+        """Clone the Metainfo map by performing a deepcopy.
 
-            >>> m = MetaInfoMap({'key1': 1, 'key2': 'str'})
+            >>> m = MetainfoMap({'key1': 1, 'key2': 'str'})
             >>> m_clone = m.clone()
             >>> m.clear()
             >>> m
-            <MetaInfoMap {}>
+            <MetainfoMap {}>
             >>> m_clone
-            <MetaInfoMap {"key2": str, "key": 5}>
+            <MetainfoMap {"key2": str, "key": 5}>
 
         :return: Clone of the map
-        :rtype: MetaInfoMap
+        :rtype: MetainfoMap
         """
-        return MetaInfoMap(impl=invoke(lib.serialboxMetaInfoCreateFromMetaInfo, self.__metainfomap))
+        return MetainfoMap(impl=invoke(lib.serialboxMetainfoCreateFromMetainfo, self.__metainfomap))
 
     def insert(self, key, value, typeid=None):
         """Insert a new element in the form `key = value` or `key = {value1, ... valueN}` pair.
@@ -316,16 +316,16 @@ class MetaInfoMap(object):
         omitted, the function will try it's best effort to deduce the typeid, otherwise the value
         will be converted to match the type of `typeid` (see :class:`TypeID <serialbox.TypeID>`).
 
-            >>> m = MetaInfoMap()
+            >>> m = MetainfoMap()
             >>> m.insert('key', 5)
             >>> m
-            <MetaInfoMap {"key": 5}>
+            <MetainfoMap {"key": 5}>
             >>> m.insert('Array', [1, 2, 3, 4])
             >>> m
-            <MetaInfoMap {"Array": [1, 2, 3, 4], "key": 5}>
+            <MetainfoMap {"Array": [1, 2, 3, 4], "key": 5}>
             >>> m.insert('Float', 5.0, TypeID.Float32)
             >>> m
-            <MetaInfoMap {"Array": [1, 2, 3, 4], "Float": 5.000000, "key": 5}>
+            <MetainfoMap {"Array": [1, 2, 3, 4], "Float": 5.000000, "key": 5}>
             >>> type(m['Float'])
             <class 'float'>
 
@@ -383,66 +383,66 @@ class MetaInfoMap(object):
         #
         ret = 0
         if typeid is TypeID.Boolean.value:
-            ret = invoke(lib.serialboxMetaInfoAddBoolean, self.__metainfomap, keystr, c_bool(value))
+            ret = invoke(lib.serialboxMetainfoAddBoolean, self.__metainfomap, keystr, c_bool(value))
 
         elif typeid is TypeID.Int32.value:
-            ret = invoke(lib.serialboxMetaInfoAddInt32, self.__metainfomap, keystr, c_int32(value))
+            ret = invoke(lib.serialboxMetainfoAddInt32, self.__metainfomap, keystr, c_int32(value))
 
         elif typeid is TypeID.Int64.value:
-            ret = invoke(lib.serialboxMetaInfoAddInt64, self.__metainfomap, keystr, c_int64(value))
+            ret = invoke(lib.serialboxMetainfoAddInt64, self.__metainfomap, keystr, c_int64(value))
 
         elif typeid is TypeID.Float32.value:
-            ret = invoke(lib.serialboxMetaInfoAddFloat32, self.__metainfomap, keystr,
+            ret = invoke(lib.serialboxMetainfoAddFloat32, self.__metainfomap, keystr,
                          c_float(value))
 
         elif typeid is TypeID.Float64.value:
-            ret = invoke(lib.serialboxMetaInfoAddFloat64, self.__metainfomap, keystr,
+            ret = invoke(lib.serialboxMetainfoAddFloat64, self.__metainfomap, keystr,
                          c_double(value))
 
         elif typeid is TypeID.String.value:
-            ret = invoke(lib.serialboxMetaInfoAddString, self.__metainfomap, keystr,
+            ret = invoke(lib.serialboxMetainfoAddString, self.__metainfomap, keystr,
                          extract_string(value)[0])
 
         elif typeid is TypeID.ArrayOfBoolean.value:
             array = invoke(lib.serialboxArrayOfBooleanCreate, c_int(len(value)))
             for i in range(array.contents.len):
                 array.contents.data[i] = c_int(value[i])
-            ret = invoke(lib.serialboxMetaInfoAddArrayOfBoolean, self.__metainfomap, keystr, array)
+            ret = invoke(lib.serialboxMetainfoAddArrayOfBoolean, self.__metainfomap, keystr, array)
             invoke(lib.serialboxArrayOfBooleanDestroy, array)
 
         elif typeid is TypeID.ArrayOfInt32.value:
             array = invoke(lib.serialboxArrayOfInt32Create, c_int(len(value)))
             for i in range(array.contents.len):
                 array.contents.data[i] = c_int32(value[i])
-            ret = invoke(lib.serialboxMetaInfoAddArrayOfInt32, self.__metainfomap, keystr, array)
+            ret = invoke(lib.serialboxMetainfoAddArrayOfInt32, self.__metainfomap, keystr, array)
             invoke(lib.serialboxArrayOfInt32Destroy, array)
 
         elif typeid is TypeID.ArrayOfInt64.value:
             array = invoke(lib.serialboxArrayOfInt64Create, c_int(len(value)))
             for i in range(array.contents.len):
                 array.contents.data[i] = c_int64(value[i])
-            ret = invoke(lib.serialboxMetaInfoAddArrayOfInt64, self.__metainfomap, keystr, array)
+            ret = invoke(lib.serialboxMetainfoAddArrayOfInt64, self.__metainfomap, keystr, array)
             invoke(lib.serialboxArrayOfInt64Destroy, array)
 
         elif typeid is TypeID.ArrayOfFloat32.value:
             array = invoke(lib.serialboxArrayOfFloat32Create, c_int(len(value)))
             for i in range(array.contents.len):
                 array.contents.data[i] = c_float(value[i])
-            ret = invoke(lib.serialboxMetaInfoAddArrayOfFloat32, self.__metainfomap, keystr, array)
+            ret = invoke(lib.serialboxMetainfoAddArrayOfFloat32, self.__metainfomap, keystr, array)
             invoke(lib.serialboxArrayOfFloat32Destroy, array)
 
         elif typeid is TypeID.ArrayOfFloat64.value:
             array = invoke(lib.serialboxArrayOfFloat64Create, c_int(len(value)))
             for i in range(array.contents.len):
                 array.contents.data[i] = c_double(value[i])
-            ret = invoke(lib.serialboxMetaInfoAddArrayOfFloat64, self.__metainfomap, keystr, array)
+            ret = invoke(lib.serialboxMetainfoAddArrayOfFloat64, self.__metainfomap, keystr, array)
             invoke(lib.serialboxArrayOfFloat64Destroy, array)
 
         elif typeid is TypeID.ArrayOfString.value:
             array = invoke(lib.serialboxArrayOfStringCreate, c_int(len(value)))
             for i in range(array.contents.len):
                 array.contents.data[i] = extract_string(value[i])[0]
-            ret = invoke(lib.serialboxMetaInfoAddArrayOfString, self.__metainfomap, keystr, array)
+            ret = invoke(lib.serialboxMetainfoAddArrayOfString, self.__metainfomap, keystr, array)
             invoke(lib.serialboxArrayOfStringDestroy, array)
 
         else:
@@ -457,7 +457,7 @@ class MetaInfoMap(object):
         :return: Number of elements in the map
         :rtype: int
         """
-        return invoke(lib.serialboxMetaInfoGetSize, self.__metainfomap)
+        return invoke(lib.serialboxMetainfoGetSize, self.__metainfomap)
 
     def empty(self):
         """Check if mao is empty.
@@ -465,7 +465,7 @@ class MetaInfoMap(object):
         :return: `True` if map is empty, `False` otherwise
         :rtype: bool
         """
-        return bool(invoke(lib.serialboxMetaInfoIsEmpty, self.__metainfomap))
+        return bool(invoke(lib.serialboxMetainfoIsEmpty, self.__metainfomap))
 
     def has_key(self, key):
         """Check if and element with key `key` exists.
@@ -476,56 +476,56 @@ class MetaInfoMap(object):
         :rtype: bool
         """
         keystr = extract_string(key)[0]
-        return bool(invoke(lib.serialboxMetaInfoHasKey, self.__metainfomap, keystr))
+        return bool(invoke(lib.serialboxMetainfoHasKey, self.__metainfomap, keystr))
 
     def clear(self):
         """Clear the map.
 
-        All the elements in the MetaInfoMap are dropped: their destructors are called, and they are
+        All the elements in the MetainfoMap are dropped: their destructors are called, and they are
         removed from the container, leaving it with a size of 0.
         """
-        invoke(lib.serialboxMetaInfoClear, self.__metainfomap)
+        invoke(lib.serialboxMetainfoClear, self.__metainfomap)
 
     def to_dict(self):
-        """Convert MetaInfoMap to a python dictionary :class:`dict`.
+        """Convert MetainfoMap to a python dictionary :class:`dict`.
 
-        The MetaInfoMap is `copied` into the dictionary.
+        The MetainfoMap is `copied` into the dictionary.
 
             >>> d = {'key': 5, 'string': 'str'}
-            >>> m = MetaInfoMap(d)
+            >>> m = MetainfoMap(d)
             >>> map_as_dict = m.to_dict()
             >>> map_as_dict
             {'key': 5, 'string': 'str'}
             >>> d == map_as_dict
             True
 
-        :return: copy of the MetaInfo map as a dictionary
+        :return: copy of the Metainfo map as a dictionary
         :rtype: dict
         """
-        elements = invoke(lib.serialboxMetaInfoCreateElementInfo, self.__metainfomap)
+        elements = invoke(lib.serialboxMetainfoCreateElementInfo, self.__metainfomap)
 
         dic = {}
         for i in range(elements.contents.len):
             dic[elements.contents.keys[i].decode()] = self.__getitem__(
                 elements.contents.keys[i].decode(), elements.contents.types[i])
 
-        invoke(lib.serialboxMetaInfoDestroyElementInfo, elements)
+        invoke(lib.serialboxMetainfoDestroyElementInfo, elements)
         return dic
 
     def __eq__(self, other):
         """Test for equality.
 
-        MetaInfoMaps are equal if all their elements are equal.
+        MetainfoMaps are equal if all their elements are equal.
 
         :return: `True` if self == other, `False` otherwise
         :rtype: bool
         """
-        return bool(invoke(lib.serialboxMetaInfoEqual, self.__metainfomap, other.__metainfomap))
+        return bool(invoke(lib.serialboxMetainfoEqual, self.__metainfomap, other.__metainfomap))
 
     def __ne__(self, other):
         """Test for inequality.
 
-        MetaInfoMaps are equal if all their elements are equal.
+        MetainfoMaps are equal if all their elements are equal.
 
         :return: `True` if self != other, `False` otherwise
         :rtype: bool
@@ -535,7 +535,7 @@ class MetaInfoMap(object):
     def __getitem__(self, key, typeid=None):
         """Get `value` of element given by `key`. The correct type will be inferred.
 
-            >>> m = MetaInfoMap()
+            >>> m = MetainfoMap()
             >>> m.insert('key', 5)
             >>> m['key']
             5
@@ -556,31 +556,31 @@ class MetaInfoMap(object):
         # Get typeid
         #
         if not typeid:
-            typeid = invoke(lib.serialboxMetaInfoGetTypeIDOfKey, self.__metainfomap, keystr)
+            typeid = invoke(lib.serialboxMetainfoGetTypeIDOfKey, self.__metainfomap, keystr)
 
         #
         # Conversions
         #
         if typeid is TypeID.Boolean.value:
-            return bool(invoke(lib.serialboxMetaInfoGetBoolean, self.__metainfomap, keystr))
+            return bool(invoke(lib.serialboxMetainfoGetBoolean, self.__metainfomap, keystr))
 
         elif typeid is TypeID.Int32.value:
-            return int(invoke(lib.serialboxMetaInfoGetInt32, self.__metainfomap, keystr))
+            return int(invoke(lib.serialboxMetainfoGetInt32, self.__metainfomap, keystr))
 
         elif typeid is TypeID.Int64.value:
-            return int(invoke(lib.serialboxMetaInfoGetInt64, self.__metainfomap, keystr))
+            return int(invoke(lib.serialboxMetainfoGetInt64, self.__metainfomap, keystr))
 
         elif typeid is TypeID.Float32.value:
-            return float(invoke(lib.serialboxMetaInfoGetFloat32, self.__metainfomap, keystr))
+            return float(invoke(lib.serialboxMetainfoGetFloat32, self.__metainfomap, keystr))
 
         elif typeid is TypeID.Float64.value:
-            return float(invoke(lib.serialboxMetaInfoGetFloat64, self.__metainfomap, keystr))
+            return float(invoke(lib.serialboxMetainfoGetFloat64, self.__metainfomap, keystr))
 
         elif typeid is TypeID.String.value:
-            return invoke(lib.serialboxMetaInfoGetString, self.__metainfomap, keystr).decode()
+            return invoke(lib.serialboxMetainfoGetString, self.__metainfomap, keystr).decode()
 
         elif typeid is TypeID.ArrayOfBoolean.value:
-            array = invoke(lib.serialboxMetaInfoGetArrayOfBoolean, self.__metainfomap, keystr)
+            array = invoke(lib.serialboxMetainfoGetArrayOfBoolean, self.__metainfomap, keystr)
             list_array = []
             for i in range(array.contents.len):
                 list_array += [bool(array.contents.data[i])]
@@ -588,7 +588,7 @@ class MetaInfoMap(object):
             return list_array
 
         elif typeid is TypeID.ArrayOfInt32.value:
-            array = invoke(lib.serialboxMetaInfoGetArrayOfInt32, self.__metainfomap, keystr)
+            array = invoke(lib.serialboxMetainfoGetArrayOfInt32, self.__metainfomap, keystr)
             list_array = []
             for i in range(array.contents.len):
                 list_array += [int(array.contents.data[i])]
@@ -596,7 +596,7 @@ class MetaInfoMap(object):
             return list_array
 
         elif typeid is TypeID.ArrayOfInt64.value:
-            array = invoke(lib.serialboxMetaInfoGetArrayOfInt64, self.__metainfomap, keystr)
+            array = invoke(lib.serialboxMetainfoGetArrayOfInt64, self.__metainfomap, keystr)
             list_array = []
             for i in range(array.contents.len):
                 list_array += [int(array.contents.data[i])]
@@ -604,7 +604,7 @@ class MetaInfoMap(object):
             return list_array
 
         elif typeid is TypeID.ArrayOfFloat32.value:
-            array = invoke(lib.serialboxMetaInfoGetArrayOfFloat32, self.__metainfomap, keystr)
+            array = invoke(lib.serialboxMetainfoGetArrayOfFloat32, self.__metainfomap, keystr)
             list_array = []
             for i in range(array.contents.len):
                 list_array += [float(array.contents.data[i])]
@@ -612,7 +612,7 @@ class MetaInfoMap(object):
             return list_array
 
         elif typeid is TypeID.ArrayOfFloat64.value:
-            array = invoke(lib.serialboxMetaInfoGetArrayOfFloat64, self.__metainfomap, keystr)
+            array = invoke(lib.serialboxMetainfoGetArrayOfFloat64, self.__metainfomap, keystr)
             list_array = []
             for i in range(array.contents.len):
                 list_array += [float(array.contents.data[i])]
@@ -620,7 +620,7 @@ class MetaInfoMap(object):
             return list_array
 
         elif typeid is TypeID.ArrayOfString.value:
-            array = invoke(lib.serialboxMetaInfoGetArrayOfString, self.__metainfomap, keystr)
+            array = invoke(lib.serialboxMetainfoGetArrayOfString, self.__metainfomap, keystr)
             list_array = []
             for i in range(array.contents.len):
                 list_array += [array.contents.data[i].decode()]
@@ -631,31 +631,31 @@ class MetaInfoMap(object):
             raise SerialboxError('internal error: unreachable (typeid = %i)' % typeid)
 
     def __iter__(self):
-        """ Iterate the MetaInfoMap.
+        """ Iterate the MetainfoMap.
 
-            >>> m = MetaInfoMap({'key1': 5, 'key2': 6})
+            >>> m = MetainfoMap({'key1': 5, 'key2': 6})
             >>> for elements in m:
                 ...     print(elements)
                 ('key1', 5)
                 ('key2', 6)
             >>>
 
-        :return: Iterator of MetaInfoMap
-        :rtype: MetaInfoMapIterator
+        :return: Iterator of MetainfoMap
+        :rtype: MetainfoMapIterator
         """
-        return MetaInfoMapIterator(self)
+        return MetainfoMapIterator(self)
 
     def impl(self):
         return self.__metainfomap
 
     def __del__(self):
-        invoke(lib.serialboxMetaInfoDestroy, self.__metainfomap)
+        invoke(lib.serialboxMetainfoDestroy, self.__metainfomap)
 
     def __repr__(self):
-        return "<MetaInfoMap {0}>".format(self.__str__())
+        return "<MetainfoMap {0}>".format(self.__str__())
 
     def __str__(self):
-        return invoke(lib.serialboxMetaInfoToString, self.__metainfomap).decode()
+        return invoke(lib.serialboxMetainfoToString, self.__metainfomap).decode()
 
 
 register_library(lib)

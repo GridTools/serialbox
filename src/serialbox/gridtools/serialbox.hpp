@@ -23,17 +23,17 @@
 ///
 /// \ingroup frontend
 
-#include "serialbox/Core/Config.h"
+#include "serialbox/core/Config.h"
 
-#include "serialbox/Core/Frontend/gridtools/Exception.h"
-#include "serialbox/Core/Frontend/gridtools/FieldMetaInfo.h"
-#include "serialbox/Core/Frontend/gridtools/Logging.h"
-#include "serialbox/Core/Frontend/gridtools/MetaInfoMap.h"
-#include "serialbox/Core/Frontend/gridtools/MetaInfoValue.h"
-#include "serialbox/Core/Frontend/gridtools/Savepoint.h"
-#include "serialbox/Core/Frontend/gridtools/Serializer.h"
-#include "serialbox/Core/Frontend/gridtools/Slice.h"
-#include "serialbox/Core/Frontend/gridtools/Type.h"
-#include "serialbox/Core/Frontend/gridtools/Timer.h"
+#include "serialbox/core/frontend/gridtools/Exception.h"
+#include "serialbox/core/frontend/gridtools/FieldMetainfo.h"
+#include "serialbox/core/frontend/gridtools/Logging.h"
+#include "serialbox/core/frontend/gridtools/MetainfoMap.h"
+#include "serialbox/core/frontend/gridtools/MetainfoValue.h"
+#include "serialbox/core/frontend/gridtools/Savepoint.h"
+#include "serialbox/core/frontend/gridtools/Serializer.h"
+#include "serialbox/core/frontend/gridtools/Slice.h"
+#include "serialbox/core/frontend/gridtools/Type.h"
+#include "serialbox/core/frontend/gridtools/Timer.h"
 
 #endif

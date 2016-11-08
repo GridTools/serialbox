@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestStorageView.cpp --------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestStorageView.cpp --------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -13,10 +13,10 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "utility/Storage.h"
-#include "serialbox/Core/Exception.h"
-#include "serialbox/Core/STLExtras.h"
-#include "serialbox/Core/StorageView.h"
-#include "serialbox/Core/Type.h"
+#include "serialbox/core/Exception.h"
+#include "serialbox/core/STLExtras.h"
+#include "serialbox/core/StorageView.h"
+#include "serialbox/core/Type.h"
 #include <boost/algorithm/string.hpp>
 #include <cstring>
 #include <gtest/gtest.h>

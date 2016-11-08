@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestSavepointImpl.cpp ------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestSavepointImpl.cpp ------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/SavepointVector.h"
+#include "serialbox/core/SavepointVector.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 
@@ -24,8 +24,8 @@ TEST(SavepointVectorTest, Construction) {
   SavepointImpl savepoint2("savepoint");
   SavepointImpl savepoint3("different-savepoint");
 
-  ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
-  ASSERT_NO_THROW(savepoint2.addMetaInfo("key1", "s2"));
+  ASSERT_NO_THROW(savepoint1.addMetainfo("key1", "s1"));
+  ASSERT_NO_THROW(savepoint2.addMetainfo("key1", "s2"));
 
   //------------------------------------------------------------------------------------------------
   //  Empty constructor
@@ -204,8 +204,8 @@ TEST(SavepointVectorTest, toJSON) {
   SavepointImpl savepoint2("savepoint");
   SavepointImpl savepoint3("different-savepoint");
 
-  ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
-  ASSERT_NO_THROW(savepoint2.addMetaInfo("key1", "s2"));
+  ASSERT_NO_THROW(savepoint1.addMetainfo("key1", "s1"));
+  ASSERT_NO_THROW(savepoint2.addMetainfo("key1", "s2"));
 
   SavepointVector s;
   ASSERT_EQ(s.insert(savepoint1), 0);
@@ -244,8 +244,8 @@ TEST(SavepointVectorTest, fromJSON) {
   SavepointImpl savepoint2("savepoint");
   SavepointImpl savepoint3("different-savepoint");
 
-  ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
-  ASSERT_NO_THROW(savepoint2.addMetaInfo("key1", "s2"));
+  ASSERT_NO_THROW(savepoint1.addMetainfo("key1", "s1"));
+  ASSERT_NO_THROW(savepoint2.addMetainfo("key1", "s2"));
 
   // -----------------------------------------------------------------------------------------------
   // Success
@@ -377,7 +377,7 @@ TEST(SavepointVectorTest, fromJSON) {
 
 TEST(SavepointVectorTest, toString) {
   SavepointImpl savepoint1("savepoint");
-  ASSERT_NO_THROW(savepoint1.addMetaInfo("key1", "s1"));
+  ASSERT_NO_THROW(savepoint1.addMetainfo("key1", "s1"));
   
   std::stringstream ss;
   SavepointVector s;

@@ -45,11 +45,11 @@ from .error import SerialboxError
 from .logging import Logging
 from .serializer import Serializer
 from .savepoint import Savepoint, SavepointCollection
-from .metainfomap import MetaInfoMap
-from .fieldmetainfo import FieldMetaInfo
+from .metainfomap import MetainfoMap
+from .fieldmetainfo import FieldMetainfo
 from .archive import Archive
 from .slice import Slice
 
 __all__ = ['Config', 'TypeID', 'SerialboxError', 'Logging', 'Serializer', 'Savepoint',
-           'SavepointCollection', 'MetaInfoMap', 'FieldMetaInfo', 'OpenModeKind', 'Archive',
+           'SavepointCollection', 'MetainfoMap', 'FieldMetainfo', 'OpenModeKind', 'Archive',
            'Slice']

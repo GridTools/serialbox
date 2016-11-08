@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestFieldID.cpp ------------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestFieldID.cpp ------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/Core/FieldID.h"
+#include "serialbox/core/FieldID.h"
 #include <gtest/gtest.h>
 #include <sstream>
 

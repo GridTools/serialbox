@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Frontend/STELLA/UnittestStorageView.cpp ----------------------*- C++ -*-===//
+//===-- serialbox/core/frontend/stella/UnittestStorageView.cpp ----------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -13,8 +13,8 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "utility/STELLA.h"
-#include "serialbox/Core/STLExtras.h"
-#include "serialbox/Core/StorageView.h"
+#include "serialbox/core/STLExtras.h"
+#include "serialbox/core/StorageView.h"
 #include <gtest/gtest.h>
 #include <memory>
 

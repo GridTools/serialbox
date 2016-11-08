@@ -120,13 +120,13 @@ void serialboxDisableSerialization(void);
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Allocate a new `serialboxMetaInfo_t` which maps to the global meta-information of the
+ * \brief Allocate a new `serialboxMetainfo_t` which maps to the global meta-information of the
  * Serializer
  *
  * \param serializer  Serializer to use
  * \return global meta-information of the serializer
  */
-serialboxMetaInfo_t* serialboxSerializerGetGlobalMetaInfo(serialboxSerializer_t* serializer);
+serialboxMetainfo_t* serialboxSerializerGetGlobalMetainfo(serialboxSerializer_t* serializer);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Register and Query Savepoints
@@ -197,7 +197,7 @@ serialboxSerializerGetFieldnamesAtSavepoint(const serialboxSerializer_t* seriali
 \*===------------------------------------------------------------------------------------------===*/
 
 /**
- * \brief Register field given as `fieldMetaInfo` within the serializer
+ * \brief Register field given as `fieldMetainfo` within the serializer
  *
  * \param serializer  Serializer to use
  * \param name        Name of the field to register
@@ -205,7 +205,7 @@ serialboxSerializerGetFieldnamesAtSavepoint(const serialboxSerializer_t* seriali
  * \return 1 if field was added successfully, 0 otherwise
  */
 int serialboxSerializerAddField(serialboxSerializer_t* serializer, const char* name,
-                                const serialboxFieldMetaInfo_t* fieldMetaInfo);
+                                const serialboxFieldMetainfo_t* fieldMetainfo);
 
 /**
  * \brief Check if `field` is registered within the serializer
@@ -253,14 +253,14 @@ int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* 
 serialboxArrayOfString_t* serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer);
 
 /**
- * \brief Get FieldMetaInfo of field with name `name`
+ * \brief Get FieldMetainfoImpl of field with name `name`
  *
  * \param serializer  Serializer to use
  * \param name        Name of the field to search for
- * \return Refrence to the FieldMetaInfo if field exists, NULL otherwise
+ * \return Refrence to the FieldMetainfoImpl if field exists, NULL otherwise
  */
-serialboxFieldMetaInfo_t*
-serialboxSerializerGetFieldMetaInfo(const serialboxSerializer_t* serializer, const char* name);
+serialboxFieldMetainfo_t*
+serialboxSerializerGetFieldMetainfo(const serialboxSerializer_t* serializer, const char* name);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Writing & Reading

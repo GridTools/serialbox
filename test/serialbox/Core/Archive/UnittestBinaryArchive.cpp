@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Archive/UnittestBinaryArchive.cpp ----------------------------*- C++ -*-===//
+//===-- serialbox/core/archive/UnittestBinaryArchive.cpp ----------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -14,8 +14,8 @@
 
 #include "utility/SerializerTestBase.h"
 #include "utility/Storage.h"
-#include "serialbox/Core/Archive/BinaryArchive.h"
-#include "serialbox/Core/Version.h"
+#include "serialbox/core/archive/BinaryArchive.h"
+#include "serialbox/core/Version.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 

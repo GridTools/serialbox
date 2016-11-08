@@ -15,7 +15,7 @@
 
 import unittest
 
-from serialbox import Savepoint, MetaInfoMap
+from serialbox import Savepoint, MetainfoMap
 
 
 class TestSavepoint(unittest.TestCase):
@@ -31,8 +31,8 @@ class TestSavepoint(unittest.TestCase):
         sp3 = Savepoint('sp3', metainfo={"key1": 5.0})
         self.assertEqual(sp3.metainfo.to_dict(), {"key1": 5.0})
 
-        # Construct with MetaInfoMap
-        metainfomap = MetaInfoMap({"key1": 5.0})
+        # Construct with MetainfoMap
+        metainfomap = MetainfoMap({"key1": 5.0})
         sp4 = Savepoint('sp4', metainfo=metainfomap)
         self.assertEqual(sp4.metainfo.to_dict(), {"key1": 5.0})
 

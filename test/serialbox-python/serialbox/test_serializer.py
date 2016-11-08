@@ -220,10 +220,10 @@ class TestSerializer(unittest.TestCase):
         # Savepoint no existing -> Error
         self.assertRaises(SerialboxError, ser.savepoint.__getattr__, 'spX')
 
-        # MetaInfo key not existing -> Error
+        # Metainfo key not existing -> Error
         self.assertRaises(SerialboxError, ser.savepoint.sp.__getattr__, 'keyX')
 
-        # MetaInfo value not existing -> Error
+        # Metainfo value not existing -> Error
         self.assertRaises(SerialboxError, ser.savepoint.sp.key.__getitem__, 3)
 
         # Indexing not supported -> Error
@@ -233,9 +233,9 @@ class TestSerializer(unittest.TestCase):
     def test_field(self):
         ser_write = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
 
-        field1 = FieldMetaInfo(TypeID.Float64, [12, 13, 14])
-        field2 = FieldMetaInfo(TypeID.Float32, [1024, 1024])
-        field3 = FieldMetaInfo(TypeID.Int32, [4096])
+        field1 = FieldMetainfo(TypeID.Float64, [12, 13, 14])
+        field2 = FieldMetainfo(TypeID.Float32, [1024, 1024])
+        field3 = FieldMetainfo(TypeID.Int32, [4096])
 
         #
         # Add fields
@@ -363,7 +363,7 @@ class TestSerializer(unittest.TestCase):
         #
         # Register field
         #
-        register_field = lambda n, t, f: ser_write.register_field(n, FieldMetaInfo(t, f.shape))
+        register_field = lambda n, t, f: ser_write.register_field(n, FieldMetainfo(t, f.shape))
 
         register_field("field_bool", TypeID.Boolean, field_bool)
         register_field("field_int32", TypeID.Int32, field_int32)

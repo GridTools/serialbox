@@ -1,4 +1,4 @@
-//===-- serialbox/Core/Archive/UnittestNetCDFArchive.cpp ----------------------------*- C++ -*-===//
+//===-- serialbox/core/archive/UnittestNetCDFArchive.cpp ----------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -14,8 +14,8 @@
 
 #include "utility/SerializerTestBase.h"
 #include "utility/Storage.h"
-#include "serialbox/Core/Archive/NetCDFArchive.h"
-#include "serialbox/Core/Compiler.h"
+#include "serialbox/core/archive/NetCDFArchive.h"
+#include "serialbox/core/Compiler.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 

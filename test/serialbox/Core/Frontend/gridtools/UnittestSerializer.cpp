@@ -1,4 +1,4 @@
-//===-- serialbox/Core/UnittestSerializer.cpp ---------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestSerializer.cpp ---------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -15,7 +15,7 @@
 #include "utility/GridTools.h"
 #include "utility/SerializerTestBase.h"
 #include "utility/Storage.h"
-#include "serialbox/Core/Frontend/gridtools/Serializer.h"
+#include "serialbox/core/frontend/gridtools/Serializer.h"
 #include <gtest/gtest.h>
 #include <memory>
 
@@ -54,7 +54,7 @@ TEST_F(GridToolsSerializerUtilityTest, SerializationStatus) {
   ASSERT_EQ(serializer::serializationStatus(), 1);
 }
 
-TEST_F(GridToolsSerializerUtilityTest, AddMetaInfo) {
+TEST_F(GridToolsSerializerUtilityTest, AddMetainfo) {
   serializer ser(open_mode::Write, directory->path().string(), "Field", "Binary");
 
   // Add meta-info
