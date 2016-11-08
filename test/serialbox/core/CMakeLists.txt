@@ -28,27 +28,27 @@ set(SOURCES
   UnittestUpgradeArchive.cpp
   UnittestVersion.cpp
   
-  # Archive/  
-  Archive/UnittestArchiveFactory.cpp 
-  Archive/UnittestBinaryArchive.cpp
-  Archive/UnittestNetCDFArchive.cpp
-  Archive/UnittestMockArchive.cpp
+  # archive/  
+  archive/UnittestArchiveFactory.cpp 
+  archive/UnittestBinaryArchive.cpp
+  archive/UnittestNetCDFArchive.cpp
+  archive/UnittestMockArchive.cpp
   
-  # Frontend/gridtools/
-  Frontend/gridtools/UnittestStorageView.cpp
-  Frontend/gridtools/UnittestMetainfoMap.cpp
-  Frontend/gridtools/UnittestFieldMetaInfo.cpp  
-  Frontend/gridtools/UnittestSavepoint.cpp    
-  Frontend/gridtools/UnittestSerializer.cpp    
+  # frontend/gridtools/
+  frontend/gridtools/UnittestStorageView.cpp
+  frontend/gridtools/UnittestMetainfoMap.cpp
+  frontend/gridtools/UnittestFieldMetaInfo.cpp  
+  frontend/gridtools/UnittestSavepoint.cpp    
+  frontend/gridtools/UnittestSerializer.cpp    
   
-  # Frontend/STELLA/
-  Frontend/STELLA/UnittestStorageView.cpp
-  Frontend/STELLA/UnittestMetainfoSet.cpp
-  Frontend/STELLA/UnittestException.cpp
-  Frontend/STELLA/UnittestSavepoint.cpp  
-  Frontend/STELLA/UnittestSerializer.cpp
-  Frontend/STELLA/UnittestDataFieldInfo.cpp
-  Frontend/STELLA/UnittestUtility.cpp  
+  # frontend/stella/
+  frontend/stella/UnittestStorageView.cpp
+  frontend/stella/UnittestMetainfoSet.cpp
+  frontend/stella/UnittestException.cpp
+  frontend/stella/UnittestSavepoint.cpp  
+  frontend/stella/UnittestSerializer.cpp
+  frontend/stella/UnittestDataFieldInfo.cpp
+  frontend/stella/UnittestUtility.cpp  
 )
 
 set(EXTERNAL_LIBRARIES SerialboxCoreLibraryStatic
