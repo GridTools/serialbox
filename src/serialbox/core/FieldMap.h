@@ -181,7 +181,8 @@ public:
   /// \return Value indicating whether the field was successfully inserted or not
   template <class StringType, typename... Args>
   bool insert(StringType&& key, Args&&... args) {
-    return map_.insert({key, std::make_shared<FieldMetainfoImpl>(std::forward<Args>(args)...)}).second;
+    return map_.insert({key, std::make_shared<FieldMetainfoImpl>(std::forward<Args>(args)...)})
+        .second;
   }
 
   /// \brief Returns the number of elements in the FieldMap

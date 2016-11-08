@@ -12,9 +12,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/core/hash/MD5.h"
 #include "serialbox/core/Compiler.h"
 #include "serialbox/core/Exception.h"
-#include "serialbox/core/hash/MD5.h"
 #include <algorithm>
 #include <iomanip>
 #include <iterator>

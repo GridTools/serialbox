@@ -15,11 +15,11 @@
 #include "serialbox/core/Compiler.h"
 #ifdef SERIALBOX_HAS_NETCDF
 
-#include "serialbox/core/archive/NetCDFArchive.h"
 #include "serialbox/core/Logging.h"
 #include "serialbox/core/STLExtras.h"
 #include "serialbox/core/Unreachable.h"
 #include "serialbox/core/Version.h"
+#include "serialbox/core/archive/NetCDFArchive.h"
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <memory>

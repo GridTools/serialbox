@@ -17,6 +17,7 @@
 
 #include "serialbox/core/hash/Hash.h"
 #include <memory>
+#include <vector>
 
 namespace serialbox {
 

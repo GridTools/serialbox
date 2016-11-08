@@ -23,7 +23,7 @@ namespace serialbox {
 ///
 /// \see
 ///   https://en.wikipedia.org/wiki/SHA-1
-/// 
+///
 /// \ingroup core
 class SHA256 : public Hash {
 public:
@@ -34,7 +34,7 @@ public:
   ///
   /// \return Name of the Hash
   virtual const char* name() const noexcept override { return Name; }
-  
+
   /// \brief Compute 256 bit hash using SHA-1
   ///
   /// \param data     Binary data

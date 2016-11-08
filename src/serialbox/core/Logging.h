@@ -73,10 +73,10 @@ public:
 /// \code
 ///   LOG(info) << "Hello, world!";
 /// \endcode
-/// 
+///
 /// \see
 ///   http://www.boost.org/doc/libs/1_62_0/libs/log/doc/html/index.html
-/// 
+///
 #define LOG(severity) SERIALBOX_INTERNAL_LOG(severity)
 
 #ifdef SERIALBOX_DISABLE_LOGGING

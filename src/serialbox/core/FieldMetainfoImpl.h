@@ -1,4 +1,5 @@
-//===-- serialbox/core/FieldMetainfoImplImpl.h ------------------------------------------*- C++ -*-===//
+//===-- serialbox/core/FieldMetainfoImplImpl.h ------------------------------------------*- C++
+//-*-===//
 //
 //                                    S E R I A L B O X
 //

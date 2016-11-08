@@ -12,15 +12,15 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/core/archive/ArchiveFactory.h"
-#include "serialbox/core/archive/BinaryArchive.h"
-#include "serialbox/core/Compiler.h"
-#include "serialbox/core/hash/HashFactory.h"
-#include "serialbox/core/STLExtras.h"
 #include "serialbox/core/SerializerImpl.h"
+#include "serialbox/core/Compiler.h"
+#include "serialbox/core/STLExtras.h"
 #include "serialbox/core/Type.h"
 #include "serialbox/core/Unreachable.h"
 #include "serialbox/core/Version.h"
+#include "serialbox/core/archive/ArchiveFactory.h"
+#include "serialbox/core/archive/BinaryArchive.h"
+#include "serialbox/core/hash/HashFactory.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <fstream>
@@ -221,7 +221,7 @@ void SerializerImpl::readSliced(const std::string& name, const SavepointImpl& sa
   this->read(name, savepoint, storageView);
 }
 
-// This is the global task vector. If we would put the tasks inside SerializerImpl, we would have a 
+// This is the global task vector. If we would put the tasks inside SerializerImpl, we would have a
 // conditional member in a class (i.e depending on a macro) which can cause trouble if someone
 // compiled the library with SERIALBOX_ASYNC_API but doesn't use it when linking the library which
 // will smash the stack!

@@ -13,8 +13,8 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/core/frontend/stella/Savepoint.h"
-#include "serialbox/core/frontend/stella/Utility.h"
 #include "serialbox/core/SavepointImpl.h"
+#include "serialbox/core/frontend/stella/Utility.h"
 #include <ostream>
 
 namespace serialbox {

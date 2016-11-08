@@ -13,11 +13,11 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/core/archive/ArchiveFactory.h"
-#include "serialbox/core/archive/BinaryArchive.h"
-#include "serialbox/core/archive/NetCDFArchive.h"
-#include "serialbox/core/archive/MockArchive.h"
 #include "serialbox/core/Exception.h"
 #include "serialbox/core/Unreachable.h"
+#include "serialbox/core/archive/BinaryArchive.h"
+#include "serialbox/core/archive/MockArchive.h"
+#include "serialbox/core/archive/NetCDFArchive.h"
 
 namespace serialbox {
 
@@ -45,7 +45,8 @@ std::unique_ptr<Archive> ArchiveFactory::create(const std::string& name, OpenMod
 std::vector<std::string> ArchiveFactory::registeredArchives() {
   std::vector<std::string> archives{BinaryArchive::Name, MockArchive::Name
 #ifdef SERIALBOX_HAS_NETCDF
-                                    , NetCDFArchive::Name
+                                    ,
+                                    NetCDFArchive::Name
 #endif
   };
   return archives;

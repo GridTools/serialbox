@@ -15,9 +15,9 @@
 #ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_META_INFO_MAP_H
 #define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_META_INFO_MAP_H
 
+#include "serialbox/core/MetainfoMapImpl.h"
 #include "serialbox/core/frontend/gridtools/Exception.h"
 #include "serialbox/core/frontend/gridtools/MetainfoValue.h"
-#include "serialbox/core/MetainfoMapImpl.h"
 #include <memory>
 
 namespace serialbox {
@@ -68,7 +68,8 @@ public:
 
   /// \brief Copy constructor
   ///
-  /// This performs a \i shallow copy, meaning the objects share the same underlying MetainfoMapImpl.
+  /// This performs a \i shallow copy, meaning the objects share the same underlying
+  /// MetainfoMapImpl.
   /// To deep copy the object call meta_info_map::clone().
   ///
   /// \b Example
@@ -77,7 +78,8 @@ public:
   ///   meta_info_map m2(m1);
   ///
   ///   m1.clear();
-  ///   assert(m2.empty());    // m1 and m2 share the same MetainfoMapImpl, hence m2 is empty as well
+  ///   assert(m2.empty());    // m1 and m2 share the same MetainfoMapImpl, hence m2 is empty as
+  ///   well
   /// \endcode
   ///
   /// \see meta_info_map::clone()
@@ -88,7 +90,8 @@ public:
 
   /// \brief Copy assignment
   ///
-  /// This performs a \i shallow copy, meaning the objects share the same underlying MetainfoMapImpl.
+  /// This performs a \i shallow copy, meaning the objects share the same underlying
+  /// MetainfoMapImpl.
   /// To deep copy the object call meta_info_map::clone().
   ///
   /// \b Example
@@ -97,7 +100,8 @@ public:
   ///   meta_info_map m2 = m1;
   ///
   ///   m1.clear();
-  ///   assert(m2.empty());     // m1 and m2 share the same MetainfoMapImpl, hence m2 is empty as well
+  ///   assert(m2.empty());     // m1 and m2 share the same MetainfoMapImpl, hence m2 is empty as
+  ///   well
   /// \endcode
   ///
   /// \see meta_info_map::clone
@@ -125,9 +129,12 @@ public:
   ///   meta_info_map m2 = m1.clone();
   ///
   ///   m1.clear();
-  ///   assert(!m2.empty()); // m1 and m2 do NOT share the same MetainfoMapImpl, hence m2 is not empty
+  ///   assert(!m2.empty()); // m1 and m2 do NOT share the same MetainfoMapImpl, hence m2 is not
+  ///   empty
   /// \endcode
-  meta_info_map clone() const { return meta_info_map(std::make_shared<MetainfoMapImpl>(*map_impl_)); }
+  meta_info_map clone() const {
+    return meta_info_map(std::make_shared<MetainfoMapImpl>(*map_impl_));
+  }
 
   /// \brief Construct with MetainfoMapImpl (internal use)
   explicit meta_info_map(const std::shared_ptr<MetainfoMapImpl>& map) { map_impl_ = map; }

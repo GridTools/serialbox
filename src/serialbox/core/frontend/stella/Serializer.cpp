@@ -13,9 +13,9 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/core/frontend/stella/Serializer.h"
-#include "serialbox/core/frontend/stella/Utility.h"
 #include "serialbox/core/SerializerImpl.h"
 #include "serialbox/core/Unreachable.h"
+#include "serialbox/core/frontend/stella/Utility.h"
 #include <boost/make_shared.hpp>
 #include <cstdlib>
 

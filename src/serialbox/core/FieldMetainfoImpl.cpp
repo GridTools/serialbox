@@ -1,4 +1,5 @@
-//===-- serialbox/core/FieldMetainfoImplImpl.h ------------------------------------------*- C++ -*-===//
+//===-- serialbox/core/FieldMetainfoImplImpl.h ------------------------------------------*- C++
+//-*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -78,7 +79,8 @@ void FieldMetainfoImpl::fromJSON(const json::json& jsonNode) {
 std::string FieldMetainfoImpl::toString() const {
   std::stringstream ss;
   ss << "type = " << TypeUtil::toString(type_) << ", dims = [" << ArrayUtil::toString(dims_)
-     << "], " << "metainfo = " << *metaInfo_;
+     << "], "
+     << "metainfo = " << *metaInfo_;
   return ss.str();
 }
 

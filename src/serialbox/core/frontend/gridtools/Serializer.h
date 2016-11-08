@@ -15,6 +15,7 @@
 #ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_SERIALIZER_H
 #define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_SERIALIZER_H
 
+#include "serialbox/core/SerializerImpl.h"
 #include "serialbox/core/archive/ArchiveFactory.h"
 #include "serialbox/core/frontend/gridtools/Exception.h"
 #include "serialbox/core/frontend/gridtools/FieldMetainfo.h"
@@ -23,7 +24,6 @@
 #include "serialbox/core/frontend/gridtools/Slice.h"
 #include "serialbox/core/frontend/gridtools/StorageViewHelper.h"
 #include "serialbox/core/frontend/gridtools/Type.h"
-#include "serialbox/core/SerializerImpl.h"
 #include <memory>
 
 namespace serialbox {
@@ -403,7 +403,7 @@ public:
 
     ArchiveFactory::readFromFile(file, storageView, archive_name, storage.get_name());
   }
-  
+
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const serializer& s) {
     return (stream << *s.serializerImpl_);

@@ -157,7 +157,7 @@ public:
   iterator erase(const_iterator first, const_iterator last) { return map_.erase(first, last); }
 
   /// \brief Return a reference to mapped value given by key
-  /// 
+  ///
   /// \throw Exception  `Key` does not exist
   mapped_type& operator[](const key_type& key) noexcept { return map_[key]; }
   mapped_type& operator[](key_type&& key) noexcept { return map_[key]; }
@@ -171,11 +171,11 @@ public:
   /// \brief Returns the number of elements in the MetainfoMapImpl
   std::size_t size() const noexcept { return map_.size(); }
 
-  /// \brief Returns a bool value indicating whether the MetainfoMapImpl is empty, i.e. whether 
+  /// \brief Returns a bool value indicating whether the MetainfoMapImpl is empty, i.e. whether
   /// its size is 0
   bool empty() const noexcept { return map_.empty(); }
 
-  /// \brief All the elements in the MetainfoMapImpl are dropped: their destructors are called, and 
+  /// \brief All the elements in the MetainfoMapImpl are dropped: their destructors are called, and
   /// they are removed from the container, leaving it with a size of 0
   void clear() noexcept { map_.clear(); }
 

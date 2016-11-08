@@ -15,12 +15,12 @@
 #ifndef SERIALBOX_CORE_SERIALIZERIMPL_H
 #define SERIALBOX_CORE_SERIALIZERIMPL_H
 
-#include "serialbox/core/archive/Archive.h"
 #include "serialbox/core/FieldMap.h"
 #include "serialbox/core/Json.h"
 #include "serialbox/core/MetainfoMapImpl.h"
 #include "serialbox/core/SavepointVector.h"
 #include "serialbox/core/StorageView.h"
+#include "serialbox/core/archive/Archive.h"
 #include <boost/filesystem.hpp>
 #include <iosfwd>
 
@@ -161,7 +161,9 @@ public:
 
   /// \brief Get pointer to the global meta information
   std::shared_ptr<MetainfoMapImpl>& globalMetainfoPtr() noexcept { return globalMetainfo_; }
-  const std::shared_ptr<MetainfoMapImpl>& globalMetainfoPtr() const noexcept { return globalMetainfo_; }
+  const std::shared_ptr<MetainfoMapImpl>& globalMetainfoPtr() const noexcept {
+    return globalMetainfo_;
+  }
 
   //===----------------------------------------------------------------------------------------===//
   //     Register and Query Fields
@@ -404,7 +406,7 @@ protected:
   /// \return FieldMetainfoImpl of field `name`
   /// \throw Exception    Inconsistency is detected
   std::shared_ptr<FieldMetainfoImpl> checkStorageView(const std::string& name,
-                                                  const StorageView& storageView) const;
+                                                      const StorageView& storageView) const;
 
   /// \brief Check if the current directory contains meta-information of an older version of
   /// serialbox and upgrade it if necessary

@@ -1,4 +1,5 @@
-//===-- serialbox/core/frontend/gridtools/FieldMetainfoImpl.h ---------------------------*- C++ -*-===//
+//===-- serialbox/core/frontend/gridtools/FieldMetainfoImpl.h ---------------------------*- C++
+//-*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -61,12 +62,14 @@ public:
                                                           field_meta_info>::value>::type>
   field_meta_info(const StorageType& storage) {
     TypeID typeID = ToTypeID<typename StorageType::value_type>::value;
-    field_meta_info_impl_ = std::make_shared<FieldMetainfoImpl>(typeID, internal::get_dims(storage));
+    field_meta_info_impl_ =
+        std::make_shared<FieldMetainfoImpl>(typeID, internal::get_dims(storage));
   }
 
   /// \brief Copy constructor
   ///
-  /// This performs a \i shallow copy, meaning the objects share the same underlying FieldMetainfoImpl.
+  /// This performs a \i shallow copy, meaning the objects share the same underlying
+  /// FieldMetainfoImpl.
   /// To deep copy the object call field_meta_info::clone().
   ///
   /// \b Example
@@ -86,7 +89,8 @@ public:
 
   /// \brief Copy assignment
   ///
-  /// This performs a \i shallow copy, meaning the objects share the same underlying FieldMetainfoImpl.
+  /// This performs a \i shallow copy, meaning the objects share the same underlying
+  /// FieldMetainfoImpl.
   /// To deep copy the object call field_meta_info::clone().
   ///
   /// \b Example

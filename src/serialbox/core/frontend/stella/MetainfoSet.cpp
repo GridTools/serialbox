@@ -14,9 +14,9 @@
 
 #include "serialbox/core/frontend/stella/MetainfoSet.h"
 #include "serialbox/core/Exception.h"
-#include "serialbox/core/frontend/stella/Utility.h"
 #include "serialbox/core/MetainfoMapImpl.h"
 #include "serialbox/core/Unreachable.h"
+#include "serialbox/core/frontend/stella/Utility.h"
 #include <boost/algorithm/string.hpp>
 
 namespace serialbox {
@@ -26,8 +26,8 @@ namespace stella {
 namespace internal {
 
 template <class KeyType>
-static MetainfoMapImpl::const_iterator checkKeyExists(const boost::shared_ptr<MetainfoMapImpl>& mapImpl,
-                                                  KeyType&& key) {
+static MetainfoMapImpl::const_iterator
+checkKeyExists(const boost::shared_ptr<MetainfoMapImpl>& mapImpl, KeyType&& key) {
   auto it = mapImpl->find(key);
   if(it == mapImpl->end())
     internal::throwSerializationException("Error: requested key %s is not in set", key);

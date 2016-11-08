@@ -1,4 +1,5 @@
-//===-- serialbox/core/MetainfoMapImpl.cpp ----------------------------------------------*- C++ -*-===//
+//===-- serialbox/core/MetainfoMapImpl.cpp ----------------------------------------------*- C++
+//-*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,8 +13,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/core/Array.h"
 #include "serialbox/core/MetainfoMapImpl.h"
+#include "serialbox/core/Array.h"
 #include "serialbox/core/Unreachable.h"
 #include <iostream>
 
@@ -27,7 +28,8 @@ struct InsertHelper {
   const std::string& key;
   const json::json& node;
 
-  // Read value from JSON node (and check if the types match) and insert it into the MetainfoMapImpl as
+  // Read value from JSON node (and check if the types match) and insert it into the MetainfoMapImpl
+  // as
   // type ´T´
   template <class T, class CheckFunction>
   void insertAs(CheckFunction&& checkFunction, const char* valueStr) {
@@ -72,7 +74,8 @@ MetainfoMapImpl::mapped_type& MetainfoMapImpl::at(const MetainfoMapImpl::key_typ
   }
 }
 
-const MetainfoMapImpl::mapped_type& MetainfoMapImpl::at(const MetainfoMapImpl::key_type& key) const {
+const MetainfoMapImpl::mapped_type&
+MetainfoMapImpl::at(const MetainfoMapImpl::key_type& key) const {
   try {
     return map_.at(key);
   } catch(std::out_of_range&) {

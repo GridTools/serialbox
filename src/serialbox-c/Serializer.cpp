@@ -16,13 +16,13 @@
 #include "serialbox-c/Logging.h"
 #include "serialbox-c/Savepoint.h"
 #include "serialbox-c/Utility.h"
-#include "serialbox/core/Unreachable.h"
-#include "serialbox/core/archive/ArchiveFactory.h"
 #include "serialbox/core/Exception.h"
 #include "serialbox/core/Logging.h"
 #include "serialbox/core/SerializerImpl.h"
 #include "serialbox/core/Slice.h"
 #include "serialbox/core/StorageView.h"
+#include "serialbox/core/Unreachable.h"
+#include "serialbox/core/archive/ArchiveFactory.h"
 
 using namespace serialboxC;
 
@@ -48,7 +48,7 @@ static std::string vecToString(VecType&& vec) {
 serialboxSerializer_t* serialboxSerializerCreate(int mode, const char* directory,
                                                  const char* prefix, const char* archive) {
   serialboxSerializer_t* serializer = allocate<serialboxSerializer_t>();
-  
+
   try {
     switch(mode) {
     case Read:
@@ -62,7 +62,7 @@ serialboxSerializer_t* serialboxSerializerCreate(int mode, const char* directory
           new Serializer(serialbox::OpenModeKind::Append, directory, prefix, archive);
       break;
     default:
-        serialbox_unreachable((boost::format("invalid mode (%i)") % mode).str().c_str());
+      serialbox_unreachable((boost::format("invalid mode (%i)") % mode).str().c_str());
     }
     serializer->ownsData = 1;
   } catch(std::exception& e) {
@@ -221,11 +221,10 @@ int serialboxSerializerHasField(serialboxSerializer_t* serializer, const char* f
   return ser->hasField(field);
 }
 
-int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* name,
-                                 int type, int bytesPerElement, int iSize, int jSize,
-                                 int kSize, int lSize, int iMinusHalo, int iPlusHalo,
-                                 int jMinusHalo, int jPlusHalo, int kMinusHalo, int kPlusHalo,
-                                 int lMinusHalo, int lPlusHalo) {
+int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* name, int type,
+                                 int bytesPerElement, int iSize, int jSize, int kSize, int lSize,
+                                 int iMinusHalo, int iPlusHalo, int jMinusHalo, int jPlusHalo,
+                                 int kMinusHalo, int kPlusHalo, int lMinusHalo, int lPlusHalo) {
   Serializer* ser = toSerializer(serializer);
 
   try {
@@ -415,8 +414,8 @@ void serialboxSerializerWaitForAll(serialboxSerializer_t* serializer) {
  *     Stateless Serialization
 \*===------------------------------------------------------------------------------------------===*/
 
-void serialboxWriteToFile(const char* filename, void* originPtr, int typeID,
-                          const int* dims, int numDims, const int* strides, const char* fieldname,
+void serialboxWriteToFile(const char* filename, void* originPtr, int typeID, const int* dims,
+                          int numDims, const int* strides, const char* fieldname,
                           const char* archivename) {
 
   try {
@@ -430,8 +429,8 @@ void serialboxWriteToFile(const char* filename, void* originPtr, int typeID,
   }
 }
 
-void serialboxReadFromFile(const char* filename, void* originPtr, int typeID,
-                           const int* dims, int numDims, const int* strides, const char* fieldname,
+void serialboxReadFromFile(const char* filename, void* originPtr, int typeID, const int* dims,
+                           int numDims, const int* strides, const char* fieldname,
                            const char* archivename) {
 
   try {

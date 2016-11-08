@@ -15,8 +15,8 @@
 #ifndef SERIALBOX_CORE_ARCHIVE_ARCHIVEFACTORY_H
 #define SERIALBOX_CORE_ARCHIVE_ARCHIVEFACTORY_H
 
-#include "serialbox/core/archive/Archive.h"
 #include "serialbox/core/Type.h"
+#include "serialbox/core/archive/Archive.h"
 #include <memory>
 #include <string>
 #include <vector>
@@ -39,7 +39,7 @@ public:
   ///
   /// \throw Exception   No archive with given name exists or is registered
   static std::unique_ptr<Archive> create(const std::string& name, OpenModeKind mode,
-                                  const std::string& directory, const std::string& prefix);
+                                         const std::string& directory, const std::string& prefix);
 
   /// \brief Get a vector of strings of the registered archives
   static std::vector<std::string> registeredArchives();

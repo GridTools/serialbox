@@ -18,8 +18,8 @@
 #include "serialbox/core/Compiler.h"
 #ifdef SERIALBOX_HAS_NETCDF
 
-#include "serialbox/core/archive/Archive.h"
 #include "serialbox/core/Json.h"
+#include "serialbox/core/archive/Archive.h"
 #include <boost/filesystem.hpp>
 #include <string>
 #include <unordered_map>

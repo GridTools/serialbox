@@ -27,11 +27,11 @@
 #include "serialbox-c/Config.h"
 #include "serialbox-c/ErrorHandling.h"
 #include "serialbox-c/FieldMetainfo.h"
+#include "serialbox-c/FortranWrapper.h"
 #include "serialbox-c/Logging.h"
 #include "serialbox-c/Metainfo.h"
 #include "serialbox-c/Savepoint.h"
 #include "serialbox-c/Serializer.h"
 #include "serialbox-c/Type.h"
-#include "serialbox-c/FortranWrapper.h"
 
 #endif

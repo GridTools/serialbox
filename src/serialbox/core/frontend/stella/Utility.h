@@ -19,8 +19,8 @@
 
 #include "serialbox/core/Compiler.h"
 #include "serialbox/core/Exception.h"
-#include "serialbox/core/frontend/stella/SerializationException.h"
 #include "serialbox/core/Type.h"
+#include "serialbox/core/frontend/stella/SerializationException.h"
 #include <boost/format.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>

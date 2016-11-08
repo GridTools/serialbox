@@ -14,8 +14,8 @@
 
 #include "serialbox/core/frontend/stella/DataFieldInfo.h"
 #include "serialbox/core/FieldMetainfoImpl.h"
-#include "serialbox/core/frontend/stella/Utility.h"
 #include "serialbox/core/Type.h"
+#include "serialbox/core/frontend/stella/Utility.h"
 
 namespace serialbox {
 
