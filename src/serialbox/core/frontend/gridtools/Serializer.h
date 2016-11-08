@@ -37,6 +37,13 @@ namespace gridtools {
 /// \ingroup gridtools
 class serializer {
 public:
+  /// \brief Type-defs
+  /// @{
+  using savepoint_t = serialbox::gridtools::savepoint;
+  using meta_info_map_t = serialbox::gridtools::meta_info_map;
+  using field_meta_info_t = serialbox::gridtools::field_meta_info;
+  /// @}
+  
   /// \brief Get the status of serialization
   ///
   /// The status is represented as an integer which can take the following values:

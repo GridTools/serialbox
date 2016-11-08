@@ -1,4 +1,4 @@
-/*===-- serialbox-c/Config.h ---------------------------------------------------------*- C++ -*-===*\
+/*===-- serialbox-c/Config.h --------------------------------------------------------*- C++ -*-===*\
  *
  *                                    S E R I A L B O X
  *
@@ -14,7 +14,7 @@
  *
 \*===------------------------------------------------------------------------------------------===*/
 
-#include "serialbox/Core/Config.h"
+#include "serialbox/core/Config.h"
 
 #ifndef SERIALBOX_C_CONFIG_H
 #define SERIALBOX_C_CONFIG_H
