@@ -38,15 +38,15 @@ int get_stride_helper(int coord, const Container& container) noexcept {
   return (max_value < 0) ? 0 : (value == max_value ? 1 : container[value + 1]);
 }
 
-template <typename Storage>
-std::vector<int> get_strides(const Storage& storage) {
-  const auto& strides_array = storage.meta_data().m_strides;
-  const int n_dimensions = storage.meta_data().dims().n_dimensions;
+template <typename MetaDataType, typename StorageType>
+std::vector<int> get_strides(const StorageType&, const MetaDataType& meta_data) {
+  const auto& strides_array = meta_data.m_strides;
+  const int n_dimensions = meta_data.dims().n_dimensions;
 
   std::vector<int> strides_vec(n_dimensions);
   for(int i = 0; i < n_dimensions; ++i)
-    strides_vec[i] =
-        internal::get_stride_helper<typename Storage::storage_info_type::layout>(i, strides_array);
+    strides_vec[i] = internal::get_stride_helper<typename StorageType::storage_info_type::layout>(
+        i, strides_array);
 
   return strides_vec;
 }
@@ -55,10 +55,10 @@ std::vector<int> get_strides(const Storage& storage) {
 //     Dimensions
 //===------------------------------------------------------------------------------------------===//
 
-template <typename Storage>
-std::vector<int> get_dims(const Storage& storage) noexcept {
-  const auto& unaligned_dims_array = storage.meta_data().m_unaligned_dims;
-  const int n_dimensions = storage.meta_data().dims().n_dimensions;
+template <typename MetaDataType>
+std::vector<int> get_dims(const MetaDataType& meta_data) noexcept {
+  const auto& unaligned_dims_array = meta_data.m_unaligned_dims;
+  const int n_dimensions = meta_data.dims().n_dimensions;
 
   std::vector<int> dims_vec(n_dimensions);
   for(int i = 0; i < n_dimensions; ++i)
@@ -84,19 +84,20 @@ int left_padding_helper(unsigned int coord) noexcept {
   return (Alignment && has_stride_one<LayoutMap>(coord)) ? (Alignment - lpad) % Alignment : 0;
 }
 
-template <typename Storage>
-void* get_origin_ptr(const Storage& storage, unsigned int field_idx) noexcept {
-  const int n_dimensions = storage.meta_data().dims().n_dimensions;
-  const auto& strides_array = storage.meta_data().m_strides;
+template <typename StorageType, class MetaDataType>
+void* get_origin_ptr(const StorageType& storage, const MetaDataType& meta_data,
+                     unsigned int field_idx) noexcept {
+  const int n_dimensions = meta_data.dims().n_dimensions;
+  const auto& strides_array = meta_data.m_strides;
 
   auto* data_ptr = storage.fields()[field_idx].get();
 
   for(int i = 0; i < n_dimensions; ++i) {
-    int lpad = left_padding_helper<typename Storage::storage_info_type::layout,
-                                   Storage::storage_info_type::s_alignment,
-                                   typename Storage::storage_info_type::halo_t>(i);
-    int stride =
-        internal::get_stride_helper<typename Storage::storage_info_type::layout>(i, strides_array);
+    int lpad = left_padding_helper<typename StorageType::storage_info_type::layout,
+                                   StorageType::storage_info_type::s_alignment,
+                                   typename StorageType::storage_info_type::halo_t>(i);
+    int stride = internal::get_stride_helper<typename StorageType::storage_info_type::layout>(
+        i, strides_array);
     data_ptr += lpad * stride;
   }
 

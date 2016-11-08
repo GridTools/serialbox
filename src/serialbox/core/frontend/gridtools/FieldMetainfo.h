@@ -60,10 +60,17 @@ public:
   template <class StorageType,
             class = typename std::enable_if<!std::is_same<typename std::decay<StorageType>::type,
                                                           field_meta_info>::value>::type>
-  field_meta_info(const StorageType& storage) {
+  field_meta_info(const StorageType& storage)
+    : field_meta_info(storage, storage.meta_data()) {}
+  
+  /// \brief Construct field meta-information with a gridtools storage and meta_data
+  ///
+  /// \param storage  gridtools storage
+  template <class StorageType, class MetaDataType>
+  field_meta_info(const StorageType& storage, const MetaDataType& meta_data) {
     TypeID typeID = ToTypeID<typename StorageType::value_type>::value;
     field_meta_info_impl_ =
-        std::make_shared<FieldMetainfoImpl>(typeID, internal::get_dims(storage));
+        std::make_shared<FieldMetainfoImpl>(typeID, internal::get_dims(meta_data));
   }
 
   /// \brief Copy constructor

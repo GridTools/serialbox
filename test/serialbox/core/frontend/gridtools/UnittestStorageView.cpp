@@ -155,13 +155,18 @@ template <typename Storage>
 serialbox::StorageView make_storage_view(const Storage& storage) {
   using namespace serialbox::gridtools;
 
-  std::vector<int> dims(internal::get_dims(storage));
-  std::vector<int> strides(internal::get_strides(storage));
-  void* originPtr = internal::get_origin_ptr(storage, 0);
+  std::vector<int> dims(internal::get_dims(storage.meta_data()));
+  std::vector<int> strides(internal::get_strides(storage, storage.meta_data()));
+  void* originPtr = internal::get_origin_ptr(storage, storage.meta_data(), 0);
 
   return serialbox::StorageView(originPtr, serialbox::ToTypeID<typename Storage::value_type>::value,
                                 std::move(dims), std::move(strides));
 }
+
+#define GET_DIMS_STRIDES_ORIGIN_PTR(storage, prefix)                                               \
+  std::vector<int> prefix##_dims(internal::get_dims(storage.meta_data()));                         \
+  std::vector<int> prefix##_strides(internal::get_strides(storage, storage.meta_data()));          \
+  void* prefix##_origin_ptr = internal::get_origin_ptr(storage, storage.meta_data(), 0);
 
 TYPED_TEST(GridToolsStorageViewTest, Construction) {
   using namespace serialbox::gridtools;
@@ -173,9 +178,7 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   auto& cpu_2d_real_storage = *this->cpu_2d_real_storage_ptr;
   auto& cpu_2d_real_meta_data = *this->cpu_2d_real_meta_data_ptr;
 
-  std::vector<int> cpu_2d_real_dims(internal::get_dims(cpu_2d_real_storage));
-  std::vector<int> cpu_2d_real_strides(internal::get_strides(cpu_2d_real_storage));
-  void* cpu_2d_real_origin_ptr = internal::get_origin_ptr(cpu_2d_real_storage, 0);
+  GET_DIMS_STRIDES_ORIGIN_PTR(cpu_2d_real_storage, cpu_2d_real)
 
   // Dimensions
   EXPECT_EQ(cpu_2d_real_dims[0], cpu_2d_real_meta_data.template unaligned_dim<0>());
@@ -195,9 +198,7 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   auto& cpu_2d_storage = *this->cpu_2d_storage_ptr;
   auto& cpu_2d_meta_data = *this->cpu_2d_meta_data_ptr;
 
-  std::vector<int> cpu_2d_dims(internal::get_dims(cpu_2d_storage));
-  std::vector<int> cpu_2d_strides(internal::get_strides(cpu_2d_storage));
-  void* cpu_2d_origin_ptr = internal::get_origin_ptr(cpu_2d_storage, 0);
+  GET_DIMS_STRIDES_ORIGIN_PTR(cpu_2d_storage, cpu_2d)
 
   // Dimensions
   EXPECT_EQ(cpu_2d_dims[0], cpu_2d_meta_data.template unaligned_dim<0>());
@@ -219,9 +220,7 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   auto& cpu_3d_storage = *this->cpu_3d_storage_ptr;
   auto& cpu_3d_meta_data = *this->cpu_3d_meta_data_ptr;
 
-  std::vector<int> cpu_3d_dims(internal::get_dims(cpu_3d_storage));
-  std::vector<int> cpu_3d_strides(internal::get_strides(cpu_3d_storage));
-  void* cpu_3d_origin_ptr = internal::get_origin_ptr(cpu_3d_storage, 0);
+  GET_DIMS_STRIDES_ORIGIN_PTR(cpu_3d_storage, cpu_3d)
 
   // Dimensions
   EXPECT_EQ(cpu_3d_dims[0], cpu_3d_meta_data.template unaligned_dim<0>());
@@ -243,9 +242,7 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   auto& cpu_4d_storage = *this->cpu_4d_storage_ptr;
   auto& cpu_4d_meta_data = *this->cpu_4d_meta_data_ptr;
 
-  std::vector<int> cpu_4d_dims(internal::get_dims(cpu_4d_storage));
-  std::vector<int> cpu_4d_strides(internal::get_strides(cpu_4d_storage));
-  void* cpu_4d_origin_ptr = internal::get_origin_ptr(cpu_4d_storage, 0);
+  GET_DIMS_STRIDES_ORIGIN_PTR(cpu_4d_storage, cpu_4d)
 
   // Dimensions
   EXPECT_EQ(cpu_4d_dims[0], cpu_4d_meta_data.template unaligned_dim<0>());
@@ -269,9 +266,7 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   auto& gpu_2d_real_storage = *this->gpu_2d_real_storage_ptr;
   auto& gpu_2d_real_meta_data = *this->gpu_2d_real_meta_data_ptr;
 
-  std::vector<int> gpu_2d_real_dims(internal::get_dims(gpu_2d_real_storage));
-  std::vector<int> gpu_2d_real_strides(internal::get_strides(gpu_2d_real_storage));
-  void* gpu_2d_real_origin_ptr = internal::get_origin_ptr(gpu_2d_real_storage, 0);
+  GET_DIMS_STRIDES_ORIGIN_PTR(gpu_2d_real_storage, gpu_2d_real)
 
   // Dimensions
   EXPECT_EQ(gpu_2d_real_dims[0], gpu_2d_real_meta_data.template unaligned_dim<0>());
@@ -291,9 +286,7 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   auto& gpu_2d_storage = *this->gpu_2d_storage_ptr;
   auto& gpu_2d_meta_data = *this->gpu_2d_meta_data_ptr;
 
-  std::vector<int> gpu_2d_dims(internal::get_dims(gpu_2d_storage));
-  std::vector<int> gpu_2d_strides(internal::get_strides(gpu_2d_storage));
-  void* gpu_2d_origin_ptr = internal::get_origin_ptr(gpu_2d_storage, 0);
+  GET_DIMS_STRIDES_ORIGIN_PTR(gpu_2d_storage, gpu_2d)
 
   // Dimensions
   EXPECT_EQ(gpu_2d_dims[0], gpu_2d_meta_data.template unaligned_dim<0>());
@@ -315,9 +308,7 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   auto& gpu_3d_storage = *this->gpu_3d_storage_ptr;
   auto& gpu_3d_meta_data = *this->gpu_3d_meta_data_ptr;
 
-  std::vector<int> gpu_3d_dims(internal::get_dims(gpu_3d_storage));
-  std::vector<int> gpu_3d_strides(internal::get_strides(gpu_3d_storage));
-  void* gpu_3d_origin_ptr = internal::get_origin_ptr(gpu_3d_storage, 0);
+  GET_DIMS_STRIDES_ORIGIN_PTR(gpu_3d_storage, gpu_3d)
 
   // Dimensions
   EXPECT_EQ(gpu_3d_dims[0], gpu_3d_meta_data.template unaligned_dim<0>());
@@ -339,9 +330,7 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   auto& gpu_4d_storage = *this->gpu_4d_storage_ptr;
   auto& gpu_4d_meta_data = *this->gpu_4d_meta_data_ptr;
 
-  std::vector<int> gpu_4d_dims(internal::get_dims(gpu_4d_storage));
-  std::vector<int> gpu_4d_strides(internal::get_strides(gpu_4d_storage));
-  void* gpu_4d_origin_ptr = internal::get_origin_ptr(gpu_4d_storage, 0);
+  GET_DIMS_STRIDES_ORIGIN_PTR(gpu_4d_storage, gpu_4d)
 
   // Dimensions
   EXPECT_EQ(gpu_4d_dims[0], gpu_4d_meta_data.template unaligned_dim<0>());
