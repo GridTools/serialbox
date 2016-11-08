@@ -56,7 +56,7 @@ The following variables can be used to hint [CMake] where to find the dependency
 |  `SERIALBOX_OLD_ROOT` | Install directory of [Serialbox (0.1)].                            |
 |  `STELLA_ROOT`        | Install directory of [STELLA].                                      |
 |  `NETCDF_ROOT`        | Install directory of [NetCDF-4].                                      |
-|  `girdtools_ROOT`     | Main directory of [girdtools].                                      |
+|  `GRIDTOOLS_ROOT`     | Main directory of [girdtools].                                      |
 
 
 ### Building on Linux <a id="building-linux"></a>

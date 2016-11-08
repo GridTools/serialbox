@@ -43,7 +43,7 @@ std::unique_ptr<Archive> ArchiveFactory::create(const std::string& name, OpenMod
 }
 
 std::vector<std::string> ArchiveFactory::registeredArchives() {
-  std::vector<std::string> archives{BinaryArchive::Name
+  std::vector<std::string> archives{BinaryArchive::Name, MockArchive::Name
 #ifdef SERIALBOX_HAS_NETCDF
                                     , NetCDFArchive::Name
 #endif
