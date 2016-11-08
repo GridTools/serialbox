@@ -1,4 +1,4 @@
-//===-- Utility/BenchmarkEnvironment.h ----------------------------------------------*- C++ -*-===//
+//===-- utility/BenchmarkEnvironment.h ----------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -15,7 +15,7 @@
 #ifndef SERIALBOX_UTILITY_BENCHMARKENVIRONMENT_H
 #define SERIALBOX_UTILITY_BENCHMARKENVIRONMENT_H
 
-#include "Utility/UnittestEnvironment.h"
+#include "utility/UnittestEnvironment.h"
 #include <gtest/gtest.h>
 
 namespace serialbox {

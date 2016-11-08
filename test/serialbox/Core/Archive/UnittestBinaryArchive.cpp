@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/SerializerTestBase.h"
-#include "Utility/Storage.h"
+#include "utility/SerializerTestBase.h"
+#include "utility/Storage.h"
 #include "serialbox/Core/Archive/BinaryArchive.h"
 #include "serialbox/Core/Version.h"
 #include <boost/algorithm/string.hpp>

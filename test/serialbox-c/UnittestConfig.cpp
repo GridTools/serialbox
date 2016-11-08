@@ -13,7 +13,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox-c/Config.h"
-#include "Utility/CInterfaceTestBase.h"
+#include "utility/CInterfaceTestBase.h"
 
 namespace {
 

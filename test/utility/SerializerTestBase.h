@@ -1,4 +1,4 @@
-//===-- Utility/SerializerTestBase.h ------------------------------------------------*- C++ -*-===//
+//===-- utility/SerializerTestBase.h ------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -15,9 +15,9 @@
 #ifndef SERIALBOX_UTILITY_SERIALIZERTESTBASE_H
 #define SERIALBOX_UTILITY_SERIALIZERTESTBASE_H
 
-#include "Utility/BenchmarkEnvironment.h"
-#include "Utility/FileUtility.h"
-#include "Utility/UnittestEnvironment.h"
+#include "utility/BenchmarkEnvironment.h"
+#include "utility/FileUtility.h"
+#include "utility/UnittestEnvironment.h"
 #include "serialbox/Core/STLExtras.h"
 #include <gtest/gtest.h>
 #include <memory>

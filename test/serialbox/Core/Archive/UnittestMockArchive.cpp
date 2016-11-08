@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/SerializerTestBase.h"
-#include "Utility/Storage.h"
+#include "utility/SerializerTestBase.h"
+#include "utility/Storage.h"
 #include "serialbox/Core/Archive/MockArchive.h"
 #include <gtest/gtest.h>
 

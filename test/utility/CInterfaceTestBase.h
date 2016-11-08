@@ -1,4 +1,4 @@
-//===-- Utility/CInterfaceTestBase.h ------------------------------------------------*- C++ -*-===//
+//===-- utility/CInterfaceTestBase.h ------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -15,7 +15,7 @@
 #ifndef SERIALBOX_UTILITY_CINTERFACETESTBASE_H
 #define SERIALBOX_UTILITY_CINTERFACETESTBASE_H
 
-#include "Utility/FileUtility.h"
+#include "utility/FileUtility.h"
 #include <gtest/gtest.h>
 
 namespace serialbox {

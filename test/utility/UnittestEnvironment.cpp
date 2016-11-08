@@ -1,4 +1,4 @@
-//===-- Utility/UnittestEnvironment.cpp ---------------------------------------------*- C++ -*-===//
+//===-- utility/UnittestEnvironment.cpp ---------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/UnittestEnvironment.h"
+#include "utility/UnittestEnvironment.h"
 #include "serialbox/Core/Exception.h"
 #include "serialbox/Core/Logging.h"
 #include "serialbox/Core/STLExtras.h"

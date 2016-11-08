@@ -1,4 +1,4 @@
-//===-- Utility/STELLA.h ------------------------------------------------------------*- C++ -*-===//
+//===-- utility/STELLA.h ------------------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -15,7 +15,7 @@
 #ifndef SERIALBOX_UTILITY_STELLA_H
 #define SERIALBOX_UTILITY_STELLA_H
 
-#include "Utility/Config.h"
+#include "utility/Config.h"
 
 #ifdef SERIALBOX_HAS_STELLA
 

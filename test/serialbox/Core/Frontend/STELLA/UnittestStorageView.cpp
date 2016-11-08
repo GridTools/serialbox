@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/STELLA.h"
+#include "utility/STELLA.h"
 #include "serialbox/Core/STLExtras.h"
 #include "serialbox/Core/StorageView.h"
 #include <gtest/gtest.h>

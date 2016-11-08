@@ -1,4 +1,4 @@
-//===-- Utility/BenchmarkEnvironment.cpp --------------------------------------------*- C++ -*-===//
+//===-- utility/BenchmarkEnvironment.cpp --------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/BenchmarkEnvironment.h"
+#include "utility/BenchmarkEnvironment.h"
 #include "serialbox/Core/Logging.h"
 #include "serialbox/Core/STLExtras.h"
 #include <boost/format.hpp>

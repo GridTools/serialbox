@@ -45,7 +45,7 @@ TEST(STELLADataFieldInfoTest, InitConstruction) {
   EXPECT_EQ(2, info.lPlusHaloSize());
 }
 
-#include "Utility/STELLA.h"
+#include "utility/STELLA.h"
 #ifdef SERIALBOX_HAS_STELLA
 
 TEST(STELLADataFieldInfoTest, STELLAConstruction) {

@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/GridTools.h"
+#include "utility/GridTools.h"
 #include "serialbox/Core/Frontend/gridtools/FieldMetaInfo.h"
 #include <gtest/gtest.h>
 

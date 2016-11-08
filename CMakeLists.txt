@@ -517,9 +517,9 @@ if(SERIALBOX_TESTING)
   # Unittest Utility library
   include_directories(${PROJECT_SOURCE_DIR}/test)
   
-  # Generate Utility/Config.h
-  set(SERIALBOX_CPP_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/test/Utility/Config.h.cmake)
-  set(SERIALBOX_CPP_CONFIG_FILE ${CMAKE_BINARY_DIR}/test/Utility/Config.h)
+  # Generate utility/Config.h
+  set(SERIALBOX_CPP_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/test/utility/Config.h.cmake)
+  set(SERIALBOX_CPP_CONFIG_FILE ${CMAKE_BINARY_DIR}/test/utility/Config.h)
   configure_file(${SERIALBOX_CPP_CONFIG_FILE_IN} ${SERIALBOX_CPP_CONFIG_FILE})
   include_directories(${CMAKE_BINARY_DIR}/test)
   

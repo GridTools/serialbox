@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/UnittestEnvironment.h"
+#include "utility/UnittestEnvironment.h"
 #include "serialbox/Core/Logging.h"
 #include <gtest/gtest.h>
 

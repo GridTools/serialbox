@@ -1,4 +1,4 @@
-//===-- Utility/CInterfaceTestBase.cpp ----------------------------------------------*- C++ -*-===//
+//===-- utility/CInterfaceTestBase.cpp ----------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,9 +12,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/CInterfaceTestBase.h"
-#include "Utility/Config.h"
-#include "Utility/UnittestEnvironment.h"
+#include "utility/CInterfaceTestBase.h"
+#include "utility/Config.h"
+#include "utility/UnittestEnvironment.h"
 #include "serialbox/Core/STLExtras.h"
 #include <cstdlib>
 #include <cstring>

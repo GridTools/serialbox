@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/CInterfaceTestBase.h"
+#include "utility/CInterfaceTestBase.h"
 #include "serialbox-c/MetaInfo.h"
 #include "serialbox-c/Savepoint.h"
 #include <gtest/gtest.h>

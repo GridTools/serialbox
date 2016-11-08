@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/CInterfaceTestBase.h"
+#include "utility/CInterfaceTestBase.h"
 #include "serialbox-c/Archive.h"
 #include <algorithm>
 #include <gtest/gtest.h>

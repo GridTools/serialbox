@@ -12,8 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/CInterfaceTestBase.h"
-#include "Utility/Storage.h"
+#include "utility/CInterfaceTestBase.h"
+#include "utility/Storage.h"
 #include "serialbox-c/FieldMetaInfo.h"
 #include "serialbox-c/MetaInfo.h"
 #include "serialbox-c/Savepoint.h"

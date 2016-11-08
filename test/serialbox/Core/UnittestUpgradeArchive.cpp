@@ -12,9 +12,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/FileUtility.h"
-#include "Utility/Serialbox.h"
-#include "Utility/Storage.h"
+#include "utility/FileUtility.h"
+#include "utility/Serialbox.h"
+#include "utility/Storage.h"
 #include "serialbox/Core/SerializerImpl.h"
 #include <gtest/gtest.h>
 

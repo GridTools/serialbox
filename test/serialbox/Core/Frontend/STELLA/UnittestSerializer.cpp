@@ -12,9 +12,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/STELLA.h"
-#include "Utility/SerializerTestBase.h"
-#include "Utility/Storage.h"
+#include "utility/STELLA.h"
+#include "utility/SerializerTestBase.h"
+#include "utility/Storage.h"
 #include "serialbox/Core/Frontend/STELLA/SerializationException.h"
 #include "serialbox/Core/Frontend/STELLA/Serializer.h"
 #include "serialbox/Core/SerializerImpl.h"

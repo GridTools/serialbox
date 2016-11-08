@@ -1,4 +1,4 @@
-//===-- Utility/Serialbox.h ---------------------------------------------------------*- C++ -*-===//
+//===-- utility/Serialbox.h ---------------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -15,7 +15,7 @@
 #ifndef SERIALBOX_UTILITY_SERIALBOX_H
 #define SERIALBOX_UTILITY_SERIALBOX_H
 
-#include "Utility/Config.h"
+#include "utility/Config.h"
 
 #ifdef SERIALBOX_HAS_SERIALBOX_OLD
 

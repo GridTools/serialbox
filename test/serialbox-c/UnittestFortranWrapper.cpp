@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/CInterfaceTestBase.h"
+#include "utility/CInterfaceTestBase.h"
 #include "serialbox-c/FieldMetaInfo.h"
 #include "serialbox-c/FortranWrapper.h"
 #include "serialbox-c/MetaInfo.h"

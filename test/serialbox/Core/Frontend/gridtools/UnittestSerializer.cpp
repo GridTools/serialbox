@@ -12,9 +12,9 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/GridTools.h"
-#include "Utility/SerializerTestBase.h"
-#include "Utility/Storage.h"
+#include "utility/GridTools.h"
+#include "utility/SerializerTestBase.h"
+#include "utility/Storage.h"
 #include "serialbox/Core/Frontend/gridtools/Serializer.h"
 #include <gtest/gtest.h>
 #include <memory>
