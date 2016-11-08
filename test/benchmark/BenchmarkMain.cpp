@@ -1,4 +1,4 @@
-//===-- Benchmark/UnittestMain.cpp --------------------------------------------------*- C++ -*-===//
+//===-- benchmark/UnittestMain.cpp --------------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -12,7 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "Utility/BenchmarkEnvironment.h"
+#include "utility/BenchmarkEnvironment.h"
 #include "serialbox/core/Logging.h"
 #include <gtest/gtest.h>
 
