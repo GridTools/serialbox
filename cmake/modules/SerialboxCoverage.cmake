@@ -1,8 +1,17 @@
+##===------------------------------------------------------------------------------*- CMake -*-===##
+##
+##                                   S E R I A L B O X
+##
+## This file is distributed under terms of BSD license. 
+## See LICENSE.txt for more information.
+##
+##===------------------------------------------------------------------------------------------===##
+
 #
 # Setup code coverage using gcov and lcov and generate HTLM output using genhtml
 #
 
-function(enable_coverage root)
+function(serialbox_enable_coverage root)
   set(EXCLUDE_PATTERN # System
                       '/usr/*'
                       '/opt/*'
@@ -37,7 +46,7 @@ function(enable_coverage root)
     )
     add_dependencies(coverage2html coverage)
   endif()
-endfunction()
+endfunction(serialbox_enable_coverage)
 
 if(NOT CMAKE_COMPILER_IS_GNUCXX)
   message(STATUS "Coverage disabled - compiler does not support gcov!")

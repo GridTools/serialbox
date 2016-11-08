@@ -58,7 +58,7 @@ set(EXTERNAL_LIBRARIES SerialboxCoreLibraryStatic
                        ${SERIALBOX_OLD_LIBRARIES}
                        ${STELLA_LIBRARIES})
   
-serialbox_add_unittest_executable(SerialboxCppUnittest 
-                                  "${EXTERNAL_LIBRARIES}"
-                                  ${SOURCES} UnittestMain.cpp)
+serialbox_add_unittest_executable(NAME SerialboxCppUnittest 
+                                  LIBRARIES ${EXTERNAL_LIBRARIES}
+                                  SOURCES ${SOURCES} UnittestMain.cpp)
 

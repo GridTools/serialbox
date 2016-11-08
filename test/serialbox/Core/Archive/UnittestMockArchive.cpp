@@ -39,7 +39,10 @@ TYPED_TEST(MockArchiveReadWriteTest, WriteAndRead) {
   // Fill with random data
   MockArchive archive(OpenModeKind::Read);
   auto sv = field.toStorageView();
+
+  auto before = field(0, 0, 0);
   archive.read(sv, FieldID{"field", 0}, nullptr);
+  ASSERT_NE(field(0, 0, 0), before);
 
   // Writing is not supported -> Exception
   ASSERT_THROW(archive.write(sv, "field", nullptr), Exception);

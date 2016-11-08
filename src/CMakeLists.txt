@@ -11,25 +11,21 @@ cmake_minimum_required(VERSION 3.1)
 
 include(CMakeParseArguments)
 
+## serialbox_add_library
+## ---------------------
+##
 ## Create an object library with target "<TARGET>Objects" and convert them to a static and/or 
 ## shared library with name "<NAME>.a" and <NAME>.so" respectively.
 ## 
-## NAME          
-##    STRING: Name of the library (e.g SerialboxCore)
-## TARGET        
-##    STRING: Target used by CMake (e.g SerialboxCoreLibrary)
-## OBJECTS       
-##    LIST OF STRINGS: Object libraries to include (e.g SerialboxCoreLibraryObjects)
-## BUILD_STATIC  
-##    BOOL: Convert object library to static library
-## BUILD_SHARED  
-##    BOOL: Convert object library to shared library (requires SERIALBOX_BUILD_SHARED)
-## SYMLINKS
-##    LIST OF STRING: Add symlinks of the shared library to the specified paths
-## LIBRARIES
-##    LIST OF STRINGS: Specify external libraries or flags to be use when linking the target
-## SOURCES
-##    LIST OF STRINGS: List of source files
+##    NAME:STRING=<>           - Name of the library (e.g SerialboxCore)
+##    TARGET:STRING=<>         - Target used by CMake (e.g SerialboxCoreLibrary)
+##    OBJECTS:STRING=<>        - Object libraries to include (e.g SerialboxCoreLibraryObjects)
+##    BUILD_STATIC:BOOL=<>     - Convert object library to static library
+##    BUILD_SHARED:BOOL=<>     - Convert object library to shared library
+##    SYMLINKS:STRING=<>       - Add symlinks of the shared library to the specified paths
+##    LIBRARIES:=<>            - Specify external libraries or flags to be use when linking the 
+##                               target
+##    SOURCES:STRING=<>        - List of source files
 ##
 function(serialbox_add_library)
 
@@ -126,10 +122,16 @@ function(serialbox_add_library)
       message(WARNING 
       "Cannot create symlinks of shared library of ${name} (set builShared=ON in the function call")
     endif()
+
+    if(UNIX)
+      set(LINK_OR_COPY create_symlink)
+    else()
+      set(LINK_OR_COPY copy)
+    endif()
   
     foreach(path ${addSymlinksTo})
       add_custom_command(TARGET ${target}Shared POST_BUILD
-         COMMAND ${CMAKE_COMMAND} -E create_symlink
+         COMMAND ${CMAKE_COMMAND} -E ${LINK_OR_COPY}
          $<TARGET_FILE:${target}Shared> 
          ${path}/$<TARGET_FILE_NAME:${target}Shared>)
     endforeach()
@@ -139,19 +141,7 @@ endfunction(serialbox_add_library)
 
 ## Add subdirectories
 add_subdirectory(serialbox)
-
-if(SERIALBOX_ENABLE_C)
-  add_subdirectory(serialbox-c)
-endif()
-
-if(SERIALBOX_ENABLE_FORTRAN)
-  add_subdirectory(serialbox-fortran)
-endif()
-
-if(SERIALBOX_ENABLE_PYTHON)
-  add_subdirectory(serialbox-python)
-endif()
-
-## Install ppser
-install(FILES ${CMAKE_SOURCE_DIR}/src/serialbox-python/pp_ser/pp_ser.py DESTINATION python/pp_ser)
+add_subdirectory(serialbox-c)
+add_subdirectory(serialbox-fortran)
+add_subdirectory(serialbox-python)
 

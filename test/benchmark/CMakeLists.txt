@@ -22,7 +22,7 @@ set(EXTERNAL_LIBRARIES SerialboxCLibraryStatic
                        ${SERIALBOX_OLD_LIBRARIES}
                        ${STELLA_LIBRARIES})
 
-serialbox_add_unittest_executable(SerialboxBenchmarkUnittest 
-                                  "${EXTERNAL_LIBRARIES}"
-                                  ${SOURCES} BenchmarkMain.cpp)
+serialbox_add_unittest_executable(NAME SerialboxBenchmarkUnittest 
+                                  LIBRARIES ${EXTERNAL_LIBRARIES}
+                                  SOURCES ${SOURCES} BenchmarkMain.cpp)
 

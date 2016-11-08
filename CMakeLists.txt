@@ -18,10 +18,9 @@ cmake_minimum_required(VERSION 3.1)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
-include(CheckCXXCompilerFlag)
 include(ExternalProject)
 include(CMakeParseArguments)
-include(GetGitRevisionDescription)
+include(CheckCXXCompilerFlag)
 
 #---------------------------------------- Configure ------------------------------------------------
 
@@ -40,11 +39,7 @@ set(SERIALBOX_VERSION_PATCH 1)
 set(SERIALBOX_VERSION_STRING 
     "${SERIALBOX_VERSION_MAJOR}.${SERIALBOX_VERSION_MINOR}.${SERIALBOX_VERSION_PATCH}")
     
-# Current head revision
-get_git_head_revision(GIT_REFSPEC GIT_SHA1)
-
 message(STATUS "Serialbox version: ${SERIALBOX_VERSION_STRING}")
-message(STATUS "Git HEAD revision: ${GIT_SHA1}")
 
 #---------------------------------------- User options ---------------------------------------------
 
@@ -74,7 +69,7 @@ option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" OFF)
 #---------------------------------------- CMake options --------------------------------------------
 
 ## Perform checks to make sure we support the current compiler
-include(CheckCxxCompilerSupport)
+include(SerialboxCheckCxxCompilerSupport)
  
 ## Set C++ standard to C++11
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Cray")
@@ -111,7 +106,8 @@ endif(NOT CMAKE_BUILD_TYPE)
 # Clear all cmake generated files
 add_custom_target(clean-all
                   COMMAND ${CMAKE_MAKE_PROGRAM} clean
-                  COMMAND ${CMAKE_COMMAND} -P  "${CMAKE_SOURCE_DIR}/cmake/modules/CleanAll.cmake")
+                  COMMAND ${CMAKE_COMMAND} -P  
+                  "${CMAKE_SOURCE_DIR}/cmake/modules/SerialboxCleanAll.cmake")
                   
 # We need thread support
 find_package(Threads REQUIRED)
@@ -460,8 +456,8 @@ endif()
 
 # --------------------------------------- Code Coverage --------------------------------------------
 if(SERIALBOX_CODE_COVERAGE)
-  include(Coverage)
-  enable_coverage(${CMAKE_BINARY_DIR})
+  include(SerialboxCoverage)
+  serialbox_enable_coverage(${CMAKE_BINARY_DIR})
 
   set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} 
                                    ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})

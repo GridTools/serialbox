@@ -52,6 +52,9 @@ class SerialboxBenchmark : public SerializerBenchmarkBase,
                            public ::testing::WithParamInterface<std::string> {};
 
 TEST_P(SerialboxBenchmark, Benchmark) {
+  if(GetParam() == "Mock")
+    return;
+
   std::string name = GetParam();
   BenchmarkResult result;
   result.name = name;

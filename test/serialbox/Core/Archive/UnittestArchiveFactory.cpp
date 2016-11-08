@@ -30,9 +30,10 @@ class ArchiveFactoryTest : public SerializerUnittestBase,
 TEST_P(ArchiveFactoryTest, registerdArchives) {
   std::vector<std::string> archives(ArchiveFactory::registeredArchives());
 
-  // BinaryArchive is always present
-  EXPECT_GE(archives.size(), 1);
+  // BinaryArchive and Mock are always present
+  EXPECT_GE(archives.size(), 2);
   EXPECT_TRUE(std::find(archives.begin(), archives.end(), "Binary") != archives.end());
+  EXPECT_TRUE(std::find(archives.begin(), archives.end(), "Mock") != archives.end());
 }
 
 TEST_P(ArchiveFactoryTest, Extension) {
@@ -40,11 +41,14 @@ TEST_P(ArchiveFactoryTest, Extension) {
 
   if(GetParam() == "NetCDF")
     ASSERT_EQ(ArchiveFactory::archiveFromExtension("test.nc"), "NetCDF");
-
+  
   ASSERT_THROW(ArchiveFactory::archiveFromExtension("test.X").c_str(), Exception);
 }
 
 TEST_P(ArchiveFactoryTest, writeAndRead) {
+  if(GetParam() == "Mock")
+    return;
+
   using Storage = Storage<double>;
   Storage storage_input(Storage::ColMajor, {5, 2, 5}, Storage::random);
   Storage storage_output(Storage::ColMajor, {5, 2, 5});

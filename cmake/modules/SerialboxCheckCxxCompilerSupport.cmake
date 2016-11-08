@@ -1,3 +1,12 @@
+##===------------------------------------------------------------------------------*- CMake -*-===##
+##
+##                                   S E R I A L B O X
+##
+## This file is distributed under terms of BSD license. 
+## See LICENSE.txt for more information.
+##
+##===------------------------------------------------------------------------------------------===##
+
 # Copyright Louis Dionne 2013-2016
 # Copyright Markus J. Weber 2015
 # Distributed under the Boost Software License, Version 1.0.

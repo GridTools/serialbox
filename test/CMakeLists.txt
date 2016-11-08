@@ -9,20 +9,30 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-## \brief Add a C++ unittest executable and register it within CMake
+## serialbox_add_unittest_executable
+## ---------------------------------
 ##
-## The exectuable will be linked against SerialboxCore and SerialboxUnittest.
+## Add a unittest executable and register it within CMake
+## 
+##    NAME:STRING=<>           - Name of the unitests
+##    LIBRARIES:STRING=<>      - Specify external libraries or flags to be use when linking the 
+##                               target (SerialboxUnittestUtility will be added).
+##    SOURCES:STRING=<>        - List of source files
 ##
-## \param name          Name of the executable (i.e the <target>)
-## \param libraries     Libraries to link against
-## \param ARGN          List of source files
-##
-## Note: To pass in a list of elements you have to *quote* the variable i.e call 
-##    serialbox_add_cpp_unittest_executable(Executable "${Libs}" SourceA.cpp SourceB.cpp)
-##
-function(serialbox_add_unittest_executable name libraries)
-  add_executable(${name} ${ARGN} ${SERIALBOX_HEADERS})
-  target_link_libraries(${name} ${libraries}  SerialboxUnittestUtility)
+function(serialbox_add_unittest_executable)                 
+  cmake_parse_arguments(serialbox_add_unittest_executable "" "NAME" "LIBRARIES;SOURCES" ${ARGN})
+  
+  set(name ${serialbox_add_unittest_executable_NAME})
+  set(libraries ${serialbox_add_unittest_executable_LIBRARIES} SerialboxUnittestUtility)
+  set(sources ${serialbox_add_unittest_executable_SOURCES})
+  
+  if(serialbox_add_unittest_executable_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR 
+            "unparsed arguments: ${serialbox_add_unittest_executable_UNPARSED_ARGUMENTS}")
+  endif()
+
+  add_executable(${name} ${sources} ${SERIALBOX_HEADERS})
+  target_link_libraries(${name} ${libraries})
   
   if(DEFINED SERIALBOX_VERBOSE_WARNINGS)
     set_target_properties(${name} PROPERTIES COMPILE_FLAGS -Wall)
@@ -52,7 +62,6 @@ endfunction(serialbox_add_unittest_executable)
 
 ## Add subdirectories
 add_subdirectory(Utility)
-  
 add_subdirectory(serialbox)
 
 if(SERIALBOX_ENABLE_C)
@@ -64,6 +73,6 @@ if(SERIALBOX_TESTING_PYTHON)
 endif()
 
 if(SERIALBOX_BENCHMARKING)
-  add_subdirectory(Benchmark)
+  add_subdirectory(benchmark)
 endif(SERIALBOX_BENCHMARKING)
 
