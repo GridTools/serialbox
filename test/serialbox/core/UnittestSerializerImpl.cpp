@@ -171,12 +171,14 @@ TEST_F(SerializerImplUtilityTest, RegisterFields) {
 
   // Perfect forwarding
   MetainfoMapImpl metaInfoField1(std::initializer_list<MetainfoMapImpl::value_type>{
-      {"key1", MetainfoValueImpl(std::string("field1_key1_str"))}, {"key2", MetainfoValueImpl(double(3))}});
+      {"key1", MetainfoValueImpl(std::string("field1_key1_str"))},
+      {"key2", MetainfoValueImpl(double(3))}});
   s.registerField("field1", TypeID::Float64, std::vector<int>{20, 15, 20}, metaInfoField1);
 
   // Copy constructor
   MetainfoMapImpl metaInfoField2(std::initializer_list<MetainfoMapImpl::value_type>{
-      {"key1", MetainfoValueImpl(std::string("field2_key1_str"))}, {"key2", MetainfoValueImpl(double(4))}});
+      {"key1", MetainfoValueImpl(std::string("field2_key1_str"))},
+      {"key2", MetainfoValueImpl(double(4))}});
   s.registerField("field2",
                   FieldMetainfoImpl(TypeID::Float32, std::vector<int>{20, 15}, metaInfoField2));
 
@@ -295,13 +297,15 @@ TEST_F(SerializerImplUtilityTest, JSONSuccess) {
 
   // Register fields
   MetainfoMapImpl metaInfoField1(std::initializer_list<MetainfoMapImpl::value_type>{
-      {"key1", MetainfoValueImpl(std::string("field1_key1_str"))}, {"key2", MetainfoValueImpl(double(3))}});
+      {"key1", MetainfoValueImpl(std::string("field1_key1_str"))},
+      {"key2", MetainfoValueImpl(double(3))}});
   s_write.registerField("field1", TypeID::Float64, std::vector<int>{20, 15, 20}, metaInfoField1);
 
   MetainfoMapImpl metaInfoField2(std::initializer_list<MetainfoMapImpl::value_type>{
-      {"key1", MetainfoValueImpl(std::string("field2_key1_str"))}, {"key2", MetainfoValueImpl(double(4))}});
-  s_write.registerField("field2",
-                        FieldMetainfoImpl(TypeID::Float32, std::vector<int>{20, 15}, metaInfoField2));
+      {"key1", MetainfoValueImpl(std::string("field2_key1_str"))},
+      {"key2", MetainfoValueImpl(double(4))}});
+  s_write.registerField(
+      "field2", FieldMetainfoImpl(TypeID::Float32, std::vector<int>{20, 15}, metaInfoField2));
 
   // Add savepoints
   SavepointImpl savepoint1("savepoint");
@@ -498,24 +502,23 @@ TEST_F(SerializerImplUtilityTest, toString) {
   s_write.addGlobalMetainfo("key", 5);
   std::stringstream ss;
   ss << s_write;
-  EXPECT_NE(ss.str().find("mode"), std::string::npos);
-  EXPECT_NE(ss.str().find("directory"), std::string::npos);
-  EXPECT_NE(ss.str().find("FieldMap"), std::string::npos);
+  EXPECT_NE(ss.str().find("Write"), std::string::npos);
+  EXPECT_NE(ss.str().find("Binary"), std::string::npos);
+  EXPECT_NE(ss.str().find("Field"), std::string::npos);
   EXPECT_NE(ss.str().find("key"), std::string::npos);
-  EXPECT_NE(ss.str().find("SavepointVector"), std::string::npos);
 }
 
 #ifdef SERIALBOX_ASYNC_API
 TEST_F(SerializerImplUtilityTest, AsyncRead) {
   using Storage = Storage<double>;
   Storage storage(Storage::ColMajor, {10, 15, 20}, Storage::random);
- 
+
   Storage storage_1(Storage::ColMajor, {10, 15, 20});
   Storage storage_2(Storage::ColMajor, {10, 15, 20});
   Storage storage_3(Storage::ColMajor, {10, 15, 20});
-  
-  SavepointImpl sp("sp");  
-  
+
+  SavepointImpl sp("sp");
+
   // Write
   {
     SerializerImpl s_write(OpenModeKind::Write, directory->path().string(), "Field", "Binary");
@@ -523,11 +526,11 @@ TEST_F(SerializerImplUtilityTest, AsyncRead) {
     s_write.registerField("field", sv.type(), sv.dims());
     s_write.write("field", sp, sv);
   }
-  
+
   // Read
   {
     SerializerImpl s_read(OpenModeKind::Read, directory->path().string(), "Field", "Binary");
-    
+
     auto sv_1 = storage_1.toStorageView();
     auto sv_2 = storage_2.toStorageView();
     auto sv_3 = storage_3.toStorageView();
@@ -536,11 +539,11 @@ TEST_F(SerializerImplUtilityTest, AsyncRead) {
     s_read.readAsync("field", sp, sv_2);
     s_read.readAsync("field", sp, sv_3);
     s_read.waitForAll();
-    
+
     ASSERT_TRUE(Storage::verify(storage_1, storage));
     ASSERT_TRUE(Storage::verify(storage_2, storage));
     ASSERT_TRUE(Storage::verify(storage_3, storage));
-    
+
     s_read.readAsync("field", sp, sv_1);
     s_read.readAsync("field", sp, sv_2);
     s_read.readAsync("field-XXX", sp, sv_3);
@@ -665,7 +668,8 @@ TYPED_TEST(SerializerImplReadWriteTest, WriteAndRead) {
     ASSERT_EQ(s_read.getFieldMetainfoImplOf("v").dims(), (std::vector<int>{5, 1, 1}));
 
     ASSERT_TRUE(s_read.hasField("field_6d"));
-    ASSERT_EQ(s_read.getFieldMetainfoImplOf("field_6d").dims(), (std::vector<int>{2, 2, 1, 2, 1, 2}));
+    ASSERT_EQ(s_read.getFieldMetainfoImplOf("field_6d").dims(),
+              (std::vector<int>{2, 2, 1, 2, 1, 2}));
 
     // Check order of savepoints is correct
     ASSERT_EQ(s_read.savepoints().size(), 5);

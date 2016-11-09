@@ -67,6 +67,9 @@ def register_library(library):
     library.serialboxSerializationStatus.argtypes = None
     library.serialboxSerializationStatus.restype = c_int
 
+    library.serialboxSerializerToString.argtypes = [POINTER(SerializerImpl)]
+    library.serialboxSerializerToString.restype = c_char_p
+
     #
     # Global Meta-information
     #
@@ -187,30 +190,45 @@ def register_library(library):
 
 
 class Serializer(object):
-    """Initialize the Serializer and prepare it to perform input/output operations.
+    """Serializer implementation of the Python Interface.
 
     The serializer is attached to a specific `directory` and to a specific `prefix`, with which
     all files read and written will start. There are three modes to open a serializer: `Read`,
-    `Write` and `Append` (see :class:`OpenModeKind`). `Read` will give a read-only access to the
-    serialized data; `Write` will erase all files of a previous run of a serializer with same
-    `directory` and `prefix`; `Append` will import all existing information and allow the user
-    to add more data.
+    `Write` and `Append` (see :class:`OpenModeKind <serialbox.OpenModeKind>`).
+    `Read` will give a read-only access to the serialized data; `Write` will **erase** all files of
+    a previous run of a serializer with same `directory` and `prefix`; `Append` will import all
+    existing information and allow the user to add more data.
 
-    :param mode: Mode of the Serializer
-    :type mode: OpenModeKind
-    :param directory: The directory where the files will be stored (will be created if
-                      necessary)
-    :type directory: str
-    :param prefix: The prefix of the files
-    :type prefix: str
-    :param archive: String used to construct the Archive
-                    (see :func:`serialbox.Archive.registered_archives`)
-    :type archive: str
+    It is possible to store multiple serializer in the same directory as long as they differ in
+    their `prefix`.
+
+    **Example:**
+            >>> field = np.array([1,2,3])
+            >>> ser = Serializer(OpenModeKind.Write, ".", "field", "Binary")
+            >>> savepoint = Savepoint("savepoint")
+            >>> ser.write("field", savepoint, field)
+            >>> [f for f in os.listdir(".") if os.path.isfile(os.path.join(".", f))] # List files in current directory
+            ['field_field.dat', 'ArchiveMetaData-field.json', 'MetaData-field.json']
     """
     Enabled = 1
     Disabled = -1
 
     def __init__(self, mode, directory, prefix, archive="Binary"):
+        """Initialize the Serializer.
+
+        :param mode: Mode of the Serializer
+        :type mode: OpenModeKind
+        :param directory: The directory where the files will be stored/read (will be created if
+                          necessary)
+        :type directory: str
+        :param prefix: The prefix of the files
+        :type prefix: str
+        :param archive: String used to construct the Archive
+                   (see :func:`Archive.registered_archives <serialbox.Archive.registered_archives>`)
+        :type archive: str
+        :raises serialbox.SerialboxError: if initialization failed
+        """
+
         self.__serializer = None
 
         #
@@ -251,6 +269,10 @@ class Serializer(object):
     def mode(self):
         """Return mode of the Serializer.
 
+            >>> ser = Serializer(OpenModeKind.Write, ".", "field", "Binary")
+            >>> ser.mode
+            <OpenModeKind.Write: 1>
+
         :return: Mode of the Serializer
         :rtype: OpenModeKind
         """
@@ -260,6 +282,10 @@ class Serializer(object):
     def prefix(self):
         """Return the prefix of all filenames.
 
+            >>> ser = Serializer(OpenModeKind.Write, ".", "field", "Binary")
+            >>> ser.prefix
+            'field'
+
         :return: prefix of all filenames
         :rtype: str
         """
@@ -268,6 +294,10 @@ class Serializer(object):
     @property
     def directory(self):
         """Return the directory of the Serializer.
+
+            >>> ser = Serializer(OpenModeKind.Write, ".", "field", "Binary")
+            >>> ser.directory
+            '.'
 
         :return: directory of the Serializer
         :rtype: str
@@ -284,9 +314,9 @@ class Serializer(object):
         """Enable serialization.
 
         Serialization is enabled by default, but it can be disabled either by setting the
-        environment variable `STELLA_SERIALIZATION_DISABLE` to a positive value or by calling the
-        funcion :func:`Serializer.disable`. With this function you enable the serialization
-        independently of the current environment.
+        environment variable ``STELLA_SERIALIZATION_DISABLE`` to a positive value or by calling the
+        function :func:`Serializer.disable <serialbox.Serializer.disable>`.
+        With this function you enable the serialization independently of the current environment.
 
         The serialization can be only globally enabled or disabled. There is no way to enable or
         disable only a specific serializer.
@@ -298,9 +328,9 @@ class Serializer(object):
         """Disable serialization.
 
         Serialization is enabled by default, but it can be disabled either by setting the
-        environment variable `STELLA_SERIALIZATION_DISABLE` to a positive value or by calling the
-        funcion :func:`Serializer.disable`. With this function you disable the serialization
-        independently of the current environment.
+        environment variable ``STELLA_SERIALIZATION_DISABLE`` to a positive value or by calling the
+        function :func:`Serializer.disable <serialbox.Serializer.disable>`.
+        With this function you disable the serialization independently of the current environment.
 
         The serialization can be only globally enabled or disabled. There is no way to enable or
         disable only a specific serializer.
@@ -314,13 +344,14 @@ class Serializer(object):
         The status is represented as an integer which can take the following values:
 
         - 0: the variable is not yet initialized i.e the serialization is enabled if the environment
-          variable `STELLA_SERIALIZATION_DISABLE` or `SERIALBOX_SERIALIZATION_DISABLE` is not set
-          to a positive value. The first Serializer which is initialized has to set this value
+          variable ``STELLA_SERIALIZATION_DISABLE`` or ``SERIALBOX_SERIALIZATION_DISABLE`` is not
+          set to a positive value. The first Serializer which is initialized has to set this value
           either to +1 or to -1 according to the environment.
         - +1: the serialization is enabled, independently of the environment
         - -1: the serialization is disabled, independently of the environment
 
-        See :func:`Serializer.enable` and :func:`Serializer.disable`.
+        See :func:`Serializer.enable <serialbox.Serializer.enable>` and
+        :func:`Serializer.disable <serialbox.Serializer.disable>`.
 
         :return: serialization status
         :rtype: int
@@ -333,10 +364,17 @@ class Serializer(object):
 
     @property
     def global_metainfo(self):
-        """Global meta-information of the serializer.
+        """Get a reference to the global meta-information of the serializer.
+
+            >>> ser = Serializer(OpenModeKind.Write, ".", "field", "Binary")
+            >>> ser.global_metainfo
+            <MetainfoMap {}>
+            >>> ser.global_metainfo.insert("key", 5)
+            >>> ser.global_metainfo
+            <MetainfoMap {"key": 5}>
 
         :return: Refrence to the meta-information map
-        :rtype: MetainfoMap
+        :rtype: :class:`MetainfoMap <serialbox.MetainfoMap>`
         """
         return MetainfoMap(impl=invoke(lib.serialboxSerializerGetGlobalMetainfo, self.__serializer))
 
@@ -345,11 +383,14 @@ class Serializer(object):
     # ==-----------------------------------------------------------------------------------------===
 
     def register_savepoint(self, savepoint):
-        """Register savepoint `savepoint` within the Serializer.
+        """Register `savepoint` within the Serializer.
+
+        Savepoints can have the same `name` but their meta-data has to be different, thus Savepoints
+        have to be unique.
 
         :param savepoint: Savepoint to add
         :type savepoint: Savepoint
-        :raises SerialboxError: Savepoint already exists within the Serializer
+        :raises serialbox.SerialboxError: if `savepoint` already exists within the Serializer
         """
         if self.mode == OpenModeKind.Read:
             raise SerialboxError("registering savepoints is not permitted in OpenModeKind.Read")
@@ -359,12 +400,11 @@ class Serializer(object):
                 "savepoint '%s' already exists withing the Serializer" % (savepoint.__str__()))
 
     def has_savepoint(self, savepoint):
-        """Check if `savepoint` exists in the Serializer.
+        """Check if `savepoint` exists within the Serializer.
 
         :param savepoint: Savepoint to search for
         :type savepoint: Savepoint
-
-        :return: True if Savepoint exists, False otherwise
+        :return: `True` if Savepoint exists, `False` otherwise
         :rtype: bool
         """
         return bool(
@@ -373,12 +413,19 @@ class Serializer(object):
     def get_savepoint(self, name):
         """Get a list of Savepoint(s) identified by `name` in the order they were registered
 
-        Savepoints can have the same `name` but their meta-data has to be different.
+        The Savepoints in the list are copy-constructed from the Savepoints in the Serializer and
+        inserted in the order they were registered.
+
+            >>> ser = Serializer(OpenModeKind.Write, ".", "field", "Binary")
+            >>> ser.register_savepoint(Savepoint("sp", {"key": 5}))
+            >>> ser.register_savepoint(Savepoint("sp", {"key": 6}))
+            >>> ser.get_savepoint("sp")
+            [<Savepoint sp {"key": 5}>, <Savepoint sp {"key": 6}>]
 
         :param name: Name of the savepoint(s)
         :type name: str
-        :return: List of registered Savepoint(s) identified  by `name`
-        :rtype: list[Savepoint]
+        :return: List of registered Savepoint(s) with ``savepoint.name() == name``
+        :rtype: :class:`list` [:class:`Savepoint <serialbox.Savepoint>`]
         """
         return [sp for sp in self.savepoint_list() if sp.name == name]
 
@@ -388,8 +435,8 @@ class Serializer(object):
         :param savepoint: Savepoint to use
         :type savepoint: Savepoint
         :return: list of fieldsnames
-        :rtype: list[str]
-        :raises SerialboxError: Savepoint does not exists
+        :rtype: :class:`list` [:class:`str`]
+        :raises serialbox.SerialboxError: if `savepoint` does not exists
         """
         array = invoke(lib.serialboxSerializerGetFieldnamesAtSavepoint, self.__serializer,
                        savepoint.impl())
@@ -400,15 +447,14 @@ class Serializer(object):
         return list_array
 
     def savepoint_list(self):
-        """ Get a list of registered savepoints within the Serializer.
+        """Get a list of registered savepoints within the Serializer.
 
         The Savepoints in the list are copy-constructed from the Savepoints in the Serializer and
         inserted in the order they were registered.
 
         :return: List of registered savepoints
-        :rtype: list[Savepoint]
+        :rtype: :class:`list` [:class:`Savepoint <serialbox.Savepoint>`]
         """
-
         if self.__savepoint_list:
             return self.__savepoint_list
         else:
@@ -424,8 +470,9 @@ class Serializer(object):
             list_of_savepoints = []
             for i in range(num_savepoints):
                 list_of_savepoints += [Savepoint('',
-                                                 impl=invoke(lib.serialboxSavepointCreateFromSavepoint,
-                                                             vec_savepoint[i].contents))]
+                                                 impl=invoke(
+                                                     lib.serialboxSavepointCreateFromSavepoint,
+                                                     vec_savepoint[i].contents))]
             #
             # Destroy the savepoint vector
             #
@@ -441,12 +488,63 @@ class Serializer(object):
 
     @property
     def savepoint(self):
-        """ Access the savepoint collection of this Serializer
+        """Access the savepoint collection of this Serializer
 
-        TODO: Describe the mapping etc..
+        Savepoints are primarily identified by their `name` and further distinguished by their
+        `meta_info` but they are unique within the Serializer.
+
+        Most of the time you will be interested in a particular
+        :class:`Savepoint <serialbox.Savepoint>`. This requires you to specify the meta-information
+        key=value pairs. There are two ways of doing this. But first, recall that there is **NO**
+        ordering in the meta-information, hence it does not matter in which sequence you specify
+        them! Consider the following example in which we register two savepoints, both named
+        identically but with slightly different meta-information:
+
+            >>> ser = Serializer(OpenModeKind.Write, ".", "field", "Binary")
+            >>> ser.register_savepoint(Savepoint("my-savepoint", {"key1": 5, "key2": "str"}))
+            >>> ser.register_savepoint(Savepoint("my-savepoint", {"key1": 6, "key2": "str"}))
+
+        To access the first savepoint (i.e the one with ``key=5``) we can use the element access:
+
+            >>> ser.savepoint["my-savepoint"]["key1"][5]["key2"]["str"]
+            <SavepointCollection [my-savepoint {"key2": str, "key1": 5}]>
+
+        Note that a :class:`SavepointCollection <serialbox.SavepointCollection>` can be converted
+        to a :class:`Savepoint <serialbox.Savepoint>` (See
+        :func:`SavepointCollection.as_savepoint() <serialbox.SavepointCollection.as_savepoint()>`)
+
+        Again, the order in which you access the meta-information does not matter, meaning the
+        follwoing is completely identical:
+
+            >>> ser.savepoint["my-savepoint"]["key2"]["str"]["key1"][5]
+            <SavepointCollection [my-savepoint {"key2": str, "key1": 5}]>
+
+        The second way uses the member access of python which can be more convenient. Note that this
+        way has some downsides if you don't use savepoint names or keys which can be mapped to valid
+        Python identifiers. For example instead of using a '.' you can use '_', same goes for '-'.
+        Therefore, we can also write:
+
+            >>> ser.savepoint.my_savepoint.key1[5].key2["str"]
+            <SavepointCollection [my-savepoint {"key2": str, "key1": 5}]>
+
+        The following transformations are applied to construct a valid Python identifier.
+
+        ==========  ===========
+        Character   Replacement
+        ==========  ===========
+        ``-``       ``_``
+        ``.``       ``_``
+        ``[0-9]``   ``_[0-9]``
+        ==========  ===========
+
+        It is also possible to mix the two approaches and thus bypass any problems with the
+        identifiers.
+
+            >>> ser.savepoint["my-savepoint"].key1[5].key2["str"]
+            <SavepointCollection [my-savepoint {"key2": str, "key1": 5}]>
 
         :return: Collection of all savepoints
-        :rtype: SavepointCollection
+        :rtype: :class:`SavepointCollection <serialbox.SavepointCollection>`
         """
         return SavepointTopCollection(self.savepoint_list())
 
@@ -457,12 +555,14 @@ class Serializer(object):
     def register_field(self, name, fieldmetainfo):
         """Add field given by `name` with field meta-information `fieldmetainfo` to the Serializer.
 
+        The `write` methods can do the registration implicitly.
+
         :param name: Name of the newly registered field
         :type name: str
         :param fieldmetainfo: Field meta-information of the newly registered field
         :type fieldmetainfo: FieldMetainfo
-
-        :raises SerialboxError: Field with given name already exists within the Serializer
+        :raises serialbox.SerialboxError: if field with given name already exists within the
+                                          Serializer
         """
         if self.mode == OpenModeKind.Read:
             raise SerialboxError("registering fields is not permitted in OpenModeKind.Read")
@@ -470,27 +570,27 @@ class Serializer(object):
         namestr = extract_string(name)[0]
         if not invoke(lib.serialboxSerializerAddField, self.__serializer, namestr,
                       fieldmetainfo.impl()):
-            raise SerialboxError("field '%s' already exists withing the Serializer" % name)
+            raise SerialboxError("field '%s' already exists within the Serializer" % name)
 
     def has_field(self, field):
         """Check if `field` is registered within the Serializer.
 
         :param field: Name of the field to check for
         :type field: str
-        :return: True if field exists, False otherwise
+        :return: `True` if field exists, `False` otherwise
         :rtype: bool
         """
         fieldstr = extract_string(field)[0]
         return bool(invoke(lib.serialboxSerializerHasField, self.__serializer, fieldstr))
 
     def get_field_metainfo(self, field):
-        """Get the :class:`FieldMetainfo` of `field`.
+        """Get the :class:`FieldMetainfo <serialbox.FieldMetainfo>` of `field`.
 
         :param field: Name of the field
         :type field: str
         :return: Copy of the field meta-information of `field`
-        :rtype: FieldMetainfo
-        :raises SerialboxError: `field` does not exist within the Serializer
+        :rtype: :class:`FieldMetainfo <serialbox.FieldMetainfo>`
+        :raises serialbox.SerialboxError: if `field` does not exist within the Serializer
         """
         fieldstr = extract_string(field)[0]
         return FieldMetainfo(None, [],
@@ -500,8 +600,8 @@ class Serializer(object):
     def fieldnames(self):
         """Get a list of registered fieldnames within the Serializer.
 
-        :return: list of fieldsnames
-        :rtype: list[str]
+        :return: list of fieldnames
+        :rtype: :class:`list` [:class:`str`]
         """
         array = invoke(lib.serialboxSerializerGetFieldnames, self.__serializer)
         list_array = []
@@ -570,18 +670,26 @@ class Serializer(object):
         """ Serialize `field` identified by `name` at `savepoint` to disk
 
         The `savepoint` will be registered at field `name` if not yet present. If `register_field`
-        is True, the field will be registered if necessary.
+        is `True`, the field will be registered if necessary.
+
+            >>> ser = Serializer(OpenModeKind.Write, ".", "field", "Binary")
+            >>> field = np.random.rand(3,3)
+            >>> ser.write("myfield", Savepoint("mysavepoint"), field)
+            >>> ser.has_field("myfield")
+            True
+            >>> ser.fields_at_savepoint(Savepoint("mysavepoint"))
+            ['myfield']
 
         :param name: Name of the field
         :type name: str
-        :param savepoint: Savepoint to at which the field will be serialized
+        :param savepoint: Savepoint at which the field will be serialized
         :type savepoint: Savepoint
         :param field: Field to serialize
         :type field: numpy.array
         :param register_field: Register the field if not present
         :type register_field: bool
 
-        :raises SerialboxError: Serialization failed
+        :raises serialbox.SerialboxError: if serialization failed
         """
         if self.mode == OpenModeKind.Read:
             raise SerialboxError("write operations are not permitted in OpenModeKind.Read")
@@ -611,20 +719,30 @@ class Serializer(object):
     def read(self, name, savepoint, field=None):
         """ Deserialize `field` identified by `name` at `savepoint` from disk
 
-        If `field` is a `numpy.array` it will be filled with data from disk. If `field` is None,
-        a new `numpy.array` will be allocated with the registered dimensions and type.
+        If `field` is a :class:`numpy.array <numpy.array>` it will be filled with data from disk.
+        If `field` is ``None``, a new numpy.array will be allocated with the registered dimensions
+        and type.
+
+            >>> ser = Serializer(OpenModeKind.Read, ".", "field", "Binary")
+            >>> ser.fieldnames()
+            ['myfield']
+            >>> ser.get_field_metainfo("myfield")
+            <FieldMetainfo type = double, dims = [3, 3], metainfo = {}>
+            >>> field = ser.read("myfield", Savepoint("mysavepoint"))
+            >>> field
+            array([[ 0.56079736,  0.21627747,  0.87964583],
+                   [ 0.94684836,  0.12496717,  0.47460455],
+                   [ 0.11462436,  0.86608157,  0.57855988]])
 
         :param name: Name of the field
         :type name: str
-        :param savepoint: Savepoint to at which the field will be serialized
+        :param savepoint: Savepoint at which the field will be deserialized
         :type savepoint: Savepoint
-        :param field: Field to serialize
+        :param field: Field to fill or ``None``
         :type field: numpy.array
-
         :return: Newly allocated and deserialized field
         :rtype: numpy.array
-
-        :raises SerialboxError: Deserialization failed
+        :raises serialbox.SerialboxError: if deserialization failed
         """
         if self.mode != OpenModeKind.Read:
             raise SerialboxError("read operations are not permitted in OpenModeKind.%s" % self.mode)
@@ -653,28 +771,36 @@ class Serializer(object):
 
     def read_async(self, name, savepoint, field=None):
         """ Asynchronously deserialize field `name` (given as `storageView`) at `savepoint` from
-        disk using std::async.
+        disk using ``std::async``.
 
-        If `field` is a `numpy.array` it will be filled with data from disk. If `field` is None,
-        a new `numpy.array` will be allocated with the registered dimensions and type.
+        If `field` is a :class:`numpy.array <numpy.array>` it will be filled with data from disk.
+        If `field` is ``None``, a new numpy.array will be allocated with the registered dimensions
+        and type.
 
-        This method runs the `read` function asynchronously (potentially in a separate thread which
-        may be part of a thread pool) meaning this function immediately returns. To synchronize all
-        threads, use :func:`Serializer.wait_for_all()`.
+        This method runs the :func:`Serializer.read <serialbox.Serializer.read>` function
+        asynchronously (potentially in a separate thread which may be part of a thread pool),
+        meaning this function immediately returns. To synchronize all threads, use
+        :func:`Serializer.wait_for_all <serialbox.Serializer.wait_for_all>`.
 
         If the archive is not thread-safe or if the library was not configured with
-        `SERIALBOX_ASYNC_API` the method falls back to synchronous execution.
+        ``SERIALBOX_ASYNC_API`` the method falls back to synchronous execution.
+
+            >>> ser = Serializer(OpenModeKind.Read, ".", "field", "Binary")
+            >>> ser.fieldnames()
+            ['field_1', 'field_2', 'field_3']
+            >>> field_1 = ser.read_async("field1", Savepoint("sp"))
+            >>> field_2 = ser.read_async("field2", Savepoint("sp"))
+            >>> field_3 = ser.read_async("field3", Savepoint("sp"))
+            >>> ser.wait_for_all()
 
         :param name: Name of the field
         :type name: str
-        :param savepoint: Savepoint to at which the field will be serialized
+        :param savepoint: Savepoint at which the field will be deserialized
         :type savepoint: Savepoint
-        :param field: Field to serialize
+        :param field: Field to fill or ``None``
         :type field: numpy.array
-
         :return: Newly allocated and deserialized field
         :rtype: numpy.array
-
         :raises SerialboxError: Deserialization failed
         """
         if self.mode != OpenModeKind.Read:
@@ -711,21 +837,38 @@ class Serializer(object):
         """ Deserialize sliced `field` identified by `name`  and `slice` at `savepoint` from disk
 
         The method will allocate a `numpy.array` with the registered dimensions and type and fill it
-        at specified positions (given by `slice_obj`) with data from disk.
+        at specified positions (given by `slice_obj`) with data from disk. If `field` is a
+        :class:`numpy.array <numpy.array>` it will be filled with data from disk. If `field` is
+        ``None``, a new numpy.array will be allocated with the registered dimensions and type.
 
-        :param name: Name of the field
+        Assume we are given a three-dimensional field but we are only interested in a certain layer
+        of the data (``k = 50``), we can use the slice object (ser.Slice) to encode this information
+        and instruct the serializer to only load the desired data. Note that we still need to
+        allocate memory for the whole field.
+
+            >>> ser = Serializer(OpenModeKind.Read, ".", "field", "Binary")
+            >>> ser.fieldnames()
+            ['field']
+            >>> ser.get_field_metainfo("field")
+            <FieldMetainfo type = double, dims = [1024, 1024, 80], metainfo = {}>
+            >>> field = np.zeros(1024, 1024, 80)
+            >>> ser.read_slice('field', Savepoint("sp"), ser.Slice[:, :, 50], field)
+
+        You can of course load the full data and slice it afterwards with numpy which yields the
+        same result, though is most likely slower.
+
+            >>> ser.read('field', Savepoint("sp"), field)[:, :, 50]
+
         :type name: str
-        :param savepoint: Savepoint to at which the field will be serialized
+        :param savepoint: Savepoint at which the field will be deserialized
         :type savepoint: Savepoint
         :param slice_obj: Slice of the data to load
-        :type slice_obj: serialbox.slice
-        :param field: Field to deserialize
+        :type slice_obj: :class:`Slice <serialbox._Slice>`
+        :param field: Field to fill or ``None``
         :type field: numpy.array
-
         :return: Newly allocated and deserialized field
         :rtype: numpy.array
-
-        :raises SerialboxError: Deserialization failed
+        :raises serialbox.SerialboxError: if deserialization failed
         """
         savepoint = self.__extract_savepoint(savepoint)
 
@@ -809,18 +952,23 @@ class Serializer(object):
     def to_file(name, field, filename, archive=None):
         """ Serialize `field` identified by `name` directly to file.
 
-        If a file with `filename` already exists, it's contents will be discarded. If `archive` is
-        None, the method will try to deduce the archive using the extensions of `filename`
-        (See :func:`Archive.archive_from_extension`).
+        This method allows stateless serializations i.e serialize fields without the need to
+        register fields or savpoints.
 
-        :param name: Name of the field
+        If a file with `filename` already exists, it's contents will be discarded. If `archive` is
+        ``None``, the method will try to deduce the archive using the extensions of `filename`
+        (See :func:`Archive.archive_from_extension() <serialbox.Archive.archive_from_extension>`).
+
+            >>> field = np.random.rand(3,3)
+            >>> Serializer.to_file("field", field, "field.dat")
+
+        :param name: Name of the field (may not be needed for certain archives)
         :type name: str
         :param field: Field to serialize
         :type field: numpy.array
         :param name: Name of the file
         :type name: str
-
-        :raises SerialboxError: Archive could not be dedcuded or serialization failed
+        :raises serialbox.SerialboxError: if archive could not be deduced or deserialization failed
         """
         strides, num_strides = Serializer.__extract_strides(field)
         dims, num_dims = Serializer.__extract_dims(field)
@@ -840,20 +988,32 @@ class Serializer(object):
     def from_file(name, field, filename, archive=None):
         """ Deserialize `field` identified by `name` directly from file.
 
-        If `archive` is None, the method will try to deduce the archive using the extensions of
-        `filename` (See :func:`Archive.archive_from_extension`).
+        This method allows stateless deserializations i.e serialize fields without specifying the
+        savepoints or fields.
+
+        If `archive` is ``None``, the method will try to deduce the archive using the extensions
+        of `filename` (See
+        :func:`Archive.archive_from_extension() <serialbox.Archive.archive_from_extension>`).
+
+            >>> field = np.zeros((3,3))
+            >>> field = Serializer.from_file("field", field, "field.dat")
+            >>> field
+            array([[ 0.56079736,  0.21627747,  0.87964583],
+                   [ 0.94684836,  0.12496717,  0.47460455],
+                   [ 0.11462436,  0.86608157,  0.57855988]])
 
         .. warning::
 
-           This method performs no consistency checks you have to know what you are doing!
+           This method performs no consistency checks concerning the dimensions and type of the
+           data. You have to know what you are doing!
 
-        :param name: Name of the field
+        :param name: Name of the field (may not be needed for certain archives)
         :type name: str
         :param field: Field to serialize
         :type field: numpy.array
         :param name: Name of the file
         :type name: str
-        :raises SerialboxError: Archive could not be deduced or deserialization failed
+        :raises serialbox.SerialboxError: if archive could not be deduced or deserialization failed
         """
         strides, num_strides = Serializer.__extract_strides(field)
         dims, num_dims = Serializer.__extract_dims(field)
@@ -873,6 +1033,27 @@ class Serializer(object):
     def __del__(self):
         if self.__serializer:
             invoke(lib.serialboxSerializerDestroy, self.__serializer)
+
+    def __str__(self):
+        """Convert Serializer to string
+
+            >>> ser = Serializer(OpenModeKind.Write, ".", "field", "Binary")
+            >>> ser
+            <Serializer mode = Write
+            directory = "."
+            prefix = "field"
+            archive = "Binary"
+            metainfo = {}
+            savepoints = []
+            fieldmetainfo = []>
+
+        :return: Multi-line string representation of the Serializer
+        :rtype: str
+        """
+        return invoke(lib.serialboxSerializerToString, self.__serializer).decode()
+
+    def __repr__(self):
+        return '<Serializer {0}>'.format(self.__str__())
 
 
 register_library(lib)

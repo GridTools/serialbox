@@ -256,6 +256,15 @@ class SavepointCollection(object, metaclass=ABCMeta):
         else:
             raise SerialboxError("SavepointCollection is empty")
 
+    def __str__(self):
+        s = "["
+        for sp in self.savepoints():
+            s += sp.__str__() + ", "
+        return s[:-2] + "]"
+
+    def __repr__(self):
+        return '<SavepointCollection {0}>'.format(self.__str__())
+
 
 def transformed_equal(name, key):
     """ Return True if ``name`` can be mapped to the transformed ``key`` such that ``key`` is a valid
@@ -332,12 +341,6 @@ class SavepointTopCollection(SavepointCollection):
         if isinstance(index, int):
             return self.__savepoint_list[index]
         return self.__make_savepoint_collection(index, True)
-
-    def __str__(self):
-        s = "SavepointTopCollection:\n"
-        for sp in self.__savepoint_list:
-            s += "  {0}\n".format(str(sp))
-        return s
 
 
 class SavepointNamedCollection(SavepointCollection):
@@ -423,12 +426,6 @@ class SavepointNamedCollection(SavepointCollection):
                                      self.__savepoint_list[0].name)
 
             return self.__make_named_savepoint_collection(index, True)
-
-    def __str__(self):
-        s = "SavepointNamedCollection:\n"
-        for sp in self.__savepoint_list:
-            s += "  {0}\n".format(str(sp))
-        return s
 
 
 register_library(lib)

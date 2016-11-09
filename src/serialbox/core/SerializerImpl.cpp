@@ -325,15 +325,26 @@ void SerializerImpl::constructMetaDataFromJson() {
   }
 }
 
+std::string SerializerImpl::toString() const {
+  std::stringstream ss;
+  ss << "mode = " << mode_ << "\n";
+  ss << "directory = " << directory_ << "\n";
+  ss << "prefix = \"" << prefix_ << "\"\n";
+  ss << "archive = \"" << archive_->name()<< "\"\n";
+  ss << "metainfo = " << *globalMetainfo_ << "\n";
+  ss << "savepoints = [";
+  for(const auto& sp : savepointVector_->savepoints())
+    ss << "\n  " << *sp;
+  ss << (savepointVector_->savepoints().empty() ? "" : "\n") << "]\n";
+  ss << "fieldmetainfo = [";
+  for(auto it = fieldMap_->begin(), end = fieldMap_->end(); it != end; ++it)
+    ss << "  " << it->first << ": " << it->second << "\n";
+  ss << (fieldMap_->empty() ? "" : "\n") << "]";
+  return ss.str();
+}
+
 std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s) {
-  stream << "Serializer = {\n";
-  stream << "  mode: " << s.mode_ << "\n";
-  stream << "  directory: " << s.directory_ << "\n";
-  stream << "  " << (*s.savepointVector_) << "\n";
-  stream << "  " << (*s.fieldMap_) << "\n";
-  stream << "  " << (*s.globalMetainfo_) << "\n";
-  stream << "}\n";
-  return stream;
+  return (stream << s.toString());  
 }
 
 json::json SerializerImpl::toJSON() const {

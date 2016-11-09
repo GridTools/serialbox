@@ -15,7 +15,14 @@
 
 
 class _Slice(object):
-    """Slice implementation of the Python Interface.
+    """Specification of the slice indices which are used for partial loading of serialized data.
+
+    To avoid instantiation, use the global object serialbox.Slice.
+
+      >>> Slice[:, :, 5]
+      (slice(None, None, None), slice(None, None, None), 5)
+
+    See `here <https://docs.scipy.org/doc/numpy/reference/arrays.indexing.html>`_.
     """
 
     def __init__(self):

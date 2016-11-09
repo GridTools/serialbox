@@ -43,7 +43,7 @@ public:
   using meta_info_map_t = serialbox::gridtools::meta_info_map;
   using field_meta_info_t = serialbox::gridtools::field_meta_info;
   /// @}
-  
+
   /// \brief Get the status of serialization
   ///
   /// The status is represented as an integer which can take the following values:
@@ -276,15 +276,15 @@ public:
              bool register_field = true) {
     this->write(name, sp, storage, storage.meta_data(), register_field);
   }
-  
+
   /// \brief Write method used internally by gridtools
-  /// 
+  ///
   /// Note that `StorageType` can be a `gridtools::storage` or `gridtools::base_storage`.
-  /// 
+  ///
   /// \see
   ///   gridtools::serializer::write
   template <class StorageType, class MetaDataType>
-  void write(const std::string& name, const savepoint& sp, const StorageType& storage, 
+  void write(const std::string& name, const savepoint& sp, const StorageType& storage,
              const MetaDataType& meta_data, bool register_field = true) {
 
     if(register_field && !serializerImpl_->fieldMap().hasField(name))
@@ -296,7 +296,6 @@ public:
                             std::move(internal::get_strides(storage, meta_data)));
     serializerImpl_->write(name, *sp.impl(), storageView);
   }
-  
 
   /// \brief Serialize field `name` given as `origin_ptr` and `strides` at `savepoint` to disk
   ///
@@ -427,6 +426,9 @@ public:
 
     ArchiveFactory::readFromFile(file, storageView, archive_name, storage.get_name());
   }
+
+  /// \brief Convert to string
+  std::string to_string() const { return serializerImpl_->toString(); }
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const serializer& s) {

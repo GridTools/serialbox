@@ -116,6 +116,13 @@ void serialboxEnableSerialization(void) { Serializer::enableSerialization(); }
 
 void serialboxDisableSerialization(void) { Serializer::disableSerialization(); }
 
+char* serialboxSerializerToString(const serialboxSerializer_t* serializer) {
+  const Serializer* ser = toConstSerializer(serializer);
+  std::stringstream ss;
+  ss << *ser;
+  return allocateAndCopyString(ss.str());
+}
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Global Meta-information
 \*===------------------------------------------------------------------------------------------===*/
