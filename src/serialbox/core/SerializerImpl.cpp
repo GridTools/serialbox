@@ -338,7 +338,7 @@ std::string SerializerImpl::toString() const {
   ss << (savepointVector_->savepoints().empty() ? "" : "\n") << "]\n";
   ss << "fieldmetainfo = [";
   for(auto it = fieldMap_->begin(), end = fieldMap_->end(); it != end; ++it)
-    ss << "  " << it->first << ": " << it->second << "\n";
+    ss << "\n  " << it->first << ": " << *it->second;
   ss << (fieldMap_->empty() ? "" : "\n") << "]";
   return ss.str();
 }

@@ -141,6 +141,17 @@ TEST(MetainfoMapImplTest, Conversion) {
   ASSERT_THROW(map.as<bool>("XXX"), Exception);
 }
 
+TEST(MetainfoMapImplTest, Append) {
+  MetainfoMapImpl map;
+  map.append("array", 1);
+  map.append("array", 2);
+  map.append("array", 3);
+  ASSERT_EQ(map.as<Array<int>>("array"), (std::vector<int>{1, 2, 3}));
+
+  map.insert("key", 5);
+  ASSERT_THROW(map.append("key", 5), Exception);
+}
+
 TEST(MetainfoMapImplTest, toJSON) {
   MetainfoMapImpl map;
   EXPECT_TRUE(map.toJSON().empty());
