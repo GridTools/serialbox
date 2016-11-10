@@ -75,7 +75,7 @@ def main():
     
     #
     # You can of course load the full data and slice it afterwards with numpy which yields the same
-    # result, though most likely slower.
+    # result, though is most likely slower.
     #
     start = time.time()
     

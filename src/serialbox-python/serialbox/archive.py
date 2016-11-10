@@ -65,7 +65,8 @@ class Archive(object):
         :type filename: str
         :return: Name of the registered archive matching the file extension
         :rtype: str
-        :raises SerialboxError: if extensions is invalid or no registered archive supports it.
+        :raises serialbox.SerialboxError: if extensions is invalid or no registered archive
+                                          supports it.
         """
         filestr = extract_string(filename)[0]
         return invoke(lib.serialboxArchiveGetArchiveFromExtension, filestr).decode()

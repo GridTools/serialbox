@@ -24,14 +24,22 @@ def register_library(library):
     library.serialboxStateErrorHandlerHasError.restype = c_int
     library.serialboxStateErrorHandlerGetErrorMessage.restype = c_char_p
 
+
 class SerialboxError(Exception):
     """Raised when an operation results in an error.
-
-    :var message: explanation of the error
     """
 
     def __init__(self, message):
-        self.message = message
+        self.__message = message
+
+    @property
+    def message(self):
+        """Explanation of the error.
+
+        :return: Explanation string
+        :rtype: str
+        """
+        return self.__message
 
 
 def invoke(function, *args):

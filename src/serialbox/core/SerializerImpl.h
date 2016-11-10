@@ -384,6 +384,9 @@ public:
   /// \brief Convert all members of the Serializer to JSON
   json::json toJSON() const;
 
+  /// \brief Convert to string
+  std::string toString() const;
+  
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s);
 

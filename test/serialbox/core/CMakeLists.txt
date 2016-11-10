@@ -15,8 +15,8 @@ set(SOURCES
   UnittestFieldMap.cpp
   UnittestFieldMetainfoImpl.cpp
   UnittestFieldID.cpp
-  UnittestMetainfoMap.cpp
-  UnittestMetainfoValue.cpp
+  UnittestMetainfoMapImpl.cpp
+  UnittestMetainfoValueImpl.cpp
   UnittestStorage.cpp
   UnittestStorageView.cpp
   UnittestSavepointImpl.cpp

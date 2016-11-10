@@ -115,6 +115,11 @@ void serialboxEnableSerialization(void);
  */
 void serialboxDisableSerialization(void);
 
+/**
+ * \brief Convert serializer to string
+ */
+char* serialboxSerializerToString(const serialboxSerializer_t* serializer);
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Global Meta-information
 \*===------------------------------------------------------------------------------------------===*/
