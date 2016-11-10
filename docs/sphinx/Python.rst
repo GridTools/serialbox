@@ -6,7 +6,10 @@ Serialbox Python
 
 This section is concerned with the `python3 <https://www.python.org/>`_ interface of Serialbox. A set of examples can be found in ``examples/python/``.
 
-.. _Installation:
+.. contents::
+   :local:
+
+.. _Building:
 
 Building
 --------
