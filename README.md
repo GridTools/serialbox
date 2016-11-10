@@ -1,6 +1,6 @@
 # Serialbox2
 
-<img src="docs/images/logo.png" width="200" height="150" />
+<img src="docs/logo/logo.png" width="200" height="150" />
 
 #### Table of Contents
 * [Introduction](#introduction)

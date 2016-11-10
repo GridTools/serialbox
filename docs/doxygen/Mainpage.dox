@@ -1,0 +1,12 @@
+/**
+\mainpage Serialbox
+
+## Introduction
+
+Welcome to Serialbox.
+
+This documentation describes the internal software that makes up Serialbox, not the external use of Serialbox. There are no instructions here on how to use Serialbox, only the APIs that make up the software. For usage instructions, please refer to the example guide.
+
+Serialbox is divided into a \ref core "Core" library which contains most of the functionality and the \ref frontend "Frontends" which expose the API to different libraries and languages.
+
+*/

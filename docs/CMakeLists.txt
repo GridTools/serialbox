@@ -15,8 +15,8 @@ if(NOT DOXYGEN_FOUND)
   message(FATAL_ERROR "Doxygen is needed to build the documentation.")
 endif()
 
-set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
-set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/doxygen/Doxyfile.in)
+set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/doxygen/Doxyfile)
 configure_file(${doxyfile_in} ${doxyfile} @ONLY)
 
 add_custom_target(doxygen
@@ -37,9 +37,6 @@ add_custom_target(sphinx
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Generating sphinx documentation" VERBATIM
 )
-
-## Find breathe
-
 
 ## Generate documentation
 add_custom_target(docs

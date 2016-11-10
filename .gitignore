@@ -15,9 +15,6 @@ build*
 install*
 buildenv*
 
-# HTML docs
-docs/doxygen/*
-
 # External projects
 external/*
 !external/gtest
