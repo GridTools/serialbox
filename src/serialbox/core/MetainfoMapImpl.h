@@ -133,31 +133,6 @@ public:
     return (map_.insert({key, MetainfoValueImpl(std::forward<ValueType>(value))}).second);
   }
 
-  /// \brief Append a value to the Array given by `key` in the map
-  ///
-  /// If element with `key` does not exist, a new element will be inserted.
-  ///
-  /// \param key    Key of the array element
-  /// \param value  Object to be appended to the array of the element
-  ///
-  /// \throw Exception  Element with `key` exists but is not an Array or `PrimitiveType` of Array is
-  ///                   not equal to `ValueType`
-  template <class KeyType, class ValueType>
-  void append(KeyType&& key, ValueType&& value) {
-    auto it = map_.find(key);
-    if(it != map_.end()) {
-      if(!TypeUtil::isArray(it->second.type()))
-        throw Exception("cannot append value: element with key '%s' is not an Array", key);
-
-      Array<ValueType> array = it->second.template as<Array<ValueType>>();
-      array.push_back(value);
-      map_.erase(it);
-
-      this->insert(std::forward<KeyType>(key), array);
-    } else
-      this->insert(std::forward<KeyType>(key), Array<ValueType>{value});
-  }
-
   /// \brief Convert value of element with key `key` to type `T`
   ///
   /// If the type `T` is different than the internally stored type, the function does its best to

@@ -438,8 +438,9 @@ class Serializer(object):
         :rtype: :class:`list` [:class:`str`]
         :raises serialbox.SerialboxError: if `savepoint` does not exists
         """
+        savepoint_ = self.__extract_savepoint(savepoint)
         array = invoke(lib.serialboxSerializerGetFieldnamesAtSavepoint, self.__serializer,
-                       savepoint.impl())
+                       savepoint_.impl())
         list_array = []
         for i in range(array.contents.len):
             list_array += [array.contents.data[i].decode()]
