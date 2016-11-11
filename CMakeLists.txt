@@ -177,6 +177,15 @@ if(SERIALBOX_TESTING_GRIDTOOLS OR
  set(SERIALBOX_TESTING ON)
 endif()
 
+## Sanity check that we are not building in the source tree
+if( CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR AND NOT MSVC_IDE )
+  message(FATAL_ERROR "In-source builds are not allowed.
+Please create a build directory and run cmake from there, passing the path
+to this source directory as the last argument.
+This process created the file `CMakeCache.txt' and the directory `CMakeFiles'.
+Please delete them.")
+endif()
+
 #---------------------------------------- GTest ----------------------------------------------------
 if(SERIALBOX_TESTING)
   if(APPLE AND NOT(CMAKE_CXX_COMPILER_ID MATCHES "GNU"))

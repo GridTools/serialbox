@@ -12,34 +12,47 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-#
-# Copy documentation from `docs/sphinx/_build/html/` to `docs/deploy`
-#
+pushd() {
+  command pushd "$@" > /dev/null
+}
+
+popd() {
+  command popd "$@" > /dev/null
+}
+
 ROOT=$(git rev-parse --show-toplevel)
 HTML_FOLDER=$ROOT/docs/sphinx/_build/html
-DEPLOY_FOLDER=$ROOT/_deploy
+GH_PAGES_FOLDER=$ROOT/gh-pages
+REMOTE_URL=$(git remote get-url --push origin)
 
-# Check existence
 if [ ! -d "$HTML_FOLDER" ]; then
   echo "error: html of documentation does not exist. Run 'make docs' first!"
   exit 1
 fi
 
-# Remove old deploy folder
-rm -rf $DEPLOY_FOLDER
+pushd $(pwd)
 
-# Copy
-cp -r $HTML_FOLDER $DEPLOY_FOLDER
+if [ ! -d "$GH_PAGES_FOLDER" ]; then
+  echo -e "\e[1m >> Cloning branch \"gh-pages\" into $GH_PAGES_FOLDER ... \e[0m"
+  git clone -b gh-pages $REMOTE_URL $GH_PAGES_FOLDER
+fi
 
-#
-# Directly deploy `docs/deploy` to the gh-pages branch
-# (http://www.damian.oquanta.info/posts/one-line-deployment-of-your-site-to-gh-pages.html)
-#
-#git subtree split --prefix docs/deploy -b gh-pages
-#git push -f origin gh-pages:gh-pages
-#git branch -D gh-pages
+echo -e "\e[1m >> Copying directory to gh-pages ... \e[0m"
+cp -r $HTML_FOLDER/* $GH_PAGES_FOLDER
 
-#
-# Cleanup (remove deploy folder)
-#
-#rm -rf $DEPLOY_FOLDER
+cd $GH_PAGES_FOLDER
+
+echo -e "\e[1m >> Pull remote ...\e[0m"
+git pull origin gh-pages
+
+echo -e "\e[1m >> Adding changes ...\e[0m"
+git add .
+
+echo -e "\e[1m >> Commiting changes ...\e[0m"
+git commit -m "update gh-pages"
+
+echo -e "\e[1m >> Pushing changes to remote ...\e[0m"
+git push origin gh-pages
+
+popd
+

@@ -49,3 +49,12 @@ add_custom_target(docs
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Generating documentation" VERBATIM
 )
+
+## Generate & deploy documentation
+add_custom_target(deploy-docs
+  COMMAND ${CMAKE_SOURCE_DIR}/tools/deploy-docs.sh
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  COMMENT "Deploying documentation" VERBATIM
+)
+add_dependencies(deploy-docs docs)
+
