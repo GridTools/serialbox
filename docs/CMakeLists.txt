@@ -43,6 +43,9 @@ add_custom_target(docs
   COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
   COMMAND ${SPHINX_EXECUTABLE} -b html -d ${CMAKE_CURRENT_SOURCE_DIR}/sphinx/_build/doctrees 
           ${CMAKE_CURRENT_SOURCE_DIR}/sphinx/ ${CMAKE_CURRENT_SOURCE_DIR}/sphinx/_build/html
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          ${CMAKE_SOURCE_DIR}/docs/doxygen/html
+          ${CMAKE_SOURCE_DIR}/docs/sphinx/_build/html/_doxygen/html
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   COMMENT "Generating documentation" VERBATIM
 )
