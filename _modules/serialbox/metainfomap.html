@@ -1,0 +1,755 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>serialbox.metainfomap &mdash; Serialbox 2.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/serialbox-theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Serialbox 2.0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+<div class="logo">
+  <a href="../../index.html">
+    <img src="../../_static/logo.png"
+         alt="Serialbox Logo" width="445" height="170"/></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for serialbox.metainfomap</h1><div class="highlight"><pre>
+<span class="ch">#!/usr/bin/python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">##===-----------------------------------------------------------------------------*- Python -*-===##</span>
+<span class="c1">##</span>
+<span class="c1">##                                   S E R I A L B O X</span>
+<span class="c1">##</span>
+<span class="c1">## This file is distributed under terms of BSD license.</span>
+<span class="c1">## See LICENSE.txt for more information.</span>
+<span class="c1">##</span>
+<span class="c1">##===------------------------------------------------------------------------------------------===##</span>
+<span class="c1">##</span>
+<span class="c1">## This file contains the metainfo implementation of the Python Interface.</span>
+<span class="c1">##</span>
+<span class="c1">##===------------------------------------------------------------------------------------------===##</span>
+
+<span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">c_void_p</span><span class="p">,</span> <span class="n">c_bool</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">c_int32</span><span class="p">,</span> <span class="n">c_int64</span><span class="p">,</span> <span class="n">c_float</span><span class="p">,</span> <span class="n">c_double</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">,</span> \
+    <span class="n">Structure</span><span class="p">,</span> <span class="n">POINTER</span>
+
+<span class="kn">from</span> <span class="nn">.common</span> <span class="kn">import</span> <span class="n">get_library</span><span class="p">,</span> <span class="n">extract_string</span>
+<span class="kn">from</span> <span class="nn">.error</span> <span class="kn">import</span> <span class="n">invoke</span><span class="p">,</span> <span class="n">SerialboxError</span>
+<span class="kn">from</span> <span class="nn">.type</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">lib</span> <span class="o">=</span> <span class="n">get_library</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">MetainfoImpl</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Mapping of serialboxMetainfo_t &quot;&quot;&quot;</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;impl&quot;</span><span class="p">,</span> <span class="n">c_void_p</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;ownsData&quot;</span><span class="p">,</span> <span class="n">c_int</span><span class="p">)]</span>
+
+
+<span class="k">class</span> <span class="nc">MetainfoElementInfoImpl</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Mapping of serialboxMetainfoElementInfo_t &quot;&quot;&quot;</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;keys&quot;</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_char_p</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">&quot;types&quot;</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int</span><span class="p">)),</span>
+                <span class="p">(</span><span class="s2">&quot;len&quot;</span><span class="p">,</span> <span class="n">c_int</span><span class="p">)]</span>
+
+
+<span class="k">class</span> <span class="nc">ArrayOfBooleanImpl</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Mapping of serialboxArrayOfBoolean_t &quot;&quot;&quot;</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;len&quot;</span><span class="p">,</span> <span class="n">c_int</span><span class="p">)]</span>
+
+
+<span class="k">class</span> <span class="nc">ArrayOfInt32Impl</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Mapping of serialboxArrayOfInt32_t &quot;&quot;&quot;</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int32</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;len&quot;</span><span class="p">,</span> <span class="n">c_int</span><span class="p">)]</span>
+
+
+<span class="k">class</span> <span class="nc">ArrayOfInt64Impl</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Mapping of serialboxArrayOfInt64_t &quot;&quot;&quot;</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_int64</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;len&quot;</span><span class="p">,</span> <span class="n">c_int</span><span class="p">)]</span>
+
+
+<span class="k">class</span> <span class="nc">ArrayOfFloat32Impl</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Mapping of serialboxArrayOfFloat32_t &quot;&quot;&quot;</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_float</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;len&quot;</span><span class="p">,</span> <span class="n">c_int</span><span class="p">)]</span>
+
+
+<span class="k">class</span> <span class="nc">ArrayOfFloat64Impl</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Mapping of serialboxArrayOfFloat64_t &quot;&quot;&quot;</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_double</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;len&quot;</span><span class="p">,</span> <span class="n">c_int</span><span class="p">)]</span>
+
+
+<span class="k">class</span> <span class="nc">ArrayOfStringImpl</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Mapping of serialboxArrayOfString_t &quot;&quot;&quot;</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">c_char_p</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;len&quot;</span><span class="p">,</span> <span class="n">c_int</span><span class="p">)]</span>
+
+
+<span class="k">def</span> <span class="nf">register_library</span><span class="p">(</span><span class="n">library</span><span class="p">):</span>
+    <span class="c1">#</span>
+    <span class="c1"># Construction &amp; Destruction</span>
+    <span class="c1">#</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoCreate</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoCreate</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">)</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoCreateFromMetainfo</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoCreateFromMetainfo</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">)</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoDestroy</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoDestroy</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># Utility</span>
+    <span class="c1">#</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetSize</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetSize</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoIsEmpty</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoIsEmpty</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoClear</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoClear</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoEqual</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoEqual</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoHasKey</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoHasKey</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetTypeIDOfKey</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetTypeIDOfKey</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoToString</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoToString</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_char_p</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoCreateElementInfo</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoCreateElementInfo</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoElementInfoImpl</span><span class="p">)</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoDestroyElementInfo</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoElementInfoImpl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoDestroyElementInfo</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># Arrays</span>
+    <span class="c1">#</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfBooleanCreate</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_int</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfBooleanCreate</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfBooleanImpl</span><span class="p">)</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfInt32Create</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_int</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfInt32Create</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfInt32Impl</span><span class="p">)</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfInt64Create</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_int</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfInt64Create</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfInt64Impl</span><span class="p">)</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfFloat32Create</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_int</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfFloat32Create</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfFloat32Impl</span><span class="p">)</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfFloat64Create</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_int</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfFloat64Create</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfFloat64Impl</span><span class="p">)</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfStringCreate</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_int</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfStringCreate</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfStringImpl</span><span class="p">)</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfBooleanDestroy</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfBooleanImpl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfBooleanDestroy</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfInt32Destroy</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfInt32Impl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfInt32Destroy</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfInt64Destroy</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfInt64Impl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfInt64Destroy</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfFloat32Destroy</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfFloat32Impl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfFloat32Destroy</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfFloat64Destroy</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfFloat64Impl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfFloat64Destroy</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfStringDestroy</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfStringImpl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArrayOfStringDestroy</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># Add meta-information</span>
+    <span class="c1">#</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddBoolean</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_bool</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddBoolean</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddInt32</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_int32</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddInt32</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddInt64</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_int64</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddInt64</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddFloat32</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_float</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddFloat32</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddFloat64</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_double</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddFloat64</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddString</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddString</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfBoolean</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">,</span>
+                                                           <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfBooleanImpl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfBoolean</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfInt32</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">,</span>
+                                                         <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfInt32Impl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfInt32</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfInt64</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">,</span>
+                                                         <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfInt64Impl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfInt64</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfFloat32</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">,</span>
+                                                           <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfFloat32Impl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfFloat32</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfFloat64</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">,</span>
+                                                           <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfFloat64Impl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfFloat64</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfString</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">,</span>
+                                                          <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfStringImpl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfString</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># Query meta-information</span>
+    <span class="c1">#</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetBoolean</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetBoolean</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetInt32</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetInt32</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int32</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetInt64</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetInt64</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_int64</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetFloat32</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetFloat32</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_float</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetFloat64</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetFloat64</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_double</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetString</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetString</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_char_p</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfBoolean</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfBoolean</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfBooleanImpl</span><span class="p">)</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfInt32</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfInt32</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfInt32Impl</span><span class="p">)</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfInt64</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfInt64</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfInt64Impl</span><span class="p">)</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfFloat32</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfFloat32</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfFloat32Impl</span><span class="p">)</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfFloat64</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfFloat64</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfFloat64Impl</span><span class="p">)</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfString</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">),</span> <span class="n">c_char_p</span><span class="p">]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfString</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfStringImpl</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MetainfoMapIterator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Iterator of the MetainfoMap</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metainfomap</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span> <span class="o">=</span> <span class="n">metainfomap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__elements</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoCreateElementInfo</span><span class="p">,</span> <span class="n">metainfomap</span><span class="o">.</span><span class="n">impl</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__idx</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__elements</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__idx</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__idx</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__elements</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__elements</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__elements</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoDestroyElementInfo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__elements</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MetainfoMap"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap">[docs]</a><span class="k">class</span> <span class="nc">MetainfoMap</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Meta-information implementation of the Python Interface.</span>
+
+<span class="sd">    Objects of this class contain a map of meta-information in form of `key = value` or</span>
+<span class="sd">    `key = {value1, ... valueN}` pair. The keys are strings and unique, while the values can be</span>
+<span class="sd">    integers, booleans, floating point numbers (either single or double precision) or strings.</span>
+
+<span class="sd">    The elements are internally stored as a hash-map and thus the order of insertion is irrelevant.</span>
+<span class="sd">    The MetainfoMaps can be constrcuted from python dictionary :class:`dict`.</span>
+
+<span class="sd">        &gt;&gt;&gt; m = MetainfoMap({&#39;key1&#39;: 1, &#39;key2&#39;: &#39;str&#39;})</span>
+<span class="sd">        &gt;&gt;&gt; m</span>
+<span class="sd">        &lt;MetainfoMap {&quot;key2&quot;: str, &quot;key&quot;: 5}&gt;</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MetainfoMap.__init__"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metainfo</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">impl</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Metainfo map.</span>
+
+<span class="sd">        If `metainfo` is None, an empty map is created. Elements can be added later with</span>
+<span class="sd">        :func:`MetainfoMap.insert &lt;serialbox.MetainfoMap.insert&gt;`.</span>
+
+<span class="sd">        :param metainfo: Key-value pair dictionary used for initialization</span>
+<span class="sd">        :type metainfo: dict</span>
+<span class="sd">        :param impl: Directly set the implementation pointer [internal use]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">impl</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span> <span class="o">=</span> <span class="n">impl</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoCreate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">metainfo</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">metainfo</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MetainfoMap.clone"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap.clone">[docs]</a>    <span class="k">def</span> <span class="nf">clone</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clone the Metainfo map by performing a deepcopy.</span>
+
+<span class="sd">            &gt;&gt;&gt; m = MetainfoMap({&#39;key1&#39;: 1, &#39;key2&#39;: &#39;str&#39;})</span>
+<span class="sd">            &gt;&gt;&gt; m_clone = m.clone()</span>
+<span class="sd">            &gt;&gt;&gt; m.clear()</span>
+<span class="sd">            &gt;&gt;&gt; m</span>
+<span class="sd">            &lt;MetainfoMap {}&gt;</span>
+<span class="sd">            &gt;&gt;&gt; m_clone</span>
+<span class="sd">            &lt;MetainfoMap {&quot;key2&quot;: str, &quot;key&quot;: 5}&gt;</span>
+
+<span class="sd">        :return: Clone of the map</span>
+<span class="sd">        :rtype: MetainfoMap</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">MetainfoMap</span><span class="p">(</span><span class="n">impl</span><span class="o">=</span><span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoCreateFromMetainfo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MetainfoMap.insert"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">typeid</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Insert a new element in the form `key = value` or `key = {value1, ... valueN}` pair.</span>
+
+<span class="sd">        The element is inserted only if its `key` is not equivalent to the `key` of any other</span>
+<span class="sd">        element already in the map (i.e keys must be unique). If the optional parameter `typeid` is</span>
+<span class="sd">        omitted, the function will try it&#39;s best effort to deduce the typeid, otherwise the value</span>
+<span class="sd">        will be converted to match the type of `typeid` (see :class:`TypeID &lt;serialbox.TypeID&gt;`).</span>
+
+<span class="sd">            &gt;&gt;&gt; m = MetainfoMap()</span>
+<span class="sd">            &gt;&gt;&gt; m.insert(&#39;key&#39;, 5)</span>
+<span class="sd">            &gt;&gt;&gt; m</span>
+<span class="sd">            &lt;MetainfoMap {&quot;key&quot;: 5}&gt;</span>
+<span class="sd">            &gt;&gt;&gt; m.insert(&#39;Array&#39;, [1, 2, 3, 4])</span>
+<span class="sd">            &gt;&gt;&gt; m</span>
+<span class="sd">            &lt;MetainfoMap {&quot;Array&quot;: [1, 2, 3, 4], &quot;key&quot;: 5}&gt;</span>
+<span class="sd">            &gt;&gt;&gt; m.insert(&#39;Float&#39;, 5.0, TypeID.Float32)</span>
+<span class="sd">            &gt;&gt;&gt; m</span>
+<span class="sd">            &lt;MetainfoMap {&quot;Array&quot;: [1, 2, 3, 4], &quot;Float&quot;: 5.000000, &quot;key&quot;: 5}&gt;</span>
+<span class="sd">            &gt;&gt;&gt; type(m[&#39;Float&#39;])</span>
+<span class="sd">            &lt;class &#39;float&#39;&gt;</span>
+
+<span class="sd">        :param key: Key of the new element</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :param value: Object to be copied to the value of the new element</span>
+<span class="sd">        :param typeid: Type-id to use</span>
+<span class="sd">        :type typeid: serialbox.TypeID</span>
+<span class="sd">        :raises SerialboxError: if element with key already exists or typeid could not be deduced</span>
+<span class="sd">        :raises TypeError: if `typeid` is not a serialbox.TypeID or int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">isArray</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">keystr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">key</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">typeid</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typeid</span><span class="p">,</span> <span class="n">TypeID</span><span class="p">):</span>
+            <span class="n">typeid</span> <span class="o">=</span> <span class="n">typeid</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typeid</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;param &#39;typeid&#39; must be of type serialbox.TypeID or int (type: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">typeid</span><span class="p">))</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># Deduce typeid</span>
+        <span class="c1">#</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">typeid</span><span class="p">:</span>
+
+            <span class="c1"># Check if type is iterable</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">isArray</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">valueToDeduce</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">valueToDeduce</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="c1"># Deduce primitve type</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">valueToDeduce</span><span class="p">,</span> <span class="n">BooleanTypes</span><span class="p">):</span>
+                <span class="n">typeid</span> <span class="o">=</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Boolean</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">valueToDeduce</span><span class="p">,</span> <span class="n">Int32Types</span><span class="p">):</span>
+                <span class="n">typeid</span> <span class="o">=</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Int32</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">valueToDeduce</span><span class="p">,</span> <span class="n">Int64Types</span><span class="p">):</span>
+                <span class="n">typeid</span> <span class="o">=</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Int64</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">valueToDeduce</span><span class="p">,</span> <span class="n">Float32Types</span><span class="p">):</span>
+                <span class="n">typeid</span> <span class="o">=</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Float32</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">valueToDeduce</span><span class="p">,</span> <span class="n">Float64Types</span><span class="p">):</span>
+                <span class="n">typeid</span> <span class="o">=</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Float64</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">valueToDeduce</span><span class="p">,</span> <span class="n">StringTypes</span><span class="p">):</span>
+                <span class="n">typeid</span> <span class="o">=</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">String</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SerialboxError</span><span class="p">(</span>
+                    <span class="s2">&quot;could not deduce type-id of key &#39;</span><span class="si">%s</span><span class="s2">&#39; (python type: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+
+            <span class="k">if</span> <span class="n">isArray</span><span class="p">:</span>
+                <span class="n">typeid</span> <span class="o">|=</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Array</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># Insert into map</span>
+        <span class="c1">#</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Boolean</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoAddBoolean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">,</span> <span class="n">c_bool</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Int32</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoAddInt32</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">,</span> <span class="n">c_int32</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Int64</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoAddInt64</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">,</span> <span class="n">c_int64</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Float32</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoAddFloat32</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">,</span>
+                         <span class="n">c_float</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Float64</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoAddFloat64</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">,</span>
+                         <span class="n">c_double</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">String</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoAddString</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">,</span>
+                         <span class="n">extract_string</span><span class="p">(</span><span class="n">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">ArrayOfBoolean</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfBooleanCreate</span><span class="p">,</span> <span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">):</span>
+                <span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfBoolean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+            <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfBooleanDestroy</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">ArrayOfInt32</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfInt32Create</span><span class="p">,</span> <span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">):</span>
+                <span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_int32</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfInt32</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+            <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfInt32Destroy</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">ArrayOfInt64</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfInt64Create</span><span class="p">,</span> <span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">):</span>
+                <span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_int64</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfInt64</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+            <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfInt64Destroy</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">ArrayOfFloat32</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfFloat32Create</span><span class="p">,</span> <span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">):</span>
+                <span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_float</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfFloat32</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+            <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfFloat32Destroy</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">ArrayOfFloat64</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfFloat64Create</span><span class="p">,</span> <span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">):</span>
+                <span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_double</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfFloat64</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+            <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfFloat64Destroy</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">ArrayOfString</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfStringCreate</span><span class="p">,</span> <span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">):</span>
+                <span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfString</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+            <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfStringDestroy</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SerialboxError</span><span class="p">(</span><span class="s1">&#39;internal error: unreachable (typeid = </span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">typeid</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ret</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SerialboxError</span><span class="p">(</span><span class="s2">&quot;cannot insert key &#39;</span><span class="si">%s</span><span class="s2">&#39;: key already exists&quot;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MetainfoMap.size"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap.size">[docs]</a>    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get number of elements in the map.</span>
+
+<span class="sd">        :return: Number of elements in the map</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoGetSize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MetainfoMap.empty"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap.empty">[docs]</a>    <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if mao is empty.</span>
+
+<span class="sd">        :return: `True` if map is empty, `False` otherwise</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoIsEmpty</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MetainfoMap.has_key"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap.has_key">[docs]</a>    <span class="k">def</span> <span class="nf">has_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if and element with key `key` exists.</span>
+
+<span class="sd">        :param key: Key of the element</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: True if element with `key` exists, False otherwise</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">keystr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">key</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoHasKey</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MetainfoMap.clear"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clear the map.</span>
+
+<span class="sd">        All the elements in the MetainfoMap are dropped: their destructors are called, and they are</span>
+<span class="sd">        removed from the container, leaving it with a size of 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoClear</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MetainfoMap.to_dict"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert MetainfoMap to a python dictionary :class:`dict`.</span>
+
+<span class="sd">        The MetainfoMap is `copied` into the dictionary.</span>
+
+<span class="sd">            &gt;&gt;&gt; d = {&#39;key&#39;: 5, &#39;string&#39;: &#39;str&#39;}</span>
+<span class="sd">            &gt;&gt;&gt; m = MetainfoMap(d)</span>
+<span class="sd">            &gt;&gt;&gt; map_as_dict = m.to_dict()</span>
+<span class="sd">            &gt;&gt;&gt; map_as_dict</span>
+<span class="sd">            {&#39;key&#39;: 5, &#39;string&#39;: &#39;str&#39;}</span>
+<span class="sd">            &gt;&gt;&gt; d == map_as_dict</span>
+<span class="sd">            True</span>
+
+<span class="sd">        :return: copy of the Metainfo map as a dictionary</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">elements</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoCreateElementInfo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">)</span>
+
+        <span class="n">dic</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">elements</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">):</span>
+            <span class="n">dic</span><span class="p">[</span><span class="n">elements</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span>
+                <span class="n">elements</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span> <span class="n">elements</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoDestroyElementInfo</span><span class="p">,</span> <span class="n">elements</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dic</span></div>
+
+<div class="viewcode-block" id="MetainfoMap.__eq__"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap.__eq__">[docs]</a>    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test for equality.</span>
+
+<span class="sd">        MetainfoMaps are equal if all their elements are equal.</span>
+
+<span class="sd">        :return: `True` if self == other, `False` otherwise</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoEqual</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MetainfoMap.__ne__"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap.__ne__">[docs]</a>    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Test for inequality.</span>
+
+<span class="sd">        MetainfoMaps are equal if all their elements are equal.</span>
+
+<span class="sd">        :return: `True` if self != other, `False` otherwise</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MetainfoMap.__getitem__"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap.__getitem__">[docs]</a>    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">typeid</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get `value` of element given by `key`. The correct type will be inferred.</span>
+
+<span class="sd">            &gt;&gt;&gt; m = MetainfoMap()</span>
+<span class="sd">            &gt;&gt;&gt; m.insert(&#39;key&#39;, 5)</span>
+<span class="sd">            &gt;&gt;&gt; m[&#39;key&#39;]</span>
+<span class="sd">            5</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+
+<span class="sd">        :param key: Key of the element</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :param typeid: Type-id [internal use]</span>
+<span class="sd">        :type typeid: int</span>
+<span class="sd">        :return: Copy of the value of the element</span>
+<span class="sd">        :raises serialbox.SerialboxError: if Element with `key` does not exist</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">StringTypes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;parameter &#39;key&#39; is not a string (type: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+        <span class="n">keystr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">key</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># Get typeid</span>
+        <span class="c1">#</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">typeid</span><span class="p">:</span>
+            <span class="n">typeid</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoGetTypeIDOfKey</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">)</span>
+
+        <span class="c1">#</span>
+        <span class="c1"># Conversions</span>
+        <span class="c1">#</span>
+        <span class="k">if</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Boolean</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoGetBoolean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Int32</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoGetInt32</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Int64</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoGetInt64</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Float32</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoGetFloat32</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Float64</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoGetFloat64</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">String</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoGetString</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">ArrayOfBoolean</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfBoolean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">)</span>
+            <span class="n">list_array</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">):</span>
+                <span class="n">list_array</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">bool</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span>
+            <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfBooleanDestroy</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">list_array</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">ArrayOfInt32</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfInt32</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">)</span>
+            <span class="n">list_array</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">):</span>
+                <span class="n">list_array</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span>
+            <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfInt32Destroy</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">list_array</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">ArrayOfInt64</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfInt64</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">)</span>
+            <span class="n">list_array</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">):</span>
+                <span class="n">list_array</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span>
+            <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfInt64Destroy</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">list_array</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">ArrayOfFloat32</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfFloat32</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">)</span>
+            <span class="n">list_array</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">):</span>
+                <span class="n">list_array</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span>
+            <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfFloat32Destroy</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">list_array</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">ArrayOfFloat64</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfFloat64</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">)</span>
+            <span class="n">list_array</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">):</span>
+                <span class="n">list_array</span> <span class="o">+=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])]</span>
+            <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfFloat64Destroy</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">list_array</span>
+
+        <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">ArrayOfString</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="n">array</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoGetArrayOfString</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">)</span>
+            <span class="n">list_array</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">):</span>
+                <span class="n">list_array</span> <span class="o">+=</span> <span class="p">[</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">()]</span>
+            <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfStringDestroy</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">list_array</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SerialboxError</span><span class="p">(</span><span class="s1">&#39;internal error: unreachable (typeid = </span><span class="si">%i</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">typeid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MetainfoMap.__iter__"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap.__iter__">[docs]</a>    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Iterate the MetainfoMap.</span>
+
+<span class="sd">            &gt;&gt;&gt; m = MetainfoMap({&#39;key1&#39;: 5, &#39;key2&#39;: 6})</span>
+<span class="sd">            &gt;&gt;&gt; for elements in m:</span>
+<span class="sd">                ...     print(elements)</span>
+<span class="sd">                (&#39;key1&#39;, 5)</span>
+<span class="sd">                (&#39;key2&#39;, 6)</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+
+<span class="sd">        :return: Iterator of MetainfoMap</span>
+<span class="sd">        :rtype: MetainfoMapIterator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">MetainfoMapIterator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">impl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span>
+
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoDestroy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;MetainfoMap {0}&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__str__</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoToString</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+
+
+<span class="n">register_library</span><span class="p">(</span><span class="n">lib</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.0.1 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Fabian Thüring.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+    </div>
+  </body>
+</html>

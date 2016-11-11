@@ -1,0 +1,24 @@
+var NAVTREEINDEX5 =
+{
+"structserialbox_1_1ToType_3_01TypeID_1_1ArrayOfInt32_01_4.html":[0,0,48],
+"structserialbox_1_1ToType_3_01TypeID_1_1ArrayOfInt32_01_4.html#ac04f445760d47075a5e6dc78cdc7526e":[0,0,48,0],
+"structserialbox_1_1ToType_3_01TypeID_1_1ArrayOfInt64_01_4.html":[0,0,49],
+"structserialbox_1_1ToType_3_01TypeID_1_1ArrayOfInt64_01_4.html#a44509ee29eea84866306abdf22c91cb9":[0,0,49,0],
+"structserialbox_1_1ToType_3_01TypeID_1_1ArrayOfString_01_4.html":[0,0,52],
+"structserialbox_1_1ToType_3_01TypeID_1_1ArrayOfString_01_4.html#ab6130767731cd7a52c07482075b04dcf":[0,0,52,0],
+"structserialbox_1_1ToType_3_01TypeID_1_1Boolean_01_4.html":[0,0,41],
+"structserialbox_1_1ToType_3_01TypeID_1_1Boolean_01_4.html#a690f423cd5a67d09e96b5d3656de74b9":[0,0,41,0],
+"structserialbox_1_1ToType_3_01TypeID_1_1Float32_01_4.html":[0,0,44],
+"structserialbox_1_1ToType_3_01TypeID_1_1Float32_01_4.html#a58a1c51972cea51a42868e9204beeef2":[0,0,44,0],
+"structserialbox_1_1ToType_3_01TypeID_1_1Float64_01_4.html":[0,0,45],
+"structserialbox_1_1ToType_3_01TypeID_1_1Float64_01_4.html#ad0b34e8d58878eae150d6a05a7600c8f":[0,0,45,0],
+"structserialbox_1_1ToType_3_01TypeID_1_1Int32_01_4.html":[0,0,42],
+"structserialbox_1_1ToType_3_01TypeID_1_1Int32_01_4.html#a662722892d548530c2afa48b75dd61e2":[0,0,42,0],
+"structserialbox_1_1ToType_3_01TypeID_1_1Int64_01_4.html":[0,0,43],
+"structserialbox_1_1ToType_3_01TypeID_1_1Int64_01_4.html#a8da1ad801ad851b40444674b86261b31":[0,0,43,0],
+"structserialbox_1_1ToType_3_01TypeID_1_1String_01_4.html":[0,0,46],
+"structserialbox_1_1ToType_3_01TypeID_1_1String_01_4.html#ab0482530c6cbe3965af14521337370e2":[0,0,46,0],
+"structserialbox_1_1TypeUtil.html":[0,0,32],
+"structserialbox_1_1Version.html":[0,0,54],
+"structserialbox_1_1Version.html#a7a7a6271d0b40545781bde724fe7eb1f":[0,0,54,0]
+};

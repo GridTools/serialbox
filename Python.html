@@ -1,0 +1,1915 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Serialbox Python &mdash; Serialbox 2.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/serialbox-theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Serialbox 2.0.1 documentation" href="index.html" />
+    <link rel="prev" title="C interface" href="C.html" /> 
+  </head>
+  <body role="document">
+<div class="logo">
+  <a href="index.html">
+    <img src="_static/logo.png"
+         alt="Serialbox Logo" width="445" height="170"/></a>
+</div>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="C.html" title="C interface"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Serialbox 2.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Serialbox Python</a><ul>
+<li><a class="reference internal" href="#building">Building</a></li>
+<li><a class="reference internal" href="#quick-start-writing">Quick start - Writing</a></li>
+<li><a class="reference internal" href="#quick-start-reading">Quick start - Reading</a></li>
+<li><a class="reference internal" href="#serializer">Serializer</a></li>
+<li><a class="reference internal" href="#metainfomap">MetaInfoMap</a></li>
+<li><a class="reference internal" href="#fieldmetainfo">FieldMetaInfo</a></li>
+<li><a class="reference internal" href="#savepoint">Savepoint</a></li>
+<li><a class="reference internal" href="#archive">Archive</a></li>
+<li><a class="reference internal" href="#logging">Logging</a></li>
+<li><a class="reference internal" href="#config">Config</a></li>
+<li><a class="reference internal" href="#openmodekind">OpenModeKind</a></li>
+<li><a class="reference internal" href="#typeid">TypeID</a></li>
+<li><a class="reference internal" href="#slice">Slice</a></li>
+<li><a class="reference internal" href="#serialboxerror">SerialboxError</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="C.html"
+                        title="previous chapter">C interface</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Python.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="serialbox-python">
+<h1>Serialbox Python<a class="headerlink" href="#serialbox-python" title="Permalink to this headline">¶</a></h1>
+<p>This section is concerned with the <a class="reference external" href="https://www.python.org/">python3</a> interface of Serialbox. A set of examples can be found in <code class="docutils literal"><span class="pre">examples/python/</span></code>.</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#building" id="id13">Building</a></li>
+<li><a class="reference internal" href="#quick-start-writing" id="id14">Quick start - Writing</a></li>
+<li><a class="reference internal" href="#quick-start-reading" id="id15">Quick start - Reading</a></li>
+<li><a class="reference internal" href="#serializer" id="id16">Serializer</a></li>
+<li><a class="reference internal" href="#metainfomap" id="id17">MetaInfoMap</a></li>
+<li><a class="reference internal" href="#fieldmetainfo" id="id18">FieldMetaInfo</a></li>
+<li><a class="reference internal" href="#savepoint" id="id19">Savepoint</a></li>
+<li><a class="reference internal" href="#archive" id="id20">Archive</a></li>
+<li><a class="reference internal" href="#logging" id="id21">Logging</a></li>
+<li><a class="reference internal" href="#config" id="id22">Config</a></li>
+<li><a class="reference internal" href="#openmodekind" id="id23">OpenModeKind</a></li>
+<li><a class="reference internal" href="#typeid" id="id24">TypeID</a></li>
+<li><a class="reference internal" href="#slice" id="id25">Slice</a></li>
+<li><a class="reference internal" href="#serialboxerror" id="id26">SerialboxError</a></li>
+</ul>
+</div>
+<div class="section" id="building">
+<span id="id1"></span><h2><a class="toc-backref" href="#id13">Building</a><a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
+<p>The Python interface of Serialbox is built if the CMake variable <code class="docutils literal"><span class="pre">SERIALBOX_ENABLE_PYTHON</span></code> is <code class="docutils literal"><span class="pre">ON</span></code> (which is the default behaviour) and installed in <code class="docutils literal"><span class="pre">install/python/serialbox</span></code>. Serialbox requires atleast Python3.4 and relies on <a class="reference external" href="http://www.numpy.org/">numpy</a>.</p>
+<p>To get started, add the path of the Serialbox module to the Python environment variable <code class="docutils literal"><span class="pre">PYTHONPATH</span></code></p>
+<div class="highlight-console"><div class="highlight"><pre><span class="go">export PYTHONPATH=&lt;path-to-serialbox-installation&gt;/python:$PYTHONPATH</span>
+</pre></div>
+</div>
+<p>To check if everything works:</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="go">export PYTHONPATH=&lt;path-to-serialbox-installation&gt;/python:$PYTHONPATH</span>
+<span class="go">python3 -c &quot;from serialbox import __version__; print(__version__)&quot;</span>
+</pre></div>
+</div>
+<p>which should print the current version string of the library.</p>
+</div>
+<div class="section" id="quick-start-writing">
+<span id="qswriting"></span><h2><a class="toc-backref" href="#id14">Quick start - Writing</a><a class="headerlink" href="#quick-start-writing" title="Permalink to this headline">¶</a></h2>
+<p>This section will show you how to write <code class="xref py py-class docutils literal"><span class="pre">numpy.arrays</span></code> using the Python interface of Serialbox. The written data set can be read by any language supported by Serialbox. To get started, import the <code class="docutils literal"><span class="pre">serialbox</span></code> module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">serialbox</span> <span class="kn">as</span> <span class="nn">ser</span>
+</pre></div>
+</div>
+<p>To serialize data, you have to create a <a class="reference internal" href="#serialbox.Serializer" title="serialbox.Serializer"><code class="xref py py-class docutils literal"><span class="pre">Serializer</span></code></a> object. The Serializer is initialized with a <cite>mode</cite> (<a class="reference internal" href="#serialbox.OpenModeKind" title="serialbox.OpenModeKind"><code class="xref py py-class docutils literal"><span class="pre">OpenModeKind</span></code></a>), a <cite>directory</cite> and a specific <cite>prefix</cite>, with which all the written files in the data set start. All files will be placed in <cite>directory</cite> and the directory will be created if necessary. For writing there are two modes: <code class="docutils literal"><span class="pre">Write</span></code> and <code class="docutils literal"><span class="pre">Append</span></code>: Write will erase all files of a previous run of a serializer the with same <cite>directory</cite> and <cite>prefix</cite>; Append will import all existing information and allow you to add more data.</p>
+<p>To open a <a class="reference internal" href="#serialbox.Serializer" title="serialbox.Serializer"><code class="xref py py-class docutils literal"><span class="pre">Serializer</span></code></a> for writing in the current directory and prefix all files with <code class="docutils literal"><span class="pre">field</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span> <span class="o">=</span> <span class="n">ser</span><span class="o">.</span><span class="n">Serializer</span><span class="p">(</span><span class="n">ser</span><span class="o">.</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Write</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To serialize a field, you have to register the field within the Serializer (<a class="reference internal" href="#serialbox.Serializer.register_field" title="serialbox.Serializer.register_field"><code class="xref py py-func docutils literal"><span class="pre">Serializer.register_field</span></code></a>) and specify a specifc <a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint"><code class="xref py py-class docutils literal"><span class="pre">Savepoint</span></code></a> at which the field will be written. Savepoints are used within the Serializer to discriminate fields at different points in time. Savepoints in the Serializer are unique and primarily identified by their <a class="reference internal" href="#serialbox.Savepoint.name" title="serialbox.Savepoint.name"><code class="xref py py-func docutils literal"><span class="pre">name</span></code></a> and further distinguished by their <a class="reference internal" href="#serialbox.Savepoint.metainfo" title="serialbox.Savepoint.metainfo"><code class="xref py py-func docutils literal"><span class="pre">metainfo</span></code></a>. Savepoints can thus have the same name as long as their <a class="reference internal" href="#serialbox.Savepoint.metainfo" title="serialbox.Savepoint.metainfo"><code class="xref py py-func docutils literal"><span class="pre">metainfo</span></code></a> differs. As a short example, we will serialize two <code class="xref py py-class docutils literal"><span class="pre">numpy.arrays</span></code> <code class="docutils literal"><span class="pre">foo</span></code> and <code class="docutils literal"><span class="pre">bar</span></code> at two different Savepoints (<code class="docutils literal"><span class="pre">MySavepoint</span></code> with <code class="docutils literal"><span class="pre">time=1</span></code> and <code class="docutils literal"><span class="pre">time=2</span></code>).</p>
+<p>We create the fields:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">foo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Register the fields (<a class="reference internal" href="#serialbox.FieldMetainfo" title="serialbox.FieldMetainfo"><code class="xref py py-class docutils literal"><span class="pre">FieldMetainfo</span></code></a>) within the <a class="reference internal" href="#serialbox.Serializer" title="serialbox.Serializer"><code class="xref py py-class docutils literal"><span class="pre">Serializer</span></code></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">foo_info</span> <span class="o">=</span> <span class="n">ser</span><span class="o">.</span><span class="n">FieldMetainfo</span><span class="p">(</span><span class="n">ser</span><span class="o">.</span><span class="n">TypeID</span><span class="o">.</span><span class="n">Float64</span><span class="p">,</span> <span class="n">foo</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bar_info</span> <span class="o">=</span> <span class="n">ser</span><span class="o">.</span><span class="n">FieldMetainfo</span><span class="p">(</span><span class="n">ser</span><span class="o">.</span><span class="n">TypeID</span><span class="o">.</span><span class="n">Float64</span><span class="p">,</span> <span class="n">bar</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">register_field</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">foo_info</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">register_field</span><span class="p">(</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span> <span class="n">bar_info</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">fieldnames</span><span class="p">()</span>
+<span class="go">[&#39;foo&#39;, &#39;bar&#39;]</span>
+</pre></div>
+</div>
+<p>Write <code class="docutils literal"><span class="pre">foo</span></code> and <code class="docutils literal"><span class="pre">bar</span></code> at <code class="docutils literal"><span class="pre">MySavepoint</span></code> with <code class="docutils literal"><span class="pre">time=1</span></code></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">MySavepoint_t1</span> <span class="o">=</span> <span class="n">ser</span><span class="o">.</span><span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;MySavepoint&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">register_savepoint</span><span class="p">(</span><span class="n">MySavepoint_t1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">MySavepoint_t1</span><span class="p">,</span> <span class="n">foo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span> <span class="n">MySavepoint_t1</span><span class="p">,</span> <span class="n">bar</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Perform a silly timestep:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">foo</span> <span class="o">*=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bar</span> <span class="o">*=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>and write the updated fields at <code class="docutils literal"><span class="pre">MySavepoint</span></code> with <code class="docutils literal"><span class="pre">time=2</span></code></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">MySavepoint_t2</span> <span class="o">=</span> <span class="n">ser</span><span class="o">.</span><span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;MySavepoint&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">register_savepoint</span><span class="p">(</span><span class="n">MySavepoint_t2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">MySavepoint_t2</span><span class="p">,</span> <span class="n">foo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span> <span class="n">MySavepoint_t2</span><span class="p">,</span> <span class="n">bar</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The current directory will now contain the following files</p>
+<div class="code highlight-python"><div class="highlight"><pre>.
+├── ArchiveMetaData-field.json
+├── MetaData-field.json
+├── field_bar.dat
+└── field_foo.dat
+</pre></div>
+</div>
+<p>With <code class="docutils literal"><span class="pre">field_foo.dat</span></code> and <code class="docutils literal"><span class="pre">field_bar.dat</span></code> containing the actual data while the <cite>JSON</cite> files hold the meta-information.</p>
+<p><strong>Note:</strong> The Python interface is actually more powerful and you can omit all the calls to  <a class="reference internal" href="#serialbox.Serializer.register_field" title="serialbox.Serializer.register_field"><code class="xref py py-func docutils literal"><span class="pre">register_field</span></code></a> and <a class="reference internal" href="#serialbox.Serializer.register_savepoint" title="serialbox.Serializer.register_savepoint"><code class="xref py py-func docutils literal"><span class="pre">register_savepoint</span></code></a>. The example above can thus be written as:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">foo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">ser</span><span class="o">.</span><span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;MySavepoint&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}),</span> <span class="n">foo</span><span class="p">)</span> <span class="c1"># implicitly register savepoint and field</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span> <span class="n">ser</span><span class="o">.</span><span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;MySavepoint&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}),</span> <span class="n">bar</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">foo</span> <span class="o">*=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bar</span> <span class="o">*=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">ser</span><span class="o">.</span><span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;MySavepoint&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}),</span> <span class="n">foo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span> <span class="n">ser</span><span class="o">.</span><span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;MySavepoint&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}),</span> <span class="n">bar</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="quick-start-reading">
+<span id="qsreading"></span><h2><a class="toc-backref" href="#id15">Quick start - Reading</a><a class="headerlink" href="#quick-start-reading" title="Permalink to this headline">¶</a></h2>
+<p>This section will show you how to read data from an existing Serialbox data set, written by any language supported by Serialbox. In this example, we will use the data set written in the <a class="reference internal" href="#qswriting"><span>Quick start - Writing</span></a> section. To get started, import the <code class="docutils literal"><span class="pre">serialbox</span></code> module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">serialbox</span> <span class="kn">as</span> <span class="nn">ser</span>
+</pre></div>
+</div>
+<p>To access the data, you have to create a <a class="reference internal" href="#serialbox.Serializer" title="serialbox.Serializer"><code class="xref py py-class docutils literal"><span class="pre">Serializer</span></code></a> object. The Serializer is initialized with a <cite>mode</cite> (<a class="reference internal" href="#serialbox.OpenModeKind" title="serialbox.OpenModeKind"><code class="xref py py-class docutils literal"><span class="pre">OpenModeKind</span></code></a>), a <cite>directory</cite> and a specific <cite>prefix</cite>, with which all the files in the data set start. The <cite>directory</cite> has to contain the data in question and the <cite>prefix</cite> has to match the one of the data set (i.e the same as used in the writing).</p>
+<p>To open a <a class="reference internal" href="#serialbox.Serializer" title="serialbox.Serializer"><code class="xref py py-class docutils literal"><span class="pre">Serializer</span></code></a> in the current directory for reading of fields matching <code class="docutils literal"><span class="pre">field_*.dat</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span> <span class="o">=</span> <span class="n">ser</span><span class="o">.</span><span class="n">Serializer</span><span class="p">(</span><span class="n">ser</span><span class="o">.</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Read</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In case of an error, a <a class="reference internal" href="#serialboxerror"><span>SerialboxError</span></a> is thrown. To access a particular <cite>field</cite>, you have to specify a specific <a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint"><code class="xref py py-class docutils literal"><span class="pre">Savepoint</span></code></a> of this <cite>field</cite>. Savepoints are used within the Serializer to discriminate fields at different points in time. Savepoints in the Serializer are unique and primarily identified by their <a class="reference internal" href="#serialbox.Savepoint.name" title="serialbox.Savepoint.name"><code class="xref py py-func docutils literal"><span class="pre">name</span></code></a> and further distinguished by their <a class="reference internal" href="#serialbox.Savepoint.metainfo" title="serialbox.Savepoint.metainfo"><code class="xref py py-func docutils literal"><span class="pre">metainfo</span></code></a>. To get a full list of all registered savepoint (in the order they were registered):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">savepoint_list</span><span class="p">()</span>
+<span class="go">[Savepoint MySavepoint {&quot;time&quot;:1}, Savepoint MySavepoint {&quot;time&quot;:2}]</span>
+</pre></div>
+</div>
+<p>For more advanced queries, see <a class="reference internal" href="#serialbox.Serializer.savepoint" title="serialbox.Serializer.savepoint"><code class="xref py py-func docutils literal"><span class="pre">Serializer.savepoint</span></code></a>. To get a list of all registered fields:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">serializer</span><span class="o">.</span><span class="n">fieldnames</span><span class="p">()</span>
+<span class="go">[&#39;foo&#39;, &#39;bar&#39;]</span>
+</pre></div>
+</div>
+<p>To read <code class="docutils literal"><span class="pre">foo</span></code> at Savepoint with <code class="docutils literal"><span class="pre">time=1</span></code>, you can use one of the <cite>read</cite> methods of the Serializer (<a class="reference internal" href="#serialbox.Serializer.read" title="serialbox.Serializer.read"><code class="xref py py-func docutils literal"><span class="pre">Serializer.read</span></code></a>, <a class="reference internal" href="#serialbox.Serializer.read_slice" title="serialbox.Serializer.read_slice"><code class="xref py py-func docutils literal"><span class="pre">Serializer.read_slice</span></code></a>, <a class="reference internal" href="#serialbox.Serializer.read_async" title="serialbox.Serializer.read_async"><code class="xref py py-func docutils literal"><span class="pre">Serializer.read_async</span></code></a>)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">savepoint</span> <span class="o">=</span> <span class="n">serializer</span><span class="o">.</span><span class="n">savepoint</span><span class="p">[</span><span class="s2">&quot;MySavepoint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">foo</span> <span class="o">=</span> <span class="n">serializer</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">savepoint</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">foo</span></code> is a newly allocated <code class="xref py py-class docutils literal"><span class="pre">numpy.array</span></code> containing the deserialized data.</p>
+</div>
+<div class="section" id="serializer">
+<span id="id2"></span><h2><a class="toc-backref" href="#id16">Serializer</a><a class="headerlink" href="#serializer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="serialbox.Serializer">
+<em class="property">class </em><code class="descclassname">serialbox.</code><code class="descname">Serializer</code><span class="sig-paren">(</span><em>mode</em>, <em>directory</em>, <em>prefix</em>, <em>archive='Binary'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serializer implementation of the Python Interface.</p>
+<p>The serializer is attached to a specific <cite>directory</cite> and to a specific <cite>prefix</cite>, with which
+all files read and written will start. There are three modes to open a serializer: <cite>Read</cite>,
+<cite>Write</cite> and <cite>Append</cite> (see <a class="reference internal" href="#serialbox.OpenModeKind" title="serialbox.OpenModeKind"><code class="xref py py-class docutils literal"><span class="pre">OpenModeKind</span></code></a>).
+<cite>Read</cite> will give a read-only access to the serialized data; <cite>Write</cite> will <strong>erase</strong> all files of
+a previous run of a serializer with same <cite>directory</cite> and <cite>prefix</cite>; <cite>Append</cite> will import all
+existing information and allow the user to add more data.</p>
+<p>It is possible to store multiple serializer in the same directory as long as they differ in
+their <cite>prefix</cite>.</p>
+<dl class="docutils">
+<dt><strong>Example:</strong></dt>
+<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Write</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="s2">&quot;Binary&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">savepoint</span> <span class="o">=</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;savepoint&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="n">savepoint</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">f</span><span class="p">))]</span> <span class="c1"># List files in current directory</span>
+<span class="go">[&#39;field_field.dat&#39;, &#39;ArchiveMetaData-field.json&#39;, &#39;MetaData-field.json&#39;]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="method">
+<dt id="serialbox.Serializer.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>mode</em>, <em>directory</em>, <em>prefix</em>, <em>archive='Binary'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the Serializer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mode</strong> (<a class="reference internal" href="#serialbox.OpenModeKind" title="serialbox.OpenModeKind"><em>OpenModeKind</em></a>) &#8211; Mode of the Serializer</li>
+<li><strong>directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; The directory where the files will be stored/read (will be created if
+necessary)</li>
+<li><strong>prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; The prefix of the files</li>
+<li><strong>archive</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; String used to construct the Archive
+(see <a class="reference internal" href="#serialbox.Archive.registered_archives" title="serialbox.Archive.registered_archives"><code class="xref py py-func docutils literal"><span class="pre">Archive.registered_archives</span></code></a>)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><strong>serialbox.SerialboxError</strong></a> &#8211; if initialization failed</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="serialbox.Serializer.mode">
+<code class="descname">mode</code><a class="headerlink" href="#serialbox.Serializer.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return mode of the Serializer.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Write</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="s2">&quot;Binary&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">mode</span>
+<span class="go">&lt;OpenModeKind.Write: 1&gt;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Mode of the Serializer</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#serialbox.OpenModeKind" title="serialbox.OpenModeKind">OpenModeKind</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="serialbox.Serializer.prefix">
+<code class="descname">prefix</code><a class="headerlink" href="#serialbox.Serializer.prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the prefix of all filenames.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Write</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="s2">&quot;Binary&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">prefix</span>
+<span class="go">&#39;field&#39;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">prefix of all filenames</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="serialbox.Serializer.directory">
+<code class="descname">directory</code><a class="headerlink" href="#serialbox.Serializer.directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the directory of the Serializer.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Write</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="s2">&quot;Binary&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">directory</span>
+<span class="go">&#39;.&#39;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">directory of the Serializer</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.update_meta_data">
+<code class="descname">update_meta_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.update_meta_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.update_meta_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write meta-data to disk.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="serialbox.Serializer.enable">
+<em class="property">static </em><code class="descname">enable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.enable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.enable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable serialization.</p>
+<p>Serialization is enabled by default, but it can be disabled either by setting the
+environment variable <code class="docutils literal"><span class="pre">STELLA_SERIALIZATION_DISABLE</span></code> to a positive value or by calling the
+function <a class="reference internal" href="#serialbox.Serializer.disable" title="serialbox.Serializer.disable"><code class="xref py py-func docutils literal"><span class="pre">Serializer.disable</span></code></a>.
+With this function you enable the serialization independently of the current environment.</p>
+<p>The serialization can be only globally enabled or disabled. There is no way to enable or
+disable only a specific serializer.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="serialbox.Serializer.disable">
+<em class="property">static </em><code class="descname">disable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.disable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.disable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable serialization.</p>
+<p>Serialization is enabled by default, but it can be disabled either by setting the
+environment variable <code class="docutils literal"><span class="pre">STELLA_SERIALIZATION_DISABLE</span></code> to a positive value or by calling the
+function <a class="reference internal" href="#serialbox.Serializer.disable" title="serialbox.Serializer.disable"><code class="xref py py-func docutils literal"><span class="pre">Serializer.disable</span></code></a>.
+With this function you disable the serialization independently of the current environment.</p>
+<p>The serialization can be only globally enabled or disabled. There is no way to enable or
+disable only a specific serializer.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="serialbox.Serializer.status">
+<em class="property">static </em><code class="descname">status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the status of serialization</p>
+<p>The status is represented as an integer which can take the following values:</p>
+<ul class="simple">
+<li>0: the variable is not yet initialized i.e the serialization is enabled if the environment
+variable <code class="docutils literal"><span class="pre">STELLA_SERIALIZATION_DISABLE</span></code> or <code class="docutils literal"><span class="pre">SERIALBOX_SERIALIZATION_DISABLE</span></code> is not
+set to a positive value. The first Serializer which is initialized has to set this value
+either to +1 or to -1 according to the environment.</li>
+<li>+1: the serialization is enabled, independently of the environment</li>
+<li>-1: the serialization is disabled, independently of the environment</li>
+</ul>
+<p>See <a class="reference internal" href="#serialbox.Serializer.enable" title="serialbox.Serializer.enable"><code class="xref py py-func docutils literal"><span class="pre">Serializer.enable</span></code></a> and
+<a class="reference internal" href="#serialbox.Serializer.disable" title="serialbox.Serializer.disable"><code class="xref py py-func docutils literal"><span class="pre">Serializer.disable</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">serialization status</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.5)">int</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="serialbox.Serializer.global_metainfo">
+<code class="descname">global_metainfo</code><a class="headerlink" href="#serialbox.Serializer.global_metainfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a reference to the global meta-information of the serializer.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Write</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="s2">&quot;Binary&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">global_metainfo</span>
+<span class="go">&lt;MetainfoMap {}&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">global_metainfo</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">global_metainfo</span>
+<span class="go">&lt;MetainfoMap {&quot;key&quot;: 5}&gt;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Refrence to the meta-information map</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#serialbox.MetainfoMap" title="serialbox.MetainfoMap"><code class="xref py py-class docutils literal"><span class="pre">MetainfoMap</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.register_savepoint">
+<code class="descname">register_savepoint</code><span class="sig-paren">(</span><em>savepoint</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.register_savepoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.register_savepoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register <cite>savepoint</cite> within the Serializer.</p>
+<p>Savepoints can have the same <cite>name</cite> but their meta-data has to be different, thus Savepoints
+have to be unique.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>savepoint</strong> (<a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint"><em>Savepoint</em></a>) &#8211; Savepoint to add</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><strong>serialbox.SerialboxError</strong></a> &#8211; if <cite>savepoint</cite> already exists within the Serializer</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.has_savepoint">
+<code class="descname">has_savepoint</code><span class="sig-paren">(</span><em>savepoint</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.has_savepoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.has_savepoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <cite>savepoint</cite> exists within the Serializer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>savepoint</strong> (<a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint"><em>Savepoint</em></a>) &#8211; Savepoint to search for</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><cite>True</cite> if Savepoint exists, <cite>False</cite> otherwise</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.5)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.get_savepoint">
+<code class="descname">get_savepoint</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.get_savepoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.get_savepoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of Savepoint(s) identified by <cite>name</cite> in the order they were registered</p>
+<p>The Savepoints in the list are copy-constructed from the Savepoints in the Serializer and
+inserted in the order they were registered.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Write</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="s2">&quot;Binary&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">register_savepoint</span><span class="p">(</span><span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;sp&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">register_savepoint</span><span class="p">(</span><span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;sp&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">}))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">get_savepoint</span><span class="p">(</span><span class="s2">&quot;sp&quot;</span><span class="p">)</span>
+<span class="go">[&lt;Savepoint sp {&quot;key&quot;: 5}&gt;, &lt;Savepoint sp {&quot;key&quot;: 6}&gt;]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; Name of the savepoint(s)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of registered Savepoint(s) with <code class="docutils literal"><span class="pre">savepoint.name()</span> <span class="pre">==</span> <span class="pre">name</span></code></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">list</span></code></a> [<a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint"><code class="xref py py-class docutils literal"><span class="pre">Savepoint</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.fields_at_savepoint">
+<code class="descname">fields_at_savepoint</code><span class="sig-paren">(</span><em>savepoint</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.fields_at_savepoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.fields_at_savepoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of the registered fieldnames at <cite>savepoint</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>savepoint</strong> (<a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint"><em>Savepoint</em></a>) &#8211; Savepoint to use</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">list of fieldsnames</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">list</span></code></a> [<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a>]</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><strong>serialbox.SerialboxError</strong></a> &#8211; if <cite>savepoint</cite> does not exists</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.savepoint_list">
+<code class="descname">savepoint_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.savepoint_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.savepoint_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of registered savepoints within the Serializer.</p>
+<p>The Savepoints in the list are copy-constructed from the Savepoints in the Serializer and
+inserted in the order they were registered.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of registered savepoints</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">list</span></code></a> [<a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint"><code class="xref py py-class docutils literal"><span class="pre">Savepoint</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="serialbox.Serializer.savepoint">
+<code class="descname">savepoint</code><a class="headerlink" href="#serialbox.Serializer.savepoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access the savepoint collection of this Serializer</p>
+<p>Savepoints are primarily identified by their <cite>name</cite> and further distinguished by their
+<cite>meta_info</cite> but they are unique within the Serializer.</p>
+<p>Most of the time you will be interested in a particular
+<a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint"><code class="xref py py-class docutils literal"><span class="pre">Savepoint</span></code></a>. This requires you to specify the meta-information
+key=value pairs. There are two ways of doing this. But first, recall that there is <strong>NO</strong>
+ordering in the meta-information, hence it does not matter in which sequence you specify
+them! Consider the following example in which we register two savepoints, both named
+identically but with slightly different meta-information:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Write</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="s2">&quot;Binary&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">register_savepoint</span><span class="p">(</span><span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;my-savepoint&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;key1&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;key2&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">}))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">register_savepoint</span><span class="p">(</span><span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;my-savepoint&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;key1&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;key2&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">}))</span>
+</pre></div>
+</div>
+<p>To access the first savepoint (i.e the one with <code class="docutils literal"><span class="pre">key=5</span></code>) we can use the element access:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">savepoint</span><span class="p">[</span><span class="s2">&quot;my-savepoint&quot;</span><span class="p">][</span><span class="s2">&quot;key1&quot;</span><span class="p">][</span><span class="mi">5</span><span class="p">][</span><span class="s2">&quot;key2&quot;</span><span class="p">][</span><span class="s2">&quot;str&quot;</span><span class="p">]</span>
+<span class="go">&lt;SavepointCollection [my-savepoint {&quot;key2&quot;: str, &quot;key1&quot;: 5}]&gt;</span>
+</pre></div>
+</div>
+<p>Note that a <a class="reference internal" href="#serialbox.SavepointCollection" title="serialbox.SavepointCollection"><code class="xref py py-class docutils literal"><span class="pre">SavepointCollection</span></code></a> can be converted
+to a <a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint"><code class="xref py py-class docutils literal"><span class="pre">Savepoint</span></code></a> (See
+<a class="reference internal" href="#serialbox.SavepointCollection.as_savepoint" title="serialbox.SavepointCollection.as_savepoint"><code class="xref py py-func docutils literal"><span class="pre">SavepointCollection.as_savepoint()</span></code></a>)</p>
+<p>Again, the order in which you access the meta-information does not matter, meaning the
+follwoing is completely identical:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">savepoint</span><span class="p">[</span><span class="s2">&quot;my-savepoint&quot;</span><span class="p">][</span><span class="s2">&quot;key2&quot;</span><span class="p">][</span><span class="s2">&quot;str&quot;</span><span class="p">][</span><span class="s2">&quot;key1&quot;</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span>
+<span class="go">&lt;SavepointCollection [my-savepoint {&quot;key2&quot;: str, &quot;key1&quot;: 5}]&gt;</span>
+</pre></div>
+</div>
+<p>The second way uses the member access of python which can be more convenient. Note that this
+way has some downsides if you don&#8217;t use savepoint names or keys which can be mapped to valid
+Python identifiers. For example instead of using a &#8216;.&#8217; you can use &#8216;_&#8217;, same goes for &#8216;-&#8216;.
+Therefore, we can also write:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">savepoint</span><span class="o">.</span><span class="n">my_savepoint</span><span class="o">.</span><span class="n">key1</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">key2</span><span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">]</span>
+<span class="go">&lt;SavepointCollection [my-savepoint {&quot;key2&quot;: str, &quot;key1&quot;: 5}]&gt;</span>
+</pre></div>
+</div>
+<p>The following transformations are applied to construct a valid Python identifier.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="48%" />
+<col width="52%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Character</th>
+<th class="head">Replacement</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">-</span></code></td>
+<td><code class="docutils literal"><span class="pre">_</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">.</span></code></td>
+<td><code class="docutils literal"><span class="pre">_</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">[0-9]</span></code></td>
+<td><code class="docutils literal"><span class="pre">_[0-9]</span></code></td>
+</tr>
+</tbody>
+</table>
+<p>It is also possible to mix the two approaches and thus bypass any problems with the
+identifiers.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">savepoint</span><span class="p">[</span><span class="s2">&quot;my-savepoint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">key1</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">key2</span><span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">]</span>
+<span class="go">&lt;SavepointCollection [my-savepoint {&quot;key2&quot;: str, &quot;key1&quot;: 5}]&gt;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Collection of all savepoints</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#serialbox.SavepointCollection" title="serialbox.SavepointCollection"><code class="xref py py-class docutils literal"><span class="pre">SavepointCollection</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.register_field">
+<code class="descname">register_field</code><span class="sig-paren">(</span><em>name</em>, <em>fieldmetainfo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.register_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.register_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add field given by <cite>name</cite> with field meta-information <cite>fieldmetainfo</cite> to the Serializer.</p>
+<p>The <cite>write</cite> methods can do the registration implicitly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; Name of the newly registered field</li>
+<li><strong>fieldmetainfo</strong> (<a class="reference internal" href="#serialbox.FieldMetainfo" title="serialbox.FieldMetainfo"><em>FieldMetainfo</em></a>) &#8211; Field meta-information of the newly registered field</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><strong>serialbox.SerialboxError</strong></a> &#8211; if field with given name already exists within the
+Serializer</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.has_field">
+<code class="descname">has_field</code><span class="sig-paren">(</span><em>field</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.has_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.has_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <cite>field</cite> is registered within the Serializer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>field</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; Name of the field to check for</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><cite>True</cite> if field exists, <cite>False</cite> otherwise</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.5)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.get_field_metainfo">
+<code class="descname">get_field_metainfo</code><span class="sig-paren">(</span><em>field</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.get_field_metainfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.get_field_metainfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the <a class="reference internal" href="#serialbox.FieldMetainfo" title="serialbox.FieldMetainfo"><code class="xref py py-class docutils literal"><span class="pre">FieldMetainfo</span></code></a> of <cite>field</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>field</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; Name of the field</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Copy of the field meta-information of <cite>field</cite></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#serialbox.FieldMetainfo" title="serialbox.FieldMetainfo"><code class="xref py py-class docutils literal"><span class="pre">FieldMetainfo</span></code></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><strong>serialbox.SerialboxError</strong></a> &#8211; if <cite>field</cite> does not exist within the Serializer</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.fieldnames">
+<code class="descname">fieldnames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.fieldnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.fieldnames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of registered fieldnames within the Serializer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of fieldnames</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">list</span></code></a> [<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>name</em>, <em>savepoint</em>, <em>field</em>, <em>register_field=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serialize <cite>field</cite> identified by <cite>name</cite> at <cite>savepoint</cite> to disk</p>
+<p>The <cite>savepoint</cite> will be registered at field <cite>name</cite> if not yet present. If <cite>register_field</cite>
+is <cite>True</cite>, the field will be registered if necessary.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Write</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="s2">&quot;Binary&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;myfield&quot;</span><span class="p">,</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;mysavepoint&quot;</span><span class="p">),</span> <span class="n">field</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">has_field</span><span class="p">(</span><span class="s2">&quot;myfield&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">fields_at_savepoint</span><span class="p">(</span><span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;mysavepoint&quot;</span><span class="p">))</span>
+<span class="go">[&#39;myfield&#39;]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; Name of the field</li>
+<li><strong>savepoint</strong> (<a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint"><em>Savepoint</em></a>) &#8211; Savepoint at which the field will be serialized</li>
+<li><strong>field</strong> (<a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v1.11)"><em>numpy.array</em></a>) &#8211; Field to serialize</li>
+<li><strong>register_field</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.5)"><em>bool</em></a>) &#8211; Register the field if not present</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><strong>serialbox.SerialboxError</strong></a> &#8211; if serialization failed</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.read">
+<code class="descname">read</code><span class="sig-paren">(</span><em>name</em>, <em>savepoint</em>, <em>field=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deserialize <cite>field</cite> identified by <cite>name</cite> at <cite>savepoint</cite> from disk</p>
+<p>If <cite>field</cite> is a <code class="xref py py-class docutils literal"><span class="pre">numpy.array</span></code> it will be filled with data from disk.
+If <cite>field</cite> is <code class="docutils literal"><span class="pre">None</span></code>, a new numpy.array will be allocated with the registered dimensions
+and type.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Read</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="s2">&quot;Binary&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">fieldnames</span><span class="p">()</span>
+<span class="go">[&#39;myfield&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">get_field_metainfo</span><span class="p">(</span><span class="s2">&quot;myfield&quot;</span><span class="p">)</span>
+<span class="go">&lt;FieldMetainfo type = double, dims = [3, 3], metainfo = {}&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span> <span class="o">=</span> <span class="n">ser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;myfield&quot;</span><span class="p">,</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;mysavepoint&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span>
+<span class="go">array([[ 0.56079736,  0.21627747,  0.87964583],</span>
+<span class="go">       [ 0.94684836,  0.12496717,  0.47460455],</span>
+<span class="go">       [ 0.11462436,  0.86608157,  0.57855988]])</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; Name of the field</li>
+<li><strong>savepoint</strong> (<a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint"><em>Savepoint</em></a>) &#8211; Savepoint at which the field will be deserialized</li>
+<li><strong>field</strong> (<a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v1.11)"><em>numpy.array</em></a>) &#8211; Field to fill or <code class="docutils literal"><span class="pre">None</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Newly allocated and deserialized field</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v1.11)">numpy.array</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><strong>serialbox.SerialboxError</strong></a> &#8211; if deserialization failed</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.read_async">
+<code class="descname">read_async</code><span class="sig-paren">(</span><em>name</em>, <em>savepoint</em>, <em>field=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.read_async"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.read_async" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asynchronously deserialize field <cite>name</cite> (given as <cite>storageView</cite>) at <cite>savepoint</cite> from
+disk using <code class="docutils literal"><span class="pre">std::async</span></code>.</p>
+<p>If <cite>field</cite> is a <code class="xref py py-class docutils literal"><span class="pre">numpy.array</span></code> it will be filled with data from disk.
+If <cite>field</cite> is <code class="docutils literal"><span class="pre">None</span></code>, a new numpy.array will be allocated with the registered dimensions
+and type.</p>
+<p>This method runs the <a class="reference internal" href="#serialbox.Serializer.read" title="serialbox.Serializer.read"><code class="xref py py-func docutils literal"><span class="pre">Serializer.read</span></code></a> function
+asynchronously (potentially in a separate thread which may be part of a thread pool),
+meaning this function immediately returns. To synchronize all threads, use
+<a class="reference internal" href="#serialbox.Serializer.wait_for_all" title="serialbox.Serializer.wait_for_all"><code class="xref py py-func docutils literal"><span class="pre">Serializer.wait_for_all</span></code></a>.</p>
+<p>If the archive is not thread-safe or if the library was not configured with
+<code class="docutils literal"><span class="pre">SERIALBOX_ASYNC_API</span></code> the method falls back to synchronous execution.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Read</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="s2">&quot;Binary&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">fieldnames</span><span class="p">()</span>
+<span class="go">[&#39;field_1&#39;, &#39;field_2&#39;, &#39;field_3&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">field_1</span> <span class="o">=</span> <span class="n">ser</span><span class="o">.</span><span class="n">read_async</span><span class="p">(</span><span class="s2">&quot;field1&quot;</span><span class="p">,</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;sp&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">field_2</span> <span class="o">=</span> <span class="n">ser</span><span class="o">.</span><span class="n">read_async</span><span class="p">(</span><span class="s2">&quot;field2&quot;</span><span class="p">,</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;sp&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">field_3</span> <span class="o">=</span> <span class="n">ser</span><span class="o">.</span><span class="n">read_async</span><span class="p">(</span><span class="s2">&quot;field3&quot;</span><span class="p">,</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;sp&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">wait_for_all</span><span class="p">()</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; Name of the field</li>
+<li><strong>savepoint</strong> (<a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint"><em>Savepoint</em></a>) &#8211; Savepoint at which the field will be deserialized</li>
+<li><strong>field</strong> (<a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v1.11)"><em>numpy.array</em></a>) &#8211; Field to fill or <code class="docutils literal"><span class="pre">None</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Newly allocated and deserialized field</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v1.11)">numpy.array</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><strong>SerialboxError</strong> &#8211; Deserialization failed</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.wait_for_all">
+<code class="descname">wait_for_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.wait_for_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.wait_for_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait for all pending asynchronous read operations and reset the internal queue.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.read_slice">
+<code class="descname">read_slice</code><span class="sig-paren">(</span><em>name</em>, <em>savepoint</em>, <em>slice_obj</em>, <em>field=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.read_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.read_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deserialize sliced <cite>field</cite> identified by <cite>name</cite>  and <cite>slice</cite> at <cite>savepoint</cite> from disk</p>
+<p>The method will allocate a <cite>numpy.array</cite> with the registered dimensions and type and fill it
+at specified positions (given by <cite>slice_obj</cite>) with data from disk. If <cite>field</cite> is a
+<code class="xref py py-class docutils literal"><span class="pre">numpy.array</span></code> it will be filled with data from disk. If <cite>field</cite> is
+<code class="docutils literal"><span class="pre">None</span></code>, a new numpy.array will be allocated with the registered dimensions and type.</p>
+<p>Assume we are given a three-dimensional field but we are only interested in a certain layer
+of the data (<code class="docutils literal"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">50</span></code>), we can use the slice object (ser.Slice) to encode this information
+and instruct the serializer to only load the desired data. Note that we still need to
+allocate memory for the whole field.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Read</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="s2">&quot;Binary&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">fieldnames</span><span class="p">()</span>
+<span class="go">[&#39;field&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">get_field_metainfo</span><span class="p">(</span><span class="s2">&quot;field&quot;</span><span class="p">)</span>
+<span class="go">&lt;FieldMetainfo type = double, dims = [1024, 1024, 80], metainfo = {}&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">read_slice</span><span class="p">(</span><span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;sp&quot;</span><span class="p">),</span> <span class="n">ser</span><span class="o">.</span><span class="n">Slice</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">50</span><span class="p">],</span> <span class="n">field</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can of course load the full data and slice it afterwards with numpy which yields the
+same result, though is most likely slower.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s2">&quot;sp&quot;</span><span class="p">),</span> <span class="n">field</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="mi">50</span><span class="p">]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>savepoint</strong> (<a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint"><em>Savepoint</em></a>) &#8211; Savepoint at which the field will be deserialized</li>
+<li><strong>slice_obj</strong> (<code class="xref py py-class docutils literal"><span class="pre">Slice</span></code>) &#8211; Slice of the data to load</li>
+<li><strong>field</strong> (<a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v1.11)"><em>numpy.array</em></a>) &#8211; Field to fill or <code class="docutils literal"><span class="pre">None</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Newly allocated and deserialized field</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v1.11)">numpy.array</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><strong>serialbox.SerialboxError</strong></a> &#8211; if deserialization failed</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="serialbox.Serializer.to_file">
+<em class="property">static </em><code class="descname">to_file</code><span class="sig-paren">(</span><em>name</em>, <em>field</em>, <em>filename</em>, <em>archive=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serialize <cite>field</cite> identified by <cite>name</cite> directly to file.</p>
+<p>This method allows stateless serializations i.e serialize fields without the need to
+register fields or savpoints.</p>
+<p>If a file with <cite>filename</cite> already exists, it&#8217;s contents will be discarded. If <cite>archive</cite> is
+<code class="docutils literal"><span class="pre">None</span></code>, the method will try to deduce the archive using the extensions of <cite>filename</cite>
+(See <a class="reference internal" href="#serialbox.Archive.archive_from_extension" title="serialbox.Archive.archive_from_extension"><code class="xref py py-func docutils literal"><span class="pre">Archive.archive_from_extension()</span></code></a>).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Serializer</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;field.dat&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; Name of the field (may not be needed for certain archives)</li>
+<li><strong>field</strong> (<a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v1.11)"><em>numpy.array</em></a>) &#8211; Field to serialize</li>
+<li><strong>name</strong> &#8211; Name of the file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><strong>serialbox.SerialboxError</strong></a> &#8211; if archive could not be deduced or deserialization failed</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.from_file">
+<code class="descname">from_file</code><span class="sig-paren">(</span><em>name</em>, <em>field</em>, <em>filename</em>, <em>archive=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.from_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.from_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deserialize <cite>field</cite> identified by <cite>name</cite> directly from file.</p>
+<p>This method allows stateless deserializations i.e serialize fields without specifying the
+savepoints or fields.</p>
+<p>If <cite>archive</cite> is <code class="docutils literal"><span class="pre">None</span></code>, the method will try to deduce the archive using the extensions
+of <cite>filename</cite> (See
+<a class="reference internal" href="#serialbox.Archive.archive_from_extension" title="serialbox.Archive.archive_from_extension"><code class="xref py py-func docutils literal"><span class="pre">Archive.archive_from_extension()</span></code></a>).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span> <span class="o">=</span> <span class="n">Serializer</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;field.dat&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">field</span>
+<span class="go">array([[ 0.56079736,  0.21627747,  0.87964583],</span>
+<span class="go">       [ 0.94684836,  0.12496717,  0.47460455],</span>
+<span class="go">       [ 0.11462436,  0.86608157,  0.57855988]])</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This method performs no consistency checks concerning the dimensions and type of the
+data. You have to know what you are doing!</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; Name of the field (may not be needed for certain archives)</li>
+<li><strong>field</strong> (<a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v1.11)"><em>numpy.array</em></a>) &#8211; Field to serialize</li>
+<li><strong>name</strong> &#8211; Name of the file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><strong>serialbox.SerialboxError</strong></a> &#8211; if archive could not be deduced or deserialization failed</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Serializer.__str__">
+<code class="descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/serializer.html#Serializer.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Serializer.__str__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert Serializer to string</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Write</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="s2">&quot;Binary&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span>
+<span class="go">&lt;Serializer mode = Write</span>
+<span class="go">directory = &quot;.&quot;</span>
+<span class="go">prefix = &quot;field&quot;</span>
+<span class="go">archive = &quot;Binary&quot;</span>
+<span class="go">metainfo = {}</span>
+<span class="go">savepoints = []</span>
+<span class="go">fieldmetainfo = []&gt;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Multi-line string representation of the Serializer</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="metainfomap">
+<span id="id3"></span><h2><a class="toc-backref" href="#id17">MetaInfoMap</a><a class="headerlink" href="#metainfomap" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="serialbox.MetainfoMap">
+<em class="property">class </em><code class="descclassname">serialbox.</code><code class="descname">MetainfoMap</code><span class="sig-paren">(</span><em>metainfo=None</em>, <em>impl=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/metainfomap.html#MetainfoMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.MetainfoMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meta-information implementation of the Python Interface.</p>
+<p>Objects of this class contain a map of meta-information in form of <cite>key = value</cite> or
+<cite>key = {value1, ... valueN}</cite> pair. The keys are strings and unique, while the values can be
+integers, booleans, floating point numbers (either single or double precision) or strings.</p>
+<p>The elements are internally stored as a hash-map and thus the order of insertion is irrelevant.
+The MetainfoMaps can be constrcuted from python dictionary <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MetainfoMap</span><span class="p">({</span><span class="s1">&#39;key1&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;key2&#39;</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span>
+<span class="go">&lt;MetainfoMap {&quot;key2&quot;: str, &quot;key&quot;: 5}&gt;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="serialbox.MetainfoMap.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>metainfo=None</em>, <em>impl=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/metainfomap.html#MetainfoMap.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.MetainfoMap.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the Metainfo map.</p>
+<p>If <cite>metainfo</cite> is None, an empty map is created. Elements can be added later with
+<a class="reference internal" href="#serialbox.MetainfoMap.insert" title="serialbox.MetainfoMap.insert"><code class="xref py py-func docutils literal"><span class="pre">MetainfoMap.insert</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>metainfo</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.5)"><em>dict</em></a>) &#8211; Key-value pair dictionary used for initialization</li>
+<li><strong>impl</strong> &#8211; Directly set the implementation pointer [internal use]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.MetainfoMap.clone">
+<code class="descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/metainfomap.html#MetainfoMap.clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.MetainfoMap.clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clone the Metainfo map by performing a deepcopy.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MetainfoMap</span><span class="p">({</span><span class="s1">&#39;key1&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;key2&#39;</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m_clone</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span>
+<span class="go">&lt;MetainfoMap {}&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m_clone</span>
+<span class="go">&lt;MetainfoMap {&quot;key2&quot;: str, &quot;key&quot;: 5}&gt;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Clone of the map</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#serialbox.MetainfoMap" title="serialbox.MetainfoMap">MetainfoMap</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.MetainfoMap.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>key</em>, <em>value</em>, <em>typeid=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/metainfomap.html#MetainfoMap.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.MetainfoMap.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a new element in the form <cite>key = value</cite> or <cite>key = {value1, ... valueN}</cite> pair.</p>
+<p>The element is inserted only if its <cite>key</cite> is not equivalent to the <cite>key</cite> of any other
+element already in the map (i.e keys must be unique). If the optional parameter <cite>typeid</cite> is
+omitted, the function will try it&#8217;s best effort to deduce the typeid, otherwise the value
+will be converted to match the type of <cite>typeid</cite> (see <a class="reference internal" href="#serialbox.TypeID" title="serialbox.TypeID"><code class="xref py py-class docutils literal"><span class="pre">TypeID</span></code></a>).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MetainfoMap</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span>
+<span class="go">&lt;MetainfoMap {&quot;key&quot;: 5}&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;Array&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span>
+<span class="go">&lt;MetainfoMap {&quot;Array&quot;: [1, 2, 3, 4], &quot;key&quot;: 5}&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;Float&#39;</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">Float32</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span>
+<span class="go">&lt;MetainfoMap {&quot;Array&quot;: [1, 2, 3, 4], &quot;Float&quot;: 5.000000, &quot;key&quot;: 5}&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s1">&#39;Float&#39;</span><span class="p">])</span>
+<span class="go">&lt;class &#39;float&#39;&gt;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; Key of the new element</li>
+<li><strong>value</strong> &#8211; Object to be copied to the value of the new element</li>
+<li><strong>typeid</strong> (<a class="reference internal" href="#serialbox.TypeID" title="serialbox.TypeID"><em>serialbox.TypeID</em></a>) &#8211; Type-id to use</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>SerialboxError</strong> &#8211; if element with key already exists or typeid could not be deduced</li>
+<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.5)"><strong>TypeError</strong></a> &#8211; if <cite>typeid</cite> is not a serialbox.TypeID or int</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.MetainfoMap.size">
+<code class="descname">size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/metainfomap.html#MetainfoMap.size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.MetainfoMap.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get number of elements in the map.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Number of elements in the map</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.5)">int</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.MetainfoMap.empty">
+<code class="descname">empty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/metainfomap.html#MetainfoMap.empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.MetainfoMap.empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if mao is empty.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><cite>True</cite> if map is empty, <cite>False</cite> otherwise</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.5)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.MetainfoMap.has_key">
+<code class="descname">has_key</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/metainfomap.html#MetainfoMap.has_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.MetainfoMap.has_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if and element with key <cite>key</cite> exists.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; Key of the element</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if element with <cite>key</cite> exists, False otherwise</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.5)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.MetainfoMap.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/metainfomap.html#MetainfoMap.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.MetainfoMap.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear the map.</p>
+<p>All the elements in the MetainfoMap are dropped: their destructors are called, and they are
+removed from the container, leaving it with a size of 0.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.MetainfoMap.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/metainfomap.html#MetainfoMap.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.MetainfoMap.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert MetainfoMap to a python dictionary <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a>.</p>
+<p>The MetainfoMap is <cite>copied</cite> into the dictionary.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MetainfoMap</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">map_as_dict</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">map_as_dict</span>
+<span class="go">{&#39;key&#39;: 5, &#39;string&#39;: &#39;str&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">==</span> <span class="n">map_as_dict</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">copy of the Metainfo map as a dictionary</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.5)">dict</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.MetainfoMap.__eq__">
+<code class="descname">__eq__</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/metainfomap.html#MetainfoMap.__eq__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.MetainfoMap.__eq__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test for equality.</p>
+<p>MetainfoMaps are equal if all their elements are equal.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><cite>True</cite> if self == other, <cite>False</cite> otherwise</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.5)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.MetainfoMap.__ne__">
+<code class="descname">__ne__</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/metainfomap.html#MetainfoMap.__ne__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.MetainfoMap.__ne__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test for inequality.</p>
+<p>MetainfoMaps are equal if all their elements are equal.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><cite>True</cite> if self != other, <cite>False</cite> otherwise</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.5)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.MetainfoMap.__getitem__">
+<code class="descname">__getitem__</code><span class="sig-paren">(</span><em>key</em>, <em>typeid=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/metainfomap.html#MetainfoMap.__getitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.MetainfoMap.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get <cite>value</cite> of element given by <cite>key</cite>. The correct type will be inferred.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MetainfoMap</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span>
+<span class="go">5</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; Key of the element</li>
+<li><strong>typeid</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.5)"><em>int</em></a>) &#8211; Type-id [internal use]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Copy of the value of the element</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><strong>serialbox.SerialboxError</strong></a> &#8211; if Element with <cite>key</cite> does not exist</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.MetainfoMap.__iter__">
+<code class="descname">__iter__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/metainfomap.html#MetainfoMap.__iter__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.MetainfoMap.__iter__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate the MetainfoMap.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MetainfoMap</span><span class="p">({</span><span class="s1">&#39;key1&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;key2&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elements</span> <span class="ow">in</span> <span class="n">m</span><span class="p">:</span>
+<span class="go">    ...     print(elements)</span>
+<span class="go">    (&#39;key1&#39;, 5)</span>
+<span class="go">    (&#39;key2&#39;, 6)</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Iterator of MetainfoMap</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">MetainfoMapIterator</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="fieldmetainfo">
+<span id="id4"></span><h2><a class="toc-backref" href="#id18">FieldMetaInfo</a><a class="headerlink" href="#fieldmetainfo" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="serialbox.FieldMetainfo">
+<em class="property">class </em><code class="descclassname">serialbox.</code><code class="descname">FieldMetainfo</code><span class="sig-paren">(</span><em>type</em>, <em>dims</em>, <em>metainfo=None</em>, <em>impl=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/fieldmetainfo.html#FieldMetainfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.FieldMetainfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>FieldMetainfo implementation of the Python Interface.</p>
+<p>FieldMetainfos store the meta-information of fields. Each FieldMetainfo stores the type
+(<a class="reference internal" href="#serialbox.TypeID" title="serialbox.TypeID"><code class="xref py py-class docutils literal"><span class="pre">TypeID</span></code></a>) and dimension of the corresponding field and, optionally,
+arbitrary meta-information in the form of a <a class="reference internal" href="#serialbox.MetainfoMap" title="serialbox.MetainfoMap"><code class="xref py py-class docutils literal"><span class="pre">MetainfoMap</span></code></a>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">FieldMetainfo</span><span class="p">(</span><span class="n">TypeID</span><span class="o">.</span><span class="n">Float64</span><span class="p">,</span> <span class="p">[</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">80</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span>
+<span class="go">&lt;FieldMetainfo type = double, dims = [256, 256, 80], metainfo = {}&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">metainfo</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span>
+<span class="go">&lt;FieldMetainfo type = double, dims = [256, 256, 80], metainfo = {&quot;key&quot;: 5}&gt;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="serialbox.FieldMetainfo.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>type</em>, <em>dims</em>, <em>metainfo=None</em>, <em>impl=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/fieldmetainfo.html#FieldMetainfo.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.FieldMetainfo.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the FieldMetainfo.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>type</strong> (<a class="reference internal" href="#serialbox.TypeID" title="serialbox.TypeID"><code class="xref py py-class docutils literal"><span class="pre">TypeID</span></code></a>, int) &#8211; Type of the field.</li>
+<li><strong>dims</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">list</span></code></a> [<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">int</span></code></a>]) &#8211; List of dimensions.</li>
+<li><strong>metainfo</strong> (<em>dict, MetainfoMap</em>) &#8211; Key-value pair dictionary used to set the meta-information</li>
+<li><strong>impl</strong> &#8211; Directly set the implementation pointer [internal use]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.FieldMetainfo.clone">
+<code class="descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/fieldmetainfo.html#FieldMetainfo.clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.FieldMetainfo.clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clone the FieldMetainfo map by performing a deepcopy.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">FieldMetainfo</span><span class="p">(</span><span class="n">TypeID</span><span class="o">.</span><span class="n">Float64</span><span class="p">,</span> <span class="p">[</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">80</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f_clone</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">f</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f_clone</span>
+<span class="go">&lt;FieldMetainfo type = double, dims = [256, 256, 80], metainfo = {}&gt;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Clone of the FieldMetainfo</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#serialbox.FieldMetainfo" title="serialbox.FieldMetainfo">FieldMetainfo</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="serialbox.FieldMetainfo.type">
+<code class="descname">type</code><a class="headerlink" href="#serialbox.FieldMetainfo.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type of the associated field</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Type of the field</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#serialbox.TypeID" title="serialbox.TypeID"><code class="xref py py-class docutils literal"><span class="pre">TypeID</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="serialbox.FieldMetainfo.dims">
+<code class="descname">dims</code><a class="headerlink" href="#serialbox.FieldMetainfo.dims" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dimensions of the associated field.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Dimensions of the field</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">list</span></code></a> [<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">int</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="serialbox.FieldMetainfo.metainfo">
+<code class="descname">metainfo</code><a class="headerlink" href="#serialbox.FieldMetainfo.metainfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meta-information of the associated field.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Refrence to the meta-info map</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#serialbox.MetainfoMap" title="serialbox.MetainfoMap"><code class="xref py py-class docutils literal"><span class="pre">MetainfoMap</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.FieldMetainfo.__eq__">
+<code class="descname">__eq__</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/fieldmetainfo.html#FieldMetainfo.__eq__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.FieldMetainfo.__eq__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test for equality.</p>
+<p>FieldMetainfos compare equal if their type, dimensions and meta-infos compare equal.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><cite>True</cite> if self == other, <cite>False</cite> otherwise</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.5)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.FieldMetainfo.__ne__">
+<code class="descname">__ne__</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/fieldmetainfo.html#FieldMetainfo.__ne__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.FieldMetainfo.__ne__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test for inequality.</p>
+<p>FieldMetainfos compare equal if their type, dimensions and meta-infos compare equal.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><cite>True</cite> if self != other, <cite>False</cite> otherwise</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.5)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="savepoint">
+<span id="id5"></span><h2><a class="toc-backref" href="#id19">Savepoint</a><a class="headerlink" href="#savepoint" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="serialbox.Savepoint">
+<em class="property">class </em><code class="descclassname">serialbox.</code><code class="descname">Savepoint</code><span class="sig-paren">(</span><em>name</em>, <em>metainfo=None</em>, <em>impl=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/savepoint.html#Savepoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Savepoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Savepoints are used within the <a class="reference internal" href="#serialbox.Serializer" title="serialbox.Serializer"><code class="xref py py-class docutils literal"><span class="pre">Serializer</span></code></a> to discriminate
+fields at different points in time. Savepoints in the <a class="reference internal" href="#serialbox.Serializer" title="serialbox.Serializer"><code class="xref py py-class docutils literal"><span class="pre">Serializer</span></code></a>
+are unique and primarily identified by their <a class="reference internal" href="#serialbox.Savepoint.name" title="serialbox.Savepoint.name"><code class="xref py py-attr docutils literal"><span class="pre">name</span></code></a></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">savepoint</span> <span class="o">=</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s1">&#39;savepoint&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">savepoint</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;savepoint&#39;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>and further distinguished by their <a class="reference internal" href="#serialbox.Savepoint.metainfo" title="serialbox.Savepoint.metainfo"><code class="xref py py-attr docutils literal"><span class="pre">metainfo</span></code></a></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">savepoint</span> <span class="o">=</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s1">&#39;savepoint&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">savepoint</span><span class="o">.</span><span class="n">metainfo</span>
+<span class="go">&lt;MetainfoMap {&quot;key&quot;: 5}&gt;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="serialbox.Savepoint.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>name</em>, <em>metainfo=None</em>, <em>impl=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/savepoint.html#Savepoint.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Savepoint.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize the Savepoint.</p>
+<p>This method prepares the Savepoint for usage and gives a name, which is the only required
+information for the savepoint to be usable. Meta-information can be added after the
+initialization has been performed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; Name of the savepoint</li>
+<li><strong>metainfo</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.5)"><em>dict</em></a>) &#8211; {Key:value} pair dictionary used for initializing the meta-information
+of the Savepont</li>
+<li><strong>impl</strong> (<em>SavepointImpl</em>) &#8211; Directly set the implementation pointer [internal use]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><strong>serialbox.SerialboxError</strong></a> &#8211; if Savepoint could not be initialized</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="serialbox.Savepoint.name">
+<code class="descname">name</code><a class="headerlink" href="#serialbox.Savepoint.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the Savepoint.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s1">&#39;savepoint&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;savepoint&#39;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return str:</th><td class="field-body">Name of the savepoint</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="serialbox.Savepoint.metainfo">
+<code class="descname">metainfo</code><a class="headerlink" href="#serialbox.Savepoint.metainfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refrence to the meta-information of the Savepoint.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s1">&#39;savepoint&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">metainfo</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">]</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">metainfo</span><span class="p">)</span>
+<span class="go">&lt;class &#39;serialbox.metainfomap.MetainfoMap&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">metainfo</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;key2&#39;</span><span class="p">,</span> <span class="s1">&#39;str&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span>
+<span class="go">&lt;MetainfoMap {&quot;key&quot;: 5, &quot;key2&quot;: str}&gt;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Refrence to the meta-information map</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#serialbox.MetainfoMap" title="serialbox.MetainfoMap"><code class="xref py py-class docutils literal"><span class="pre">MetainfoMap</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Savepoint.clone">
+<code class="descname">clone</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/savepoint.html#Savepoint.clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Savepoint.clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clone the Savepoint by performing a deepcopy.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s1">&#39;savepoint&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_clone</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">metainfo</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_clone</span>
+<span class="go">&lt;Savepoint sp {&quot;key&quot;: 5}&gt;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Clone of the savepoint</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint">Savepoint</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Savepoint.__eq__">
+<code class="descname">__eq__</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/savepoint.html#Savepoint.__eq__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Savepoint.__eq__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test for equality.</p>
+<p>Savepoints compare equal if their <a class="reference internal" href="#serialbox.Savepoint.name" title="serialbox.Savepoint.name"><code class="xref py py-attr docutils literal"><span class="pre">names</span></code></a> and
+<a class="reference internal" href="#serialbox.Savepoint.metainfo" title="serialbox.Savepoint.metainfo"><code class="xref py py-attr docutils literal"><span class="pre">metainfos</span></code></a> compare equal.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s1">&#39;savepoint&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s1">&#39;savepoint&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">==</span> <span class="n">s2</span>
+<span class="go">False</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><cite>True</cite> if self == other, <cite>False</cite> otherwise</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.5)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.Savepoint.__ne__">
+<code class="descname">__ne__</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/savepoint.html#Savepoint.__ne__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Savepoint.__ne__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test for inequality.</p>
+<p>Savepoints compare equal if their <a class="reference internal" href="#serialbox.Savepoint.name" title="serialbox.Savepoint.name"><code class="xref py py-attr docutils literal"><span class="pre">names</span></code></a> and
+<a class="reference internal" href="#serialbox.Savepoint.metainfo" title="serialbox.Savepoint.metainfo"><code class="xref py py-attr docutils literal"><span class="pre">metainfos</span></code></a> compare equal.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s1">&#39;savepoint&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="n">Savepoint</span><span class="p">(</span><span class="s1">&#39;savepoint&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">!=</span> <span class="n">s2</span>
+<span class="go">True</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><cite>True</cite> if self != other, <cite>False</cite> otherwise</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.5)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="serialbox.SavepointCollection">
+<em class="property">class </em><code class="descclassname">serialbox.</code><code class="descname">SavepointCollection</code><a class="reference internal" href="_modules/serialbox/savepoint.html#SavepointCollection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.SavepointCollection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collection of savepoints. A collection can be obtained by using the
+<a class="reference internal" href="#serialbox.Serializer.savepoint" title="serialbox.Serializer.savepoint"><code class="xref py py-attr docutils literal"><span class="pre">savepoint</span></code></a> attribute of the
+<a class="reference internal" href="#serialbox.Serializer" title="serialbox.Serializer"><code class="xref py py-class docutils literal"><span class="pre">Serializer</span></code></a>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span> <span class="o">=</span> <span class="n">Serializer</span><span class="p">(</span><span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Write</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;field&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">register_savepoint</span><span class="p">(</span><span class="n">Savepoint</span><span class="p">(</span><span class="s1">&#39;s1&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">register_savepoint</span><span class="p">(</span><span class="n">Savepoint</span><span class="p">(</span><span class="s1">&#39;s2&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">ser</span><span class="o">.</span><span class="n">savepoint</span><span class="p">,</span> <span class="n">SavepointCollection</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">savpoint</span><span class="o">.</span><span class="n">savepoints</span><span class="p">()</span>
+<span class="go">[&lt;Savepoint s1 {}&gt;, &lt;Savepoint s2 {}&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ser</span><span class="o">.</span><span class="n">savepoint</span><span class="o">.</span><span class="n">as_savepoint</span><span class="p">()</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">?</span>
+  File <span class="nb">&quot;savepoint.py&quot;</span>, line <span class="m">227</span>, in <span class="n">as_savepoint</span>
+    <span class="k">raise</span> <span class="n">SerialboxError</span><span class="p">(</span><span class="n">errstr</span><span class="p">)</span>
+<span class="gr">serialbox.error.SerialboxError</span>: <span class="n">Savepoint is ambiguous. Candidates are:</span>
+<span class="go">  s1 {}</span>
+<span class="go">  s2 {}</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="serialbox.SavepointCollection.savepoints">
+<code class="descname">savepoints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/savepoint.html#SavepointCollection.savepoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.SavepointCollection.savepoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of savepoints in this collection. The savepoints are ordered in the way
+they were inserted.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of savepoints in the collection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">list</span></code></a> [<a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint"><code class="xref py py-class docutils literal"><span class="pre">Savepoint</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="serialbox.SavepointCollection.as_savepoint">
+<code class="descname">as_savepoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/savepoint.html#SavepointCollection.as_savepoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.SavepointCollection.as_savepoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the unique savepoint in the list or raise an
+<a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><code class="xref py py-class docutils literal"><span class="pre">SerialboxError</span></code></a> if list has more than 1 element.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Unique savepoint in this collection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#serialbox.Savepoint" title="serialbox.Savepoint">Savepoint</a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><strong>serialbox.SerialboxError</strong></a> &#8211; if list has more than one Savepoint</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="archive">
+<span id="id6"></span><h2><a class="toc-backref" href="#id20">Archive</a><a class="headerlink" href="#archive" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="serialbox.Archive">
+<em class="property">class </em><code class="descclassname">serialbox.</code><code class="descname">Archive</code><a class="reference internal" href="_modules/serialbox/archive.html#Archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Archive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide information about the registered archives</p>
+<dl class="staticmethod">
+<dt id="serialbox.Archive.registered_archives">
+<em class="property">static </em><code class="descname">registered_archives</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/archive.html#Archive.registered_archives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Archive.registered_archives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of strings of the registered archives.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Registered archives</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">list</span></code></a> [<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="serialbox.Archive.archive_from_extension">
+<em class="property">static </em><code class="descname">archive_from_extension</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/archive.html#Archive.archive_from_extension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Archive.archive_from_extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deduce the name of the <cite>archive</cite> according to the extension of the <cite>filename</cite>.</p>
+<p>Only the registered archives are taken into account!</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="58%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Extensions</th>
+<th class="head">Archives</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>.dat, .bin</td>
+<td>Binary</td>
+</tr>
+<tr class="row-odd"><td>.nc</td>
+<td>NetCDF</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><em>str</em></a>) &#8211; Name of the file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Name of the registered archive matching the file extension</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)">str</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference internal" href="#serialbox.SerialboxError" title="serialbox.SerialboxError"><strong>serialbox.SerialboxError</strong></a> &#8211; if extensions is invalid or no registered archive
+supports it.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="logging">
+<span id="id7"></span><h2><a class="toc-backref" href="#id21">Logging</a><a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="serialbox.Logging">
+<em class="property">class </em><code class="descclassname">serialbox.</code><code class="descname">Logging</code><a class="reference internal" href="_modules/serialbox/logging.html#Logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Logging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logging infastrucutre</p>
+<p>By default, logging is disabled. If <code class="docutils literal"><span class="pre">SERIALBOX_DISABLE_LOGGING</span></code> was used during
+compilation of the library, the functions do nothing (see <a class="reference internal" href="#serialbox.Config" title="serialbox.Config"><code class="xref py py-class docutils literal"><span class="pre">Config</span></code></a>).</p>
+<dl class="staticmethod">
+<dt id="serialbox.Logging.enable">
+<em class="property">static </em><code class="descname">enable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/logging.html#Logging.enable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Logging.enable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable logging.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="serialbox.Logging.disable">
+<em class="property">static </em><code class="descname">disable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/logging.html#Logging.disable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Logging.disable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable logging.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="serialbox.Logging.is_enabled">
+<em class="property">static </em><code class="descname">is_enabled</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/logging.html#Logging.is_enabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Logging.is_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if logging is enabled.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><cite>True</cite> if logging is enabled, <cite>False</cite> otherwise</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.5)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="config">
+<span id="id8"></span><h2><a class="toc-backref" href="#id22">Config</a><a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="serialbox.Config">
+<em class="property">class </em><code class="descclassname">serialbox.</code><code class="descname">Config</code><a class="reference internal" href="_modules/serialbox/core.html#Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configurations used when compiling the <code class="docutils literal"><span class="pre">serialboxC</span></code> library. The configuration is stored
+as a python dictionary <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get_dict</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span>
+<span class="go">{&#39;SERIALBOX_HAS_NETCDF&#39;: &#39;1&#39;,</span>
+<span class="go"> &#39;SERIALBOX_CXX_FLAGS&#39;: &#39;-std=c++11  -march=native -fPIC -O2 -g -DNDEBUG&#39;,</span>
+<span class="go"> &#39;BOOST_VERSION&#39;: &#39;1_61&#39;,</span>
+<span class="go"> &#39;SERIALBOX_ASYNC_API&#39;: &#39;1&#39;,</span>
+<span class="go"> &#39;SERIALBOX_CXX_COMPILER&#39;: &#39;/usr/bin/clang&#39;,</span>
+<span class="go"> &#39;SERIALBOX_HAS_OPENSSL&#39;: &#39;1&#39;}</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="serialbox.Config.get_dict">
+<code class="descname">get_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/core.html#Config.get_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.Config.get_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of compile options</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Compile options</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">dict</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="openmodekind">
+<span id="id9"></span><h2><a class="toc-backref" href="#id23">OpenModeKind</a><a class="headerlink" href="#openmodekind" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="serialbox.OpenModeKind">
+<em class="property">class </em><code class="descclassname">serialbox.</code><code class="descname">OpenModeKind</code><a class="reference internal" href="_modules/serialbox/type.html#OpenModeKind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.OpenModeKind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Policy for opening files in the Serializer and Archive</p>
+</dd></dl>
+
+<table border="1" class="docutils">
+<colgroup>
+<col width="67%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Mode</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">Read</span></code></td>
+<td>0</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">Write</span></code></td>
+<td>1</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">Append</span></code></td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="typeid">
+<span id="id10"></span><h2><a class="toc-backref" href="#id24">TypeID</a><a class="headerlink" href="#typeid" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="serialbox.TypeID">
+<em class="property">class </em><code class="descclassname">serialbox.</code><code class="descname">TypeID</code><a class="reference internal" href="_modules/serialbox/type.html#TypeID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.TypeID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type-id of types recognized by serialbox.</p>
+<p>This enum corresponds to the enum definitions of the C/C++ library.</p>
+</dd></dl>
+
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="50%" />
+<col width="31%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">TypeID</th>
+<th class="head">Python Type</th>
+<th class="head">C++ Type</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">TypeID.Boolean</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">bool</span></code></a></td>
+<td><code class="docutils literal"><span class="pre">bool</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">TypeID.Int32</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">int</span></code></a>, np.int32</td>
+<td><code class="docutils literal"><span class="pre">int</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">TypeID.Int64</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">int</span></code></a>, np.int64</td>
+<td><code class="docutils literal"><span class="pre">std::int64_t</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">TypeID.Float32</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">float</span></code></a>, np.float32</td>
+<td><code class="docutils literal"><span class="pre">float</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">TypeID.Float64</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">float</span></code></a>, np.float64</td>
+<td><code class="docutils literal"><span class="pre">double</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">TypeID.String</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></a></td>
+<td><code class="docutils literal"><span class="pre">std::string</span></code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="slice">
+<span id="id11"></span><h2><a class="toc-backref" href="#id25">Slice</a><a class="headerlink" href="#slice" title="Permalink to this headline">¶</a></h2>
+<p>Specification of the slice indices which are used for partial loading of serialized data.
+To avoid instantiation, use the global object serialbox.Slice.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Slice</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="go">(slice(None, None, None), slice(None, None, None), 5)</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/arrays.indexing.html">here</a> for furhter information on indexing.</p>
+</div>
+<div class="section" id="serialboxerror">
+<span id="id12"></span><h2><a class="toc-backref" href="#id26">SerialboxError</a><a class="headerlink" href="#serialboxerror" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="serialbox.SerialboxError">
+<em class="property">class </em><code class="descclassname">serialbox.</code><code class="descname">SerialboxError</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serialbox/error.html#SerialboxError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#serialbox.SerialboxError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised when an operation results in an error.</p>
+<dl class="attribute">
+<dt id="serialbox.SerialboxError.message">
+<code class="descname">message</code><a class="headerlink" href="#serialbox.SerialboxError.message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Explanation of the error.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Explanation string</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.5)">str</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="C.html" title="C interface"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Serialbox 2.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Fabian Thüring.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+    </div>
+  </body>
+</html>
