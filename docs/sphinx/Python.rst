@@ -18,13 +18,13 @@ The Python interface of Serialbox is built if the CMake variable ``SERIALBOX_ENA
 
 To get started, add the path of the Serialbox module to the Python environment variable ``PYTHONPATH``
 
-.. code::
+.. code-block:: console
 
   export PYTHONPATH=<path-to-serialbox-installation>/python:$PYTHONPATH
   
 To check if everything works:
 
-.. code::
+.. code-block:: console
 
   export PYTHONPATH=<path-to-serialbox-installation>/python:$PYTHONPATH
   python3 -c "from serialbox import __version__; print(__version__)"

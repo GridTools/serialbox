@@ -37,7 +37,7 @@ The build can be customized with the following [CMake] options:
 | `SERIALBOX_USE_NETCDF`            | `-`      | Use [NetCDF-4] library to build the NetCDF archive backend. By default the option is `ON` if NetCDF-4 was found. |
 | `SERIALBOX_EXAMPLES`              | `ON`     | Build example exectuables. |
 | `SERIALBOX_TESTING`               | `OFF`    | Build unittests. |
-| `SERIALBOX_TESTING_girdtools`     | `OFF`    | Build girdtools unitests and examples. |
+| `SERIALBOX_TESTING_GRIDTOOLS`     | `OFF`    | Build girdtools unitests and examples. |
 | `SERIALBOX_TESTING_STELLA`        | `OFF`    | Build STELLA unitests. |
 | `SERIALBOX_TESTING_OLD_SERIALBOX` | `OFF`    | Build compatiblity unitests against old [Serialbox (0.1)]. |
 | `SERIALBOX_TESTING_DEATH_TESTS`   | `OFF`    | Run death-tests. |

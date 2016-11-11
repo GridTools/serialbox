@@ -7,7 +7,7 @@ Serialbox is a serialization library and tools for C/C++, Python3 and Fortran. S
 
 .. toctree::
    :hidden:
-   :maxdepth: 1
+   :maxdepth: 2
 
    Building
    C++
