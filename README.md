@@ -1,4 +1,4 @@
-<img src="docs/logo/logo.png" width="447" height="170" />
+<img src="docs/logo/logo.png" width="559" height="212" />
 
 #### Table of Contents
 * [Introduction](#introduction)
