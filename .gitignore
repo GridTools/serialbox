@@ -24,4 +24,4 @@ src/serialbox-python/serialbox/*.so
 src/serialbox-python/serialbox/*.dylib
 
 # Ignore gh-pages folder
-gh-pages/*
+gh-pages*
