@@ -42,4 +42,4 @@ cp -r $HTML_FOLDER $DEPLOY_FOLDER
 #
 # Cleanup (remove deploy folder)
 #
-rm -rf $DEPLOY_FOLDER
+#rm -rf $DEPLOY_FOLDER
