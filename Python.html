@@ -127,12 +127,12 @@
 <span id="id1"></span><h2><a class="toc-backref" href="#id13">Building</a><a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
 <p>The Python interface of Serialbox is built if the CMake variable <code class="docutils literal"><span class="pre">SERIALBOX_ENABLE_PYTHON</span></code> is <code class="docutils literal"><span class="pre">ON</span></code> (which is the default behaviour) and installed in <code class="docutils literal"><span class="pre">install/python/serialbox</span></code>. Serialbox requires atleast Python3.4 and relies on <a class="reference external" href="http://www.numpy.org/">numpy</a>.</p>
 <p>To get started, add the path of the Serialbox module to the Python environment variable <code class="docutils literal"><span class="pre">PYTHONPATH</span></code></p>
-<div class="highlight-console"><div class="highlight"><pre><span class="go">export PYTHONPATH=&lt;path-to-serialbox-installation&gt;/python:$PYTHONPATH</span>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> <span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span>&lt;path-to-serialbox-installation&gt;/python:$PYTHONPATH
 </pre></div>
 </div>
 <p>To check if everything works:</p>
-<div class="highlight-console"><div class="highlight"><pre><span class="go">export PYTHONPATH=&lt;path-to-serialbox-installation&gt;/python:$PYTHONPATH</span>
-<span class="go">python3 -c &quot;from serialbox import __version__; print(__version__)&quot;</span>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> <span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span>&lt;path-to-serialbox-installation&gt;/python:$PYTHONPATH
+<span class="gp">$</span> python3 -c <span class="s2">&quot;from serialbox import __version__; print(__version__)&quot;</span>
 </pre></div>
 </div>
 <p>which should print the current version string of the library.</p>

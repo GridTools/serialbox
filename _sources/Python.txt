@@ -20,14 +20,14 @@ To get started, add the path of the Serialbox module to the Python environment v
 
 .. code-block:: console
 
-  export PYTHONPATH=<path-to-serialbox-installation>/python:$PYTHONPATH
+  $ export PYTHONPATH=<path-to-serialbox-installation>/python:$PYTHONPATH
   
 To check if everything works:
 
 .. code-block:: console
 
-  export PYTHONPATH=<path-to-serialbox-installation>/python:$PYTHONPATH
-  python3 -c "from serialbox import __version__; print(__version__)"
+  $ export PYTHONPATH=<path-to-serialbox-installation>/python:$PYTHONPATH
+  $ python3 -c "from serialbox import __version__; print(__version__)"
   
 which should print the current version string of the library.
 

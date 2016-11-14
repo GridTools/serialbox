@@ -5,6 +5,45 @@ Building Documentation
 **********************
 
 This section is concerned with building and deploying the Documentation you are currently reading.
+   
+.. _Prerequisite:
 
-.. contents::
-   :local:
+Prerequisite
+============
+
+Serialbox requires `doxygen <http://www.stack.nl/~dimitri/doxygen/>`_ and `sphinx <http://www.sphinx-doc.org/en/1.4.8/>`_. As sphinx imports the Python module of Serialbox to obtain the doc-strings, we require the Python3 version of sphinx. In Ubuntu (16.04), the following install the necessary packages:
+
+.. code-block:: console
+
+  $ sudo apt-get install doxygen python3-sphinx
+
+To enable the documentation, configure the project with the CMake variable ``SERIALBOX_DOCUMENTATION`` set to ON:
+
+.. code-block:: console
+
+  $ cmake -DSERIALBOX_DOCUMENTATION=ON ../
+
+As mentioned, sphinx imports the Python module and thus Serialbox should be built with ``SERIALBOX_ENABLE_PYTHON=ON`` (which is default). 
+
+.. _Building:
+
+Building
+========
+
+If CMake was able to pick up doxygen and sphinx, it will provide a ``docs`` target:
+
+.. code-block:: console
+
+  $ make docs
+
+This will install the documentation into ``docs/sphinx/_build/html`` and you can immedialtly view it by opening ``docs/sphinx/_build/html/index.html`` in your favorite browser.
+
+Deploying
+=========
+
+GitHub provides the ability to upload your website to `GitHub Pages <https://pages.github.com/>`_. To to this, we need to push the website to the ``gh-pages`` branch. The script ``tools/deploy-docs.sh`` does exactly this, meaning: Cloning the branch ``gh-pages``, copying the website from ``docs/sphinx/_build/html/`` and commiting and pushing the changes to your remote. To ease the burden, CMake was configured to provide a target to invoke the script:
+
+.. code-block:: console
+
+  $ make deploy-docs
+

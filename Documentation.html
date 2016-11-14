@@ -54,6 +54,16 @@
 
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Building Documentation</a><ul>
+<li><a class="reference internal" href="#prerequisite">Prerequisite</a></li>
+<li><a class="reference internal" href="#building">Building</a></li>
+<li><a class="reference internal" href="#deploying">Deploying</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="Building.html"
                         title="previous chapter">Building Serialbox</a></p>
@@ -91,6 +101,33 @@
   <div class="section" id="building-documentation">
 <h1>Building Documentation<a class="headerlink" href="#building-documentation" title="Permalink to this headline">¶</a></h1>
 <p>This section is concerned with building and deploying the Documentation you are currently reading.</p>
+<div class="section" id="prerequisite">
+<span id="id1"></span><h2>Prerequisite<a class="headerlink" href="#prerequisite" title="Permalink to this headline">¶</a></h2>
+<p>Serialbox requires <a class="reference external" href="http://www.stack.nl/~dimitri/doxygen/">doxygen</a> and <a class="reference external" href="http://www.sphinx-doc.org/en/1.4.8/">sphinx</a>. As sphinx imports the Python module of Serialbox to obtain the doc-strings, we require the Python3 version of sphinx. In Ubuntu (16.04), the following install the necessary packages:</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> sudo apt-get install doxygen python3-sphinx
+</pre></div>
+</div>
+<p>To enable the documentation, configure the project with the CMake variable <code class="docutils literal"><span class="pre">SERIALBOX_DOCUMENTATION</span></code> set to ON:</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> cmake -DSERIALBOX_DOCUMENTATION<span class="o">=</span>ON ../
+</pre></div>
+</div>
+<p>As mentioned, sphinx imports the Python module and thus Serialbox should be built with <code class="docutils literal"><span class="pre">SERIALBOX_ENABLE_PYTHON=ON</span></code> (which is default).</p>
+</div>
+<div class="section" id="building">
+<span id="id2"></span><h2>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
+<p>If CMake was able to pick up doxygen and sphinx, it will provide a <code class="docutils literal"><span class="pre">docs</span></code> target:</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> make docs
+</pre></div>
+</div>
+<p>This will install the documentation into <code class="docutils literal"><span class="pre">docs/sphinx/_build/html</span></code> and you can immedialtly view it by opening <code class="docutils literal"><span class="pre">docs/sphinx/_build/html/index.html</span></code> in your favorite browser.</p>
+</div>
+<div class="section" id="deploying">
+<h2>Deploying<a class="headerlink" href="#deploying" title="Permalink to this headline">¶</a></h2>
+<p>GitHub provides the ability to upload your website to <a class="reference external" href="https://pages.github.com/">GitHub Pages</a>. To to this, we need to push the website to the <code class="docutils literal"><span class="pre">gh-pages</span></code> branch. The script <code class="docutils literal"><span class="pre">tools/deploy-docs.sh</span></code> does exactly this, meaning: Cloning the branch <code class="docutils literal"><span class="pre">gh-pages</span></code>, copying the website from <code class="docutils literal"><span class="pre">docs/sphinx/_build/html/</span></code> and commiting and pushing the changes to your remote. To ease the burden, CMake was configured to provide a target to invoke the script:</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> make deploy-docs
+</pre></div>
+</div>
+</div>
 </div>
 
 
