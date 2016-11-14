@@ -33,25 +33,25 @@ fi
 pushd $(pwd)
 
 if [ ! -d "$GH_PAGES_FOLDER" ]; then
-  echo -e "\e[1m >> Cloning branch \"gh-pages\" into $GH_PAGES_FOLDER ... \e[0m"
+  echo -e "\e[1m>> Cloning branch \"gh-pages\" into $GH_PAGES_FOLDER ... \e[0m"
   git clone -b gh-pages $REMOTE_URL $GH_PAGES_FOLDER
 fi
 
-echo -e "\e[1m >> Copying directory to gh-pages ... \e[0m"
+echo -e "\e[1m>> Copying directory to gh-pages ... \e[0m"
 cp -r $HTML_FOLDER/* $GH_PAGES_FOLDER
 
 cd $GH_PAGES_FOLDER
 
-echo -e "\e[1m >> Pull remote ...\e[0m"
+echo -e "\e[1m>> Pull remote ...\e[0m"
 git pull origin gh-pages
 
-echo -e "\e[1m >> Adding changes ...\e[0m"
+echo -e "\e[1m>> Adding changes ...\e[0m"
 git add .
 
-echo -e "\e[1m >> Commiting changes ...\e[0m"
+echo -e "\e[1m>> Commiting changes ...\e[0m"
 git commit -m "update gh-pages"
 
-echo -e "\e[1m >> Pushing changes to remote ...\e[0m"
+echo -e "\e[1m>> Pushing changes to remote ...\e[0m"
 git push origin gh-pages
 
 popd

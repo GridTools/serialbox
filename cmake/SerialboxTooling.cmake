@@ -14,7 +14,7 @@
 # This module contains the `serialbox_run_pp_ser` function which is used to preprocess Fortran
 # source code using the pp_ser.py script.
 #
-# Function arguments:
+# Function arguments::
 #
 #   SOURCES       - Sources to preprocess
 #   OUTPUT_DIR    - Output directory of the the source files. If nothing is specified 

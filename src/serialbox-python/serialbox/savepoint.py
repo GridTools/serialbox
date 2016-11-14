@@ -238,7 +238,7 @@ class SavepointCollection(object, metaclass=ABCMeta):
 
     def as_savepoint(self):
         """ Return the unique savepoint in the list or raise an
-        :class:`SerialboxError <serialbox.SerialboxError>` if list has more than 1 element.
+        :class:`SerialboxError <serialbox.SerialboxError>` if the list has more than 1 element.
 
         :return: Unique savepoint in this collection.
         :rtype: Savepoint

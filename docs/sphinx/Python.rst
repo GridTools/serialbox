@@ -1,5 +1,3 @@
-.. Python Serialbox Documentation
-
 ****************
 Serialbox Python
 ****************
@@ -9,25 +7,25 @@ This section is concerned with the `python3 <https://www.python.org/>`_ interfac
 .. contents::
    :local:
 
-.. _Building:
+.. _PythonBuilding:
 
 Building
 --------
 
-The Python interface of Serialbox is built if the CMake variable ``SERIALBOX_ENABLE_PYTHON`` is ``ON`` (which is the default behaviour) and installed in ``install/python/serialbox``. Serialbox requires atleast Python3.4 and relies on `numpy <http://www.numpy.org/>`_.
+The Python interface of Serialbox is built if the CMake variable ``SERIALBOX_ENABLE_PYTHON`` is ON (which is the default behaviour) and installed in ``install/python/serialbox``. Serialbox requires atleast Python3.4 and relies on `numpy <http://www.numpy.org/>`_.
 
 To get started, add the path of the Serialbox module to the Python environment variable ``PYTHONPATH``
 
 .. code-block:: console
 
-  export PYTHONPATH=<path-to-serialbox-installation>/python:$PYTHONPATH
+  $ export PYTHONPATH=<path-to-serialbox-installation>/python:$PYTHONPATH
   
 To check if everything works:
 
 .. code-block:: console
 
-  export PYTHONPATH=<path-to-serialbox-installation>/python:$PYTHONPATH
-  python3 -c "from serialbox import __version__; print(__version__)"
+  $ export PYTHONPATH=<path-to-serialbox-installation>/python:$PYTHONPATH
+  $ python3 -c "from serialbox import __version__; print(__version__)"
   
 which should print the current version string of the library.
 

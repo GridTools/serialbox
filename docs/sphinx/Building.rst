@@ -1,5 +1,3 @@
-.. Building Serialbox Documentation
-
 ******************
 Building Serialbox
 ******************
@@ -182,32 +180,32 @@ Serialbox specific variables
 ----------------------------
 
 **SERIALBOX_ENABLE_C**:BOOL
-  Build the C interface of Serialbox (``libSerialboxC``). The options is ``ON`` by default.
+  Build the C interface of Serialbox (``libSerialboxC``). The options is ON by default.
 
 **SERIALBOX_ENABLE_PYTHON**:BOOL
-  Build Python3 interface of Serialbox (requires ``SERIALBOX_ENABLE_C=ON``). The options is ``ON`` by default. The module will be installed in ``python/serialbox``.
+  Build Python3 interface of Serialbox (requires ``SERIALBOX_ENABLE_C=ON``). The options is ON by default. The module will be installed in ``python/serialbox``.
 
 **SERIALBOX_ENABLE_FORTRAN**:BOOL
-  Build the C interface of Serialbox (``libSerialboxFortran``). The options is ``OFF`` by default.
+  Build the C interface of Serialbox (``libSerialboxFortran``). The options is OFF by default.
  
 **SERIALBOX_EXAMPLES**:BOOL
   Build the example executables in ``examples/``. To build the gridtools examples, ``SERIALBOX_TESTING_GRIDTOOLS=ON`` is required.
   
 **SERIALBOX_BUILD_SHARED**:BOOL
-  Build shared libraries of Serialbox. This is required for the Python module. The option is ``ON`` by default.
+  Build shared libraries of Serialbox. This is required for the Python module. The option is ON by default.
   
 **SERIALBOX_LOGGING**:BOOL
   Enable/disable the logging infrastructure. If logging is disabled, `Boost.Log <http://www.boost.org/doc/libs/1_62_0/libs/log/doc/html/index.html>`_ is not **NOT** required anymore. 
-  The option is ``ON`` by default.
+  The option is ON by default.
 
 **SERIALBOX_ASYNC_API**:BOOL
-  Enable the asynchronous API. This uses the C++11 STL multitheading infrastructure. The option is ``ON`` by default.
+  Enable the asynchronous API. This uses the C++11 STL multitheading infrastructure. The option is ON by default.
 
 **SERIALBOX_USE_OPENSSL**:BOOL
-  Use OpenSSL library for fast hash-algorithms. By default the option is ``ON`` if NetCDF-4 was found.
+  Use OpenSSL library for fast hash-algorithms. By default the option is ON if NetCDF-4 was found.
 
 **SERIALBOX_USE_NETCDF**:BOOL
-  Use `NetCDF-4 <http://www.unidata.ucar.edu/software/netcdf/>`_ library to build the NetCDF archive backend. By default the option is ``ON`` if NetCDF-4 was found.
+  Use `NetCDF-4 <http://www.unidata.ucar.edu/software/netcdf/>`_ library to build the NetCDF archive backend. By default the option is ON if NetCDF-4 was found.
 
 **SERIALBOX_TESTING**:BOOL
   Build the unittests (see `Building the unittests`_)

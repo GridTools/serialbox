@@ -721,8 +721,8 @@ class Serializer(object):
         """ Deserialize `field` identified by `name` at `savepoint` from disk
 
         If `field` is a :class:`numpy.array <numpy.array>` it will be filled with data from disk.
-        If `field` is ``None``, a new numpy.array will be allocated with the registered dimensions
-        and type.
+        If `field` is ``None``, a new :class:`numpy.array <numpy.array>` will be allocated with
+        the registered dimensions and type.
 
             >>> ser = Serializer(OpenModeKind.Read, ".", "field", "Binary")
             >>> ser.fieldnames()
@@ -771,12 +771,11 @@ class Serializer(object):
         return field
 
     def read_async(self, name, savepoint, field=None):
-        """ Asynchronously deserialize field `name` (given as `storageView`) at `savepoint` from
-        disk using ``std::async``.
+        """ Asynchronously deserialize field `name` at `savepoint` from disk.
 
         If `field` is a :class:`numpy.array <numpy.array>` it will be filled with data from disk.
-        If `field` is ``None``, a new numpy.array will be allocated with the registered dimensions
-        and type.
+        If `field` is ``None``, a new :class:`numpy.array <numpy.array>` will be allocated with
+        the registered dimensions and type.
 
         This method runs the :func:`Serializer.read <serialbox.Serializer.read>` function
         asynchronously (potentially in a separate thread which may be part of a thread pool),
@@ -838,9 +837,10 @@ class Serializer(object):
         """ Deserialize sliced `field` identified by `name`  and `slice` at `savepoint` from disk
 
         The method will allocate a `numpy.array` with the registered dimensions and type and fill it
-        at specified positions (given by `slice_obj`) with data from disk. If `field` is a
-        :class:`numpy.array <numpy.array>` it will be filled with data from disk. If `field` is
-        ``None``, a new numpy.array will be allocated with the registered dimensions and type.
+        at specified positions (given by `slice_obj`) with data from disk.
+        If `field` is a :class:`numpy.array <numpy.array>` it will be filled with data from disk.
+        If `field` is ``None``, a new :class:`numpy.array <numpy.array>` will be allocated with
+        the registered dimensions and type.
 
         Assume we are given a three-dimensional field but we are only interested in a certain layer
         of the data (``k = 50``), we can use the slice object (ser.Slice) to encode this information

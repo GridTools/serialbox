@@ -1,5 +1,3 @@
-.. Serialbox Documentation
-
 Introduction
 ============
 
@@ -11,9 +9,11 @@ Serialbox is a serialization library and tools for C/C++, Python3 and Fortran. S
 
    Building
    Documentation
+   Usage
    C++
    C
    Python
+   Fortran
 
 Building
 ========
@@ -21,8 +21,14 @@ Building
 :doc:`Building Serialbox with CMake <Building>`
   Discusses how to get up and running quickly with the Serialbox tools and libraries.
   
-:doc:`Building documentation<Documentation>`
-  Discusses how to build and deploy the documentation to `github pages <https://pages.github.com/>`_.
+:doc:`Building the Documentation<Documentation>`
+  Instructions on how to build and deploy the documentation to `GitHub Pages <https://pages.github.com/>`_.
+  
+Examples
+========
+
+:doc:`Using Serialbox as an external library with CMake <Usage>`
+  Notes on using the CMake module of Serialbox.
   
 API Documentation
 =================
@@ -30,11 +36,14 @@ API Documentation
 The core implementation of Serialbox is written in C++ and bindings to C, Fortran and Python3 are available.
 
 :doc:`C++ interface <C++>`
-  C++ interface of Serialbox.
+  Information about the C++ interface of Serialbox.
 
 :doc:`C interface <C>`
-  C interface of Serialbox.
+  Information about the C interface of Serialbox.
 
-:doc:`Python module <Python>`
-  Python3 interface of Serialbox.
+:doc:`Python3 module <Python>`
+  A reference manual of the Python3 interface of Serialbox.
+  
+:doc:`Fortran interface <Fortran>`
+  Information about the Fortran interface of Serialbox.
 
