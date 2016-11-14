@@ -793,8 +793,8 @@
         <span class="sd">&quot;&quot;&quot; Deserialize `field` identified by `name` at `savepoint` from disk</span>
 
 <span class="sd">        If `field` is a :class:`numpy.array &lt;numpy.array&gt;` it will be filled with data from disk.</span>
-<span class="sd">        If `field` is ``None``, a new numpy.array will be allocated with the registered dimensions</span>
-<span class="sd">        and type.</span>
+<span class="sd">        If `field` is ``None``, a new :class:`numpy.array &lt;numpy.array&gt;` will be allocated with</span>
+<span class="sd">        the registered dimensions and type.</span>
 
 <span class="sd">            &gt;&gt;&gt; ser = Serializer(OpenModeKind.Read, &quot;.&quot;, &quot;field&quot;, &quot;Binary&quot;)</span>
 <span class="sd">            &gt;&gt;&gt; ser.fieldnames()</span>
@@ -843,12 +843,11 @@
         <span class="k">return</span> <span class="n">field</span></div>
 
 <div class="viewcode-block" id="Serializer.read_async"><a class="viewcode-back" href="../../Python.html#serialbox.Serializer.read_async">[docs]</a>    <span class="k">def</span> <span class="nf">read_async</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">savepoint</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Asynchronously deserialize field `name` (given as `storageView`) at `savepoint` from</span>
-<span class="sd">        disk using ``std::async``.</span>
+        <span class="sd">&quot;&quot;&quot; Asynchronously deserialize field `name` at `savepoint` from disk.</span>
 
 <span class="sd">        If `field` is a :class:`numpy.array &lt;numpy.array&gt;` it will be filled with data from disk.</span>
-<span class="sd">        If `field` is ``None``, a new numpy.array will be allocated with the registered dimensions</span>
-<span class="sd">        and type.</span>
+<span class="sd">        If `field` is ``None``, a new :class:`numpy.array &lt;numpy.array&gt;` will be allocated with</span>
+<span class="sd">        the registered dimensions and type.</span>
 
 <span class="sd">        This method runs the :func:`Serializer.read &lt;serialbox.Serializer.read&gt;` function</span>
 <span class="sd">        asynchronously (potentially in a separate thread which may be part of a thread pool),</span>
@@ -910,9 +909,10 @@
         <span class="sd">&quot;&quot;&quot; Deserialize sliced `field` identified by `name`  and `slice` at `savepoint` from disk</span>
 
 <span class="sd">        The method will allocate a `numpy.array` with the registered dimensions and type and fill it</span>
-<span class="sd">        at specified positions (given by `slice_obj`) with data from disk. If `field` is a</span>
-<span class="sd">        :class:`numpy.array &lt;numpy.array&gt;` it will be filled with data from disk. If `field` is</span>
-<span class="sd">        ``None``, a new numpy.array will be allocated with the registered dimensions and type.</span>
+<span class="sd">        at specified positions (given by `slice_obj`) with data from disk.</span>
+<span class="sd">        If `field` is a :class:`numpy.array &lt;numpy.array&gt;` it will be filled with data from disk.</span>
+<span class="sd">        If `field` is ``None``, a new :class:`numpy.array &lt;numpy.array&gt;` will be allocated with</span>
+<span class="sd">        the registered dimensions and type.</span>
 
 <span class="sd">        Assume we are given a three-dimensional field but we are only interested in a certain layer</span>
 <span class="sd">        of the data (``k = 50``), we can use the slice object (ser.Slice) to encode this information</span>

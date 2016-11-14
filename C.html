@@ -54,6 +54,15 @@
 
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">C interface</a><ul>
+<li><a class="reference internal" href="#building">Building</a></li>
+<li><a class="reference internal" href="#linking">Linking</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="C++.html"
                         title="previous chapter">C++ interface</a></p>
@@ -90,8 +99,34 @@
             
   <div class="section" id="c-interface">
 <h1>C interface<a class="headerlink" href="#c-interface" title="Permalink to this headline">¶</a></h1>
-<p>This section is concerned with the C++ interface of Serialbox. A set of examples can be found in <code class="docutils literal"><span class="pre">examples/c/</span></code>.</p>
-<p><a class="reference external" href="_doxygen/html/group__serialboxC.html">Doxygen</a></p>
+<p>This section is concerned with the C interface of Serialbox. A set of examples can be found in <code class="docutils literal"><span class="pre">examples/c/</span></code>.</p>
+<div class="section" id="building">
+<h2>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
+<p>The C interface of Serialbox is built if the CMake variable <code class="docutils literal"><span class="pre">SERIALBOX_ENABLE_C</span></code> is ON (which is the default behaviour) and installed in <code class="docutils literal"><span class="pre">install/lib/</span></code> and <code class="docutils literal"><span class="pre">install/include/serialbox-c</span></code>. To get started, include the <code class="docutils literal"><span class="pre">Serialbox.h</span></code> header, which exposes the complete API:</p>
+<div class="highlight-C"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;serialbox-c/Serialbox.h&gt;</span><span class="cp"></span>
+</pre></div>
+</div>
+<p>To get an overview of the full API, you can take a look at the doxygen generate documentation: <a class="reference external" href="_doxygen/html/group__serialboxC.html">here</a>.</p>
+</div>
+<div class="section" id="linking">
+<h2>Linking<a class="headerlink" href="#linking" title="Permalink to this headline">¶</a></h2>
+<p>Consider the following minimalistic example, <code class="docutils literal"><span class="pre">test.c</span></code>, which simply creates and destroys a serializer:</p>
+<div class="highlight-C"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;serialbox-c/Serialbox.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+  <span class="n">serialboxSerializer_t</span><span class="o">*</span> <span class="n">serializer</span> <span class="o">=</span> <span class="n">serialboxSerializerCreate</span><span class="p">(</span><span class="n">Write</span><span class="p">,</span> <span class="s">&quot;./ser-test&quot;</span><span class="p">,</span> <span class="s">&quot;field&quot;</span><span class="p">,</span> <span class="s">&quot;Binary&quot;</span><span class="p">);</span>
+  <span class="n">serialboxSerializerDestroy</span><span class="p">(</span><span class="n">serializer</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To compile this sample program, you have to link against <code class="docutils literal"><span class="pre">SerialboxC</span></code> and the dependency libraries. The dependency libraries include the Boost libraries (filesystem, system, chrono, log, date_time, log_setup, thread, regex and atomic) as well as the NetCDF and OpenSSL libraries. However, if you choose to link dynamically (i.e against <code class="docutils literal"><span class="pre">libSerialboxC.so</span></code>), the dependencies will be resolved automatically:</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> <span class="nb">export</span> <span class="nv">SERIALBOX_INSTALL_PATH</span><span class="o">=</span>&lt;path-to-serialbox-installation&gt;
+<span class="gp">$</span> gcc test.c -o <span class="nb">test</span> -I$SERIALBOX_INSTALL_PATH/include -L$SERIALBOX_INSTALL_PATH/lib -lSerialboxC
+<span class="gp">$</span> <span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>$SERIALBOX_INSTALL_PATH/lib<span class="p">;</span> ./test
+</pre></div>
+</div>
+<p>In general, it is <strong>strongly</strong> advised to use the CMake find_package-module of Serialbox which takes care of linking against the correct libraries (see <a class="reference internal" href="Usage.html"><em>Using Serialbox as an external library</em></a>).</p>
+</div>
 </div>
 
 

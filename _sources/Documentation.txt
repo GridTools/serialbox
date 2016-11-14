@@ -1,5 +1,3 @@
-.. Serialbox Documentation
-
 **********************
 Building Documentation
 **********************
@@ -46,4 +44,6 @@ GitHub provides the ability to upload your website to `GitHub Pages <https://pag
 .. code-block:: console
 
   $ make deploy-docs
+  
+To view your website, head to http://username.github.io/serialbox2 .
 
