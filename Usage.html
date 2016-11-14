@@ -25,7 +25,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="Serialbox 2.0.1 documentation" href="index.html" /> 
+    <link rel="top" title="Serialbox 2.0.1 documentation" href="index.html" />
+    <link rel="next" title="C++ interface" href="C++.html" />
+    <link rel="prev" title="Building the Documentation" href="Documentation.html" /> 
   </head>
   <body role="document">
 <div class="logo">
@@ -40,12 +42,36 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="C++.html" title="C++ interface"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Documentation.html" title="Building the Documentation"
+             accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Serialbox 2.0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
 
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using Serialbox as an external library</a><ul>
+<li><a class="reference internal" href="#cmake-modules">CMake modules</a><ul>
+<li><a class="reference internal" href="#id1">FindSerialbox</a></li>
+<li><a class="reference internal" href="#serialboxtooling">SerialboxTooling</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Documentation.html"
+                        title="previous chapter">Building the Documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="C++.html"
+                        title="next chapter">C++ interface</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -76,6 +102,70 @@
             
   <div class="section" id="using-serialbox-as-an-external-library">
 <h1>Using Serialbox as an external library<a class="headerlink" href="#using-serialbox-as-an-external-library" title="Permalink to this headline">¶</a></h1>
+<p>This section provides a brief introduction on how to use Serialbox as an external library using the CMake modules of Serialbox.</p>
+<div class="section" id="cmake-modules">
+<span id="findserialbox"></span><h2>CMake modules<a class="headerlink" href="#cmake-modules" title="Permalink to this headline">¶</a></h2>
+<p>There are several CMake modules located in <code class="docutils literal"><span class="pre">install/cmake/</span></code>. To assist in the loading of the settings of the Serialbox project (e.g include and link directories), Serialbox provides a <a class="reference external" href="https://cmake.org/cmake/help/v3.0/command/find_package.html">find_package</a> module. In addition, to run the preprocessor script <code class="docutils literal"><span class="pre">pp_ser.py</span></code> a tooling module is provided. For a working example, see <code class="docutils literal"><span class="pre">examples/fortran/perturbation</span></code>.</p>
+<div class="section" id="id1">
+<h3>FindSerialbox<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Try to find Serialbox headers and libraries.</p>
+<p>Use this module by invoking find_package with the form:</p>
+<div class="highlight-python"><div class="highlight"><pre>find_package(Serialbox
+  [version]                  # Minimum version e.g. 2.0
+  [REQUIRED]                 # Fail with error if Serialbox is not found
+  [COMPONENTS &lt;languages&gt;]   # Components of Serialbox i.e the languages: C++, C, Fortran. C++ is always ON.
+)
+</pre></div>
+</div>
+<p>Example to find Serialbox headers and <cite>shared</cite> libraries for the C, C++ and Fortran interfaces:</p>
+<div class="highlight-python"><div class="highlight"><pre>set(SERIALBOX_USE_SHARED_LIBS ON)
+find_package(Serialbox REQUIRED COMPONENTS C++ C Fortran)
+</pre></div>
+</div>
+<p>The Serialbox module will look for the <cite>exact</cite> boost version used during compilation and append
+the necessary libraries to the <code class="docutils literal"><span class="pre">SERIALBOX_[LANGUAGE]_LIBRARIES</span></code> variable. If Serialbox was
+compiled with OpenSSL and/or NetCDF support, the necessary libraries will be appended as well.</p>
+<p>Variables used by this module, they can change the default behaviour and need to be set before
+calling find_package:</p>
+<div class="highlight-python"><div class="highlight"><pre>SERIALBOX_ROOT                  - Set this variable to the root installation of Serialbox if the
+                                  module has problems finding the proper installation path.
+SERIALBOX_USE_SHARED_LIBS       - Use the shared libraries (.so or .dylib) of Serialbox.
+SERIALBOX_NO_EXTERNAL_LIBS      - Don&#39;t look for external libraries (Boost, NetCDF and OpenSSL)
+</pre></div>
+</div>
+<p>Variables defined by this module:</p>
+<div class="highlight-python"><div class="highlight"><pre>SERIALBOX_FOUND                 - True if headers and requested libraries were found
+SERIALBOX_VERSION               - Version string of Serialbox (e.g &quot;2.0.1&quot;)
+SERIALBOX_INCLUDE_DIRS          - The location of the Serialbox headers (i.e to include the
+                                  C Interface ${SERIALBOX_INCLUDE_DIRS}/serialbox-c/Serialbox.h)
+                                  and possibly the boost headers.
+SERIALBOX_LIBRARY_DIR           - The location of the Serialbox libraries and Fortran mod files.
+SERIALBOX_HAS_C                 - Serialbox was compiled with C support
+SERIALBOX_HAS_FORTRAN           - Serialbox was compiled with Fortran support
+SERIALBOX_CXX_LIBRARIES         - The C++ libraries of Serialbox (libSerialboxCore) and
+                                  possibly the external libraries.
+SERIALBOX_C_LIBRARIES           - The C libraries of Serialbox (libSerialboxC) and
+                                  possibly the external libraries.
+SERIALBOX_FORTRAN_LIBRARIES     - The Fortran libraries of Serialbox (libSerialboxFortran) and
+                                  possibly the external libraries.
+SERIALBOX_PPSER                 - Path to the pp_ser.py script.
+SERIALBOX_BOOST_VERSION         - Boost version used during compilation.
+SERIALBOX_HAS_OPENSSL           - Serialbox was compiled with OpenSSL support.
+SERIALBOX_HAS_NETCDF            - Serialbox was compiled with NetCDF support.
+</pre></div>
+</div>
+</div>
+<div class="section" id="serialboxtooling">
+<h3>SerialboxTooling<a class="headerlink" href="#serialboxtooling" title="Permalink to this headline">¶</a></h3>
+<p>This module contains the <code class="docutils literal"><span class="pre">serialbox_run_pp_ser</span></code> function which is used to preprocess Fortran
+source code using the pp_ser.py script.</p>
+<p>Function arguments:</p>
+<div class="highlight-python"><div class="highlight"><pre>SOURCES       - Sources to preprocess
+OUTPUT_DIR    - Output directory of the the source files. If nothing is specified ${CMAKE_BINARY_DIR}/pp is used.
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 
 
@@ -90,6 +180,12 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="C++.html" title="C++ interface"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Documentation.html" title="Building the Documentation"
+             >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Serialbox 2.0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
