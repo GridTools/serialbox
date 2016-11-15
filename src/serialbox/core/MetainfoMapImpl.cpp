@@ -1,5 +1,4 @@
-//===-- serialbox/core/MetainfoMapImpl.cpp ----------------------------------------------*- C++
-//-*-===//
+//===-- serialbox/core/MetainfoMapImpl.cpp ------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //

@@ -134,7 +134,7 @@ public:
   std::shared_ptr<MetainfoMapImpl>& metaInfoPtr() noexcept { return metaInfo_; }
   const std::shared_ptr<MetainfoMapImpl>& metaInfoPtr() const noexcept { return metaInfo_; }
 
-protected:
+private:
   std::string name_;                          ///< Name of this savepoint
   std::shared_ptr<MetainfoMapImpl> metaInfo_; ///< Meta-information of this savepoint
 };

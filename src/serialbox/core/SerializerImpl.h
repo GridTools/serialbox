@@ -24,11 +24,6 @@
 #include <boost/filesystem.hpp>
 #include <iosfwd>
 
-#ifdef SERIALBOX_ASYNC_API
-#include <future>
-#include <thread>
-#endif
-
 namespace serialbox {
 
 /// \addtogroup core

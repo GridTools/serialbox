@@ -31,7 +31,6 @@ if version_info < (3, 4):
 #
 try:
     import numpy
-
     del numpy
 except ImportError:
     raise Exception("Serialbox requires numpy")

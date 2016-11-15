@@ -27,6 +27,11 @@
 #include <memory>
 #include <type_traits>
 
+#ifdef SERIALBOX_ASYNC_API
+#include <future>
+#include <thread>
+#endif
+
 namespace serialbox {
 
 int SerializerImpl::enabled_ = 0;
