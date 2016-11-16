@@ -1,4 +1,4 @@
-<a href="https://travis-ci.org/thfabian/serialbox2"><img src="docs/logo/logo.png" width="559" height="212" border="0" alt="Serialbox2 documentation" /></a> 
+<a href="https://thfabian.github.io/serialbox2"><img src="docs/logo/logo.png" width="559" height="212" border="0" alt="Serialbox2 documentation" /></a> 
 
 ## Introduction
 Serialbox is a serialization library and tools for C/C++, Python3 and Fortran. Serialbox is used in several projects for building validation frameworks against reference runs. This is useful in the scope of rewrite of large codes, or when porting codes to multiple computing architectures. As an example, porting scientific codes to graphical processing units, that require continuous validation against the existing x86 code.
