@@ -36,7 +36,7 @@ class SetupWidget(QWidget):
 
         self.__directory_edit = QLineEdit(self.__serializer_data.directory)
         self.__directory_edit.setDragEnabled(True)
-        self.__directory_edit.textChanged.connect(self.__directory_edit_changed)
+        self.__directory_edit.textChanged[str].connect(self.__directory_edit_changed)
 
         self.__directory_file_dialog = QPushButton()
         self.__directory_file_dialog.setIcon(QIcon("sdbgui/images/fileopen.png"))
@@ -49,7 +49,7 @@ class SetupWidget(QWidget):
         self.__prefix_edit = QComboBox()
         self.__prefix_edit.setEditText(self.__serializer_data.prefix)
         self.__prefix_edit.setEditable(True)
-        self.__prefix_edit.editTextChanged.connect(self.__prefix_edit_changed)
+        self.__prefix_edit.editTextChanged[str].connect(self.__prefix_edit_changed)
 
         # Layouting
         grid_layout = QGridLayout()
@@ -67,21 +67,15 @@ class SetupWidget(QWidget):
 
         self.setLayout(grid_layout)
         self.__check_if_directory_is_valid()
+        self.__check_if_prefix_is_valid()
 
     @property
     def directory(self):
-        return self.__directory_edit.text()
+        return self.__serializer_data.directory
 
     @property
     def prefix(self):
-        return self.__prefix_edit.currentText()
-
-    def set_directory(self, directory):
-        self.__directory_edit.setText(directory)
-        self.__check_if_directory_is_valid()
-
-    def set_prefix(self, prefix):
-        self.__prefix_edit.setText(prefix)
+        return self.__serializer_data.prefix
 
     def __check_if_directory_is_valid(self):
         """Check if the directory exists and fill the self.__prefix_edit with suggestions for the
@@ -93,8 +87,7 @@ class SetupWidget(QWidget):
             files = [f for f in listdir(self.directory) if
                      path.isfile(path.join(self.directory, f))]
 
-            for idx in range(self.__prefix_edit.count()):
-                self.__prefix_edit.removeItem(idx)
+            self.__prefix_edit.clear()
 
             dir_is_valid = False
             for f in files:
@@ -106,7 +99,7 @@ class SetupWidget(QWidget):
             self.__show_valid_icon()
         else:
             self.__show_invalid_icon()
-            
+
     def __check_if_prefix_is_valid(self):
         dir_is_valid = path.exists(self.directory)
         if dir_is_valid:
@@ -127,23 +120,19 @@ class SetupWidget(QWidget):
             open_dir = getcwd()
 
         fname = QFileDialog.getExistingDirectory(self, 'Open %s' % self.__name, open_dir)
-        self.set_directory(fname)
+        self.__directory_edit.setText(fname)
+
+    def __directory_edit_changed(self, dir):
+        self.__serializer_data.directory = dir
+        self.__check_if_directory_is_valid()
 
         Logger.info("Setting directory of %s to: %s" % (self.__name, self.directory))
 
-    def __directory_edit_changed(self):
-        self.__check_if_directory_is_valid()
-        self.__sync_serializer_data_directory()
-
-    def __prefix_edit_changed(self):
+    def __prefix_edit_changed(self, prefix):
+        self.__serializer_data.prefix = prefix
         self.__check_if_prefix_is_valid()
-        self.__sync_serializer_data_prefix()
 
-    def __sync_serializer_data_directory(self):
-        self.__serializer_data.directory = self.directory
-
-    def __sync_serializer_data_prefix(self):
-        self.__serializer_data.prefix = self.prefix
+        Logger.info("Setting prefix of %s to: %s" % (self.__name, self.prefix))
 
     def __show_invalid_icon(self):
         self.__name_icon.setPixmap(QPixmap("sdbgui/images/error.png"))

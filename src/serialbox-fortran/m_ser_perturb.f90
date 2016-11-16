@@ -1,8 +1,18 @@
-!This file is released under terms of BSD license`
-!See LICENSE.txt for more information
-
+!------------------------------------------------------------*- Fortran -*-----
+!
+!                              S E R I A L B O X
+!
+! This file is distributed under terms of BSD license. 
+! See LICENSE.txt for more information.
+!
+!------------------------------------------------------------------------------
+!
+!+ This module contains the perturbation module of Serialbox.
+!
+!------------------------------------------------------------------------------
 
 MODULE m_ser_perturb
+
 !-------------------------------------------------------------------------------
 !
 ! Description:
@@ -25,11 +35,12 @@ MODULE m_ser_perturb
 !
 !     field = (1 + epsilon) * field
 !
-!   where epsilon can either be chose relative to the least significant bit (rperturb<0.0)
-!   or as an absolute perturbation value (rperturb>0.0).
+!   where epsilon can either be chose relative to the least significant bit 
+!   (rperturb<0.0) or as an absolute perturbation value (rperturb>0.0).
 !
-!   Note: this type of perturbation does not alter zero's and conserves the positive
-!         definitiveness of a field
+!   Note: this type of perturbation does not alter zero's and conserves the 
+!         positive definitiveness of a field.
+!
 !==============================================================================
 
 

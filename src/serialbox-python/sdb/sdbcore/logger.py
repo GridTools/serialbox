@@ -11,6 +11,7 @@
 
 from datetime import datetime
 from enum import Enum
+from sys import stderr, stdout
 from threading import get_ident
 
 
@@ -34,12 +35,16 @@ class BaseLogger(object):
         self.__log(msg, Level.error)
 
     def __log(self, msg, level):
+        file = stderr if level == Level.error else stdout
         if level.value >= self.__level.value:
             # Boost.Log style
-            print("[%s] [%s] [%s]    %s" % (
+            print("[%s] [%s] [%s]%s%s" % (
                 datetime.now().strftime("%G-%m-%d %H:%M:%S.%f"),
                 "{0:#0{1}x}".format(get_ident(), 18),
-                self.__level.name, msg))
+                level.name,
+                " " * (len(Level.info.name) + 4 - len(level.name)),
+                msg), file=file)
+        file.flush()
 
     def set_level(self, level):
         self.__level = level

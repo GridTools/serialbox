@@ -9,13 +9,17 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLabel
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 
+from sdbcore.logger import Logger
 from .stencilwidget import StencilWidget
+from .tabstate import TabState
 
 class StencilWindow(QWidget):
     def __init__(self, parent, input_serializer_data, reference_serializer_data):
         super().__init__()
+
+        # Data
         self.__parent = parent
         self.__input_serializer_data = input_serializer_data
         self.__reference_serializer_data = reference_serializer_data
@@ -23,31 +27,36 @@ class StencilWindow(QWidget):
         self.__input_widget = StencilWidget(self.__input_serializer_data)
         self.__reference_widget = StencilWidget(self.__reference_serializer_data)
 
+        # Buttons
         self.__continue_button = QPushButton("Continue")
-        self.__continue_button.clicked.connect(self.__continue)
+        self.__continue_button.clicked.connect(self.make_continue)
 
         self.__back_button = QPushButton("Back")
-        self.__back_button.clicked.connect(self.__back)
+        self.__back_button.clicked.connect(self.make_back)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self.__input_widget)
         hbox.addWidget(self.__reference_widget)
-
-        vbox = QVBoxLayout()
-        vbox.addLayout(hbox)
 
         hbox_button = QHBoxLayout()
         hbox_button.addStretch(1)
         hbox_button.addWidget(self.__back_button)
         hbox_button.addWidget(self.__continue_button)
 
+        vbox = QVBoxLayout()
+        vbox.addLayout(hbox)
+        vbox.addStretch(1)
         vbox.addLayout(hbox_button)
 
         self.setLayout(vbox)
 
-    def __continue(self):
+    def make_continue(self):
         print("continue")
 
-    def __back(self):
-        self.__parent.switch_to_setup_window()
+    def make_back(self):
+        self.__parent.switch_to_tab(TabState.Setup)
 
+    def make_update(self):
+        Logger.info("Updating stencil tab")
+        self.__input_widget.make_update()
+        self.__reference_widget.make_update()

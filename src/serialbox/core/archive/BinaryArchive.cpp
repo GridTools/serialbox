@@ -171,7 +171,7 @@ BinaryArchive::BinaryArchive(OpenModeKind mode, const std::string& directory,
 
   metaDatafile_ = directory_ / ("ArchiveMetaData-" + prefix_ + ".json");
   hash_ = HashFactory::create(HashFactory::defaultHash());
-
+  
   try {
     bool isDir = boost::filesystem::is_directory(directory_);
 

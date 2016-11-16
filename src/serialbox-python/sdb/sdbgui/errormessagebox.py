@@ -15,6 +15,7 @@ from sdbcore import Logger
 
 class ErrorMessageBox():
     def __init__(self, parent, msg):
+        Logger.error(msg.replace("<b>", "").replace("</b>", "").replace("<br />", " "))
         msgbox = QMessageBox(parent)
         msgbox.setWindowTitle("Error")
         msgbox.setIcon(QMessageBox.Critical)

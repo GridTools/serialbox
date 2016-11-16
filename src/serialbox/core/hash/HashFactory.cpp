@@ -19,6 +19,8 @@
 #include "serialbox/core/hash/SHA256.h"
 #include <sstream>
 
+#include <iostream>
+
 namespace serialbox {
 
 std::unique_ptr<Hash> HashFactory::create(const std::string& name) {

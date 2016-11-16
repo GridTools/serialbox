@@ -18,10 +18,13 @@ class SerializerData(object):
         self.__directory = directory
         self.__prefix = prefix
         self.__serializer = None
+        self.__data_changed = True
 
     def make_serializer(self):
         try:
-            self.__serializer = Serializer(OpenModeKind.Read, self.directory, self.prefix)
+            if self.__data_changed:
+                self.__serializer = Serializer(OpenModeKind.Read, self.directory, self.prefix)
+                self.__data_changed = False
         except SerialboxError as e:
             self.__serializer = None
             raise RuntimeError("<b>%s:</b><br />%s" % (self.name, e))
@@ -35,6 +38,7 @@ class SerializerData(object):
 
     @directory.setter
     def directory(self, directory):
+        self.__data_changed = True
         self.__directory = directory
 
     @property
@@ -43,6 +47,7 @@ class SerializerData(object):
 
     @prefix.setter
     def prefix(self, prefix):
+        self.__data_changed = True
         self.__prefix = prefix
 
     @property
@@ -55,4 +60,20 @@ class SerializerData(object):
 
     @serializer.setter
     def serializer(self, serializer):
+        self.__data_changed = True
         self.__serializer = serializer
+
+    @property
+    def stencils(self):
+        stencil_list = []
+        if self.__serializer.global_metainfo.has_key("stencils"):
+            stencil_list = self.__serializer.global_metainfo["stencils"]
+        return stencil_list
+
+    def get_fields_of_stencil(self, name):
+        field_list = []
+        for sp in self.__serializer.savepoint_list():
+            if sp.name.startswith(name):
+                for fields in self.__serializer.fields_at_savepoint(sp):
+                    field_list += [fields]
+        return list(set(field_list))

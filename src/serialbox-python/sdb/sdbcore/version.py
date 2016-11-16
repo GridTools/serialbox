@@ -13,16 +13,17 @@ __versioninfo__ = (0, 0, 1)
 __version__ = '.'.join(str(v) for v in __versioninfo__)
 
 class Version(object):
-    def __init__(self):
-        pass
 
-    def serialbox_version(self):
+    @staticmethod
+    def serialbox_version():
         from serialbox import __version__ as serialbox_vers
         return serialbox_vers
 
-    def numpy_version(self):
+    @staticmethod
+    def numpy_version():
         from numpy import __version__ as numpy_vers
         return numpy_vers
 
-    def sdb_version(self):
+    @staticmethod
+    def sdb_version():
         return __version__
