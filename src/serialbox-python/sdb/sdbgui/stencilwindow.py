@@ -12,40 +12,48 @@
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 
 from sdbcore.logger import Logger
+from .stencilfieldmetainfowidget import StencilFieldMetainfoWidget
 from .stencilwidget import StencilWidget
 from .tabstate import TabState
 
+
 class StencilWindow(QWidget):
-    def __init__(self, parent, input_serializer_data, reference_serializer_data):
+    def __init__(self, mainwindow, input_stencil_data, reference_stencil_data):
         super().__init__()
 
         # Data
-        self.__parent = parent
-        self.__input_serializer_data = input_serializer_data
-        self.__reference_serializer_data = reference_serializer_data
+        self.__input_stencil_data = input_stencil_data
+        self.__reference_stencil_data = reference_stencil_data
 
-        self.__input_widget = StencilWidget(self.__input_serializer_data)
-        self.__reference_widget = StencilWidget(self.__reference_serializer_data)
+        # Widget
+        self.__widget_mainwindow = mainwindow
 
-        # Buttons
-        self.__continue_button = QPushButton("Continue")
-        self.__continue_button.clicked.connect(self.make_continue)
+        self.__widget_fieldmetainfo = StencilFieldMetainfoWidget()
 
-        self.__back_button = QPushButton("Back")
-        self.__back_button.clicked.connect(self.make_back)
+        self.__widget_stencil_input = StencilWidget(self.__input_stencil_data,
+                                                    self.__widget_fieldmetainfo)
+        self.__widget_stencil_reference = StencilWidget(self.__reference_stencil_data,
+                                                        self.__widget_fieldmetainfo)
 
-        hbox = QHBoxLayout()
-        hbox.addWidget(self.__input_widget)
-        hbox.addWidget(self.__reference_widget)
+        self.__widget_button_continue = QPushButton("Continue")
+        self.__widget_button_continue.clicked.connect(self.make_continue)
+
+        self.__widget_button_back = QPushButton("Back")
+        self.__widget_button_back.clicked.connect(self.make_back)
+
+        hbox_widgets = QHBoxLayout()
+        hbox_widgets.addWidget(self.__widget_stencil_input)
+        hbox_widgets.addWidget(self.__widget_stencil_reference)
 
         hbox_button = QHBoxLayout()
         hbox_button.addStretch(1)
-        hbox_button.addWidget(self.__back_button)
-        hbox_button.addWidget(self.__continue_button)
+        hbox_button.addWidget(self.__widget_button_back)
+        hbox_button.addWidget(self.__widget_button_continue)
 
         vbox = QVBoxLayout()
-        vbox.addLayout(hbox)
+        vbox.addLayout(hbox_widgets)
         vbox.addStretch(1)
+        vbox.addWidget(self.__widget_fieldmetainfo)
         vbox.addLayout(hbox_button)
 
         self.setLayout(vbox)
@@ -54,9 +62,9 @@ class StencilWindow(QWidget):
         print("continue")
 
     def make_back(self):
-        self.__parent.switch_to_tab(TabState.Setup)
+        self.__widget_mainwindow.switch_to_tab(TabState.Setup)
 
     def make_update(self):
-        Logger.info("Updating stencil tab")
-        self.__input_widget.make_update()
-        self.__reference_widget.make_update()
+        Logger.info("Updating Stencil tab")
+        self.__widget_stencil_input.make_update()
+        self.__widget_stencil_reference.make_update()

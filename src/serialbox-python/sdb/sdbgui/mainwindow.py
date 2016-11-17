@@ -10,10 +10,11 @@
 ##===------------------------------------------------------------------------------------------===##
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, qApp, QAction, QTabWidget
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QAction, QTabWidget
 
 from sdbcore.logger import Logger
+from sdbcore.stencildata import StencilData
 from sdbcore.version import Version
 from .aboutwidget import AboutWidget
 from .configuration import Configuration
@@ -26,16 +27,20 @@ from .tabstate import TabState
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        Logger.info("Initializing main window")
+        Logger.info("Setup main window")
 
-        # Members
-        self.configuration = Configuration()
-        self.configuration.load_from_file()
+        # Data
+        self.__configuration = Configuration()
+        self.__configuration.load_from_file()
 
-        self.input_data = self.configuration.make_serializer_data("Input Serializer")
-        self.reference_data = self.configuration.make_serializer_data("Reference Serializer")
+        self.__input_serializer_data = self.__configuration.make_serializer_data("Input Serializer")
+        self.__input_stencil_data = StencilData(self.__input_serializer_data)
 
-        # Initialize GUI
+        self.__reference_serializer_data = self.__configuration.make_serializer_data(
+            "Reference Serializer")
+        self.__reference_stencil_data = StencilData(self.__reference_serializer_data)
+
+        # Setup GUI
         self.setWindowTitle('sdb - stencil debugger (%s)' % Version().sdb_version())
         self.resize(960, 480)
 
@@ -43,111 +48,122 @@ class MainWindow(QMainWindow):
         self.init_menu_tool_bar()
 
         # Setup tabs
-        self.valid_tab_state = TabState.Setup
-        self.tab_widget = QTabWidget()
-        self.tab_widget.addTab(SetupWindow(self, self.input_data, self.reference_data),
-                               "Setup")
-        self.tab_widget.addTab(StencilWindow(self, self.input_data, self.reference_data),
-                               "Stencil")
-        self.tab_widget.currentChanged.connect(self.switch_to_tab)
+        self.__tab_highest_valid_state = TabState.Setup
+        self.__widget_tab = QTabWidget()
+        self.__widget_tab.addTab(
+            SetupWindow(self, self.__input_serializer_data, self.__reference_serializer_data),
+            "Setup")
+        self.__widget_tab.addTab(
+            StencilWindow(self, self.__input_stencil_data, self.__reference_stencil_data),
+            "Stencil")
 
-        self.tab_widget.setTabEnabled(TabState.Stencil.value, False)
+        self.__widget_tab.currentChanged.connect(self.switch_to_tab)
+        self.__widget_tab.setTabEnabled(TabState.Stencil.value, False)
 
-        self.old_tab_state = TabState.Setup
-        self.valid_tab_state = TabState.Setup
+        self.__tab_old_state = TabState.Setup
+        self.__tab_highest_valid_state = TabState.Setup
         self.switch_to_tab(TabState.Setup)
 
-        self.setCentralWidget(self.tab_widget)
+        self.setCentralWidget(self.__widget_tab)
 
         Logger.info("Starting main loop")
         self.show()
 
     def init_menu_tool_bar(self):
-        Logger.info("Initializing menu toolbar")
+        Logger.info("Setup menu toolbar")
 
-        exit_action = QAction("Exit", self)
-        exit_action.setShortcut("Ctrl+Q")
-        exit_action.setStatusTip("Exit the application")
-        exit_action.triggered.connect(qApp.quit)
+        action_exit = QAction("Exit", self)
+        action_exit.setShortcut("Ctrl+Q")
+        action_exit.setStatusTip("Exit the application")
+        action_exit.triggered.connect(self.close)
 
-        about_action = QAction("&About", self)
-        about_action.setStatusTip("Show the application's About box")
-        about_action.triggered.connect(self.show_about)
+        action_about = QAction("&About", self)
+        action_about.setStatusTip("Show the application's About box")
+        action_about.triggered.connect(self.show_about)
 
-        save_session_action = QAction(QIcon("sdbgui/images/filesave.png"), "&Save", self)
-        save_session_action.setStatusTip("Save current session")
-        save_session_action.setShortcut("Ctrl+S")
-        save_session_action.triggered.connect(self.save_session)
+        action_save_session = QAction(QIcon("sdbgui/images/filesave.png"), "&Save", self)
+        action_save_session.setStatusTip("Save current session")
+        action_save_session.setShortcut("Ctrl+S")
+        action_save_session.triggered.connect(self.save_session)
 
-        open_session_action = QAction(QIcon("sdbgui/images/fileopen.png"), "&Open", self)
-        open_session_action.setShortcut("Ctrl+O")
-        open_session_action.setStatusTip("Open session")
-        open_session_action.triggered.connect(self.open_session)
+        action_open_session = QAction(QIcon("sdbgui/images/fileopen.png"), "&Open", self)
+        action_open_session.setShortcut("Ctrl+O")
+        action_open_session.setStatusTip("Open session")
+        action_open_session.triggered.connect(self.open_session)
 
-        continue_action = QAction(QIcon("sdbgui/images/next_cursor.png"), "Continue", self)
-        continue_action.setShortcut("Ctrl+R")
-        continue_action.setStatusTip("Continue to next tab")
-        continue_action.triggered.connect(self.switch_to_next_tab)
+        action_continue = QAction(QIcon("sdbgui/images/next_cursor.png"), "Continue", self)
+        action_continue.setShortcut("Ctrl+R")
+        action_continue.setStatusTip("Continue to next tab")
+        action_continue.triggered.connect(self.switch_to_next_tab)
 
-        back_action = QAction(QIcon("sdbgui/images/prev_cursor.png"), "Back", self)
-        back_action.setShortcut("Ctrl+B")
-        back_action.setStatusTip("Back to previous tab")
-        back_action.triggered.connect(self.switch_to_previous_tab)
+        action_back= QAction(QIcon("sdbgui/images/prev_cursor.png"), "Back", self)
+        action_back.setShortcut("Ctrl+B")
+        action_back.setStatusTip("Back to previous tab")
+        action_back.triggered.connect(self.switch_to_previous_tab)
+
+        self.__action_reload = QAction(QIcon("sdbgui/images/step_in.png"), "Reload", self)
+        self.__action_reload.setStatusTip("Reload Input and Reference Serializer")
+        self.__action_reload.triggered.connect(self.reload_serializer)
+        self.__action_reload.setEnabled(False)
 
         menubar = self.menuBar()
         menubar.setNativeMenuBar(False)
         self.statusBar()
 
         file_menu = menubar.addMenu('&File')
-        file_menu.addAction(open_session_action)
-        file_menu.addAction(save_session_action)
-        file_menu.addAction(exit_action)
+        file_menu.addAction(action_open_session)
+        file_menu.addAction(action_save_session)
+        file_menu.addAction(action_exit)
 
         edit_menu = menubar.addMenu('&Edit')
-        edit_menu.addAction(back_action)
-        edit_menu.addAction(continue_action)
+        edit_menu.addAction(action_back)
+        edit_menu.addAction(action_continue)
+        edit_menu.addAction(self.__action_reload)
 
         help_menu = menubar.addMenu('&Help')
-        help_menu.addAction(about_action)
+        help_menu.addAction(action_about)
 
         toolbar = self.addToolBar("Toolbar")
-        toolbar.addAction(open_session_action)
-        toolbar.addAction(save_session_action)
-        toolbar.addAction(back_action)
-        toolbar.addAction(continue_action)
+        toolbar.addAction(action_open_session)
+        toolbar.addAction(action_save_session)
+        toolbar.addAction(action_back)
+        toolbar.addAction(action_continue)
+        toolbar.addAction(self.__action_reload)
 
     def switch_to_tab(self, tab):
         idx = tab.value if isinstance(tab, TabState) else tab
-        if self.old_tab_state == TabState(idx):
+        if self.__tab_old_state == TabState(idx):
             return
 
-        Logger.info("Switching to tab: %s" % TabState(idx))
-        self.old_tab_state = TabState(idx)
-        self.tab_widget.setCurrentIndex(idx)
-        self.tab_widget.currentWidget().make_update()
+        Logger.info("Switching to %s tab" % TabState(idx).name)
+        self.__tab_old_state = TabState(idx)
+        self.__widget_tab.setCurrentIndex(idx)
+        self.__widget_tab.currentWidget().make_update()
 
-    def set_valid_tab_state(self, state):
+    def set_tab_highest_valid_state(self, state):
         """Set the state at which the data is valid i.e everything <= self.valid_tab_state is valid
         """
-        self.valid_tab_state = state
-        self.enable_tabs_according_to_valid_tab_state()
+        self.__tab_highest_valid_state = state
+        self.enable_tabs_according_to_tab_highest_valid_state()
 
-    def enable_tabs_according_to_valid_tab_state(self):
-        """Enable/Disable tabs according to self.valid_tab_state
+    def enable_tabs_according_to_tab_highest_valid_state(self):
+        """Enable/Disable tabs according to self.__tab_highest_valid_state
         """
-        if self.valid_tab_state == TabState.Setup:
-            self.tab_widget.setTabEnabled(TabState.Setup.value, True)
-            self.tab_widget.setTabEnabled(TabState.Stencil.value, False)
+        if self.__tab_highest_valid_state == TabState.Setup:
+            self.__widget_tab.setTabEnabled(TabState.Setup.value, True)
+            self.__widget_tab.setTabEnabled(TabState.Stencil.value, False)
 
-        elif self.valid_tab_state == TabState.Stencil:
-            self.tab_widget.setTabEnabled(TabState.Setup.value, True)
-            self.tab_widget.setTabEnabled(TabState.Stencil.value, True)
+        elif self.__tab_highest_valid_state == TabState.Stencil:
+            self.__widget_tab.setTabEnabled(TabState.Setup.value, True)
+            self.__widget_tab.setTabEnabled(TabState.Stencil.value, True)
+
+            self.__action_reload.setEnabled(True)
 
     def switch_to_next_tab(self):
-        self.tab_widget.currentWidget().make_continue()
+        self.__widget_tab.currentWidget().make_continue()
 
     def switch_to_previous_tab(self):
-        self.tab_widget.currentWidget().make_back()
+        self.__widget_tab.currentWidget().make_back()
 
     def center(self):
         qr = self.frameGeometry()
@@ -161,16 +177,24 @@ class MainWindow(QMainWindow):
     def show_error(self, msg):
         ErrorMessageBox(self, msg)
 
-    def reload(self):
-        Logger.info("Reload current window")
-
     def save_session(self):
-        Logger.info("Save session")
+        Logger.info("Saveing session")
 
     def open_session(self):
-        Logger.info("Open session")
+        Logger.info("Opening session")
+
+    def reload_serializer(self):
+        Logger.info("Reloading serializers")
+        try:
+            self.__input_serializer_data.reload()
+            self.__reference_serializer_data.reload()
+        except RuntimeError as e:
+            self.show_error(str(e))
+            self.set_tab_highest_valid_state(TabState.Setup)
+            self.switch_to_tab(TabState.Setup)
+            self.__widget_tab.currentWidget().make_update()
 
     def closeEvent(self, event):
-        self.configuration.upade_serializer_data(self.input_data)
-        self.configuration.upade_serializer_data(self.reference_data)
-        self.configuration.sotre_to_file()
+        self.__configuration.update_serializer_data(self.__input_serializer_data)
+        self.__configuration.update_serializer_data(self.__reference_serializer_data)
+        self.__configuration.store_to_file()

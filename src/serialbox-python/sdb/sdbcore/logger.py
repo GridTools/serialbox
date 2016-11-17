@@ -11,6 +11,9 @@
 
 from datetime import datetime
 from enum import Enum
+from inspect import currentframe, getsourcefile, stack
+from os import path
+from re import search
 from sys import stderr, stdout
 from threading import get_ident
 
@@ -35,16 +38,43 @@ class BaseLogger(object):
         self.__log(msg, Level.error)
 
     def __log(self, msg, level):
-        file = stderr if level == Level.error else stdout
         if level.value >= self.__level.value:
+            filestream = stderr if level == Level.error else stdout
+            file = ""
+            line = ""
+            class_name = ""
+
+            current_frame = currentframe()
+            current_stack = stack()
+            try:
+                # File name
+                file_path_full = getsourcefile(current_frame.f_back.f_back)
+                head, tail = path.split(path.dirname(file_path_full))
+                file = path.join(tail, path.basename(file_path_full))
+
+                # Line number
+                line = ":" + str(current_frame.f_back.f_back.f_lineno)
+
+                # Class name of callee
+                class_name_str = str(current_stack[2][0].f_locals["self"].__class__)
+                regex_result = search(r"\'([A-Za-z0-9_.]+)\'", class_name_str)
+                class_name_with_namespaces = regex_result.groups(1)[0]
+                class_name = ":" + class_name_with_namespaces.split(".")[-1]
+            except (OSError, KeyError):
+                pass
+            finally:
+                del current_frame
+                del current_stack
+
+            msg = "%s%s%s: %s" % (file, line, class_name, msg)
+
             # Boost.Log style
             print("[%s] [%s] [%s]%s%s" % (
                 datetime.now().strftime("%G-%m-%d %H:%M:%S.%f"),
                 "{0:#0{1}x}".format(get_ident(), 18),
                 level.name,
                 " " * (len(Level.info.name) + 4 - len(level.name)),
-                msg), file=file)
-        file.flush()
+                msg), file=filestream)
 
     def set_level(self, level):
         self.__level = level

@@ -25,9 +25,14 @@ class Configuration(MutableMapping):
         self.__config = dict()
 
         self.__config["Version"] = Version().sdb_version()
+
+        # SerializerData
         self.__config["SerializerData"] = dict()
         self.__config["SerializerData"]["Input Serializer"] = {"directory": "", "prefix": ""}
         self.__config["SerializerData"]["Reference Serializer"] = {"directory": "", "prefix": ""}
+
+        # StencilData
+
 
     def __getitem__(self, key):
         return self.__config[self.__keytransform__(key)]
@@ -57,16 +62,16 @@ class Configuration(MutableMapping):
 
         return serializer_data
 
-    def upade_serializer_data(self, serializer_data):
+    def update_serializer_data(self, serializer_data):
         name = serializer_data.name
-        Logger.info("Updating serializer data of: %s" % name)
+        Logger.info("Syncing SerializerData of '%s' with Configuration" % name)
         try:
             self.__config["SerializerData"][name]["directory"] = serializer_data.directory
             self.__config["SerializerData"][name]["prefix"] = serializer_data.prefix
         except IndexError as e:
             pass
 
-    def sotre_to_file(self):
+    def store_to_file(self):
         # Try to store config in $(pwd)/.sdb/
         stored_config = True
         config_file = path.join(getcwd(), ".sdb", Configuration.ConfigFile)
@@ -79,10 +84,10 @@ class Configuration(MutableMapping):
 
             with open(config_file, 'w') as file:
                 dump(self.__config, file)
-                Logger.info("Storing config file in: %s" % config_file)
+                Logger.info("Storing config file in \"%s\"" % config_file)
 
         except (OSError, IOError) as e:
-            Logger.warning("Unable to save config file in %s: %s" % (config_file, e))
+            Logger.warning("Unable to save config file in \"%s\": %s" % (config_file, e))
             stored_config = False
 
         # Try to store in $HOME/.sdb/
@@ -99,10 +104,10 @@ class Configuration(MutableMapping):
 
                     with open(config_file, 'w') as file:
                         dump(self.__config, file)
-                        Logger.info("Storing config file in: %s" % config_file)
+                        Logger.info("Storing config file in \"%s\"" % config_file)
 
                 except (OSError, IOError) as e:
-                    Logger.warning("Unable to save config file in %s: %s" % (config_file, e))
+                    Logger.warning("Unable to save config file in \"%s\": %s" % (config_file, e))
                     stored_config = False
 
     def load_from_file(self):
@@ -112,10 +117,10 @@ class Configuration(MutableMapping):
         try:
             with open(config_file, 'r') as file:
                 self.__config = load(file)
-                Logger.info("Loading config file from: %s" % config_file)
+                Logger.info("Loading config file from \"%s\"" % config_file)
                 loaded_config = True
         except (OSError, IOError, error) as e:
-            Logger.info("Unable to load config file from %s: %s" % (config_file, e))
+            Logger.info("Unable to load config file from \"%s\": %s" % (config_file, e))
 
         # Try to load config from $HOME/.sdb/
         if not loaded_config:
@@ -125,7 +130,7 @@ class Configuration(MutableMapping):
                 try:
                     with open(config_file, 'r') as file:
                         self.__config = load(file)
-                        Logger.info("Loading config file from: %s" % config_file)
+                        Logger.info("Loading config file from \"%s\"" % config_file)
 
                 except (OSError, IOError) as e:
-                    Logger.info("Unable to load config file from %s: %s" % (config_file, e))
+                    Logger.info("Unable to load config file from \"%s\": %s" % (config_file, e))

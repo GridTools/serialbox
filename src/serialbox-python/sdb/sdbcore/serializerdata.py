@@ -11,26 +11,39 @@
 
 from serialbox import Serializer, SerialboxError, OpenModeKind
 
+from sdbcore.logger import Logger
 
 class SerializerData(object):
-    def __init__(self, name, directory="", prefix="", serializer=None):
+    def __init__(self, name, directory="", prefix=""):
+        Logger.info("Setup SerializerData of '%s'" % name)
+
         self.__name = name
         self.__directory = directory
         self.__prefix = prefix
         self.__serializer = None
         self.__data_changed = True
+        self.__listener_callbacks = []
 
-    def make_serializer(self):
+    def make_serializer(self, force=False):
         try:
-            if self.__data_changed:
+            if force or self.__data_changed:
+                Logger.info("Creating new Serializer in SerializerData of '%s'" % self.__name)
                 self.__serializer = Serializer(OpenModeKind.Read, self.directory, self.prefix)
                 self.__data_changed = False
+
+                for listener_callback in self.__listener_callbacks:
+                    listener_callback()
+
         except SerialboxError as e:
             self.__serializer = None
+            self.__data_changed = True
             raise RuntimeError("<b>%s:</b><br />%s" % (self.name, e))
 
     def is_valid(self):
         return (self.__serializer is not None)
+
+    def reload(self):
+        self.make_serializer(True)
 
     @property
     def directory(self):
@@ -63,17 +76,7 @@ class SerializerData(object):
         self.__data_changed = True
         self.__serializer = serializer
 
-    @property
-    def stencils(self):
-        stencil_list = []
-        if self.__serializer.global_metainfo.has_key("stencils"):
-            stencil_list = self.__serializer.global_metainfo["stencils"]
-        return stencil_list
-
-    def get_fields_of_stencil(self, name):
-        field_list = []
-        for sp in self.__serializer.savepoint_list():
-            if sp.name.startswith(name):
-                for fields in self.__serializer.fields_at_savepoint(sp):
-                    field_list += [fields]
-        return list(set(field_list))
+    def register_as_listener(self, listener):
+        """Register a callback which is invoked when a new serializer is allocated
+        """
+        self.__listener_callbacks += [listener]

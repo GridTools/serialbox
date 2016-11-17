@@ -34,8 +34,8 @@ class AboutWidget(QWidget):
         image = QPixmap("sdbgui/images/logo.png")
         image_scaled = image.scaled(geometry.height(), geometry.width(), Qt.KeepAspectRatio)
 
-        image_label = QLabel()
-        image_label.setPixmap(image_scaled)
+        self.__widget_label_image = QLabel()
+        self.__widget_label_image.setPixmap(image_scaled)
 
         about_txt = ("",
                      "sdb (%s)" % Version().sdb_version(),
@@ -51,12 +51,12 @@ class AboutWidget(QWidget):
                      "WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.",
                      "")
 
-        about_txt_label = QLabel()
-        about_txt_label.setText("\n".join(about_txt))
-        about_txt_label.setWordWrap(True)
+        self.__widget_label_about_txt = QLabel()
+        self.__widget_label_about_txt.setText("\n".join(about_txt))
+        self.__widget_label_about_txt.setWordWrap(True)
 
         hbox = QHBoxLayout()
-        hbox.addWidget(image_label)
+        hbox.addWidget(self.__widget_label_image)
         hbox.addStretch(1)
 
         hbox_button = QHBoxLayout()
@@ -67,7 +67,7 @@ class AboutWidget(QWidget):
 
         vbox = QVBoxLayout()
         vbox.addLayout(hbox)
-        vbox.addWidget(about_txt_label)
+        vbox.addWidget(self.__widget_label_about_txt)
         vbox.addLayout(hbox_button)
 
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
@@ -76,4 +76,5 @@ class AboutWidget(QWidget):
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Escape:
+            Logger.info("Closing about message box")
             self.close()
