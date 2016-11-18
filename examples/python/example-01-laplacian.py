@@ -75,7 +75,7 @@ def write():
     # Register the field within the Serializer. Note that for the Python Interface this step is not
     # strictly necessary as it can be done implicitly in the write method (see below).
     #
-    fieldmetainfo = ser.FieldMetaInfo(ser.TypeID.Float64, phi.shape)
+    fieldmetainfo = ser.FieldMetainfo(ser.TypeID.Float64, phi.shape)
     serializer.register_field('phi', fieldmetainfo)
 
     #

@@ -33,7 +33,7 @@ if(SERIALBOX_ENABLE_C)
   set(SOURCES
     Archive.cpp
     Array.cpp
-    Config.cpp
+    ConfigOptions.cpp
     ErrorHandling.cpp
     FieldMetainfo.cpp
     Logging.cpp
@@ -51,7 +51,7 @@ if(SERIALBOX_ENABLE_C)
   serialbox_add_library(NAME SerialboxC 
                         TARGET SerialboxCLibrary 
                         OBJECTS SerialboxCoreLibraryObjects
-                        BUILD_SHARED 
+                        BUILD_SHARED
                         BUILD_STATIC
                         SYMLINKS ${SYMLINKS}
                         LIBRARIES ${EXTERNAL_LIBRARIES}

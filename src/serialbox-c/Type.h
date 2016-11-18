@@ -15,6 +15,7 @@
 #ifndef SERIALBOX_C_TYPE_H
 #define SERIALBOX_C_TYPE_H
 
+#include "serialbox-c/Api.h"
 #include "serialbox/core/Config.h"
 #include <stdint.h>
 
@@ -37,32 +38,32 @@ extern "C" {
 /**
  * \brief Boolean type of serialbox
  */
-typedef int serialboxBoolean_t;
+SERIALBOX_API typedef int serialboxBoolean_t;
 
 /**
  * \brief 32-bit integral type of serialbox
  */
-typedef int32_t serialboxInt32_t;
+SERIALBOX_API typedef int32_t serialboxInt32_t;
 
 /**
  * \brief 64-bit integral type of serialbox
  */
-typedef int64_t serialboxInt64_t;
+SERIALBOX_API typedef int64_t serialboxInt64_t;
 
 /**
  * \brief 32-bit floating point type of serialbox (float)
  */
-typedef float serialboxFloat32_t;
+SERIALBOX_API typedef float serialboxFloat32_t;
 
 /**
  * \brief 64-bit floating point type of serialbox (double)
  */
-typedef double serialboxFloat64_t;
+SERIALBOX_API typedef double serialboxFloat64_t;
 
 /**
  * \brief String type of serialbox
  */
-typedef char* serialboxString_t;
+SERIALBOX_API typedef char* serialboxString_t;
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Serialbox Types
@@ -71,7 +72,7 @@ typedef char* serialboxString_t;
 /**
  * \brief Refrence to a Serializer
  */
-typedef struct {
+SERIALBOX_API typedef struct {
   void* impl;
   int ownsData;
 } serialboxSerializer_t;
@@ -79,7 +80,7 @@ typedef struct {
 /**
  * \brief Refrence to a Savepoint
  */
-typedef struct {
+SERIALBOX_API typedef struct {
   void* impl;
   int ownsData;
 } serialboxSavepoint_t;
@@ -87,7 +88,7 @@ typedef struct {
 /**
  * \brief Refrence to a Metainfo
  */
-typedef struct {
+SERIALBOX_API typedef struct {
   void* impl;
   int ownsData;
 } serialboxMetainfo_t;
@@ -95,7 +96,7 @@ typedef struct {
 /**
  * \brief Refrence to a FieldMetainfoImpl
  */
-typedef struct {
+SERIALBOX_API typedef struct {
   void* impl;
   int ownsData;
 } serialboxFieldMetainfo_t;

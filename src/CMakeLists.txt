@@ -50,7 +50,7 @@ function(serialbox_add_library)
   if(NOT("${serialbox_add_library_UNPARSED_ARGUMENTS}" STREQUAL ""))
     message(FATAL_ERROR "invalid argument ${serialbox_add_library_UNPARSED_ARGUMENTS}")
   endif()
-  
+
   #
   # Add object library
   #
@@ -65,6 +65,12 @@ function(serialbox_add_library)
     foreach(object ${objects})
       list(APPEND OBJECT_SOURCES $<TARGET_OBJECTS:${object}>)
     endforeach()
+  endif()
+
+  if(DEFINED SERIALBOX_COMPILER_MSVC)
+    if(buildShared)
+      add_definitions(-DSERIALBOX_DLL)
+    endif()
   endif()
   
   #

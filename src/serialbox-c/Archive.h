@@ -15,6 +15,7 @@
 #ifndef SERIALBOX_C_ARCHIVE_H
 #define SERIALBOX_C_ARCHIVE_H
 
+#include "serialbox-c/Api.h"
 #include "serialbox-c/Array.h"
 
 #ifdef __cplusplus
@@ -37,7 +38,7 @@ extern "C" {
  *
  * \return Array of C-strings with the names of all registered archives
  */
-serialboxArrayOfString_t* serialboxArchiveGetRegisteredArchives(void);
+SERIALBOX_API serialboxArrayOfString_t* serialboxArchiveGetRegisteredArchives(void);
 
 /**
  * \brief Deduce the name of the `archive` according to the extension of the `filename`
@@ -50,7 +51,7 @@ serialboxArrayOfString_t* serialboxArchiveGetRegisteredArchives(void);
  * \param filename    Path or name of the file
  * \return C-String of the archive or NULL if an error occured
  */
-char* serialboxArchiveGetArchiveFromExtension(const char* filename);
+SERIALBOX_API char* serialboxArchiveGetArchiveFromExtension(const char* filename);
 
 /** @} @} */
 

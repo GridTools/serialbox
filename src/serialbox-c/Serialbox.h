@@ -25,6 +25,7 @@
 #include "serialbox-c/Archive.h"
 #include "serialbox-c/Array.h"
 #include "serialbox-c/Config.h"
+#include "serialbox-c/ConfigOptions.h"
 #include "serialbox-c/ErrorHandling.h"
 #include "serialbox-c/FieldMetainfo.h"
 #include "serialbox-c/FortranWrapper.h"

@@ -15,6 +15,7 @@
 #ifndef SERIALBOX_C_FIELDMETAINFO_H
 #define SERIALBOX_C_FIELDMETAINFO_H
 
+#include "serialbox-c/Api.h"
 #include "serialbox-c/Type.h"
 
 #ifdef __cplusplus
@@ -41,8 +42,9 @@ extern "C" {
  * \param numDimensions   Number of dimensions
  * \return pointer to the newly constructed FieldMetainfoImpl or NULL if an error occurred
  */
-serialboxFieldMetainfo_t* serialboxFieldMetainfoCreate(enum serialboxTypeID type,
-                                                       const int* dimensions, int numDimensions);
+SERIALBOX_API serialboxFieldMetainfo_t* serialboxFieldMetainfoCreate(enum serialboxTypeID type,
+                                                                     const int* dimensions, 
+                                                                     int numDimensions);
 
 /**
  * \brief Copy construct the FieldMetainfoImpl
@@ -50,7 +52,7 @@ serialboxFieldMetainfo_t* serialboxFieldMetainfoCreate(enum serialboxTypeID type
  * \param other   FieldMetainfoImpl to copy from
  * \return pointer to the newly constructed FieldMetainfoImpl or NULL if an error occurred
  */
-serialboxFieldMetainfo_t*
+SERIALBOX_API serialboxFieldMetainfo_t*
 serialboxFieldMetainfoCreateFromFieldMetainfo(const serialboxFieldMetainfo_t* other);
 
 /**
@@ -58,7 +60,7 @@ serialboxFieldMetainfoCreateFromFieldMetainfo(const serialboxFieldMetainfo_t* ot
  *
  * \param fieldMetainfo  Field meta-information to use
  */
-void serialboxFieldMetainfoDestroy(serialboxFieldMetainfo_t* fieldMetainfo);
+SERIALBOX_API void serialboxFieldMetainfoDestroy(serialboxFieldMetainfo_t* fieldMetainfo);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Utility
@@ -71,8 +73,8 @@ void serialboxFieldMetainfoDestroy(serialboxFieldMetainfo_t* fieldMetainfo);
  * \param f2  Second FieldMetainfoImpl to use
  * \return 1 if `f1 == f2`, 0 otherwise
  */
-int serialboxFieldMetainfoEqual(const serialboxFieldMetainfo_t* f1,
-                                const serialboxFieldMetainfo_t* f2);
+SERIALBOX_API int serialboxFieldMetainfoEqual(const serialboxFieldMetainfo_t* f1,
+                                              const serialboxFieldMetainfo_t* f2);
 
 /**
  * \brief Convert to string
@@ -83,7 +85,7 @@ int serialboxFieldMetainfoEqual(const serialboxFieldMetainfo_t* f1,
  * \param fieldMetainfo  Field meta-information to use
  * \return String representation of the FieldMetainfoImpl
  */
-char* serialboxFieldMetainfoToString(const serialboxFieldMetainfo_t* fieldMetainfo);
+SERIALBOX_API char* serialboxFieldMetainfoToString(const serialboxFieldMetainfo_t* fieldMetainfo);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Dimensions and TypeID
@@ -95,7 +97,8 @@ char* serialboxFieldMetainfoToString(const serialboxFieldMetainfo_t* fieldMetain
  * \param fieldMetainfo  Field meta-information to use
  * \return type-id the field
  */
-enum serialboxTypeID serialboxFieldMetainfoGetTypeID(const serialboxFieldMetainfo_t* fieldMetainfo);
+SERIALBOX_API enum serialboxTypeID 
+serialboxFieldMetainfoGetTypeID(const serialboxFieldMetainfo_t* fieldMetainfo);
 
 /**
  * \brief Get dimensions
@@ -105,7 +108,8 @@ enum serialboxTypeID serialboxFieldMetainfoGetTypeID(const serialboxFieldMetainf
  * \return dimensions of the field as an array of `int`s of size
  * `serialboxFieldMetainfoGetNumDimensions`
  */
-const int* serialboxFieldMetainfoGetDimensions(const serialboxFieldMetainfo_t* fieldMetainfo);
+SERIALBOX_API const int* 
+serialboxFieldMetainfoGetDimensions(const serialboxFieldMetainfo_t* fieldMetainfo);
 
 /**
  * \brief Get number of dimensions
@@ -113,7 +117,8 @@ const int* serialboxFieldMetainfoGetDimensions(const serialboxFieldMetainfo_t* f
  * \param fieldMetainfo  Field meta-information to use
  * \return number of dimensions of the field
  */
-int serialboxFieldMetainfoGetNumDimensions(const serialboxFieldMetainfo_t* fieldMetainfo);
+SERIALBOX_API int 
+serialboxFieldMetainfoGetNumDimensions(const serialboxFieldMetainfo_t* fieldMetainfo);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Meta-information
@@ -126,7 +131,8 @@ int serialboxFieldMetainfoGetNumDimensions(const serialboxFieldMetainfo_t* field
  * \param fieldMetainfo  Field meta-information to use
  * \return meta-information of the field
  */
-serialboxMetainfo_t* serialboxFieldMetainfoGetMetainfo(serialboxFieldMetainfo_t* fieldMetainfo);
+SERIALBOX_API serialboxMetainfo_t* 
+serialboxFieldMetainfoGetMetainfo(serialboxFieldMetainfo_t* fieldMetainfo);
 
 /** @} @} */
 

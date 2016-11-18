@@ -15,6 +15,7 @@
 #ifndef SERIALBOX_C_SAVEPOINT_H
 #define SERIALBOX_C_SAVEPOINT_H
 
+#include "serialbox-c/Api.h"
 #include "serialbox-c/Type.h"
 
 #ifdef __cplusplus
@@ -39,7 +40,7 @@ extern "C" {
  * \param name   Name of the Savepoint
  * \return pointer to the newly constructed Savepoint or NULL if an error occurred
  */
-serialboxSavepoint_t* serialboxSavepointCreate(const char* name);
+SERIALBOX_API serialboxSavepoint_t* serialboxSavepointCreate(const char* name);
 
 /**
  * \brief Copy construct the Savepoint
@@ -47,14 +48,15 @@ serialboxSavepoint_t* serialboxSavepointCreate(const char* name);
  * \param other   Savepoint to copy from
  * \return pointer to the newly constructed Savepoint or NULL if an error occurred
  */
-serialboxSavepoint_t* serialboxSavepointCreateFromSavepoint(const serialboxSavepoint_t* other);
+SERIALBOX_API serialboxSavepoint_t* 
+serialboxSavepointCreateFromSavepoint(const serialboxSavepoint_t* other);
 
 /**
  * \brief Destroy the savepoint and deallocate all memory
  *
  * \param savepoint  Savepoint to use
  */
-void serialboxSavepointDestroy(serialboxSavepoint_t* savepoint);
+SERIALBOX_API void serialboxSavepointDestroy(serialboxSavepoint_t* savepoint);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Utility
@@ -66,7 +68,7 @@ void serialboxSavepointDestroy(serialboxSavepoint_t* savepoint);
  * \param savepoint  Savepoint to use
  * \return name of the Savepoint
  */
-const char* serialboxSavepointGetName(const serialboxSavepoint_t* savepoint);
+SERIALBOX_API const char* serialboxSavepointGetName(const serialboxSavepoint_t* savepoint);
 
 /**
  * \brief Check if Savepoint `s1` is equal to savepoint `s2`
@@ -75,7 +77,8 @@ const char* serialboxSavepointGetName(const serialboxSavepoint_t* savepoint);
  * \param s2  Second Savepoint to use
  * \return 1 if `s1 == s2`, 0 otherwise
  */
-int serialboxSavepointEqual(const serialboxSavepoint_t* s1, const serialboxSavepoint_t* s2);
+SERIALBOX_API int 
+serialboxSavepointEqual(const serialboxSavepoint_t* s1, const serialboxSavepoint_t* s2);
 
 /**
  * \brief Convert to string
@@ -86,7 +89,7 @@ int serialboxSavepointEqual(const serialboxSavepoint_t* s1, const serialboxSavep
  * \param savepoint  Savepoint to use
  * \return String representation of the Savepoint
  */
-char* serialboxSavepointToString(const serialboxSavepoint_t* savepoint);
+SERIALBOX_API char* serialboxSavepointToString(const serialboxSavepoint_t* savepoint);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Meta-information
@@ -98,7 +101,7 @@ char* serialboxSavepointToString(const serialboxSavepoint_t* savepoint);
  * \param savepoint  Savepoint to use
  * \return meta-information of the Savepoint
  */
-serialboxMetainfo_t* serialboxSavepointGetMetainfo(serialboxSavepoint_t* savepoint);
+SERIALBOX_API serialboxMetainfo_t* serialboxSavepointGetMetainfo(serialboxSavepoint_t* savepoint);
 
 /** @} @} */
 

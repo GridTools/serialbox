@@ -12,6 +12,8 @@
  *
 \*===------------------------------------------------------------------------------------------===*/
 
+#include "serialbox-c/Api.h"
+
 #ifndef SERIALBOX_C_ERRORHANDLING_H
 #define SERIALBOX_C_ERRORHANDLING_H
 
@@ -34,12 +36,12 @@ extern "C" {
  *
  * \see serialboxInstallFatalErrorHandler
  */
-void serialboxFatalError(const char* reason);
+SERIALBOX_API void serialboxFatalError(const char* reason);
 
 /**
  * \brief Error handler callback
  */
-typedef void (*serialboxFatalErrorHandler_t)(const char* reason);
+SERIALBOX_API typedef void (*serialboxFatalErrorHandler_t)(const char* reason);
 
 /**
  * \brief Install a fatal error handler
@@ -51,14 +53,14 @@ typedef void (*serialboxFatalErrorHandler_t)(const char* reason);
  * translate the errror into an exception. This function allows you to install a callback that will
  * be invoked after a fatal error occurred.
  */
-void serialboxInstallFatalErrorHandler(serialboxFatalErrorHandler_t handler);
+SERIALBOX_API void serialboxInstallFatalErrorHandler(serialboxFatalErrorHandler_t handler);
 
 /**
  * \brief Reset the fatal error handler.
  *
  * This resets Serialbox's fatal error handling behavior to the default.
  */
-void serialboxResetFatalErrorHandler(void);
+SERIALBOX_API void serialboxResetFatalErrorHandler(void);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Default Error Handler
@@ -77,7 +79,7 @@ void serialboxDefaultFatalErrorHandler(const char* reason);
  * \brief Store the the current state of the error which can be queried via
  * \ref serialboxStateErrorHandlerGetLastError.
  */
-void serialboxStateErrorHandler(const char* reason);
+SERIALBOX_API void serialboxStateErrorHandler(const char* reason);
 
 /**
  * \brief Check the current error state
@@ -87,7 +89,7 @@ void serialboxStateErrorHandler(const char* reason);
  *
  * \return 1 if there was an error, 0 otherwise
  */
-int serialboxStateErrorHandlerHasError(void);
+SERIALBOX_API int serialboxStateErrorHandlerHasError(void);
 
 /**
  * \brief Query the current error state
@@ -96,12 +98,12 @@ int serialboxStateErrorHandlerHasError(void);
  *
  * \return newly allocated `char*` with the current error message
  */
-char* serialboxStateErrorHandlerGetErrorMessage(void);
+SERIALBOX_API char* serialboxStateErrorHandlerGetErrorMessage(void);
 
 /**
  * \brief Reset the current error state
  */
-void serialboxStateErrorHandlerResetState(void);
+SERIALBOX_API void serialboxStateErrorHandlerResetState(void);
 
 /** @} @} */
 

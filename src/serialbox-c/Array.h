@@ -12,6 +12,7 @@
  *
 \*===------------------------------------------------------------------------------------------===*/
 
+#include "serialbox-c/Api.h"
 #include "serialbox-c/Type.h"
 
 #ifndef SERIALBOX_C_ARRAY_H
@@ -36,7 +37,7 @@ extern "C" {
 /**
  * \brief Array of booleans
  */
-typedef struct {
+SERIALBOX_API typedef struct {
   serialboxBoolean_t* data;
   int len;
 } serialboxArrayOfBoolean_t;
@@ -44,7 +45,7 @@ typedef struct {
 /**
  * \brief Array of 32-bit integers
  */
-typedef struct {
+SERIALBOX_API typedef struct {
   serialboxInt32_t* data;
   int len;
 } serialboxArrayOfInt32_t;
@@ -52,7 +53,7 @@ typedef struct {
 /**
  * \brief Array of 64-bit integers
  */
-typedef struct {
+SERIALBOX_API typedef struct {
   serialboxInt64_t* data;
   int len;
 } serialboxArrayOfInt64_t;
@@ -60,7 +61,7 @@ typedef struct {
 /**
  * \brief Array of 32-bit floating point numbers (float)
  */
-typedef struct {
+SERIALBOX_API typedef struct {
   serialboxFloat32_t* data;
   int len;
 } serialboxArrayOfFloat32_t;
@@ -68,7 +69,7 @@ typedef struct {
 /**
  * \brief Array of 64-bit floating point numbers (double)
  */
-typedef struct {
+SERIALBOX_API typedef struct {
   serialboxFloat64_t* data;
   int len;
 } serialboxArrayOfFloat64_t;
@@ -76,7 +77,7 @@ typedef struct {
 /**
  * \brief Array of strings
  */
-typedef struct {
+SERIALBOX_API typedef struct {
   serialboxString_t* data;
   int len;
 } serialboxArrayOfString_t;
@@ -88,12 +89,12 @@ typedef struct {
  * \return newly allocated array of length `len`
  * @{
  */
-serialboxArrayOfBoolean_t* serialboxArrayOfBooleanCreate(int len);
-serialboxArrayOfInt32_t* serialboxArrayOfInt32Create(int len);
-serialboxArrayOfInt64_t* serialboxArrayOfInt64Create(int len);
-serialboxArrayOfFloat32_t* serialboxArrayOfFloat32Create(int len);
-serialboxArrayOfFloat64_t* serialboxArrayOfFloat64Create(int len);
-serialboxArrayOfString_t* serialboxArrayOfStringCreate(int len);
+SERIALBOX_API serialboxArrayOfBoolean_t* serialboxArrayOfBooleanCreate(int len);
+SERIALBOX_API serialboxArrayOfInt32_t* serialboxArrayOfInt32Create(int len);
+SERIALBOX_API serialboxArrayOfInt64_t* serialboxArrayOfInt64Create(int len);
+SERIALBOX_API serialboxArrayOfFloat32_t* serialboxArrayOfFloat32Create(int len);
+SERIALBOX_API serialboxArrayOfFloat64_t* serialboxArrayOfFloat64Create(int len);
+SERIALBOX_API serialboxArrayOfString_t* serialboxArrayOfStringCreate(int len);
 /** @} */
 
 /**
@@ -102,12 +103,12 @@ serialboxArrayOfString_t* serialboxArrayOfStringCreate(int len);
  * \param array   Array to dellaocate
  * @{
  */
-void serialboxArrayOfBooleanDestroy(serialboxArrayOfBoolean_t* array);
-void serialboxArrayOfInt32Destroy(serialboxArrayOfInt32_t* array);
-void serialboxArrayOfInt64Destroy(serialboxArrayOfInt64_t* array);
-void serialboxArrayOfFloat32Destroy(serialboxArrayOfFloat32_t* array);
-void serialboxArrayOfFloat64Destroy(serialboxArrayOfFloat64_t* array);
-void serialboxArrayOfStringDestroy(serialboxArrayOfString_t* array);
+SERIALBOX_API void serialboxArrayOfBooleanDestroy(serialboxArrayOfBoolean_t* array);
+SERIALBOX_API void serialboxArrayOfInt32Destroy(serialboxArrayOfInt32_t* array);
+SERIALBOX_API void serialboxArrayOfInt64Destroy(serialboxArrayOfInt64_t* array);
+SERIALBOX_API void serialboxArrayOfFloat32Destroy(serialboxArrayOfFloat32_t* array);
+SERIALBOX_API void serialboxArrayOfFloat64Destroy(serialboxArrayOfFloat64_t* array);
+SERIALBOX_API void serialboxArrayOfStringDestroy(serialboxArrayOfString_t* array);
 /** @} */
 
 /** @} @} */

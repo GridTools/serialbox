@@ -15,6 +15,8 @@
 #ifndef SERIALBOX_C_LOGGER_H
 #define SERIALBOX_C_LOGGER_H
 
+#include "serialbox-c/Api.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,7 +35,7 @@ extern "C" {
  * By default, the logging is disabled. If `SERIALBOX_DISABLE_LOGGING` is defined, the function
  * does nothing.
  */
-void serialboxLoggingEnable(void);
+SERIALBOX_API void serialboxLoggingEnable(void);
 
 /**
  * \brief Disable logging
@@ -41,14 +43,14 @@ void serialboxLoggingEnable(void);
  * By default, the logging is disabled. If `SERIALBOX_DISABLE_LOGGING` is defined, the function
  * does nothing.
  */
-void serialboxLoggingDisable(void);
+SERIALBOX_API void serialboxLoggingDisable(void);
 
 /**
  * \brief Check if logging is enabled
  *
  * \return 1 if logging is enabled, 0 otherwise
  */
-int serialboxLoggingIsEnabled(void);
+SERIALBOX_API int serialboxLoggingIsEnabled(void);
 
 /** @} @} */
 
