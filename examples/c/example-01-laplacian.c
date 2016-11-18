@@ -33,8 +33,8 @@ static const int M = 10;
  */
 static void laplacianStencil(const double* phi, double* lap, int N, int M) {
   int i, j;
-  for(i = 0; i < N; ++i)
-    for(j = 0; j < M; ++j)
+  for(i = 1; i < N - 1; ++i)
+    for(j = 1; j < M - 1; ++j)
       lap[i * N + j] = phi[(i + 1) * N + j] + phi[(i - 1) * N + j] + phi[i * N + (j + 1)] +
                        phi[i * N + (j - 1)] - 4 * phi[i * N + j];
 }
@@ -120,8 +120,8 @@ static void write() {
   /*
    * Up to this point nothing has been written to disk. Using update_meta_data() will force a write
    * of the meta-information to the corresponding JSON files. Note that the meta-data is updated 
-   * after each call and thus a manual update of the meta-data is seldom required. If you are 
-   * curious you can inspect the files './laplacian/MetaData-field.json' and
+   * after each write/read call and thus a manual update of the meta-data is seldom required. 
+   * If you are curious you can inspect the files './laplacian/MetaData-field.json' and
    * './laplacian/ArchiveMetaData-field.json'
    */
   serialboxSerializerUpdateMetaData(serializer);
