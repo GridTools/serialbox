@@ -22,6 +22,7 @@ external/*
 # Shared library in source dir
 src/serialbox-python/serialbox/*.so
 src/serialbox-python/serialbox/*.dylib
+src/serialbox-python/serialbox/*.dll
 
 # Ignore gh-pages folder
 gh-pages*
