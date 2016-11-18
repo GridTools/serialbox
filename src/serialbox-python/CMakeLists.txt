@@ -33,11 +33,10 @@ if(SERIALBOX_ENABLE_PYTHON)
   # libSerialboxC.so in the source tree from other builds, that's why we scan for broken links 
   # first)
   if(SERIALBOX_COMPILER_MSVC)
-    set(REMOVE_OBSOLETE_SYMLINKS_OR_NOP 
-        "rem") # nop
+    set(REMOVE_OBSOLETE_SYMLINKS_OR_NOP rem) # nop
   else()
     set(REMOVE_OBSOLETE_SYMLINKS_OR_NOP 
-        "find -L ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox -type l -delete")
+        find -L ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox -type l -delete)
   endif()
   
   add_custom_target(SerialboxPython
