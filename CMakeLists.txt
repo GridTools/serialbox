@@ -32,6 +32,10 @@ if(WIN32)
   set(SERIALBOX_ON_WIN32 1)
 endif(WIN32)
 
+if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
+  set(SERIALBOX_COMPILER_MSVC 1)
+endif()
+
 # Serialbox version
 set(SERIALBOX_VERSION_MAJOR 2)
 set(SERIALBOX_VERSION_MINOR 0)
@@ -74,28 +78,34 @@ include(SerialboxCheckCxxCompilerSupport)
 ## Set C++ standard to C++11
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Cray")
   set(CXX11_FLAG "-h std=c++11")
-else()
+elseif(NOT(SERIALBOX_COMPILER_MSVC))
   set(CXX11_FLAG "-std=c++11")
 endif()
 
-CHECK_CXX_COMPILER_FLAG("${CXX11_FLAG}" COMPILER_SUPPORTS_CXX11)
-if(NOT(COMPILER_SUPPORTS_CXX11))
-  message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
-endif(NOT(COMPILER_SUPPORTS_CXX11))
-set(CMAKE_CXX_FLAGS "${CXX11_FLAG} ${CMAKE_CXX_FLAGS}")
+if(NOT(SERIALBOX_COMPILER_MSVC))
+  
+  CHECK_CXX_COMPILER_FLAG("${CXX11_FLAG}" COMPILER_SUPPORTS_CXX11)
+  if(NOT(COMPILER_SUPPORTS_CXX11))
+    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support.")
+  endif(NOT(COMPILER_SUPPORTS_CXX11))
+  set(CMAKE_CXX_FLAGS "${CXX11_FLAG} ${CMAKE_CXX_FLAGS}")
 
-# Shared architecture flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+  # Shared architecture flags
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 
-# Compiler specific
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")            
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -wd488")
+  # Compiler specific
+  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")            
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -wd488")
+  endif()
+
+else()
+  
 endif()
-
+  
 # Set build type to Release if nothing was specified (instead of Debug)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING 
@@ -124,11 +134,14 @@ endif()
 # Set shared library flags
 if(SERIALBOX_BUILD_SHARED)
   set(BUILD_SHARED_LIBS ON)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+  
+  if(NOT(SERIALBOX_COMPILER_MSVC))
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+  endif()
   
   # Use, i.e. don't skip the full RPATH for the build tree
-  set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+  set(CMAKE_SKIP_BUILD_RPATH FALSE)
 
   # When building, don't use the install RPATH already (but later on when installing)
   set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 

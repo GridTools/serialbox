@@ -16,7 +16,7 @@
 # This CMake module checks whether the current compiler is supported, and
 # provides friendly hints to the user.
 
-if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     if (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS "3.4")
         message(WARNING "
     ### You appear to be using Clang ${CMAKE_CXX_COMPILER_VERSION}, which is known
@@ -27,7 +27,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     ###     cmake .. -DCMAKE_CXX_COMPILER=/path/to/clang
         ")
     endif()
-elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
     if (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS "6.1.0")
         message(WARNING "
     ### You appear to be using Apple's Clang ${CMAKE_CXX_COMPILER_VERSION}, which is
@@ -44,7 +44,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
     ###     cmake .. -DCMAKE_CXX_COMPILER=/path/to/clang
         ")
     endif()
-elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     if (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS "17")
         message(WARNING "
     ### You appear to be using Intel's ICC ${CMAKE_CXX_COMPILER_VERSION}, which is known
@@ -55,7 +55,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
     ###     cmake .. -DCMAKE_CXX_COMPILER=/path/to/icpc
         ")
     endif()
-elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     if (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS "4.9")
         message(WARNING "
     ### You appear to be using GCC ${CMAKE_CXX_COMPILER_VERSION}, which is known to be
@@ -65,6 +65,14 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     ### system, you can tell CMake to use it with
     ###
     ###     cmake .. -DCMAKE_CXX_COMPILER=/path/to/g++
+        ")
+    endif()
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    if (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS "19.0")
+        message(WARNING "
+    ### You appear to be using Visual Studio ${CMAKE_CXX_COMPILER_VERSION}, 
+    ### which is known to be unable to compile Serialbox. 
+    ### Only Visual Studio 14 2015 is currently supported.
         ")
     endif()
 else()

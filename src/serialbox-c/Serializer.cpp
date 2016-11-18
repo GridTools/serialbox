@@ -93,7 +93,7 @@ int serialboxSerializerGetMode(const serialboxSerializer_t* serializer) {
 
 const char* serialboxSerializerGetDirectory(const serialboxSerializer_t* serializer) {
   const Serializer* ser = toConstSerializer(serializer);
-  return ser->directory().c_str();
+  return toCharP(ser->directory().c_str());
 }
 
 const char* serialboxSerializerGetPrefix(const serialboxSerializer_t* serializer) {
