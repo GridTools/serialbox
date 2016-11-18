@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('sdb - stencil debugger (%s)' % Version().sdb_version())
         self.resize(960, 480)
 
-        self.setWindowIcon(QIcon("sdbgui/images/favicon.ico"))
+        self.setWindowIcon(QIcon("sdbgui/images/favicon2.png"))
         self.init_menu_tool_bar()
 
         # Setup tabs

@@ -11,6 +11,7 @@
 
 from os import getcwd, listdir, path
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QFileDialog,
                              QComboBox)
@@ -92,7 +93,9 @@ class SetupWidget(QWidget):
             files = [f for f in listdir(self.directory) if
                      path.isfile(path.join(self.directory, f))]
 
-            if self.prefix != self.__widget_edit_prefix.currentText():
+            if self.prefix == "":
+                dir_is_valid = False
+            elif self.prefix != self.__widget_edit_prefix.currentText():
                 dir_is_valid = False
                 for f in files:
                     if path.splitext(f)[1] == ".json" and f.startswith("MetaData-"):
@@ -151,5 +154,7 @@ class SetupWidget(QWidget):
         self.__widget_setupwindow.widget_mainwindow.set_tab_highest_valid_state(TabState.Setup)
 
     def show_valid_icon(self):
-        self.__widget_label_status_icon.setPixmap(QPixmap("sdbgui/images/success.png"))
+        image = QPixmap("sdbgui/images/success.png")
+        image = image.scaled(12, 12, Qt.KeepAspectRatio)
+        self.__widget_label_status_icon.setPixmap(image)
         self.__widget_label_status_icon.setStatusTip("")
