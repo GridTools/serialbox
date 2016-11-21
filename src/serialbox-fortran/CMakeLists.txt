@@ -25,6 +25,11 @@ if(SERIALBOX_ENABLE_FORTRAN)
   # Install mod files
   foreach(source ${SOURCES})
     get_filename_component(module_name ${source} NAME_WE)
+
+    if("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Cray")
+      string(TOUPPER ${module_name} module_name)
+    endif()
+    
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${module_name}.mod" DESTINATION include)
   endforeach()
 
