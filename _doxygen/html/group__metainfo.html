@@ -103,123 +103,123 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structserialboxMetainfoElementInfo__t.html">serialboxMetainfoElementInfo_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data-structure to query the info of the elements (keys and corresponding types) in the meta-information.  <a href="structserialboxMetainfoElementInfo__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadaedb85765f75303e51c1505ceed47fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#gadaedb85765f75303e51c1505ceed47fe">serialboxMetainfoCreate</a> (void)</td></tr>
-<tr class="memdesc:gadaedb85765f75303e51c1505ceed47fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty meta-information.  <a href="#gadaedb85765f75303e51c1505ceed47fe">More...</a><br /></td></tr>
-<tr class="separator:gadaedb85765f75303e51c1505ceed47fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab8f87795dd2320c1c0db69e0a9e3150f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#gab8f87795dd2320c1c0db69e0a9e3150f">serialboxMetainfoCreateFromMetainfo</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *other)</td></tr>
-<tr class="memdesc:gab8f87795dd2320c1c0db69e0a9e3150f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy construct the meta-information.  <a href="#gab8f87795dd2320c1c0db69e0a9e3150f">More...</a><br /></td></tr>
-<tr class="separator:gab8f87795dd2320c1c0db69e0a9e3150f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga36576fc23520acc85942bcdd72fa0d88"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga36576fc23520acc85942bcdd72fa0d88">serialboxMetainfoDestroy</a> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo)</td></tr>
-<tr class="memdesc:ga36576fc23520acc85942bcdd72fa0d88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy the meta-information and deallocate all memory.  <a href="#ga36576fc23520acc85942bcdd72fa0d88">More...</a><br /></td></tr>
-<tr class="separator:ga36576fc23520acc85942bcdd72fa0d88"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4618b26b1695ca662a2d6ed94d765565"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga4618b26b1695ca662a2d6ed94d765565">serialboxMetainfoGetSize</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo)</td></tr>
-<tr class="memdesc:ga4618b26b1695ca662a2d6ed94d765565"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get number of elemenets in the meta-information.  <a href="#ga4618b26b1695ca662a2d6ed94d765565">More...</a><br /></td></tr>
-<tr class="separator:ga4618b26b1695ca662a2d6ed94d765565"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga365f3ae716f018942533662827c8f8cf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga365f3ae716f018942533662827c8f8cf">serialboxMetainfoIsEmpty</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo)</td></tr>
-<tr class="memdesc:ga365f3ae716f018942533662827c8f8cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if meta information is empty.  <a href="#ga365f3ae716f018942533662827c8f8cf">More...</a><br /></td></tr>
-<tr class="separator:ga365f3ae716f018942533662827c8f8cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabcf8a1bc64add5dcc83565e256539eeb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#gabcf8a1bc64add5dcc83565e256539eeb">serialboxMetainfoClear</a> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo)</td></tr>
-<tr class="memdesc:gabcf8a1bc64add5dcc83565e256539eeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">All the elements in the Metainfo are dropped: their destructors are called, and they are removed from the container, leaving it with a size of 0.  <a href="#gabcf8a1bc64add5dcc83565e256539eeb">More...</a><br /></td></tr>
-<tr class="separator:gabcf8a1bc64add5dcc83565e256539eeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7eafde9ba9e547b9b3c09199994e0db2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga7eafde9ba9e547b9b3c09199994e0db2">serialboxMetainfoEqual</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *m1, const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *m2)</td></tr>
-<tr class="memdesc:ga7eafde9ba9e547b9b3c09199994e0db2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if Metainfo <code>m1</code> is equal to Metainfo <code>m2</code>  <a href="#ga7eafde9ba9e547b9b3c09199994e0db2">More...</a><br /></td></tr>
-<tr class="separator:ga7eafde9ba9e547b9b3c09199994e0db2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga657490e022cbac0e736714e63c0d02f1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga657490e022cbac0e736714e63c0d02f1">serialboxMetainfoHasKey</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
-<tr class="memdesc:ga657490e022cbac0e736714e63c0d02f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if and element with key <code>key</code> exists.  <a href="#ga657490e022cbac0e736714e63c0d02f1">More...</a><br /></td></tr>
-<tr class="separator:ga657490e022cbac0e736714e63c0d02f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2207d29346160e33dec5cfa1de10de4f"><td class="memItemLeft" align="right" valign="top">enum <a class="el" href="group__type.html#ga4a8c0471620b4c2dfff64f4c1b1f905c">serialboxTypeID</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga2207d29346160e33dec5cfa1de10de4f">serialboxMetainfoGetTypeIDOfKey</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
-<tr class="memdesc:ga2207d29346160e33dec5cfa1de10de4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get TypeID of element with key <code>key</code>  <a href="#ga2207d29346160e33dec5cfa1de10de4f">More...</a><br /></td></tr>
-<tr class="separator:ga2207d29346160e33dec5cfa1de10de4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac5605c5cee9e99b31eb4a913e0b0157c"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#gac5605c5cee9e99b31eb4a913e0b0157c">serialboxMetainfoToString</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo)</td></tr>
-<tr class="memdesc:gac5605c5cee9e99b31eb4a913e0b0157c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert to string.  <a href="#gac5605c5cee9e99b31eb4a913e0b0157c">More...</a><br /></td></tr>
-<tr class="separator:gac5605c5cee9e99b31eb4a913e0b0157c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa79e38f4ce472a53badc48ab7f559d8f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structserialboxMetainfoElementInfo__t.html">serialboxMetainfoElementInfo_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#gaa79e38f4ce472a53badc48ab7f559d8f">serialboxMetainfoCreateElementInfo</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo)</td></tr>
-<tr class="memdesc:gaa79e38f4ce472a53badc48ab7f559d8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate and intialize the element-info.  <a href="#gaa79e38f4ce472a53badc48ab7f559d8f">More...</a><br /></td></tr>
-<tr class="separator:gaa79e38f4ce472a53badc48ab7f559d8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga99e30304bf6924c603f4e5f9d8b3f10b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga99e30304bf6924c603f4e5f9d8b3f10b">serialboxMetainfoDestroyElementInfo</a> (<a class="el" href="structserialboxMetainfoElementInfo__t.html">serialboxMetainfoElementInfo_t</a> *elementInfo)</td></tr>
-<tr class="memdesc:ga99e30304bf6924c603f4e5f9d8b3f10b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy the element-information and deallocate all memory.  <a href="#ga99e30304bf6924c603f4e5f9d8b3f10b">More...</a><br /></td></tr>
-<tr class="separator:ga99e30304bf6924c603f4e5f9d8b3f10b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5a6c330fd0200be44433641d9e7ebaeb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga5a6c330fd0200be44433641d9e7ebaeb">serialboxMetainfoAddBoolean</a> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, <a class="el" href="group__type.html#gae949d9a4f715b190ebb70783fa269f5f">serialboxBoolean_t</a> value)</td></tr>
-<tr class="memdesc:ga5a6c330fd0200be44433641d9e7ebaeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new element in the form key=value pair to the meta-information.  <a href="#ga5a6c330fd0200be44433641d9e7ebaeb">More...</a><br /></td></tr>
-<tr class="separator:ga5a6c330fd0200be44433641d9e7ebaeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae7574c4814422dcdaa5b9c81697a27a5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae7574c4814422dcdaa5b9c81697a27a5"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddInt32</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, <a class="el" href="group__type.html#ga09473a02b46ee37a1b3dc9dfc798a2a1">serialboxInt32_t</a> value)</td></tr>
-<tr class="separator:gae7574c4814422dcdaa5b9c81697a27a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8602d03a8f85c16c06bb1ee83805a46f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8602d03a8f85c16c06bb1ee83805a46f"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddInt64</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, <a class="el" href="group__type.html#ga773bcb71a100797af1573e2852c2794f">serialboxInt64_t</a> value)</td></tr>
-<tr class="separator:ga8602d03a8f85c16c06bb1ee83805a46f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacb39239c9c70b84e5bf8f18e696be80b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gacb39239c9c70b84e5bf8f18e696be80b"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddFloat32</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, <a class="el" href="group__type.html#ga090fe435dd7c87953941f21623ef56ca">serialboxFloat32_t</a> value)</td></tr>
-<tr class="separator:gacb39239c9c70b84e5bf8f18e696be80b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gafcb803756beed4ca0f61673c541bff2d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafcb803756beed4ca0f61673c541bff2d"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddFloat64</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, <a class="el" href="group__type.html#gaca0c07558aa82f17da4bb923c45cfa31">serialboxFloat64_t</a> value)</td></tr>
-<tr class="separator:gafcb803756beed4ca0f61673c541bff2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9912b79789685d1749e0135399e4b0ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9912b79789685d1749e0135399e4b0ec"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddString</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, const char *value)</td></tr>
-<tr class="separator:ga9912b79789685d1749e0135399e4b0ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa6a402007c7976132a04c0a3e3259a63"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#gaa6a402007c7976132a04c0a3e3259a63">serialboxMetainfoAddArrayOfBoolean</a> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, const <a class="el" href="structserialboxArrayOfBoolean__t.html">serialboxArrayOfBoolean_t</a> *array)</td></tr>
-<tr class="memdesc:gaa6a402007c7976132a04c0a3e3259a63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new element in the form key=[array] to the meta-information.  <a href="#gaa6a402007c7976132a04c0a3e3259a63">More...</a><br /></td></tr>
-<tr class="separator:gaa6a402007c7976132a04c0a3e3259a63"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7382d25597a992ebe0b9ad9ba44f8ccd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7382d25597a992ebe0b9ad9ba44f8ccd"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddArrayOfInt32</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, const <a class="el" href="structserialboxArrayOfInt32__t.html">serialboxArrayOfInt32_t</a> *array)</td></tr>
-<tr class="separator:ga7382d25597a992ebe0b9ad9ba44f8ccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6d25c48004977027c79be95980f2c265"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6d25c48004977027c79be95980f2c265"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddArrayOfInt64</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, const <a class="el" href="structserialboxArrayOfInt64__t.html">serialboxArrayOfInt64_t</a> *array)</td></tr>
-<tr class="separator:ga6d25c48004977027c79be95980f2c265"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf2177eeb241c69736ffb78d31f166ed6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf2177eeb241c69736ffb78d31f166ed6"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddArrayOfFloat32</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, const <a class="el" href="structserialboxArrayOfFloat32__t.html">serialboxArrayOfFloat32_t</a> *array)</td></tr>
-<tr class="separator:gaf2177eeb241c69736ffb78d31f166ed6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2036a55601f480d9cd90fa7aafd82138"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2036a55601f480d9cd90fa7aafd82138"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddArrayOfFloat64</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, const <a class="el" href="structserialboxArrayOfFloat64__t.html">serialboxArrayOfFloat64_t</a> *array)</td></tr>
-<tr class="separator:ga2036a55601f480d9cd90fa7aafd82138"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7bbcf824033de4cb421a01a834a28504"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7bbcf824033de4cb421a01a834a28504"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddArrayOfString</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, const <a class="el" href="structserialboxArrayOfString__t.html">serialboxArrayOfString_t</a> *array)</td></tr>
-<tr class="separator:ga7bbcf824033de4cb421a01a834a28504"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaefab62c48b39287de4dad7031957e9b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__type.html#gae949d9a4f715b190ebb70783fa269f5f">serialboxBoolean_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#gaefab62c48b39287de4dad7031957e9b0">serialboxMetainfoGetBoolean</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
-<tr class="memdesc:gaefab62c48b39287de4dad7031957e9b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert value of element with key <code>key</code> to type <code>T</code> (where <code>T</code> is given by the suffix of thefunction.  <a href="#gaefab62c48b39287de4dad7031957e9b0">More...</a><br /></td></tr>
-<tr class="separator:gaefab62c48b39287de4dad7031957e9b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab197f70149e8dbedf5044c58cd134d48"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gab197f70149e8dbedf5044c58cd134d48"></a>
-<a class="el" href="group__type.html#ga09473a02b46ee37a1b3dc9dfc798a2a1">serialboxInt32_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetInt32</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
-<tr class="separator:gab197f70149e8dbedf5044c58cd134d48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadafcc889fa8a175e5bd5cd475227ff44"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gadafcc889fa8a175e5bd5cd475227ff44"></a>
-<a class="el" href="group__type.html#ga773bcb71a100797af1573e2852c2794f">serialboxInt64_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetInt64</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
-<tr class="separator:gadafcc889fa8a175e5bd5cd475227ff44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa8df524e063d6e82a220b972012878ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa8df524e063d6e82a220b972012878ec"></a>
-<a class="el" href="group__type.html#ga090fe435dd7c87953941f21623ef56ca">serialboxFloat32_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetFloat32</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
-<tr class="separator:gaa8df524e063d6e82a220b972012878ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac318af5015b216a988b2dbf37db7cfe6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac318af5015b216a988b2dbf37db7cfe6"></a>
-<a class="el" href="group__type.html#gaca0c07558aa82f17da4bb923c45cfa31">serialboxFloat64_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetFloat64</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
-<tr class="separator:gac318af5015b216a988b2dbf37db7cfe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab411a2f553dd0c2cbd5444e9077fdbe5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gab411a2f553dd0c2cbd5444e9077fdbe5"></a>
-<a class="el" href="group__type.html#ga61df5fff494d25895b2429ca1f427126">serialboxString_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetString</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
-<tr class="separator:gab411a2f553dd0c2cbd5444e9077fdbe5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3afd3d467e54f15c1baa4c0b4c4e40e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structserialboxArrayOfBoolean__t.html">serialboxArrayOfBoolean_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga3afd3d467e54f15c1baa4c0b4c4e40e3">serialboxMetainfoGetArrayOfBoolean</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
-<tr class="memdesc:ga3afd3d467e54f15c1baa4c0b4c4e40e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert value of element with key <code>key</code> to a newly allocated array array of type <code>T</code>  <a href="#ga3afd3d467e54f15c1baa4c0b4c4e40e3">More...</a><br /></td></tr>
-<tr class="separator:ga3afd3d467e54f15c1baa4c0b4c4e40e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabe4928f28a7124a7cb6e7374c00e0041"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gabe4928f28a7124a7cb6e7374c00e0041"></a>
-<a class="el" href="structserialboxArrayOfInt32__t.html">serialboxArrayOfInt32_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetArrayOfInt32</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
-<tr class="separator:gabe4928f28a7124a7cb6e7374c00e0041"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga151de23a17b0f810b8f513e72c7d5b6a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga151de23a17b0f810b8f513e72c7d5b6a"></a>
-<a class="el" href="structserialboxArrayOfInt64__t.html">serialboxArrayOfInt64_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetArrayOfInt64</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
-<tr class="separator:ga151de23a17b0f810b8f513e72c7d5b6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6e8f4b851e54b6794b84f570216247f9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6e8f4b851e54b6794b84f570216247f9"></a>
-<a class="el" href="structserialboxArrayOfFloat32__t.html">serialboxArrayOfFloat32_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetArrayOfFloat32</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
-<tr class="separator:ga6e8f4b851e54b6794b84f570216247f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2c965a7a450db5436a4307982fd16b48"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2c965a7a450db5436a4307982fd16b48"></a>
-<a class="el" href="structserialboxArrayOfFloat64__t.html">serialboxArrayOfFloat64_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetArrayOfFloat64</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
-<tr class="separator:ga2c965a7a450db5436a4307982fd16b48"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga960d8a93689f0c88c3e410495c839126"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga960d8a93689f0c88c3e410495c839126"></a>
-<a class="el" href="structserialboxArrayOfString__t.html">serialboxArrayOfString_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetArrayOfString</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
-<tr class="separator:ga960d8a93689f0c88c3e410495c839126"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2fc62181eb5dae85466b50b44eacb80e"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga2fc62181eb5dae85466b50b44eacb80e">serialboxMetainfoCreate</a> (void)</td></tr>
+<tr class="memdesc:ga2fc62181eb5dae85466b50b44eacb80e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty meta-information.  <a href="#ga2fc62181eb5dae85466b50b44eacb80e">More...</a><br /></td></tr>
+<tr class="separator:ga2fc62181eb5dae85466b50b44eacb80e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8ecdbfec342d202ad0083752a153a463"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga8ecdbfec342d202ad0083752a153a463">serialboxMetainfoCreateFromMetainfo</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *other)</td></tr>
+<tr class="memdesc:ga8ecdbfec342d202ad0083752a153a463"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy construct the meta-information.  <a href="#ga8ecdbfec342d202ad0083752a153a463">More...</a><br /></td></tr>
+<tr class="separator:ga8ecdbfec342d202ad0083752a153a463"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1c240880084ca4555f790a1033b8e736"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga1c240880084ca4555f790a1033b8e736">serialboxMetainfoDestroy</a> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo)</td></tr>
+<tr class="memdesc:ga1c240880084ca4555f790a1033b8e736"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy the meta-information and deallocate all memory.  <a href="#ga1c240880084ca4555f790a1033b8e736">More...</a><br /></td></tr>
+<tr class="separator:ga1c240880084ca4555f790a1033b8e736"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5cd4f11eebc9617e800194ad17849f7d"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga5cd4f11eebc9617e800194ad17849f7d">serialboxMetainfoGetSize</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo)</td></tr>
+<tr class="memdesc:ga5cd4f11eebc9617e800194ad17849f7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get number of elemenets in the meta-information.  <a href="#ga5cd4f11eebc9617e800194ad17849f7d">More...</a><br /></td></tr>
+<tr class="separator:ga5cd4f11eebc9617e800194ad17849f7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5874108c89cd80e01b2f5b771ad5520b"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga5874108c89cd80e01b2f5b771ad5520b">serialboxMetainfoIsEmpty</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo)</td></tr>
+<tr class="memdesc:ga5874108c89cd80e01b2f5b771ad5520b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if meta information is empty.  <a href="#ga5874108c89cd80e01b2f5b771ad5520b">More...</a><br /></td></tr>
+<tr class="separator:ga5874108c89cd80e01b2f5b771ad5520b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2268927dbf8a1fbcef451486439adf55"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga2268927dbf8a1fbcef451486439adf55">serialboxMetainfoClear</a> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo)</td></tr>
+<tr class="memdesc:ga2268927dbf8a1fbcef451486439adf55"><td class="mdescLeft">&#160;</td><td class="mdescRight">All the elements in the Metainfo are dropped: their destructors are called, and they are removed from the container, leaving it with a size of 0.  <a href="#ga2268927dbf8a1fbcef451486439adf55">More...</a><br /></td></tr>
+<tr class="separator:ga2268927dbf8a1fbcef451486439adf55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5d437cce4208c112f1833c547235a022"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga5d437cce4208c112f1833c547235a022">serialboxMetainfoEqual</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *m1, const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *m2)</td></tr>
+<tr class="memdesc:ga5d437cce4208c112f1833c547235a022"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if Metainfo <code>m1</code> is equal to Metainfo <code>m2</code>  <a href="#ga5d437cce4208c112f1833c547235a022">More...</a><br /></td></tr>
+<tr class="separator:ga5d437cce4208c112f1833c547235a022"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad873b46fc0f10e54d5f99589f5fa6851"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#gad873b46fc0f10e54d5f99589f5fa6851">serialboxMetainfoHasKey</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="memdesc:gad873b46fc0f10e54d5f99589f5fa6851"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if and element with key <code>key</code> exists.  <a href="#gad873b46fc0f10e54d5f99589f5fa6851">More...</a><br /></td></tr>
+<tr class="separator:gad873b46fc0f10e54d5f99589f5fa6851"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4c641cb2a627a9d471edefa145fdac7c"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API enum <a class="el" href="group__type.html#ga4a8c0471620b4c2dfff64f4c1b1f905c">serialboxTypeID</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga4c641cb2a627a9d471edefa145fdac7c">serialboxMetainfoGetTypeIDOfKey</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="memdesc:ga4c641cb2a627a9d471edefa145fdac7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get TypeID of element with key <code>key</code>  <a href="#ga4c641cb2a627a9d471edefa145fdac7c">More...</a><br /></td></tr>
+<tr class="separator:ga4c641cb2a627a9d471edefa145fdac7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadadb3156ebf1bc904799c3f153fca8d0"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#gadadb3156ebf1bc904799c3f153fca8d0">serialboxMetainfoToString</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo)</td></tr>
+<tr class="memdesc:gadadb3156ebf1bc904799c3f153fca8d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert to string.  <a href="#gadadb3156ebf1bc904799c3f153fca8d0">More...</a><br /></td></tr>
+<tr class="separator:gadadb3156ebf1bc904799c3f153fca8d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5d16013567973a9bb34663189bfae31b"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API <a class="el" href="structserialboxMetainfoElementInfo__t.html">serialboxMetainfoElementInfo_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga5d16013567973a9bb34663189bfae31b">serialboxMetainfoCreateElementInfo</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo)</td></tr>
+<tr class="memdesc:ga5d16013567973a9bb34663189bfae31b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate and intialize the element-info.  <a href="#ga5d16013567973a9bb34663189bfae31b">More...</a><br /></td></tr>
+<tr class="separator:ga5d16013567973a9bb34663189bfae31b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab8c95b0b2d564aa92bfa70c5b8d97040"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#gab8c95b0b2d564aa92bfa70c5b8d97040">serialboxMetainfoDestroyElementInfo</a> (<a class="el" href="structserialboxMetainfoElementInfo__t.html">serialboxMetainfoElementInfo_t</a> *elementInfo)</td></tr>
+<tr class="memdesc:gab8c95b0b2d564aa92bfa70c5b8d97040"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy the element-information and deallocate all memory.  <a href="#gab8c95b0b2d564aa92bfa70c5b8d97040">More...</a><br /></td></tr>
+<tr class="separator:gab8c95b0b2d564aa92bfa70c5b8d97040"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5848191c40048f8a0f7c75a00051805a"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga5848191c40048f8a0f7c75a00051805a">serialboxMetainfoAddBoolean</a> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, <a class="el" href="group__type.html#gad2d964bb573fe9e8ef8b87d9e363453e">serialboxBoolean_t</a> value)</td></tr>
+<tr class="memdesc:ga5848191c40048f8a0f7c75a00051805a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new element in the form key=value pair to the meta-information.  <a href="#ga5848191c40048f8a0f7c75a00051805a">More...</a><br /></td></tr>
+<tr class="separator:ga5848191c40048f8a0f7c75a00051805a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5c2ccc4849fda521a9c68b6e51054c00"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga5c2ccc4849fda521a9c68b6e51054c00"></a>
+SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddInt32</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, <a class="el" href="group__type.html#ga20e662af9f297aa311da25425f245795">serialboxInt32_t</a> value)</td></tr>
+<tr class="separator:ga5c2ccc4849fda521a9c68b6e51054c00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga70ba48998f381e80f199b2466aa3b850"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga70ba48998f381e80f199b2466aa3b850"></a>
+SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddInt64</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, <a class="el" href="group__type.html#gac483e832246521f12ddd1ac108ee0709">serialboxInt64_t</a> value)</td></tr>
+<tr class="separator:ga70ba48998f381e80f199b2466aa3b850"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafabb11bc4ed61c7b7c2bb5392833d671"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafabb11bc4ed61c7b7c2bb5392833d671"></a>
+SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddFloat32</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, <a class="el" href="group__type.html#ga135412c821207c65903ea22ec858af74">serialboxFloat32_t</a> value)</td></tr>
+<tr class="separator:gafabb11bc4ed61c7b7c2bb5392833d671"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4792c1806ce7632bae67579d1b97d5fb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4792c1806ce7632bae67579d1b97d5fb"></a>
+SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddFloat64</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, <a class="el" href="group__type.html#ga6f8178cd07fbc584325946bf52a8d6c4">serialboxFloat64_t</a> value)</td></tr>
+<tr class="separator:ga4792c1806ce7632bae67579d1b97d5fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga70e230a9dcefb2c411c86a42b74aba53"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga70e230a9dcefb2c411c86a42b74aba53"></a>
+SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddString</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, const char *value)</td></tr>
+<tr class="separator:ga70e230a9dcefb2c411c86a42b74aba53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1214f43be42bc9656c8fea870456301c"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga1214f43be42bc9656c8fea870456301c">serialboxMetainfoAddArrayOfBoolean</a> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, const <a class="el" href="structserialboxArrayOfBoolean__t.html">serialboxArrayOfBoolean_t</a> *array)</td></tr>
+<tr class="memdesc:ga1214f43be42bc9656c8fea870456301c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new element in the form key=[array] to the meta-information.  <a href="#ga1214f43be42bc9656c8fea870456301c">More...</a><br /></td></tr>
+<tr class="separator:ga1214f43be42bc9656c8fea870456301c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf77f154e8e9b3af7d7fcbb960c3859ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf77f154e8e9b3af7d7fcbb960c3859ec"></a>
+SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddArrayOfInt32</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, const <a class="el" href="structserialboxArrayOfInt32__t.html">serialboxArrayOfInt32_t</a> *array)</td></tr>
+<tr class="separator:gaf77f154e8e9b3af7d7fcbb960c3859ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7fd9b52b9a34542d152cafe6e875a263"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7fd9b52b9a34542d152cafe6e875a263"></a>
+SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddArrayOfInt64</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, const <a class="el" href="structserialboxArrayOfInt64__t.html">serialboxArrayOfInt64_t</a> *array)</td></tr>
+<tr class="separator:ga7fd9b52b9a34542d152cafe6e875a263"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae89d87c3e05181392eee0b3e15e085be"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae89d87c3e05181392eee0b3e15e085be"></a>
+SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddArrayOfFloat32</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, const <a class="el" href="structserialboxArrayOfFloat32__t.html">serialboxArrayOfFloat32_t</a> *array)</td></tr>
+<tr class="separator:gae89d87c3e05181392eee0b3e15e085be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga73ba23ebab10e11cc4accac130013061"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga73ba23ebab10e11cc4accac130013061"></a>
+SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddArrayOfFloat64</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, const <a class="el" href="structserialboxArrayOfFloat64__t.html">serialboxArrayOfFloat64_t</a> *array)</td></tr>
+<tr class="separator:ga73ba23ebab10e11cc4accac130013061"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1b02d12cae17b2650e6e1f6bb82e1a22"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga1b02d12cae17b2650e6e1f6bb82e1a22"></a>
+SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddArrayOfString</b> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, const <a class="el" href="structserialboxArrayOfString__t.html">serialboxArrayOfString_t</a> *array)</td></tr>
+<tr class="separator:ga1b02d12cae17b2650e6e1f6bb82e1a22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0b7f28b34435d8bf2668968f5ab74f69"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API <a class="el" href="group__type.html#gad2d964bb573fe9e8ef8b87d9e363453e">serialboxBoolean_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga0b7f28b34435d8bf2668968f5ab74f69">serialboxMetainfoGetBoolean</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="memdesc:ga0b7f28b34435d8bf2668968f5ab74f69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert value of element with key <code>key</code> to type <code>T</code> (where <code>T</code> is given by the suffix of thefunction.  <a href="#ga0b7f28b34435d8bf2668968f5ab74f69">More...</a><br /></td></tr>
+<tr class="separator:ga0b7f28b34435d8bf2668968f5ab74f69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafc1e1e71ff434ba49ecf8841646c5f3c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafc1e1e71ff434ba49ecf8841646c5f3c"></a>
+SERIALBOX_API <a class="el" href="group__type.html#ga20e662af9f297aa311da25425f245795">serialboxInt32_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetInt32</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="separator:gafc1e1e71ff434ba49ecf8841646c5f3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafb222799e6b242f612b781d079a6585b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafb222799e6b242f612b781d079a6585b"></a>
+SERIALBOX_API <a class="el" href="group__type.html#gac483e832246521f12ddd1ac108ee0709">serialboxInt64_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetInt64</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="separator:gafb222799e6b242f612b781d079a6585b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga75ef63194d886ab4ec13528f44534309"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga75ef63194d886ab4ec13528f44534309"></a>
+SERIALBOX_API <a class="el" href="group__type.html#ga135412c821207c65903ea22ec858af74">serialboxFloat32_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetFloat32</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="separator:ga75ef63194d886ab4ec13528f44534309"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadb65bbcd9f30536c0a3f0b226091ef22"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gadb65bbcd9f30536c0a3f0b226091ef22"></a>
+SERIALBOX_API <a class="el" href="group__type.html#ga6f8178cd07fbc584325946bf52a8d6c4">serialboxFloat64_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetFloat64</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="separator:gadb65bbcd9f30536c0a3f0b226091ef22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf6536b8f11bc447aa12837789171e4f8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf6536b8f11bc447aa12837789171e4f8"></a>
+SERIALBOX_API <a class="el" href="group__type.html#ga555e7e4eab950bba18a1c1ef72311afe">serialboxString_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetString</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="separator:gaf6536b8f11bc447aa12837789171e4f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa832fcd4675b11da9881a3de5c35b92b"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API <a class="el" href="structserialboxArrayOfBoolean__t.html">serialboxArrayOfBoolean_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#gaa832fcd4675b11da9881a3de5c35b92b">serialboxMetainfoGetArrayOfBoolean</a> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="memdesc:gaa832fcd4675b11da9881a3de5c35b92b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert value of element with key <code>key</code> to a newly allocated array array of type <code>T</code>  <a href="#gaa832fcd4675b11da9881a3de5c35b92b">More...</a><br /></td></tr>
+<tr class="separator:gaa832fcd4675b11da9881a3de5c35b92b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga463b5a95945f6ac17477d398b9442fe8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga463b5a95945f6ac17477d398b9442fe8"></a>
+SERIALBOX_API <a class="el" href="structserialboxArrayOfInt32__t.html">serialboxArrayOfInt32_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetArrayOfInt32</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="separator:ga463b5a95945f6ac17477d398b9442fe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabc2acd6693c900d89d6645652cb15ff4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gabc2acd6693c900d89d6645652cb15ff4"></a>
+SERIALBOX_API <a class="el" href="structserialboxArrayOfInt64__t.html">serialboxArrayOfInt64_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetArrayOfInt64</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="separator:gabc2acd6693c900d89d6645652cb15ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa129be6eba460f1c8b638e4acc9a45d8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa129be6eba460f1c8b638e4acc9a45d8"></a>
+SERIALBOX_API <a class="el" href="structserialboxArrayOfFloat32__t.html">serialboxArrayOfFloat32_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetArrayOfFloat32</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="separator:gaa129be6eba460f1c8b638e4acc9a45d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabbfef12b0bd69b1565c5b4c7030d9d4b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gabbfef12b0bd69b1565c5b4c7030d9d4b"></a>
+SERIALBOX_API <a class="el" href="structserialboxArrayOfFloat64__t.html">serialboxArrayOfFloat64_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetArrayOfFloat64</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="separator:gabbfef12b0bd69b1565c5b4c7030d9d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1a449b3cc2801eee9bf3d252e0fe9f57"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga1a449b3cc2801eee9bf3d252e0fe9f57"></a>
+SERIALBOX_API <a class="el" href="structserialboxArrayOfString__t.html">serialboxArrayOfString_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoGetArrayOfString</b> (const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="separator:ga1a449b3cc2801eee9bf3d252e0fe9f57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="gaa6a402007c7976132a04c0a3e3259a63"></a>
+<a class="anchor" id="ga1214f43be42bc9656c8fea870456301c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int serialboxMetainfoAddArrayOfBoolean </td>
+          <td class="memname">SERIALBOX_API int serialboxMetainfoAddArrayOfBoolean </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
           <td class="paramname"><em>metaInfo</em>, </td>
@@ -258,12 +258,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="ga5a6c330fd0200be44433641d9e7ebaeb"></a>
+<a class="anchor" id="ga5848191c40048f8a0f7c75a00051805a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int serialboxMetainfoAddBoolean </td>
+          <td class="memname">SERIALBOX_API int serialboxMetainfoAddBoolean </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
           <td class="paramname"><em>metaInfo</em>, </td>
@@ -277,7 +277,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__type.html#gae949d9a4f715b190ebb70783fa269f5f">serialboxBoolean_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="group__type.html#gad2d964bb573fe9e8ef8b87d9e363453e">serialboxBoolean_t</a>&#160;</td>
           <td class="paramname"><em>value</em>&#160;</td>
         </tr>
         <tr>
@@ -302,12 +302,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="gabcf8a1bc64add5dcc83565e256539eeb"></a>
+<a class="anchor" id="ga2268927dbf8a1fbcef451486439adf55"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void serialboxMetainfoClear </td>
+          <td class="memname">SERIALBOX_API void serialboxMetainfoClear </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
           <td class="paramname"><em>metaInfo</em></td><td>)</td>
@@ -328,12 +328,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="gadaedb85765f75303e51c1505ceed47fe"></a>
+<a class="anchor" id="ga2fc62181eb5dae85466b50b44eacb80e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a>* serialboxMetainfoCreate </td>
+          <td class="memname">SERIALBOX_API <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a>* serialboxMetainfoCreate </td>
           <td>(</td>
           <td class="paramtype">void&#160;</td>
           <td class="paramname"></td><td>)</td>
@@ -349,12 +349,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="gaa79e38f4ce472a53badc48ab7f559d8f"></a>
+<a class="anchor" id="ga5d16013567973a9bb34663189bfae31b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structserialboxMetainfoElementInfo__t.html">serialboxMetainfoElementInfo_t</a>* serialboxMetainfoCreateElementInfo </td>
+          <td class="memname">SERIALBOX_API <a class="el" href="structserialboxMetainfoElementInfo__t.html">serialboxMetainfoElementInfo_t</a>* serialboxMetainfoCreateElementInfo </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
           <td class="paramname"><em>metaInfo</em></td><td>)</td>
@@ -377,12 +377,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="gab8f87795dd2320c1c0db69e0a9e3150f"></a>
+<a class="anchor" id="ga8ecdbfec342d202ad0083752a153a463"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a>* serialboxMetainfoCreateFromMetainfo </td>
+          <td class="memname">SERIALBOX_API <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a>* serialboxMetainfoCreateFromMetainfo </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
           <td class="paramname"><em>other</em></td><td>)</td>
@@ -404,12 +404,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="ga36576fc23520acc85942bcdd72fa0d88"></a>
+<a class="anchor" id="ga1c240880084ca4555f790a1033b8e736"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void serialboxMetainfoDestroy </td>
+          <td class="memname">SERIALBOX_API void serialboxMetainfoDestroy </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
           <td class="paramname"><em>metaInfo</em></td><td>)</td>
@@ -430,12 +430,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="ga99e30304bf6924c603f4e5f9d8b3f10b"></a>
+<a class="anchor" id="gab8c95b0b2d564aa92bfa70c5b8d97040"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void serialboxMetainfoDestroyElementInfo </td>
+          <td class="memname">SERIALBOX_API void serialboxMetainfoDestroyElementInfo </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structserialboxMetainfoElementInfo__t.html">serialboxMetainfoElementInfo_t</a> *&#160;</td>
           <td class="paramname"><em>elementInfo</em></td><td>)</td>
@@ -456,12 +456,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="ga7eafde9ba9e547b9b3c09199994e0db2"></a>
+<a class="anchor" id="ga5d437cce4208c112f1833c547235a022"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int serialboxMetainfoEqual </td>
+          <td class="memname">SERIALBOX_API int serialboxMetainfoEqual </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
           <td class="paramname"><em>m1</em>, </td>
@@ -494,12 +494,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="ga3afd3d467e54f15c1baa4c0b4c4e40e3"></a>
+<a class="anchor" id="gaa832fcd4675b11da9881a3de5c35b92b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structserialboxArrayOfBoolean__t.html">serialboxArrayOfBoolean_t</a>* serialboxMetainfoGetArrayOfBoolean </td>
+          <td class="memname">SERIALBOX_API <a class="el" href="structserialboxArrayOfBoolean__t.html">serialboxArrayOfBoolean_t</a>* serialboxMetainfoGetArrayOfBoolean </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
           <td class="paramname"><em>metaInfo</em>, </td>
@@ -538,12 +538,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="gaefab62c48b39287de4dad7031957e9b0"></a>
+<a class="anchor" id="ga0b7f28b34435d8bf2668968f5ab74f69"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group__type.html#gae949d9a4f715b190ebb70783fa269f5f">serialboxBoolean_t</a> serialboxMetainfoGetBoolean </td>
+          <td class="memname">SERIALBOX_API <a class="el" href="group__type.html#gad2d964bb573fe9e8ef8b87d9e363453e">serialboxBoolean_t</a> serialboxMetainfoGetBoolean </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
           <td class="paramname"><em>metaInfo</em>, </td>
@@ -582,12 +582,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="ga4618b26b1695ca662a2d6ed94d765565"></a>
+<a class="anchor" id="ga5cd4f11eebc9617e800194ad17849f7d"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int serialboxMetainfoGetSize </td>
+          <td class="memname">SERIALBOX_API int serialboxMetainfoGetSize </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
           <td class="paramname"><em>metaInfo</em></td><td>)</td>
@@ -609,12 +609,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="ga2207d29346160e33dec5cfa1de10de4f"></a>
+<a class="anchor" id="ga4c641cb2a627a9d471edefa145fdac7c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="group__type.html#ga4a8c0471620b4c2dfff64f4c1b1f905c">serialboxTypeID</a> serialboxMetainfoGetTypeIDOfKey </td>
+          <td class="memname">SERIALBOX_API enum <a class="el" href="group__type.html#ga4a8c0471620b4c2dfff64f4c1b1f905c">serialboxTypeID</a> serialboxMetainfoGetTypeIDOfKey </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
           <td class="paramname"><em>metaInfo</em>, </td>
@@ -647,12 +647,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="ga657490e022cbac0e736714e63c0d02f1"></a>
+<a class="anchor" id="gad873b46fc0f10e54d5f99589f5fa6851"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int serialboxMetainfoHasKey </td>
+          <td class="memname">SERIALBOX_API int serialboxMetainfoHasKey </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
           <td class="paramname"><em>metaInfo</em>, </td>
@@ -685,12 +685,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="ga365f3ae716f018942533662827c8f8cf"></a>
+<a class="anchor" id="ga5874108c89cd80e01b2f5b771ad5520b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int serialboxMetainfoIsEmpty </td>
+          <td class="memname">SERIALBOX_API int serialboxMetainfoIsEmpty </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
           <td class="paramname"><em>metaInfo</em></td><td>)</td>
@@ -712,12 +712,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 
 </div>
 </div>
-<a class="anchor" id="gac5605c5cee9e99b31eb4a913e0b0157c"></a>
+<a class="anchor" id="gadadb3156ebf1bc904799c3f153fca8d0"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">char* serialboxMetainfoToString </td>
+          <td class="memname">SERIALBOX_API char* serialboxMetainfoToString </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
           <td class="paramname"><em>metaInfo</em></td><td>)</td>
@@ -745,7 +745,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxMetainfoAddAr
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Mon Nov 14 2016 12:08:35 for Serialbox by
+    <li class="footer">Generated on Mon Nov 21 2016 10:46:19 for Serialbox by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

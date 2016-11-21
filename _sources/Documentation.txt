@@ -45,5 +45,5 @@ GitHub provides the ability to upload your website to `GitHub Pages <https://pag
 
   $ make deploy-docs
   
-To view your website, head to http://username.github.io/serialbox2 .
+To view your website, head to http://username.github.io/serialbox2 . You may need to adjust the GitHub settings for the repository first: ``"Settings"`` -> ``"GitHub Pages"`` set the ``"Source"`` to ``"gh-pages branch"``.
 

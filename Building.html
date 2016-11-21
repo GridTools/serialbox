@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="top" title="Serialbox 2.0.1 documentation" href="index.html" />
-    <link rel="next" title="Building Documentation" href="Documentation.html" />
+    <link rel="next" title="Building the Documentation" href="Documentation.html" />
     <link rel="prev" title="Introduction" href="index.html" /> 
   </head>
   <body role="document">
@@ -43,7 +43,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="Documentation.html" title="Building Documentation"
+          <a href="Documentation.html" title="Building the Documentation"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Introduction"
@@ -59,6 +59,8 @@
 <li><a class="reference internal" href="#">Building Serialbox</a><ul>
 <li><a class="reference internal" href="#quick-start">Quick start</a></li>
 <li><a class="reference internal" href="#building-the-unittests">Building the unittests</a></li>
+<li><a class="reference internal" href="#building-the-python3-module">Building the Python3 module</a></li>
+<li><a class="reference internal" href="#building-the-fortran-interface">Building the Fortran Interface</a></li>
 <li><a class="reference internal" href="#dependencies">Dependencies</a><ul>
 <li><a class="reference internal" href="#ubuntu-16-04">Ubuntu (16.04)</a></li>
 <li><a class="reference internal" href="#mac-osx">Mac OSX</a></li>
@@ -79,7 +81,7 @@
                         title="previous chapter">Introduction</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="Documentation.html"
-                        title="next chapter">Building Documentation</a></p>
+                        title="next chapter">Building the Documentation</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -115,15 +117,17 @@
 <ul class="simple">
 <li><a class="reference internal" href="#quick-start" id="id15">Quick start</a></li>
 <li><a class="reference internal" href="#building-the-unittests" id="id16">Building the unittests</a></li>
-<li><a class="reference internal" href="#dependencies" id="id17">Dependencies</a><ul>
-<li><a class="reference internal" href="#ubuntu-16-04" id="id18">Ubuntu (16.04)</a></li>
-<li><a class="reference internal" href="#mac-osx" id="id19">Mac OSX</a></li>
+<li><a class="reference internal" href="#building-the-python3-module" id="id17">Building the Python3 module</a></li>
+<li><a class="reference internal" href="#building-the-fortran-interface" id="id18">Building the Fortran Interface</a></li>
+<li><a class="reference internal" href="#dependencies" id="id19">Dependencies</a><ul>
+<li><a class="reference internal" href="#ubuntu-16-04" id="id20">Ubuntu (16.04)</a></li>
+<li><a class="reference internal" href="#mac-osx" id="id21">Mac OSX</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#options-and-variables" id="id20">Options and variables</a><ul>
-<li><a class="reference internal" href="#frequently-used-cmake-variables" id="id21">Frequently-used CMake variables</a></li>
-<li><a class="reference internal" href="#serialbox-specific-variables" id="id22">Serialbox specific variables</a></li>
-<li><a class="reference internal" href="#external-project-specific-variables" id="id23">External project specific variables</a></li>
+<li><a class="reference internal" href="#options-and-variables" id="id22">Options and variables</a><ul>
+<li><a class="reference internal" href="#frequently-used-cmake-variables" id="id23">Frequently-used CMake variables</a></li>
+<li><a class="reference internal" href="#serialbox-specific-variables" id="id24">Serialbox specific variables</a></li>
+<li><a class="reference internal" href="#external-project-specific-variables" id="id25">External project specific variables</a></li>
 </ul>
 </li>
 </ul>
@@ -189,8 +193,16 @@ CMake will use default values for all build parameters. See the <a class="refere
 </pre></div>
 </div>
 </div>
+<div class="section" id="building-the-python3-module">
+<h2><a class="toc-backref" href="#id17">Building the Python3 module</a><a class="headerlink" href="#building-the-python3-module" title="Permalink to this headline">¶</a></h2>
+<p>The Python3 module relies on the C-Interface of Serialbox which is build by default. For furhter instructions see <a class="reference internal" href="Python.html#pythonbuilding"><span>Building</span></a>.</p>
+</div>
+<div class="section" id="building-the-fortran-interface">
+<h2><a class="toc-backref" href="#id18">Building the Fortran Interface</a><a class="headerlink" href="#building-the-fortran-interface" title="Permalink to this headline">¶</a></h2>
+<p>The Fortran interface can be built by setting the CMake variable <code class="docutils literal"><span class="pre">SERIALBOX_ENABLE_FORTRAN</span></code> to ON. Note that this requires a working Fortran compiler. See <a class="reference internal" href="Fortran.html#fortranbuilding"><span>Building</span></a></p>
+</div>
 <div class="section" id="dependencies">
-<span id="id4"></span><h2><a class="toc-backref" href="#id17">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<span id="id4"></span><h2><a class="toc-backref" href="#id19">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
 <p>Serialbox requires a C++11 compatible compiler:</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -217,20 +229,20 @@ CMake will use default values for all build parameters. See the <a class="refere
 </tr>
 </tbody>
 </table>
-<p>Serialbox depends on the <a class="reference external" href="http://www.boost.org/">Boost</a> modules: filesystem and log. Optionally, Serialbox can be compiled with <a class="reference external" href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF-4</a> support.</p>
+<p>Serialbox depends on the <a class="reference external" href="http://www.boost.org/">Boost</a> modules: filesystem and log. Optionally, Serialbox can be compiled with <a class="reference external" href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF-4</a> support. The Cray and PGI compilers are currently not able to compile the C++/C part of Serialbox.</p>
 <div class="section" id="ubuntu-16-04">
-<h3><a class="toc-backref" href="#id18">Ubuntu (16.04)</a><a class="headerlink" href="#ubuntu-16-04" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">Ubuntu (16.04)</a><a class="headerlink" href="#ubuntu-16-04" title="Permalink to this headline">¶</a></h3>
 <p>The following will install all the necessary dependencies:</p>
 <div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> sudo apt-get install cmake libboost-all-dev python3-numpy python3-nose
 </pre></div>
 </div>
 <p>and the following will furhter install all the optional dependencies:</p>
-<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> sudo apt-get install libnetcdf-dev
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> sudo apt-get install libnetcdf-dev libssl-dev
 </pre></div>
 </div>
 </div>
 <div class="section" id="mac-osx">
-<h3><a class="toc-backref" href="#id19">Mac OSX</a><a class="headerlink" href="#mac-osx" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">Mac OSX</a><a class="headerlink" href="#mac-osx" title="Permalink to this headline">¶</a></h3>
 <p>Make sure you have the <a class="reference external" href="http://railsapps.github.io/xcode-command-line-tools.html">Xcode Command Line Tools</a> installed.</p>
 <div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> xcode-select --install
 </pre></div>
@@ -249,7 +261,7 @@ CMake will use default values for all build parameters. See the <a class="refere
 </div>
 </div>
 <div class="section" id="options-and-variables">
-<span id="id6"></span><h2><a class="toc-backref" href="#id20">Options and variables</a><a class="headerlink" href="#options-and-variables" title="Permalink to this headline">¶</a></h2>
+<span id="id6"></span><h2><a class="toc-backref" href="#id22">Options and variables</a><a class="headerlink" href="#options-and-variables" title="Permalink to this headline">¶</a></h2>
 <p>Variables customize how the build will be generated. Options are boolean variables, with possible values ON/OFF. Options and variables are defined on the CMake command line like this:</p>
 <div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> cmake -DVARIABLE<span class="o">=</span>value ../
 </pre></div>
@@ -259,7 +271,7 @@ CMake will use default values for all build parameters. See the <a class="refere
 </pre></div>
 </div>
 <div class="section" id="frequently-used-cmake-variables">
-<h3><a class="toc-backref" href="#id21">Frequently-used CMake variables</a><a class="headerlink" href="#frequently-used-cmake-variables" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id23">Frequently-used CMake variables</a><a class="headerlink" href="#frequently-used-cmake-variables" title="Permalink to this headline">¶</a></h3>
 <p>Here are some of the CMake variables that are used often, along with a brief explanation and Serialbox-specific notes. For full documentation, consult the
 CMake manual, or execute <code class="docutils literal"><span class="pre">cmake</span> <span class="pre">--help-variable</span> <span class="pre">VARIABLE_NAME</span></code>.</p>
 <dl class="docutils">
@@ -271,7 +283,7 @@ Release, Debug, RelWithDebInfo and MinSizeRel (default is Release).</dd>
 </dl>
 </div>
 <div class="section" id="serialbox-specific-variables">
-<h3><a class="toc-backref" href="#id22">Serialbox specific variables</a><a class="headerlink" href="#serialbox-specific-variables" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">Serialbox specific variables</a><a class="headerlink" href="#serialbox-specific-variables" title="Permalink to this headline">¶</a></h3>
 <dl class="docutils">
 <dt><strong>SERIALBOX_ENABLE_C</strong>:BOOL</dt>
 <dd>Build the C interface of Serialbox (<code class="docutils literal"><span class="pre">libSerialboxC</span></code>). The options is ON by default.</dd>
@@ -313,7 +325,7 @@ The option is ON by default.</dd>
 </dl>
 </div>
 <div class="section" id="external-project-specific-variables">
-<h3><a class="toc-backref" href="#id23">External project specific variables</a><a class="headerlink" href="#external-project-specific-variables" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id25">External project specific variables</a><a class="headerlink" href="#external-project-specific-variables" title="Permalink to this headline">¶</a></h3>
 <dl class="docutils">
 <dt><strong>BOOST_ROOT</strong>:PATH</dt>
 <dd>Install directory of Boost (see <a class="reference external" href="https://cmake.org/cmake/help/v3.0/module/FindBoost.html">here</a>).</dd>
@@ -343,7 +355,7 @@ The option is ON by default.</dd>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="Documentation.html" title="Building Documentation"
+          <a href="Documentation.html" title="Building the Documentation"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Introduction"

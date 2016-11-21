@@ -16,12 +16,12 @@ var group__type =
       [ "impl", "group__type.html#ga6057aecb39a04f5aeafa2fb3543d6c5e", null ],
       [ "ownsData", "group__type.html#ga4a266b71dea58f70df9de30733b893ad", null ]
     ] ],
-    [ "serialboxBoolean_t", "group__type.html#gae949d9a4f715b190ebb70783fa269f5f", null ],
-    [ "serialboxFloat32_t", "group__type.html#ga090fe435dd7c87953941f21623ef56ca", null ],
-    [ "serialboxFloat64_t", "group__type.html#gaca0c07558aa82f17da4bb923c45cfa31", null ],
-    [ "serialboxInt32_t", "group__type.html#ga09473a02b46ee37a1b3dc9dfc798a2a1", null ],
-    [ "serialboxInt64_t", "group__type.html#ga773bcb71a100797af1573e2852c2794f", null ],
-    [ "serialboxString_t", "group__type.html#ga61df5fff494d25895b2429ca1f427126", null ],
     [ "serialboxOpenModeKind", "group__type.html#gabed959749540b1170ccd08635bfa95f4", null ],
-    [ "serialboxTypeID", "group__type.html#ga4a8c0471620b4c2dfff64f4c1b1f905c", null ]
+    [ "serialboxTypeID", "group__type.html#ga4a8c0471620b4c2dfff64f4c1b1f905c", null ],
+    [ "serialboxBoolean_t", "group__type.html#gad2d964bb573fe9e8ef8b87d9e363453e", null ],
+    [ "serialboxFloat32_t", "group__type.html#ga135412c821207c65903ea22ec858af74", null ],
+    [ "serialboxFloat64_t", "group__type.html#ga6f8178cd07fbc584325946bf52a8d6c4", null ],
+    [ "serialboxInt32_t", "group__type.html#ga20e662af9f297aa311da25425f245795", null ],
+    [ "serialboxInt64_t", "group__type.html#gac483e832246521f12ddd1ac108ee0709", null ],
+    [ "serialboxString_t", "group__type.html#ga555e7e4eab950bba18a1c1ef72311afe", null ]
 ];

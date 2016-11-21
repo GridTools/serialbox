@@ -1,5 +1,7 @@
 var NAVTREEINDEX1 =
 {
+"classserialbox_1_1FieldMap.html#a12a3798e9d315f2fb3378d811efd268a":[0,0,12,13],
+"classserialbox_1_1FieldMap.html#a13a84db5a18a8fa484cc8bca233c3bc5":[0,0,12,31],
 "classserialbox_1_1FieldMap.html#a1b557bbe2569e392f0ad0dbb5be07a56":[0,0,12,21],
 "classserialbox_1_1FieldMap.html#a20463c17c3d04f5440e9918c51cd769e":[0,0,12,6],
 "classserialbox_1_1FieldMap.html#a25cae4d1469bb65aabb64d85a4e54801":[0,0,12,20],
@@ -183,12 +185,10 @@ var NAVTREEINDEX1 =
 "classserialbox_1_1SavepointImpl.html#a80b1cc131e6a70466626d810dc0eef13":[0,0,21,19],
 "classserialbox_1_1SavepointImpl.html#a86f71c44fb0a01a9828139d65f941a98":[0,0,21,9],
 "classserialbox_1_1SavepointImpl.html#a89b1548905ac1c7123ea187af2d48084":[0,0,21,7],
-"classserialbox_1_1SavepointImpl.html#a960d3ddd1c383947238f49b00dcb10a8":[0,0,21,22],
 "classserialbox_1_1SavepointImpl.html#a9645a19de4ef81772d85103c93376052":[0,0,21,4],
 "classserialbox_1_1SavepointImpl.html#aa0eb7bac99440da9513aad25a8d129c3":[0,0,21,11],
 "classserialbox_1_1SavepointImpl.html#ab9e1e3cc6c5cb0e06c98c3074888cc17":[0,0,21,6],
 "classserialbox_1_1SavepointImpl.html#ac4a0eeff178582d4ee15df779f37290d":[0,0,21,12],
-"classserialbox_1_1SavepointImpl.html#ac7a1cc660f376944b1646d91b40a6921":[0,0,21,23],
 "classserialbox_1_1SavepointImpl.html#acf5be293e7e3ac7bb61ec8f82b28ef62":[0,0,21,13],
 "classserialbox_1_1SavepointImpl.html#ad1b74b5dcd5869ce710c7025f0661c5c":[0,0,21,20],
 "classserialbox_1_1SavepointImpl.html#ae2e09dfb0844709fdbc4b0207fea0060":[0,0,21,5],

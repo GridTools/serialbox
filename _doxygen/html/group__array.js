@@ -24,6 +24,6 @@ var group__array =
       [ "data", "structserialboxArrayOfString__t.html#a7b036932b7d0d084de142844d3ad2e12", null ],
       [ "len", "structserialboxArrayOfString__t.html#a08a4b057f1dd52b5226c1a30c9888af0", null ]
     ] ],
-    [ "serialboxArrayOfBooleanCreate", "group__array.html#gafc4df54faff5acea7ee61097761ef29d", null ],
-    [ "serialboxArrayOfBooleanDestroy", "group__array.html#gaafa820cb8d13dd741e8c2de4a4d9e152", null ]
+    [ "serialboxArrayOfBooleanCreate", "group__array.html#ga7d28a245e2ad8133bbc899861521446c", null ],
+    [ "serialboxArrayOfBooleanDestroy", "group__array.html#ga78ea381ba6bf479c21d1f5a5cfd42f8b", null ]
 ];

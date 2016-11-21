@@ -58,7 +58,7 @@
   <ul>
 <li><a class="reference internal" href="#">Using Serialbox as an external library</a><ul>
 <li><a class="reference internal" href="#cmake-modules">CMake modules</a><ul>
-<li><a class="reference internal" href="#id1">FindSerialbox</a></li>
+<li><a class="reference internal" href="#findserialbox">FindSerialbox</a></li>
 <li><a class="reference internal" href="#serialboxtooling">SerialboxTooling</a></li>
 </ul>
 </li>
@@ -104,10 +104,10 @@
 <h1>Using Serialbox as an external library<a class="headerlink" href="#using-serialbox-as-an-external-library" title="Permalink to this headline">¶</a></h1>
 <p>This section provides a brief introduction on how to use Serialbox as an external library using the CMake modules of Serialbox.</p>
 <div class="section" id="cmake-modules">
-<span id="findserialbox"></span><h2>CMake modules<a class="headerlink" href="#cmake-modules" title="Permalink to this headline">¶</a></h2>
+<span id="cmakemodule"></span><h2>CMake modules<a class="headerlink" href="#cmake-modules" title="Permalink to this headline">¶</a></h2>
 <p>There are several CMake modules located in <code class="docutils literal"><span class="pre">install/cmake/</span></code>. To assist in the loading of the settings of the Serialbox project (e.g include and link directories), Serialbox provides a <a class="reference external" href="https://cmake.org/cmake/help/v3.0/command/find_package.html">find_package</a> module. In addition, to run the preprocessor script <code class="docutils literal"><span class="pre">pp_ser.py</span></code> a tooling module is provided. For a working example, see <code class="docutils literal"><span class="pre">examples/fortran/perturbation</span></code>.</p>
-<div class="section" id="id1">
-<h3>FindSerialbox<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="findserialbox">
+<span id="id1"></span><h3>FindSerialbox<a class="headerlink" href="#findserialbox" title="Permalink to this headline">¶</a></h3>
 <p>Try to find Serialbox headers and libraries.</p>
 <p>Use this module by invoking find_package with the form:</p>
 <div class="highlight-python"><div class="highlight"><pre>find_package(Serialbox
@@ -156,7 +156,7 @@ SERIALBOX_HAS_NETCDF            - Serialbox was compiled with NetCDF support.
 </div>
 </div>
 <div class="section" id="serialboxtooling">
-<h3>SerialboxTooling<a class="headerlink" href="#serialboxtooling" title="Permalink to this headline">¶</a></h3>
+<span id="id2"></span><h3>SerialboxTooling<a class="headerlink" href="#serialboxtooling" title="Permalink to this headline">¶</a></h3>
 <p>This module contains the <code class="docutils literal"><span class="pre">serialbox_run_pp_ser</span></code> function which is used to preprocess Fortran
 source code using the pp_ser.py script.</p>
 <p>Function arguments:</p>

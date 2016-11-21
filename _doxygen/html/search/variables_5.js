@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['start',['start',['../structserialbox_1_1SliceTriple.html#a245b525279986ec9b2a453a4ca404f13',1,'serialbox::SliceTriple']]],
-  ['step',['step',['../structserialbox_1_1SliceTriple.html#a3f4b6aec1f85d0e4109f2312c5f92f6d',1,'serialbox::SliceTriple']]],
-  ['stop',['stop',['../structserialbox_1_1SliceTriple.html#a8173d8aa6e52a47528efa7a750897fc1',1,'serialbox::SliceTriple']]]
+  ['value',['value',['../structserialbox_1_1IsSupported.html#aadd0945234533d2c37b3fbccbcef2075',1,'serialbox::IsSupported']]],
+  ['version',['Version',['../classserialbox_1_1BinaryArchive.html#a81201d0da242b45e04efe7c0e3320779',1,'serialbox::BinaryArchive::Version()'],['../classserialbox_1_1NetCDFArchive.html#a919198608fcd8b1a1ec6fb77a566a00f',1,'serialbox::NetCDFArchive::Version()']]]
 ];

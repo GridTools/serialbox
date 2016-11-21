@@ -21,7 +21,5 @@ var classserialbox_1_1SavepointImpl =
     [ "swap", "classserialbox_1_1SavepointImpl.html#a046e165d43d7375f3e66787dc24b3e6b", null ],
     [ "toJSON", "classserialbox_1_1SavepointImpl.html#a80b1cc131e6a70466626d810dc0eef13", null ],
     [ "toString", "classserialbox_1_1SavepointImpl.html#ad1b74b5dcd5869ce710c7025f0661c5c", null ],
-    [ "operator<<", "classserialbox_1_1SavepointImpl.html#a6520b89a8c0abfe749fda4c52a555cdd", null ],
-    [ "metaInfo_", "classserialbox_1_1SavepointImpl.html#a960d3ddd1c383947238f49b00dcb10a8", null ],
-    [ "name_", "classserialbox_1_1SavepointImpl.html#ac7a1cc660f376944b1646d91b40a6921", null ]
+    [ "operator<<", "classserialbox_1_1SavepointImpl.html#a6520b89a8c0abfe749fda4c52a555cdd", null ]
 ];
