@@ -1,0 +1,9 @@
+laplacian/*
+slice/*
+async/*
+
+MetaData-*.json
+ArchiveMetaData-*.json
+*.nc
+*.dat
+
