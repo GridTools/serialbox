@@ -80,7 +80,6 @@ elif [ "$FC_COMPILER" = "ftn" ]; then
     module load craype-haswell
     module load craype-accel-nvidia35
     module load PrgEnv-cray/15.10_cuda_7.0
-    module load CMake/3.3.2
     module swap cce/8.4.0a
     module unload mvapich2_cce
     module load cray-libsci_acc/3.3.0
