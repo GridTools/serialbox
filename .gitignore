@@ -10,8 +10,7 @@
 */unittest-tmp-dir/*
 
 # Build directories
-build.sh
-build*
+build*/
 install*
 buildenv*
 
