@@ -521,17 +521,14 @@ endif()
 ## Build Serialbox
 add_subdirectory(src)
 
-## Build examples
-if(SERIALBOX_EXAMPLES)
-  add_subdirectory(examples)
-endif(SERIALBOX_EXAMPLES)
-
 ## Install FindSerialbox.cmake
 add_subdirectory(cmake)
 
 ## Build unittests
 if(SERIALBOX_TESTING)
   enable_testing()
+  include(SerialboxTestScript)
+  serialbox_test_init()
   
   if(SERIALBOX_TESTING_DEATH_TESTS)
     add_definitions(-DSERIALBOX_RUN_DEATH_TESTS)
@@ -549,8 +546,17 @@ if(SERIALBOX_TESTING)
   add_subdirectory(test)
 endif(SERIALBOX_TESTING)
 
+## Build examples
+if(SERIALBOX_EXAMPLES)
+  add_subdirectory(examples)
+endif(SERIALBOX_EXAMPLES)
+
 ## Build documentation
 if(SERIALBOX_DOCUMENTATION)
   add_subdirectory(docs)
 endif()
+
+if(SERIALBOX_TESTING)
+  serialbox_test_end()
+endif(SERIALBOX_TESTING)
 

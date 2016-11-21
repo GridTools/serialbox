@@ -38,8 +38,9 @@ print_help()
     # --help
     printf "  %-35s %s\n" "-h, --help" "Print this help statement."
     
-    printf "\nThe unittests for gridtools will be built automatically if"
-    printf " gridtools was checked out in external/ or GRIDTOOLS_ROOT is set.\n"
+    printf "\nThe unittests for gridtools and stella will be built " 
+    printf "automatically they are checked out in external/ or " 
+    printf "GRIDTOOLS_ROOT and/or STELLA_ROOT are set.\n"
     exit 0
 }
 
@@ -143,13 +144,23 @@ source ${CURRENT_PATH}/env_${MYHOST}.sh -f ${FC_COMPILER}
 EXTERNAL_DIR=${CURRENT_PATH}/../../external
 
 # Gridtools
-if [ -z ${GRIDTOOLS_ROOT+x} ]; then
+if [ ! -z ${GRIDTOOLS_ROOT+x} ]; then
     SERIALBOX_TESTING_GRIDTOOLS=ON
 elif [ -d "${EXTERNAL_DIR}/gridtools" ]; then
     SERIALBOX_TESTING_GRIDTOOLS=ON
     export GRIDTOOLS_ROOT=${EXTERNAL_DIR}/gridtools
 else
     SERIALBOX_TESTING_GRIDTOOLS=OFF
+fi
+
+# STELLA
+if [ ! -z ${STELLA_ROOT+x} ]; then
+    SERIALBOX_TESTING_STELLA=ON
+elif [ -d "${EXTERNAL_DIR}/stella" ]; then
+    SERIALBOX_TESTING_STELLA=ON
+    export GRIDTOOLS_ROOT=${EXTERNAL_DIR}/stella
+else
+    SERIALBOX_TESTING_STELLA=OFF
 fi
 
 #------------------------------ Build ------------------------------------------
@@ -175,6 +186,7 @@ cmake                                                                          \
  -DSERIALBOX_ENABLE_C:BOOL=${SERIALBOX_ENABLE_C}                               \
  -DSERIALBOX_ENABLE_FORTRAN:BOOL=${SERIALBOX_ENABLE_FORTRAN}                   \
  -DSERIALBOX_TESTING_GRIDTOOLS:BOOL=${SERIALBOX_TESTING_GRIDTOOLS}             \
+ -DSERIALBOX_TESTING_STELLA:BOOL=${SERIALBOX_TESTING_STELLA}                   \
  ../
 
 # Run make

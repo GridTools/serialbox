@@ -57,7 +57,8 @@ function(serialbox_add_unittest_executable)
     add_dependencies(coverage ${name})
   endif()
 
-  add_test(NAME ${name} COMMAND $<TARGET_FILE:${name}> --gtest_color=yes)
+  serialbox_add_test(TARGET ${name} 
+                     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/${name})
 endfunction(serialbox_add_unittest_executable)
 
 ## Add subdirectories

@@ -23,6 +23,7 @@ function(serialbox_add_c_example name)
                         ${SERIALBOX_EXTERNAL_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT})
   install(TARGETS ${name} DESTINATION bin)
+  serialbox_add_test(TARGET ${name} EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/${name})
 endfunction(serialbox_add_c_example)
 
 ## Create and install a gridtools example
@@ -39,6 +40,7 @@ function(serialbox_add_gridtools_example name)
                         ${SERIALBOX_EXTERNAL_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT})
   install(TARGETS ${name} DESTINATION bin)
+  serialbox_add_test(TARGET ${name} EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/${name})
 endfunction(serialbox_add_gridtools_example)
 
 ## Create and install a Fortran example
@@ -64,8 +66,8 @@ endfunction(serialbox_add_fortran_example)
 ##
 ## ARGN    
 ##    LIST OF STRINGS: List of source files
-function(serialbox_add_python_example)
-  install(FILES ${ARGN} DESTINATION bin)
+function(serialbox_add_python_example name)
+  install(FILES ${name} ${ARGN} DESTINATION bin)
 endfunction(serialbox_add_python_example)
 
 ## Build examples
