@@ -86,6 +86,18 @@ To run the unittests via CTest:
 .. code-block:: console
 
    $ cmake --build . --target test
+   
+
+Building the Python3 module
+===========================
+
+The Python3 module relies on the C-Interface of Serialbox which is build by default. For furhter instructions see :ref:`PythonBuilding`. 
+
+Building the Fortran Interface
+==============================
+
+The Fortran interface can be built by setting the CMake variable ``SERIALBOX_ENABLE_FORTRAN`` to ON. Note that this requires a working Fortran compiler. See :ref:`FortranBuilding`
+
 
 .. _Dependencies:
 
@@ -103,7 +115,7 @@ Intel icc     >= 17.0
 XCode         >= 6.1   
 ============  =======
 
-Serialbox depends on the `Boost <http://www.boost.org/>`_ modules: filesystem and log. Optionally, Serialbox can be compiled with `NetCDF-4 <http://www.unidata.ucar.edu/software/netcdf/>`_ support.
+Serialbox depends on the `Boost <http://www.boost.org/>`_ modules: filesystem and log. Optionally, Serialbox can be compiled with `NetCDF-4 <http://www.unidata.ucar.edu/software/netcdf/>`_ support. The Cray and PGI compilers are currently not able to compile the C++/C part of Serialbox.
 
 Ubuntu (16.04)
 --------------
@@ -118,7 +130,7 @@ and the following will furhter install all the optional dependencies:
 
 .. code-block:: console
 
-   $ sudo apt-get install libnetcdf-dev
+   $ sudo apt-get install libnetcdf-dev libssl-dev
 
 Mac OSX
 -------

@@ -64,7 +64,7 @@ serialbox_run_pp_ser(SOURCES main_producer.f90
 #
 # Now, we add the executables. But first, we need to tell CMake where to find the *.mod files.
 #
-include_directories(${SERIALBOX_LIBRARY_DIR})
+include_directories(${SERIALBOX_INCLUDE_DIRS})
 
 # The source files of `add_executable` are the preprocessed files from before.
 # The variable `SERIALBOX_FORTRAN_LIBRARIES` contains all the necessary external libraries (Boost, 

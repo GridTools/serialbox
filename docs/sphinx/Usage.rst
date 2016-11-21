@@ -4,12 +4,15 @@ Using Serialbox as an external library
 
 This section provides a brief introduction on how to use Serialbox as an external library using the CMake modules of Serialbox.
 
-.. _FindSerialbox:
+.. _CMakeModule:
 
 CMake modules
 -------------
 
 There are several CMake modules located in ``install/cmake/``. To assist in the loading of the settings of the Serialbox project (e.g include and link directories), Serialbox provides a `find_package <https://cmake.org/cmake/help/v3.0/command/find_package.html>`_ module. In addition, to run the preprocessor script ``pp_ser.py`` a tooling module is provided. For a working example, see ``examples/fortran/perturbation``.
+
+
+.. _FindSerialbox:
 
 FindSerialbox
 ^^^^^^^^^^^^^
@@ -62,6 +65,8 @@ Variables defined by this module::
   SERIALBOX_HAS_OPENSSL           - Serialbox was compiled with OpenSSL support.
   SERIALBOX_HAS_NETCDF            - Serialbox was compiled with NetCDF support.
 
+
+.. _SerialboxTooling:
 
 SerialboxTooling
 ^^^^^^^^^^^^^^^^

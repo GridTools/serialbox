@@ -25,7 +25,7 @@ if(SERIALBOX_ENABLE_FORTRAN)
   # Install mod files
   foreach(source ${SOURCES})
     get_filename_component(module_name ${source} NAME_WE)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${module_name}.mod" DESTINATION lib)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${module_name}.mod" DESTINATION include)
   endforeach()
 
 endif()
