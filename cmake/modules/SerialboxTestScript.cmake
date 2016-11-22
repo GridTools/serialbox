@@ -65,8 +65,9 @@ function(serialbox_add_test)
     endforeach()
   
     file(APPEND ${SERIALBOX_TEST_SCRIPT} "\n${exectuable} ${flat_args}\n")
-    file(APPEND ${SERIALBOX_TEST_SCRIPT} "if [ $? -ne 0 ] ; then\n echo \"Error: problem found in Unittest\"\nfi\n")
-    file(APPEND ${SERIALBOX_TEST_SCRIPT} "res=$((res || $? ))\n")
+    file(APPEND ${SERIALBOX_TEST_SCRIPT} "ret=\$?\n")
+    file(APPEND ${SERIALBOX_TEST_SCRIPT} "if [ $ret -ne 0 ] ; then\n echo \"Error: problem found in Unittest\"\nfi\n")
+    file(APPEND ${SERIALBOX_TEST_SCRIPT} "res=$((res || ret ))\n")
   endif()
 
 endfunction(serialbox_add_test)
@@ -79,7 +80,11 @@ endfunction(serialbox_add_test)
 ##
 function(serialbox_test_end)
   file(APPEND ${SERIALBOX_TEST_SCRIPT} 
-       "\nif [ $res -ne 0 ]; then\n printf \"\\n  TESTS FAILED\\n\\n\"\nelse\nprintf \"\\n  ALL TESTS PASSED\\n\\n\"\nfi\n")
+       "\nif [ $res -ne 0 ]; then\n"
+       "  printf \"\\n  >>>>>>>>>>>>>>>> TESTS FAILED <<<<<<<<<<<<<<<<\\n\\n\"\n"
+       "else\n"
+       "  printf \"\\n  ALL TESTS PASSED\\n\\n\"\n"
+       "fi\n")
   file(INSTALL ${SERIALBOX_TEST_SCRIPT} DESTINATION ${CMAKE_BINARY_DIR}/install
        FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ)
 endfunction(serialbox_test_end)

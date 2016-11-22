@@ -26,12 +26,28 @@ class StencilFieldListWidget(QListView):
         self.__model = QStandardItemModel()
         self.setModel(self.__model)
 
+        self.setDragEnabled(True)
+        self.setDefaultDropAction(Qt.MoveAction)
+        self.setDragDropOverwriteMode(False)
+        self.setDragDropMode(self.InternalMove)
+
         # Widgets
         self.__widget_fieldmetainfo = widget_fieldmetainfo
 
         # Signals
         self.clicked.connect(self.update_field_metainfo)
         self.selectionModel().selectionChanged.connect(self.update_field_metainfo)
+
+    def dragEnterEvent(self, e):
+        print(e)
+        super().dragEnterEvent(e)
+
+    def startDrag(self, supportedActions):
+        super().startDrag(supportedActions)
+
+    def dropEvent(self, e):
+        print(e)
+        super().dropEvent(e)
 
     def update_field_metainfo(self, model_idx):
         if isinstance(model_idx, QItemSelection):
@@ -48,10 +64,12 @@ class StencilFieldListWidget(QListView):
             "Adding item '%s' to StencilFieldListWidget of '%s'" % (item, self.__stencil_data.name))
 
         item_to_add = QStandardItem(item)
-        item_to_add.setCheckable(True)
         item_to_add.setEditable(False)
-        item_to_add.setCheckState(Qt.Checked)
-        item_to_add.checkState()
+
+        item_to_add.setCheckable(False)
+        # item_to_add.setCheckState(Qt.Checked)
+        #item_to_add.checkState()
+
         self.__model.appendRow(item_to_add)
 
     def remove_item(self, item):

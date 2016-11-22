@@ -23,7 +23,6 @@ TEST(ArrayTest, IsArray) {
 
   using T2 = double;
   static_assert(IsArray<T2>::value == false, "Doubles");
-  ASSERT_TRUE(false);
 }
 
 TEST(ArrayTest, MakePrimitive) {
