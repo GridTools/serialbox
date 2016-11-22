@@ -155,6 +155,6 @@ class SetupWidget(QWidget):
 
     def show_valid_icon(self):
         image = QPixmap("sdbgui/images/success.png")
-        image = image.scaled(12, 12, Qt.KeepAspectRatio)
+        #image = image.scaled(12, 12, Qt.KeepAspectRatio)
         self.__widget_label_status_icon.setPixmap(image)
         self.__widget_label_status_icon.setStatusTip("")

@@ -9,6 +9,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 
 from sdbcore.logger import Logger
@@ -18,28 +19,28 @@ from .tabstate import TabState
 
 
 class StencilWindow(QWidget):
-    def __init__(self, mainwindow, input_stencil_data, reference_stencil_data):
+    def __init__(self, mainwindow, stencil_field_mapper, input_stencil_data,
+                 reference_stencil_data):
         super().__init__()
 
         # Data
         self.__input_stencil_data = input_stencil_data
         self.__reference_stencil_data = reference_stencil_data
+        self.__stencil_field_mapper = stencil_field_mapper
 
         # Widget
         self.__widget_mainwindow = mainwindow
 
         self.__widget_fieldmetainfo = StencilFieldMetainfoWidget()
 
-        self.__widget_stencil_input = StencilWidget(self.__input_stencil_data,
+        self.__widget_stencil_input = StencilWidget(self, self.__input_stencil_data,
                                                     self.__widget_fieldmetainfo)
-        self.__widget_stencil_reference = StencilWidget(self.__reference_stencil_data,
+        self.__widget_stencil_reference = StencilWidget(self, self.__reference_stencil_data,
                                                         self.__widget_fieldmetainfo)
 
-        self.__widget_button_continue = QPushButton("Continue")
-        self.__widget_button_continue.clicked.connect(self.make_continue)
-
-        self.__widget_button_back = QPushButton("Back")
-        self.__widget_button_back.clicked.connect(self.make_back)
+        self.__widget_button_next = QPushButton("Next")
+        self.__widget_button_next.clicked.connect(self.make_continue)
+        self.__widget_button_next.setIcon(QIcon("sdbgui/images/run.png"))
 
         hbox_widgets = QHBoxLayout()
         hbox_widgets.addWidget(self.__widget_stencil_input)
@@ -47,19 +48,21 @@ class StencilWindow(QWidget):
 
         hbox_button = QHBoxLayout()
         hbox_button.addStretch(1)
-        hbox_button.addWidget(self.__widget_button_back)
-        hbox_button.addWidget(self.__widget_button_continue)
+        hbox_button.addWidget(self.__widget_button_next)
 
         vbox = QVBoxLayout()
         vbox.addLayout(hbox_widgets)
         vbox.addStretch(1)
         vbox.addWidget(self.__widget_fieldmetainfo)
         vbox.addLayout(hbox_button)
-
         self.setLayout(vbox)
 
+    def match_fields(self):
+        self.__stencil_field_mapper.match_fields()
+
     def make_continue(self):
-        print("continue")
+        self.__widget_mainwindow.set_tab_highest_valid_state(TabState.Result)
+        self.__widget_mainwindow.switch_to_tab(TabState.Result)
 
     def make_back(self):
         self.__widget_mainwindow.switch_to_tab(TabState.Setup)

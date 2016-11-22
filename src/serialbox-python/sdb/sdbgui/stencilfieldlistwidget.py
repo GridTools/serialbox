@@ -19,6 +19,7 @@ from sdbcore.logger import Logger
 class StencilFieldListWidget(QListView):
     def __init__(self, stencil_data, widget_fieldmetainfo):
         super().__init__()
+
         # Data
         self.__stencil_data = stencil_data
         self.__stencil_data.register_as_field_list_listener(self)
@@ -38,39 +39,39 @@ class StencilFieldListWidget(QListView):
         self.clicked.connect(self.update_field_metainfo)
         self.selectionModel().selectionChanged.connect(self.update_field_metainfo)
 
-    def dragEnterEvent(self, e):
-        print(e)
-        super().dragEnterEvent(e)
-
-    def startDrag(self, supportedActions):
-        super().startDrag(supportedActions)
-
-    def dropEvent(self, e):
-        print(e)
-        super().dropEvent(e)
-
     def update_field_metainfo(self, model_idx):
         if isinstance(model_idx, QItemSelection):
             model_idx = model_idx.indexes()[0]
         self.__widget_fieldmetainfo.set_field(self.__stencil_data.serializer, model_idx.data())
+
+    @classmethod
+    def create_item(self, data):
+        item = QStandardItem(data)
+        item.setData(data)
+        item.setEditable(False)
+
+        # Don't allow overwrite of items
+        item.setFlags(item.flags() & ~Qt.ItemIsDropEnabled)
+
+        item.setCheckable(True)
+        item.setCheckState(Qt.Checked)
+        item.checkState()
+        return item
 
     def remove_all_items(self):
         Logger.info(
             "Removing all items of StencilFieldListWidget of '%s'" % self.__stencil_data.name)
         self.__model.clear()
 
-    def add_item(self, item):
+    def add_item(self, data, idx=None):
         Logger.info(
-            "Adding item '%s' to StencilFieldListWidget of '%s'" % (item, self.__stencil_data.name))
+            "Adding data '%s' to StencilFieldListWidget of '%s'" % (data, self.__stencil_data.name))
 
-        item_to_add = QStandardItem(item)
-        item_to_add.setEditable(False)
-
-        item_to_add.setCheckable(False)
-        # item_to_add.setCheckState(Qt.Checked)
-        #item_to_add.checkState()
-
-        self.__model.appendRow(item_to_add)
+        item = self.create_item(data)
+        if idx:
+            self.__model.insertRow(idx, item)
+        else:
+            self.__model.appendRow(item)
 
     def remove_item(self, item):
         Logger.info(
@@ -79,6 +80,29 @@ class StencilFieldListWidget(QListView):
 
         idx = self.__model.findItems(item)
         self.__model.removeRow(idx)
+
+    def set_enable_item(self, idx, enable):
+        item = self.__model.item(idx)
+        Logger.info("Setting enable status of item '%s' of StencilFieldListWidget of '%s' to %s" % (
+            item.data(), self.__stencil_data.name, enable))
+
+        if enable:
+            item.setCheckState(Qt.Checked)
+        else:
+            item.setCheckState(Qt.Unchecked)
+
+    def move_item(self, from_idx, to_idx):
+        data = self.__model.item(from_idx, 0).data()
+        Logger.info(
+            "Moving item '%s' from '%i' to '%i' of StencilFieldListWidget of '%s'" % (
+                data, from_idx, to_idx, self.__stencil_data.name))
+
+        self.__model.removeRow(from_idx)
+        item = self.create_item(data)
+        self.__model.insertRow(to_idx, item)
+
+    def num_items(self):
+        return self.__model.rowCount()
 
     @property
     def fields(self):

@@ -9,16 +9,17 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QAction, QTabWidget
 
 from sdbcore.logger import Logger
 from sdbcore.stencildata import StencilData
+from sdbcore.stencilfieldmapper import StencilFieldMapper
 from sdbcore.version import Version
 from .aboutwidget import AboutWidget
 from .configuration import Configuration
 from .errormessagebox import ErrorMessageBox
+from .resultwindow import ResultWindow
 from .setupwindow import SetupWindow
 from .stencilwindow import StencilWindow
 from .tabstate import TabState
@@ -40,11 +41,14 @@ class MainWindow(QMainWindow):
             "Reference Serializer")
         self.__reference_stencil_data = StencilData(self.__reference_serializer_data)
 
+        self.__stencil_field_mapper = StencilFieldMapper(self.__input_stencil_data,
+                                                         self.__reference_stencil_data)
+
         # Setup GUI
         self.setWindowTitle('sdb - stencil debugger (%s)' % Version().sdb_version())
         self.resize(960, 480)
 
-        self.setWindowIcon(QIcon("sdbgui/images/favicon2.png"))
+        self.setWindowIcon(QIcon("sdbgui/images/logo-small.png"))
         self.init_menu_tool_bar()
 
         # Setup tabs
@@ -54,14 +58,28 @@ class MainWindow(QMainWindow):
             SetupWindow(self, self.__input_serializer_data, self.__reference_serializer_data),
             "Setup")
         self.__widget_tab.addTab(
-            StencilWindow(self, self.__input_stencil_data, self.__reference_stencil_data),
+            StencilWindow(self, self.__stencil_field_mapper, self.__input_stencil_data,
+                          self.__reference_stencil_data),
             "Stencil")
+        self.__widget_tab.addTab(
+            ResultWindow(self, self.__stencil_field_mapper),
+            "Result")
 
         self.__widget_tab.currentChanged.connect(self.switch_to_tab)
+
+        self.__widget_tab.setTabEnabled(TabState.Setup.value, True)
         self.__widget_tab.setTabEnabled(TabState.Stencil.value, False)
+        self.__widget_tab.setTabEnabled(TabState.Result.value, False)
+
+        self.__widget_tab.setTabToolTip(TabState.Setup.value,
+                                        "Setup Input and Refrence Serializer")
+        self.__widget_tab.setTabToolTip(TabState.Stencil.value,
+                                        "Set the stencil to compare and define the mapping of the fields")
+        self.__widget_tab.setTabToolTip(TabState.Result.value,
+                                        "View to comparison result")
 
         self.__tab_old_state = TabState.Setup
-        self.__tab_highest_valid_state = TabState.Setup
+        self.set_tab_highest_valid_state(TabState.Setup)
         self.switch_to_tab(TabState.Setup)
 
         self.setCentralWidget(self.__widget_tab)
@@ -91,15 +109,17 @@ class MainWindow(QMainWindow):
         action_open_session.setStatusTip("Open session")
         action_open_session.triggered.connect(self.open_session)
 
-        action_continue = QAction(QIcon("sdbgui/images/next_cursor.png"), "Continue", self)
-        action_continue.setShortcut("Ctrl+R")
-        action_continue.setStatusTip("Continue to next tab")
-        action_continue.triggered.connect(self.switch_to_next_tab)
+        self.__action_continue = QAction(QIcon("sdbgui/images/next_cursor.png"), "Continue", self)
+        self.__action_continue.setShortcut("Ctrl+R")
+        self.__action_continue.setStatusTip("Continue to next tab")
+        self.__action_continue.triggered.connect(self.switch_to_next_tab)
+        self.__action_continue.setEnabled(True)
 
-        action_back= QAction(QIcon("sdbgui/images/prev_cursor.png"), "Back", self)
-        action_back.setShortcut("Ctrl+B")
-        action_back.setStatusTip("Back to previous tab")
-        action_back.triggered.connect(self.switch_to_previous_tab)
+        self.__action_back = QAction(QIcon("sdbgui/images/prev_cursor.png"), "Back", self)
+        self.__action_back.setShortcut("Ctrl+B")
+        self.__action_back.setStatusTip("Back to previous tab")
+        self.__action_back.triggered.connect(self.switch_to_previous_tab)
+        self.__action_back.setEnabled(False)
 
         self.__action_reload = QAction(QIcon("sdbgui/images/step_in.png"), "Reload", self)
         self.__action_reload.setStatusTip("Reload Input and Reference Serializer")
@@ -116,8 +136,8 @@ class MainWindow(QMainWindow):
         file_menu.addAction(action_exit)
 
         edit_menu = menubar.addMenu('&Edit')
-        edit_menu.addAction(action_back)
-        edit_menu.addAction(action_continue)
+        edit_menu.addAction(self.__action_back)
+        edit_menu.addAction(self.__action_continue)
         edit_menu.addAction(self.__action_reload)
 
         help_menu = menubar.addMenu('&Help')
@@ -126,8 +146,8 @@ class MainWindow(QMainWindow):
         toolbar = self.addToolBar("Toolbar")
         toolbar.addAction(action_open_session)
         toolbar.addAction(action_save_session)
-        toolbar.addAction(action_back)
-        toolbar.addAction(action_continue)
+        toolbar.addAction(self.__action_back)
+        toolbar.addAction(self.__action_continue)
         toolbar.addAction(self.__action_reload)
 
     def switch_to_tab(self, tab):
@@ -139,6 +159,19 @@ class MainWindow(QMainWindow):
         self.__tab_old_state = TabState(idx)
         self.__widget_tab.setCurrentIndex(idx)
         self.__widget_tab.currentWidget().make_update()
+
+        # First tab
+        if idx == 0:
+            self.__action_continue.setEnabled(True)
+            self.__action_back.setEnabled(False)
+        # Last tab
+        elif idx == self.__widget_tab.count() - 1:
+            self.__action_continue.setEnabled(False)
+            self.__action_back.setEnabled(True)
+        # Middle tab
+        else:
+            self.__action_continue.setEnabled(True)
+            self.__action_back.setEnabled(True)
 
     def set_tab_highest_valid_state(self, state):
         """Set the state at which the data is valid i.e everything <= self.valid_tab_state is valid
@@ -152,12 +185,20 @@ class MainWindow(QMainWindow):
         if self.__tab_highest_valid_state == TabState.Setup:
             self.__widget_tab.setTabEnabled(TabState.Setup.value, True)
             self.__widget_tab.setTabEnabled(TabState.Stencil.value, False)
+            self.__widget_tab.setTabEnabled(TabState.Result.value, False)
 
         elif self.__tab_highest_valid_state == TabState.Stencil:
             self.__widget_tab.setTabEnabled(TabState.Setup.value, True)
             self.__widget_tab.setTabEnabled(TabState.Stencil.value, True)
+            self.__widget_tab.setTabEnabled(TabState.Result.value, False)
+            self.__widget_tab.widget(TabState.Stencil.value).match_fields()
 
             self.__action_reload.setEnabled(True)
+
+        elif self.__tab_highest_valid_state == TabState.Result:
+            self.__widget_tab.setTabEnabled(TabState.Setup.value, True)
+            self.__widget_tab.setTabEnabled(TabState.Stencil.value, True)
+            self.__widget_tab.setTabEnabled(TabState.Result.value, True)
 
     def switch_to_next_tab(self):
         self.__widget_tab.currentWidget().make_continue()

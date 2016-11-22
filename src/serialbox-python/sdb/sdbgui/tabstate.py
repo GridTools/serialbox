@@ -14,3 +14,4 @@ from enum import Enum
 class TabState(Enum):
     Setup = 0
     Stencil = 1
+    Result = 2

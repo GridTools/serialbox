@@ -17,7 +17,7 @@ from .stencillistwidget import StencilListWidget
 
 
 class StencilWidget(QWidget):
-    def __init__(self, stencil_data, widget_fieldmetainfo):
+    def __init__(self, widget_stencil_window, stencil_data, widget_fieldmetainfo):
         super().__init__()
 
         # Data
@@ -26,6 +26,8 @@ class StencilWidget(QWidget):
         self.__name = self.__stencil_data.name
 
         # Widgets
+        self.__widget_stencil_window = widget_stencil_window
+
         self.__widget_label_name = QLabel("<b>%s</b>" % self.__name)
         self.__widget_label_stencil = QLabel("Stencil")
         self.__widget_stencil_list = StencilListWidget(self.__stencil_data)
@@ -48,6 +50,7 @@ class StencilWidget(QWidget):
     def set_stencil_index(self, idx):
         self.__stencil_data.set_selected_stencil(idx)
         self.update_available_fields()
+        self.__widget_stencil_window.match_fields()
 
     def make_update(self):
         Logger.info("Updating StencilWidget of '%s'" % self.__name)
@@ -62,3 +65,7 @@ class StencilWidget(QWidget):
         Logger.info("Updating ListView of StencilWidget '%s' to match stencil '%s'" % (
             self.__name, self.__stencil_data.selected_stencil))
         self.__stencil_data.update_field_list()
+
+    @property
+    def widget_listview_field_list(self):
+        return self.__widget_listview_field_list

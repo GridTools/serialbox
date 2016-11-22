@@ -30,7 +30,13 @@ class StencilData(object):
         self.__stencil_list_listener = []
         self.__field_list_listener = []
 
+        # # Other stencil data
+        # self.__other_stencil_data = None
+
         self.reset()
+
+    def set_other_stencil_data(self, other):
+        self.__other_stencil_data = other
 
     def reset(self):
         Logger.info("Updating StencilData of '%s'" % self.__serializer_data.name)
@@ -43,10 +49,11 @@ class StencilData(object):
 
         # Update the available list of fields
         if self.__stencil_list:
-            self.set_selected_stencil(0)
+            self.set_selected_stencil(
+                0 if self.__stencil_idx_selected < 0 else self.__stencil_idx_selected)
 
     def update_stencil_list(self):
-        """Update the avialable stencils.
+        """Update the available stencils.
         """
         if not self.__stencil_list_changed:
             return
@@ -70,7 +77,7 @@ class StencilData(object):
             else:
                 self.__stencil_list = stencil_list
 
-            self.__stencil_list_changed = False
+            self.__stencil_list_changed = True
 
     def update_field_list(self):
         """Update field list according to the selected stencil
@@ -87,7 +94,7 @@ class StencilData(object):
         if not self.__stencil_list:
             return
 
-        # Get list of fileds of the current stencil
+        # Get list of fields of the current stencil
         field_list = []
         for sp in serializer.savepoint_list():
             if sp.name.startswith(self.__stencil_list[self.__stencil_idx_selected]):
@@ -96,6 +103,9 @@ class StencilData(object):
 
         # Remove duplicates
         field_list = list(set(field_list))
+
+        # Sort alphabetically
+        field_list = sorted(field_list)
 
         if self.__field_list != field_list:
             # Inform listener that we removed all items
@@ -112,8 +122,16 @@ class StencilData(object):
 
         self.__field_list_changed = False
 
+    def move_field(self, from_idx, to_idx):
+        for listener in self.__field_list_listener:
+            listener.move_item(from_idx, to_idx)
+
+    def set_enable_field(self, idx, enable):
+        for listener in self.__field_list_listener:
+            listener.set_enable_item(idx, enable)
+
     def set_selected_stencil(self, idx):
-        self.__stencil_idx_selected = 0 if idx < 0 else idx
+        self.__stencil_idx_selected = idx
         self.__field_list_changed = True
         self.update_field_list()
 
@@ -133,6 +151,7 @@ class StencilData(object):
     def selected_stencil(self):
         return "<not-set>" if not self.__stencil_list else self.__stencil_list[
             self.__stencil_idx_selected]
+
     @property
     def name(self):
         return self.__serializer_data.name

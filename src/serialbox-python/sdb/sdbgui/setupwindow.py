@@ -9,6 +9,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLabel
 
 from sdbcore import Logger
@@ -30,11 +31,9 @@ class SetupWindow(QWidget):
         self.__widget_setup_input = SetupWidget(self, self.__input_serializer_data)
         self.__widget_setup_reference = SetupWidget(self, self.__reference_serializer_data)
 
-        self.__widget_button_continue = QPushButton("Continue")
-        self.__widget_button_continue.clicked.connect(self.make_continue)
-
-        self.__widget_button_back = QPushButton("Back")
-        self.__widget_button_back.setEnabled(False)
+        self.__widget_button_next = QPushButton("Next")
+        self.__widget_button_next.clicked.connect(self.make_continue)
+        self.__widget_button_next.setIcon(QIcon("sdbgui/images/run.png"))
 
         self.__widget_label_explain = QLabel("Explain the process here!")
 
@@ -50,8 +49,7 @@ class SetupWindow(QWidget):
 
         hbox_button = QHBoxLayout()
         hbox_button.addStretch(1)
-        hbox_button.addWidget(self.__widget_button_back)
-        hbox_button.addWidget(self.__widget_button_continue)
+        hbox_button.addWidget(self.__widget_button_next)
 
         vbox.addLayout(hbox_button)
 
