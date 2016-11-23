@@ -47,7 +47,7 @@ extern "C" {
  * \param archiveName  Name of Archive (e.g "BinaryArchive")
  * \return refrence to the newly constructed Serializer or NULL if an error occurred
  */
-SERIALBOX_API serialboxSerializer_t* 
+SERIALBOX_API serialboxSerializer_t*
 serialboxSerializerCreate(int mode, const char* directory, const char* prefix, const char* archive);
 
 /**
@@ -132,7 +132,7 @@ SERIALBOX_API char* serialboxSerializerToString(const serialboxSerializer_t* ser
  * \param serializer  Serializer to use
  * \return global meta-information of the serializer
  */
-SERIALBOX_API serialboxMetainfo_t* 
+SERIALBOX_API serialboxMetainfo_t*
 serialboxSerializerGetGlobalMetainfo(serialboxSerializer_t* serializer);
 
 /*===------------------------------------------------------------------------------------------===*\
@@ -186,8 +186,8 @@ serialboxSerializerGetSavepointVector(const serialboxSerializer_t* serializer);
  * \param len               Length of the savepoint vector (usually obtained at the time of
  *                          allocation via `serialboxSerializerGetNumSavepoints`)
  */
-SERIALBOX_API void 
-serialboxSerializerDestroySavepointVector(serialboxSavepoint_t** savepointVector, int len);
+SERIALBOX_API void serialboxSerializerDestroySavepointVector(serialboxSavepoint_t** savepointVector,
+                                                             int len);
 
 /**
  * \brief Get an array of C-strings of the field names registered at `savepoint`
@@ -247,11 +247,11 @@ SERIALBOX_API int serialboxSerializerHasField(serialboxSerializer_t* serializer,
  * \param lPlusHalo         The dimension of the halo in positive l-direction
  * \return 1 if field was added successfully, 0 otherwise
  */
-SERIALBOX_API int 
-serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* name, int type,
-                             int bytesPerElement, int iSize, int jSize, int kSize, int lSize,
-                             int iMinusHalo, int iPlusHalo, int jMinusHalo, int jPlusHalo,
-                             int kMinusHalo, int kPlusHalo, int lMinusHalo, int lPlusHalo);
+SERIALBOX_API int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* name,
+                                               int type, int bytesPerElement, int iSize, int jSize,
+                                               int kSize, int lSize, int iMinusHalo, int iPlusHalo,
+                                               int jMinusHalo, int jPlusHalo, int kMinusHalo,
+                                               int kPlusHalo, int lMinusHalo, int lPlusHalo);
 
 /**
  * \brief Get an array of C-strings of all names of the registered fields
@@ -259,7 +259,7 @@ serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* name
  * \param serializer  Serializer to use
  * \return Array of C-strings of the names of all registered fields
  */
-SERIALBOX_API serialboxArrayOfString_t* 
+SERIALBOX_API serialboxArrayOfString_t*
 serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer);
 
 /**
@@ -324,10 +324,11 @@ SERIALBOX_API void serialboxSerializerRead(serialboxSerializer_t* serializer, co
  * \param slice        Array of slices (i.e {start, stop, step}) of each dimension of length
  *                     `3 * numStrides`
  */
-SERIALBOX_API void 
-serialboxSerializerReadSliced(serialboxSerializer_t* serializer, const char* name,
-                              const serialboxSavepoint_t* savepoint, void* originPtr,
-                              const int* strides, int numStrides, const int* slice);
+SERIALBOX_API void serialboxSerializerReadSliced(serialboxSerializer_t* serializer,
+                                                 const char* name,
+                                                 const serialboxSavepoint_t* savepoint,
+                                                 void* originPtr, const int* strides,
+                                                 int numStrides, const int* slice);
 
 /**
  * \brief Asynchronously deserialize field `name` (given as `storageView`) at `savepoint` from
@@ -350,10 +351,10 @@ serialboxSerializerReadSliced(serialboxSerializer_t* serializer, const char* nam
  * \see
  *    serialbox::SerializerImpl::readAsync
  */
-SERIALBOX_API void 
-serialboxSerializerReadAsync(serialboxSerializer_t* serializer, const char* name,
-                             const serialboxSavepoint_t* savepoint, void* originPtr,
-                             const int* strides, int numStrides);
+SERIALBOX_API void serialboxSerializerReadAsync(serialboxSerializer_t* serializer, const char* name,
+                                                const serialboxSavepoint_t* savepoint,
+                                                void* originPtr, const int* strides,
+                                                int numStrides);
 /**
  * \brief Wait for all pending asynchronous read operations and reset the internal queue
  */
@@ -378,10 +379,9 @@ SERIALBOX_API void serialboxSerializerWaitForAll(serialboxSerializer_t* serializ
  * \param fieldname    Name of the field
  * \param archivename  Name of the archive used for serialization (e.g "Binary")
  */
-SERIALBOX_API void 
-serialboxWriteToFile(const char* filename, void* originPtr, int typeID, const int* dims,
-                     int numDims, const int* strides, const char* fieldname,
-                     const char* archivename);
+SERIALBOX_API void serialboxWriteToFile(const char* filename, void* originPtr, int typeID,
+                                        const int* dims, int numDims, const int* strides,
+                                        const char* fieldname, const char* archivename);
 
 /**
  * \brief Deserialize field `name` (given by `originPtr` and `strides`) directly from file
@@ -400,10 +400,9 @@ serialboxWriteToFile(const char* filename, void* originPtr, int typeID, const in
  * \param fieldname    Name of the field
  * \param archivename  Name of the archive used for serialization (e.g "Binary")
  */
-SERIALBOX_API void 
-serialboxReadFromFile(const char* filename, void* originPtr, int typeID, const int* dims,
-                      int numDims, const int* strides, const char* fieldname,
-                      const char* archivename);
+SERIALBOX_API void serialboxReadFromFile(const char* filename, void* originPtr, int typeID,
+                                         const int* dims, int numDims, const int* strides,
+                                         const char* fieldname, const char* archivename);
 
 /** @} */
 

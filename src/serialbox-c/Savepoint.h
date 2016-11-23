@@ -48,7 +48,7 @@ SERIALBOX_API serialboxSavepoint_t* serialboxSavepointCreate(const char* name);
  * \param other   Savepoint to copy from
  * \return pointer to the newly constructed Savepoint or NULL if an error occurred
  */
-SERIALBOX_API serialboxSavepoint_t* 
+SERIALBOX_API serialboxSavepoint_t*
 serialboxSavepointCreateFromSavepoint(const serialboxSavepoint_t* other);
 
 /**
@@ -77,8 +77,8 @@ SERIALBOX_API const char* serialboxSavepointGetName(const serialboxSavepoint_t* 
  * \param s2  Second Savepoint to use
  * \return 1 if `s1 == s2`, 0 otherwise
  */
-SERIALBOX_API int 
-serialboxSavepointEqual(const serialboxSavepoint_t* s1, const serialboxSavepoint_t* s2);
+SERIALBOX_API int serialboxSavepointEqual(const serialboxSavepoint_t* s1,
+                                          const serialboxSavepoint_t* s2);
 
 /**
  * \brief Convert to string

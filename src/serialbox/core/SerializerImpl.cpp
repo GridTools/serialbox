@@ -335,7 +335,7 @@ std::string SerializerImpl::toString() const {
   ss << "mode = " << mode_ << "\n";
   ss << "directory = " << directory_ << "\n";
   ss << "prefix = \"" << prefix_ << "\"\n";
-  ss << "archive = \"" << archive_->name()<< "\"\n";
+  ss << "archive = \"" << archive_->name() << "\"\n";
   ss << "metainfo = " << *globalMetainfo_ << "\n";
   ss << "savepoints = [";
   for(const auto& sp : savepointVector_->savepoints())
@@ -349,7 +349,7 @@ std::string SerializerImpl::toString() const {
 }
 
 std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s) {
-  return (stream << s.toString());  
+  return (stream << s.toString());
 }
 
 json::json SerializerImpl::toJSON() const {

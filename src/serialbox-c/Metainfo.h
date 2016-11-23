@@ -48,7 +48,7 @@ SERIALBOX_API serialboxMetainfo_t* serialboxMetainfoCreate(void);
  * \param other   Metainfo to copy from
  * \return refrence pointer to the newly constructed meta-information or NULL if an error occurred
  */
-SERIALBOX_API serialboxMetainfo_t* 
+SERIALBOX_API serialboxMetainfo_t*
 serialboxMetainfoCreateFromMetainfo(const serialboxMetainfo_t* other);
 
 /**
@@ -92,8 +92,8 @@ SERIALBOX_API void serialboxMetainfoClear(serialboxMetainfo_t* metaInfo);
  * \param m2  Second Metainfo to use
  * \return 1 if `m1 == m2`, 0 otherwise
  */
-SERIALBOX_API int 
-serialboxMetainfoEqual(const serialboxMetainfo_t* m1, const serialboxMetainfo_t* m2);
+SERIALBOX_API int serialboxMetainfoEqual(const serialboxMetainfo_t* m1,
+                                         const serialboxMetainfo_t* m2);
 
 /**
  * \brief Check if and element with key `key` exists
@@ -111,9 +111,8 @@ SERIALBOX_API int serialboxMetainfoHasKey(const serialboxMetainfo_t* metaInfo, c
  * \param key       Key used for lookup
  * \return TypeID of the element
  */
-SERIALBOX_API enum serialboxTypeID 
-serialboxMetainfoGetTypeIDOfKey(const serialboxMetainfo_t* metaInfo,
-                                const char* key);
+SERIALBOX_API enum serialboxTypeID
+serialboxMetainfoGetTypeIDOfKey(const serialboxMetainfo_t* metaInfo, const char* key);
 
 /**
  * \brief Convert to string
@@ -184,7 +183,7 @@ SERIALBOX_API int serialboxMetainfoAddFloat32(serialboxMetainfo_t* metaInfo, con
                                               serialboxFloat32_t value);
 SERIALBOX_API int serialboxMetainfoAddFloat64(serialboxMetainfo_t* metaInfo, const char* key,
                                               serialboxFloat64_t value);
-SERIALBOX_API int serialboxMetainfoAddString(serialboxMetainfo_t* metaInfo, const char* key, 
+SERIALBOX_API int serialboxMetainfoAddString(serialboxMetainfo_t* metaInfo, const char* key,
                                              const char* value);
 /** @} */
 
@@ -237,15 +236,15 @@ SERIALBOX_API int serialboxMetainfoAddArrayOfString(serialboxMetainfo_t* metaInf
  */
 SERIALBOX_API serialboxBoolean_t serialboxMetainfoGetBoolean(const serialboxMetainfo_t* metaInfo,
                                                              const char* key);
-SERIALBOX_API serialboxInt32_t serialboxMetainfoGetInt32(const serialboxMetainfo_t* metaInfo, 
+SERIALBOX_API serialboxInt32_t serialboxMetainfoGetInt32(const serialboxMetainfo_t* metaInfo,
                                                          const char* key);
-SERIALBOX_API serialboxInt64_t serialboxMetainfoGetInt64(const serialboxMetainfo_t* metaInfo, 
+SERIALBOX_API serialboxInt64_t serialboxMetainfoGetInt64(const serialboxMetainfo_t* metaInfo,
                                                          const char* key);
 SERIALBOX_API serialboxFloat32_t serialboxMetainfoGetFloat32(const serialboxMetainfo_t* metaInfo,
                                                              const char* key);
 SERIALBOX_API serialboxFloat64_t serialboxMetainfoGetFloat64(const serialboxMetainfo_t* metaInfo,
                                                              const char* key);
-SERIALBOX_API serialboxString_t serialboxMetainfoGetString(const serialboxMetainfo_t* metaInfo, 
+SERIALBOX_API serialboxString_t serialboxMetainfoGetString(const serialboxMetainfo_t* metaInfo,
                                                            const char* key);
 /** @} */
 
@@ -265,22 +264,22 @@ SERIALBOX_API serialboxString_t serialboxMetainfoGetString(const serialboxMetain
  *                         or conversions from primitive to array type
  * @{
  */
-SERIALBOX_API serialboxArrayOfBoolean_t* 
+SERIALBOX_API serialboxArrayOfBoolean_t*
 serialboxMetainfoGetArrayOfBoolean(const serialboxMetainfo_t* metaInfo, const char* key);
 
-SERIALBOX_API serialboxArrayOfInt32_t* 
+SERIALBOX_API serialboxArrayOfInt32_t*
 serialboxMetainfoGetArrayOfInt32(const serialboxMetainfo_t* metaInfo, const char* key);
 
-SERIALBOX_API serialboxArrayOfInt64_t* 
+SERIALBOX_API serialboxArrayOfInt64_t*
 serialboxMetainfoGetArrayOfInt64(const serialboxMetainfo_t* metaInfo, const char* key);
-                                                          
-SERIALBOX_API serialboxArrayOfFloat32_t* 
+
+SERIALBOX_API serialboxArrayOfFloat32_t*
 serialboxMetainfoGetArrayOfFloat32(const serialboxMetainfo_t* metaInfo, const char* key);
 
-SERIALBOX_API serialboxArrayOfFloat64_t* 
+SERIALBOX_API serialboxArrayOfFloat64_t*
 serialboxMetainfoGetArrayOfFloat64(const serialboxMetainfo_t* metaInfo, const char* key);
 
-SERIALBOX_API serialboxArrayOfString_t* 
+SERIALBOX_API serialboxArrayOfString_t*
 serialboxMetainfoGetArrayOfString(const serialboxMetainfo_t* metaInfo, const char* key);
 /** @} */
 

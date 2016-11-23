@@ -42,9 +42,8 @@ extern "C" {
  * \param numDimensions   Number of dimensions
  * \return pointer to the newly constructed FieldMetainfoImpl or NULL if an error occurred
  */
-SERIALBOX_API serialboxFieldMetainfo_t* serialboxFieldMetainfoCreate(enum serialboxTypeID type,
-                                                                     const int* dimensions, 
-                                                                     int numDimensions);
+SERIALBOX_API serialboxFieldMetainfo_t*
+serialboxFieldMetainfoCreate(enum serialboxTypeID type, const int* dimensions, int numDimensions);
 
 /**
  * \brief Copy construct the FieldMetainfoImpl
@@ -97,7 +96,7 @@ SERIALBOX_API char* serialboxFieldMetainfoToString(const serialboxFieldMetainfo_
  * \param fieldMetainfo  Field meta-information to use
  * \return type-id the field
  */
-SERIALBOX_API enum serialboxTypeID 
+SERIALBOX_API enum serialboxTypeID
 serialboxFieldMetainfoGetTypeID(const serialboxFieldMetainfo_t* fieldMetainfo);
 
 /**
@@ -108,7 +107,7 @@ serialboxFieldMetainfoGetTypeID(const serialboxFieldMetainfo_t* fieldMetainfo);
  * \return dimensions of the field as an array of `int`s of size
  * `serialboxFieldMetainfoGetNumDimensions`
  */
-SERIALBOX_API const int* 
+SERIALBOX_API const int*
 serialboxFieldMetainfoGetDimensions(const serialboxFieldMetainfo_t* fieldMetainfo);
 
 /**
@@ -117,7 +116,7 @@ serialboxFieldMetainfoGetDimensions(const serialboxFieldMetainfo_t* fieldMetainf
  * \param fieldMetainfo  Field meta-information to use
  * \return number of dimensions of the field
  */
-SERIALBOX_API int 
+SERIALBOX_API int
 serialboxFieldMetainfoGetNumDimensions(const serialboxFieldMetainfo_t* fieldMetainfo);
 
 /*===------------------------------------------------------------------------------------------===*\
@@ -131,7 +130,7 @@ serialboxFieldMetainfoGetNumDimensions(const serialboxFieldMetainfo_t* fieldMeta
  * \param fieldMetainfo  Field meta-information to use
  * \return meta-information of the field
  */
-SERIALBOX_API serialboxMetainfo_t* 
+SERIALBOX_API serialboxMetainfo_t*
 serialboxFieldMetainfoGetMetainfo(serialboxFieldMetainfo_t* fieldMetainfo);
 
 /** @} @} */
