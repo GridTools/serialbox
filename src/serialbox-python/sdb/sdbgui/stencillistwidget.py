@@ -27,12 +27,13 @@ class StencilListWidget(QComboBox):
 
     def add_item(self, item):
         Logger.info(
-            "Adding item '%s' to StencilFieldListWidget of '%s'" % (item, self.__stencil_data.name))
+            "Adding stencil '%s' to StencilFieldListWidget of '%s'" % (
+            item, self.__stencil_data.name))
         self.addItem(item)
 
     def remove_item(self, item):
         Logger.info(
-            "Removing item '%s' of StencilFieldListWidget of '%s'" % (
+            "Removing stencil '%s' of StencilFieldListWidget of '%s'" % (
                 item, self.__stencil_data.name))
         self.removeItem(self.findText(item))
 

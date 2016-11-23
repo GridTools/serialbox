@@ -83,7 +83,7 @@ class Configuration(MutableMapping):
                 pass
 
             with open(config_file, 'w') as file:
-                dump(self.__config, file)
+                dump(self.__config, file, indent=2)
                 Logger.info("Storing config file in \"%s\"" % config_file)
 
         except (OSError, IOError) as e:
@@ -103,7 +103,7 @@ class Configuration(MutableMapping):
                         pass
 
                     with open(config_file, 'w') as file:
-                        dump(self.__config, file)
+                        dump(self.__config, file, indent=2)
                         Logger.info("Storing config file in \"%s\"" % config_file)
 
                 except (OSError, IOError) as e:

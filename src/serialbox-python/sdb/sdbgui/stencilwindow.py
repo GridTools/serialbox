@@ -13,6 +13,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 
 from sdbcore.logger import Logger
+from .errormessagebox import ErrorMessageBox
 from .stencilfieldmetainfowidget import StencilFieldMetainfoWidget
 from .stencilwidget import StencilWidget
 from .tabstate import TabState
@@ -61,6 +62,13 @@ class StencilWindow(QWidget):
         self.__stencil_field_mapper.match_fields()
 
     def make_continue(self):
+        try:
+            self.__stencil_field_mapper.compare_fields(self.__widget_stencil_input.fields,
+                                                       self.__widget_stencil_reference.fields)
+        except RuntimeError as e:
+            ErrorMessageBox(self, str(e))
+            return
+
         self.__widget_mainwindow.set_tab_highest_valid_state(TabState.Result)
         self.__widget_mainwindow.switch_to_tab(TabState.Result)
 

@@ -122,9 +122,9 @@ class StencilData(object):
 
         self.__field_list_changed = False
 
-    def move_field(self, from_idx, to_idx):
+    def move_field(self, field, idx):
         for listener in self.__field_list_listener:
-            listener.move_item(from_idx, to_idx)
+            listener.move_item(field, idx)
 
     def set_enable_field(self, idx, enable):
         for listener in self.__field_list_listener:

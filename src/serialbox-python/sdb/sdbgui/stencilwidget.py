@@ -30,10 +30,13 @@ class StencilWidget(QWidget):
 
         self.__widget_label_name = QLabel("<b>%s</b>" % self.__name)
         self.__widget_label_stencil = QLabel("Stencil")
+        self.__widget_label_stencil.setStatusTip("Stencil to compare")
         self.__widget_stencil_list = StencilListWidget(self.__stencil_data)
         self.__widget_stencil_list.currentIndexChanged[int].connect(self.set_stencil_index)
 
         self.__widget_label_field = QLabel("Fields")
+        self.__widget_label_field.setStatusTip("Fields of the stencil to compare")
+
         self.__widget_listview_field_list = StencilFieldListWidget(self.__stencil_data,
                                                                    widget_fieldmetainfo)
 
@@ -67,5 +70,5 @@ class StencilWidget(QWidget):
         self.__stencil_data.update_field_list()
 
     @property
-    def widget_listview_field_list(self):
-        return self.__widget_listview_field_list
+    def fields(self):
+        return self.__widget_listview_field_list.fields
