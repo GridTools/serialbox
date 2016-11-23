@@ -88,7 +88,8 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   //
   // Register field
   //
-  serialboxFortranSerializerRegisterField(serializer, "field", Float64, 8, 30, 40, 50, 60);
+  serialboxFortranSerializerRegisterField(serializer, "field", Float64, 8, 30, 40, 50, 60, 0, 0, 0,
+                                          0, 0, 0, 0, 0);
 
   //
   // Add field meta-info

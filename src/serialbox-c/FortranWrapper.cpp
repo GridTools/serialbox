@@ -206,9 +206,12 @@ void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* k
 
 void serialboxFortranSerializerRegisterField(void* serializer, const char* name, int type,
                                              int bytesPerElement, int iSize, int jSize, int kSize,
-                                             int lSize) {
+                                             int lSize, int iMinusHalo, int iPlusHalo,
+                                             int jMinusHalo, int jPlusHalo, int kMinusHalo,
+                                             int kPlusHalo, int lMinusHalo, int lPlusHalo) {
   serialboxSerializerAddField2(static_cast<serialboxSerializer_t*>(serializer), name, type,
-                               bytesPerElement, iSize, jSize, kSize, lSize, 0, 0, 0, 0, 0, 0, 0, 0);
+                               bytesPerElement, iSize, jSize, kSize, lSize, iMinusHalo, iPlusHalo,
+                               jMinusHalo, jPlusHalo, kMinusHalo, kPlusHalo, lMinusHalo, lPlusHalo);
 }
 
 /*===------------------------------------------------------------------------------------------===*\

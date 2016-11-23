@@ -515,22 +515,29 @@ END SUBROUTINE fs_print_debuginfo
 !  the execution is stopped with an error message.
 !------------------------------------------------------------------------------
 SUBROUTINE fs_register_field(serializer, fieldname, data_type, bytes_per_element, &
-                          isize, jsize, ksize, lsize)
+                             isize, jsize, ksize, lsize,                          &
+                             iminushalo, iplushalo, jminushalo, jplushalo,        &
+                             kminushalo, kplushalo, lminushalo, lplushalo)
 
   TYPE(t_serializer), INTENT(IN) :: serializer
   CHARACTER(LEN=*)               :: fieldname, data_type
-  INTEGER, INTENT(IN)            :: bytes_per_element, isize, jsize, ksize, lsize
+  INTEGER, INTENT(IN)            :: bytes_per_element, isize, jsize, ksize, lsize, &
+                                    iminushalo, iplushalo, jminushalo, jplushalo,  &
+                                    kminushalo, kplushalo, lminushalo, lplushalo
 
   ! External function
   INTERFACE
-     SUBROUTINE fs_register_field_(serializer, fieldname, datatype, bytes_per_element, &
-                                  isize, jsize, ksize, lsize)                          &
+     SUBROUTINE fs_register_field_(serializer, fieldname, datatype, bytes_per_element,           &
+                                  isize, jsize, ksize, lsize, iminushalo, iplushalo, jminushalo, &
+                                  jplushalo, kminushalo, kplushalo, lminushalo, lplushalo) &
           BIND(c, name='serialboxFortranSerializerRegisterField')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), VALUE                    :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*)  :: fieldname
-       INTEGER(C_INT), VALUE                 :: datatype, bytes_per_element, &
-                                                isize, jsize, ksize, lsize
+       INTEGER(C_INT), VALUE                 :: datatype, bytes_per_element,                  &
+                                                isize, jsize, ksize, lsize,                   &
+                                                iminushalo, iplushalo, jminushalo, jplushalo, &
+                                                kminushalo, kplushalo, lminushalo, lplushalo
      END SUBROUTINE fs_register_field_
   END INTERFACE
 
@@ -549,7 +556,9 @@ SUBROUTINE fs_register_field(serializer, fieldname, data_type, bytes_per_element
   END SELECT
 
   CALL fs_register_field_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, &
-                         c_type, bytes_per_element, isize, jsize, ksize, lsize)
+                          c_type, bytes_per_element, isize, jsize, ksize, lsize,   &
+                          iminushalo, iplushalo, jminushalo, jplushalo,            &
+                          kminushalo, kplushalo, lminushalo, lplushalo)
 
 END SUBROUTINE fs_register_field
 
@@ -741,7 +750,7 @@ SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, is
   ! Else register field
   ELSE IF(fs_serializer_openmode(serializer) /= 'r') THEN
     CALL fs_register_field(serializer, fieldname, data_type, bytes_per_element, &
-                           isize, jsize, ksize, lsize)
+                           isize, jsize, ksize, lsize, 0, 0, 0, 0, 0, 0, 0, 0)
   ELSE
     WRITE(*,*) "Serialbox: ERROR: field ", fieldname, " does not exist in the serializer"
     STOP

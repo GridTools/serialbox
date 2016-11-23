@@ -95,10 +95,20 @@ void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* k
  * \param jSize             The size of the second dimension
  * \param kSize             The size of the third dimension
  * \param lsize             The size of the fourth dimension
+ * \param iMinusHalo        The dimension of the halo in negative i-direction
+ * \param iPlusHalo         The dimension of the halo in positive i-direction
+ * \param jMinusHalo        The dimension of the halo in negative j-direction
+ * \param jPlusHalo         The dimension of the halo in positive j-direction
+ * \param kMinusHalo        The dimension of the halo in negative k-direction
+ * \param kPlusHalo         The dimension of the halo in positive k-direction
+ * \param lMinusHalo        The dimension of the halo in negative l-direction
+ * \param lPlusHalo         The dimension of the halo in positive l-direction
  */
 void serialboxFortranSerializerRegisterField(void* serializer, const char* name, int type,
                                              int bytesPerElement, int iSize, int jSize, int kSize,
-                                             int lSize);
+                                             int lSize, int iMinusHalo, int iPlusHalo,
+                                             int jMinusHalo, int jPlusHalo, int kMinusHalo,
+                                             int kPlusHalo, int lMinusHalo, int lPlusHalo);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     FieldMetainfoImpl
