@@ -22,7 +22,7 @@ class SerializerData(object):
         self.__prefix = prefix
         self.__serializer = None
         self.__data_changed = True
-        self.__listener_callbacks = []
+        self.__stencil_listeners = []
 
     def make_serializer(self, force=False):
         try:
@@ -31,8 +31,8 @@ class SerializerData(object):
                 self.__serializer = Serializer(OpenModeKind.Read, self.directory, self.prefix)
                 self.__data_changed = False
 
-                for listener_callback in self.__listener_callbacks:
-                    listener_callback()
+                for stencil_listener in self.__stencil_listeners:
+                    stencil_listener.reload()
 
         except SerialboxError as e:
             self.__serializer = None
@@ -76,7 +76,5 @@ class SerializerData(object):
         self.__data_changed = True
         self.__serializer = serializer
 
-    def register_as_listener(self, listener):
-        """Register a callback which is invoked when a new serializer is allocated
-        """
-        self.__listener_callbacks += [listener]
+    def register_as_stencil_listener(self, listener):
+        self.__stencil_listeners += [listener]

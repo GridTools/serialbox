@@ -132,21 +132,6 @@ class StencilFieldListWidget(QListView):
         item.setCheckState(check_state)
         self.__model.insertRow(idx, item)
 
-    # def move_item(self, from_idx, to_idx):
-    #     item = self.__model.item(from_idx, 0)
-    #     name = item.text()
-    #     data = item.data()
-    #     check_state = item.checkState()
-    #
-    #     Logger.info(
-    #         "Moving item with name '%s' from '%i' to '%i' of StencilFieldListWidget of '%s'" % (
-    #             name, from_idx, to_idx, self.__stencil_data.name))
-    #
-    #     self.__model.removeRow(from_idx)
-    #     item = self.create_item(name, data)
-    #     item.setCheckState(check_state)
-    #     self.__model.insertRow(to_idx, item)
-
     def num_items(self):
         return self.__model.rowCount()
 

@@ -17,7 +17,7 @@ class StencilData(object):
 
         # Data
         self.__serializer_data = serializer_data
-        self.__serializer_data.register_as_listener(self.reset)
+        self.__serializer_data.register_as_stencil_listener(self)
 
         self.__stencil_list_changed = False
         self.__stencil_list = []
@@ -30,16 +30,17 @@ class StencilData(object):
         self.__stencil_list_listener = []
         self.__field_list_listener = []
 
-        # # Other stencil data
-        # self.__other_stencil_data = None
-
-        self.reset()
+        self.init()
 
     def set_other_stencil_data(self, other):
         self.__other_stencil_data = other
 
-    def reset(self):
-        Logger.info("Updating StencilData of '%s'" % self.__serializer_data.name)
+    def reload(self):
+        Logger.info("Reloading StencilData of '%s'" % self.__serializer_data.name)
+        self.init()
+
+    def init(self):
+        Logger.info("Loading StencilData of '%s'" % self.__serializer_data.name)
 
         # Possibly a new Serializer
         self.__stencil_list_changed = True

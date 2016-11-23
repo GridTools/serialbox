@@ -113,7 +113,7 @@ class StencilFieldMapper(object):
                     input_stage = input_savepoint.metainfo["stage_name"]
                     reference_stage = reference_savepoint.metainfo["stage_name"]
 
-                    # TODO: proper mapping here
+                    # TODO: Provide proper handling if the stages don't match etc...
                     stage = input_stage
                     intent = "in" if input_savepoint.name.endswith("in") else "out"
 
@@ -133,7 +133,6 @@ class StencilFieldMapper(object):
                                                             reference_savepoint)
         except SerialboxError as e:
             raise RuntimeError(make_error_msg(shared_stencil_name, e.message))
-
 
     @property
     def comparison_result(self):
