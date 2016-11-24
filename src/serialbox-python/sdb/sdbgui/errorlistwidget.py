@@ -9,10 +9,16 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from enum import Enum
+from PyQt5.QtWidgets import QWidget
+from sdbcore.version import Version
 
-class TabState(Enum):
-    Setup = 0
-    Stencil = 1
-    Result = 2
-    Error = 3
+class ErrorListWidget(QWidget):
+
+    def __init__(self, errorwindow):
+        super().__init__(errorwindow)
+
+        self.__widget_errorwindow = errorwindow
+
+        #
+        # if Version().ipython_version():
+        #     from .ipythonwidget import

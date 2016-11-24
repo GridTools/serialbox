@@ -13,12 +13,13 @@ from PyQt5.QtWidgets import QMessageBox
 
 from sdbcore import Logger
 
-class ErrorMessageBox():
+
+class PopupErrorMessageBox(QMessageBox):
     def __init__(self, parent, msg):
+        super().__init__(parent)
         Logger.error(msg.replace("<b>", "").replace("</b>", "").replace("<br />", ":"))
-        msgbox = QMessageBox(parent)
-        msgbox.setWindowTitle("Error")
-        msgbox.setIcon(QMessageBox.Critical)
-        msgbox.setText(msg)
-        msgbox.setStandardButtons(QMessageBox.Ok)
-        msgbox.show()
+        self.setWindowTitle("Error")
+        self.setIcon(QMessageBox.Critical)
+        self.setText(msg)
+        self.setStandardButtons(QMessageBox.Ok)
+        self.show()

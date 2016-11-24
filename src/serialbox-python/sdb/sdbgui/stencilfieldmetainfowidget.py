@@ -12,17 +12,16 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QHBoxLayout, QGridLayout
 
+from .fieldmetainfobox import FieldMetainfoBox
+
 
 class StencilFieldMetainfoWidget(QWidget):
-
-    MaxFieldLen = 15
-
     def __init__(self):
         super().__init__()
 
         # Data
         self.__current_fieldname = None
-        self.__current_dimensions = []
+        self.__current_field_metainfo = None
 
         # Widgets
         self.__widget_label_fieldmetainfo_name = QLabel()
@@ -31,6 +30,7 @@ class StencilFieldMetainfoWidget(QWidget):
         self.__widget_button_metainfo = QPushButton()
         self.__widget_button_metainfo.setIcon(QIcon("sdbgui/images/show_all.png"))
         self.__widget_button_metainfo.setEnabled(False)
+        self.__widget_button_metainfo.clicked.connect(self.show_field_metainfo_box)
 
         hbox = QHBoxLayout()
 
@@ -47,19 +47,21 @@ class StencilFieldMetainfoWidget(QWidget):
 
     def set_field(self, serializer, field):
         if serializer.has_field(field):
-            field_metainfo = serializer.get_field_metainfo(field)
+            self.__current_field_metainfo = serializer.get_field_metainfo(field)
             self.__current_fieldname = field
-            self.__current_dimensions = field_metainfo.dims
+            self.__widget_button_metainfo.setEnabled(True)
         else:
             self.__current_fieldname = None
-            self.__current_dimensions = []
+            self.__current_field_metainfo = None
+            self.__widget_button_metainfo.setEnabled(False)
 
         self.update()
 
     def update(self):
         if self.__current_fieldname:
             self.__widget_label_fieldmetainfo_name.setText("<b>%s</b>" % self.__current_fieldname)
-            self.__widget_label_fieldmetainfo_dimensions.setText("%s" % self.__current_dimensions)
+            self.__widget_label_fieldmetainfo_dimensions.setText(
+                "%s" % self.__current_field_metainfo.dims)
 
             self.__widget_button_metainfo.setEnabled(True)
             self.__widget_button_metainfo.setStatusTip(
@@ -69,3 +71,7 @@ class StencilFieldMetainfoWidget(QWidget):
             self.__widget_label_fieldmetainfo.setText("")
             self.__widget_button_metainfo.setStatusTip("")
             self.__widget_button_metainfo.setEnabled(False)
+
+    def show_field_metainfo_box(self):
+        self.__widget_field_metainfo_box = FieldMetainfoBox(self, self.__current_fieldname,
+                                                            self.__current_field_metainfo)

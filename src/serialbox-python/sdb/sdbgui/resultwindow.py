@@ -16,7 +16,7 @@ from .tabstate import TabState
 
 
 class ResultWindow(QWidget):
-    def __init__(self, mainwindow, stencil_field_mapper):
+    def __init__(self, mainwindow, stencilwindow, stencil_field_mapper):
         super().__init__()
 
         # Data
@@ -24,7 +24,9 @@ class ResultWindow(QWidget):
 
         # Widgets
         self.__widget_mainwindow = mainwindow
-        self.__widget_result_table = ResultTableWidget(self.__stencil_field_mapper)
+        self.__widget_stencilwindow = stencilwindow
+
+        self.__widget_result_table = ResultTableWidget(self, self.__stencil_field_mapper)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self.__widget_result_table)
@@ -34,10 +36,19 @@ class ResultWindow(QWidget):
         self.setLayout(vbox)
 
     def make_continue(self):
-        pass
+        self.try_switch_to_error_tab()
 
     def make_back(self):
         self.__widget_mainwindow.switch_to_tab(TabState.Stencil)
 
     def make_update(self):
+        if not self.__widget_stencilwindow.update_comparison_result():
+            self.make_back()
         self.__widget_result_table.make_update()
+
+    def try_switch_to_error_tab(self):
+        self.__widget_result_table.try_switch_to_error_tab()
+
+    @property
+    def widget_mainwindow(self):
+        return self.__widget_mainwindow

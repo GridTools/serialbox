@@ -29,6 +29,7 @@ class StencilData(object):
         # Listeners
         self.__stencil_list_listener = []
         self.__field_list_listener = []
+        self.__data_listener = []
 
         self.init()
 
@@ -80,6 +81,9 @@ class StencilData(object):
 
             self.__stencil_list_changed = True
 
+            for listener in self.__data_listener:
+                listener.set_outdated()
+
     def update_field_list(self):
         """Update field list according to the selected stencil
         """
@@ -123,6 +127,9 @@ class StencilData(object):
 
         self.__field_list_changed = False
 
+        for listener in self.__data_listener:
+            listener.set_outdated()
+
     def move_field(self, field, idx):
         for listener in self.__field_list_listener:
             listener.move_item(field, idx)
@@ -162,3 +169,6 @@ class StencilData(object):
 
     def register_as_field_list_listener(self, listener):
         self.__field_list_listener += [listener]
+
+    def register_as_data_listener(self, listener):
+        self.__data_listener += [listener]

@@ -31,27 +31,38 @@ class ComparisonResult(object):
         self.__result_dict["result"] = []
 
     def compare_fields(self,
-                       stage,
                        intent,
+                       input_stage,
+                       input_stencil,
                        input_field,
                        input_field_name,
                        input_savepoint,
+                       input_serializer,
+                       reference_stage,
+                       reference_stencil,
                        reference_field,
                        reference_field_name,
-                       reference_savepoint):
+                       reference_savepoint,
+                       reference_serializer):
         match = np.allclose(input_field, reference_field)
-        self.__result_dict["result"] += [{"stage": stage,
-                                          "intent": intent,
+        self.__result_dict["result"] += [{"intent": intent,
+                                          "input_stage": input_stage,
+                                          "input_stencil": input_stencil,
                                           "input_field_name": input_field_name,
                                           "input_savepoint": input_savepoint,
+                                          "input_serializer": input_serializer,
                                           "reference_field_name": reference_field_name,
                                           "reference_savepoint": reference_savepoint,
+                                          "reference_stage": reference_stage,
+                                          "reference_stencil": reference_stencil,
+                                          "reference_serializer": reference_serializer,
                                           "match": match}]
 
         Logger.info(
             "Comparing field '%s' vs. '%s' of stage '%s' [%s], result: %s" % (input_field_name,
                                                                               reference_field_name,
-                                                                              stage, intent, match))
+                                                                              input_stage, intent,
+                                                                              match))
 
     def __getitem__(self, key):
         return self.__result_dict[key]

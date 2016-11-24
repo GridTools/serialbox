@@ -25,10 +25,19 @@ def field_in_list(field_name, field_list):
 
 class StencilFieldMapper(object):
     def __init__(self, input_stencil_data, reference_stencil_data):
+
+        # References
         self.__input_stencil_data = input_stencil_data
         self.__reference_stencil_data = reference_stencil_data
+
+        # Register as listener
+        self.__reference_stencil_data.register_as_data_listener(self)
+        self.__input_stencil_data.register_as_data_listener(self)
+
+        # Data
         self.__comparison_result = ComparisonResult(self.__input_stencil_data,
                                                     self.__reference_stencil_data)
+        self.__comparison_result_dirty = True
 
     def match_fields(self):
         Logger.info("Matching fields")
@@ -61,31 +70,33 @@ class StencilFieldMapper(object):
                 self.__reference_stencil_data.set_enable_field(field, False)
 
     def compare_fields(self, input_fields, reference_fields):
+        if not self.__comparison_result_dirty:
+            return
 
         # Name of the stencils
-        input_stencil_name = self.__input_stencil_data.selected_stencil
-        reference_stencil_name = self.__reference_stencil_data.selected_stencil
-        shared_stencil_name = input_stencil_name if input_stencil_name == reference_stencil_name else (
-            "%s vs. %s" % (input_stencil_name, reference_stencil_name))
+        input_stencil = self.__input_stencil_data.selected_stencil
+        reference_stencil = self.__reference_stencil_data.selected_stencil
+        shared_stencil_name = input_stencil if input_stencil == reference_stencil else (
+            "%s vs. %s" % (input_stencil, reference_stencil))
 
         make_error_msg = lambda title, msg: "<b>%s</b> <br />%s." % (title, msg)
 
-        Logger.info("Comparing fields of input stencil '%s' to fields of refrence stencil '%s'" % (
-            input_stencil_name,
-            reference_stencil_name))
+        Logger.info("Comparing fields of input stencil '%s' to fields of reference stencil '%s'" % (
+            input_stencil,
+            reference_stencil))
         Logger.info("Input fields:     %s" % input_fields)
         Logger.info("Reference fields: %s" % reference_fields)
 
         self.__comparison_result.reset()
-        self.__comparison_result.add_stencils(input_stencil_name, reference_stencil_name)
+        self.__comparison_result.add_stencils(input_stencil, reference_stencil)
 
         # Check for empty fields
         if not input_fields:
-            raise RuntimeError(make_error_msg(input_stencil_name, "No input fields selected"))
+            raise RuntimeError(make_error_msg(input_stencil, "No input fields selected"))
 
         if not reference_fields:
             raise RuntimeError(
-                make_error_msg(reference_stencil_name, "No reference fields selected"))
+                make_error_msg(reference_stencil, "No reference fields selected"))
 
         # Check for inconsistent lengths
         if len(input_fields) != len(reference_fields):
@@ -99,9 +110,9 @@ class StencilFieldMapper(object):
         try:
             # Get savepoint list
             input_savepoint_list = [sp for sp in input_serializer.savepoint_list() if
-                                    sp.name.startswith(input_stencil_name)]
+                                    sp.name.startswith(input_stencil)]
             reference_savepoint_list = [sp for sp in reference_serializer.savepoint_list() if
-                                        sp.name.startswith(reference_stencil_name)]
+                                        sp.name.startswith(reference_stencil)]
 
             Logger.info("Input savepoints:     %s" % input_savepoint_list)
             Logger.info("Reference savepoints: %s" % reference_savepoint_list)
@@ -109,30 +120,49 @@ class StencilFieldMapper(object):
             # Iterate savepoints & compare
             for input_savepoint, reference_savepoint in zip(input_savepoint_list,
                                                             reference_savepoint_list):
+                fields_at_input_savepoint = input_serializer.fields_at_savepoint(input_savepoint)
+                fields_at_reference_savepoint = reference_serializer.fields_at_savepoint(
+                    reference_savepoint)
+
                 for input_field_name, reference_field_name in zip(input_fields, reference_fields):
                     input_stage = input_savepoint.metainfo["stage_name"]
                     reference_stage = reference_savepoint.metainfo["stage_name"]
 
-                    # TODO: Provide proper handling if the stages don't match etc...
                     stage = input_stage
                     intent = "in" if input_savepoint.name.endswith("in") else "out"
 
-                    # Load fields
-                    input_field = input_serializer.read(input_field_name, input_savepoint)
-                    reference_field = reference_serializer.read(reference_field_name,
-                                                                reference_savepoint)
+                    # Not every field might be participating in the current stage
+                    if input_field_name in fields_at_input_savepoint and reference_field_name in fields_at_reference_savepoint:
+                        # Load fields asynchronous
+                        input_field = input_serializer.read_async(input_field_name, input_savepoint)
+                        reference_field = reference_serializer.read_async(reference_field_name,
+                                                                          reference_savepoint)
 
-                    # Compare
-                    self.__comparison_result.compare_fields(stage,
-                                                            intent,
-                                                            input_field,
-                                                            input_field_name,
-                                                            input_savepoint,
-                                                            reference_field,
-                                                            reference_field_name,
-                                                            reference_savepoint)
+                        input_serializer.wait_for_all()
+                        reference_serializer.wait_for_all()
+
+                        # Compare
+                        self.__comparison_result.compare_fields(intent,
+                                                                input_stage,
+                                                                input_stencil,
+                                                                input_field,
+                                                                input_field_name,
+                                                                input_savepoint,
+                                                                input_serializer,
+                                                                reference_stage,
+                                                                reference_stencil,
+                                                                reference_field,
+                                                                reference_field_name,
+                                                                reference_savepoint,
+                                                                reference_serializer)
+
         except SerialboxError as e:
             raise RuntimeError(make_error_msg(shared_stencil_name, e.message))
+
+        self.__comparison_result_dirty = False
+
+    def set_outdated(self):
+        self.__comparison_result_dirty = True
 
     @property
     def comparison_result(self):

@@ -12,8 +12,8 @@
 __versioninfo__ = (0, 0, 1)
 __version__ = '.'.join(str(v) for v in __versioninfo__)
 
-class Version(object):
 
+class Version(object):
     @staticmethod
     def serialbox_version():
         from serialbox import __version__ as serialbox_vers
@@ -27,3 +27,11 @@ class Version(object):
     @staticmethod
     def sdb_version():
         return __version__
+
+    @staticmethod
+    def ipython_version():
+        try:
+            from IPython import __version__ as ipython_vers
+            return ipython_vers
+        except ImportError:
+            return None

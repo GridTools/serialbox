@@ -13,7 +13,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLabel
 
 from sdbcore import Logger
-from .errormessagebox import ErrorMessageBox
+from .popuperrormessagebox import PopupErrorMessageBox
 from .setupwidget import SetupWidget
 from .tabstate import TabState
 
@@ -61,7 +61,7 @@ class SetupWindow(QWidget):
             self.__input_serializer_data.make_serializer()
             self.__reference_serializer_data.make_serializer()
         except RuntimeError as e:
-            ErrorMessageBox(self, "%s" % e)
+            PopupErrorMessageBox(self, "%s" % e)
 
         if self.__input_serializer_data.is_valid() and self.__reference_serializer_data.is_valid():
             self.__widget_mainwindow.set_tab_highest_valid_state(TabState.Stencil)

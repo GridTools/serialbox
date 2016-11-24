@@ -12,70 +12,74 @@
 import os
 import sys
 
-sys.path.insert(1, os.path.join(os.path.dirname(os.path.realpath(__file__)), 
+sys.path.insert(1, os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                 "../../../src/serialbox-python"))
 
 import serialbox as ser
 import numpy as np
 
-u = np.random.rand(4, 4, 2)
-v = np.random.rand(4, 4, 2)
-w = np.random.rand(4, 4, 2)
-t = np.random.rand(2)
 
-u1 = np.copy(u)
-v1 = np.copy(v)
-w1 = np.copy(w)
-t1 = np.copy(t)
-u1[2,2,1] = -1
+class StencilUVWT(object):
+    def __init__(self, perturb=None):
 
-# ===--------------------------------------------------------------------------------------------===
-#   Fields: u,v,w,t 
-#   Stencils: Coriolis, Diffusion
-# ==---------------------------------------------------------------------------------------------===
-serializer = ser.Serializer(ser.OpenModeKind.Write, "./test-uvwt", "stencil")
-serializer.global_metainfo.insert("stencils", ["Coriolis", "Diffusion"])
+        self.name = "StencilUVWT"
+        self.invocation_count = 0
+        self.perturb = 0 if perturb is None else perturb
 
-sp_in = ser.Savepoint("Coriolis__in")
-sp_in.metainfo.insert("stage_id", 0)
-sp_in.metainfo.insert("stage_name", "CoriolisStage")
-sp_in.metainfo.insert("invocation_count", 0)
-serializer.write("u", sp_in, u)
-serializer.write("v", sp_in, v)
-serializer.write("w", sp_in, w)
-serializer.write("t", sp_in, t)
+        dir = "./" + self.name + ("" if perturb is None else "-error")
+        self.serializer = ser.Serializer(ser.OpenModeKind.Write, dir, "stencil")
+        self.serializer.global_metainfo.insert("stencils", ["StencilUVWT"])
 
-sp_out = ser.Savepoint("Coriolis__out")
-sp_out.metainfo.insert("stage_id", 0)
-sp_out.metainfo.insert("stage_name", "CoriolisStage")
-sp_out.metainfo.insert("invocation_count", 0)
-serializer.write("u", sp_out, u)
-serializer.write("v", sp_out, v)
-serializer.write("w", sp_out, w)
-serializer.write("t", sp_out, t)
+        self.name = "StencilUVWT"
+        self.invocation_count = 0
 
-# ===--------------------------------------------------------------------------------------------===
-#   Fields: u,v,w,t 
-#   Stencils: Coriolis, Diffusion
-# ==---------------------------------------------------------------------------------------------===
-serializer = ser.Serializer(ser.OpenModeKind.Write, "./test-uvwt-error", "stencil")
-serializer.global_metainfo.insert("stencils", ["Coriolis", "Diffusion"])
+        np.random.seed(0)
+        self.u = np.random.rand(32, 34, 80)
+        self.v = np.random.rand(32, 34, 80)
+        self.w = np.random.rand(32, 34, 80)
 
-sp_in = ser.Savepoint("Coriolis__in")
-sp_in.metainfo.insert("stage_id", 0)
-sp_in.metainfo.insert("stage_name", "CoriolisStage")
-sp_in.metainfo.insert("invocation_count", 0)
-serializer.write("u", sp_in, u)
-serializer.write("v", sp_in, v)
-serializer.write("w", sp_in, w)
-serializer.write("t", sp_in, t)
+        self.t = np.random.rand(80)
 
-sp_out = ser.Savepoint("Coriolis__out")
-sp_out.metainfo.insert("stage_id", 0)
-sp_out.metainfo.insert("stage_name", "CoriolisStage")
-sp_out.metainfo.insert("invocation_count", 0)
-serializer.write("u", sp_out, u1)
-serializer.write("v", sp_out, v1)
-serializer.write("w", sp_out, w1)
-serializer.write("t", sp_out, t1)
+    def run(self):
+        self.stage_1()
+        self.stage_2()
 
+        self.invocation_count += 1
+
+    def stage_1(self):
+        self.serialize("in", 0, "stage_1", {"u": self.u, "v": self.v, "w": self.w})
+
+        self.u += 1
+        self.v += 2
+        self.w += 3
+
+        self.serialize("out", 0, "stage_1", {"u": self.u, "v": self.v, "w": self.w})
+
+    def stage_2(self):
+        self.serialize("in", 1, "stage_2", {"u": self.u, "v": self.v, "w": self.w, "t": self.t})
+
+        self.u += 1
+        self.v += 2
+        self.w += 3 + self.perturb
+        self.t += 4
+
+        self.serialize("out", 1, "stage_2", {"u": self.u, "v": self.v, "w": self.w, "t": self.t})
+
+    def serialize(self, intent, stage_id, stage_name, fields):
+        sp = ser.Savepoint(self.name + "__" + intent)
+        sp.metainfo.insert("stage_id", stage_id)
+        sp.metainfo.insert("stage_name", stage_name)
+        sp.metainfo.insert("invocation_count", self.invocation_count)
+
+        for name, field in fields.items():
+            self.serializer.write(name, sp, field)
+
+
+if __name__ == '__main__':
+    #ser.Logging().enable()
+
+    s_uvwt = StencilUVWT()
+    s_uvwt.run()
+
+    s_uvwt_error = StencilUVWT(1)
+    s_uvwt_error.run()

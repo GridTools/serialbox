@@ -17,7 +17,7 @@ from sdbcore.logger import Logger
 from sdbcore.version import Version
 
 
-class AboutWidget(QWidget):
+class PopupAboutWidget(QWidget):
     def __init__(self, parent):
         super().__init__()
         Logger.info("Showing about message box")
@@ -42,6 +42,7 @@ class AboutWidget(QWidget):
                      "Serialbox (%s)" % Version().serialbox_version(),
                      "numpy (%s)" % Version().numpy_version(),
                      "PyQt5 (%s)" % QT_VERSION_STR,
+                     "IPython (%s)" % Version().ipython_version(),
                      "",
                      "Copyright (c) 2016, Fabian Thuering",
                      "",

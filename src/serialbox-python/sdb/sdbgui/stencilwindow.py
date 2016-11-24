@@ -13,7 +13,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 
 from sdbcore.logger import Logger
-from .errormessagebox import ErrorMessageBox
+from .popuperrormessagebox import PopupErrorMessageBox
 from .stencilfieldmetainfowidget import StencilFieldMetainfoWidget
 from .stencilwidget import StencilWidget
 from .tabstate import TabState
@@ -61,16 +61,19 @@ class StencilWindow(QWidget):
     def match_fields(self):
         self.__stencil_field_mapper.match_fields()
 
-    def make_continue(self):
+    def update_comparison_result(self):
         try:
             self.__stencil_field_mapper.compare_fields(self.__widget_stencil_input.fields,
                                                        self.__widget_stencil_reference.fields)
         except RuntimeError as e:
-            ErrorMessageBox(self, str(e))
-            return
+            PopupErrorMessageBox(self, str(e))
+            return False
+        return True
 
-        self.__widget_mainwindow.set_tab_highest_valid_state(TabState.Result)
-        self.__widget_mainwindow.switch_to_tab(TabState.Result)
+    def make_continue(self):
+        if self.update_comparison_result():
+            self.__widget_mainwindow.set_tab_highest_valid_state(TabState.Result)
+            self.__widget_mainwindow.switch_to_tab(TabState.Result)
 
     def make_back(self):
         self.__widget_mainwindow.switch_to_tab(TabState.Setup)
@@ -79,3 +82,7 @@ class StencilWindow(QWidget):
         Logger.info("Updating Stencil tab")
         self.__widget_stencil_input.make_update()
         self.__widget_stencil_reference.make_update()
+
+    @property
+    def widget_mainwindow(self):
+        return self.__widget_mainwindow

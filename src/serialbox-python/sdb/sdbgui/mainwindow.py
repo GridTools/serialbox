@@ -16,9 +16,10 @@ from sdbcore.logger import Logger
 from sdbcore.stencildata import StencilData
 from sdbcore.stencilfieldmapper import StencilFieldMapper
 from sdbcore.version import Version
-from .aboutwidget import AboutWidget
 from .configuration import Configuration
-from .errormessagebox import ErrorMessageBox
+from .errorwindow import ErrorWindow
+from .popupaboutwidget import PopupAboutWidget
+from .popuperrormessagebox import PopupErrorMessageBox
 from .resultwindow import ResultWindow
 from .setupwindow import SetupWindow
 from .stencilwindow import StencilWindow
@@ -47,29 +48,41 @@ class MainWindow(QMainWindow):
         # Setup GUI
         self.setWindowTitle('sdb - stencil debugger (%s)' % Version().sdb_version())
         self.resize(960, 480)
+        # self.center()
 
         self.setWindowIcon(QIcon("sdbgui/images/logo-small.png"))
         self.init_menu_tool_bar()
 
-        # Setup tabs
+        # Tabs
         self.__tab_highest_valid_state = TabState.Setup
         self.__widget_tab = QTabWidget()
+
+        # Setup tab
         self.__widget_tab.addTab(
             SetupWindow(self, self.__input_serializer_data, self.__reference_serializer_data),
             "Setup")
+
+        # Stencil tab
         self.__widget_tab.addTab(
             StencilWindow(self, self.__stencil_field_mapper, self.__input_stencil_data,
                           self.__reference_stencil_data),
             "Stencil")
+
+        # Result tab
         self.__widget_tab.addTab(
-            ResultWindow(self, self.__stencil_field_mapper),
+            ResultWindow(self, self.__widget_tab.widget(TabState.Stencil.value),
+                         self.__stencil_field_mapper),
             "Result")
+
+        # Visualize tab
+        self.__widget_tab.addTab(ErrorWindow(self), "Error")
 
         self.__widget_tab.currentChanged.connect(self.switch_to_tab)
 
         self.__widget_tab.setTabEnabled(TabState.Setup.value, True)
         self.__widget_tab.setTabEnabled(TabState.Stencil.value, False)
         self.__widget_tab.setTabEnabled(TabState.Result.value, False)
+        self.__widget_tab.setTabEnabled(TabState.Error.value, False)
 
         self.__widget_tab.setTabToolTip(TabState.Setup.value,
                                         "Setup Input and Refrence Serializer")
@@ -77,6 +90,8 @@ class MainWindow(QMainWindow):
                                         "Set the stencil to compare and define the mapping of the fields")
         self.__widget_tab.setTabToolTip(TabState.Result.value,
                                         "View to comparison result")
+        self.__widget_tab.setTabToolTip(TabState.Error.value,
+                                        "Detailed error desscription of the current field")
 
         self.__tab_old_state = TabState.Setup
         self.set_tab_highest_valid_state(TabState.Setup)
@@ -110,21 +125,27 @@ class MainWindow(QMainWindow):
         action_open_session.triggered.connect(self.open_session)
 
         self.__action_continue = QAction(QIcon("sdbgui/images/next_cursor.png"), "Continue", self)
-        self.__action_continue.setShortcut("Ctrl+R")
         self.__action_continue.setStatusTip("Continue to next tab")
         self.__action_continue.triggered.connect(self.switch_to_next_tab)
         self.__action_continue.setEnabled(True)
 
         self.__action_back = QAction(QIcon("sdbgui/images/prev_cursor.png"), "Back", self)
-        self.__action_back.setShortcut("Ctrl+B")
         self.__action_back.setStatusTip("Back to previous tab")
         self.__action_back.triggered.connect(self.switch_to_previous_tab)
         self.__action_back.setEnabled(False)
 
         self.__action_reload = QAction(QIcon("sdbgui/images/step_in.png"), "Reload", self)
         self.__action_reload.setStatusTip("Reload Input and Reference Serializer")
+        self.__action_reload.setShortcut("Ctrl+R")
         self.__action_reload.triggered.connect(self.reload_serializer)
         self.__action_reload.setEnabled(False)
+
+        self.__action_try_switch_to_error_tab = QAction(QIcon("sdbgui/images/visualize.png"),
+                                                        "Visualize", self)
+        self.__action_try_switch_to_error_tab.setStatusTip(
+            "Detailed error desscription of the current field")
+        self.__action_try_switch_to_error_tab.triggered.connect(self.try_switch_to_error_tab)
+        self.__action_try_switch_to_error_tab.setEnabled(False)
 
         menubar = self.menuBar()
         menubar.setNativeMenuBar(False)
@@ -149,6 +170,7 @@ class MainWindow(QMainWindow):
         toolbar.addAction(self.__action_back)
         toolbar.addAction(self.__action_continue)
         toolbar.addAction(self.__action_reload)
+        toolbar.addAction(self.__action_try_switch_to_error_tab)
 
     def switch_to_tab(self, tab):
         idx = tab.value if isinstance(tab, TabState) else tab
@@ -159,6 +181,11 @@ class MainWindow(QMainWindow):
         self.__tab_old_state = TabState(idx)
         self.__widget_tab.setCurrentIndex(idx)
         self.__widget_tab.currentWidget().make_update()
+
+        self.__action_try_switch_to_error_tab.setEnabled(TabState(idx) == TabState.Result)
+
+        # Error tab is always disabled if not in "Error"
+        self.__widget_tab.setTabEnabled(TabState.Error.value, TabState(idx) == TabState.Error)
 
         # First tab
         if idx == 0:
@@ -186,19 +213,34 @@ class MainWindow(QMainWindow):
             self.__widget_tab.setTabEnabled(TabState.Setup.value, True)
             self.__widget_tab.setTabEnabled(TabState.Stencil.value, False)
             self.__widget_tab.setTabEnabled(TabState.Result.value, False)
+            self.__widget_tab.setTabEnabled(TabState.Error.value, False)
+
+            self.__action_try_switch_to_error_tab.setEnabled(False)
 
         elif self.__tab_highest_valid_state == TabState.Stencil:
             self.__widget_tab.setTabEnabled(TabState.Setup.value, True)
             self.__widget_tab.setTabEnabled(TabState.Stencil.value, True)
             self.__widget_tab.setTabEnabled(TabState.Result.value, False)
+            self.__widget_tab.setTabEnabled(TabState.Error.value, False)
+
             self.__widget_tab.widget(TabState.Stencil.value).match_fields()
 
             self.__action_reload.setEnabled(True)
+            self.__action_try_switch_to_error_tab.setEnabled(False)
 
         elif self.__tab_highest_valid_state == TabState.Result:
             self.__widget_tab.setTabEnabled(TabState.Setup.value, True)
             self.__widget_tab.setTabEnabled(TabState.Stencil.value, True)
             self.__widget_tab.setTabEnabled(TabState.Result.value, True)
+            self.__widget_tab.setTabEnabled(TabState.Error.value, True)
+
+            self.__action_try_switch_to_error_tab.setEnabled(True)
+
+        elif self.__tab_highest_valid_state == TabState.Error:
+            self.__widget_tab.setTabEnabled(TabState.Setup.value, True)
+            self.__widget_tab.setTabEnabled(TabState.Stencil.value, True)
+            self.__widget_tab.setTabEnabled(TabState.Result.value, True)
+            self.__action_try_switch_to_error_tab.setEnabled(False)
 
     def switch_to_next_tab(self):
         self.__widget_tab.currentWidget().make_continue()
@@ -213,10 +255,10 @@ class MainWindow(QMainWindow):
         self.move(qr.topLeft())
 
     def show_about(self):
-        self.about_widget = AboutWidget(self)
+        self.about_widget = PopupAboutWidget(self)
 
     def show_error(self, msg):
-        ErrorMessageBox(self, msg)
+        PopupErrorMessageBox(self, msg)
 
     def save_session(self):
         Logger.info("Saveing session")
@@ -229,6 +271,7 @@ class MainWindow(QMainWindow):
         try:
             self.__input_serializer_data.reload()
             self.__reference_serializer_data.reload()
+            self.__widget_tab.currentWidget().make_update()
         except RuntimeError as e:
             self.show_error(str(e))
             self.set_tab_highest_valid_state(TabState.Setup)
@@ -239,3 +282,10 @@ class MainWindow(QMainWindow):
         self.__configuration.update_serializer_data(self.__input_serializer_data)
         self.__configuration.update_serializer_data(self.__reference_serializer_data)
         self.__configuration.store_to_file()
+
+    def try_switch_to_error_tab(self):
+        self.__widget_tab.widget(TabState.Result.value).try_switch_to_error_tab()
+        self.__widget_tab.setTabEnabled(TabState.Error.value, True)
+
+    def error_window_set_result_data(self, result_data):
+        self.__widget_tab.widget(TabState.Error.value).set_result_data(result_data)
