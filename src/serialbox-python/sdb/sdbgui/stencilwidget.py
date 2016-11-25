@@ -37,7 +37,7 @@ class StencilWidget(QWidget):
         self.__widget_label_field = QLabel("Fields")
         self.__widget_label_field.setStatusTip("Fields of the stencil to compare")
 
-        self.__widget_listview_field_list = StencilFieldListWidget(self.__stencil_data,
+        self.__widget_listview_field_list = StencilFieldListWidget(self, self.__stencil_data,
                                                                    widget_fieldmetainfo)
 
         # Layout

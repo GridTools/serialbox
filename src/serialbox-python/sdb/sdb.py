@@ -77,7 +77,8 @@ def main():
     # ===----------------------------------------------------------------------------------------===
     try:
         from serialbox import __version__
-        Logger.enable_serialbox_logging()
+        if options.verbose:
+            Logger.enable_serialbox_logging()
         Logger.info("Using Serialbox: %s" % __version__)
     except ImportError as e:
         fatal_error("serialbox not found: %s" % e)
@@ -125,7 +126,6 @@ def main():
     app = QApplication(argv)
     mainWindow = MainWindow()
     exit(app.exec_())
-
 
 if __name__ == '__main__':
     main()
