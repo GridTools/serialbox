@@ -85,7 +85,7 @@ class MainWindow(QMainWindow):
                          self.__stencil_field_mapper),
             "Result")
 
-        # Visualize tab
+        # Error tab
         self.__widget_tab.addTab(ErrorWindow(self), "Error")
 
         self.__widget_tab.currentChanged.connect(self.switch_to_tab)
@@ -152,7 +152,7 @@ class MainWindow(QMainWindow):
         self.__action_reload.setEnabled(False)
 
         self.__action_try_switch_to_error_tab = QAction(QIcon("sdbgui/images/visualize.png"),
-                                                        "Visualize", self)
+                                                        "Detailed error description", self)
         self.__action_try_switch_to_error_tab.setStatusTip(
             "Detailed error desscription of the current field")
         self.__action_try_switch_to_error_tab.triggered.connect(self.try_switch_to_error_tab)

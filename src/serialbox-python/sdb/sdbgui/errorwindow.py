@@ -9,12 +9,13 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, QSizePolicy
 
 from sdbcore.logger import Logger
-from .tabstate import TabState
+from .errorlistwidget import ErrorListWidget
 from .errorwindowheaderwidget import ErrorWindowHeaderWidget
+from .tabstate import TabState
+
 
 class ErrorWindow(QWidget):
     def __init__(self, mainwindow):
@@ -28,7 +29,10 @@ class ErrorWindow(QWidget):
 
         self.__widget_input_header = ErrorWindowHeaderWidget("Input")
         self.__widget_reference_header = ErrorWindowHeaderWidget("Reference")
-        # self.__widget_error_tab =
+
+        self.__widget_error_tab = QTabWidget(self)
+        self.__widget_error_tab.addTab(ErrorListWidget(self), "List")
+        self.__widget_error_tab.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         hbox_header = QHBoxLayout()
         hbox_header.addWidget(self.__widget_input_header)
@@ -36,7 +40,7 @@ class ErrorWindow(QWidget):
 
         vbox = QVBoxLayout()
         vbox.addLayout(hbox_header)
-        vbox.addStretch(1)
+        vbox.addWidget(self.__widget_error_tab)
 
         self.setLayout(vbox)
 
@@ -53,6 +57,8 @@ class ErrorWindow(QWidget):
         Logger.info("Updating ErrorTab tab")
         self.__widget_input_header.make_update(self.__result_data)
         self.__widget_reference_header.make_update(self.__result_data)
+
+        self.__widget_error_tab.widget(0).make_update(self.__result_data)
 
     @property
     def widget_mainwindow(self):

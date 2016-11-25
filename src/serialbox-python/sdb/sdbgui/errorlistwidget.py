@@ -9,16 +9,30 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from PyQt5.QtWidgets import QWidget
-from sdbcore.version import Version
+from PyQt5.QtWidgets import QTableWidget, QHeaderView
 
-class ErrorListWidget(QWidget):
+from sdbcore.logger import Logger
 
-    def __init__(self, errorwindow):
-        super().__init__(errorwindow)
 
-        self.__widget_errorwindow = errorwindow
+class ErrorListWidget(QTableWidget):
+    def __init__(self, parent):
+        super().__init__(parent)
 
-        #
-        # if Version().ipython_version():
-        #     from .ipythonwidget import
+    def make_update(self, result_data):
+        Logger.info("Updating ErrorListWidget")
+
+        self.setColumnCount(3)
+        self.setHorizontalHeaderLabels(["Index", "Input", "Reference"])
+
+        self.setStyleSheet(
+            '''
+                QTableWidget::item:selected:active {
+                    background: #FFFFFF;
+                    border-style: solid;
+                    border-color: #D4D8DD;
+                    border-width: 2px;
+                }
+            ''')
+
+        self.horizontalHeader().resizeSections(QHeaderView.Stretch)
+        self.setEditTriggers(QTableWidget.NoEditTriggers)

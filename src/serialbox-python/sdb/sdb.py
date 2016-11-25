@@ -65,7 +65,7 @@ def main():
     parser.add_option_group(group)
 
     parser.add_option("--move-window", metavar="X:Y", dest="move_window",
-                      help="Move main window at launch by X in the vertical and Y in the horizontal")
+                      help="Move main window at launch by X in the horizontal and Y in the vertical")
 
     (options, args) = parser.parse_args()
 

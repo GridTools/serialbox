@@ -30,6 +30,7 @@ def make_stage_name(result):
     # TODO: Handle the case when input_stage != reference_stage
     return result["input_stage"] + " [" + result["intent"] + "]"
 
+
 class ResultTableWidget(QWidget):
     def __init__(self, resultwindow, stencil_field_mapper):
         super().__init__(resultwindow)
@@ -84,9 +85,10 @@ class ResultTableWidget(QWidget):
         self.setLayout(vbox)
 
     def make_update(self):
-        comparison_result = self.__stencil_field_mapper.comparison_result
+        comparison_result_list = self.__stencil_field_mapper.comparison_result_list
 
-        self.__widget_label_title.setText("<b>%s</b>" % comparison_result["stencil_name"])
+        self.__widget_label_title.setText(
+            "<b>%s</b>" % comparison_result_list.shared_stencil_name())
 
         # Compute stages and fields
         stages = []
@@ -95,7 +97,7 @@ class ResultTableWidget(QWidget):
         num_errors = 0
         first_error_cell = None
 
-        for result in comparison_result["result"]:
+        for result in comparison_result_list.results:
             stages += [make_stage_name(result)]
 
             input_field = result["input_field_name"]
@@ -146,7 +148,7 @@ class ResultTableWidget(QWidget):
         self.__widget_table.customContextMenuRequested[QPoint].connect(self.cell_right_clicked)
 
         # Populate table
-        for result in comparison_result["result"]:
+        for result in comparison_result_list.results:
             stage_idx = stages.index(make_stage_name(result))
             field_idx = fields.index(
                 [f for f in fields if f.startswith(result["input_field_name"])][0])

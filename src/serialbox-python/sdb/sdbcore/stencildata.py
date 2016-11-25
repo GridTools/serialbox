@@ -82,7 +82,7 @@ class StencilData(object):
             self.__stencil_list_changed = True
 
             for listener in self.__data_listener:
-                listener.set_outdated()
+                listener.data_changed()
 
     def update_field_list(self):
         """Update field list according to the selected stencil
@@ -128,7 +128,7 @@ class StencilData(object):
         self.__field_list_changed = False
 
         for listener in self.__data_listener:
-            listener.set_outdated()
+            listener.data_changed()
 
     def move_field(self, field, idx):
         for listener in self.__field_list_listener:
