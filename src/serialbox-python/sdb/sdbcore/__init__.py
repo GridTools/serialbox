@@ -9,18 +9,6 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from .error import fatal_error
-from .logger import Logger
 from .version import __version__, __versioninfo__
-
-# Check if Serialbox is available
-try:
-    from serialbox import __version__
-
-    Logger.info("importing Serialbox (%s)" % __version__)
-except ImportError as e:
-    from .error import fatal_error
-    fatal_error(e)
-
 
 __all__ = ['__version__', '__versioninfo__']

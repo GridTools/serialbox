@@ -13,14 +13,16 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QAction, QTabWidget
 
 from sdbcore.logger import Logger
+from sdbcore.serializerdata import SerializerData
 from sdbcore.stencildata import StencilData
 from sdbcore.stencilfieldmapper import StencilFieldMapper
 from sdbcore.version import Version
-from .configuration import Configuration
 from .errorwindow import ErrorWindow
+from .globalconfig import GlobalConfig
 from .popupaboutwidget import PopupAboutWidget
 from .popuperrormessagebox import PopupErrorMessageBox
 from .resultwindow import ResultWindow
+from .sessionmanager import SessionManager
 from .setupwindow import SetupWindow
 from .stencilwindow import StencilWindow
 from .tabstate import TabState
@@ -31,31 +33,40 @@ class MainWindow(QMainWindow):
         super().__init__()
         Logger.info("Setup main window")
 
-        # Data
-        self.__configuration = Configuration()
-        self.__configuration.load_from_file()
-
-        self.__input_serializer_data = self.__configuration.make_serializer_data("Input Serializer")
+        self.__input_serializer_data = SerializerData("Input Serializer")
         self.__input_stencil_data = StencilData(self.__input_serializer_data)
 
-        self.__reference_serializer_data = self.__configuration.make_serializer_data(
-            "Reference Serializer")
+        self.__reference_serializer_data = SerializerData("Reference Serializer")
         self.__reference_stencil_data = StencilData(self.__reference_serializer_data)
 
         self.__stencil_field_mapper = StencilFieldMapper(self.__input_stencil_data,
-                                                         self.__reference_stencil_data)
+                                                         self.__reference_stencil_data,
+                                                         GlobalConfig()["async"])
+
+        # Load from session?
+        if GlobalConfig()["default_session"]:
+            self.__session_manager = SessionManager()
+            self.__session_manager.load_from_file()
+
+            self.__session_manager.get_serializer_data(self.__input_serializer_data)
+            self.__session_manager.get_serializer_data(self.__reference_serializer_data)
 
         # Setup GUI
         self.setWindowTitle('sdb - stencil debugger (%s)' % Version().sdb_version())
         self.resize(960, 480)
-        # self.center()
+
+        if GlobalConfig()["center_window"]:
+            self.center()
+
+        if GlobalConfig()["move_window"]:
+            self.move(GlobalConfig()["move_window"])
 
         self.setWindowIcon(QIcon("sdbgui/images/logo-small.png"))
         self.init_menu_tool_bar()
 
         # Tabs
         self.__tab_highest_valid_state = TabState.Setup
-        self.__widget_tab = QTabWidget()
+        self.__widget_tab = QTabWidget(self)
 
         # Setup tab
         self.__widget_tab.addTab(
@@ -279,9 +290,10 @@ class MainWindow(QMainWindow):
             self.__widget_tab.currentWidget().make_update()
 
     def closeEvent(self, event):
-        self.__configuration.update_serializer_data(self.__input_serializer_data)
-        self.__configuration.update_serializer_data(self.__reference_serializer_data)
-        self.__configuration.store_to_file()
+        if GlobalConfig()["default_session"]:
+            self.__session_manager.update_serializer_data(self.__input_serializer_data)
+            self.__session_manager.update_serializer_data(self.__reference_serializer_data)
+            self.__session_manager.store_to_file()
 
     def try_switch_to_error_tab(self):
         self.__widget_tab.widget(TabState.Result.value).try_switch_to_error_tab()

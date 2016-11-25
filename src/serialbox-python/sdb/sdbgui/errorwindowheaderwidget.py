@@ -12,7 +12,7 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QHBoxLayout, QVBoxLayout
 
-from sdbcore import Logger
+from sdbcore.logger import Logger
 from .fieldmetainfobox import FieldMetainfoBox
 
 

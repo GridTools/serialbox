@@ -12,7 +12,7 @@
 from PyQt5.QtWidgets import QMessageBox, QLabel, QHBoxLayout, QGridLayout, QVBoxLayout
 
 
-from sdbcore import Logger
+from sdbcore.logger import Logger
 
 
 class FieldMetainfoBox(QMessageBox):

@@ -11,7 +11,6 @@
 
 from os import getcwd, listdir, path
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QFileDialog,
                              QComboBox)
@@ -53,8 +52,8 @@ class SetupWidget(QWidget):
         self.__widget_label_prefix_name.setStatusTip("Prefix of the %s" % self.__name)
 
         self.__widget_edit_prefix = QComboBox()
-        self.__widget_edit_prefix.setEditText(self.__serializer_data.prefix)
         self.__widget_edit_prefix.setEditable(True)
+        self.__widget_edit_prefix.setEditText(self.__serializer_data.prefix)
         self.__widget_edit_prefix.editTextChanged[str].connect(self.widget_edit_prefix_changed)
 
         # Layouting
@@ -87,23 +86,27 @@ class SetupWidget(QWidget):
         """Check if the directory exists and fill the self.__prefix_edit with suggestions for the
         prefix.
         """
-        dir_is_valid = path.exists(self.directory)
+        is_valid = path.exists(self.directory)
 
-        if dir_is_valid:
+        if is_valid:
             files = [f for f in listdir(self.directory) if
                      path.isfile(path.join(self.directory, f))]
 
-            if self.prefix == "":
-                dir_is_valid = False
-            elif self.prefix != self.__widget_edit_prefix.currentText():
-                dir_is_valid = False
+            # If the prefix is empty or changed (i.e not the same as currently displayed), we
+            # check and edit the text of the widget
+            if self.prefix == "" or self.prefix != self.__widget_edit_prefix.currentText():
+                is_valid = False
                 for f in files:
                     if path.splitext(f)[1] == ".json" and f.startswith("MetaData-"):
                         self.__widget_edit_prefix.addItem(
                             path.splitext(f)[0].replace("MetaData-", ""))
-                        dir_is_valid = True
+                        is_valid = True
+            # In case the prefix has not changed and is not empty, we just check
+            else:
+                self.check_if_prefix_is_valid()
+                return
 
-        if dir_is_valid:
+        if is_valid:
             self.show_valid_icon()
         else:
             self.show_invalid_icon()
@@ -155,6 +158,6 @@ class SetupWidget(QWidget):
 
     def show_valid_icon(self):
         image = QPixmap("sdbgui/images/success.png")
-        #image = image.scaled(12, 12, Qt.KeepAspectRatio)
+        # image = image.scaled(12, 12, Qt.KeepAspectRatio)
         self.__widget_label_status_icon.setPixmap(image)
         self.__widget_label_status_icon.setStatusTip("")

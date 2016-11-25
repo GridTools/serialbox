@@ -22,11 +22,12 @@ class Level(Enum):
     info = 1
     warning = 2
     error = 3
+    disabled = 4
 
 
 class BaseLogger(object):
     def __init__(self):
-        self.__level = Level.warning
+        self.__level = Level.disabled
 
     def info(self, msg):
         self.__log(msg, Level.info)

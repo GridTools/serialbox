@@ -11,7 +11,7 @@
 
 from PyQt5.QtWidgets import QMessageBox
 
-from sdbcore import Logger
+from sdbcore.logger import Logger
 
 
 class PopupErrorMessageBox(QMessageBox):

@@ -12,7 +12,7 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLabel
 
-from sdbcore import Logger
+from sdbcore.logger import Logger
 from .popuperrormessagebox import PopupErrorMessageBox
 from .setupwidget import SetupWidget
 from .tabstate import TabState

@@ -24,7 +24,9 @@ def field_in_list(field_name, field_list):
 
 
 class StencilFieldMapper(object):
-    def __init__(self, input_stencil_data, reference_stencil_data):
+    def __init__(self, input_stencil_data, reference_stencil_data, use_async_api=True):
+
+        self.__use_async_api = use_async_api
 
         # References
         self.__input_stencil_data = input_stencil_data
@@ -133,14 +135,21 @@ class StencilFieldMapper(object):
 
                     # Not every field might be participating in the current stage
                     if input_field_name in fields_at_input_savepoint and reference_field_name in fields_at_reference_savepoint:
-                        # Load fields asynchronous
-                        input_field = input_serializer.read_async(input_field_name, input_savepoint)
-                        reference_field = reference_serializer.read_async(reference_field_name,
-                                                                          reference_savepoint)
+                        # Load fields
 
-                        input_serializer.wait_for_all()
-                        reference_serializer.wait_for_all()
+                        if self.__use_async_api:
+                            input_field = input_serializer.read_async(input_field_name,
+                                                                      input_savepoint)
+                            reference_field = reference_serializer.read_async(reference_field_name,
+                                                                              reference_savepoint)
 
+                            input_serializer.wait_for_all()
+                            reference_serializer.wait_for_all()
+                        else:
+                            input_field = input_serializer.read(input_field_name,
+                                                                input_savepoint)
+                            reference_field = reference_serializer.read(reference_field_name,
+                                                                        reference_savepoint)
                         # Compare
                         self.__comparison_result.compare_fields(intent,
                                                                 input_stage,

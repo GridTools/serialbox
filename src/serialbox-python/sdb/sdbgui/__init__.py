@@ -9,15 +9,10 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from logging import info
+from sdbcore import __version__ as __sdbcore_version__
+from sdbcore import __versioninfo__ as __sdbcore_versioninfo__
 
-from sdbcore.error import fatal_error
-from sdbcore.logger import Logger
+__version__ = __sdbcore_version__
+__versioninfo__ = __sdbcore_versioninfo__
 
-# Check if PyQt5 is available
-try:
-  from PyQt5.QtCore import QT_VERSION_STR
-  Logger.info("importing PyQt5 (%s)" % QT_VERSION_STR)
-except ImportError as e:
-  fatal_error(e)
-  
+__all__ = ['__version__', '__versioninfo__']

@@ -12,7 +12,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout
 
-from sdbcore import Logger
+from sdbcore.logger import Logger
 from .tabstate import TabState
 from .errorwindowheaderwidget import ErrorWindowHeaderWidget
 
@@ -28,6 +28,7 @@ class ErrorWindow(QWidget):
 
         self.__widget_input_header = ErrorWindowHeaderWidget("Input")
         self.__widget_reference_header = ErrorWindowHeaderWidget("Reference")
+        # self.__widget_error_tab =
 
         hbox_header = QHBoxLayout()
         hbox_header.addWidget(self.__widget_input_header)
