@@ -9,12 +9,13 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-import numpy as np
-
+from .comparisonresult import ComparisonResult
 from .logger import Logger
 
-
 class ComparisonResultList(object):
+    """Store a list of comparison results of an input and reference serializer.
+    """
+
     def __init__(self):
         self.__results = []
         self.__input_stencil = None
@@ -25,31 +26,33 @@ class ComparisonResultList(object):
         self.__input_stencil = None
         self.__reference_stencil = None
 
-    def compare_fields(self,
-                       intent,
-                       input_stage,
-                       input_field,
-                       input_field_name,
-                       input_savepoint,
-                       input_serializer,
-                       reference_stage,
-                       reference_field,
-                       reference_field_name,
-                       reference_savepoint,
-                       reference_serializer):
-        match = np.allclose(input_field, reference_field)
-        self.__results += [{"intent": intent,
-                            "input_stage": input_stage,
-                            "input_stencil": self.input_stencil,
-                            "input_field_name": input_field_name,
-                            "input_savepoint": input_savepoint,
-                            "input_serializer": input_serializer,
-                            "reference_field_name": reference_field_name,
-                            "reference_savepoint": reference_savepoint,
-                            "reference_stage": reference_stage,
-                            "reference_stencil": self.reference_stencil,
-                            "reference_serializer": reference_serializer,
-                            "match": match}]
+    def append(self,
+               match,
+               intent,
+               input_stage,
+               input_field_name,
+               input_savepoint,
+               input_serializer,
+               reference_stage,
+               reference_field_name,
+               reference_savepoint,
+               reference_serializer,
+               rtol,
+               atol):
+        self.__results += [ComparisonResult({"intent": intent,
+                                             "input_stage": input_stage,
+                                             "input_stencil": self.input_stencil,
+                                             "input_field_name": input_field_name,
+                                             "input_savepoint": input_savepoint,
+                                             "input_serializer": input_serializer,
+                                             "reference_field_name": reference_field_name,
+                                             "reference_savepoint": reference_savepoint,
+                                             "reference_stage": reference_stage,
+                                             "reference_stencil": self.reference_stencil,
+                                             "reference_serializer": reference_serializer,
+                                             "match": match,
+                                             "rtol": rtol,
+                                             "atol": atol})]
 
         Logger.info(
             "Comparing field '%s' vs. '%s' of stage '%s' [%s], result: %s" % (input_field_name,
@@ -71,11 +74,12 @@ class ComparisonResultList(object):
     def __get_input_stencil(self):
         return self.__input_stencil
 
+    input_stencil = property(__get_input_stencil, __set_input_stencil)
+
     def __set_reference_stencil(self, reference_stencil):
         self.__reference_stencil = reference_stencil
 
     def __get_reference_stencil(self):
         return self.__reference_stencil
 
-    input_stencil = property(__get_input_stencil, __set_input_stencil)
     reference_stencil = property(__get_reference_stencil, __set_reference_stencil)

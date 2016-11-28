@@ -9,6 +9,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
+from numpy import allclose
 from serialbox import SerialboxError
 
 from .comparisonresultlist import ComparisonResultList
@@ -41,6 +42,25 @@ class StencilFieldMapper(StencilDataDataListener):
         self.__comparison_result_list = ComparisonResultList()
         self.__comparison_result_list_dirty = True
 
+        self.__rtol = 1e-08
+        self.__atol = 1e-05
+
+    def __get_atol(self):
+        return self.__atol
+
+    def __set_atol(self, atol):
+        self.__atol = atol
+
+    atol = property(__get_atol, __set_atol)
+
+    def __get_rtol(self):
+        return self.__rtol
+
+    def __set_rtol(self, rtol):
+        self.__rtol = rtol
+
+    rtol = property(__get_rtol, __set_rtol)
+
     def match_fields(self):
         Logger.info("Matching fields")
 
@@ -55,7 +75,7 @@ class StencilFieldMapper(StencilDataDataListener):
             idx_in_ref = field_in_list(input_field, reference_fields)
 
             if idx_in_ref != -1:
-                self.__input_stencil_data.set_enable_field(idx, True)
+                self.__input_stencil_data.set_field_enabled(idx, True)
                 reference_fields_seen += [input_field]
 
                 # Move field to match index in input (i.e idx)
@@ -63,23 +83,37 @@ class StencilFieldMapper(StencilDataDataListener):
                     self.__reference_stencil_data.move_field(input_field, idx)
 
             else:
-                self.__input_stencil_data.set_enable_field(idx, False)
+                self.__input_stencil_data.set_field_enabled(idx, False)
 
         for field in reference_fields:
             if field in reference_fields_seen:
-                self.__reference_stencil_data.set_enable_field(field, True)
+                self.__reference_stencil_data.set_field_enabled(field, True)
             else:
-                self.__reference_stencil_data.set_enable_field(field, False)
+                self.__reference_stencil_data.set_field_enabled(field, False)
 
     def compare_fields(self, input_fields, reference_fields):
         if not self.__comparison_result_list_dirty:
             return
 
+        make_error_msg = lambda title, msg: "<b>%s</b> <br />%s." % (title, msg)
+
+        # Check if atol or rtol are valid
+        def check_tolerance(str, value):
+            try:
+                float(value)
+            except ValueError:
+                raise RuntimeError(make_error_msg(str,
+                                                  "cannot convert '%s' to a valid floating point number" %
+                                                  value))
+
+        check_tolerance("Absolute tolerance:", self.__atol)
+        check_tolerance("Relative tolerance:", self.__rtol)
+        self.__atol = float(self.__atol)
+        self.__rtol = float(self.__rtol)
+
         self.__comparison_result_list.reset()
         self.__comparison_result_list.input_stencil = self.__input_stencil_data.selected_stencil
         self.__comparison_result_list.reference_stencil = self.__reference_stencil_data.selected_stencil
-
-        make_error_msg = lambda title, msg: "<b>%s</b> <br />%s." % (title, msg)
 
         Logger.info("Comparing fields of input stencil '%s' to fields of reference stencil '%s'" % (
             self.__comparison_result_list.input_stencil,
@@ -135,8 +169,8 @@ class StencilFieldMapper(StencilDataDataListener):
 
                     # Not every field might be participating in the current stage
                     if input_field_name in fields_at_input_savepoint and reference_field_name in fields_at_reference_savepoint:
-                        # Load fields
 
+                        # Load fields
                         if self.__use_async_api:
                             input_field = input_serializer.read_async(input_field_name,
                                                                       input_savepoint)
@@ -150,18 +184,23 @@ class StencilFieldMapper(StencilDataDataListener):
                                                                 input_savepoint)
                             reference_field = reference_serializer.read(reference_field_name,
                                                                         reference_savepoint)
-                        # Compare
-                        self.__comparison_result_list.compare_fields(intent,
-                                                                     input_stage,
-                                                                     input_field,
-                                                                     input_field_name,
-                                                                     input_savepoint,
-                                                                     input_serializer,
-                                                                     reference_stage,
-                                                                     reference_field,
-                                                                     reference_field_name,
-                                                                     reference_savepoint,
-                                                                     reference_serializer)
+                        # Compare fields
+                        match = allclose(input_field, reference_field, rtol=self.__rtol,
+                                         atol=self.__atol)
+
+                        # Append result
+                        self.__comparison_result_list.append(match,
+                                                             intent,
+                                                             input_stage,
+                                                             input_field_name,
+                                                             input_savepoint,
+                                                             input_serializer,
+                                                             reference_stage,
+                                                             reference_field_name,
+                                                             reference_savepoint,
+                                                             reference_serializer,
+                                                             self.__rtol,
+                                                             self.__atol)
 
         except SerialboxError as e:
             raise RuntimeError(

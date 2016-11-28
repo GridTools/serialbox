@@ -9,11 +9,5 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-class SerializerDataListener(object):
-    """Listen to any changes of the data of the SerializerData object.
-    """
-
-    def reload(self):
-        """Serializer data changed i.e the underlying serializer have been reloaded.
-        """
-        raise NotImplementedError
+def compare_python(input_field, reference_field, atol, rtol):
+    print("hello from python")

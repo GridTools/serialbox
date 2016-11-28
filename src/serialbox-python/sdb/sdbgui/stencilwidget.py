@@ -31,7 +31,7 @@ class StencilWidget(QWidget):
         self.__widget_label_name = QLabel("<b>%s</b>" % self.__name)
         self.__widget_label_stencil = QLabel("Stencil")
         self.__widget_label_stencil.setStatusTip("Stencil to compare")
-        self.__widget_stencil_list = StencilListWidget(self.__stencil_data)
+        self.__widget_stencil_list = StencilListWidget(self, self.__stencil_data)
         self.__widget_stencil_list.currentIndexChanged[int].connect(self.set_stencil_index)
 
         self.__widget_label_field = QLabel("Fields")

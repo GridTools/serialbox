@@ -23,6 +23,7 @@ class ErrorWindow(QWidget):
 
         # Data
         self.__result_data = None
+        self.__result_data_is_dirty = True
 
         # Widgets
         self.__widget_mainwindow = mainwindow
@@ -45,7 +46,9 @@ class ErrorWindow(QWidget):
         self.setLayout(vbox)
 
     def set_result_data(self, result_data):
-        self.__result_data = result_data
+        if self.__result_data != result_data:
+            self.__result_data = result_data
+            self.__result_data_is_dirty = True
 
     def make_continue(self):
         pass
@@ -54,11 +57,16 @@ class ErrorWindow(QWidget):
         self.__widget_mainwindow.switch_to_tab(TabState.Result)
 
     def make_update(self):
-        Logger.info("Updating ErrorTab tab")
-        self.__widget_input_header.make_update(self.__result_data)
-        self.__widget_reference_header.make_update(self.__result_data)
+        if self.__result_data_is_dirty:
+            Logger.info("Updating ErrorTab tab")
 
-        self.__widget_error_tab.widget(0).make_update(self.__result_data)
+            self.__widget_input_header.make_update(self.__result_data)
+            self.__widget_reference_header.make_update(self.__result_data)
+
+            for idx in range(self.__widget_error_tab.count()):
+                self.__widget_error_tab.widget(idx).make_update(self.__result_data)
+
+            self.__result_data_is_dirty = False
 
     @property
     def widget_mainwindow(self):

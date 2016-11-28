@@ -51,6 +51,8 @@ option(SERIALBOX_BUILD_SHARED "Build shared libraries" ON)
 option(SERIALBOX_ENABLE_C "Build C Interface" ON)
 option(SERIALBOX_ENABLE_PYTHON "Build Python Interface" ${SERIALBOX_ENABLE_C})
 option(SERIALBOX_ENABLE_FORTRAN "Build Fortran Interface" OFF)
+option(SERIALBOX_ENABLE_SDB "Install the stencil-debugger (sdb)" ON)
+
 option(SERIALBOX_LOGGING "Enable logging" ON)
 option(SERIALBOX_ASYNC_API "Enable the asynchronous API" ON)
 option(SERIALBOX_EXAMPLES "Build example exectuables" ON)
@@ -283,7 +285,22 @@ if(SERIALBOX_ENABLE_PYTHON)
   
   option(SERIALBOX_TESTING_PYTHON "Run Python tests" ${ENABLE_PYTHON_TESTS})
   mark_as_advanced(ENABLE_PYTHON_TESTS)
+  
 endif(SERIALBOX_ENABLE_PYTHON)
+  
+if(SERIALBOX_ENABLE_SDB)
+
+  find_package(PythonLibs 3.4)
+  
+  set(ENABLE_SDB_EXTENSION OFF)
+  if(PYTHONLIBS_FOUND)
+    set(ENABLE_SDB_EXTENSION ON)
+  endif()
+  
+  option(SERIALBOX_ENABLE_SDB_C_EXTENSION "Build C Extension of sdb" ${ENABLE_SDB_EXTENSION})
+  mark_as_advanced(ENABLE_SDB_EXTENSION)
+  
+endif(SERIALBOX_ENABLE_SDB)
 
 #---------------------------------------- GridTools ------------------------------------------------
 if(SERIALBOX_TESTING_GRIDTOOLS)

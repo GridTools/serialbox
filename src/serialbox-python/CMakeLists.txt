@@ -12,6 +12,15 @@ cmake_minimum_required(VERSION 3.1)
 ## Install ppser
 install(FILES ${CMAKE_SOURCE_DIR}/src/serialbox-python/pp_ser/pp_ser.py DESTINATION python/pp_ser)
 
+## Install sdb
+if(SERIALBOX_ENABLE_SDB)
+
+  if(SERIALBOX_ENABLE_SDB_C_EXTENSION)
+    add_subdirectory(sdb/sdbcutil)
+  endif()
+  
+endif()
+
 ## Install serialbox
 if(SERIALBOX_ENABLE_PYTHON)
   if(NOT(SERIALBOX_ENABLE_C))
@@ -30,7 +39,7 @@ if(SERIALBOX_ENABLE_PYTHON)
        ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox/*.py)
 
   # Copy python code to python build dir (this will fail if there are "dead" symlinks to 
-  # libSerialboxC.so in the source tree from other builds, that's why we scan for broken links 
+  # libSerialboxC.so in the source tree from other builds, thus we scan for broken links 
   # first)
   if(SERIALBOX_COMPILER_MSVC)
     set(REMOVE_OBSOLETE_SYMLINKS_OR_NOP rem) # nop

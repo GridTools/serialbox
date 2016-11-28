@@ -11,7 +11,9 @@
 
 from serialbox import Serializer, SerialboxError, OpenModeKind
 
-from sdbcore.logger import Logger
+from .logger import Logger
+from .serializerdatalistener import SerializerDataListener
+
 
 class SerializerData(object):
     def __init__(self, name, directory="", prefix=""):
@@ -22,7 +24,8 @@ class SerializerData(object):
         self.__prefix = prefix
         self.__serializer = None
         self.__data_changed = True
-        self.__stencil_listeners = []
+
+        self.__serializer_data_listeners = []
 
     def make_serializer(self, force=False):
         try:
@@ -31,7 +34,7 @@ class SerializerData(object):
                 self.__serializer = Serializer(OpenModeKind.Read, self.directory, self.prefix)
                 self.__data_changed = False
 
-                for stencil_listener in self.__stencil_listeners:
+                for stencil_listener in self.__serializer_data_listeners:
                     stencil_listener.reload()
 
         except SerialboxError as e:
@@ -45,36 +48,43 @@ class SerializerData(object):
     def reload(self):
         self.make_serializer(True)
 
-    @property
-    def directory(self):
+    def __get_directory(self):
         return self.__directory
 
-    @directory.setter
-    def directory(self, directory):
+    def __set_directory(self, directory):
         self.__data_changed = True
         self.__directory = directory
 
-    @property
-    def prefix(self):
+    directory = property(__get_directory, __set_directory)
+
+    def __get_prefix(self):
         return self.__prefix
 
-    @prefix.setter
-    def prefix(self, prefix):
+    def __set_prefix(self, prefix):
         self.__data_changed = True
         self.__prefix = prefix
 
-    @property
-    def name(self):
+    prefix = property(__get_prefix, __set_prefix)
+
+    def __get_name(self):
         return self.__name
 
-    @property
-    def serializer(self):
+    def __set_name(self, name):
+        self.__name = name
+
+    name = property(__get_name, __set_name)
+
+    def __get_serializer(self):
         return self.__serializer
 
-    @serializer.setter
-    def serializer(self, serializer):
+    def __set_serializer(self, serializer):
         self.__data_changed = True
         self.__serializer = serializer
 
-    def register_as_stencil_listener(self, listener):
-        self.__stencil_listeners += [listener]
+    serializer = property(__get_serializer, __set_serializer)
+
+    def register_as_serializer_data_listener(self, listener):
+        if not isinstance(listener, SerializerDataListener):
+            raise RuntimeError("listener is not a SerailizerDataListener: %s" % type(listener))
+
+        self.__serializer_data_listeners += [listener]

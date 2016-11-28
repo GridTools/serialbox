@@ -12,30 +12,31 @@
 from PyQt5.QtWidgets import QComboBox
 
 from sdbcore.logger import Logger
+from sdbcore.stencildatalistener import StencilDataStencilListListener
 
 
-class StencilListWidget(QComboBox):
-    def __init__(self, stencil_data):
-        super().__init__()
+class StencilListWidget(QComboBox, StencilDataStencilListListener):
+    def __init__(self, parent, stencil_data):
+        super().__init__(parent)
         self.__stencil_data = stencil_data
         self.__stencil_data.register_as_stencil_list_listener(self)
 
-    def remove_all_items(self):
+    def remove_all_stencils(self):
         Logger.info(
-            "Removing all items of StencilListWidget of '%s'" % self.__stencil_data.name)
+            "Removing all stencils of StencilListWidget of '%s'" % self.__stencil_data.name)
         self.clear()
 
-    def add_item(self, item):
+    def add_stencil(self, stencil):
         Logger.info(
             "Adding stencil '%s' to StencilFieldListWidget of '%s'" % (
-            item, self.__stencil_data.name))
-        self.addItem(item)
+            stencil, self.__stencil_data.name))
+        self.addItem(stencil)
 
-    def remove_item(self, item):
+    def remove_stencil(self, stencil):
         Logger.info(
             "Removing stencil '%s' of StencilFieldListWidget of '%s'" % (
-                item, self.__stencil_data.name))
-        self.removeItem(self.findText(item))
+                stencil, self.__stencil_data.name))
+        self.removeItem(self.findText(stencil))
 
     @property
     def stencil(self):

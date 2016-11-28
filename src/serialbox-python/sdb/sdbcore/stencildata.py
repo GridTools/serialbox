@@ -10,14 +10,21 @@
 ##===------------------------------------------------------------------------------------------===##
 
 from .logger import Logger
+from .stencildatalistener import (StencilDataStencilListListener, StencilDataFieldListListener,
+                                  StencilDataDataListener)
+from .serializerdatalistener import SerializerDataListener
 
 
-class StencilData(object):
+class StencilData(SerializerDataListener):
+    """Store a list of available stencils and corresponding fields.
+
+    The StencilData is a SerializerListener.
+    """
     def __init__(self, serializer_data):
 
         # Data
         self.__serializer_data = serializer_data
-        self.__serializer_data.register_as_stencil_listener(self)
+        self.__serializer_data.register_as_serializer_data_listener(self)
 
         self.__stencil_list_changed = False
         self.__stencil_list = []
@@ -67,15 +74,15 @@ class StencilData(object):
             stencil_list = serializer.global_metainfo["stencils"]
 
             if stencil_list != self.__stencil_list:
-                # Inform listener that we removed all items
+                # Inform listener that we removed all stencils
                 for listener in self.__stencil_list_listener:
-                    listener.remove_all_items()
+                    listener.remove_all_stencils()
 
-                # Inform listener that we added new items
+                # Inform listener that we added new stencils
                 self.__stencil_list = stencil_list
                 for stencil in self.__stencil_list:
                     for listener in self.__stencil_list_listener:
-                        listener.add_item(stencil)
+                        listener.add_stencil(stencil)
             else:
                 self.__stencil_list = stencil_list
 
@@ -113,15 +120,15 @@ class StencilData(object):
         field_list = sorted(field_list)
 
         if self.__field_list != field_list:
-            # Inform listener that we removed all items
+            # Inform listener that we removed all fields
             for listener in self.__field_list_listener:
-                listener.remove_all_items()
+                listener.remove_all_fields()
 
-            # Inform listener that we added new items
+            # Inform listener that we added new fields
             self.__field_list = field_list
             for field in self.__field_list:
                 for listener in self.__field_list_listener:
-                    listener.add_item(field)
+                    listener.add_field(field)
         else:
             self.__field_list = field_list
 
@@ -132,11 +139,11 @@ class StencilData(object):
 
     def move_field(self, field, idx):
         for listener in self.__field_list_listener:
-            listener.move_item(field, idx)
+            listener.move_field(field, idx)
 
-    def set_enable_field(self, idx, enable):
+    def set_field_enabled(self, idx, enable):
         for listener in self.__field_list_listener:
-            listener.set_enable_item(idx, enable)
+            listener.set_field_enabled(idx, enable)
 
     def set_selected_stencil(self, idx):
         self.__stencil_idx_selected = idx
@@ -165,10 +172,21 @@ class StencilData(object):
         return self.__serializer_data.name
 
     def register_as_stencil_list_listener(self, listener):
+        if not isinstance(listener, StencilDataStencilListListener):
+            raise RuntimeError(
+                "listener is not a StencilDataStencilListListener: %s" % type(listener))
+
         self.__stencil_list_listener += [listener]
 
     def register_as_field_list_listener(self, listener):
+        if not isinstance(listener, StencilDataFieldListListener):
+            raise RuntimeError(
+                "listener is not a StencilDataFieldListListener: %s" % type(listener))
+
         self.__field_list_listener += [listener]
 
     def register_as_data_listener(self, listener):
+        if not isinstance(listener, StencilDataDataListener):
+            raise RuntimeError("listener is not a StencilDataDataListener: %s" % type(listener))
+
         self.__data_listener += [listener]

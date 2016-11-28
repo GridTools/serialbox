@@ -39,7 +39,6 @@ class SetupWidget(QWidget):
         self.__widget_label_directory_name.setStatusTip("Directory of the %s" % self.__name)
 
         self.__widget_edit_directory = QLineEdit(self.__serializer_data.directory)
-        self.__widget_edit_directory.setDragEnabled(True)
         self.__widget_edit_directory.textChanged[str].connect(self.widget_edit_directory_changed)
 
         self.__widget_button_directory_file_dialog = QPushButton()

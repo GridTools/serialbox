@@ -18,6 +18,7 @@ from sys import exit, stderr
 from sys import path as sys_path, argv
 
 sys_path.insert(1, path.join(path.dirname(path.realpath(__file__)), "../"))
+sys_path.insert(2, path.join(path.dirname(path.realpath(__file__)), "./sdbcutil"))
 
 
 class BooleanOptionGroup(OptionGroup):
@@ -126,6 +127,7 @@ def main():
     app = QApplication(argv)
     mainWindow = MainWindow()
     exit(app.exec_())
+
 
 if __name__ == '__main__':
     main()

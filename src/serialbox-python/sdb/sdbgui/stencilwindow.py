@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 from sdbcore.logger import Logger
 from .popuperrormessagebox import PopupErrorMessageBox
 from .stencilfieldmetainfowidget import StencilFieldMetainfoWidget
+from .stencilthresholdsetterwidget import StencilThresholdSetterWidget
 from .stencilwidget import StencilWidget
 from .tabstate import TabState
 
@@ -32,7 +33,9 @@ class StencilWindow(QWidget):
         # Widget
         self.__widget_mainwindow = mainwindow
 
-        self.__widget_fieldmetainfo = StencilFieldMetainfoWidget()
+        self.__widget_fieldmetainfo = StencilFieldMetainfoWidget(self)
+        self.__widget_threshold_setter = StencilThresholdSetterWidget(self,
+                                                                      self.__stencil_field_mapper)
 
         self.__widget_stencil_input = StencilWidget(self, self.__input_stencil_data,
                                                     self.__widget_fieldmetainfo)
@@ -55,6 +58,7 @@ class StencilWindow(QWidget):
         vbox.addLayout(hbox_widgets)
         vbox.addStretch(1)
         vbox.addWidget(self.__widget_fieldmetainfo)
+        vbox.addWidget(self.__widget_threshold_setter)
         vbox.addLayout(hbox_button)
         self.setLayout(vbox)
 

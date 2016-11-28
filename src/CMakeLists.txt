@@ -17,28 +17,32 @@ include(CMakeParseArguments)
 ## Create an object library with target "<TARGET>Objects" and convert them to a static and/or 
 ## shared library with name "<NAME>.a" and <NAME>.so" respectively.
 ## 
-##    NAME:STRING=<>           - Name of the library (e.g SerialboxCore)
-##    TARGET:STRING=<>         - Target used by CMake (e.g SerialboxCoreLibrary)
-##    OBJECTS:STRING=<>        - Object libraries to include (e.g SerialboxCoreLibraryObjects)
-##    BUILD_STATIC:BOOL=<>     - Convert object library to static library
-##    BUILD_SHARED:BOOL=<>     - Convert object library to shared library
-##    SYMLINKS:STRING=<>       - Add symlinks of the shared library to the specified paths
-##    LIBRARIES:=<>            - Specify external libraries or flags to be use when linking the 
-##                               target
-##    SOURCES:STRING=<>        - List of source files
+##    NAME:STRING=<>             - Name of the library (e.g SerialboxCore)
+##    TARGET:STRING=<>           - Target used by CMake (e.g SerialboxCoreLibrary)
+##    OBJECTS:STRING=<>          - Object libraries to include (e.g SerialboxCoreLibraryObjects)
+##    NATIVE_PYTHON_LIB:BOOL=<>  - Generate a library which can be nativly imported in Python3. This
+##                                 means the library will have no prefix and the suffix is set to 
+##                                 .so
+##    BUILD_STATIC:BOOL=<>       - Convert object library to static library
+##    BUILD_SHARED:BOOL=<>       - Convert object library to shared library
+##    SYMLINKS:STRING=<>         - Add symlinks of the shared library to the specified paths
+##    LIBRARIES:=<>              - Specify external libraries or flags to be use when linking the 
+##                                 target
+##    SOURCES:STRING=<>          - List of source files
 ##
 function(serialbox_add_library)
 
   #
   # Parse arguments
   #
-  set(options BUILD_SHARED BUILD_STATIC)
+  set(options BUILD_SHARED BUILD_STATIC NATIVE_PYTHON_LIB)
   set(oneValueArgs NAME TARGET)
   set(multiValueArgs OBJECTS SYMLINKS LIBRARIES SOURCES)
   cmake_parse_arguments(serialbox_add_library "${options}" "${oneValueArgs}" "${multiValueArgs}" 
                         ${ARGN})
                         
   set(name ${serialbox_add_library_NAME})
+  set(nativePythonLibrary ${serialbox_add_library_NATIVE_PYTHON_LIB})
   set(target ${serialbox_add_library_TARGET})
   set(objects ${serialbox_add_library_OBJECTS})
   set(buildStatic ${serialbox_add_library_BUILD_STATIC})
@@ -93,6 +97,11 @@ function(serialbox_add_library)
     target_link_libraries(${target}Static ${libraries})
     install(TARGETS ${target}Static DESTINATION lib)
     
+    if(nativePythonLibrary)
+      set_target_properties(${target}Static PROPERTIES PREFIX "")
+      set_target_properties(${target}Static PROPERTIES SUFFIX ".so")      
+    endif()
+    
     if(DEFINED COVERAGE_SUPPORTED)
       set_property(TARGET ${target}Static PROPERTY LINK_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})
     endif()
@@ -113,6 +122,11 @@ function(serialbox_add_library)
 
     target_link_libraries(${target}Shared ${libraries})
     install(TARGETS ${target}Shared DESTINATION lib)
+    
+    if(nativePythonLibrary)
+      set_target_properties(${target}Shared PROPERTIES PREFIX "")
+      set_target_properties(${target}Shared PROPERTIES SUFFIX ".so")      
+    endif()
     
     if(DEFINED COVERAGE_SUPPORTED)
       set_property(TARGET ${target}Shared PROPERTY LINK_FLAGS ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})
