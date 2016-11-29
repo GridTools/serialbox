@@ -9,42 +9,71 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from PyQt5.QtWidgets import QTableWidget, QHeaderView, QTableWidgetItem, QLineEdit, QHBoxLayout
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QTableWidget, QHeaderView, QTableWidgetItem, QWidget, QVBoxLayout,
+                             QHBoxLayout, QLineEdit, QLabel)
 
 from sdbcore.logger import Logger
 
 
-class ErrorListWidget(QTableWidget):
-    def __init__(self, parent):
+class ErrorListWidget(QWidget):
+    def __init__(self, parent, mainwindow):
         super().__init__(parent)
+
+        self.__widget_table = QTableWidget(self)
+        self.__widget_mainwindow = mainwindow
+
+        self.__widget_label_num_errors = QLabel("Find error by index: ", parent=self)
+        self.__widget_label_num_errors.setStatusTip("Find an error by specifying the index")
+
+        self.__widget_lineedit_num_errors = QLineEdit("", parent=self)
+        self.__widget_lineedit_num_errors.textEdited[str].connect(self.find_error_by_index)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.__widget_table)
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.__widget_label_num_errors)
+        hbox.addWidget(self.__widget_lineedit_num_errors)
+        hbox.addStretch(1)
+
+        vbox.addLayout(hbox)
+        self.setLayout(vbox)
 
     def make_update(self, comparison_result):
         Logger.info("Updating ErrorListWidget")
 
-        list_of_errors = comparison_result.list_of_errors
+        list_of_errors = comparison_result.get_error_list()
 
-        self.setColumnCount(3)
-        self.setRowCount(len(list_of_errors))
-        self.setHorizontalHeaderLabels(
+        self.__widget_table.setColumnCount(3)
+        self.__widget_table.setRowCount(len(list_of_errors))
+        self.__widget_table.setHorizontalHeaderLabels(
             ["Index", "Input (%s)" % comparison_result["input_field_name"],
              "Reference (%s)" % comparison_result["reference_field_name"]])
 
-        self.setStyleSheet(
+        self.__widget_table.setStyleSheet(
             '''
                 QTableWidget::item:selected:active {
-                    background: #FFFFFF;
-                    border-style: solid;
-                    border-color: #D4D8DD;
-                    border-width: 2px;
+                    background: transparent;
+                    border-width: 0px;
                 }
             ''')
 
-        self.horizontalHeader().resizeSections(QHeaderView.Stretch)
-        self.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.setSelectionMode(QTableWidget.NoSelection)
+        self.__widget_table.horizontalHeader().resizeSections(QHeaderView.Stretch)
+        self.__widget_table.setEditTriggers(QTableWidget.NoEditTriggers)
 
         for idx in range(len(list_of_errors)):
             error = list_of_errors[idx]
-            self.setItem(idx, 0, QTableWidgetItem("%s" % str(error[0])))
-            self.setItem(idx, 1, QTableWidgetItem("%s" % error[1]))
-            self.setItem(idx, 2, QTableWidgetItem("%s" % error[2]))
+            self.__widget_table.setItem(idx, 0, QTableWidgetItem("%s" % str(error[0])))
+            self.__widget_table.setItem(idx, 1, QTableWidgetItem("%s" % error[1]))
+            self.__widget_table.setItem(idx, 2, QTableWidgetItem("%s" % error[2]))
+
+    def find_error_by_index(self, index):
+        item = self.__widget_table.findItems(index, Qt.MatchExactly)
+
+        if len(item) == 0:
+            # Try with whitespaces after comma
+            item = self.__widget_table.findItems(index.replace(",", ", "), Qt.MatchExactly)
+
+        if item:
+            self.__widget_table.selectRow(item[0].row())

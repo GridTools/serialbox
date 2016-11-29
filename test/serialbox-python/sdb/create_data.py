@@ -17,16 +17,21 @@ sys.path.insert(1, os.path.join(os.path.dirname(os.path.realpath(__file__)),
 
 import serialbox as ser
 import numpy as np
+from random import randint, random
 
 
 class StencilUVWT(object):
-    def __init__(self, perturb=None):
+    def __init__(self, num_errors=0, is_error=None):
 
         self.name = "StencilUVWT"
         self.invocation_count = 0
-        self.perturb = 0 if perturb is None else perturb
+        self.num_errors = num_errors
 
-        dir = "./" + self.name + ("" if perturb is None else "-error")
+        dir = "./" + self.name + ("" if num_errors is 0 else "-error")
+        
+        if num_errors == 0 and is_error:
+          dir += "-error"
+        
         self.serializer = ser.Serializer(ser.OpenModeKind.Write, dir, "stencil")
         self.serializer.global_metainfo.insert("stencils", ["StencilUVWT"])
 
@@ -60,8 +65,13 @@ class StencilUVWT(object):
 
         self.u += 1
         self.v += 2
-        self.w += 3 + self.perturb
+        self.w += 3
         self.t += 4
+
+        for e in range(self.num_errors):
+          self.w[randint(0, self.w.shape[0] - 1),
+                 randint(0, self.w.shape[1] - 1),
+                 randint(0, self.w.shape[2] - 1)] = random() 
 
         self.serialize("out", 1, "stage_2", {"u": self.u, "v": self.v, "w": self.w, "t": self.t})
 
@@ -81,5 +91,6 @@ if __name__ == '__main__':
     s_uvwt = StencilUVWT()
     s_uvwt.run()
 
-    s_uvwt_error = StencilUVWT(1)
+    s_uvwt_error = StencilUVWT(1204, True)
     s_uvwt_error.run()
+

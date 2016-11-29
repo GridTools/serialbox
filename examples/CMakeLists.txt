@@ -9,65 +9,80 @@
 
 cmake_minimum_required(VERSION 3.1)
 
+## serialbox_add_c_example
+## -----------------------
+##
 ## Create an install a C example
 ##
-## name    
-##    STRING: Name of target and executable
-## ARGN    
-##    LIST OF STRINGS: List of source files
-function(serialbox_add_c_example name)
-  add_executable(${name} ${ARGN} ${SERIALBOX_C_HEADERS})
-  target_link_libraries(${name} 
+## NAME:STRING=<>     - Name of target and executable
+## ARGN:STRINGS=<>    - List of source files
+##
+function(serialbox_add_c_example NAME)
+  add_executable(${NAME} ${ARGN} ${SERIALBOX_C_HEADERS})
+  target_link_libraries(${NAME} 
                         SerialboxCLibraryStatic 
                         ${Boost_LIBRARIES} 
                         ${SERIALBOX_EXTERNAL_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT})
-  install(TARGETS ${name} DESTINATION bin)
-  serialbox_add_test(TARGET ${name} EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/${name})
+  install(TARGETS ${NAME} DESTINATION bin)
+  
+  if(SERIALBOX_TESTING)
+    serialbox_add_test(TARGET ${NAME} EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/${NAME})
+  endif(SERIALBOX_TESTING)
 endfunction(serialbox_add_c_example)
 
+## serialbox_add_gridtools_example
+## -------------------------------
+##
 ## Create and install a gridtools example
 ##
-## name    
-##    STRING: Name of target and executable
-## ARGN    
-##    LIST OF STRINGS: List of source files
-function(serialbox_add_gridtools_example name)
-  add_executable(${name} ${ARGN} ${SERIALBOX_HEADERS})
-  target_link_libraries(${name} 
+## NAME:STRING=<>     - Name of target and executable
+## ARGN:STRINGS=<>    - List of source files
+##
+function(serialbox_add_gridtools_example NAME)
+  add_executable(${NAME} ${ARGN} ${SERIALBOX_HEADERS})
+  target_link_libraries(${NAME} 
                         SerialboxCoreLibraryStatic 
                         ${Boost_LIBRARIES} 
                         ${SERIALBOX_EXTERNAL_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT})
-  install(TARGETS ${name} DESTINATION bin)
-  serialbox_add_test(TARGET ${name} EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/${name})
+  install(TARGETS ${NAME} DESTINATION bin)
+  
+  if(SERIALBOX_TESTING)
+    serialbox_add_test(TARGET ${NAME} EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/${NAME})
+  endif(SERIALBOX_TESTING)
 endfunction(serialbox_add_gridtools_example)
 
+## serialbox_add_fortran_example
+## -----------------------------
+##
 ## Create and install a Fortran example
 ##
-## name    
-##    STRING: Name of target and executable
-## ARGN    
-##    LIST OF STRINGS: List of source files
-function(serialbox_add_fortran_example name)
-  add_executable(${name} ${ARGN} ${SERIALBOX_HEADERS})
-  target_link_libraries(${name} 
+## NAME:STRING=<>     - Name of target and executable
+## ARGN:STRINGS=<>    - List of source files
+##
+function(serialbox_add_fortran_example NAME)
+  add_executable(${NAME} ${ARGN} ${SERIALBOX_HEADERS})
+  target_link_libraries(${NAME} 
                         SerialboxFortranLibraryStatic 
                         SerialboxCLibraryStatic
                         ${Boost_LIBRARIES} 
                         ${SERIALBOX_EXTERNAL_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT})
-  target_include_directories(${name} PUBLIC ${CMAKE_BINARY_DIR}/src/serialbox-fortran)
+  target_include_directories(${NAME} PUBLIC ${CMAKE_BINARY_DIR}/src/serialbox-fortran)
   link_directories(${CMAKE_BINARY_DIR}/src/serialbox-fortran)
-  install(TARGETS ${name} DESTINATION bin)
+  install(TARGETS ${NAME} DESTINATION bin)
 endfunction(serialbox_add_fortran_example)
 
+## serialbox_add_python_example
+## ----------------------------
+##
 ## Install a python example
 ##
-## ARGN    
-##    LIST OF STRINGS: List of source files
-function(serialbox_add_python_example name)
-  install(FILES ${name} ${ARGN} DESTINATION bin)
+## ARGN:STRINGS=<>    - List of source files
+##
+function(serialbox_add_python_example NAME)
+  install(FILES ${NAME} ${ARGN} DESTINATION bin)
 endfunction(serialbox_add_python_example)
 
 ## Build examples
@@ -78,7 +93,6 @@ endif()
 if(SERIALBOX_ENABLE_FORTRAN)
   add_subdirectory(fortran)
 endif()
-
 
 if(SERIALBOX_ENABLE_PYTHON)
   add_subdirectory(python)

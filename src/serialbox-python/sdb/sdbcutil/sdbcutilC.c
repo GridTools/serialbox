@@ -17,11 +17,13 @@
 #include <stdio.h>
 
 /* Available functions */
-static PyObject* sdbcutilC_compare_c(PyObject* self, PyObject* args);
+static PyObject* sdbcutilC_compute_error_list_c(PyObject* self, PyObject* args);
 
 /* Method specification */
-static PyMethodDef module_methods[] = {{"compare_c", sdbcutilC_compare_c, METH_VARARGS, "TODO"},
-                                       {NULL, NULL, 0, NULL}};
+static PyMethodDef module_methods[] = {
+    {"compute_error_list_c", sdbcutilC_compute_error_list_c, METH_VARARGS, ""},
+    {NULL, NULL, 0, NULL}};
+
 /* Module specification */
 static struct PyModuleDef sdbcutilC_module_definition = {
     PyModuleDef_HEAD_INIT, "sdbcutilC", "This module provides C extensions to the sdbcore module.",
@@ -33,7 +35,7 @@ PyMODINIT_FUNC PyInit_sdbcutilC(void) {
   return PyModule_Create(&sdbcutilC_module_definition);
 }
 
-static PyObject* sdbcutilC_compare_c(PyObject* self, PyObject* args) {
+static PyObject* sdbcutilC_compute_error_list_c(PyObject* self, PyObject* args) {
   puts("hello from C");
   Py_RETURN_NONE;
 }

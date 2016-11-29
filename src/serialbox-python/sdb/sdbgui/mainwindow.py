@@ -9,8 +9,11 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
+from time import time
+
+from PyQt5.QtCore import QFileSystemWatcher
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QAction, QTabWidget
+from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QAction, QTabWidget, QMessageBox
 
 from sdbcore.logger import Logger
 from sdbcore.serializerdata import SerializerData
@@ -42,6 +45,10 @@ class MainWindow(QMainWindow):
         self.__stencil_field_mapper = StencilFieldMapper(self.__input_stencil_data,
                                                          self.__reference_stencil_data,
                                                          GlobalConfig()["async"])
+
+        self.__file_system_watcher = QFileSystemWatcher()
+        self.__file_system_watcher.directoryChanged[str].connect(self.popup_reload_box)
+        self.__file_system_watcher_last_modify = time()
 
         # Load from session?
         if GlobalConfig()["default_session"]:
@@ -123,7 +130,7 @@ class MainWindow(QMainWindow):
 
         action_about = QAction("&About", self)
         action_about.setStatusTip("Show the application's About box")
-        action_about.triggered.connect(self.show_about)
+        action_about.triggered.connect(self.popup_about_box)
 
         action_save_session = QAction(QIcon("sdbgui/images/filesave.png"), "&Save", self)
         action_save_session.setStatusTip("Save current session")
@@ -183,6 +190,9 @@ class MainWindow(QMainWindow):
         toolbar.addAction(self.__action_reload)
         toolbar.addAction(self.__action_try_switch_to_error_tab)
 
+    def tab_widget(self, idx):
+        return self.__widget_tab.widget(idx if not isinstance(idx, TabState) else idx.value)
+
     def switch_to_tab(self, tab):
         idx = tab.value if isinstance(tab, TabState) else tab
         if self.__tab_old_state == TabState(idx):
@@ -228,7 +238,15 @@ class MainWindow(QMainWindow):
 
             self.__action_try_switch_to_error_tab.setEnabled(False)
 
+            watched_directories = self.__file_system_watcher.directories()
+            if watched_directories:
+                self.__file_system_watcher.removePaths(self.__file_system_watcher.directories())
+
         elif self.__tab_highest_valid_state == TabState.Stencil:
+
+            self.__file_system_watcher.addPath(self.__input_serializer_data.serializer.directory)
+            self.__file_system_watcher.addPath(self.__reference_stencil_data.serializer.directory)
+
             self.__widget_tab.setTabEnabled(TabState.Setup.value, True)
             self.__widget_tab.setTabEnabled(TabState.Stencil.value, True)
             self.__widget_tab.setTabEnabled(TabState.Result.value, False)
@@ -265,10 +283,20 @@ class MainWindow(QMainWindow):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
 
-    def show_about(self):
+    def popup_about_box(self):
         self.about_widget = PopupAboutWidget(self)
 
-    def show_error(self, msg):
+    def popup_reload_box(self, path):
+        self.__file_system_watcher.blockSignals(True)
+        reply = QMessageBox.question(self, "Reload serializer?",
+                                     "The path \"%s\" has changed.\nDo want to reload the serializers?" % path,
+                                     QMessageBox.Yes | QMessageBox.No,
+                                     QMessageBox.Yes)
+        self.__file_system_watcher.blockSignals(False)
+        if reply == QMessageBox.Yes:
+            self.reload_serializer()
+
+    def popup_error_box(self, msg):
         PopupErrorMessageBox(self, msg)
 
     def save_session(self):
@@ -282,9 +310,14 @@ class MainWindow(QMainWindow):
         try:
             self.__input_serializer_data.reload()
             self.__reference_serializer_data.reload()
+
+            if self.__widget_tab.currentIndex() == TabState.Error.value:
+                self.switch_to_tab(TabState.Result)
+
             self.__widget_tab.currentWidget().make_update()
+
         except RuntimeError as e:
-            self.show_error(str(e))
+            self.popup_error_box(str(e))
             self.set_tab_highest_valid_state(TabState.Setup)
             self.switch_to_tab(TabState.Setup)
             self.__widget_tab.currentWidget().make_update()

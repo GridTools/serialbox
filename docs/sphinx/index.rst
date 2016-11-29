@@ -30,6 +30,9 @@ Examples
 :doc:`Using Serialbox as an external library with CMake <Usage>`
   Notes on using the CMake module of Serialbox.
   
+:doc:`Debugging stencils with sdb (stencil-debugger) <sdb>`
+  Introduction to the stencil-debugger of Serialbox.
+  
 API Documentation
 =================
 

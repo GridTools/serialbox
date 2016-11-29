@@ -9,10 +9,11 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, QSizePolicy
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, QSizePolicy, QLabel, QProgressDialog
 
 from sdbcore.logger import Logger
 from .errorlistwidget import ErrorListWidget
+from .errorvisualizewidget import ErrorVisualizeWidget
 from .errorwindowheaderwidget import ErrorWindowHeaderWidget
 from .tabstate import TabState
 
@@ -32,7 +33,8 @@ class ErrorWindow(QWidget):
         self.__widget_reference_header = ErrorWindowHeaderWidget("Reference")
 
         self.__widget_error_tab = QTabWidget(self)
-        self.__widget_error_tab.addTab(ErrorListWidget(self), "List")
+        self.__widget_error_tab.addTab(ErrorListWidget(self, mainwindow), "List")
+        self.__widget_error_tab.addTab(ErrorVisualizeWidget(self, mainwindow), "Visualize")
         self.__widget_error_tab.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         hbox_header = QHBoxLayout()

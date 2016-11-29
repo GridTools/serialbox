@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-##===-----------------------------------------------------------------------------*- python -*-===##
+##===-----------------------------------------------------------------------------*- Python -*-===##
 ##
-##                                   s e r i a l b o x
+##                                   S E R I A L B O X
 ##
-## this file is distributed under terms of bsd license.
-## see license.txt for more information.
+## This file is distributed under terms of BSD license.
+## See LICENSE.txt for more information.
 ##
 ##===------------------------------------------------------------------------------------------===##
 

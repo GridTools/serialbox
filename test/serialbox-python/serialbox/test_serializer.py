@@ -500,7 +500,6 @@ class TestSerializer(unittest.TestCase):
 
     def test_to_string(self):
         ser = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
-        print(ser)
 
 if __name__ == "__main__":
     unittest.main()

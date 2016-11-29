@@ -64,6 +64,8 @@ class ResultTableWidget(QWidget):
         self.__widget_label_result = QLabel("")
         self.__widget_label_result_icon = QLabel("")
 
+        self.__widget_label_loading = QLabel("")
+
         vbox = QVBoxLayout()
 
         hbox_top = QHBoxLayout()
@@ -79,6 +81,7 @@ class ResultTableWidget(QWidget):
         hbox_bottom.addWidget(self.__widget_label_result)
         hbox_bottom.addWidget(self.__widget_label_result_icon)
         hbox_bottom.addStretch(1)
+        hbox_bottom.addWidget(self.__widget_label_loading)
 
         vbox.addLayout(hbox_bottom)
 

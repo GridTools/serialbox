@@ -234,8 +234,9 @@ void BinaryArchive::readMetaDataFromJson() {
     throw Exception("binary archive version (%s) does not match the version of the library (%s)",
                     archiveVersion, BinaryArchive::Version);
 
-  // Set the correct hash algorithm
-  hash_ = HashFactory::create(hashAlgorithm);
+  // Set the correct hash algorithm if we are not writing
+  if(mode_ != OpenModeKind::Write)
+    hash_ = HashFactory::create(hashAlgorithm);
 
   // Deserialize FieldTable
   for(auto it = json_["fields_table"].begin(); it != json_["fields_table"].end(); ++it) {

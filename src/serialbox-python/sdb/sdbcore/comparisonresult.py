@@ -1,17 +1,14 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-##===-----------------------------------------------------------------------------*- python -*-===##
+##===-----------------------------------------------------------------------------*- Python -*-===##
 ##
-##                                   s e r i a l b o x
+##                                   S E R I A L B O X
 ##
-## this file is distributed under terms of bsd license.
-## see license.txt for more information.
+## This file is distributed under terms of BSD license.
+## See LICENSE.txt for more information.
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-import numpy as np
-
-from sdbcore.logger import Logger
 from sdbcutil.errorlist import ErrorList
 
 
@@ -24,13 +21,9 @@ class ComparisonResult(object):
     def __init__(self, dict_result):
         self.__result = dict_result
 
-        # Auxiliary datastructures are computed lazily
-        self.__list_of_errors = None
-        self.__position_of_errors = None
-
+        # Auxiliary data structures are computed lazily
         self.__input_field = None
         self.__reference_field = None
-
         self.__error_list = None
 
     def __getitem__(self, key):
@@ -72,43 +65,16 @@ class ComparisonResult(object):
             self.__reference_field = serializer.read(field_name, savepoint)
         return self.__reference_field
 
-    @property
-    def position_of_errors(self):
+    def __get_error_list(self):
+        if self.__error_list is None:
+            self.__error_list = ErrorList(self.input_field, self.reference_field,
+                                          self.__result["atol"],
+                                          self.__result["rtol"],
+                                          True)
+        return self.__error_list
 
-        if self.__position_of_errors is None:
-            Logger.info(
-                "Computing position of errors of input field '%s' and reference field '%s'" % (
-                    self.__result["input_field_name"], self.__result["reference_field_name"]))
+    def get_error_positions(self):
+        return self.__get_error_list().positions()
 
-            self.__position_of_errors = np.logical_not(
-                np.isclose(self.input_field, self.reference_field,
-                           atol=self.__result["atol"],
-                           rtol=self.__result["rtol"]))
-
-        return self.__position_of_errors
-
-    @property
-    def list_of_errors(self):
-
-        self.__error_list = ErrorList(self.input_field, self.reference_field, self.__result["atol"],
-                                      self.__result["rtol"])
-
-        if self.__list_of_errors is None:
-            Logger.info("Computing list of errors of input field '%s' and reference field '%s'" % (
-                self.__result["input_field_name"], self.__result["reference_field_name"]))
-            self.__list_of_errors = []
-
-            it_value = np.nditer(self.position_of_errors, flags=["multi_index"])
-            it_input = np.nditer(self.input_field)
-            it_reference = np.nditer(self.reference_field)
-
-            while not it_value.finished:
-                if it_value.value:
-                    self.__list_of_errors += [[it_value.multi_index, it_input.value,
-                                               it_reference.value]]
-
-                it_value.iternext()
-                it_input.iternext()
-                it_reference.iternext()
-
-        return self.__list_of_errors
+    def get_error_list(self):
+        return self.__get_error_list().list()
