@@ -35,3 +35,11 @@ class Version(object):
             return ipython_vers
         except ImportError:
             return None
+
+    @staticmethod
+    def matplotlib_version():
+        try:
+            from matplotlib import __version__ as matplotlib_vers
+            return matplotlib_vers
+        except ImportError:
+            return None

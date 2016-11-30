@@ -44,9 +44,9 @@ class StencilFieldMetainfoWidget(QWidget):
             self.__current_fieldname = None
             self.__current_field_metainfo = None
 
-        self.update()
+        self.update_field()
 
-    def update(self):
+    def update_field(self):
         if self.__current_fieldname:
             self.__widget_label_fieldmetainfo_name.setText("<b>%s</b>" % self.__current_fieldname)
             self.__widget_label_fieldmetainfo_dimensions.setText(

@@ -25,9 +25,10 @@ class BooleanOptionGroup(OptionGroup):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def add_boolean_option(self, dest, help, default):
+    def add_boolean_option(self, dest, help, default, default_txt=None):
         self.add_option('--%s' % dest, dest=dest.replace("-", "_"), action='store_true',
-                        help=help + " [default: %s]" % default, default=True if default else False)
+                        help=help + " [default: %s]" % default if default_txt is None else default_txt,
+                        default=default)
         self.add_option('--no-%s' % dest, dest=dest.replace("-", "_"), action='store_false',
                         help=SUPPRESS_HELP, default=default)
 
@@ -44,6 +45,19 @@ def main():
         exit(1)
 
     # ===----------------------------------------------------------------------------------------===
+    #   Check if IPython is available
+    # ===----------------------------------------------------------------------------------------===
+    SDB_HAS_IPYTHON = False
+    try:
+        from os import environ
+        environ['QT_API'] = 'pyqt5'
+        from IPython.qt.console.rich_ipython_widget import RichIPythonWidget
+        from IPython.qt.inprocess import QtInProcessKernelManager
+        SDB_HAS_IPYTHON = True
+    except ImportError as e:
+        pass
+
+    # ===----------------------------------------------------------------------------------------===
     #   Parse command-line
     # ==-----------------------------------------------------------------------------------------===
     from sdbcore.version import Version
@@ -58,7 +72,7 @@ def main():
                                "All options take a negative form, for example --foo sets the option"
                                " foo to True, while --no-foo sets it to False.")
     group.add_boolean_option("ipython", "Embed IPython console in the error description",
-                             "True of IPython is available, False otherwise")
+                             SDB_HAS_IPYTHON, "True of IPython is available, False otherwise")
     group.add_boolean_option("center-window", "Center main window at launch", True)
     group.add_boolean_option("default-session",
                              "Load (save) default session at startup (shutdown)", True)
@@ -91,11 +105,16 @@ def main():
         from PyQt5.QtCore import QT_VERSION_STR
         Logger.info("Using PyQt5: %s" % QT_VERSION_STR)
     except ImportError as e:
-        fatal_error("sdb: error: PyQt5 not found: %s" % e)
+        fatal_error("PyQt5 not found: %s" % e)
 
     # ===----------------------------------------------------------------------------------------===
-    #   Check if IPython is available
+    #   Check if matplotlib is available
     # ===----------------------------------------------------------------------------------------===
+    try:
+        import matplotlib
+        Logger.info("Using matplotlib: %s" % matplotlib.__version__)
+    except ImportError as e:
+        Logger.warning("cannot import matplotlib: %s" % e)
 
     # ===----------------------------------------------------------------------------------------===
     #  Set global configuration option

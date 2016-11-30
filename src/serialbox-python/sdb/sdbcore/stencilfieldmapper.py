@@ -39,7 +39,7 @@ class StencilFieldMapper(StencilDataDataListener):
         self.__input_stencil_data.register_as_data_listener(self)
 
         # Data
-        self.__comparison_result_list = ComparisonResultList()
+        self.__comparison_result_list = []
         self.__comparison_result_list_dirty = True
 
         self.__rtol = 1e-08
@@ -111,7 +111,7 @@ class StencilFieldMapper(StencilDataDataListener):
         self.__atol = float(self.__atol)
         self.__rtol = float(self.__rtol)
 
-        self.__comparison_result_list.reset()
+        self.__comparison_result_list = ComparisonResultList()
         self.__comparison_result_list.input_stencil = self.__input_stencil_data.selected_stencil
         self.__comparison_result_list.reference_stencil = self.__reference_stencil_data.selected_stencil
 
@@ -160,9 +160,17 @@ class StencilFieldMapper(StencilDataDataListener):
                 fields_at_reference_savepoint = reference_serializer.fields_at_savepoint(
                     reference_savepoint)
 
+                input_stage = input_savepoint.metainfo["stage_name"]
+                reference_stage = reference_savepoint.metainfo["stage_name"]
+
+                invocation_count_input = input_savepoint.metainfo["invocation_count"]
+                invocation_count_refrence = reference_savepoint.metainfo["invocation_count"]
+
+                # Invocation counts have to match
+                if invocation_count_input != invocation_count_refrence:
+                    continue
+
                 for input_field_name, reference_field_name in zip(input_fields, reference_fields):
-                    input_stage = input_savepoint.metainfo["stage_name"]
-                    reference_stage = reference_savepoint.metainfo["stage_name"]
 
                     stage = input_stage
                     intent = "in" if input_savepoint.name.endswith("in") else "out"
@@ -200,7 +208,8 @@ class StencilFieldMapper(StencilDataDataListener):
                                                              reference_savepoint,
                                                              reference_serializer,
                                                              self.__rtol,
-                                                             self.__atol)
+                                                             self.__atol,
+                                                             invocation_count_input)
 
         except SerialboxError as e:
             raise RuntimeError(

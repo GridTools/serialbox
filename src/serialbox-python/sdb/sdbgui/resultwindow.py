@@ -13,9 +13,10 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
 
 from .resulttablewidget import ResultTableWidget
 from .tabstate import TabState
+from .tabwindow import TabWindow
 
 
-class ResultWindow(QWidget):
+class ResultWindow(QWidget, TabWindow):
     def __init__(self, mainwindow, stencilwindow, stencil_field_mapper):
         super().__init__()
 

@@ -18,9 +18,10 @@ from .stencilfieldmetainfowidget import StencilFieldMetainfoWidget
 from .stencilthresholdsetterwidget import StencilThresholdSetterWidget
 from .stencilwidget import StencilWidget
 from .tabstate import TabState
+from .tabwindow import TabWindow
 
 
-class StencilWindow(QWidget):
+class StencilWindow(QWidget, TabWindow):
     def __init__(self, mainwindow, stencil_field_mapper, input_stencil_data,
                  reference_stencil_data):
         super().__init__()

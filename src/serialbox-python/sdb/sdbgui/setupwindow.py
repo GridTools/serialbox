@@ -16,9 +16,10 @@ from sdbcore.logger import Logger
 from .popuperrormessagebox import PopupErrorMessageBox
 from .setupwidget import SetupWidget
 from .tabstate import TabState
+from .tabwindow import TabWindow
 
 
-class SetupWindow(QWidget):
+class SetupWindow(QWidget, TabWindow):
     def __init__(self, mainwindow, input_serializer_data, reference_serializer_data):
         super().__init__()
 

@@ -14,7 +14,7 @@ from random import random
 from PyQt5.QtCore import QSize, Qt, QPoint
 from PyQt5.QtGui import QMovie, QIcon
 from PyQt5.QtWidgets import (QLabel, QVBoxLayout, QTableWidget, QWidget, QHBoxLayout, QHeaderView,
-                             QCheckBox, QTableWidgetItem)
+                             QCheckBox, QTableWidgetItem, QComboBox)
 
 from .resulttablecellwidget import ResultTableCellWidget
 from .tabstate import TabState
@@ -44,27 +44,36 @@ class ResultTableWidget(QWidget):
         self.__current_cell_row = None
         self.__current_cell_col = None
 
+        self.__current_invocation_count = 0
+
         # Widgets
         self.__widget_resultwindow = resultwindow
         self.__widget_table = QTableWidget(self)
-        self.__widget_label_title = QLabel("")
 
-        self.__widget_checkbox_draw_success = QCheckBox()
+        self.__widget_label_title = QLabel("", parent=self)
+
+        self.__widget_label_invocation_count = QLabel("Invocation count: ", parent=self)
+        self.__widget_label_invocation_count.setStatusTip("Select the invocation of the stencil")
+        self.__widget_combobox_invocation_count = QComboBox(self)
+        self.__widget_combobox_invocation_count.currentIndexChanged.connect(
+            self.set_invocation_count)
+
+        self.__widget_checkbox_draw_success = QCheckBox(self)
         self.__widget_checkbox_draw_success.setIcon(QIcon("sdbgui/images/success.png"))
         self.__widget_checkbox_draw_success.setChecked(True)
         self.__widget_checkbox_draw_success.stateChanged[int].connect(self.set_draw_success)
         self.__widget_checkbox_draw_success.setStatusTip("Show success icons")
 
-        self.__widget_checkbox_draw_failure = QCheckBox()
+        self.__widget_checkbox_draw_failure = QCheckBox(self)
         self.__widget_checkbox_draw_failure.setIcon(QIcon("sdbgui/images/failure-small.png"))
         self.__widget_checkbox_draw_failure.setChecked(True)
         self.__widget_checkbox_draw_failure.stateChanged[int].connect(self.set_draw_failure)
         self.__widget_checkbox_draw_failure.setStatusTip("Show failure icons")
 
-        self.__widget_label_result = QLabel("")
-        self.__widget_label_result_icon = QLabel("")
+        self.__widget_label_result = QLabel("", parent=self)
+        self.__widget_label_result_icon = QLabel("", parent=self)
 
-        self.__widget_label_loading = QLabel("")
+        self.__widget_label_loading = QLabel("", parent=self)
 
         vbox = QVBoxLayout()
 
@@ -74,6 +83,12 @@ class ResultTableWidget(QWidget):
         hbox_top.addWidget(self.__widget_checkbox_draw_success)
         hbox_top.addWidget(self.__widget_checkbox_draw_failure)
         vbox.addLayout(hbox_top)
+
+        hbox_middle = QHBoxLayout()
+        hbox_middle.addWidget(self.__widget_label_invocation_count)
+        hbox_middle.addWidget(self.__widget_combobox_invocation_count)
+        hbox_middle.addStretch(1)
+        vbox.addLayout(hbox_middle)
 
         vbox.addWidget(self.__widget_table)
 
@@ -88,10 +103,70 @@ class ResultTableWidget(QWidget):
         self.setLayout(vbox)
 
     def make_update(self):
-        comparison_result_list = self.__stencil_field_mapper.comparison_result_list
+        self.__comparison_result_list = self.__stencil_field_mapper.comparison_result_list
 
         self.__widget_label_title.setText(
-            "<b>%s</b>" % comparison_result_list.shared_stencil_name())
+            "<b>%s</b>" % self.__comparison_result_list.shared_stencil_name())
+
+        # Set current invocation count
+        if self.__current_invocation_count >= self.__comparison_result_list.invocation_count():
+            self.__current_invocation_count = 0
+
+        num_errors = 0
+
+        # Set invocation count widgets
+        if self.__comparison_result_list.invocation_count() > 1:
+            self.__widget_label_invocation_count.setEnabled(True)
+            self.__widget_combobox_invocation_count.setEnabled(True)
+
+            self.__widget_combobox_invocation_count.clear()
+            for i in range(self.__comparison_result_list.invocation_count()):
+                self.__widget_combobox_invocation_count.addItem("%i" % i)
+
+                for result in self.__comparison_result_list.results(i):
+                    num_errors += not result["match"]
+
+        else:
+            self.__widget_label_invocation_count.setEnabled(False)
+            self.__widget_combobox_invocation_count.setEnabled(False)
+
+        # Update the table
+        self.update_table()
+
+        # Set bottom message and display a funny gif ;)
+        if num_errors != 0:
+            self.__widget_label_result_icon.clear()
+            self.__widget_label_result.setText(
+                "<b>%s error%s detected</b>" % (num_errors, "s" if num_errors > 1 else ""))
+            self.__widget_label_result.setStyleSheet("QLabel {color: #B72424}")
+        else:
+            if random() < 0.2:
+                rnd = random()
+                if rnd < 0.33:
+                    movie = QMovie("sdbgui/images/dance_1.gif")
+                    movie.setScaledSize(QSize(21, 25))
+                elif rnd < 0.66:
+                    movie = QMovie("sdbgui/images/dance_2.gif")
+                    movie.setScaledSize(QSize(42, 25))
+                else:
+                    movie = QMovie("sdbgui/images/dance_3.gif")
+                    movie.setScaledSize(QSize(20, 25))
+
+                self.__widget_label_result_icon.setMovie(movie)
+                movie.start()
+            else:
+                self.__widget_label_result_icon.clear()
+
+            self.__widget_label_result.setText("<b>No errors detected! Hurray!</b>")
+            self.__widget_label_result.setStyleSheet("QLabel {color: #478E40}")
+
+    def set_invocation_count(self, idx):
+        if idx < 0:
+            return
+        self.__current_invocation_count = int(self.__widget_combobox_invocation_count.itemText(idx))
+        self.update_table()
+
+    def update_table(self):
 
         # Compute stages and fields
         stages = []
@@ -100,14 +175,14 @@ class ResultTableWidget(QWidget):
         num_errors = 0
         first_error_cell = None
 
-        for result in comparison_result_list.results:
+        for result in self.__comparison_result_list.results(self.__current_invocation_count):
             stages += [make_stage_name(result)]
 
             input_field = result["input_field_name"]
             reference_field = result["reference_field_name"]
 
             if input_field == reference_field:
-                fields += input_field
+                fields += [input_field]
                 fields_tooltip += ["Field: \"%s\"" % input_field]
             else:
                 fields += ["%s  (%s)" % (input_field, reference_field)]
@@ -151,10 +226,18 @@ class ResultTableWidget(QWidget):
         self.__widget_table.customContextMenuRequested[QPoint].connect(self.cell_right_clicked)
 
         # Populate table
-        for result in comparison_result_list.results:
+        for result in self.__comparison_result_list.results(self.__current_invocation_count):
             stage_idx = stages.index(make_stage_name(result))
-            field_idx = fields.index(
-                [f for f in fields if f.startswith(result["input_field_name"])][0])
+
+            field_name = result["input_field_name"]
+
+            # Remove parentheses
+            start = field_name.find('(')
+            end = field_name.find(')')
+            if start != -1 and end != -1:
+                field_name = field_name[start + 1:end]
+
+            field_idx = fields.index(field_name)
 
             # Widget
             cell = ResultTableCellWidget(result["match"])
@@ -164,7 +247,6 @@ class ResultTableWidget(QWidget):
             # Save the first error for selection
             if not result["match"] and not first_error_cell:
                 first_error_cell = [field_idx, stage_idx]
-                first_error_cell = [field_idx, stage_idx]
 
             # Item
             cell_item = QTableWidgetItem("")
@@ -173,37 +255,10 @@ class ResultTableWidget(QWidget):
             # Data
             self.__table_data[field_idx][stage_idx] = result
 
-        # Set bottom widgets
+        # Emulate "left" click on first error
         if num_errors != 0:
-            self.__widget_label_result_icon.clear()
-            self.__widget_label_result.setText(
-                "<b>%s error%s detected</b>" % (num_errors, "s" if num_errors > 1 else ""))
-            self.__widget_label_result.setStyleSheet("QLabel {color: #B72424}")
-
-            # Emulate "left" click on first error
             self.__widget_table.setCurrentCell(first_error_cell[0], first_error_cell[1])
             self.cell_left_clicked(first_error_cell[0], first_error_cell[1])
-
-        else:
-            if random() < 0.2:
-                rnd = random()
-                if rnd < 0.33:
-                    movie = QMovie("sdbgui/images/dance_1.gif")
-                    movie.setScaledSize(QSize(21, 25))
-                elif rnd < 0.66:
-                    movie = QMovie("sdbgui/images/dance_2.gif")
-                    movie.setScaledSize(QSize(42, 25))
-                else:
-                    movie = QMovie("sdbgui/images/dance_3.gif")
-                    movie.setScaledSize(QSize(20, 25))
-
-                self.__widget_label_result_icon.setMovie(movie)
-                movie.start()
-            else:
-                self.__widget_label_result_icon.clear()
-
-            self.__widget_label_result.setText("<b>No errors detected! Hurray!</b>")
-            self.__widget_label_result.setStyleSheet("QLabel {color: #478E40}")
 
     def set_draw_success(self, state):
         self.__draw_success_icons = True if state == Qt.Checked else False

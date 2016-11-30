@@ -44,36 +44,47 @@ class StencilUVWT(object):
         self.w = np.random.rand(32, 34, 80)
 
         self.t = np.random.rand(80)
+        self.tp = np.random.rand(32, 34)
 
-    def run(self):
-        self.stage_1()
-        self.stage_2()
+    def run(self, num=1):
+    
+        for i in range(num):
+          self.stage_1()
+          self.stage_2()
 
-        self.invocation_count += 1
+          self.invocation_count += 1
 
     def stage_1(self):
-        self.serialize("in", 0, "stage_1", {"u": self.u, "v": self.v, "w": self.w})
+        self.serialize("in", 0, "stage_1", {"u": self.u, "v": self.v, "w": self.w, "tp": self.tp})
 
         self.u += 1
         self.v += 2
         self.w += 3
+        self.tp += 4
 
-        self.serialize("out", 0, "stage_1", {"u": self.u, "v": self.v, "w": self.w})
+        self.serialize("out", 0, "stage_1", {"u": self.u, "v": self.v, "w": self.w, "tp": self.tp})
 
     def stage_2(self):
-        self.serialize("in", 1, "stage_2", {"u": self.u, "v": self.v, "w": self.w, "t": self.t})
+        self.serialize("in", 1, "stage_2", {"u": self.u, "v": self.v, "w": self.w, "t": self.t, "tp": self.tp})
 
         self.u += 1
         self.v += 2
         self.w += 3
         self.t += 4
+        self.tp += 5
 
         for e in range(self.num_errors):
           self.w[randint(0, self.w.shape[0] - 1),
                  randint(0, self.w.shape[1] - 1),
                  randint(0, self.w.shape[2] - 1)] = random() 
+                 
+#          self.tp[randint(0, self.w.shape[0] - 1),
+#                  randint(0, self.w.shape[1] - 1)] = random() 
+#                 
+#          self.t[randint(0, self.w.shape[0] - 1)] = random()
+          
 
-        self.serialize("out", 1, "stage_2", {"u": self.u, "v": self.v, "w": self.w, "t": self.t})
+        self.serialize("out", 1, "stage_2", {"u": self.u, "v": self.v, "w": self.w, "t": self.t, "tp": self.tp})
 
     def serialize(self, intent, stage_id, stage_name, fields):
         sp = ser.Savepoint(self.name + "__" + intent)
@@ -89,8 +100,8 @@ if __name__ == '__main__':
     #ser.Logging().enable()
 
     s_uvwt = StencilUVWT()
-    s_uvwt.run()
+    s_uvwt.run(2)
 
-    s_uvwt_error = StencilUVWT(1204, True)
-    s_uvwt_error.run()
+    s_uvwt_error = StencilUVWT(70, True)
+    s_uvwt_error.run(2)
 

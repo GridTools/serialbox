@@ -60,7 +60,7 @@ class MainWindow(QMainWindow):
 
         # Setup GUI
         self.setWindowTitle('sdb - stencil debugger (%s)' % Version().sdb_version())
-        self.resize(960, 480)
+        self.resize(1200, 600)
 
         if GlobalConfig()["center_window"]:
             self.center()
@@ -292,9 +292,11 @@ class MainWindow(QMainWindow):
                                      "The path \"%s\" has changed.\nDo want to reload the serializers?" % path,
                                      QMessageBox.Yes | QMessageBox.No,
                                      QMessageBox.Yes)
-        self.__file_system_watcher.blockSignals(False)
         if reply == QMessageBox.Yes:
             self.reload_serializer()
+
+        self.__file_system_watcher.blockSignals(False)
+
 
     def popup_error_box(self, msg):
         PopupErrorMessageBox(self, msg)
