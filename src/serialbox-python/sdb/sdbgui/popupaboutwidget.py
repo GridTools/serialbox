@@ -10,11 +10,11 @@
 ##===------------------------------------------------------------------------------------------===##
 
 from PyQt5.QtCore import QT_VERSION_STR, Qt
-from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QSizePolicy
 
 from sdbcore.logger import Logger
 from sdbcore.version import Version
+from .pixmap import Pixmap
 
 
 class PopupAboutWidget(QWidget):
@@ -31,7 +31,7 @@ class PopupAboutWidget(QWidget):
         geometry.setHeight(0.80 * parent.geometry().height())
         self.setGeometry(geometry)
 
-        image = QPixmap("sdbgui/images/logo.png")
+        image = Pixmap("logo.png")
         image_scaled = image.scaled(geometry.height(), geometry.width(), Qt.KeepAspectRatio)
 
         self.__widget_label_image = QLabel()

@@ -16,7 +16,7 @@ from numpy import any
 
 from sdbcore.logger import Logger
 from .errorvisualizematplotlibwidget import ErrorVisualizeMatplotlibWidget, SDB_HAS_MATPLOTLIB
-
+from .icon import Icon
 
 class ErrorVisualizeWidget(QWidget):
     def __init__(self, parent, mainwindow):
@@ -76,9 +76,9 @@ class ErrorVisualizeWidget(QWidget):
                     item = QStandardItem("  %i" % k)
 
                     if any(self.__error_positions[:, :, k]):
-                        item.setIcon(QIcon("sdbgui/images/failure-small.png"))
+                        item.setIcon(Icon("failure-small.png"))
                     else:
-                        item.setIcon(QIcon("sdbgui/images/success.png"))
+                        item.setIcon(Icon("success.png"))
 
                     item.setEditable(False)
                     self.__widget_list_layer.model().insertRow(k, item)

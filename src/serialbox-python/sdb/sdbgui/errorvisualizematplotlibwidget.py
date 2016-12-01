@@ -27,7 +27,7 @@ if SDB_HAS_MATPLOTLIB:
 
     from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
     from matplotlib.figure import Figure
-    from matplotlib.colors import ListedColormap
+    from matplotlib.colors import ColorConverter
 
     from numpy import arange, zeros
 
@@ -52,10 +52,12 @@ if SDB_HAS_MATPLOTLIB:
             data = error_positions[:, :, layer] if error_positions.ndim == 3 else error_positions
 
             # True == Error
-            # False == Ok
+            color = zeros((data.shape[0], data.shape[1], 3))
 
-            cmap = ListedColormap(['red', 'green'])
-            self.axes.imshow(data, interpolation='nearest', origin='lower', cmap=cmap)
+            color[data == True] = ColorConverter.colors["r"]
+            color[data == False] = ColorConverter.colors["g"]
+
+            self.axes.imshow(color, interpolation='nearest')
 
             self.axes.set_xticks(arange(-.5, data.shape[1] - 1, 1), minor=True)
             self.axes.set_yticks(arange(-.5, data.shape[0] - 1, 1), minor=True)
@@ -72,9 +74,8 @@ if SDB_HAS_MATPLOTLIB:
         def draw_nothing(self):
             Logger.info("Drawing nothing")
 
-            cmap = ListedColormap(['white'])
-            data = zeros((1,1))
-            self.axes.imshow(data, interpolation='nearest', origin='lower', cmap=cmap)
+            data = zeros((1, 1))
+            self.axes.imshow(data, interpolation='nearest')
 
             self.axes.set_xticklabels([])
             self.axes.set_yticklabels([])

@@ -18,6 +18,7 @@ from .stencilthresholdsetterwidget import StencilThresholdSetterWidget
 from .stencilwidget import StencilWidget
 from .tabstate import TabState
 from .tabwindow import TabWindow
+from .icon import Icon
 
 
 class StencilWindow(QWidget, TabWindow):
@@ -44,7 +45,7 @@ class StencilWindow(QWidget, TabWindow):
 
         self.__widget_button_next = QPushButton("Next")
         self.__widget_button_next.clicked.connect(self.make_continue)
-        self.__widget_button_next.setIcon(QIcon("sdbgui/images/run.png"))
+        self.__widget_button_next.setIcon(Icon("run.png"))
         self.__widget_button_next.setStatusTip(
             "Compare selected fields of the Input and Refrence stencil")
 

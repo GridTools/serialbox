@@ -9,7 +9,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from sdbcutil.errorlist import ErrorList
+from sdbcore.errorlist import ErrorList
 
 
 class ComparisonResult(object):

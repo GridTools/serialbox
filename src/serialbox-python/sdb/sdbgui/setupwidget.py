@@ -12,14 +12,16 @@
 from os import getcwd, listdir, path
 from sys import platform as sys_platform
 
-from PyQt5.QtCore import Qt, QDataStream, QIODevice
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QFileDialog,
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QPushButton, QFileDialog,
                              QComboBox)
 
 from sdbcore.logger import Logger
-from .tabstate import TabState
 from .droppablelineeditwidget import DroppableLineEditWidget
+from .icon import Icon
+from .pixmap import Pixmap
+from .tabstate import TabState
+
 
 class SetupWidget(QWidget):
     def __init__(self, setupwindow, serializer_data):
@@ -47,7 +49,7 @@ class SetupWidget(QWidget):
         self.__widget_edit_directory.textChanged[str].connect(self.widget_edit_directory_changed)
 
         self.__widget_button_directory_file_dialog = QPushButton(self)
-        self.__widget_button_directory_file_dialog.setIcon(QIcon("sdbgui/images/fileopen.png"))
+        self.__widget_button_directory_file_dialog.setIcon(Icon("fileopen.png"))
         self.__widget_button_directory_file_dialog.setToolTip("Set Serializer directory")
         self.__widget_button_directory_file_dialog.clicked.connect(self.open_file_dialog)
 
@@ -90,7 +92,7 @@ class SetupWidget(QWidget):
         """Check if the directory exists and fill the self.__prefix_edit with suggestions for the
         prefix.
         """
-        is_valid = path.exists(self.directory)
+        is_valid = path.isdir(self.directory)
 
         if is_valid:
             files = [f for f in listdir(self.directory) if
@@ -116,7 +118,7 @@ class SetupWidget(QWidget):
             self.show_invalid_icon()
 
     def check_if_prefix_is_valid(self):
-        dir_is_valid = path.exists(self.directory)
+        dir_is_valid = path.isdir(self.directory)
         if dir_is_valid:
             files = [f for f in listdir(self.directory) if
                      path.isfile(path.join(self.directory, f))]
@@ -154,14 +156,14 @@ class SetupWidget(QWidget):
         Logger.info("Setting prefix of %s to: %s" % (self.__name, self.prefix))
 
     def show_invalid_icon(self):
-        self.__widget_label_status_icon.setPixmap(QPixmap("sdbgui/images/error.png"))
+        self.__widget_label_status_icon.setPixmap(Pixmap("error.png"))
         self.__widget_label_status_icon.setStatusTip("Directory does not contain a Serializer")
 
         # It's the safest way to just invalidate all other tabs
         self.__widget_setupwindow.widget_mainwindow.set_tab_highest_valid_state(TabState.Setup)
 
     def show_valid_icon(self):
-        image = QPixmap("sdbgui/images/success.png")
+        image = Pixmap("success.png")
 
         if sys_platform == 'win32':
             image = image.scaled(12, 12, Qt.KeepAspectRatio)

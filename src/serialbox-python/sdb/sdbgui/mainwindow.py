@@ -11,9 +11,11 @@
 
 from time import time
 
-from PyQt5.QtCore import QFileSystemWatcher
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QAction, QTabWidget, QMessageBox
+from os import getcwd, listdir, path
+
+from PyQt5.QtCore import QFileSystemWatcher, QUrl
+from PyQt5.QtGui import QIcon, QDesktopServices
+from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QAction, QTabWidget, QMessageBox, QFileDialog
 
 from sdbcore.logger import Logger
 from sdbcore.serializerdata import SerializerData
@@ -28,7 +30,7 @@ from .sessionmanager import SessionManager
 from .setupwindow import SetupWindow
 from .stencilwindow import StencilWindow
 from .tabstate import TabState
-
+from .icon import Icon
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -68,7 +70,7 @@ class MainWindow(QMainWindow):
         if GlobalConfig()["move_window"]:
             self.move(GlobalConfig()["move_window"])
 
-        self.setWindowIcon(QIcon("sdbgui/images/logo-small.png"))
+        self.setWindowIcon(Icon("logo-small.png"))
         self.init_menu_tool_bar()
 
         # Tabs
@@ -132,33 +134,38 @@ class MainWindow(QMainWindow):
         action_about.setStatusTip("Show the application's About box")
         action_about.triggered.connect(self.popup_about_box)
 
-        action_save_session = QAction(QIcon("sdbgui/images/filesave.png"), "&Save", self)
+        action_save_session = QAction(Icon("filesave.png"), "&Save", self)
         action_save_session.setStatusTip("Save current session")
         action_save_session.setShortcut("Ctrl+S")
         action_save_session.triggered.connect(self.save_session)
 
-        action_open_session = QAction(QIcon("sdbgui/images/fileopen.png"), "&Open", self)
+        action_open_session = QAction(Icon("fileopen.png"), "&Open", self)
         action_open_session.setShortcut("Ctrl+O")
         action_open_session.setStatusTip("Open session")
         action_open_session.triggered.connect(self.open_session)
 
-        self.__action_continue = QAction(QIcon("sdbgui/images/next_cursor.png"), "Continue", self)
+        action_help = QAction(Icon("help.png"), "&Online Help", self)
+        action_help.setStatusTip("Online Help")
+        action_help.setToolTip("Online Help")
+        action_help.triggered.connect(self.go_to_online_help)
+
+        self.__action_continue = QAction(Icon("next_cursor.png"), "Continue", self)
         self.__action_continue.setStatusTip("Continue to next tab")
         self.__action_continue.triggered.connect(self.switch_to_next_tab)
         self.__action_continue.setEnabled(True)
 
-        self.__action_back = QAction(QIcon("sdbgui/images/prev_cursor.png"), "Back", self)
+        self.__action_back = QAction(Icon("prev_cursor.png"), "Back", self)
         self.__action_back.setStatusTip("Back to previous tab")
         self.__action_back.triggered.connect(self.switch_to_previous_tab)
         self.__action_back.setEnabled(False)
 
-        self.__action_reload = QAction(QIcon("sdbgui/images/step_in.png"), "Reload", self)
+        self.__action_reload = QAction(Icon("step_in.png"), "Reload", self)
         self.__action_reload.setStatusTip("Reload Input and Reference Serializer")
         self.__action_reload.setShortcut("Ctrl+R")
         self.__action_reload.triggered.connect(self.reload_serializer)
         self.__action_reload.setEnabled(False)
 
-        self.__action_try_switch_to_error_tab = QAction(QIcon("sdbgui/images/visualize.png"),
+        self.__action_try_switch_to_error_tab = QAction(Icon("visualize.png"),
                                                         "Detailed error description", self)
         self.__action_try_switch_to_error_tab.setStatusTip(
             "Detailed error desscription of the current field")
@@ -181,8 +188,10 @@ class MainWindow(QMainWindow):
 
         help_menu = menubar.addMenu('&Help')
         help_menu.addAction(action_about)
+        help_menu.addAction(action_help)
 
         toolbar = self.addToolBar("Toolbar")
+        toolbar.addAction(action_help)
         toolbar.addAction(action_open_session)
         toolbar.addAction(action_save_session)
         toolbar.addAction(self.__action_back)
@@ -337,9 +346,15 @@ class MainWindow(QMainWindow):
 
     def save_session(self):
         Logger.info("Saveing session")
+        filename = QFileDialog.getSaveFileName(self, "Open Session", getcwd())
+        print(filename)
+        self.switch_to_tab(TabState.Setup)
 
     def open_session(self):
         Logger.info("Opening session")
+        filename = QFileDialog.getOpenFileName(self, "Open Session", getcwd())
+        print(filename)
+        self.switch_to_tab(TabState.Setup)
 
     @property
     def session_manager(self):
@@ -365,3 +380,11 @@ class MainWindow(QMainWindow):
             self.set_tab_highest_valid_state(TabState.Setup)
             self.switch_to_tab(TabState.Setup)
             self.__widget_tab.currentWidget().make_update()
+
+    # ===----------------------------------------------------------------------------------------===
+    #   Online help
+    # ==-----------------------------------------------------------------------------------------===
+
+    def go_to_online_help(self):
+        Logger.info("Opening online help")
+        QDesktopServices.openUrl(QUrl("https://thfabian.github.io/serialbox2/sdb.html"))

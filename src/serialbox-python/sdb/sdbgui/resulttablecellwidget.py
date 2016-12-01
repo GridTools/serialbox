@@ -12,6 +12,7 @@
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout
 
+from .pixmap import Pixmap
 
 class ResultTableCellWidget(QWidget):
     def __init__(self, match):
@@ -28,11 +29,11 @@ class ResultTableCellWidget(QWidget):
     def set_icon(self, draw_success, draw_failure):
         if self.__match:
             if draw_success:
-                self.__widget_icon.setPixmap(QPixmap("sdbgui/images/success.png"))
+                self.__widget_icon.setPixmap(Pixmap("success.png"))
             else:
-                self.__widget_icon.setPixmap(QPixmap("sdbgui/images/none.png"))
+                self.__widget_icon.setPixmap(Pixmap("none.png"))
         else:
             if draw_failure:
-                self.__widget_icon.setPixmap(QPixmap("sdbgui/images/failure.png"))
+                self.__widget_icon.setPixmap(Pixmap("failure.png"))
             else:
-                self.__widget_icon.setPixmap(QPixmap("sdbgui/images/none.png"))
+                self.__widget_icon.setPixmap(Pixmap("none.png"))

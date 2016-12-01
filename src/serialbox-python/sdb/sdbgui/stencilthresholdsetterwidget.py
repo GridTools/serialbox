@@ -9,10 +9,10 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel, QHBoxLayout
 
 from sdbcore.logger import Logger
+from .pixmap import Pixmap
 
 
 class StencilThresholdSetterWidget(QWidget):
@@ -53,7 +53,7 @@ class StencilThresholdSetterWidget(QWidget):
         try:
             float(atol)
         except ValueError:
-            self.__widget_icon_atol.setPixmap(QPixmap("sdbgui/images/error.png"))
+            self.__widget_icon_atol.setPixmap(Pixmap("error.png"))
             self.__widget_icon_atol.setToolTip(
                 "%s cannot be converted to a valid floating point number" % atol)
             return
@@ -66,7 +66,7 @@ class StencilThresholdSetterWidget(QWidget):
         try:
             float(rtol)
         except ValueError:
-            self.__widget_icon_rtol.setPixmap(QPixmap("sdbgui/images/error.png"))
+            self.__widget_icon_rtol.setPixmap(Pixmap("error.png"))
             self.__widget_icon_rtol.setToolTip(
                 "%s cannot be converted to a valid floating point number" % rtol)
             return

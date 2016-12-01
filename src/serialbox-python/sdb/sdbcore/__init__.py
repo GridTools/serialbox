@@ -11,4 +11,11 @@
 
 from .version import __version__, __versioninfo__
 
-__all__ = ['__version__', '__versioninfo__']
+SDBCORE_HAS_C = True
+
+try:
+    import sdbcoreC
+except ImportError:
+    SDBCORE_HAS_C = False
+
+__all__ = ['__version__', '__versioninfo__', 'SDBCORE_HAS_C']

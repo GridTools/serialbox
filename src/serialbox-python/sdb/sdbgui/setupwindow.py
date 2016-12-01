@@ -9,11 +9,11 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLabel, QListWidget
 
 from sdbcore.logger import Logger
+from .icon import Icon
 from .setupwidget import SetupWidget
 from .tabstate import TabState
 from .tabwindow import TabWindow
@@ -28,6 +28,7 @@ class SmallListWidget(QListWidget):
         s.setHeight(super().sizeHint().height())
         s.setWidth(self.sizeHintForColumn(0))
         return s
+
 
 class SetupWindow(QWidget, TabWindow):
     def __init__(self, mainwindow, input_serializer_data, reference_serializer_data):
@@ -44,7 +45,7 @@ class SetupWindow(QWidget, TabWindow):
 
         self.__widget_button_next = QPushButton("Next", parent=self)
         self.__widget_button_next.clicked.connect(self.make_continue)
-        self.__widget_button_next.setIcon(QIcon("sdbgui/images/run.png"))
+        self.__widget_button_next.setIcon(Icon("run.png"))
         self.__widget_button_next.setStatusTip("Load Input and Refrence Serializers")
 
         self.__widget_label_recently_used = QLabel("Recently used Serializers: ", parent=self)

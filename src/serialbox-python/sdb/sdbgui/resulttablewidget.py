@@ -12,11 +12,12 @@
 from random import random
 
 from PyQt5.QtCore import QSize, Qt, QPoint
-from PyQt5.QtGui import QMovie, QIcon
 from PyQt5.QtWidgets import (QLabel, QVBoxLayout, QTableWidget, QWidget, QHBoxLayout, QHeaderView,
                              QCheckBox, QTableWidgetItem, QComboBox)
 
 from sdbcore.logger import Logger
+from .icon import Icon
+from .movie import Movie
 from .resulttablecellwidget import ResultTableCellWidget
 from .tabstate import TabState
 
@@ -67,13 +68,13 @@ class ResultTableWidget(QWidget):
             self.set_invocation_count)
 
         self.__widget_checkbox_draw_success = QCheckBox(self)
-        self.__widget_checkbox_draw_success.setIcon(QIcon("sdbgui/images/success.png"))
+        self.__widget_checkbox_draw_success.setIcon(Icon("success.png"))
         self.__widget_checkbox_draw_success.setChecked(True)
         self.__widget_checkbox_draw_success.stateChanged[int].connect(self.set_draw_success)
         self.__widget_checkbox_draw_success.setStatusTip("Show success icons")
 
         self.__widget_checkbox_draw_failure = QCheckBox(self)
-        self.__widget_checkbox_draw_failure.setIcon(QIcon("sdbgui/images/failure-small.png"))
+        self.__widget_checkbox_draw_failure.setIcon(Icon("failure-small.png"))
         self.__widget_checkbox_draw_failure.setChecked(True)
         self.__widget_checkbox_draw_failure.stateChanged[int].connect(self.set_draw_failure)
         self.__widget_checkbox_draw_failure.setStatusTip("Show failure icons")
@@ -157,13 +158,13 @@ class ResultTableWidget(QWidget):
             if random() < 0.2:
                 rnd = random()
                 if rnd < 0.33:
-                    movie = QMovie("sdbgui/images/dance_1.gif")
+                    movie = Movie("dance_1.gif")
                     movie.setScaledSize(QSize(21, 25))
                 elif rnd < 0.66:
-                    movie = QMovie("sdbgui/images/dance_2.gif")
+                    movie = Movie("dance_2.gif")
                     movie.setScaledSize(QSize(42, 25))
                 else:
-                    movie = QMovie("sdbgui/images/dance_3.gif")
+                    movie = Movie("dance_3.gif")
                     movie.setScaledSize(QSize(20, 25))
 
                 self.__widget_label_result_icon.setMovie(movie)
