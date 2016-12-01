@@ -9,7 +9,7 @@ This section is concerned with building and deploying the Documentation you are 
 Prerequisite
 ============
 
-Serialbox requires `doxygen <http://www.stack.nl/~dimitri/doxygen/>`_ and `sphinx <http://www.sphinx-doc.org/en/1.4.8/>`_. As sphinx imports the Python module of Serialbox to obtain the doc-strings, we require the Python3 version of sphinx. In Ubuntu (16.04), the following install the necessary packages:
+Serialbox requires `doxygen <http://www.stack.nl/~dimitri/doxygen/>`_ and `sphinx <http://www.sphinx-doc.org/en/1.4.8/>`_. As sphinx imports the Python module of Serialbox to obtain the doc-strings, we require the **Python3** version of sphinx. In Ubuntu (16.04), the following installs the necessary packages:
 
 .. code-block:: console
 
@@ -45,5 +45,5 @@ GitHub provides the ability to upload your website to `GitHub Pages <https://pag
 
   $ make deploy-docs
   
-To view your website, head to http://username.github.io/serialbox2 . You may need to adjust the GitHub settings for the repository first: ``"Settings"`` -> ``"GitHub Pages"`` set the ``"Source"`` to ``"gh-pages branch"``.
+To view your website, head to http://username.github.io/serialbox2 . You may need to adjust the GitHub settings of your Serialbox repository: ``"Settings"`` -> ``"GitHub Pages"`` set the ``"Source"`` to ``"gh-pages branch"`` to enable GitHub Pages.
 

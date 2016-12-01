@@ -331,8 +331,8 @@ class MainWindow(QMainWindow):
             self.__session_manager.store_to_file()
 
     def try_switch_to_error_tab(self):
-        self.__widget_tab.widget(TabState.Result.value).try_switch_to_error_tab()
-        self.__widget_tab.setTabEnabled(TabState.Error.value, True)
+        if self.__widget_tab.widget(TabState.Result.value).try_switch_to_error_tab():
+            self.__widget_tab.setTabEnabled(TabState.Error.value, True)
 
     def error_window_set_result_data(self, result_data):
         self.__widget_tab.widget(TabState.Error.value).set_result_data(result_data)

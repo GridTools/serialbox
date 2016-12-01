@@ -1,0 +1,83 @@
+{
+ "field_map": {
+  "u": {
+   "dims": [
+    32,
+    34,
+    80
+   ],
+   "meta_info": null,
+   "type_id": 5
+  },
+  "v": {
+   "dims": [
+    32,
+    34
+   ],
+   "meta_info": null,
+   "type_id": 5
+  }
+ },
+ "global_meta_info": {
+  "stencils": {
+   "type_id": 22,
+   "value": [
+    "MyStencil"
+   ]
+  }
+ },
+ "prefix": "stencil",
+ "savepoint_vector": {
+  "fields_per_savepoint": [
+   {
+    "MyStencil__in": {
+     "u": 0,
+     "v": 0
+    }
+   },
+   {
+    "MyStencil__out": {
+     "u": 1,
+     "v": 1
+    }
+   }
+  ],
+  "savepoints": [
+   {
+    "meta_info": {
+     "invocation_count": {
+      "type_id": 2,
+      "value": 0
+     },
+     "stage_id": {
+      "type_id": 2,
+      "value": 0
+     },
+     "stage_name": {
+      "type_id": 6,
+      "value": "my_fance_stage"
+     }
+    },
+    "name": "MyStencil__in"
+   },
+   {
+    "meta_info": {
+     "invocation_count": {
+      "type_id": 2,
+      "value": 0
+     },
+     "stage_id": {
+      "type_id": 2,
+      "value": 0
+     },
+     "stage_name": {
+      "type_id": 6,
+      "value": "my_fance_stage"
+     }
+    },
+    "name": "MyStencil__out"
+   }
+  ]
+ },
+ "serialbox_version": 201
+}

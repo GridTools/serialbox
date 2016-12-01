@@ -48,7 +48,7 @@ class ResultWindow(QWidget, TabWindow):
         self.__widget_result_table.make_update()
 
     def try_switch_to_error_tab(self):
-        self.__widget_result_table.try_switch_to_error_tab()
+        return self.__widget_result_table.try_switch_to_error_tab()
 
     @property
     def widget_mainwindow(self):

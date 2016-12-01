@@ -297,3 +297,5 @@ class ResultTableWidget(QWidget):
                 mainwindow = self.__widget_resultwindow.widget_mainwindow
                 mainwindow.error_window_set_result_data(result_data)
                 mainwindow.switch_to_tab(TabState.Error)
+                return True
+        return False

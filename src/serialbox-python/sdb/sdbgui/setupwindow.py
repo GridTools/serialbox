@@ -10,7 +10,7 @@
 ##===------------------------------------------------------------------------------------------===##
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLabel
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLabel, QListWidget
 
 from sdbcore.logger import Logger
 from .popuperrormessagebox import PopupErrorMessageBox
@@ -32,11 +32,12 @@ class SetupWindow(QWidget, TabWindow):
         self.__widget_setup_input = SetupWidget(self, self.__input_serializer_data)
         self.__widget_setup_reference = SetupWidget(self, self.__reference_serializer_data)
 
-        self.__widget_button_next = QPushButton("Next")
+        self.__widget_button_next = QPushButton("Next", parent=self)
         self.__widget_button_next.clicked.connect(self.make_continue)
         self.__widget_button_next.setIcon(QIcon("sdbgui/images/run.png"))
 
-        self.__widget_label_explain = QLabel("Explain the process here!")
+        self.__widget_label_recently_used = QLabel("Recently used Serializers: ", parent=self)
+        self.__widget_list_recently_used = QListWidget(self)
 
         hbox = QHBoxLayout()
         hbox.addWidget(self.__widget_setup_input)
@@ -44,8 +45,9 @@ class SetupWindow(QWidget, TabWindow):
 
         vbox = QVBoxLayout()
         vbox.addLayout(hbox)
-        vbox.addStretch(1)
-        vbox.addWidget(self.__widget_label_explain)
+        vbox.addStretch(5)
+        vbox.addWidget(self.__widget_label_recently_used)
+        vbox.addWidget(self.__widget_list_recently_used)
         vbox.addStretch(1)
 
         hbox_button = QHBoxLayout()

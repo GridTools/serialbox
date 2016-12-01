@@ -14,6 +14,7 @@ Serialbox is a serialization library and tools for C/C++, Python3 and Fortran. S
    C
    Python
    Fortran
+   sdb
 
 Building
 ========

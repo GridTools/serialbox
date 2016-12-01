@@ -4,9 +4,6 @@ Fortran interface
 
 This section deals with the Fortran interface of Serialbox. A simple example can be found in ``examples/fortran/simple`` and a fully self-contained one in ``examples/fortran/perturbation``.
 
-.. contents::
-   :local:
-
 .. _FortranBuilding:
 
 Building
@@ -26,7 +23,7 @@ To build the Fortran interface, proceed as described in :ref:`Quick start` secti
 The CMake build system of Serialbox takes care of setting the correct flags for the different Fortran compilers (GNU, PGI and Cray).
 
 .. note::
-  It is important to use the same tool-chain (C++ and Fortran compiler) than the one used to build Serialbox.
+  If you want to use Serialbox in your project, it is important to use the same tool-chain (C++ and Fortran compiler) than the one used to build Serialbox.
      
 Using the Fortran Interface
 ===========================

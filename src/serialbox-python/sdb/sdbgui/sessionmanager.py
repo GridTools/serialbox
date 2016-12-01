@@ -30,6 +30,9 @@ class SessionManager(object):
 
         config["Version"] = Version().sdb_version()
 
+        # Recently used serializers
+        config["RecentlyUsedSerializer"] = {}
+
         # SerializerData
         config["SerializerData"]["Input Serializer"] = {"directory": "", "prefix": ""}
         config["SerializerData"]["Reference Serializer"] = {"directory": "", "prefix": ""}
