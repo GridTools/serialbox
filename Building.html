@@ -112,7 +112,7 @@
             
   <div class="section" id="building-serialbox">
 <h1>Building Serialbox<a class="headerlink" href="#building-serialbox" title="Permalink to this headline">¶</a></h1>
-<p>Serialbox relies on <a class="reference external" href="http://www.cmake.org/">CMake</a> (&gt;= 3.3), a cross-platform build-generator tool. CMake does not build the project, it generates the files needed by your build tool (GNU make, Visual Studio, etc.) for building Serialbox.</p>
+<p>Serialbox relies on <a class="reference external" href="http://www.cmake.org/">CMake</a> (&gt;= 3.1), a cross-platform build-generator tool. CMake does not build the project, it generates the files needed by your build tool (GNU make, Visual Studio, etc.) for building Serialbox.</p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
 <li><a class="reference internal" href="#quick-start" id="id15">Quick start</a></li>
@@ -291,6 +291,8 @@ Release, Debug, RelWithDebInfo and MinSizeRel (default is Release).</dd>
 <dd>Build Python3 interface of Serialbox (requires <code class="docutils literal"><span class="pre">SERIALBOX_ENABLE_C=ON</span></code>). The options is ON by default. The module will be installed in <code class="docutils literal"><span class="pre">python/serialbox</span></code>.</dd>
 <dt><strong>SERIALBOX_ENABLE_FORTRAN</strong>:BOOL</dt>
 <dd>Build the C interface of Serialbox (<code class="docutils literal"><span class="pre">libSerialboxFortran</span></code>). The options is OFF by default.</dd>
+<dt><strong>SERIALBOX_ENABLE_SDB</strong>:BOOL</dt>
+<dd>Build stencil debugger <code class="docutils literal"><span class="pre">sdb</span></code> (requires <code class="docutils literal"><span class="pre">SERIALBOX_ENABLE_PYTHON=ON</span></code>). The options is ON by default. The module will be installed in <code class="docutils literal"><span class="pre">python/sdb</span></code>.</dd>
 <dt><strong>SERIALBOX_EXAMPLES</strong>:BOOL</dt>
 <dd>Build the example executables in <code class="docutils literal"><span class="pre">examples/</span></code>. To build the gridtools examples, <code class="docutils literal"><span class="pre">SERIALBOX_TESTING_GRIDTOOLS=ON</span></code> is required.</dd>
 <dt><strong>SERIALBOX_BUILD_SHARED</strong>:BOOL</dt>

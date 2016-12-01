@@ -2,7 +2,7 @@
 Building Serialbox
 ******************
 
-Serialbox relies on `CMake <http://www.cmake.org/>`_ (>= 3.3), a cross-platform build-generator tool. CMake does not build the project, it generates the files needed by your build tool (GNU make, Visual Studio, etc.) for building Serialbox.
+Serialbox relies on `CMake <http://www.cmake.org/>`_ (>= 3.1), a cross-platform build-generator tool. CMake does not build the project, it generates the files needed by your build tool (GNU make, Visual Studio, etc.) for building Serialbox.
 
 .. contents::
    :local:
@@ -199,6 +199,9 @@ Serialbox specific variables
 
 **SERIALBOX_ENABLE_FORTRAN**:BOOL
   Build the C interface of Serialbox (``libSerialboxFortran``). The options is OFF by default.
+  
+**SERIALBOX_ENABLE_SDB**:BOOL
+  Build stencil debugger ``sdb`` (requires ``SERIALBOX_ENABLE_PYTHON=ON``). The options is ON by default. The module will be installed in ``python/sdb``.
  
 **SERIALBOX_EXAMPLES**:BOOL
   Build the example executables in ``examples/``. To build the gridtools examples, ``SERIALBOX_TESTING_GRIDTOOLS=ON`` is required.

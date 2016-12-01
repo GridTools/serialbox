@@ -26,6 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="top" title="Serialbox 2.0.1 documentation" href="index.html" />
+    <link rel="next" title="sdb - stencil debugger" href="sdb.html" />
     <link rel="prev" title="Serialbox Python" href="Python.html" /> 
   </head>
   <body role="document">
@@ -41,6 +42,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="sdb.html" title="sdb - stencil debugger"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="Python.html" title="Serialbox Python"
              accesskey="P">previous</a> |</li>
@@ -62,6 +66,9 @@
   <h4>Previous topic</h4>
   <p class="topless"><a href="Python.html"
                         title="previous chapter">Serialbox Python</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="sdb.html"
+                        title="next chapter">sdb - stencil debugger</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -93,14 +100,8 @@
   <div class="section" id="fortran-interface">
 <h1>Fortran interface<a class="headerlink" href="#fortran-interface" title="Permalink to this headline">¶</a></h1>
 <p>This section deals with the Fortran interface of Serialbox. A simple example can be found in <code class="docutils literal"><span class="pre">examples/fortran/simple</span></code> and a fully self-contained one in <code class="docutils literal"><span class="pre">examples/fortran/perturbation</span></code>.</p>
-<div class="contents local topic" id="contents">
-<ul class="simple">
-<li><a class="reference internal" href="#building" id="id1">Building</a></li>
-<li><a class="reference internal" href="#using-the-fortran-interface" id="id2">Using the Fortran Interface</a></li>
-</ul>
-</div>
 <div class="section" id="building">
-<span id="fortranbuilding"></span><h2><a class="toc-backref" href="#id1">Building</a><a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
+<span id="fortranbuilding"></span><h2>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
 <p>To build the Fortran interface, proceed as described in <a class="reference internal" href="Building.html#quick-start"><span>Quick start</span></a> section with the difference of setting the CMake variable <code class="docutils literal"><span class="pre">SERIALBOX_ENABLE_FORTRAN</span></code> to ON. Note that you can control the Fortran compiler used by CMake with the the environment varialbe <code class="docutils literal"><span class="pre">FC</span></code>.</p>
 <p><strong>For example</strong>: To use the GNU fortran compiler:</p>
 <blockquote>
@@ -114,11 +115,11 @@
 <p>The CMake build system of Serialbox takes care of setting the correct flags for the different Fortran compilers (GNU, PGI and Cray).</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">It is important to use the same tool-chain (C++ and Fortran compiler) than the one used to build Serialbox.</p>
+<p class="last">If you want to use Serialbox in your project, it is important to use the same tool-chain (C++ and Fortran compiler) than the one used to build Serialbox.</p>
 </div>
 </div>
 <div class="section" id="using-the-fortran-interface">
-<h2><a class="toc-backref" href="#id2">Using the Fortran Interface</a><a class="headerlink" href="#using-the-fortran-interface" title="Permalink to this headline">¶</a></h2>
+<h2>Using the Fortran Interface<a class="headerlink" href="#using-the-fortran-interface" title="Permalink to this headline">¶</a></h2>
 <p>To use the Fortran interface in your project, you need to link against <code class="docutils literal"><span class="pre">libSerialboxFortran</span></code> and the C++ standard library used to compile the code (e.g <code class="docutils literal"><span class="pre">libstdc++</span></code> for GNU gcc) as well as the dependency libraries (Boost and possibly NetCDF and OpenSSL). As this can be tedious, Serialbox provides a CMake find_package module (<a class="reference internal" href="Usage.html#findserialbox"><span>FindSerialbox</span></a>) to handle this task.</p>
 <p>To use the preprocessing script <code class="docutils literal"><span class="pre">pp_ser.py</span></code>, take a look at the CMake module <a class="reference internal" href="Usage.html#serialboxtooling"><span>SerialboxTooling</span></a>. For a self-contained example see <code class="docutils literal"><span class="pre">examples/fortran/perturbation</span></code>.</p>
 </div>
@@ -136,6 +137,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="sdb.html" title="sdb - stencil debugger"
+             >next</a> |</li>
         <li class="right" >
           <a href="Python.html" title="Serialbox Python"
              >previous</a> |</li>

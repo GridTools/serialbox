@@ -100,9 +100,9 @@ $(document).ready(function(){initNavTree('group__fortran__wrapper.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga85a8b792b58cdb8cdb9612fad3f6c7cd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__fortran__wrapper.html#ga85a8b792b58cdb8cdb9612fad3f6c7cd">serialboxFortranSerializerRegisterField</a> (void *serializer, const char *name, int type, int bytesPerElement, int iSize, int jSize, int kSize, int lSize)</td></tr>
-<tr class="memdesc:ga85a8b792b58cdb8cdb9612fad3f6c7cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register <code>field</code> within the serializer.  <a href="#ga85a8b792b58cdb8cdb9612fad3f6c7cd">More...</a><br /></td></tr>
-<tr class="separator:ga85a8b792b58cdb8cdb9612fad3f6c7cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga276364734a2963ae27aa5c69737c2c61"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__fortran__wrapper.html#ga276364734a2963ae27aa5c69737c2c61">serialboxFortranSerializerRegisterField</a> (void *serializer, const char *name, int type, int bytesPerElement, int iSize, int jSize, int kSize, int lSize, int iMinusHalo, int iPlusHalo, int jMinusHalo, int jPlusHalo, int kMinusHalo, int kPlusHalo, int lMinusHalo, int lPlusHalo)</td></tr>
+<tr class="memdesc:ga276364734a2963ae27aa5c69737c2c61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register <code>field</code> within the serializer.  <a href="#ga276364734a2963ae27aa5c69737c2c61">More...</a><br /></td></tr>
+<tr class="separator:ga276364734a2963ae27aa5c69737c2c61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga776a8ba2ca8fee3433cdc682fa7c451a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga776a8ba2ca8fee3433cdc682fa7c451a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__fortran__wrapper.html#ga776a8ba2ca8fee3433cdc682fa7c451a">serialboxFortranSerializerWrite</a> (void *serializer, const void *savepoint, const char *name, void *originPtr, int istride, int jstride, int kstride, int lstride)</td></tr>
 <tr class="memdesc:ga776a8ba2ca8fee3433cdc682fa7c451a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper for <a class="el" href="group__serializer.html#gaaddd9cb3524c8ee29dafe61264ebc202">serialboxSerializerWrite</a>. <br /></td></tr>
@@ -212,7 +212,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxFortranSavep
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="FortranWrapper_8cpp_source.html#l00287">287</a> of file <a class="el" href="FortranWrapper_8cpp_source.html">FortranWrapper.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FortranWrapper_8cpp_source.html#l00290">290</a> of file <a class="el" href="FortranWrapper_8cpp_source.html">FortranWrapper.cpp</a>.</p>
 
 </div>
 </div>
@@ -264,7 +264,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxFortranSavep
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="FortranWrapper_8cpp_source.html#l00218">218</a> of file <a class="el" href="FortranWrapper_8cpp_source.html">FortranWrapper.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FortranWrapper_8cpp_source.html#l00221">221</a> of file <a class="el" href="FortranWrapper_8cpp_source.html">FortranWrapper.cpp</a>.</p>
 
 </div>
 </div>
@@ -313,7 +313,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxFortranSavep
 
 </div>
 </div>
-<a class="anchor" id="ga85a8b792b58cdb8cdb9612fad3f6c7cd"></a>
+<a class="anchor" id="ga276364734a2963ae27aa5c69737c2c61"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -363,7 +363,55 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxFortranSavep
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>lSize</em>&#160;</td>
+          <td class="paramname"><em>lSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iMinusHalo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iPlusHalo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>jMinusHalo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>jPlusHalo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>kMinusHalo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>kPlusHalo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lMinusHalo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lPlusHalo</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -385,6 +433,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxFortranSavep
     <tr><td class="paramname">jSize</td><td>The size of the second dimension </td></tr>
     <tr><td class="paramname">kSize</td><td>The size of the third dimension </td></tr>
     <tr><td class="paramname">lsize</td><td>The size of the fourth dimension </td></tr>
+    <tr><td class="paramname">iMinusHalo</td><td>The dimension of the halo in negative i-direction </td></tr>
+    <tr><td class="paramname">iPlusHalo</td><td>The dimension of the halo in positive i-direction </td></tr>
+    <tr><td class="paramname">jMinusHalo</td><td>The dimension of the halo in negative j-direction </td></tr>
+    <tr><td class="paramname">jPlusHalo</td><td>The dimension of the halo in positive j-direction </td></tr>
+    <tr><td class="paramname">kMinusHalo</td><td>The dimension of the halo in negative k-direction </td></tr>
+    <tr><td class="paramname">kPlusHalo</td><td>The dimension of the halo in positive k-direction </td></tr>
+    <tr><td class="paramname">lMinusHalo</td><td>The dimension of the halo in negative l-direction </td></tr>
+    <tr><td class="paramname">lPlusHalo</td><td>The dimension of the halo in positive l-direction </td></tr>
   </table>
   </dd>
 </dl>
@@ -398,7 +454,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>serialboxFortranSavep
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Mon Nov 21 2016 10:46:19 for Serialbox by
+    <li class="footer">Generated on Thu Dec 1 2016 12:09:36 for Serialbox by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>
