@@ -12,13 +12,18 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, QSizePolicy
 
 from sdbcore.logger import Logger
+from .errorconsolewidget import ErrorConsoleWidget
 from .errorlistwidget import ErrorListWidget
 from .errorvisualizewidget import ErrorVisualizeWidget
 from .errorwindowheaderwidget import ErrorWindowHeaderWidget
-from .errorconsolewidget import ErrorConsoleWidget
 from .tabstate import TabState
 from .tabwindow import TabWindow
+from enum import Enum
 
+class ResulDataState(Enum):
+    Uninitialized = 0
+    Invalid = 1
+    Valid = 2
 
 class ErrorWindow(QWidget, TabWindow):
     def __init__(self, mainwindow):
@@ -26,7 +31,7 @@ class ErrorWindow(QWidget, TabWindow):
 
         # Data
         self.__result_data = None
-        self.__result_data_is_dirty = True
+        self.__result_data_state = ResulDataState.Uninitialized
 
         # Widgets
         self.__widget_mainwindow = mainwindow
@@ -54,7 +59,7 @@ class ErrorWindow(QWidget, TabWindow):
     def set_result_data(self, result_data):
         if self.__result_data != result_data:
             self.__result_data = result_data
-            self.__result_data_is_dirty = True
+            self.__result_data_state = ResulDataState.Uninitialized
 
     def make_continue(self):
         pass
@@ -63,8 +68,8 @@ class ErrorWindow(QWidget, TabWindow):
         self.__widget_mainwindow.switch_to_tab(TabState.Result)
 
     def make_update(self):
-        if self.__result_data_is_dirty:
-            Logger.info("Updating ErrorTab tab")
+        if self.__result_data_state == ResulDataState.Uninitialized:
+            Logger.info("Updating Error tab")
 
             self.__widget_input_header.make_update(self.__result_data)
             self.__widget_reference_header.make_update(self.__result_data)
@@ -72,7 +77,7 @@ class ErrorWindow(QWidget, TabWindow):
             for idx in range(self.__widget_error_tab.count()):
                 self.__widget_error_tab.widget(idx).make_update(self.__result_data)
 
-            self.__result_data_is_dirty = False
+            self.__result_data_state = ResulDataState.Valid
 
     @property
     def widget_mainwindow(self):

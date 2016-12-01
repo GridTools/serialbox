@@ -23,12 +23,14 @@ class StencilThresholdSetterWidget(QWidget):
         self.__stencil_field_mapper = stencil_field_mapper
 
         # Widget
-        self.__widget_label_rtol = QLabel("Relative tolerance: ")
+        self.__widget_label_rtol = QLabel("Relative tolerance: ", parent=self)
+        self.__widget_label_rtol.setStatusTip("Relative tolerance used during comparison")
         self.__widget_lineedit_rtol = QLineEdit("%s" % stencil_field_mapper.rtol)
         self.__widget_lineedit_rtol.textChanged[str].connect(self.set_rtol)
         self.__widget_icon_rtol = QLabel("")
 
-        self.__widget_label_atol = QLabel("Absolute tolerance: ")
+        self.__widget_label_atol = QLabel("Absolute tolerance: ", parent=self)
+        self.__widget_label_atol.setStatusTip("Relative tolerance used during comparison")
         self.__widget_lineedit_atol = QLineEdit("%s" % stencil_field_mapper.atol)
         self.__widget_lineedit_atol.textChanged[str].connect(self.set_atol)
         self.__widget_icon_atol = QLabel("")

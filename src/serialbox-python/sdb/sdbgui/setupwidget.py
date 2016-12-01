@@ -10,14 +10,16 @@
 ##===------------------------------------------------------------------------------------------===##
 
 from os import getcwd, listdir, path
+from sys import platform as sys_platform
 
+from PyQt5.QtCore import Qt, QDataStream, QIODevice
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QLineEdit, QPushButton, QFileDialog,
                              QComboBox)
 
 from sdbcore.logger import Logger
 from .tabstate import TabState
-
+from .droppablelineeditwidget import DroppableLineEditWidget
 
 class SetupWidget(QWidget):
     def __init__(self, setupwindow, serializer_data):
@@ -30,27 +32,30 @@ class SetupWidget(QWidget):
         #  Widgets
         self.__widget_setupwindow = setupwindow
 
-        self.__widget_label_name = QLabel("<b>%s</b>" % self.__name)
+        self.__widget_label_name = QLabel("<b>%s</b>" % self.__name, parent=self)
 
-        self.__widget_label_status_icon = QLabel()
+        self.__widget_label_status_icon = QLabel(self)
 
-        self.__widget_label_directory_name = QLabel('Directory')
+        self.__widget_label_directory_name = QLabel('Directory', parent=self)
         self.__widget_label_directory_name.setToolTip("Directory of the %s" % self.__name)
         self.__widget_label_directory_name.setStatusTip("Directory of the %s" % self.__name)
 
-        self.__widget_edit_directory = QLineEdit(self.__serializer_data.directory)
+        self.__widget_edit_directory = DroppableLineEditWidget(self.__serializer_data.directory,
+                                                               parent=self)
+        self.__widget_edit_directory.setClearButtonEnabled(True)
+        self.__widget_edit_directory.setDragEnabled(True)
         self.__widget_edit_directory.textChanged[str].connect(self.widget_edit_directory_changed)
 
-        self.__widget_button_directory_file_dialog = QPushButton()
+        self.__widget_button_directory_file_dialog = QPushButton(self)
         self.__widget_button_directory_file_dialog.setIcon(QIcon("sdbgui/images/fileopen.png"))
         self.__widget_button_directory_file_dialog.setToolTip("Set Serializer directory")
         self.__widget_button_directory_file_dialog.clicked.connect(self.open_file_dialog)
 
-        self.__widget_label_prefix_name = QLabel('Prefix')
+        self.__widget_label_prefix_name = QLabel('Prefix', parent=self)
         self.__widget_label_prefix_name.setToolTip("Prefix of the %s" % self.__name)
         self.__widget_label_prefix_name.setStatusTip("Prefix of the %s" % self.__name)
 
-        self.__widget_edit_prefix = QComboBox()
+        self.__widget_edit_prefix = QComboBox(self)
         self.__widget_edit_prefix.setEditable(True)
         self.__widget_edit_prefix.setEditText(self.__serializer_data.prefix)
         self.__widget_edit_prefix.editTextChanged[str].connect(self.widget_edit_prefix_changed)
@@ -158,7 +163,8 @@ class SetupWidget(QWidget):
     def show_valid_icon(self):
         image = QPixmap("sdbgui/images/success.png")
 
-        #TODO: fix this here
-        # image = image.scaled(12, 12, Qt.KeepAspectRatio)
+        if sys_platform == 'win32':
+            image = image.scaled(12, 12, Qt.KeepAspectRatio)
+
         self.__widget_label_status_icon.setPixmap(image)
         self.__widget_label_status_icon.setStatusTip("")

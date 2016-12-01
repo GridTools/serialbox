@@ -19,6 +19,9 @@ from sdbcore.version import Version
 
 
 class SessionManager(object):
+    """Load/store information about the current session
+    """
+
     DefaultConfigFile = "default-config.json"
 
     def __init__(self):
@@ -31,7 +34,7 @@ class SessionManager(object):
         config["Version"] = Version().sdb_version()
 
         # Recently used serializers
-        config["RecentlyUsedSerializer"] = {}
+        config["RecentlyUsedSerializerPaths"] = []
 
         # SerializerData
         config["SerializerData"]["Input Serializer"] = {"directory": "", "prefix": ""}
@@ -42,7 +45,11 @@ class SessionManager(object):
 
         self.__config = dict(config)
 
-    def get_serializer_data(self, serializer_data):
+    # ===----------------------------------------------------------------------------------------===
+    #   SerializerData
+    # ==-----------------------------------------------------------------------------------------===
+
+    def set_serializer_data(self, serializer_data):
         name = serializer_data.name
         Logger.info("Loading SerializerData of '%s' from Configuration" % name)
 
@@ -64,6 +71,40 @@ class SessionManager(object):
             self.__config["SerializerData"][name]["prefix"] = serializer_data.prefix
         except IndexError as e:
             Logger.warning("Error storing SerializerData of '%s': %s" % (name, e))
+
+    # ===----------------------------------------------------------------------------------------===
+    #   Recently used files
+    # ==-----------------------------------------------------------------------------------------===
+
+    def get_recently_used_serializer_paths(self):
+        """Get a list of recently used serializer paths.
+
+        :return: List of recently used serializer paths
+        :rtype: :class:`list` [:class:`str`]
+        """
+        Logger.info("Query recently used Serializer paths")
+
+        if "RecentlyUsedSerializerPaths" in self.__config:
+            return self.__config["RecentlyUsedSerializerPaths"]
+        else:
+            return []
+
+    def update_recently_used_serializer_paths(self, path):
+        """Add a path to the recently used serializer paths
+
+        :param path: Path to the serializer i.e directory
+        :type path: str
+        """
+        if "RecentlyUsedSerializerPaths" in self.__config:
+            if not path in self.__config["RecentlyUsedSerializerPaths"]:
+                Logger.info("Adding '%s' to recently used Serializer paths" % path)
+                self.__config["RecentlyUsedSerializerPaths"] += [path]
+        else:
+            self.__config["RecentlyUsedSerializerPaths"] = [path]
+
+    # ===----------------------------------------------------------------------------------------===
+    #   Load/Store config file
+    # ==-----------------------------------------------------------------------------------------===
 
     def excract_config_files(self, filename):
         """If filename is None, the default configuration paths: (pwd)/.sdb/ or $HOME/.sdb/ will be
@@ -100,6 +141,12 @@ class SessionManager(object):
         return True
 
     def store_to_file(self, filename=None):
+        """Store configuration file to disk.
+
+        :param filename: Path of the configuration file. If `filename` is ``None``, the default
+                         locations will be searched for ``default-config.json``.
+        :type filename: str
+        """
         config_files = self.excract_config_files(filename)
         for config_file in config_files:
             if self.__store_to_file_impl(config_file):
@@ -118,6 +165,12 @@ class SessionManager(object):
         return True
 
     def load_from_file(self, filename=None):
+        """Load configuration file from disk.
+
+        :param filename: Path of the configuration file. If `filename` is ``None``, the default
+                         locations will be searched for ``default-config.json``.
+        :type filename: str
+        """
         config_files = self.excract_config_files(filename)
         for config_file in config_files:
             if self.__load_from_file_impl(config_file):

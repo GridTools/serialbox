@@ -16,6 +16,7 @@ from PyQt5.QtGui import QMovie, QIcon
 from PyQt5.QtWidgets import (QLabel, QVBoxLayout, QTableWidget, QWidget, QHBoxLayout, QHeaderView,
                              QCheckBox, QTableWidgetItem, QComboBox)
 
+from sdbcore.logger import Logger
 from .resulttablecellwidget import ResultTableCellWidget
 from .tabstate import TabState
 
@@ -24,6 +25,10 @@ def make_unqiue_and_preserve_order(seq):
     seen = set()
     seen_add = seen.add
     return [x for x in seq if not (x in seen or seen_add(x))]
+
+
+def make_shared_name(input_field, reference_field):
+    return "%s  (%s)" % (input_field, reference_field)
 
 
 def make_stage_name(result):
@@ -43,12 +48,15 @@ class ResultTableWidget(QWidget):
         self.__table_data = None
         self.__current_cell_row = None
         self.__current_cell_col = None
+        self.__last_cell_row = None
+        self.__last_cell_row = None
 
         self.__current_invocation_count = 0
 
         # Widgets
         self.__widget_resultwindow = resultwindow
         self.__widget_table = QTableWidget(self)
+        self.__currently_processing_custom_context_menu_request = False
 
         self.__widget_label_title = QLabel("", parent=self)
 
@@ -103,6 +111,8 @@ class ResultTableWidget(QWidget):
         self.setLayout(vbox)
 
     def make_update(self):
+        Logger.info("Updating ResultTableWidget")
+
         self.__comparison_result_list = self.__stencil_field_mapper.comparison_result_list
 
         self.__widget_label_title.setText(
@@ -114,21 +124,25 @@ class ResultTableWidget(QWidget):
 
         num_errors = 0
 
-        # Set invocation count widgets
-        if self.__comparison_result_list.invocation_count() > 1:
-            self.__widget_label_invocation_count.setEnabled(True)
-            self.__widget_combobox_invocation_count.setEnabled(True)
-
+        # Set invocation count widgets and compute errors
+        if self.__comparison_result_list.invocation_count() >= 1:
             self.__widget_combobox_invocation_count.clear()
             for i in range(self.__comparison_result_list.invocation_count()):
                 self.__widget_combobox_invocation_count.addItem("%i" % i)
 
                 for result in self.__comparison_result_list.results(i):
                     num_errors += not result["match"]
-
         else:
-            self.__widget_label_invocation_count.setEnabled(False)
-            self.__widget_combobox_invocation_count.setEnabled(False)
+            # No comparison found, roll back
+            self.__widget_resultwindow.widget_mainwindow.popup_error_box(
+                "<b>No valid comparisons</b><br/>No valid comparison were "
+                "computed for the selected stencil pair.")
+            self.__widget_resultwindow.make_back()
+
+        self.__widget_label_invocation_count.setEnabled(
+            self.__comparison_result_list.invocation_count() > 1)
+        self.__widget_combobox_invocation_count.setEnabled(
+            self.__comparison_result_list.invocation_count() > 1)
 
         # Update the table
         self.update_table()
@@ -162,9 +176,11 @@ class ResultTableWidget(QWidget):
 
     def set_invocation_count(self, idx):
         if idx < 0:
-            return
-        self.__current_invocation_count = int(self.__widget_combobox_invocation_count.itemText(idx))
-        self.update_table()
+            self.__current_invocation_count = 0
+        else:
+            self.__current_invocation_count = int(
+                self.__widget_combobox_invocation_count.itemText(idx))
+            self.update_table()
 
     def update_table(self):
 
@@ -185,7 +201,7 @@ class ResultTableWidget(QWidget):
                 fields += [input_field]
                 fields_tooltip += ["Field: \"%s\"" % input_field]
             else:
-                fields += ["%s  (%s)" % (input_field, reference_field)]
+                fields += [make_shared_name(input_field, reference_field)]
                 fields_tooltip += [
                     "Input field: \"%s\", Reference field: \"%s\"" % (input_field, reference_field)]
 
@@ -229,15 +245,13 @@ class ResultTableWidget(QWidget):
         for result in self.__comparison_result_list.results(self.__current_invocation_count):
             stage_idx = stages.index(make_stage_name(result))
 
-            field_name = result["input_field_name"]
+            input_field_name = result["input_field_name"]
 
-            # Remove parentheses
-            start = field_name.find('(')
-            end = field_name.find(')')
-            if start != -1 and end != -1:
-                field_name = field_name[start + 1:end]
-
-            field_idx = fields.index(field_name)
+            if input_field_name in fields:
+                field_idx = fields.index(input_field_name)
+            else:
+                field_idx = fields.index(
+                    make_shared_name(input_field_name, result["reference_field_name"]))
 
             # Widget
             cell = ResultTableCellWidget(result["match"])
@@ -291,11 +305,41 @@ class ResultTableWidget(QWidget):
         self.set_current_cell(self.__widget_table.item(row, column))
 
     def try_switch_to_error_tab(self):
-        if self.__current_cell_row is not None and self.__current_cell_col is not None:
-            result_data = self.__table_data[self.__current_cell_row][self.__current_cell_col]
+        Logger.info("Attempting to swtich to Error tab")
+        cur_row = self.__current_cell_row
+        cur_col = self.__current_cell_col
+
+        if cur_row is not None and cur_col is not None:
+
+            result_data = self.__table_data[cur_row][cur_col]
+
             if not result_data["match"]:
+
                 mainwindow = self.__widget_resultwindow.widget_mainwindow
-                mainwindow.error_window_set_result_data(result_data)
-                mainwindow.switch_to_tab(TabState.Error)
-                return True
+
+                # Check if dimensions match, if not display an error message and abort
+                if not result_data.shapes_match():
+
+                    # We only display the error message that the dimensions mismatch once. If we
+                    # don't do this it will popup two error message.. don't ask me why :(
+                    if self.__last_cell_row == cur_row and self.__last_cell_col == cur_col:
+                        return False
+
+                    self.__last_cell_row = cur_row
+                    self.__last_cell_col = cur_col
+
+                    errmsg = "<b>Dimension mismatch</b><br/>"
+                    errmsg += "Input '%s': %s<br/>" % (
+                        result_data["input_field_name"], result_data.input_shape)
+                    errmsg += "Reference '%s': %s" % (
+                        result_data["reference_field_name"], result_data.reference_shape)
+
+                    mainwindow.popup_error_box(errmsg)
+                    return False
+                else:
+                    mainwindow.error_window_set_result_data(result_data)
+                    mainwindow.switch_to_tab(TabState.Error)
+                    self.__last_cell_row = self.__last_cell_col = None
+                    return True
+
         return False

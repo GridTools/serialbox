@@ -13,7 +13,6 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 
 from sdbcore.logger import Logger
-from .popuperrormessagebox import PopupErrorMessageBox
 from .stencilfieldmetainfowidget import StencilFieldMetainfoWidget
 from .stencilthresholdsetterwidget import StencilThresholdSetterWidget
 from .stencilwidget import StencilWidget
@@ -46,6 +45,8 @@ class StencilWindow(QWidget, TabWindow):
         self.__widget_button_next = QPushButton("Next")
         self.__widget_button_next.clicked.connect(self.make_continue)
         self.__widget_button_next.setIcon(QIcon("sdbgui/images/run.png"))
+        self.__widget_button_next.setStatusTip(
+            "Compare selected fields of the Input and Refrence stencil")
 
         hbox_widgets = QHBoxLayout()
         hbox_widgets.addWidget(self.__widget_stencil_input)
@@ -71,7 +72,7 @@ class StencilWindow(QWidget, TabWindow):
             self.__stencil_field_mapper.compare_fields(self.__widget_stencil_input.fields,
                                                        self.__widget_stencil_reference.fields)
         except RuntimeError as e:
-            PopupErrorMessageBox(self, str(e))
+            self.__widget_mainwindow.popup_error_box(str(e))
             return False
         return True
 

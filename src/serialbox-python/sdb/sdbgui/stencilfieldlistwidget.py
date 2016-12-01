@@ -101,8 +101,19 @@ class StencilFieldListWidget(QListView, StencilDataFieldListListener):
         self.model().removeRow(item)
 
     def set_field_enabled(self, name_or_idx, enable):
+
+        # print(name_or_idx, self.__stencil_data.name)
+        # print(self.model().rowCount(), self.model().columnCount())
+        # print(self.model())
+
+        # print(name_or_idx, enable)
+        # print(self.model().rowCount(), self.model().columnCount())
+
         if isinstance(name_or_idx, str):
-            item = self.model().findItems(name_or_idx)[0]
+            index_list = self.model().findItems(name_or_idx)
+            if not index_list:
+                return
+            item = index_list[0]
         else:
             item = self.model().item(name_or_idx)
 

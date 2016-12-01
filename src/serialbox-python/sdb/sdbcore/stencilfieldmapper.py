@@ -78,8 +78,8 @@ class StencilFieldMapper(StencilDataDataListener):
                 self.__input_stencil_data.set_field_enabled(idx, True)
                 reference_fields_seen += [input_field]
 
-                # Move field to match index in input (i.e idx)
-                if idx != idx_in_ref:
+                # Move field to match index in input (i.e idx) if possible
+                if idx != idx_in_ref and idx < len(reference_fields):
                     self.__reference_stencil_data.move_field(input_field, idx)
 
             else:
@@ -192,9 +192,13 @@ class StencilFieldMapper(StencilDataDataListener):
                                                                 input_savepoint)
                             reference_field = reference_serializer.read(reference_field_name,
                                                                         reference_savepoint)
+
                         # Compare fields
-                        match = allclose(input_field, reference_field, rtol=self.__rtol,
-                                         atol=self.__atol)
+                        if input_field.shape == reference_field.shape:
+                            match = allclose(input_field, reference_field, rtol=self.__rtol,
+                                             atol=self.__atol)
+                        else:
+                            match = False
 
                         # Append result
                         self.__comparison_result_list.append(match,

@@ -23,7 +23,6 @@ from sdbcore.version import Version
 from .errorwindow import ErrorWindow
 from .globalconfig import GlobalConfig
 from .popupaboutwidget import PopupAboutWidget
-from .popuperrormessagebox import PopupErrorMessageBox
 from .resultwindow import ResultWindow
 from .sessionmanager import SessionManager
 from .setupwindow import SetupWindow
@@ -51,12 +50,13 @@ class MainWindow(QMainWindow):
         self.__file_system_watcher_last_modify = time()
 
         # Load from session?
+        self.__session_manager = SessionManager()
+
         if GlobalConfig()["default_session"]:
-            self.__session_manager = SessionManager()
             self.__session_manager.load_from_file()
 
-            self.__session_manager.get_serializer_data(self.__input_serializer_data)
-            self.__session_manager.get_serializer_data(self.__reference_serializer_data)
+        self.__session_manager.set_serializer_data(self.__input_serializer_data)
+        self.__session_manager.set_serializer_data(self.__reference_serializer_data)
 
         # Setup GUI
         self.setWindowTitle('sdb - stencil debugger (%s)' % Version().sdb_version())
@@ -111,7 +111,7 @@ class MainWindow(QMainWindow):
         self.__widget_tab.setTabToolTip(TabState.Error.value,
                                         "Detailed error desscription of the current field")
 
-        self.__tab_old_state = TabState.Setup
+        self.__tab_current_state = TabState.Setup
         self.set_tab_highest_valid_state(TabState.Setup)
         self.switch_to_tab(TabState.Setup)
 
@@ -190,18 +190,36 @@ class MainWindow(QMainWindow):
         toolbar.addAction(self.__action_reload)
         toolbar.addAction(self.__action_try_switch_to_error_tab)
 
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+    def closeEvent(self, event):
+        self.__session_manager.update_serializer_data(self.__input_serializer_data)
+        self.__session_manager.update_serializer_data(self.__reference_serializer_data)
+
+        if GlobalConfig()["default_session"]:
+            self.__session_manager.store_to_file()
+
+    # ===----------------------------------------------------------------------------------------===
+    #   TabWidgets
+    # ==-----------------------------------------------------------------------------------------===
+
     def tab_widget(self, idx):
         return self.__widget_tab.widget(idx if not isinstance(idx, TabState) else idx.value)
 
     def switch_to_tab(self, tab):
         idx = tab.value if isinstance(tab, TabState) else tab
-        if self.__tab_old_state == TabState(idx):
+        if self.__tab_current_state == TabState(idx):
             return
 
         Logger.info("Switching to %s tab" % TabState(idx).name)
-        self.__tab_old_state = TabState(idx)
+        self.__tab_current_state = TabState(idx)
+
         self.__widget_tab.setCurrentIndex(idx)
-        self.__widget_tab.currentWidget().make_update()
+        self.tab_widget(idx).make_update()
 
         self.__action_try_switch_to_error_tab.setEnabled(TabState(idx) == TabState.Result)
 
@@ -277,14 +295,30 @@ class MainWindow(QMainWindow):
     def switch_to_previous_tab(self):
         self.__widget_tab.currentWidget().make_back()
 
-    def center(self):
-        qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
+    def try_switch_to_error_tab(self):
+        if self.__widget_tab.widget(TabState.Result.value).try_switch_to_error_tab():
+            self.__widget_tab.setTabEnabled(TabState.Error.value, True)
+
+    def error_window_set_result_data(self, result_data):
+        self.__widget_tab.widget(TabState.Error.value).set_result_data(result_data)
+
+    # ===----------------------------------------------------------------------------------------===
+    #   PopupWidgets
+    # ==-----------------------------------------------------------------------------------------===
 
     def popup_about_box(self):
-        self.about_widget = PopupAboutWidget(self)
+        self.__about_widget = PopupAboutWidget(self)
+
+    def popup_error_box(self, msg):
+        Logger.error(
+            msg.replace("<b>", "").replace("</b>", "").replace("<br />", ":").replace("<br/>", ":"))
+
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle("Error")
+        msg_box.setIcon(QMessageBox.Critical)
+        msg_box.setText(msg)
+        msg_box.setStandardButtons(QMessageBox.Ok)
+        reply = msg_box.exec_()  # Blocking
 
     def popup_reload_box(self, path):
         self.__file_system_watcher.blockSignals(True)
@@ -297,15 +331,23 @@ class MainWindow(QMainWindow):
 
         self.__file_system_watcher.blockSignals(False)
 
-
-    def popup_error_box(self, msg):
-        PopupErrorMessageBox(self, msg)
+    # ===----------------------------------------------------------------------------------------===
+    #   Session manager
+    # ==-----------------------------------------------------------------------------------------===
 
     def save_session(self):
         Logger.info("Saveing session")
 
     def open_session(self):
         Logger.info("Opening session")
+
+    @property
+    def session_manager(self):
+        return self.__session_manager
+
+    # ===----------------------------------------------------------------------------------------===
+    #   Reload Serializer
+    # ==-----------------------------------------------------------------------------------------===
 
     def reload_serializer(self):
         Logger.info("Reloading serializers")
@@ -323,16 +365,3 @@ class MainWindow(QMainWindow):
             self.set_tab_highest_valid_state(TabState.Setup)
             self.switch_to_tab(TabState.Setup)
             self.__widget_tab.currentWidget().make_update()
-
-    def closeEvent(self, event):
-        if GlobalConfig()["default_session"]:
-            self.__session_manager.update_serializer_data(self.__input_serializer_data)
-            self.__session_manager.update_serializer_data(self.__reference_serializer_data)
-            self.__session_manager.store_to_file()
-
-    def try_switch_to_error_tab(self):
-        if self.__widget_tab.widget(TabState.Result.value).try_switch_to_error_tab():
-            self.__widget_tab.setTabEnabled(TabState.Error.value, True)
-
-    def error_window_set_result_data(self, result_data):
-        self.__widget_tab.widget(TabState.Error.value).set_result_data(result_data)

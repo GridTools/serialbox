@@ -51,7 +51,10 @@ if SDB_HAS_MATPLOTLIB:
 
             data = error_positions[:, :, layer] if error_positions.ndim == 3 else error_positions
 
-            cmap = ListedColormap(['green', 'red'])
+            # True == Error
+            # False == Ok
+
+            cmap = ListedColormap(['red', 'green'])
             self.axes.imshow(data, interpolation='nearest', origin='lower', cmap=cmap)
 
             self.axes.set_xticks(arange(-.5, data.shape[1] - 1, 1), minor=True)
