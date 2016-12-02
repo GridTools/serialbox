@@ -18,18 +18,6 @@ from .setupwidget import SetupWidget
 from .tabstate import TabState
 from .tabwindow import TabWindow
 
-
-class SmallListWidget(QListWidget):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def sizeHint(self):
-        s = QSize()
-        s.setHeight(super().sizeHint().height())
-        s.setWidth(self.sizeHintForColumn(0))
-        return s
-
-
 class SetupWindow(QWidget, TabWindow):
     def __init__(self, mainwindow, input_serializer_data, reference_serializer_data):
         super().__init__()

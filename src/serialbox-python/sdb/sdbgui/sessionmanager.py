@@ -10,7 +10,7 @@
 ##===------------------------------------------------------------------------------------------===##
 
 from collections import defaultdict
-from json import dump, load
+from json import dump, load, JSONDecodeError
 from os import getcwd, path, environ, makedirs, error
 
 from sdbcore.logger import Logger
@@ -137,8 +137,8 @@ class SessionManager(object):
 
         except (OSError, IOError) as e:
             Logger.warning("Unable to save config file in \"%s\": %s" % (filename, e))
-            return False
-        return True
+            return False, str(e)
+        return True, ""
 
     def store_to_file(self, filename=None):
         """Store configuration file to disk.
@@ -148,11 +148,17 @@ class SessionManager(object):
         :type filename: str
         """
         config_files = self.excract_config_files(filename)
+        error_messages = []
+
         for config_file in config_files:
-            if self.__store_to_file_impl(config_file):
-                return
+            ret, msg = self.__store_to_file_impl(config_file)
+            if ret:
+                return True, error_messages
+            else:
+                error_messages += [msg]
 
         Logger.warning("Failed to save config file")
+        return False, error_messages
 
     def __load_from_file_impl(self, filename):
         try:
@@ -161,8 +167,10 @@ class SessionManager(object):
                 Logger.info("Loading config file from \"%s\"" % filename)
         except (OSError, IOError, error) as e:
             Logger.warning("Unable to load config file from \"%s\": %s" % (filename, e))
-            return False
-        return True
+            return False, str(e)
+        except JSONDecodeError as e:
+            return False, "JSON decoding error: " + str(e)
+        return True, ""
 
     def load_from_file(self, filename=None):
         """Load configuration file from disk.
@@ -172,8 +180,14 @@ class SessionManager(object):
         :type filename: str
         """
         config_files = self.excract_config_files(filename)
+        error_messages = []
+
         for config_file in config_files:
-            if self.__load_from_file_impl(config_file):
-                return
+            ret, msg = self.__load_from_file_impl(config_file)
+            if ret:
+                return True, error_messages
+            else:
+                error_messages += [msg]
 
         Logger.warning("Failed to load config file")
+        return False, error_messages

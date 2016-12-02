@@ -9,13 +9,13 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
+from os import getcwd
 from time import time
 
-from os import getcwd, listdir, path
-
 from PyQt5.QtCore import QFileSystemWatcher, QUrl
-from PyQt5.QtGui import QIcon, QDesktopServices
-from PyQt5.QtWidgets import QMainWindow, QDesktopWidget, QAction, QTabWidget, QMessageBox, QFileDialog
+from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtWidgets import (QMainWindow, QDesktopWidget, QAction, QTabWidget, QMessageBox,
+                             QFileDialog)
 
 from sdbcore.logger import Logger
 from sdbcore.serializerdata import SerializerData
@@ -24,15 +24,18 @@ from sdbcore.stencilfieldmapper import StencilFieldMapper
 from sdbcore.version import Version
 from .errorwindow import ErrorWindow
 from .globalconfig import GlobalConfig
+from .icon import Icon
 from .popupaboutwidget import PopupAboutWidget
 from .resultwindow import ResultWindow
 from .sessionmanager import SessionManager
 from .setupwindow import SetupWindow
 from .stencilwindow import StencilWindow
 from .tabstate import TabState
-from .icon import Icon
+
 
 class MainWindow(QMainWindow):
+    OnlineHelpUrl = QUrl("https://thfabian.github.io/serialbox2/sdb.html")
+
     def __init__(self):
         super().__init__()
         Logger.info("Setup main window")
@@ -345,16 +348,42 @@ class MainWindow(QMainWindow):
     # ==-----------------------------------------------------------------------------------------===
 
     def save_session(self):
-        Logger.info("Saveing session")
-        filename = QFileDialog.getSaveFileName(self, "Open Session", getcwd())
-        print(filename)
-        self.switch_to_tab(TabState.Setup)
+        Logger.info("Try saving current session")
+
+        dialog = QFileDialog(self, "Save current session")
+        dialog.setAcceptMode(QFileDialog.AcceptSave)
+        dialog.setDefaultSuffix("json")
+        dialog.setDirectory(getcwd())
+
+        if not dialog.exec_():
+            Logger.info("Abort saving current session")
+            return
+
+        filename = dialog.selectedFiles()
+
+        ret, msglist = self.__session_manager.store_to_file(filename[0])
+        if not ret:
+            self.popup_error_box(
+                "Failed to save configuration file: %s\n%s " % (filename[0], msglist[0]))
 
     def open_session(self):
-        Logger.info("Opening session")
-        filename = QFileDialog.getOpenFileName(self, "Open Session", getcwd())
-        print(filename)
-        self.switch_to_tab(TabState.Setup)
+        Logger.info("Try opening session")
+        filename = QFileDialog.getOpenFileName(self, "Open Session", getcwd(),
+                                               "JSON configuration (*.json)")[0]
+
+        if filename is None or filename is "":
+            Logger.info("Abort opening session")
+            return
+
+        ret, msglist = self.__session_manager.load_from_file(filename)
+        if not ret:
+            self.popup_error_box(
+                "Failed to load configuration file: %s\n%s " % (filename, msglist[0]))
+        else:
+            Logger.info("Successfully opened session")
+            self.__session_manager.set_serializer_data(self.__input_serializer_data)
+            self.__session_manager.set_serializer_data(self.__reference_serializer_data)
+            self.switch_to_tab(TabState.Setup)
 
     @property
     def session_manager(self):
@@ -387,4 +416,4 @@ class MainWindow(QMainWindow):
 
     def go_to_online_help(self):
         Logger.info("Opening online help")
-        QDesktopServices.openUrl(QUrl("https://thfabian.github.io/serialbox2/sdb.html"))
+        QDesktopServices.openUrl(MainWindow.OnlineHelpUrl)

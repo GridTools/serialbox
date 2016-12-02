@@ -17,19 +17,23 @@ from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QPushButton, QFileDia
                              QComboBox)
 
 from sdbcore.logger import Logger
+from sdbcore.serializerdatalistener import SerializerDataDirectoryAndPrefixListener
 from .droppablelineeditwidget import DroppableLineEditWidget
 from .icon import Icon
 from .pixmap import Pixmap
 from .tabstate import TabState
 
 
-class SetupWidget(QWidget):
+class SetupWidget(QWidget, SerializerDataDirectoryAndPrefixListener):
     def __init__(self, setupwindow, serializer_data):
         super().__init__()
 
         # Data
         self.__serializer_data = serializer_data
         self.__name = serializer_data.name
+
+        # Register as SerializerData listener
+        self.__serializer_data.register_as_serializer_data_directory_and_prefix_listener(self)
 
         #  Widgets
         self.__widget_setupwindow = setupwindow
@@ -79,6 +83,12 @@ class SetupWidget(QWidget):
         self.setLayout(grid_layout)
         self.check_if_directory_is_valid()
         self.check_if_prefix_is_valid()
+
+    def prefix_changed(self, prefix):
+        self.__widget_edit_prefix.setEditText(prefix)
+
+    def directory_changed(self, directory):
+        self.__widget_edit_directory.setText(directory)
 
     @property
     def directory(self):

@@ -12,7 +12,7 @@
 from serialbox import Serializer, SerialboxError, OpenModeKind
 
 from .logger import Logger
-from .serializerdatalistener import SerializerDataListener
+from .serializerdatalistener import SerializerDataListener, SerializerDataDirectoryAndPrefixListener
 
 
 class SerializerData(object):
@@ -26,6 +26,7 @@ class SerializerData(object):
         self.__data_changed = True
 
         self.__serializer_data_listeners = []
+        self.__serializer_data_directory_and_prefix_listeners = []
 
     def make_serializer(self, force=False):
         try:
@@ -55,6 +56,9 @@ class SerializerData(object):
         self.__data_changed = True
         self.__directory = directory
 
+        for listener in self.__serializer_data_directory_and_prefix_listeners:
+            listener.directory_changed(directory)
+
     directory = property(__get_directory, __set_directory)
 
     def __get_prefix(self):
@@ -63,6 +67,9 @@ class SerializerData(object):
     def __set_prefix(self, prefix):
         self.__data_changed = True
         self.__prefix = prefix
+
+        for listener in self.__serializer_data_directory_and_prefix_listeners:
+            listener.prefix_changed(prefix)
 
     prefix = property(__get_prefix, __set_prefix)
 
@@ -88,3 +95,10 @@ class SerializerData(object):
             raise RuntimeError("listener is not a SerailizerDataListener: %s" % type(listener))
 
         self.__serializer_data_listeners += [listener]
+
+    def register_as_serializer_data_directory_and_prefix_listener(self, listener):
+        if not isinstance(listener, SerializerDataDirectoryAndPrefixListener):
+            raise RuntimeError(
+                "listener is not a SerializerDataDirectoryAndPrefixListener: %s" % type(listener))
+
+        self.__serializer_data_directory_and_prefix_listeners += [listener]

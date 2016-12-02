@@ -17,3 +17,17 @@ class SerializerDataListener(object):
         """Serializer data changed i.e the underlying serializer have been reloaded.
         """
         raise NotImplementedError
+
+class SerializerDataDirectoryAndPrefixListener(object):
+    """Listen to any changes of the directory and prefix of the SerializerData object.
+    """
+
+    def prefix_changed(self, prefix):
+        """Prefix of the SerializerData changed to `prefix`
+        """
+        raise NotImplementedError
+
+    def directory_changed(self, directory):
+        """Directory of the SerializerData changed to `directory`
+        """
+        raise NotImplementedError
