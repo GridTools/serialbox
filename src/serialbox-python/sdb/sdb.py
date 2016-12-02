@@ -74,6 +74,7 @@ def main():
     group.add_boolean_option("ipython", "Embed IPython console in the error description",
                              SDB_HAS_IPYTHON, "True of IPython is available, False otherwise")
     group.add_boolean_option("center-window", "Center main window at launch", True)
+    group.add_boolean_option("c-extension", "Use the C extensions if available", True)
     group.add_boolean_option("default-session",
                              "Load (save) default session at startup (shutdown)", True)
     group.add_boolean_option("async", "Use asynchronous reading API of Serialbox", True)
@@ -126,6 +127,7 @@ def main():
     GlobalConfig()["default_session"] = options.default_session
     GlobalConfig()["center_window"] = options.center_window
     GlobalConfig()["async"] = options.async
+    GlobalConfig()["c-extension"] = options.c_extension
 
     if options.move_window:
         try:

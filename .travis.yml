@@ -229,14 +229,11 @@ install:
       if ! brew ls --version cmake &>/dev/null; then brew install cmake; fi
     fi
   
-  # Install Python dependencies (Linux)
+  # Install Python dependencies (Linux) [using python directly in opt/python is not officially 
+  # supported and thus the versions may change]
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
       PYTHON_DIR=/opt/python/3.5.2
-      
-      ls /opt/python/3.5.2
-      ls /opt/python/3.5.2/bin
-      
       ${PYTHON_DIR}/bin/pip3 install nose numpy
     fi
     

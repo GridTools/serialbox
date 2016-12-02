@@ -21,6 +21,6 @@ if(SERIALBOX_ENABLE_C)
                         BUILD_SHARED
                         SYMLINKS ${SYMLINKS}
                         LIBRARIES ${PYTHON_LIBRARY}
-                        SOURCES sdbcoreC.c)
+                        SOURCES sdbcoreC.cpp)
 endif()
 

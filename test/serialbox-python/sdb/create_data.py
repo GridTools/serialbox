@@ -102,6 +102,6 @@ if __name__ == '__main__':
     s_uvwt = StencilUVWT()
     s_uvwt.run(2)
 
-    s_uvwt_error = StencilUVWT(70, True)
+    s_uvwt_error = StencilUVWT(42000, True)
     s_uvwt_error.run(2)
 

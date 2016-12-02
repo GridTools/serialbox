@@ -291,9 +291,10 @@ endif(SERIALBOX_ENABLE_PYTHON)
 if(SERIALBOX_ENABLE_SDB)
 
   find_package(PythonLibs 3.4)
+  find_package(NumPy)
   
   set(ENABLE_SDB_EXTENSION OFF)
-  if(PYTHONLIBS_FOUND)
+  if(PYTHONLIBS_FOUND AND NUMPY_FOUND)
     set(ENABLE_SDB_EXTENSION ON)
   endif()
   
