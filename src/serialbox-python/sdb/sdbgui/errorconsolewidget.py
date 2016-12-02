@@ -11,7 +11,7 @@
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 
-from .errorconsoleipythonwidget import SDB_HAS_IPYTHON, SDB_IPYTHON_IMPORT_ERROR
+from sdbgui.errorconsoleipythonwidget import SDB_HAS_IPYTHON, SDB_IPYTHON_IMPORT_ERROR
 
 
 class ErrorConsoleWidget(QWidget):
@@ -21,7 +21,7 @@ class ErrorConsoleWidget(QWidget):
         self.__widget_mainwindow = mainwindow
 
         if SDB_HAS_IPYTHON:
-            from .errorconsoleipythonwidget import ErrorConsoleIPythonWidget
+            from sdbgui.errorconsoleipythonwidget import ErrorConsoleIPythonWidget
             self.__widget_ipython = ErrorConsoleIPythonWidget(parent=self)
             layout = QVBoxLayout()
             layout.addWidget(self.__widget_ipython)

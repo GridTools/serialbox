@@ -22,15 +22,15 @@ from sdbcore.serializerdata import SerializerData
 from sdbcore.stencildata import StencilData
 from sdbcore.stencilfieldmapper import StencilFieldMapper
 from sdbcore.version import Version
-from .errorwindow import ErrorWindow
-from .globalconfig import GlobalConfig
-from .icon import Icon
-from .popupaboutwidget import PopupAboutWidget
-from .resultwindow import ResultWindow
-from .sessionmanager import SessionManager
-from .setupwindow import SetupWindow
-from .stencilwindow import StencilWindow
-from .tabstate import TabState
+from sdbgui.errorwindow import ErrorWindow
+from sdbgui.globalconfig import GlobalConfig
+from sdbgui.icon import Icon
+from sdbgui.popupaboutwidget import PopupAboutWidget
+from sdbgui.resultwindow import ResultWindow
+from sdbgui.sessionmanager import SessionManager
+from sdbgui.setupwindow import SetupWindow
+from sdbgui.stencilwindow import StencilWindow
+from sdbgui.tabstate import TabState
 
 
 class MainWindow(QMainWindow):

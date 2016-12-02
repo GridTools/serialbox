@@ -12,7 +12,7 @@
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout
 
-from .pixmap import Pixmap
+from sdbgui.pixmap import Pixmap
 
 class ResultTableCellWidget(QWidget):
     def __init__(self, match):

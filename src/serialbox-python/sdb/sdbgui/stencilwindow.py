@@ -13,12 +13,12 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 
 from sdbcore.logger import Logger
-from .stencilfieldmetainfowidget import StencilFieldMetainfoWidget
-from .stencilthresholdsetterwidget import StencilThresholdSetterWidget
-from .stencilwidget import StencilWidget
-from .tabstate import TabState
-from .tabwindow import TabWindow
-from .icon import Icon
+from sdbgui.stencilfieldmetainfowidget import StencilFieldMetainfoWidget
+from sdbgui.stencilthresholdsetterwidget import StencilThresholdSetterWidget
+from sdbgui.stencilwidget import StencilWidget
+from sdbgui.tabstate import TabState
+from sdbgui.tabwindow import TabWindow
+from sdbgui.icon import Icon
 
 
 class StencilWindow(QWidget, TabWindow):

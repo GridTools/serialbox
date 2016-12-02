@@ -9,7 +9,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from .globalconfig import GlobalConfig
+from sdbgui.globalconfig import GlobalConfig
 
 SDB_HAS_IPYTHON = False
 SDB_IPYTHON_IMPORT_ERROR = None

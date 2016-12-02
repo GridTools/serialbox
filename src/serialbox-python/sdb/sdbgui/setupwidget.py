@@ -18,10 +18,10 @@ from PyQt5.QtWidgets import (QWidget, QGridLayout, QLabel, QPushButton, QFileDia
 
 from sdbcore.logger import Logger
 from sdbcore.serializerdatalistener import SerializerDataDirectoryAndPrefixListener
-from .droppablelineeditwidget import DroppableLineEditWidget
-from .icon import Icon
-from .pixmap import Pixmap
-from .tabstate import TabState
+from sdbgui.droppablelineeditwidget import DroppableLineEditWidget
+from sdbgui.icon import Icon
+from sdbgui.pixmap import Pixmap
+from sdbgui.tabstate import TabState
 
 
 class SetupWidget(QWidget, SerializerDataDirectoryAndPrefixListener):

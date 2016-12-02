@@ -15,8 +15,8 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QListView
 from numpy import any
 
 from sdbcore.logger import Logger
-from .errorvisualizematplotlibwidget import ErrorVisualizeMatplotlibWidget, SDB_HAS_MATPLOTLIB
-from .icon import Icon
+from sdbgui.errorvisualizematplotlibwidget import ErrorVisualizeMatplotlibWidget, SDB_HAS_MATPLOTLIB
+from sdbgui.icon import Icon
 
 
 class ErrorVisualizeWidget(QWidget):

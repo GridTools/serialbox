@@ -12,8 +12,8 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QGridLayout
 
 from sdbcore.logger import Logger
-from .stencilfieldlistwidget import StencilFieldListWidget
-from .stencillistwidget import StencilListWidget
+from sdbgui.stencilfieldlistwidget import StencilFieldListWidget
+from sdbgui.stencillistwidget import StencilListWidget
 
 
 class StencilWidget(QWidget):

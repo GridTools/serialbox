@@ -12,12 +12,12 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, QSizePolicy
 
 from sdbcore.logger import Logger
-from .errorconsolewidget import ErrorConsoleWidget
-from .errorlistwidget import ErrorListWidget
-from .errorvisualizewidget import ErrorVisualizeWidget
-from .errorwindowheaderwidget import ErrorWindowHeaderWidget
-from .tabstate import TabState
-from .tabwindow import TabWindow
+from sdbgui.errorconsolewidget import ErrorConsoleWidget
+from sdbgui.errorlistwidget import ErrorListWidget
+from sdbgui.errorvisualizewidget import ErrorVisualizeWidget
+from sdbgui.errorwindowheaderwidget import ErrorWindowHeaderWidget
+from sdbgui.tabstate import TabState
+from sdbgui.tabwindow import TabWindow
 from enum import Enum
 
 class ResulDataState(Enum):

@@ -11,9 +11,9 @@
 
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
 
-from .resulttablewidget import ResultTableWidget
-from .tabstate import TabState
-from .tabwindow import TabWindow
+from sdbgui.resulttablewidget import ResultTableWidget
+from sdbgui.tabstate import TabState
+from sdbgui.tabwindow import TabWindow
 
 
 class ResultWindow(QWidget, TabWindow):

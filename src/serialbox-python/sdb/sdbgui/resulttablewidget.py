@@ -16,10 +16,10 @@ from PyQt5.QtWidgets import (QLabel, QVBoxLayout, QTableWidget, QWidget, QHBoxLa
                              QCheckBox, QTableWidgetItem, QComboBox)
 
 from sdbcore.logger import Logger
-from .icon import Icon
-from .movie import Movie
-from .resulttablecellwidget import ResultTableCellWidget
-from .tabstate import TabState
+from sdbgui.icon import Icon
+from sdbgui.movie import Movie
+from sdbgui.resulttablecellwidget import ResultTableCellWidget
+from sdbgui.tabstate import TabState
 
 
 def make_unqiue_and_preserve_order(seq):

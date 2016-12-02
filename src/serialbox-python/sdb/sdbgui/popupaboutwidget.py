@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButt
 
 from sdbcore.logger import Logger
 from sdbcore.version import Version
-from .pixmap import Pixmap
+from sdbgui.pixmap import Pixmap
 
 
 class PopupAboutWidget(QWidget):

@@ -12,7 +12,7 @@
 from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel, QHBoxLayout
 
 from sdbcore.logger import Logger
-from .pixmap import Pixmap
+from sdbgui.pixmap import Pixmap
 
 
 class StencilThresholdSetterWidget(QWidget):
