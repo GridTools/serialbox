@@ -11,10 +11,23 @@
 
 from numpy import logical_not, isclose, nditer
 
-from sdbcore.logger import Logger
 from sdbcore import SDBCORE_HAS_C
+from sdbcore.logger import Logger
+
 
 def make_error_list_python(input_field, reference_field, atol, rtol):
+    """Python implementation of creating the ErrorList.
+
+    :param input_field: Input field
+    :type input_field: numpy.array
+    :param reference_field: Refrence field
+    :type reference_field: numpy.array
+    :param atol: Absolute tolerance used for comparison
+    :type atol: float
+    :param rtol: Relative tolerance used for comparison
+    :type rtol: float
+    :return: list of errors and positions
+    """
     error_positions = logical_not(
         isclose(input_field, reference_field, atol, rtol))
 
@@ -40,7 +53,7 @@ class ErrorList(object):
 
         if not force_python and SDBCORE_HAS_C:
             Logger.info("Using sdbcutil C interface")
-            from sdbcoreC import make_error_list_c as make_error_list
+            from sdbcore.sdbcoreC import make_error_list_c as make_error_list
         else:
             Logger.info("Using sdbcutil Python interface")
             make_error_list = make_error_list_python

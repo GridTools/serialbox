@@ -69,8 +69,7 @@ class ComparisonResult(object):
         if self.__error_list is None:
             self.__error_list = ErrorList(self.input_field, self.reference_field,
                                           self.__result["atol"],
-                                          self.__result["rtol"],
-                                          True)
+                                          self.__result["rtol"])
         return self.__error_list
 
     def get_error_positions(self):

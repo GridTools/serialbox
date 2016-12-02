@@ -232,6 +232,9 @@ install:
   # Install Python dependencies (Linux)
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+      ls /opt
+      ls /opt/python/
+    
       PYTHON_DIR=/opt/python/3.5.0
       ${PYTHON_DIR}/bin/pip3 install nose numpy
     fi

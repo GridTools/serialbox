@@ -17,25 +17,25 @@
 #include <stdio.h>
 
 /* Available functions */
-static PyObject* sdbcutilC_compute_error_list_c(PyObject* self, PyObject* args);
+static PyObject* sdbcoreC_make_error_list_c(PyObject* self, PyObject* args);
 
 /* Method specification */
 static PyMethodDef module_methods[] = {
-    {"compute_error_list_c", sdbcutilC_compute_error_list_c, METH_VARARGS, ""},
-    {NULL, NULL, 0, NULL}};
+    {"make_error_list_c", sdbcoreC_make_error_list_c, METH_VARARGS, ""}, {NULL, NULL, 0, NULL}};
 
 /* Module specification */
-static struct PyModuleDef sdbcutilC_module_definition = {
-    PyModuleDef_HEAD_INIT, "sdbcutilC", "This module provides C extensions to the sdbcore module.",
+static struct PyModuleDef sdbcoreC_module_definition = {
+    PyModuleDef_HEAD_INIT, "sdbcoreC", "This module provides C extensions to the sdbcore module.",
     -1, module_methods};
 
 /* Initialize the module */
-PyMODINIT_FUNC PyInit_sdbcutilC(void) {
+PyMODINIT_FUNC PyInit_sdbcoreC(void) {
   Py_Initialize();
-  return PyModule_Create(&sdbcutilC_module_definition);
+  return PyModule_Create(&sdbcoreC_module_definition);
 }
 
-static PyObject* sdbcutilC_compute_error_list_c(PyObject* self, PyObject* args) {
+static PyObject* sdbcoreC_make_error_list_c(PyObject* self, PyObject* args) {
   puts("hello from C");
+
   Py_RETURN_NONE;
 }

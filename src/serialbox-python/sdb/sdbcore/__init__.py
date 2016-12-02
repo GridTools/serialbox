@@ -14,7 +14,7 @@ from .version import __version__, __versioninfo__
 SDBCORE_HAS_C = True
 
 try:
-    import sdbcoreC
+    import sdbcore.sdbcoreC
 except ImportError:
     SDBCORE_HAS_C = False
 

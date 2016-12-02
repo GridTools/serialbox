@@ -12,15 +12,6 @@ cmake_minimum_required(VERSION 3.1)
 ## Install ppser
 install(FILES ${CMAKE_SOURCE_DIR}/src/serialbox-python/pp_ser/pp_ser.py DESTINATION python/pp_ser)
 
-## Install sdb
-if(SERIALBOX_ENABLE_SDB)
-
-  if(SERIALBOX_ENABLE_SDB_C_EXTENSION)
-    add_subdirectory(sdb/sdbcutil)
-  endif()
-  
-endif()
-
 ## Install serialbox
 if(SERIALBOX_ENABLE_PYTHON)
   if(NOT(SERIALBOX_ENABLE_C))
@@ -38,7 +29,7 @@ if(SERIALBOX_ENABLE_PYTHON)
        ${CMAKE_SOURCE_DIR}/src/serialbox-python/*.py
        ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox/*.py)
 
-  # Copy python code to python build dir (this will fail if there are "dead" symlinks to 
+  # Copy serialbox python code to python build dir (this will fail if there are "dead" symlinks to 
   # libSerialboxC.so in the source tree from other builds, thus we scan for broken links 
   # first)
   if(SERIALBOX_COMPILER_MSVC)
@@ -80,3 +71,55 @@ if(SERIALBOX_ENABLE_PYTHON)
   endif()
   
 endif()
+
+## Install sdb
+if(SERIALBOX_ENABLE_SDB)
+
+  if(NOT(SERIALBOX_ENABLE_PYTHON))
+    message(FATAL_ERROR 
+            "sdb requires the Python interface (set SERIALBOX_ENABLE_PYTHON=ON)")
+  endif()
+
+  file(GLOB_RECURSE SDB_PYTHON_SOURCE 
+       ${CMAKE_SOURCE_DIR}/src/serialbox-python/
+       ${CMAKE_SOURCE_DIR}/src/serialbox-python/*.py
+       ${CMAKE_SOURCE_DIR}/src/serialbox-python/sdb/*.py)
+
+  # Copy sdb python code to python build dir (this will fail if there are "dead" symlinks to 
+  # sdbcoreC.so in the source tree from other builds, thus we scan for broken links 
+  # first)
+  if(SERIALBOX_COMPILER_MSVC)
+    set(REMOVE_OBSOLETE_SYMLINKS_OR_NOP rem) # nop
+  else()
+    set(REMOVE_OBSOLETE_SYMLINKS_OR_NOP 
+        find -L ${CMAKE_SOURCE_DIR}/src/serialbox-python/sdb/sdbcore -type l -delete)
+  endif()
+  
+  add_custom_target(sdbPython
+                    COMMAND ${REMOVE_OBSOLETE_SYMLINKS_OR_NOP}
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    ${CMAKE_SOURCE_DIR}/src/serialbox-python/sdb
+                    ${CMAKE_BINARY_DIR}/src/serialbox-python/sdb
+                    DEPENDS "${SDB_PYTHON_SOURCE}")            
+  add_dependencies(SerialboxPython sdbPython)
+
+  if(SERIALBOX_ENABLE_SDB_C_EXTENSION)
+    add_subdirectory(sdb/sdbcore)
+  endif()
+  
+  # Install python source
+  install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/serialbox-python/sdb/ 
+          DESTINATION python/sdb
+          FILES_MATCHING PATTERN "*.py" PATTERN "*.png"
+          PATTERN "*__pycache__*" EXCLUDE)
+
+  # Copy sdbcoreC.so library
+  install(CODE " 
+    EXECUTE_PROCESS(COMMAND 
+      \"${CMAKE_COMMAND}\" -E copy 
+      \"${CMAKE_INSTALL_PREFIX}/lib/sdbcoreC.so\" 
+      \"${CMAKE_INSTALL_PREFIX}/python/sdb/sdbcore/sdbcoreC.so\")
+  ")
+
+endif()
+

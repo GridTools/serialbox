@@ -360,6 +360,8 @@ class MainWindow(QMainWindow):
             return
 
         filename = dialog.selectedFiles()
+        self.__session_manager.update_serializer_data(self.__input_serializer_data)
+        self.__session_manager.update_serializer_data(self.__reference_serializer_data)
 
         ret, msglist = self.__session_manager.store_to_file(filename[0])
         if not ret:

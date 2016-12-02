@@ -29,8 +29,14 @@ if [ "$?" == "1" ]; then
 fi
 
 #
-# Run python tests with nose
+# Run serialbox python tests with nose
 #
 cd ${PYTHON_TEST_DIR}/serialbox
+${PYTHON_EXECUTABLE} -m "nose"
+
+#
+# Run the sdb tests with nose
+#
+cd ${PYTHON_TEST_DIR}/sdb/sdbcore
 ${PYTHON_EXECUTABLE} -m "nose"
 
