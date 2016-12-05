@@ -2,7 +2,7 @@
 #
 # Usage of this module as follows:
 #
-#   find_python_module(PyQt4 REQUIRED)
+#   find_python_module(PyQt5 REQUIRED)
 #
 # The module makes use of the ${PYTHON_EXECUTABLE} which needs to be set before calling the 
 # find_python_module function.
@@ -34,7 +34,7 @@ function(find_python_module module)
 
     # Set result
     if(NOT _${module}_status)
-      message(STATUS "Found python module \"${module}\" for python: ${PYTHON_EXECUTABLE}")
+      message(STATUS "Found Python module \"${module}\" for Python: ${PYTHON_EXECUTABLE}")
       set(PY_${module_upper}_PATH ${_${module}_location} 
           CACHE STRING "Location of Python module ${module}")
       set(PY_${module_upper}_FOUND TRUE
