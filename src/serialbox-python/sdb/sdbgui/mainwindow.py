@@ -282,7 +282,7 @@ class MainWindow(QMainWindow):
             self.__widget_tab.setTabEnabled(TabState.Result.value, False)
             self.__widget_tab.setTabEnabled(TabState.Error.value, False)
 
-            self.__widget_tab.widget(TabState.Stencil.value).match_fields()
+            self.__widget_tab.widget(TabState.Stencil.value).initial_field_match()
 
             self.__action_reload.setEnabled(True)
             self.__action_try_switch_to_error_tab.setEnabled(False)

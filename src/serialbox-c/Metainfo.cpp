@@ -140,9 +140,14 @@ void serialboxMetainfoDestroyElementInfo(serialboxMetainfoElementInfo_t* element
     // types
     std::free(elementInfo->types);
 
-    // element-ifno
+    // element-info
     std::free(elementInfo);
   }
+}
+
+SERIALBOX_API int serialboxMetainfoDeleteKey(serialboxMetainfo_t* metaInfo, const char* key) {
+  MetainfoMap* map = toMetainfoMap(metaInfo);
+  return map->erase(key);
 }
 
 /*===------------------------------------------------------------------------------------------===*\

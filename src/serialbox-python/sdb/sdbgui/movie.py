@@ -23,7 +23,7 @@ class Movie(QMovie):
     ImagePath = path.join(path.dirname(path.realpath(__file__)), "images")
 
     def __init__(self, filename):
-        filename = path.join(Icon.ImagePath, filename)
+        filename = path.join(Movie.ImagePath, filename)
         if not path.isfile(filename):
             Logger.error("Path to movie does not exist: %s" % filename)
 

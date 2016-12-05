@@ -85,7 +85,7 @@ class SessionManager(object):
         Logger.info("Query recently used Serializer paths")
 
         if "RecentlyUsedSerializerPaths" in self.__config:
-            return self.__config["RecentlyUsedSerializerPaths"]
+            return [p for p in self.__config["RecentlyUsedSerializerPaths"] if path.isdir(p)]
         else:
             return []
 

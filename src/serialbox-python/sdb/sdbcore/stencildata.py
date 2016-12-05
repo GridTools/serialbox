@@ -9,10 +9,11 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from .logger import Logger
-from .stencildatalistener import (StencilDataStencilListListener, StencilDataFieldListListener,
-                                  StencilDataDataListener)
-from .serializerdatalistener import SerializerDataListener
+from sdbcore.logger import Logger
+from sdbcore.serializerdatalistener import SerializerDataListener
+from sdbcore.stencildatalistener import (StencilDataStencilListListener,
+                                         StencilDataFieldListListener,
+                                         StencilDataDataListener)
 
 
 class StencilData(SerializerDataListener):
@@ -20,6 +21,7 @@ class StencilData(SerializerDataListener):
 
     The StencilData is a SerializerListener.
     """
+
     def __init__(self, serializer_data):
 
         # Data
@@ -39,9 +41,6 @@ class StencilData(SerializerDataListener):
         self.__data_listener = []
 
         self.init()
-
-    def set_other_stencil_data(self, other):
-        self.__other_stencil_data = other
 
     def reload(self):
         Logger.info("Reloading StencilData of '%s'" % self.__serializer_data.name)

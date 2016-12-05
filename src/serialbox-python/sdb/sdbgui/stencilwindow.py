@@ -9,16 +9,15 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 
 from sdbcore.logger import Logger
+from sdbgui.icon import Icon
 from sdbgui.stencilfieldmetainfowidget import StencilFieldMetainfoWidget
 from sdbgui.stencilthresholdsetterwidget import StencilThresholdSetterWidget
 from sdbgui.stencilwidget import StencilWidget
 from sdbgui.tabstate import TabState
 from sdbgui.tabwindow import TabWindow
-from sdbgui.icon import Icon
 
 
 class StencilWindow(QWidget, TabWindow):
@@ -65,8 +64,8 @@ class StencilWindow(QWidget, TabWindow):
         vbox.addLayout(hbox_button)
         self.setLayout(vbox)
 
-    def match_fields(self):
-        self.__stencil_field_mapper.match_fields()
+    def initial_field_match(self):
+        self.__stencil_field_mapper.initial_field_match()
 
     def update_comparison_result(self):
         try:

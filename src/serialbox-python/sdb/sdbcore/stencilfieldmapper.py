@@ -10,19 +10,11 @@
 ##===------------------------------------------------------------------------------------------===##
 
 from numpy import allclose
+
+from sdbcore.comparisonresultlist import ComparisonResultList
+from sdbcore.logger import Logger
+from sdbcore.stencildatalistener import StencilDataDataListener
 from serialbox import SerialboxError
-
-from .comparisonresultlist import ComparisonResultList
-from .logger import Logger
-from .stencildatalistener import StencilDataDataListener
-
-
-def field_in_list(field_name, field_list):
-    for idx in range(len(field_list)):
-        field = field_list[idx]
-        if field_name == field:
-            return idx
-    return -1
 
 
 class StencilFieldMapper(StencilDataDataListener):
@@ -61,35 +53,65 @@ class StencilFieldMapper(StencilDataDataListener):
 
     rtol = property(__get_rtol, __set_rtol)
 
-    def match_fields(self):
-        Logger.info("Matching fields")
+    def initial_field_match(self):
+        Logger.info("Matching fields ...")
 
         input_fields = self.__input_stencil_data.field_list
+        input_fields_state = [False] * len(input_fields)
+
         reference_fields = self.__reference_stencil_data.field_list
+        reference_fields_state = [False] * len(reference_fields)
         reference_fields_seen = []
 
-        # Rearrange the field list in the reference serializer
+        #
+        # 1. Sweep - Set enable state of reference and input field list
+        #
+        Logger.info("Set enable state of reference and input field list")
         for idx in range(len(input_fields)):
             input_field = input_fields[idx]
 
-            idx_in_ref = field_in_list(input_field, reference_fields)
-
-            if idx_in_ref != -1:
-                self.__input_stencil_data.set_field_enabled(idx, True)
+            enable = False
+            if input_field in reference_fields:
                 reference_fields_seen += [input_field]
+                enable = True
 
-                # Move field to match index in input (i.e idx) if possible
-                if idx != idx_in_ref and idx < len(reference_fields):
-                    self.__reference_stencil_data.move_field(input_field, idx)
+            self.__input_stencil_data.set_field_enabled(input_field, enable)
+            input_fields_state[idx] = enable
 
-            else:
-                self.__input_stencil_data.set_field_enabled(idx, False)
+        for idx in range(len(reference_fields)):
+            reference_field = reference_fields[idx]
 
-        for field in reference_fields:
-            if field in reference_fields_seen:
-                self.__reference_stencil_data.set_field_enabled(field, True)
-            else:
-                self.__reference_stencil_data.set_field_enabled(field, False)
+            enable = reference_field in reference_fields_seen
+
+            self.__reference_stencil_data.set_field_enabled(reference_field, enable)
+            reference_fields_state[idx] = enable
+
+        #
+        # 2. Sweep - Move all disabled fields to the back
+        #
+        Logger.info("Move disabled fields of input and reference field list to the back")
+
+        input_fields_reordered = input_fields[:]
+        for idx in range(len(input_fields)):
+            if not input_fields_state[idx]:
+                self.__input_stencil_data.move_field(input_fields[idx], len(input_fields) - 1)
+                input_fields_reordered.insert(len(input_fields) - 1,
+                                              input_fields_reordered.pop(idx))
+
+        reference_fields_reordered = reference_fields[:]
+        for idx in range(len(reference_fields)):
+            if not reference_fields_state[idx]:
+                self.__reference_stencil_data.move_field(reference_fields[idx],
+                                                         len(reference_fields) - 1)
+                reference_fields_reordered.insert(len(reference_fields) - 1,
+                                                  reference_fields_reordered.pop(idx))
+        #
+        # 3. Sweep - Move the enabled reference fields to match the input positions
+        #
+        Logger.info("Move reference fields to match input field list")
+        for idx in range(input_fields_state.count(True)):
+            reference_field = reference_fields_reordered[idx]
+            self.__reference_stencil_data.move_field(reference_field, idx)
 
     def compare_fields(self, input_fields, reference_fields):
         if not self.__comparison_result_list_dirty:
@@ -227,3 +249,11 @@ class StencilFieldMapper(StencilDataDataListener):
     @property
     def comparison_result_list(self):
         return self.__comparison_result_list
+
+    @property
+    def input_field_list(self):
+        return self.__input_stencil_data.field_list
+
+    @property
+    def reference_field_list(self):
+        return self.__reference_stencil_data.field_list

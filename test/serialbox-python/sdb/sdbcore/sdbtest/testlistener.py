@@ -9,17 +9,18 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## Unittest of the sdbcore C extensions.
+## Simplify listener tests
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-import unittest
 
-class TestFieldMapper(unittest.TestCase):
-    def test_fields_match(self):
-        pass
-            
-if __name__ == "__main__":
-    unittest.main()
+class TestListener(object):
+    def __init__(self):
+        self.__count = 0
 
+    def increment_count(self):
+        self.__count += 1
 
+    @property
+    def count(self):
+        return self.__count

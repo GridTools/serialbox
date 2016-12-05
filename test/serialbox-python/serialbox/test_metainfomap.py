@@ -180,6 +180,14 @@ class TestMetainfo(unittest.TestCase):
         for key, value in map:
             self.assertEqual(value, dic[key])
 
+    def test_deletion(self):
+        map = MetainfoMap()
+        map.insert("key", 2)
+
+        self.assertTrue(map.has_key("key"))
+        del map["key"]
+        self.assertFalse(map.has_key("key"))
+
 
 if __name__ == "__main__":
     unittest.main()

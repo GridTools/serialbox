@@ -53,7 +53,8 @@ def make_error_list_python(input_field, reference_field, atol, rtol):
 
 class ErrorList(object):
     def __init__(self, input_field, reference_field, atol, rtol,
-                 force_python=True if not GlobalConfig()["c-extension"] else False):
+                 force_python=False if not "c-extension" in GlobalConfig().keys() or
+                                       GlobalConfig()["c-extension"] is True else True):
 
         if not force_python and SDBCORE_HAS_C:
             Logger.info("Using sdbcutil C interface")

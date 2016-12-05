@@ -41,7 +41,7 @@ except ImportError:
 from .core import Config
 from .type import TypeID, OpenModeKind
 from .error import SerialboxError
-from .logging import Logging
+from .serlogging import Logging
 from .serializer import Serializer
 from .savepoint import Savepoint, SavepointCollection
 from .metainfomap import MetainfoMap

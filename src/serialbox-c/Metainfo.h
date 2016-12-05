@@ -157,6 +157,16 @@ serialboxMetainfoCreateElementInfo(const serialboxMetainfo_t* metaInfo);
  */
 SERIALBOX_API void serialboxMetainfoDestroyElementInfo(serialboxMetainfoElementInfo_t* elementInfo);
 
+/**
+ * \brief Delete element given by `key`
+ *
+ * \param metaInfo  Meta-information to use
+ * \param key       Key of element to delete
+ * 
+ * \return 1 if element was deleted, 0 otherwise
+ */
+SERIALBOX_API int serialboxMetainfoDeleteKey(serialboxMetainfo_t* metaInfo, const char* key);
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Add meta-information
 \*===------------------------------------------------------------------------------------------===*/

@@ -13,8 +13,8 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from ctypes import c_void_p, c_bool, c_int, c_int32, c_int64, c_float, c_double, c_char_p, \
-    Structure, POINTER
+from ctypes import (c_void_p, c_bool, c_int, c_int32, c_int64, c_float, c_double, c_char_p,
+                    Structure, POINTER)
 
 from .common import get_library, extract_string
 from .error import invoke, SerialboxError
@@ -107,6 +107,9 @@ def register_library(library):
 
     library.serialboxMetainfoDestroyElementInfo.argtypes = [POINTER(MetainfoElementInfoImpl)]
     library.serialboxMetainfoDestroyElementInfo.restype = None
+
+    library.serialboxMetainfoDeleteKey.argtypes = [POINTER(MetainfoImpl), c_char_p]
+    library.serialboxMetainfoDeleteKey.restype = c_int
 
     #
     # Arrays
@@ -629,6 +632,12 @@ class MetainfoMap(object):
 
         else:
             raise SerialboxError('internal error: unreachable (typeid = %i)' % typeid)
+
+    def __delitem__(self, key):
+        if type(key) not in StringTypes:
+            raise TypeError("parameter 'key' is not a string (type: %s)" % type(key))
+        keystr = extract_string(key)[0]
+        invoke(lib.serialboxMetainfoDeleteKey, self.__metainfomap, keystr)
 
     def __iter__(self):
         """ Iterate the MetainfoMap.

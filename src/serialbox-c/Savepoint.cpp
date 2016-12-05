@@ -75,6 +75,12 @@ char* serialboxSavepointToString(const serialboxSavepoint_t* savepoint) {
   return allocateAndCopyString(sp->toString());
 }
 
+size_t serialboxSavepointHash(const serialboxSavepoint_t* savepoint) {
+  const Savepoint* sp = toConstSavepoint(savepoint);
+  return std::hash<Savepoint>()(*sp);
+}
+
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Meta-information
 \*===------------------------------------------------------------------------------------------===*/
