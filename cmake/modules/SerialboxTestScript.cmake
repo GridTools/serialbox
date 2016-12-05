@@ -32,12 +32,18 @@ endfunction(serialbox_test_init)
 ##    EXECUTABLE:STRINGS=<>      - The first string in the list will be treated as the exectuable 
 ##                                 to run while the remaining elements in the list are passed as 
 ##                                 command-line arguments.
+##    NAME:STRING=<>             - [optional]: Name of the test. If the name is not provided either
+##                                 the CMake target or the second argument to EXECUTABLE will be 
+##                                 used.
 ##
 function(serialbox_add_test)
-  cmake_parse_arguments(serialbox_add_test "" "" "TARGET;EXECUTABLE" ${ARGN})
+  cmake_parse_arguments(serialbox_add_test "" "NAME" "TARGET;EXECUTABLE" ${ARGN})
   
   set(target_list ${serialbox_add_test_TARGET})
   set(exectuable_list ${serialbox_add_test_EXECUTABLE})
+  set(name ${serialbox_add_test_NAME})
+
+  set(test_already_added_to_ctest FALSE)
 
   if(target_list)
     list(GET target_list 0 target)
@@ -50,7 +56,12 @@ function(serialbox_add_test)
       set(flat_args "${flat_args} ${arg}")
     endforeach()
     
-    add_test(NAME ${target} COMMAND $<TARGET_FILE:${target}> ${flat_args})
+    if(NOT(name))
+      set(name ${target})
+    endif()
+    
+    add_test(NAME ${name} COMMAND $<TARGET_FILE:${target}> ${flat_args})
+    set(test_already_added_to_ctest TRUE)
   endif()
   
   if(exectuable_list)
@@ -63,11 +74,20 @@ function(serialbox_add_test)
     foreach(arg ${args})
       set(flat_args "${flat_args} ${arg}")
     endforeach()
+    
+    if(NOT(name))
+      list(GET exectuable_list 1 name_with_whitespaces)
+      string(STRIP ${name_with_whitespaces} name)
+    endif()
   
     file(APPEND ${SERIALBOX_TEST_SCRIPT} "\n${exectuable} ${flat_args}\n")
     file(APPEND ${SERIALBOX_TEST_SCRIPT} "ret=\$?\n")
     file(APPEND ${SERIALBOX_TEST_SCRIPT} "if [ $ret -ne 0 ] ; then\n echo \"Error: problem found in Unittest\"\nfi\n")
     file(APPEND ${SERIALBOX_TEST_SCRIPT} "res=$((res || ret ))\n")
+    
+    if(NOT(test_already_added_to_ctest))
+      add_test(NAME ${name} COMMAND ${exectuable_list})
+    endif()
   endif()
 
 endfunction(serialbox_add_test)

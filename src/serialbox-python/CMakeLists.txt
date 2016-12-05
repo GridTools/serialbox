@@ -117,7 +117,7 @@ if(SERIALBOX_ENABLE_SDB)
   install(CODE " 
     EXECUTE_PROCESS(COMMAND 
       \"${CMAKE_COMMAND}\" -E copy 
-      \"${CMAKE_INSTALL_PREFIX}/lib/sdbcoreC.so\" 
+      \"${CMAKE_BINARY_DIR}src/serialbox-python/sdb/sdbcore/sdbcoreC.so\" 
       \"${CMAKE_INSTALL_PREFIX}/python/sdb/sdbcore/sdbcoreC.so\")
   ")
 

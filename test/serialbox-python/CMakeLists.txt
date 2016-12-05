@@ -25,5 +25,5 @@ set(PYTHON_TEST_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/run_python_tests.sh)
 configure_file(${PYTHON_TEST_SCRIPT_IN} ${PYTHON_TEST_SCRIPT})
 
 ## Register test
-serialbox_add_test(EXECUTABLE ${BASH_EXECUTABLE} ${PYTHON_TEST_SCRIPT})
+serialbox_add_test(NAME SerialboxPythonUnittest EXECUTABLE ${BASH_EXECUTABLE} ${PYTHON_TEST_SCRIPT})
 
