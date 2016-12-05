@@ -18,8 +18,8 @@
 #include <numpy/ndarrayobject.h>
 
 #include <cmath>
-#include <iostream>
 #include <vector>
+#include <stdexcept>
 
 namespace {
 
