@@ -12,9 +12,6 @@ cmake_minimum_required(VERSION 3.1)
 if(SERIALBOX_ENABLE_C)
 
   set(SYMLINKS ${CMAKE_SOURCE_DIR}/src/serialbox-python/sdb/sdbcore)
-
-  include_directories(${PYTHON_INCLUDE_DIR})
-
   serialbox_add_library(NAME sdbcoreC
                         TARGET sdbcoreCLibrary 
                         NATIVE_PYTHON_LIB
