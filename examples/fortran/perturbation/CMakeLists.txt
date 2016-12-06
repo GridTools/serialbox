@@ -17,7 +17,7 @@ cmake_minimum_required(VERSION 3.1)
 # First, we setup the project and look for Serialbox. This is a pure Fortran project, however we 
 # still require the C++ compiler for linking (i.e we depend on libstdc++ or libc++).
 #
-project(Serialbox_Fortran_Perturbation_Example CXX Fortran)
+project(SerialboxPerturbationExample CXX Fortran)
 
 #
 # We use the Serialbox which was installed in install/. If this folder does not exists, or is empty,

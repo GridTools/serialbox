@@ -123,7 +123,7 @@ class TestStencilFieldMapper(TestCase):
             "s1", 1, ["A", "C", "B"],
             "s1", 1, ["A", "C", "B"])
 
-        # The fields habe been sorted (alphabetically), we update them here
+        # The fields have been sorted (alphabetically), we update them here
         input_field_listener.list_value = field_mapper.input_field_list
         reference_field_listener.list_value = field_mapper.reference_field_list
 
@@ -145,7 +145,7 @@ class TestStencilFieldMapper(TestCase):
             "s1", 1, ["A", "B", "C"],
             "s1", 1, ["A", "BB", "B", "C"])
 
-        # The fields habe been sorted (alphabetically), we update them here
+        # The fields have been sorted (alphabetically), we update them here
         input_field_listener.list_value = field_mapper.input_field_list
         reference_field_listener.list_value = field_mapper.reference_field_list
 
@@ -163,7 +163,7 @@ class TestStencilFieldMapper(TestCase):
             "s1", 1, ["A", "A1", "A2", "B"],
             "s1", 1, ["A", "A3", "B"])
 
-        # The fields habe been sorted, we update them here
+        # The fields have been sorted (alphabetically), we update them here
         input_field_listener.list_value = field_mapper.input_field_list
         reference_field_listener.list_value = field_mapper.reference_field_list
 

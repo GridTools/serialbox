@@ -288,39 +288,6 @@ if(SERIALBOX_ENABLE_PYTHON)
   
 endif(SERIALBOX_ENABLE_PYTHON)
   
-if(SERIALBOX_ENABLE_SDB)
-
-  find_package(PythonLibs 3.4)
-  find_package(NumPy)
-  
-  # Determine if we build the C-Extension by default
-  set(ENABLE_SDB_EXTENSION_BY_DEFAULT OFF)
-  if(PYTHONLIBS_FOUND AND NUMPY_FOUND)
-    set(ENABLE_SDB_EXTENSION_BY_DEFAULT ON)
-  endif()
-  
-  option(SERIALBOX_ENABLE_SDB_C_EXTENSION 
-         "Build C Extension of sdb" ${ENABLE_SDB_EXTENSION_BY_DEFAULT})
-  mark_as_advanced(ENABLE_SDB_EXTENSION_BY_DEFAULT)
-  
-  # Set the Python and Numpy include directories
-  if(SERIALBOX_ENABLE_SDB_C_EXTENSION)
-  
-    if(NOT(NUMPY_FOUND))
-      message(FATAL_ERROR "C Extension of sdb requies the numpy libraries")
-    endif()
-  
-    if(NOT(PYTHONLIBS_FOUND))
-      message(FATAL_ERROR "C Extension of sdb requies the python libraries")
-    endif()
-  
-    include_directories(SYSTEM ${PYTHON_INCLUDE_PATH})
-    include_directories(SYSTEM ${NUMPY_INCLUDE_DIRS})
-  
-  endif()
-
-endif(SERIALBOX_ENABLE_SDB)
-
 #---------------------------------------- GridTools ------------------------------------------------
 if(SERIALBOX_TESTING_GRIDTOOLS)
 

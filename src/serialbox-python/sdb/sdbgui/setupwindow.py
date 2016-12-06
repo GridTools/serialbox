@@ -9,7 +9,6 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLabel, QListWidget
 
 from sdbcore.logger import Logger
@@ -17,6 +16,7 @@ from sdbgui.icon import Icon
 from sdbgui.setupwidget import SetupWidget
 from sdbgui.tabstate import TabState
 from sdbgui.tabwindow import TabWindow
+
 
 class SetupWindow(QWidget, TabWindow):
     def __init__(self, mainwindow, input_serializer_data, reference_serializer_data):
