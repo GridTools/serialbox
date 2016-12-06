@@ -81,5 +81,14 @@ class TestSavepoint(unittest.TestCase):
         sp_to_clone.metainfo.clear()
         self.assertEqual(sp_clone.metainfo.to_dict(), {"key1": 5.0})
 
+    def test_hash(self):
+        sp1 = Savepoint("sp1")
+        sp2 = Savepoint("sp1", {"key": 5})
+        sp3 = Savepoint("sp2")
+
+        self.assertEqual(sp1.__hash__(), sp2.__hash__())
+        self.assertNotEqual(sp1.__hash__(), sp3.__hash__())
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -14,7 +14,7 @@
 ##===------------------------------------------------------------------------------------------===##
 
 from abc import ABCMeta
-from ctypes import c_char_p, c_void_p, c_int, Structure, POINTER
+from ctypes import c_char_p, c_void_p, c_int, Structure, POINTER, c_size_t
 
 from .common import get_library, extract_string
 from .error import invoke, SerialboxError
@@ -48,6 +48,9 @@ def register_library(library):
 
     library.serialboxSavepointToString.argtypes = [POINTER(SavepointImpl)]
     library.serialboxSavepointToString.restype = c_char_p
+
+    library.serialboxSavepointHash.argtypes = [POINTER(SavepointImpl)]
+    library.serialboxSavepointHash.restype = c_size_t
 
     library.serialboxSavepointGetMetainfo.argtypes = [POINTER(SavepointImpl)]
     library.serialboxSavepointGetMetainfo.restype = POINTER(MetainfoImpl)
@@ -196,6 +199,9 @@ class Savepoint(object):
 
     def __str__(self):
         return invoke(lib.serialboxSavepointToString, self.__savepoint).decode()
+
+    def __hash__(self):
+        return invoke(lib.serialboxSavepointHash, self.__savepoint)
 
 
 # ===--------------------------------------------------------------------------------------------===

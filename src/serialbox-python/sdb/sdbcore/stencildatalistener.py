@@ -78,17 +78,17 @@ class StencilDataFieldListListener(object):
         """Enable or disable field.
 
         :param name_or_idx: Name or index of the field
-        :type name: str, int
+        :type name_or_idx: str, int
         :param enable: Enable (``True``) or disable (``False``) field
         :type enable: bool
         """
         raise NotImplementedError
 
-    def move_field(self, name, idx):
-        """Move field `name` to position `idx` in the list field list.
+    def move_field(self, name_or_idx, idx):
+        """Move field, given by `name` or `idx`, to position `idx` in the list field list.
 
-        :param name: Name of the field
-        :type name: str
+        :param name_or_idx: Name or index of the field
+        :type name_or_idx: str, int
         :param idx: Index of the `field` to be moved to
         :type idx: int
         """

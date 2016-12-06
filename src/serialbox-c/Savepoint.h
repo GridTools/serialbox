@@ -17,6 +17,7 @@
 
 #include "serialbox-c/Api.h"
 #include "serialbox-c/Type.h"
+#include "stddef.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -90,6 +91,21 @@ SERIALBOX_API int serialboxSavepointEqual(const serialboxSavepoint_t* s1,
  * \return String representation of the Savepoint
  */
 SERIALBOX_API char* serialboxSavepointToString(const serialboxSavepoint_t* savepoint);
+
+/**
+ * \brief Compute hash of the Savepoint
+ *
+ * Savepoints are hashed on their name (std::string). Although, the name of a savepoint is not
+ * unique, it is a reasoanble compromise as we assume there are only O(1) savepoints sharing the
+ * same name.
+ * 
+ * The function will allocate a sufficiently large `char` buffer (using malloc()) which needs
+ * be freed by the user using free().
+ *
+ * \param savepoint  Savepoint to use
+ * \return Hash of the string
+ */
+SERIALBOX_API size_t serialboxSavepointHash(const serialboxSavepoint_t* savepoint);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Meta-information

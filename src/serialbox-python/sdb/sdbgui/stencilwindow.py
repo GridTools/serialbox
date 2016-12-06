@@ -9,16 +9,16 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton
 
 from sdbcore.logger import Logger
+from sdbgui.icon import Icon
+from sdbgui.popuphalodescriptorwidget import PopupHaloDescriptorWidget
 from sdbgui.stencilfieldmetainfowidget import StencilFieldMetainfoWidget
 from sdbgui.stencilthresholdsetterwidget import StencilThresholdSetterWidget
 from sdbgui.stencilwidget import StencilWidget
 from sdbgui.tabstate import TabState
 from sdbgui.tabwindow import TabWindow
-from sdbgui.icon import Icon
 
 
 class StencilWindow(QWidget, TabWindow):
@@ -43,6 +43,13 @@ class StencilWindow(QWidget, TabWindow):
         self.__widget_stencil_reference = StencilWidget(self, self.__reference_stencil_data,
                                                         self.__widget_fieldmetainfo)
 
+        self.__widget_button_halo = QPushButton("Halo", parent=self)
+        self.__widget_button_halo.setIcon(Icon("show_all.png"))
+        self.__widget_button_halo.setStatusTip(
+            "Set halo size of the fields. The indentation of the halos is skipped during"
+            " comparison of the fields.")
+        self.__widget_button_halo.clicked.connect(self.popup_halo_descriptor)
+
         self.__widget_button_next = QPushButton("Next")
         self.__widget_button_next.clicked.connect(self.make_continue)
         self.__widget_button_next.setIcon(Icon("run.png"))
@@ -57,16 +64,21 @@ class StencilWindow(QWidget, TabWindow):
         hbox_button.addStretch(1)
         hbox_button.addWidget(self.__widget_button_next)
 
+        hbox_middle = QHBoxLayout()
+        hbox_middle.addWidget(self.__widget_fieldmetainfo)
+        hbox_middle.addStretch(1)
+        hbox_middle.addWidget(self.__widget_button_halo)
+
         vbox = QVBoxLayout()
         vbox.addLayout(hbox_widgets)
         vbox.addStretch(1)
-        vbox.addWidget(self.__widget_fieldmetainfo)
+        vbox.addLayout(hbox_middle)
         vbox.addWidget(self.__widget_threshold_setter)
         vbox.addLayout(hbox_button)
         self.setLayout(vbox)
 
-    def match_fields(self):
-        self.__stencil_field_mapper.match_fields()
+    def initial_field_match(self):
+        self.__stencil_field_mapper.initial_field_match()
 
     def update_comparison_result(self):
         try:
@@ -76,6 +88,9 @@ class StencilWindow(QWidget, TabWindow):
             self.__widget_mainwindow.popup_error_box(str(e))
             return False
         return True
+
+    def popup_halo_descriptor(self):
+        self.__widget_popup_halo_descriptor = PopupHaloDescriptorWidget(self.__widget_mainwindow)
 
     def make_continue(self):
         if self.update_comparison_result():

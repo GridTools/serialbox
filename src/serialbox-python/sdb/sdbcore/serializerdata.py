@@ -11,9 +11,8 @@
 
 from serialbox import Serializer, SerialboxError, OpenModeKind
 
-from .logger import Logger
-from .serializerdatalistener import SerializerDataListener, SerializerDataDirectoryAndPrefixListener
-
+from sdbcore.logger import Logger
+from sdbcore.serializerdatalistener import SerializerDataListener, SerializerDataDirectoryAndPrefixListener
 
 class SerializerData(object):
     def __init__(self, name, directory="", prefix=""):

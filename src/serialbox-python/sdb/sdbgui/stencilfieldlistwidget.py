@@ -101,14 +101,6 @@ class StencilFieldListWidget(QListView, StencilDataFieldListListener):
         self.model().removeRow(item)
 
     def set_field_enabled(self, name_or_idx, enable):
-
-        # print(name_or_idx, self.__stencil_data.name)
-        # print(self.model().rowCount(), self.model().columnCount())
-        # print(self.model())
-
-        # print(name_or_idx, enable)
-        # print(self.model().rowCount(), self.model().columnCount())
-
         if isinstance(name_or_idx, str):
             index_list = self.model().findItems(name_or_idx)
             if not index_list:
@@ -126,8 +118,12 @@ class StencilFieldListWidget(QListView, StencilDataFieldListListener):
         else:
             item.setCheckState(Qt.Unchecked)
 
-    def move_field(self, name, idx):
-        item = self.model().findItems(name)[0]
+    def move_field(self, name_or_idx, idx):
+        if isinstance(name_or_idx, str):
+            item = self.model().findItems(name_or_idx)[0]
+        else:
+            item = self.model().item(name_or_idx)
+
         name = item.text()
         data = item.data()
         check_state = item.checkState()

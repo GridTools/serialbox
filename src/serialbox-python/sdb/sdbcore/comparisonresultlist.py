@@ -9,8 +9,8 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-from .comparisonresult import ComparisonResult
-from .logger import Logger
+from sdbcore.comparisonresult import ComparisonResult
+from sdbcore.logger import Logger
 
 
 class ComparisonResultList(object):

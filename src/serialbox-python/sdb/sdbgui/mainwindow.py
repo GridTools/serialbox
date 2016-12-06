@@ -12,7 +12,7 @@
 from os import getcwd
 from time import time
 
-from PyQt5.QtCore import QFileSystemWatcher, QUrl
+from PyQt5.QtCore import QFileSystemWatcher, QUrl, Qt
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import (QMainWindow, QDesktopWidget, QAction, QTabWidget, QMessageBox,
                              QFileDialog)
@@ -121,6 +121,9 @@ class MainWindow(QMainWindow):
         self.switch_to_tab(TabState.Setup)
 
         self.setCentralWidget(self.__widget_tab)
+
+        # If the MainWindow is closed, kill all popup windows
+        self.setAttribute(Qt.WA_DeleteOnClose)
 
         Logger.info("Starting main loop")
         self.show()
@@ -282,7 +285,7 @@ class MainWindow(QMainWindow):
             self.__widget_tab.setTabEnabled(TabState.Result.value, False)
             self.__widget_tab.setTabEnabled(TabState.Error.value, False)
 
-            self.__widget_tab.widget(TabState.Stencil.value).match_fields()
+            self.__widget_tab.widget(TabState.Stencil.value).initial_field_match()
 
             self.__action_reload.setEnabled(True)
             self.__action_try_switch_to_error_tab.setEnabled(False)

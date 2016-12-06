@@ -53,7 +53,7 @@ class StencilWidget(QWidget):
     def set_stencil_index(self, idx):
         self.__stencil_data.set_selected_stencil(idx)
         self.update_available_fields()
-        self.__widget_stencilwindow.match_fields()
+        self.__widget_stencilwindow.initial_field_match()
 
     def make_update(self):
         Logger.info("Updating StencilWidget of '%s'" % self.__name)

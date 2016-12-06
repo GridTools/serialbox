@@ -10,29 +10,24 @@
 ##===------------------------------------------------------------------------------------------===##
 
 from PyQt5.QtCore import QT_VERSION_STR, Qt
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QSizePolicy
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QSizePolicy
 
 from sdbcore.logger import Logger
 from sdbcore.version import Version
 from sdbgui.pixmap import Pixmap
+from sdbgui.popupwidget import PopupWidget
 
 
-class PopupAboutWidget(QWidget):
+class PopupAboutWidget(PopupWidget):
     def __init__(self, parent):
-        super().__init__()
+        super().__init__(parent)
         Logger.info("Showing about message box")
 
         self.setWindowTitle("About sdb")
 
-        geometry = parent.geometry()
-        geometry.setY(geometry.y() + int(0.10 * parent.geometry().height()))
-        geometry.setX(geometry.x() + int(0.10 * parent.geometry().width()))
-        geometry.setWidth(0.80 * parent.geometry().width())
-        geometry.setHeight(0.80 * parent.geometry().height())
-        self.setGeometry(geometry)
-
         image = Pixmap("logo.png")
-        image_scaled = image.scaled(geometry.height(), geometry.width(), Qt.KeepAspectRatio)
+        image_scaled = image.scaled(self.geometry().height(), self.geometry().width(),
+                                    Qt.KeepAspectRatio)
 
         self.__widget_label_image = QLabel()
         self.__widget_label_image.setPixmap(image_scaled)
