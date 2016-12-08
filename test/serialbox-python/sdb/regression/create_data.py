@@ -13,7 +13,7 @@ import os
 import sys
 
 sys.path.insert(1, os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                "../../../src/serialbox-python"))
+                                "../../../../src/serialbox-python"))
 
 import serialbox as ser
 import numpy as np
