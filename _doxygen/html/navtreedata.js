@@ -40,7 +40,7 @@ var NAVTREEINDEX =
 "classserialbox_1_1SerializerImpl.html#a3f1679414099c0da2761e51c124da2df",
 "classserialbox_1_1stella_1_1DataFieldInfo.html#a16f42e35a61e6dc49f4a3cad10d20372",
 "functions_func_j.html",
-"structserialbox_1_1ToType_3_01TypeID_1_1ArrayOfInt32_01_4.html"
+"structserialbox_1_1ToType_3_01TypeID_1_1ArrayOfFloat64_01_4.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

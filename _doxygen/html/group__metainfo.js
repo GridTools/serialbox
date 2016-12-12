@@ -11,6 +11,7 @@ var group__metainfo =
     [ "serialboxMetainfoCreate", "group__metainfo.html#ga2fc62181eb5dae85466b50b44eacb80e", null ],
     [ "serialboxMetainfoCreateElementInfo", "group__metainfo.html#ga5d16013567973a9bb34663189bfae31b", null ],
     [ "serialboxMetainfoCreateFromMetainfo", "group__metainfo.html#ga8ecdbfec342d202ad0083752a153a463", null ],
+    [ "serialboxMetainfoDeleteKey", "group__metainfo.html#gad7c418aab4e5d7c94fb9d107e2a5c13e", null ],
     [ "serialboxMetainfoDestroy", "group__metainfo.html#ga1c240880084ca4555f790a1033b8e736", null ],
     [ "serialboxMetainfoDestroyElementInfo", "group__metainfo.html#gab8c95b0b2d564aa92bfa70c5b8d97040", null ],
     [ "serialboxMetainfoEqual", "group__metainfo.html#ga5d437cce4208c112f1833c547235a022", null ],

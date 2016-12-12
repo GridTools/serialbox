@@ -1,5 +1,7 @@
 var NAVTREEINDEX5 =
 {
+"structserialbox_1_1ToType_3_01TypeID_1_1ArrayOfFloat64_01_4.html":[0,0,51],
+"structserialbox_1_1ToType_3_01TypeID_1_1ArrayOfFloat64_01_4.html#a934bcdbf51c96f1f15aaa90876228a9b":[0,0,51,0],
 "structserialbox_1_1ToType_3_01TypeID_1_1ArrayOfInt32_01_4.html":[0,0,48],
 "structserialbox_1_1ToType_3_01TypeID_1_1ArrayOfInt32_01_4.html#ac04f445760d47075a5e6dc78cdc7526e":[0,0,48,0],
 "structserialbox_1_1ToType_3_01TypeID_1_1ArrayOfInt64_01_4.html":[0,0,49],

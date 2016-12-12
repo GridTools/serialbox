@@ -86,7 +86,7 @@
 <span class="c1">##===------------------------------------------------------------------------------------------===##</span>
 
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span>
-<span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_void_p</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">POINTER</span>
+<span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_void_p</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">,</span> <span class="n">c_size_t</span>
 
 <span class="kn">from</span> <span class="nn">.common</span> <span class="kn">import</span> <span class="n">get_library</span><span class="p">,</span> <span class="n">extract_string</span>
 <span class="kn">from</span> <span class="nn">.error</span> <span class="kn">import</span> <span class="n">invoke</span><span class="p">,</span> <span class="n">SerialboxError</span>
@@ -120,6 +120,9 @@
 
     <span class="n">library</span><span class="o">.</span><span class="n">serialboxSavepointToString</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">SavepointImpl</span><span class="p">)]</span>
     <span class="n">library</span><span class="o">.</span><span class="n">serialboxSavepointToString</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_char_p</span>
+
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxSavepointHash</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">SavepointImpl</span><span class="p">)]</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxSavepointHash</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_size_t</span>
 
     <span class="n">library</span><span class="o">.</span><span class="n">serialboxSavepointGetMetainfo</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">SavepointImpl</span><span class="p">)]</span>
     <span class="n">library</span><span class="o">.</span><span class="n">serialboxSavepointGetMetainfo</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">MetainfoImpl</span><span class="p">)</span>
@@ -267,7 +270,10 @@
         <span class="k">return</span> <span class="s1">&#39;&lt;Savepoint {0}&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__str__</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxSavepointToString</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__savepoint</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxSavepointToString</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__savepoint</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxSavepointHash</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__savepoint</span><span class="p">)</span></div>
 
 
 <span class="c1"># ===--------------------------------------------------------------------------------------------===</span>

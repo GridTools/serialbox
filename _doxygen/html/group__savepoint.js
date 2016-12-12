@@ -6,5 +6,6 @@ var group__savepoint =
     [ "serialboxSavepointEqual", "group__savepoint.html#gafbc0ce6f7541c3cfaba60be2e30b2ce6", null ],
     [ "serialboxSavepointGetMetainfo", "group__savepoint.html#ga674275b4c94ac1052e80e4c3201fe082", null ],
     [ "serialboxSavepointGetName", "group__savepoint.html#gac7e18eb91bb570b241c57eb0ff1e9a0a", null ],
+    [ "serialboxSavepointHash", "group__savepoint.html#ga6803a9d2bd39792055891fb11be9ace9", null ],
     [ "serialboxSavepointToString", "group__savepoint.html#gaefca6de3641a26a6541eb6b9f798281a", null ]
 ];

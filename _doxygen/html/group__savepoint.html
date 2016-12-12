@@ -114,6 +114,9 @@ $(document).ready(function(){initNavTree('group__savepoint.html','');});
 <tr class="memitem:gaefca6de3641a26a6541eb6b9f798281a"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__savepoint.html#gaefca6de3641a26a6541eb6b9f798281a">serialboxSavepointToString</a> (const <a class="el" href="structserialboxSavepoint__t.html">serialboxSavepoint_t</a> *savepoint)</td></tr>
 <tr class="memdesc:gaefca6de3641a26a6541eb6b9f798281a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert to string.  <a href="#gaefca6de3641a26a6541eb6b9f798281a">More...</a><br /></td></tr>
 <tr class="separator:gaefca6de3641a26a6541eb6b9f798281a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6803a9d2bd39792055891fb11be9ace9"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__savepoint.html#ga6803a9d2bd39792055891fb11be9ace9">serialboxSavepointHash</a> (const <a class="el" href="structserialboxSavepoint__t.html">serialboxSavepoint_t</a> *savepoint)</td></tr>
+<tr class="memdesc:ga6803a9d2bd39792055891fb11be9ace9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute hash of the Savepoint.  <a href="#ga6803a9d2bd39792055891fb11be9ace9">More...</a><br /></td></tr>
+<tr class="separator:ga6803a9d2bd39792055891fb11be9ace9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga674275b4c94ac1052e80e4c3201fe082"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API <a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__savepoint.html#ga674275b4c94ac1052e80e4c3201fe082">serialboxSavepointGetMetainfo</a> (<a class="el" href="structserialboxSavepoint__t.html">serialboxSavepoint_t</a> *savepoint)</td></tr>
 <tr class="memdesc:ga674275b4c94ac1052e80e4c3201fe082"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate a new <code><a class="el" href="structserialboxMetainfo__t.html" title="Refrence to a Metainfo. ">serialboxMetainfo_t</a></code> which maps to the meta-information of the Savepoint.  <a href="#ga674275b4c94ac1052e80e4c3201fe082">More...</a><br /></td></tr>
 <tr class="separator:ga674275b4c94ac1052e80e4c3201fe082"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -261,7 +264,7 @@ $(document).ready(function(){initNavTree('group__savepoint.html','');});
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>meta-information of the Savepoint </dd></dl>
 
-<p>Definition at line <a class="el" href="c_2Savepoint_8cpp_source.html#l00082">82</a> of file <a class="el" href="c_2Savepoint_8cpp_source.html">Savepoint.cpp</a>.</p>
+<p>Definition at line <a class="el" href="c_2Savepoint_8cpp_source.html#l00088">88</a> of file <a class="el" href="c_2Savepoint_8cpp_source.html">Savepoint.cpp</a>.</p>
 
 </div>
 </div>
@@ -289,6 +292,35 @@ $(document).ready(function(){initNavTree('group__savepoint.html','');});
 <dl class="section return"><dt>Returns</dt><dd>name of the Savepoint </dd></dl>
 
 <p>Definition at line <a class="el" href="c_2Savepoint_8cpp_source.html#l00062">62</a> of file <a class="el" href="c_2Savepoint_8cpp_source.html">Savepoint.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga6803a9d2bd39792055891fb11be9ace9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SERIALBOX_API size_t serialboxSavepointHash </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structserialboxSavepoint__t.html">serialboxSavepoint_t</a> *&#160;</td>
+          <td class="paramname"><em>savepoint</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute hash of the Savepoint. </p>
+<p>Savepoints are hashed on their name (std::string). Although, the name of a savepoint is not unique, it is a reasoanble compromise as we assume there are only O(1) savepoints sharing the same name.</p>
+<p>The function will allocate a sufficiently large <code>char</code> buffer (using malloc()) which needs be freed by the user using free().</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">savepoint</td><td>Savepoint to use </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Hash of the string </dd></dl>
+
+<p>Definition at line <a class="el" href="c_2Savepoint_8cpp_source.html#l00078">78</a> of file <a class="el" href="c_2Savepoint_8cpp_source.html">Savepoint.cpp</a>.</p>
 
 </div>
 </div>
@@ -325,7 +357,7 @@ $(document).ready(function(){initNavTree('group__savepoint.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Dec 1 2016 12:09:36 for Serialbox by
+    <li class="footer">Generated on Mon Dec 12 2016 14:50:15 for Serialbox by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

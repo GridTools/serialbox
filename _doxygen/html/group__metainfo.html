@@ -139,6 +139,9 @@ Classes</h2></td></tr>
 <tr class="memitem:gab8c95b0b2d564aa92bfa70c5b8d97040"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#gab8c95b0b2d564aa92bfa70c5b8d97040">serialboxMetainfoDestroyElementInfo</a> (<a class="el" href="structserialboxMetainfoElementInfo__t.html">serialboxMetainfoElementInfo_t</a> *elementInfo)</td></tr>
 <tr class="memdesc:gab8c95b0b2d564aa92bfa70c5b8d97040"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy the element-information and deallocate all memory.  <a href="#gab8c95b0b2d564aa92bfa70c5b8d97040">More...</a><br /></td></tr>
 <tr class="separator:gab8c95b0b2d564aa92bfa70c5b8d97040"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad7c418aab4e5d7c94fb9d107e2a5c13e"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#gad7c418aab4e5d7c94fb9d107e2a5c13e">serialboxMetainfoDeleteKey</a> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key)</td></tr>
+<tr class="memdesc:gad7c418aab4e5d7c94fb9d107e2a5c13e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete element given by <code>key</code>  <a href="#gad7c418aab4e5d7c94fb9d107e2a5c13e">More...</a><br /></td></tr>
+<tr class="separator:gad7c418aab4e5d7c94fb9d107e2a5c13e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5848191c40048f8a0f7c75a00051805a"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__metainfo.html#ga5848191c40048f8a0f7c75a00051805a">serialboxMetainfoAddBoolean</a> (<a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *metaInfo, const char *key, <a class="el" href="group__type.html#gad2d964bb573fe9e8ef8b87d9e363453e">serialboxBoolean_t</a> value)</td></tr>
 <tr class="memdesc:ga5848191c40048f8a0f7c75a00051805a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a new element in the form key=value pair to the meta-information.  <a href="#ga5848191c40048f8a0f7c75a00051805a">More...</a><br /></td></tr>
 <tr class="separator:ga5848191c40048f8a0f7c75a00051805a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -401,6 +404,44 @@ SERIALBOX_API <a class="el" href="structserialboxArrayOfString__t.html">serialbo
 <dl class="section return"><dt>Returns</dt><dd>refrence pointer to the newly constructed meta-information or NULL if an error occurred </dd></dl>
 
 <p>Definition at line <a class="el" href="Metainfo_8cpp_source.html#l00038">38</a> of file <a class="el" href="Metainfo_8cpp_source.html">Metainfo.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gad7c418aab4e5d7c94fb9d107e2a5c13e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SERIALBOX_API int serialboxMetainfoDeleteKey </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structserialboxMetainfo__t.html">serialboxMetainfo_t</a> *&#160;</td>
+          <td class="paramname"><em>metaInfo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Delete element given by <code>key</code> </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">metaInfo</td><td>Meta-information to use </td></tr>
+    <tr><td class="paramname">key</td><td>Key of element to delete</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1 if element was deleted, 0 otherwise </dd></dl>
+
+<p>Definition at line <a class="el" href="Metainfo_8cpp_source.html#l00148">148</a> of file <a class="el" href="Metainfo_8cpp_source.html">Metainfo.cpp</a>.</p>
 
 </div>
 </div>
@@ -745,7 +786,7 @@ SERIALBOX_API <a class="el" href="structserialboxArrayOfString__t.html">serialbo
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Dec 1 2016 12:09:36 for Serialbox by
+    <li class="footer">Generated on Mon Dec 12 2016 14:50:15 for Serialbox by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>
