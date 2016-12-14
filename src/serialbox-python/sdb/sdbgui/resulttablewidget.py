@@ -12,10 +12,12 @@
 from random import random
 
 from PyQt5.QtCore import QSize, Qt, QPoint
+from PyQt5.QtGui import QColor, QBrush, QPen
 from PyQt5.QtWidgets import (QLabel, QVBoxLayout, QTableWidget, QWidget, QHBoxLayout, QHeaderView,
-                             QCheckBox, QTableWidgetItem, QComboBox)
+                             QCheckBox, QTableWidgetItem, QComboBox, QStyledItemDelegate, QStyle)
 
 from sdbcore.logger import Logger
+from sdbgui.globalconfig import GlobalConfig
 from sdbgui.icon import Icon
 from sdbgui.movie import Movie
 from sdbgui.resulttablecellwidget import ResultTableCellWidget
@@ -35,6 +37,28 @@ def make_shared_name(input_field, reference_field):
 def make_stage_name(result):
     # TODO: Handle the case when input_stage != reference_stage
     return result["input_stage"] + " [" + result["intent"] + "]"
+
+
+class BackgroundDelegate(QStyledItemDelegate):
+    """ Draw transparent background """
+
+    def __init__(self, parent):
+        super().__init__(parent)
+
+    def paint(self, painter, option, index):
+        background = index.data(Qt.BackgroundRole)
+        if isinstance(background, QBrush):
+            painter.fillRect(option.rect, background)
+
+        super().paint(painter, option, index)
+
+        if option.state & QStyle.State_Selected:
+            painter.save()
+            pen = QPen(Qt.black, 2, Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin)
+            w = pen.width() / 2
+            painter.setPen(pen)
+            painter.drawRect(option.rect.adjusted(w, w, -w, -w))
+            painter.restore()
 
 
 class ResultTableWidget(QWidget):

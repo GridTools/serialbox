@@ -77,6 +77,10 @@ def main():
     group.add_boolean_option("default-session",
                              "Load (save) default session at startup (shutdown)", True)
     group.add_boolean_option("async", "Use asynchronous reading API of Serialbox", True)
+    group.add_boolean_option("in-cell-icons",
+                             "Display small in icons the result table instead of coloring the cell",
+                             True)
+
     parser.add_option_group(group)
 
     parser.add_option("--move-window", metavar="X:Y", dest="move_window",

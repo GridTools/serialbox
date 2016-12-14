@@ -41,8 +41,17 @@ include_directories(SYSTEM ${GRIDTOOLS_INCLUDE_DIRS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 #
-# Finally, we add the executable and link against the Serialbox libraries
+# Don't use Debug symbols, gcc takes to long otherwise ;)
+#
+string(REPLACE "-g" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+
+#
+# Finally, we add the executables and link against the Serialbox libraries
 #
 add_executable(smagorinsky smagorinsky.cpp smagorinsky_stencil.hpp smagorinsky_repository.hpp)
 target_link_libraries(smagorinsky ${SERIALBOX_CXX_LIBRARIES})
+
+add_executable(smagorinsky-error smagorinsky.cpp smagorinsky_stencil.hpp smagorinsky_repository.hpp)
+target_compile_definitions(smagorinsky-error PUBLIC -DERROR)
+target_link_libraries(smagorinsky-error ${SERIALBOX_CXX_LIBRARIES})
 

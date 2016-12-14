@@ -19,6 +19,7 @@
 #include <gridtools.hpp>
 #include <stencil-composition/stencil-composition.hpp>
 #include <stencil-composition/structured_grids/call_interfaces.hpp>
+#include <serialbox/gridtools/serialbox.hpp>
 
 #include <string>
 #include <random>
@@ -30,10 +31,10 @@ using backend = gridtools::backend<gridtools::enumtype::Host, gridtools::enumtyp
                                    gridtools::enumtype::Naive>;
 
 /// @brief Axis of the Grid including the entire vertical domain
-using axis_t = gridtools::interval<gridtools::level<0, -1>, gridtools::level<2, 3>>;
+using axis_t = gridtools::interval<gridtools::level<0, -1>, gridtools::level<1, 3>>;
 
 /// \brief All layers, meaning [0, k)
-using full_domain_t = gridtools::interval<gridtools::level<0, -1>, gridtools::level<2, -1>>;
+using full_domain_t = gridtools::interval<gridtools::level<0, -1>, gridtools::level<1, -1>>;
 
 /// \brief Repository of the storages of the smagorinsky stencil
 class repository {
@@ -57,23 +58,22 @@ public:
   /// \brief Meta-data types
   /// @{
   using metadata_ijk_t = backend::storage_info<0, layout_ijk_t, halo_ijk_t>;
-  using metadata_ijk_tmp_t = backend::storage_info<1, layout_ijk_t, halo_ijk_t>;
-  using metadata_j_t = backend::storage_info<2, layout_j_t, halo_j_t>;
-  using metadata_scalar_t = backend::storage_info<3, layout_scalar_t>;
+  using metadata_j_t = backend::storage_info<1, layout_j_t, halo_j_t>;
+  using metadata_scalar_t = backend::storage_info<2, layout_scalar_t>;
   /// @}
 
   /// \brief Storage types
   /// @{
   using storage_ijk_t = backend::storage_type<float_type, metadata_ijk_t>::type;
-  using storage_ijk_tmp_t = backend::temporary_storage_type<float_type, metadata_ijk_tmp_t>::type;
+  using storage_ijk_tmp_t = backend::temporary_storage_type<float_type, metadata_ijk_t>::type;
   using storage_j_t = backend::storage_type<float_type, metadata_j_t>::type;
   using storage_scalar_t = backend::storage_type<float_type, metadata_scalar_t>::type;
 
   /// \brief Allocate the storages
   repository(int i, int j, int k)
-      : isize_(i + 2 * halo_size), jsize_(j + 2 * halo_size), ksize_(k + 2 * halo_size),
+      : isize_(i + 2 * halo_size), jsize_(j + 2 * halo_size), ksize_(k),
 
-        metadata_ijk_(isize_, jsize_, ksize_), metadata_j_(1, jsize_, 1), metadata_scalar_(1, 1, 1),
+        metadata_scalar_(1, 1, 1), metadata_j_(1, jsize_, 1), metadata_ijk_(isize_, jsize_, ksize_),
 
         // Output fields
         u_out_(metadata_ijk_, -1.0, "u_out"), v_out_(metadata_ijk_, -1.0, "v_out"),
@@ -119,25 +119,28 @@ public:
   /// \brief Load input data
   void init_fields() {
 
+    std::cout << "Initializing storages ..." << std::endl;
+
     std::default_random_engine generator;
     std::uniform_real_distribution<double> distribution(0.0, 1.0);
-
+    
     for(int i = 0; i < isize_; i++)
       for(int j = 0; j < jsize_; j++)
         for(int k = 0; k < ksize_; k++) {
-
           u_out_(i, j, k) = distribution(generator);
           v_out_(i, j, k) = distribution(generator);
           u_in_(i, j, k) = distribution(generator);
           v_in_(i, j, k) = distribution(generator);
           hdmaskvel_(i, j, k) = distribution(generator);
-
-          crlavo_(0, j, 0) = distribution(generator);
-          crlavu_(0, j, 0) = distribution(generator);
-          crlato_(0, j, 0) = distribution(generator);
-          crlatu_(0, j, 0) = distribution(generator);
-          acrlat0_(0, j, 0) = distribution(generator);
         }
+
+    for(int j = 0; j < jsize_; j++) {
+      crlavo_(0, j, 0) = distribution(generator);
+      crlavu_(0, j, 0) = distribution(generator);
+      crlato_(0, j, 0) = distribution(generator);
+      crlatu_(0, j, 0) = distribution(generator);
+      acrlat0_(0, j, 0) = distribution(generator);
+    }
 
     eddlon_(0, 0, 0) = distribution(generator);
     eddlat_(0, 0, 0) = distribution(generator);
@@ -147,14 +150,16 @@ public:
 
 private:
   gridtools::uint_t isize_, jsize_, ksize_;
-  metadata_ijk_t metadata_ijk_;
-  metadata_j_t metadata_j_;
+
+  // Meta-data
   metadata_scalar_t metadata_scalar_;
+  metadata_j_t metadata_j_;
+  metadata_ijk_t metadata_ijk_;
 
   // Output fields
   storage_ijk_t u_out_, v_out_;
 
-  // Input fields)
+  // Input fields
   storage_ijk_t u_in_, v_in_, hdmaskvel_;
   storage_j_t crlavo_, crlavu_, crlato_, crlatu_, acrlat0_;
 

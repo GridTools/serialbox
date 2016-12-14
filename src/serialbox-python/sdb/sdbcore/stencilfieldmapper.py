@@ -113,7 +113,7 @@ class StencilFieldMapper(StencilDataDataListener):
             reference_field = reference_fields_reordered[idx]
             self.__reference_stencil_data.move_field(reference_field, idx)
 
-    def compare_fields(self, input_fields, reference_fields):
+    def compare_fields(self, input_fields, reference_fields, halos):
         if not self.__comparison_result_list_dirty:
             return
 
@@ -217,8 +217,17 @@ class StencilFieldMapper(StencilDataDataListener):
 
                         # Compare fields
                         if input_field.shape == reference_field.shape:
-                            match = allclose(input_field, reference_field, rtol=self.__rtol,
-                                             atol=self.__atol)
+                            if halos.is_null():
+                                match = allclose(input_field, reference_field, rtol=self.__rtol,
+                                                 atol=self.__atol)
+                            else:
+                                import numpy as np
+                                print(halos.get_slice())
+                                print(np.shape(input_field[halos.get_slice()]))
+                                match = allclose(input_field[halos.get_slice()],
+                                                 reference_field[halos.get_slice()],
+                                                 rtol=self.__rtol,
+                                                 atol=self.__atol)
                         else:
                             match = False
 

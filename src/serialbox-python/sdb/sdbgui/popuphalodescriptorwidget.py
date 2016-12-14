@@ -14,6 +14,7 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (QLabel, QVBoxLayout, QHBoxLayout, QHeaderView, QSizePolicy, QTableView,
                              QPushButton)
 
+from sdbcore.halos import Halos
 from sdbcore.logger import Logger
 from sdbgui.icon import Icon
 from sdbgui.popupwidget import PopupWidget
@@ -22,7 +23,6 @@ from sdbgui.popupwidget import PopupWidget
 class PopupHaloDescriptorWidget(PopupWidget):
     def __init__(self, parent):
         super().__init__(parent, 0.25, 0.5)
-
         self.setWindowTitle("Halo descriptor")
 
         self.__widget_label_title = QLabel("Set the halos for each dimension.", parent=self)
@@ -74,7 +74,6 @@ class PopupHaloDescriptorWidget(PopupWidget):
 
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.setLayout(vbox)
-        self.show()
 
     def add_row(self):
         Logger.info("Adding row")
@@ -95,3 +94,20 @@ class PopupHaloDescriptorWidget(PopupWidget):
 
     def done(self):
         self.close()
+
+    def get_halos(self):
+        halos = []
+        try:
+            for i in range(self.__halo_model.rowCount()):
+                minus = int(self.__halo_model.item(i, 0).text())
+                plus = int(self.__halo_model.item(i, 1).text())
+
+                if minus < 0 or plus < 0:
+                    raise RuntimeError(
+                        "Invalid halo boundary (%i, %i) in dimension %s: halo boundaries must be positive numbers." % (
+                            minus, plus, i))
+
+                halos += [[minus, None if plus is 0 else plus]]
+        except ValueError as e:
+            raise RuntimeError(str(e))
+        return Halos(halos)

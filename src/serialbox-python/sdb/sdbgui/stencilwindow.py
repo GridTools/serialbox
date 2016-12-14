@@ -43,6 +43,8 @@ class StencilWindow(QWidget, TabWindow):
         self.__widget_stencil_reference = StencilWidget(self, self.__reference_stencil_data,
                                                         self.__widget_fieldmetainfo)
 
+        self.__widget_popup_halo_descriptor = PopupHaloDescriptorWidget(self.__widget_mainwindow)
+
         self.__widget_button_halo = QPushButton("Halo", parent=self)
         self.__widget_button_halo.setIcon(Icon("show_all.png"))
         self.__widget_button_halo.setStatusTip(
@@ -83,14 +85,15 @@ class StencilWindow(QWidget, TabWindow):
     def update_comparison_result(self):
         try:
             self.__stencil_field_mapper.compare_fields(self.__widget_stencil_input.fields,
-                                                       self.__widget_stencil_reference.fields)
+                                                       self.__widget_stencil_reference.fields,
+                                                       self.__widget_popup_halo_descriptor.get_halos())
         except RuntimeError as e:
             self.__widget_mainwindow.popup_error_box(str(e))
             return False
         return True
 
     def popup_halo_descriptor(self):
-        self.__widget_popup_halo_descriptor = PopupHaloDescriptorWidget(self.__widget_mainwindow)
+        self.__widget_popup_halo_descriptor.show()
 
     def make_continue(self):
         if self.update_comparison_result():

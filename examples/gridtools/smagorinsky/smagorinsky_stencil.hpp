@@ -58,7 +58,7 @@ struct tension_shear_stage {
     // Tension
     const float_type T_s = eval(v_in(i, j - 1, k) - v_in(i, j, k)) * frac_1_dy -
                            eval(u_in(i - 1, j, k) - u_in(i, j, k)) * frac_1_dx;
-    eval(T_sqr_s()) = 0;
+    eval(T_sqr_s()) = T_s * T_s;
 
     // Shear
     const float_type S_uv = eval(u_in(i, j + 1, k) - u_in(i, j, k)) * frac_1_dy +
@@ -98,12 +98,20 @@ struct smag_coeff_stage {
 
     eval(smag_u()) = math::min((float_type)0.5, math::max((float_type)0.0, smag_u_));
 
-    // j-direction
+// j-direction
+#ifdef ERROR
+    const float_type smag_v_ =
+        eval(tau_smag(i, j, k)) *
+            math::sqrt((float_type)0.5 * (eval(T_sqr_s(i, j, k) + T_sqr_s(i, j + 1, k) +
+                                               S_sqr_uv(i, j, k) + S_sqr_uv(i - 1, j, k)))) + // <--
+        hdweight;
+#else
     const float_type smag_v_ =
         eval(tau_smag(i, j, k)) *
             math::sqrt((float_type)0.5 * (eval(T_sqr_s(i, j, k) + T_sqr_s(i, j + 1, k) +
                                                S_sqr_uv(i, j, k) + S_sqr_uv(i - 1, j, k)))) -
         hdweight;
+#endif
 
     eval(smag_v()) = math::min((float_type)0.5, math::max((float_type)0.0, smag_v_));
   }
@@ -157,7 +165,7 @@ struct smag_update_stage {
         call<laplacian, full_domain_t>::at<0, 0, 0>::with(eval, v_in(), crlavo(), crlavu());
 
     eval(u_out()) = eval(u_in(i, j, k)) + eval(smag_u(i, j, k)) * lapu;
-    eval(v_out()) = eval(v_in(i, j, k)) + eval(smag_v(i, j, k)) * lapv;
+    eval(v_out()) = eval(v_in(i, j, k)) - eval(smag_v(i, j, k)) * lapv;
   }
 };
 
@@ -231,9 +239,13 @@ void run_stencil(repository& repo, SerializerType& serializer, int invocation_co
   //    Grid
   //
 
-  const uint halo_size = 3;
-  uint_t di[5] = {halo_size, halo_size, halo_size, repo.isize() - halo_size - 1, repo.isize()};
-  uint_t dj[5] = {halo_size, halo_size, halo_size, repo.jsize() - halo_size - 1, repo.jsize()};
+  const int halo_size = 3;
+
+  // minus, plus, begin, end, length
+  uint_t di[5] = {halo_size, halo_size, halo_size, repo.isize() - halo_size - 2,
+                  repo.isize() - 2 * halo_size};
+  uint_t dj[5] = {halo_size, halo_size, halo_size, repo.jsize() - halo_size - 2,
+                  repo.jsize() - 2 * halo_size};
 
   gridtools::grid<axis_t> grid(di, dj);
   grid.value_list[0] = 0;
@@ -267,8 +279,11 @@ void run_stencil(repository& repo, SerializerType& serializer, int invocation_co
   computation->ready();
   computation->steady();
 
-  for(int i = 0; i < invocation_count; ++i)
+  std::cout << "Running smagorinsky stencil ... " << std::endl;
+  for(int i = 0; i < invocation_count; ++i) {
+    std::cout << "Invocation: " << i << std::endl;
     computation->run(serializer, "Smagorinsky");
+  }
 
   computation->finalize();
 }

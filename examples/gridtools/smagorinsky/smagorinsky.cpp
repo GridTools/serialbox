@@ -19,17 +19,41 @@
 #include <serialbox/gridtools/serialbox.hpp>
 #include <iostream>
 
+namespace {
+#ifdef ERROR
+const char* output_dir = "./smagorinsky-stencil-error";
+#else
+const char* output_dir = "./smagorinsky-stencil";
+#endif
+}
+
 int main() {
-  // Initialize fields
+  //
+  // Allocate & initialize fields
+  //
+
   auto repo = smagorinsky::repository(33, 28, 80);
   repo.init_fields();
 
-  // Setup serializer
-  serialbox::gridtools::serializer serializer(serialbox::gridtools::open_mode::Write,
-                                              "./smagorinsky-stencil", "stencil");
+  try {
 
-  // Run and serialize stencil
-  smagorinsky::run_stencil(repo, serializer, 1);
+    //
+    // Setup serializer
+    //
+    serialbox::gridtools::serializer serializer(serialbox::gridtools::open_mode::Write, output_dir,
+                                                "stencil");
 
+    //
+    // Run & serialize smagorinsky stencil
+    //
+
+    smagorinsky::run_stencil(repo, serializer, 3);
+
+  } catch(std::exception& e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+    return 1;
+  }
+
+  std::cout << "Successfully ran Smagorinsky stencil!" << std::endl;
   return 0;
 }
