@@ -757,3 +757,48 @@ TYPED_TEST(SerializerImplReadWriteTest, SliceWriteAndRead) {
   }
 #endif
 }
+
+#ifdef SERIALBOX_RUN_LARGE_FILE_TESTS
+
+TYPED_TEST(SerializerImplReadWriteTest, LargeFile) {
+  using Storage = Storage<TypeParam>;
+
+  // Allocate up to 4.1 GB storages. Note that binary archive creates a buffer which makes 
+  // it ~8.2 GB.
+  std::cout << "[          ] Running large file tests ... " << std::flush;
+
+  Storage field(Storage::RowMajor, {int((4.1 * (1 << 30)) / sizeof(TypeParam))},
+                Storage::sequential);
+  SavepointImpl savepoint("savepoint");
+
+  // Write to disk
+  {
+    SerializerImpl ser(OpenModeKind::Write, this->directory->path().string(), "Field", "Binary");
+    auto sv = field.toStorageView();
+    ser.registerField("field", sv.type(), sv.dims());
+    ser.write("field", savepoint, sv);
+  }
+
+  // Clear field
+  field.forEach(Storage::random);
+
+  // Read field from disk
+  {
+    SerializerImpl ser(OpenModeKind::Read, this->directory->path().string(), "Field", "Binary");
+    auto sv = field.toStorageView();
+    ser.read("field", savepoint, sv);
+  }
+
+  // Verify field is still sequential
+  bool fieldsMatch = true;
+  for(int i = 0; i < field.size(); ++i)
+    if(SERIALBOX_BUILTIN_UNLIKELY(field(i) != i)) {
+      fieldsMatch = false;
+      break;
+    }
+
+  std::cout << (fieldsMatch ? "Done" : "FAILED") << std::endl;
+  ASSERT_TRUE(fieldsMatch);
+}
+
+#endif

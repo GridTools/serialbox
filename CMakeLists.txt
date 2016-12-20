@@ -65,6 +65,7 @@ option(SERIALBOX_TESTING_GRIDTOOLS "Build gridtools unitests and examples" OFF)
 option(SERIALBOX_TESTING_STELLA "Build STELLA unitests" OFF)
 option(SERIALBOX_TESTING_OLD_SERIALBOX "Build compatiblity unitests against old serialbox" OFF)
 option(SERIALBOX_TESTING_DEATH_TESTS "Run death-tests" OFF)
+option(SERIALBOX_TESTING_LARGE_FILE_TESTS "Run large file (>4GB) tests" OFF)
 
 option(SERIALBOX_BENCHMARKING "Build benchmark exectuables" OFF)
 option(SERIALBOX_DOCUMENTATION "Build and install the documentation" OFF)
@@ -535,6 +536,10 @@ if(SERIALBOX_TESTING)
   
   if(SERIALBOX_TESTING_DEATH_TESTS)
     add_definitions(-DSERIALBOX_RUN_DEATH_TESTS)
+  endif()
+  
+  if(SERIALBOX_TESTING_LARGE_FILE_TESTS)
+    add_definitions(-DSERIALBOX_RUN_LARGE_FILE_TESTS)
   endif()
   
   # Unittest Utility library

@@ -12,8 +12,8 @@
  *
 \*===------------------------------------------------------------------------------------------===*/
 
-#include "serialbox-c/Config.h"
 #include "serialbox-c/ConfigOptions.h"
+#include "serialbox-c/Config.h"
 #include "serialbox-c/Utility.h"
 #include <string>
 

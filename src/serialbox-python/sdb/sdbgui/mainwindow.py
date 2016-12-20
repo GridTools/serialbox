@@ -4,7 +4,7 @@
 ##
 ##                                   S E R I A L B O X
 ##
-## This file is distributed under terms of BSD license. 
+## This file is distributed under terms of BSD license.
 ## See LICENSE.txt for more information.
 ##
 ##===------------------------------------------------------------------------------------------===##
@@ -34,7 +34,7 @@ from sdbgui.tabstate import TabState
 
 
 class MainWindow(QMainWindow):
-    OnlineHelpUrl = QUrl("https://thfabian.github.io/serialbox2/sdb.html")
+    OnlineHelpUrl = QUrl("https://eth-cscs.github.io/serialbox2/sdb.html")
 
     def __init__(self):
         super().__init__()
