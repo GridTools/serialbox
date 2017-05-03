@@ -26,3 +26,5 @@ external/*
 
 # Ignore gh-pages folder
 gh-pages*
+/.settings/
+/.cproject
