@@ -76,13 +76,13 @@ SUBROUTINE ppser_initialize(directory, prefix, mode, prefix_ref, mpi_rank, rprec
   IF ( .NOT. ppser_initialized ) THEN
     IF ( PRESENT(mpi_rank) ) THEN
       WRITE(suffix, '(A5,I0)') "_rank", mpi_rank
-      IF ( PRESENT(opt_archive) )
+      IF ( PRESENT(opt_archive) ) THEN
         CALL fs_create_serializer(directory, TRIM(prefix)//TRIM(suffix), 'w', ppser_serializer, opt_archive)
       ELSE
         CALL fs_create_serializer(directory, TRIM(prefix)//TRIM(suffix), 'w', ppser_serializer)
       END IF
     ELSE
-      IF ( PRESENT(opt_archive) )
+      IF ( PRESENT(opt_archive) ) THEN
         CALL fs_create_serializer(directory, TRIM(prefix), 'w', ppser_serializer, opt_archive)
       ELSE
         CALL fs_create_serializer(directory, TRIM(prefix), 'w', ppser_serializer)
@@ -92,13 +92,13 @@ SUBROUTINE ppser_initialize(directory, prefix, mode, prefix_ref, mpi_rank, rprec
     IF ( PRESENT(mode) ) ppser_mode = mode
     IF ( PRESENT(prefix_ref) ) THEN
       IF ( PRESENT(mpi_rank) ) THEN
-        IF ( PRESENT(opt_archive) )
+        IF ( PRESENT(opt_archive) ) THEN
           CALL fs_create_serializer(directory, TRIM(prefix_ref)//TRIM(suffix), 'r', ppser_serializer_ref, opt_archive)
         ELSE
           CALL fs_create_serializer(directory, TRIM(prefix_ref)//TRIM(suffix), 'r', ppser_serializer_ref)
         END IF
       ELSE
-        IF ( PRESENT(opt_archive) )
+        IF ( PRESENT(opt_archive) ) THEN
           CALL fs_create_serializer(directory, TRIM(prefix_ref), 'r', ppser_serializer_ref, opt_archive)
         ELSE
           CALL fs_create_serializer(directory, TRIM(prefix_ref), 'r', ppser_serializer_ref)
