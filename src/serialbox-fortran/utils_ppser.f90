@@ -58,13 +58,14 @@ CONTAINS
 
 !============================================================================
 
-SUBROUTINE ppser_initialize(directory, prefix, mode, prefix_ref, mpi_rank, rprecision, rperturb, realtype)
+SUBROUTINE ppser_initialize(directory, prefix, mode, prefix_ref, mpi_rank, rprecision, rperturb, realtype, opt_archive)
   CHARACTER(LEN=*), INTENT(IN)           :: directory, prefix
   INTEGER, OPTIONAL, INTENT(IN)          :: mode
   CHARACTER(LEN=*), OPTIONAL, INTENT(IN) :: prefix_ref
   INTEGER, OPTIONAL, INTENT(IN)          :: mpi_rank
   REAL(KIND=8), OPTIONAL, INTENT(IN)     :: rprecision, rperturb
   INTEGER, OPTIONAL, INTENT(IN)          :: realtype
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: opt_archive
 
   CHARACTER(LEN=1), DIMENSION(128)       :: buffer
   CHARACTER(LEN=15)                      :: suffix
@@ -75,17 +76,17 @@ SUBROUTINE ppser_initialize(directory, prefix, mode, prefix_ref, mpi_rank, rprec
   IF ( .NOT. ppser_initialized ) THEN
     IF ( PRESENT(mpi_rank) ) THEN
       WRITE(suffix, '(A5,I0)') "_rank", mpi_rank
-      CALL fs_create_serializer(directory, TRIM(prefix)//TRIM(suffix), 'w', ppser_serializer)
+      CALL fs_create_serializer(directory, TRIM(prefix)//TRIM(suffix), 'w', ppser_serializer, opt_archive)
     ELSE
-      CALL fs_create_serializer(directory, TRIM(prefix), 'w', ppser_serializer)
+      CALL fs_create_serializer(directory, TRIM(prefix), 'w', ppser_serializer, opt_archive)
     END IF
     CALL fs_create_savepoint('', ppser_savepoint)
     IF ( PRESENT(mode) ) ppser_mode = mode
     IF ( PRESENT(prefix_ref) ) THEN
       IF ( PRESENT(mpi_rank) ) THEN
-        CALL fs_create_serializer(directory, TRIM(prefix_ref)//TRIM(suffix), 'r', ppser_serializer_ref)
+        CALL fs_create_serializer(directory, TRIM(prefix_ref)//TRIM(suffix), 'r', ppser_serializer_ref, opt_archive)
       ELSE
-        CALL fs_create_serializer(directory, TRIM(prefix_ref), 'r', ppser_serializer_ref)
+        CALL fs_create_serializer(directory, TRIM(prefix_ref), 'r', ppser_serializer_ref, opt_archive)
       END IF
     END IF
   END IF
