@@ -28,5 +28,8 @@ external/*
 
 # Ignore gh-pages folder
 gh-pages*
+
+#Ignore Eclipse files
 /.settings/
 /.cproject
+/.pydevproject
