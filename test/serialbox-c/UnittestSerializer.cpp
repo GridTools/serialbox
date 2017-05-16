@@ -243,7 +243,7 @@ TEST_F(CSerializerUtilityTest, RegisterFields) {
 
   EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__bytesperelement"), 4);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__rank"), 2);
+  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__rank"), 4);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "__isize"), 42);
