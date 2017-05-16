@@ -133,20 +133,14 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
 
     const auto& dims = info.dims();
 
-    // Check rank
-    checkRank(fieldname, strides, dims);
-
     // Reorder strides
-    for(int i = 0; i < 4; ++i) {
-      if(dims[i] <= 1) {
-
-        // Shift strides to the left and set the current one to 0
-        for(int j = 3; j > i; --j)
-          strides[j] = strides[j - 1];
-
-        strides[i] = 0;
-      }
-    }
+    for (int i = 2; i >= 0; --i)
+	{
+		if (strides[i] == 0)
+		{
+			strides[i] = strides[i+1];
+		}
+	}
 
     // Convert to unit-strides
     const int bytesPerElement = serialbox::TypeUtil::sizeOf(info.type());
