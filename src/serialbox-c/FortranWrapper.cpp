@@ -60,7 +60,9 @@ static void checkRank(const char* name, ArrayType1&& array, ArrayType2&& arrayRe
   const int refRank = (arrayRef[0] > 0 ? 1 : 0) + (arrayRef[1] > 0 ? 1 : 0) +
                       (arrayRef[2] > 0 ? 1 : 0) + (arrayRef[3] > 0 ? 1 : 0);
 
-  if(rank != refRank)
+  bool scalar = rank == 0 && refRank == 1 && arrayRef[0] == 1;
+
+  if(rank != refRank && !scalar)
     throw Exception("field '%s' has rank %i but field with rank %i was passed", name, refRank,
                     rank);
 }
