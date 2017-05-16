@@ -244,7 +244,7 @@ int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* 
                                  bytesPerElement, typeName, serialbox::TypeUtil::sizeOf(typeID));
 
     int rank =
-        (iSize != 1 ? 1 : 0) + (jSize != 1 ? 1 : 0) + (kSize != 1 ? 1 : 0) + (lSize != 1 ? 1 : 0);
+        (iSize > 0 ? 1 : 0) + (jSize > 0 ? 1 : 0) + (kSize > 0 ? 1 : 0) + (lSize > 0 ? 1 : 0);
 
     std::vector<int> dims{iSize, jSize, kSize, lSize};
     MetainfoMap metaInfo;
