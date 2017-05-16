@@ -131,16 +131,10 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
     if(info.dims().size() != 4)
       throw Exception("number of dimensions is %i, required are 4");
 
-    const auto& dims = info.dims();
-
     // Reorder strides
     for (int i = 2; i >= 0; --i)
-	{
 		if (strides[i] == 0)
-		{
 			strides[i] = strides[i+1];
-		}
-	}
 
     // Convert to unit-strides
     const int bytesPerElement = serialbox::TypeUtil::sizeOf(info.type());
