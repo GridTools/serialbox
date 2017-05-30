@@ -10,7 +10,7 @@
 cmake_minimum_required(VERSION 3.1)
 
 ## Install ppser
-install(FILES ${CMAKE_SOURCE_DIR}/src/serialbox-python/pp_ser/pp_ser.py DESTINATION python/pp_ser)
+install(FILES ${CMAKE_SOURCE_DIR}/src/serialbox-python/pp_ser/pp_ser.py DESTINATION python/pp_ser PERMISSIONS WORLD_EXECUTE)
 
 ## Install serialbox
 if(SERIALBOX_ENABLE_PYTHON)
