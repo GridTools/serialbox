@@ -61,9 +61,3 @@ target_link_libraries(SerialboxFortranUnittest ${EXTERNAL_LIBRARIES})
 
 serialbox_add_test(TARGET SerialboxFortranUnittest 
                    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/SerialboxFortranUnittest)
-
-                                  
-
-
-
-

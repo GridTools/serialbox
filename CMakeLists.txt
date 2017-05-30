@@ -250,7 +250,7 @@ if(SERIALBOX_TESTING)
 endif(SERIALBOX_TESTING)
 
 #---------------------------------------- pFUnit ---------------------------------------------------
-if(${SERIALBOX_TESTING_FORTRAN})
+if(SERIALBOX_TESTING_FORTRAN)
   if(SERIALBOX_ENABLE_FORTRAN)
     set(PFUNIT_ROOT_ENV "$ENV{PFUNIT}")
     if(NOT(PFUNIT_ROOT_ENV))
