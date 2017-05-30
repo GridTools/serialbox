@@ -274,7 +274,10 @@ if(${SERIALBOX_TESTING_FORTRAN})
       )
       message(STATUS "Building pFUnit from: ${CMAKE_CURRENT_SOURCE_DIR}/external/pfunit")  
 
-      set(PFUNIT_DRIVER "${PFUNIT_INSTALL_DIR}/include/driver.F90")
+      # make the driver available in the binary dir
+      set(PFUNIT_DRIVER "${CMAKE_BINARY_DIR}/external/pfunit/include/driver.F90")
+      configure_file("${CMAKE_CURRENT_SOURCE_DIR}/external/pfunit/include/driver.F90" "${PFUNIT_DRIVER}" COPYONLY)
+      
       set(PFUNIT_INCLUDE_DIRS "${PFUNIT_INSTALL_DIR}/include" "${PFUNIT_INSTALL_DIR}/mod")
       set(PFUNIT_LIBRARIES "${PFUNIT_INSTALL_DIR}/lib/libpfunit.a")
       set(PFUNIT_BIN_DIR "${PFUNIT_INSTALL_DIR}/bin")
