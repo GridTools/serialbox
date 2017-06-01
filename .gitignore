@@ -7,6 +7,8 @@
 *~
 *.user
 *.project
+*.cproject
+*.settings
 .idea
 */unittest-tmp-dir/*
 
