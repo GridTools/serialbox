@@ -1,0 +1,55 @@
+MODULE serialbox_test
+   
+  USE ISO_FORTRAN_ENV
+  USE pfunit_mod
+  USE m_serialize
+  
+  IMPLICIT NONE
+  
+  PUBLIC 
+
+  TYPE(t_savepoint)  :: savepoint
+  
+  CHARACTER(len=*), PARAMETER :: dir = 'sbdata'
+  CHARACTER(len=*), PARAMETER :: base_name = 'test'
+  CHARACTER(len=*), PARAMETER :: savepoint_name = 'test'
+
+CONTAINS
+
+@Before
+   SUBROUTINE mySetup()
+
+      CALL fs_create_savepoint(savepoint_name, savepoint)
+      
+   END SUBROUTINE mySetup
+   
+@After
+   SUBROUTINE myTearDown()
+
+      CALL fs_destroy_savepoint(savepoint)
+      
+   END SUBROUTINE myTearDown
+   
+@Test
+    SUBROUTINE testSerializer()
+    
+      TYPE(t_serializer) :: serializer
+      INTEGER :: w_testfield_i1(5), r_testfield_i1(5)
+      
+      w_testfield_i1 = (/ 0, 1, 2, 3, 4 /)
+            
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL fs_write_field(serializer, savepoint, "testfield_i1", w_testfield_i1)
+      CALL fs_destroy_serializer(serializer)
+      
+      CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      CALL fs_read_field(serializer, savepoint, "testfield_i1", r_testfield_i1)
+      CALL fs_destroy_serializer(serializer)
+      
+      @assertEqual(w_testfield_i1, r_testfield_i1)
+    
+    END SUBROUTINE testSerializer
+
+END MODULE serialbox_test
+
+

@@ -66,6 +66,7 @@ option(SERIALBOX_TESTING_STELLA "Build STELLA unitests" OFF)
 option(SERIALBOX_TESTING_OLD_SERIALBOX "Build compatiblity unitests against old serialbox" OFF)
 option(SERIALBOX_TESTING_DEATH_TESTS "Run death-tests" OFF)
 option(SERIALBOX_TESTING_LARGE_FILE_TESTS "Run large file (>4GB) tests" OFF)
+option(SERIALBOX_TESTING_FORTRAN "Build tests for the Fortran interface")
 
 option(SERIALBOX_BENCHMARKING "Build benchmark exectuables" OFF)
 option(SERIALBOX_DOCUMENTATION "Build and install the documentation" OFF)
@@ -186,11 +187,12 @@ endif(SERIALBOX_ASYNC_API)
 ## Third party libraries
 set(SERIALBOX_EXTERNAL_LIBRARIES)
 
-## Enable testing if a SERIALBOX_TESTING_* is set
+## Enable testing if one ore more of the tests is requested
 if(SERIALBOX_TESTING_GRIDTOOLS OR 
    SERIALBOX_TESTING_STELLA OR 
    SERIALBOX_TESTING_OLD_SERIALBOX OR 
-   SERIALBOX_TESTING_DEATH_TESTS)
+   SERIALBOX_TESTING_DEATH_TESTS OR
+   SERIALBOX_TESTING_FORTRAN)
  set(SERIALBOX_TESTING ON)
 endif()
 
@@ -246,6 +248,48 @@ if(SERIALBOX_TESTING)
     set(SERIALBOX_HAS_C 1)
   endif(SERIALBOX_ENABLE_C)
 endif(SERIALBOX_TESTING)
+
+#---------------------------------------- pFUnit ---------------------------------------------------
+if(SERIALBOX_TESTING_FORTRAN)
+  if(SERIALBOX_ENABLE_FORTRAN)
+    set(PFUNIT_ROOT_ENV "$ENV{PFUNIT}")
+    if(NOT(PFUNIT_ROOT_ENV))
+      set(BUILD_PFUNIT "ON" BOOL)
+      set(PFUNIT_INSTALL_DIR "${CMAKE_BINARY_DIR}/external/pfunit/install")
+    
+      # Forward toolchain
+      set(CMAKE_EXTERNAL_ARGS -Wno-dev
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
+        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
+        -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
+        -DCMAKE_INSTALL_PREFIX=${PFUNIT_INSTALL_DIR}
+      )
+
+      # Build pFUnit
+      ExternalProject_Add(
+          pfunit
+          URL        "${CMAKE_CURRENT_SOURCE_DIR}/external/pfunit"
+          PREFIX     "external/pfunit"
+          CMAKE_ARGS ${CMAKE_EXTERNAL_ARGS}
+      )
+      message(STATUS "Building pFUnit from: ${CMAKE_CURRENT_SOURCE_DIR}/external/pfunit")  
+
+      # make the driver available in the binary dir
+      set(PFUNIT_DRIVER "${CMAKE_BINARY_DIR}/external/pfunit/include/driver.F90")
+      configure_file("${CMAKE_CURRENT_SOURCE_DIR}/external/pfunit/include/driver.F90" "${PFUNIT_DRIVER}" COPYONLY)
+      
+      set(PFUNIT_INCLUDE_DIRS "${PFUNIT_INSTALL_DIR}/include" "${PFUNIT_INSTALL_DIR}/mod")
+      set(PFUNIT_LIBRARIES "${PFUNIT_INSTALL_DIR}/lib/libpfunit.a")
+      set(PFUNIT_BIN_DIR "${PFUNIT_INSTALL_DIR}/bin")
+    else()
+      message(FATAL_ERROR "TODO: provide find_package(pFUnit)")
+  #    find_package(pFUnit REQUIRED)
+    endif()
+  else()
+    message(WARNING "You need to enable Fortran (-DSERIALBOX_ENABLE_FORTRAN=ON) to build the Fortran tests.")
+  endif()
+endif()
+  
 
 #---------------------------------------- OpenSSL --------------------------------------------------
 if(${SERIALBOX_USE_OPENSSL})
