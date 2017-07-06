@@ -34,6 +34,11 @@ print_help()
     printf "  %-35s %s\n" \
            "-f, --fc-compiler [gnu|cray|pgi]" \
            "Select Fortran compiler [default: gnu]." 
+
+    # --run-tests
+    printf "  %-35s %s\n" \
+           "-t, --run-tests]" \
+           "Run tests."
    
     # --help
     printf "  %-35s %s\n" "-h, --help" "Print this help statement."
@@ -68,8 +73,8 @@ fi
 
 #------------------------------ Parse options ----------------------------------
 ARGS=$(getopt                                                                  \
-       -o b:i:f:r::h::                                                         \
-       -l build-type:,fc-compiler:,install:,rerun-cmake::,help::               \
+       -o b:i:f:r::h::t::                                                      \
+       -l build-type:,fc-compiler:,install:,rerun-cmake::,run-tests::,help::   \
        -n 'build' -- "$@");
 
 if [ $? -ne 0 ]; then
@@ -84,6 +89,7 @@ while true; do
         -b|--build-type) ARG_BUILD=$(to_lower_and_trim $2); shift 2;;
         -i|--install) ARG_INSTALL=$(to_lower_and_trim $2); shift 2;;
         -f|--fc-compiler) ARG_FC_COMPILER=$(to_lower_and_trim $2); shift 2;;
+        -t|--run-tests ) ARG_RUN_TESTS=true; shift 2;;
         -r|--rerun-cmake) 			
             case "$2" in
                 "") ARG_RERUN=true; shift 2;;
@@ -163,6 +169,15 @@ else
     SERIALBOX_TESTING_STELLA=OFF
 fi
 
+# pFUnit
+if [ ! -z ${PFUNIT_ROOT+x} ]; then
+    SERIALBOX_TESTING_FORTRAN=ON
+elif [ -d "${EXTERNAL_DIR}/pfunit" ]; then
+    SERIALBOX_TESTING_FORTRAN=ON
+else
+    SERIALBOX_TESTING_FORTRAN=OFF
+fi
+
 #------------------------------ Build ------------------------------------------
 
 BUILD_DIR=${CURRENT_PATH}/../../build_gcc_${ARG_FC_COMPILER}
@@ -187,8 +202,14 @@ cmake                                                                          \
  -DSERIALBOX_ENABLE_FORTRAN:BOOL=${SERIALBOX_ENABLE_FORTRAN}                   \
  -DSERIALBOX_TESTING_GRIDTOOLS:BOOL=${SERIALBOX_TESTING_GRIDTOOLS}             \
  -DSERIALBOX_TESTING_STELLA:BOOL=${SERIALBOX_TESTING_STELLA}                   \
+ -DSERIALBOX_TESTING_FORTRAN:BOOL=${SERIALBOX_TESTING_FORTRAN}                 \
  ../
 
 # Run make
 make -j5
+
+# Run tests
+if [ "$ARG_RUN_TESTS" == "true" ]; then
+    cmake --build . --target test
+fi
 
