@@ -162,8 +162,8 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_2DRealCPU) {
   GET_DIMS_STRIDES_ORIGIN_PTR(cpu_2d_real_storage, cpu_2d_real)
 
   // Dimensions
-  EXPECT_EQ(cpu_2d_real_dims[0], cpu_2d_real_meta_data.template unaligned_dim<0>());
-  EXPECT_EQ(cpu_2d_real_dims[1], cpu_2d_real_meta_data.template unaligned_dim<1>());
+  EXPECT_EQ(cpu_2d_real_dims[0], this->dim1);
+  EXPECT_EQ(cpu_2d_real_dims[1], this->dim2);
 
   // Strides
   EXPECT_EQ(cpu_2d_real_strides[0], cpu_2d_real_meta_data.template strides<0>());
@@ -183,9 +183,9 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_2DCPU) {
   GET_DIMS_STRIDES_ORIGIN_PTR(cpu_2d_storage, cpu_2d)
 
   // Dimensions
-  EXPECT_EQ(cpu_2d_dims[0], cpu_2d_meta_data.template unaligned_dim<0>());
-  EXPECT_EQ(cpu_2d_dims[1], cpu_2d_meta_data.template unaligned_dim<1>());
-  EXPECT_EQ(cpu_2d_dims[2], cpu_2d_meta_data.template unaligned_dim<2>());
+  EXPECT_EQ(cpu_2d_dims[0], this->dim1);
+  EXPECT_EQ(cpu_2d_dims[1], this->dim2);
+  EXPECT_EQ(cpu_2d_dims[2], 0);
 
   // Strides
   EXPECT_EQ(cpu_2d_strides[0], cpu_2d_meta_data.template strides<0>());
@@ -203,9 +203,9 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_3DCPU) {
   GET_DIMS_STRIDES_ORIGIN_PTR(cpu_3d_storage, cpu_3d)
 
   // Dimensions
-  EXPECT_EQ(cpu_3d_dims[0], cpu_3d_meta_data.template unaligned_dim<0>());
-  EXPECT_EQ(cpu_3d_dims[1], cpu_3d_meta_data.template unaligned_dim<1>());
-  EXPECT_EQ(cpu_3d_dims[2], cpu_3d_meta_data.template unaligned_dim<2>());
+  EXPECT_EQ(cpu_3d_dims[0], this->dim1);
+  EXPECT_EQ(cpu_3d_dims[1], this->dim2);
+  EXPECT_EQ(cpu_3d_dims[2], this->dim3);
 
   // Strides
   EXPECT_EQ(cpu_3d_strides[0], cpu_3d_meta_data.template strides<0>());
@@ -223,10 +223,10 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_4DCPU) {
   GET_DIMS_STRIDES_ORIGIN_PTR(cpu_4d_storage, cpu_4d)
 
   // Dimensions
-  EXPECT_EQ(cpu_4d_dims[0], cpu_4d_meta_data.template unaligned_dim<0>());
-  EXPECT_EQ(cpu_4d_dims[1], cpu_4d_meta_data.template unaligned_dim<1>());
-  EXPECT_EQ(cpu_4d_dims[2], cpu_4d_meta_data.template unaligned_dim<2>());
-  EXPECT_EQ(cpu_4d_dims[3], cpu_4d_meta_data.template unaligned_dim<3>());
+  EXPECT_EQ(cpu_4d_dims[0], this->dim1);
+  EXPECT_EQ(cpu_4d_dims[1], this->dim2);
+  EXPECT_EQ(cpu_4d_dims[2], this->dim3);
+  EXPECT_EQ(cpu_4d_dims[3], this->dim4);
 
   // Strides
   EXPECT_EQ(cpu_4d_strides[0], cpu_4d_meta_data.template strides<0>());
@@ -245,8 +245,8 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_2DRealGPU) {
   GET_DIMS_STRIDES_ORIGIN_PTR(gpu_2d_real_storage, gpu_2d_real)
 
   // Dimensions
-  EXPECT_EQ(gpu_2d_real_dims[0], gpu_2d_real_meta_data.template unaligned_dim<0>());
-  EXPECT_EQ(gpu_2d_real_dims[1], gpu_2d_real_meta_data.template unaligned_dim<1>());
+  EXPECT_EQ(gpu_2d_real_dims[0], this->dim1);
+  EXPECT_EQ(gpu_2d_real_dims[1], this->dim2);
 
   // Strides
   EXPECT_EQ(gpu_2d_real_strides[0], gpu_2d_real_meta_data.template strides<0>());
@@ -263,9 +263,9 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_2DGPU) {
   GET_DIMS_STRIDES_ORIGIN_PTR(gpu_2d_storage, gpu_2d)
 
   // Dimensions
-  EXPECT_EQ(gpu_2d_dims[0], gpu_2d_meta_data.template unaligned_dim<0>());
-  EXPECT_EQ(gpu_2d_dims[1], gpu_2d_meta_data.template unaligned_dim<1>());
-  EXPECT_EQ(gpu_2d_dims[2], gpu_2d_meta_data.template unaligned_dim<2>());
+  EXPECT_EQ(gpu_2d_dims[0], this->dim1);
+  EXPECT_EQ(gpu_2d_dims[1], this->dim2);
+  EXPECT_EQ(gpu_2d_dims[2], 0);
 
   // Strides
   EXPECT_EQ(gpu_2d_strides[0], gpu_2d_meta_data.template strides<0>());
@@ -283,9 +283,9 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_3DGPU) {
   GET_DIMS_STRIDES_ORIGIN_PTR(gpu_3d_storage, gpu_3d)
 
   // Dimensions
-  EXPECT_EQ(gpu_3d_dims[0], gpu_3d_meta_data.template unaligned_dim<0>());
-  EXPECT_EQ(gpu_3d_dims[1], gpu_3d_meta_data.template unaligned_dim<1>());
-  EXPECT_EQ(gpu_3d_dims[2], gpu_3d_meta_data.template unaligned_dim<2>());
+  EXPECT_EQ(gpu_3d_dims[0], this->dim1);
+  EXPECT_EQ(gpu_3d_dims[1], this->dim2);
+  EXPECT_EQ(gpu_3d_dims[2], this->dim3);
 
   // Strides
   EXPECT_EQ(gpu_3d_strides[0], gpu_3d_meta_data.template strides<0>());
@@ -303,10 +303,10 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_4DGPU) {
   GET_DIMS_STRIDES_ORIGIN_PTR(gpu_4d_storage, gpu_4d)
 
   // Dimensions
-  EXPECT_EQ(gpu_4d_dims[0], gpu_4d_meta_data.template unaligned_dim<0>());
-  EXPECT_EQ(gpu_4d_dims[1], gpu_4d_meta_data.template unaligned_dim<1>());
-  EXPECT_EQ(gpu_4d_dims[2], gpu_4d_meta_data.template unaligned_dim<2>());
-  EXPECT_EQ(gpu_4d_dims[3], gpu_4d_meta_data.template unaligned_dim<3>());
+  EXPECT_EQ(gpu_4d_dims[0], this->dim1);
+  EXPECT_EQ(gpu_4d_dims[1], this->dim2);
+  EXPECT_EQ(gpu_4d_dims[2], this->dim3);
+  EXPECT_EQ(gpu_4d_dims[3], this->dim4);
 
   // Strides
   EXPECT_EQ(gpu_4d_strides[0], gpu_4d_meta_data.template strides<0>());
