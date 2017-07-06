@@ -73,6 +73,10 @@ if(SERIALBOX_TESTING_PYTHON)
   add_subdirectory(serialbox-python)
 endif()
 
+if(SERIALBOX_TESTING_FORTRAN)
+  add_subdirectory(serialbox-fortran)
+endif()
+
 if(SERIALBOX_BENCHMARKING)
   add_subdirectory(benchmark)
 endif(SERIALBOX_BENCHMARKING)

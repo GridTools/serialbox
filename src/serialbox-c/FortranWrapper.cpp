@@ -76,7 +76,7 @@ void serialboxFortranSerializerCheckField(const void* serializer, const char* na
     const auto& info = ser->getFieldMetainfoImplOf(name);
 
     if(info.dims().size() != 4)
-      throw Exception("number of dimensions is %i, required are 4");
+      throw Exception("number of dimensions is %i, required are 4", info.dims().size());
 
     std::array<int, 4> actualSizes{{*isize, *jsize, *ksize, *lsize}};
     const auto& refSizes = info.dims();
@@ -129,7 +129,7 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
          reinterpret_cast<const char*>(lplus1) - reinterpret_cast<const char*>(basePtr)}};
 
     if(info.dims().size() != 4)
-      throw Exception("number of dimensions is %i, required are 4");
+      throw Exception("number of dimensions is %i, required are 4", info.dims().size());
 
     // Reorder strides
     for(int i = 2; i >= 0; --i)

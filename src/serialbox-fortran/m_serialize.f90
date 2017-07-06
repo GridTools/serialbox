@@ -49,6 +49,8 @@ PUBLIC :: &
   INTEGER, PARAMETER :: MODE_WRITE = 1
   INTEGER, PARAMETER :: MODE_APPEND = 2
 
+  INTEGER, PARAMETER :: MAX_LENGTH_ARCHIVE_NAME = 16
+
 
 PRIVATE
 
@@ -275,12 +277,14 @@ END FUNCTION fs_doublesize
 !  The returend serializer should be destroyed after usage to free resources.
 !  If the serializer object has already been created, it is destroyed first.
 !------------------------------------------------------------------------------
-SUBROUTINE fs_create_serializer(directory, prefix, mode, serializer)
+SUBROUTINE fs_create_serializer(directory, prefix, mode, serializer, opt_archive)
   USE iso_c_binding, ONLY: C_F_POINTER
 
   CHARACTER(LEN=*), INTENT(IN)    :: directory, prefix
   CHARACTER, INTENT(IN)           :: mode
   TYPE(t_serializer), INTENT(OUT) :: serializer
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: opt_archive
+  CHARACTER(LEN=MAX_LENGTH_ARCHIVE_NAME) :: archive
 
   ! external functions
 
@@ -311,10 +315,16 @@ SUBROUTINE fs_create_serializer(directory, prefix, mode, serializer)
     c_mode = MODE_APPEND
   END SELECT
   
+  IF (PRESENT(opt_archive)) THEN
+    archive = opt_archive
+  ELSE
+    archive = C_CHAR_"Binary"
+  END IF
+
   c_serializer = fs_create_serializer_(c_mode,                       &
                                        TRIM(directory)//C_NULL_CHAR, &
                                        TRIM(prefix)//C_NULL_CHAR,    &
-                                       C_CHAR_"Binary"//C_NULL_CHAR)
+                                       TRIM(archive)//C_NULL_CHAR)
   serializer%serializer_ptr = c_serializer
 
 END SUBROUTINE fs_create_serializer
