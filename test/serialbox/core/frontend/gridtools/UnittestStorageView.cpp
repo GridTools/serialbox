@@ -29,17 +29,13 @@ class GridToolsStorageViewTest : public testing::Test {
 public:
   using storage_types = serialbox::unittest::gridtools_storage_types<T>;
 
-  // -----------------------------------------------------------------------------------------------
   // Dimensions
-  // -----------------------------------------------------------------------------------------------
   int dim1;
   int dim2;
   int dim3;
   int dim4;
 
-  // -----------------------------------------------------------------------------------------------
   // Meta Data
-  // -----------------------------------------------------------------------------------------------
   typename storage_types::cpu_2d_real_meta_data_type cpu_2d_real_meta_data;
   typename storage_types::gpu_2d_real_meta_data_type gpu_2d_real_meta_data;
   typename storage_types::cpu_2d_meta_data_type cpu_2d_meta_data;
@@ -49,9 +45,7 @@ public:
   typename storage_types::cpu_4d_meta_data_type cpu_4d_meta_data;
   typename storage_types::gpu_4d_meta_data_type gpu_4d_meta_data;
 
-  // -----------------------------------------------------------------------------------------------
   // Storages
-  // -----------------------------------------------------------------------------------------------
   typename storage_types::cpu_2d_real_storage_type cpu_2d_real_storage;
   typename storage_types::gpu_2d_real_storage_type gpu_2d_real_storage;
   typename storage_types::cpu_2d_storage_type cpu_2d_storage;
@@ -133,18 +127,13 @@ serialbox::StorageView make_storage_view(const Storage& storage) {
                                 std::move(dims), std::move(strides));
 }
 
+using namespace serialbox::gridtools;
 #define GET_DIMS_STRIDES_ORIGIN_PTR(storage, prefix)                                               \
   std::vector<int> prefix##_dims(internal::get_dims(storage.meta_data()));                         \
   std::vector<int> prefix##_strides(internal::get_strides(storage, storage.meta_data()));          \
   void* prefix##_origin_ptr = internal::get_origin_ptr(storage, storage.meta_data(), 0);
 
-TYPED_TEST(GridToolsStorageViewTest, Construction) {
-  using namespace serialbox::gridtools;
-
-  // -----------------------------------------------------------------------------------------------
-  // 2D Real CPU Storage
-  // -----------------------------------------------------------------------------------------------
-
+TYPED_TEST(GridToolsStorageViewTest, Construction_2DRealCPU) {
   auto& cpu_2d_real_storage = this->cpu_2d_real_storage;
   auto& cpu_2d_real_meta_data = this->cpu_2d_real_meta_data;
 
@@ -160,11 +149,12 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
 
   // Data
   EXPECT_EQ(cpu_2d_real_origin_ptr, static_cast<void*>(&cpu_2d_real_storage(0, 0)));
+}
 
+TYPED_TEST(GridToolsStorageViewTest, Construction_2DCPU) {
   // -----------------------------------------------------------------------------------------------
   // 2D CPU Storage
   // -----------------------------------------------------------------------------------------------
-
   auto& cpu_2d_storage = this->cpu_2d_storage;
   auto& cpu_2d_meta_data = this->cpu_2d_meta_data;
 
@@ -182,11 +172,9 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
 
   // Data
   EXPECT_EQ(cpu_2d_origin_ptr, static_cast<void*>(&cpu_2d_storage(0, 0, 0)));
+}
 
-  // -----------------------------------------------------------------------------------------------
-  // 3D CPU Storage
-  // -----------------------------------------------------------------------------------------------
-
+TYPED_TEST(GridToolsStorageViewTest, Construction_3DCPU) {
   auto& cpu_3d_storage = this->cpu_3d_storage;
   auto& cpu_3d_meta_data = this->cpu_3d_meta_data;
 
@@ -204,11 +192,9 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
 
   // Data
   EXPECT_EQ(cpu_3d_origin_ptr, static_cast<void*>(&cpu_3d_storage(0, 0, 0)));
+}
 
-  // -----------------------------------------------------------------------------------------------
-  // 4D CPU Storage
-  // -----------------------------------------------------------------------------------------------
-
+TYPED_TEST(GridToolsStorageViewTest, Construction_4DCPU) {
   auto& cpu_4d_storage = this->cpu_4d_storage;
   auto& cpu_4d_meta_data = this->cpu_4d_meta_data;
 
@@ -228,11 +214,9 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
 
   // Data
   EXPECT_EQ(cpu_4d_origin_ptr, static_cast<void*>(&cpu_4d_storage(0, 0, 0, 0)));
+}
 
-  // -----------------------------------------------------------------------------------------------
-  // 2D GPU Storage
-  // -----------------------------------------------------------------------------------------------
-
+TYPED_TEST(GridToolsStorageViewTest, Construction_2DRealGPU) {
   auto& gpu_2d_real_storage = this->gpu_2d_real_storage;
   auto& gpu_2d_real_meta_data = this->gpu_2d_real_meta_data;
 
@@ -248,11 +232,9 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
 
   // Data
   EXPECT_EQ(gpu_2d_real_origin_ptr, static_cast<void*>(&gpu_2d_real_storage(0, 0)));
+}
 
-  // -----------------------------------------------------------------------------------------------
-  // 2D GPU Storage
-  // -----------------------------------------------------------------------------------------------
-
+TYPED_TEST(GridToolsStorageViewTest, Construction_2DGPU) {
   auto& gpu_2d_storage = this->gpu_2d_storage;
   auto& gpu_2d_meta_data = this->gpu_2d_meta_data;
 
@@ -270,11 +252,9 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
 
   // Data
   EXPECT_EQ(gpu_2d_origin_ptr, static_cast<void*>(&gpu_2d_storage(0, 0, 0)));
+}
 
-  // -----------------------------------------------------------------------------------------------
-  // 3D GPU Storage
-  // -----------------------------------------------------------------------------------------------
-
+TYPED_TEST(GridToolsStorageViewTest, Construction_3DGPU) {
   auto& gpu_3d_storage = this->gpu_3d_storage;
   auto& gpu_3d_meta_data = this->gpu_3d_meta_data;
 
@@ -292,11 +272,9 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
 
   // Data
   EXPECT_EQ(gpu_3d_origin_ptr, static_cast<void*>(&gpu_3d_storage(0, 0, 0)));
+}
 
-  // -----------------------------------------------------------------------------------------------
-  // 4D GPU Storage
-  // -----------------------------------------------------------------------------------------------
-
+TYPED_TEST(GridToolsStorageViewTest, Construction_4DGPU) {
   auto& gpu_4d_storage = this->gpu_4d_storage;
   auto& gpu_4d_meta_data = this->gpu_4d_meta_data;
 
@@ -318,116 +296,96 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   EXPECT_EQ(gpu_4d_origin_ptr, static_cast<void*>(&gpu_4d_storage(0, 0, 0, 0)));
 }
 
-TYPED_TEST(GridToolsStorageViewTest, Iterator) {
-  int dim1 = this->dim1, dim2 = this->dim2, dim3 = this->dim3, dim4 = this->dim4;
-
-  // -----------------------------------------------------------------------------------------------
-  // 2D Real CPU Storage
-  // -----------------------------------------------------------------------------------------------
-
+TYPED_TEST(GridToolsStorageViewTest, Iterator_2DRealCPU) {
   auto& cpu_2d_real_storage = this->cpu_2d_real_storage;
   serialbox::StorageView cpu_2d_real_storage_view = make_storage_view(cpu_2d_real_storage);
 
   auto cpu_2d_real_it = cpu_2d_real_storage_view.begin();
-  for(int j = 0; j < dim2; ++j)
-    for(int i = 0; i < dim1; ++i, ++cpu_2d_real_it) {
+  for(int j = 0; j < this->dim2; ++j)
+    for(int i = 0; i < this->dim1; ++i, ++cpu_2d_real_it) {
       ASSERT_EQ(cpu_2d_real_it.as<TypeParam>(), cpu_2d_real_storage(i, j));
     }
+}
 
-  // -----------------------------------------------------------------------------------------------
-  // 2D CPU Storage
-  // -----------------------------------------------------------------------------------------------
-
+TYPED_TEST(GridToolsStorageViewTest, Iterator_2DCPU) {
   auto& cpu_2d_storage = this->cpu_2d_storage;
   serialbox::StorageView cpu_2d_storage_view = make_storage_view(cpu_2d_storage);
 
   auto cpu_2d_it = cpu_2d_storage_view.begin();
-  for(int j = 0; j < dim2; ++j)
-    for(int i = 0; i < dim1; ++i, ++cpu_2d_it) {
+  for(int j = 0; j < this->dim2; ++j)
+    for(int i = 0; i < this->dim1; ++i, ++cpu_2d_it) {
       ASSERT_EQ(cpu_2d_it.as<TypeParam>(), cpu_2d_storage(i, j, 0));
     }
+}
 
-  // -----------------------------------------------------------------------------------------------
-  // 3D CPU Storage
-  // -----------------------------------------------------------------------------------------------
-
+TYPED_TEST(GridToolsStorageViewTest, Iterator_3DCPU) {
   auto& cpu_3d_storage = this->cpu_3d_storage;
   serialbox::StorageView cpu_3d_storage_view = make_storage_view(cpu_3d_storage);
 
   auto cpu_3d_it = cpu_3d_storage_view.begin();
-  for(int k = 0; k < dim3; ++k)
-    for(int j = 0; j < dim2; ++j)
-      for(int i = 0; i < dim1; ++i, ++cpu_3d_it) {
+  for(int k = 0; k < this->dim3; ++k)
+    for(int j = 0; j < this->dim2; ++j)
+      for(int i = 0; i < this->dim1; ++i, ++cpu_3d_it) {
         ASSERT_EQ(cpu_3d_it.as<TypeParam>(), cpu_3d_storage(i, j, k));
       }
-
-  // -----------------------------------------------------------------------------------------------
-  // 4D CPU Storage
-  // -----------------------------------------------------------------------------------------------
+}
+TYPED_TEST(GridToolsStorageViewTest, Iterator_4DCPU) {
 
   auto& cpu_4d_storage = this->cpu_4d_storage;
   serialbox::StorageView cpu_4d_storage_view = make_storage_view(cpu_4d_storage);
 
   auto cpu_4d_it = cpu_4d_storage_view.begin();
-  for(int l = 0; l < dim4; ++l)
-    for(int k = 0; k < dim3; ++k)
-      for(int j = 0; j < dim2; ++j)
-        for(int i = 0; i < dim1; ++i, ++cpu_4d_it) {
+  for(int l = 0; l < this->dim4; ++l)
+    for(int k = 0; k < this->dim3; ++k)
+      for(int j = 0; j < this->dim2; ++j)
+        for(int i = 0; i < this->dim1; ++i, ++cpu_4d_it) {
           ASSERT_EQ(cpu_4d_it.as<TypeParam>(), cpu_4d_storage(i, j, k, l));
         }
+}
 
-  // -----------------------------------------------------------------------------------------------
-  // 2D Real GPU Storage
-  // -----------------------------------------------------------------------------------------------
-
+TYPED_TEST(GridToolsStorageViewTest, Iterator_2DRealGPU) {
   auto& gpu_2d_real_storage = this->gpu_2d_real_storage;
   serialbox::StorageView gpu_2d_real_storage_view = make_storage_view(gpu_2d_real_storage);
 
   auto gpu_2d_real_it = gpu_2d_real_storage_view.begin();
-  for(int j = 0; j < dim2; ++j)
-    for(int i = 0; i < dim1; ++i, ++gpu_2d_real_it) {
+  for(int j = 0; j < this->dim2; ++j)
+    for(int i = 0; i < this->dim1; ++i, ++gpu_2d_real_it) {
       ASSERT_EQ(gpu_2d_real_it.as<TypeParam>(), gpu_2d_real_storage(i, j));
     }
+}
 
-  // -----------------------------------------------------------------------------------------------
-  // 2D GPU Storage
-  // -----------------------------------------------------------------------------------------------
-
+TYPED_TEST(GridToolsStorageViewTest, Iterator_2DGPU) {
   auto& gpu_2d_storage = this->gpu_2d_storage;
   serialbox::StorageView gpu_2d_storage_view = make_storage_view(gpu_2d_storage);
 
   auto gpu_2d_it = gpu_2d_storage_view.begin();
-  for(int j = 0; j < dim2; ++j)
-    for(int i = 0; i < dim1; ++i, ++gpu_2d_it) {
+  for(int j = 0; j < this->dim2; ++j)
+    for(int i = 0; i < this->dim1; ++i, ++gpu_2d_it) {
       ASSERT_EQ(gpu_2d_it.as<TypeParam>(), gpu_2d_storage(i, j, 0));
     }
+}
 
-  // -----------------------------------------------------------------------------------------------
-  // 3D GPU Storage
-  // -----------------------------------------------------------------------------------------------
-
+TYPED_TEST(GridToolsStorageViewTest, Iterator_3DGPU) {
   auto& gpu_3d_storage = this->gpu_3d_storage;
   serialbox::StorageView gpu_3d_storage_view = make_storage_view(gpu_3d_storage);
 
   auto gpu_3d_it = gpu_3d_storage_view.begin();
-  for(int k = 0; k < dim3; ++k)
-    for(int j = 0; j < dim2; ++j)
-      for(int i = 0; i < dim1; ++i, ++gpu_3d_it) {
+  for(int k = 0; k < this->dim3; ++k)
+    for(int j = 0; j < this->dim2; ++j)
+      for(int i = 0; i < this->dim1; ++i, ++gpu_3d_it) {
         ASSERT_EQ(gpu_3d_it.as<TypeParam>(), gpu_3d_storage(i, j, k));
       }
+}
 
-  // -----------------------------------------------------------------------------------------------
-  // 4D GPU Storage
-  // -----------------------------------------------------------------------------------------------
-
+TYPED_TEST(GridToolsStorageViewTest, Iterator_4DGPU) {
   auto& gpu_4d_storage = this->gpu_4d_storage;
   serialbox::StorageView gpu_4d_storage_view = make_storage_view(gpu_4d_storage);
 
   auto gpu_4d_it = gpu_4d_storage_view.begin();
-  for(int l = 0; l < dim4; ++l)
-    for(int k = 0; k < dim3; ++k)
-      for(int j = 0; j < dim2; ++j)
-        for(int i = 0; i < dim1; ++i, ++gpu_4d_it) {
+  for(int l = 0; l < this->dim4; ++l)
+    for(int k = 0; k < this->dim3; ++k)
+      for(int j = 0; j < this->dim2; ++j)
+        for(int i = 0; i < this->dim1; ++i, ++gpu_4d_it) {
           ASSERT_EQ(gpu_4d_it.as<TypeParam>(), gpu_4d_storage(i, j, k, l));
         }
 }
@@ -442,7 +400,7 @@ TYPED_TEST(GridToolsStorageViewTest, isMemCopyable) {
   EXPECT_FALSE(make_storage_view(this->cpu_4d_storage).isMemCopyable());
   EXPECT_FALSE(make_storage_view(this->gpu_4d_storage).isMemCopyable());
 
-  // Create a memcopyable stroage
+  // Create a memcopyable storage
   using layout_type = gridtools::layout_map<2, 1, 0>; // stride 1 on i (col-major)
   using meta_data_type = typename GridToolsStorageViewTest<
       TypeParam>::storage_types::storage_traits_type::template meta_storage_type<9, layout_type>;
