@@ -40,86 +40,58 @@ public:
   // -----------------------------------------------------------------------------------------------
   // Meta Data
   // -----------------------------------------------------------------------------------------------
-  std::unique_ptr<typename storage_types::cpu_2d_real_meta_data_type> cpu_2d_real_meta_data_ptr;
-  std::unique_ptr<typename storage_types::gpu_2d_real_meta_data_type> gpu_2d_real_meta_data_ptr;
-  std::unique_ptr<typename storage_types::cpu_2d_meta_data_type> cpu_2d_meta_data_ptr;
-  std::unique_ptr<typename storage_types::gpu_2d_meta_data_type> gpu_2d_meta_data_ptr;
-  std::unique_ptr<typename storage_types::cpu_3d_meta_data_type> cpu_3d_meta_data_ptr;
-  std::unique_ptr<typename storage_types::gpu_3d_meta_data_type> gpu_3d_meta_data_ptr;
-  std::unique_ptr<typename storage_types::cpu_4d_meta_data_type> cpu_4d_meta_data_ptr;
-  std::unique_ptr<typename storage_types::gpu_4d_meta_data_type> gpu_4d_meta_data_ptr;
+  typename storage_types::cpu_2d_real_meta_data_type cpu_2d_real_meta_data;
+  typename storage_types::gpu_2d_real_meta_data_type gpu_2d_real_meta_data;
+  typename storage_types::cpu_2d_meta_data_type cpu_2d_meta_data;
+  typename storage_types::gpu_2d_meta_data_type gpu_2d_meta_data;
+  typename storage_types::cpu_3d_meta_data_type cpu_3d_meta_data;
+  typename storage_types::gpu_3d_meta_data_type gpu_3d_meta_data;
+  typename storage_types::cpu_4d_meta_data_type cpu_4d_meta_data;
+  typename storage_types::gpu_4d_meta_data_type gpu_4d_meta_data;
 
   // -----------------------------------------------------------------------------------------------
   // Storages
   // -----------------------------------------------------------------------------------------------
-  std::unique_ptr<typename storage_types::cpu_2d_real_storage_type> cpu_2d_real_storage_ptr;
-  std::unique_ptr<typename storage_types::gpu_2d_real_storage_type> gpu_2d_real_storage_ptr;
-  std::unique_ptr<typename storage_types::cpu_2d_storage_type> cpu_2d_storage_ptr;
-  std::unique_ptr<typename storage_types::gpu_2d_storage_type> gpu_2d_storage_ptr;
-  std::unique_ptr<typename storage_types::cpu_3d_storage_type> cpu_3d_storage_ptr;
-  std::unique_ptr<typename storage_types::gpu_3d_storage_type> gpu_3d_storage_ptr;
-  std::unique_ptr<typename storage_types::cpu_4d_storage_type> cpu_4d_storage_ptr;
-  std::unique_ptr<typename storage_types::gpu_4d_storage_type> gpu_4d_storage_ptr;
+  typename storage_types::cpu_2d_real_storage_type cpu_2d_real_storage;
+  typename storage_types::gpu_2d_real_storage_type gpu_2d_real_storage;
+  typename storage_types::cpu_2d_storage_type cpu_2d_storage;
+  typename storage_types::gpu_2d_storage_type gpu_2d_storage;
+  typename storage_types::cpu_3d_storage_type cpu_3d_storage;
+  typename storage_types::gpu_3d_storage_type gpu_3d_storage;
+  typename storage_types::cpu_4d_storage_type cpu_4d_storage;
+  typename storage_types::gpu_4d_storage_type gpu_4d_storage;
 
 protected:
-  virtual void SetUp() override {
-
-    dim1 = 2 + storage_types::halo1_left + storage_types::halo1_right;
-    dim2 = 3 + storage_types::halo2_left + storage_types::halo2_right;
-    dim3 = 4 + storage_types::halo3_left + storage_types::halo3_right;
-    dim4 = 5 + storage_types::halo4_left + storage_types::halo4_right;
-
-    // ---------------------------------------------------------------------------------------------
-    // Meta Data
-    // ---------------------------------------------------------------------------------------------
-    cpu_2d_real_meta_data_ptr =
-        std::make_unique<typename storage_types::cpu_2d_real_meta_data_type>(dim1, dim2);
-    gpu_2d_real_meta_data_ptr =
-        std::make_unique<typename storage_types::gpu_2d_real_meta_data_type>(dim1, dim2);
-    cpu_2d_meta_data_ptr =
-        std::make_unique<typename storage_types::cpu_2d_meta_data_type>(dim1, dim2, 0);
-    gpu_2d_meta_data_ptr =
-        std::make_unique<typename storage_types::gpu_2d_meta_data_type>(dim1, dim2, 0);
-    cpu_3d_meta_data_ptr =
-        std::make_unique<typename storage_types::cpu_3d_meta_data_type>(dim1, dim2, dim3);
-    gpu_3d_meta_data_ptr =
-        std::make_unique<typename storage_types::gpu_3d_meta_data_type>(dim1, dim2, dim3);
-    cpu_4d_meta_data_ptr =
-        std::make_unique<typename storage_types::cpu_4d_meta_data_type>(dim1, dim2, dim3, dim4);
-    gpu_4d_meta_data_ptr =
-        std::make_unique<typename storage_types::gpu_4d_meta_data_type>(dim1, dim2, dim3, dim4);
-
-    // ---------------------------------------------------------------------------------------------
-    // Storages
-    // ---------------------------------------------------------------------------------------------
-    cpu_2d_real_storage_ptr = std::make_unique<typename storage_types::cpu_2d_real_storage_type>(
-        *cpu_2d_real_meta_data_ptr, "cpu_2d_real_storage", -1.0);
-    gpu_2d_real_storage_ptr = std::make_unique<typename storage_types::gpu_2d_real_storage_type>(
-        *gpu_2d_real_meta_data_ptr, "gpu_2d_real_storage", -1.0);
-
-    cpu_2d_storage_ptr = std::make_unique<typename storage_types::cpu_2d_storage_type>(
-        *cpu_2d_meta_data_ptr, "cpu_2d_storage", -1.0);
-    gpu_2d_storage_ptr = std::make_unique<typename storage_types::gpu_2d_storage_type>(
-        *gpu_2d_meta_data_ptr, "gpu_2d_storage", -1.0);
-
-    cpu_3d_storage_ptr = std::make_unique<typename storage_types::cpu_3d_storage_type>(
-        *cpu_3d_meta_data_ptr, "cpu_3d_storage", -1.0);
-    gpu_3d_storage_ptr = std::make_unique<typename storage_types::gpu_3d_storage_type>(
-        *gpu_3d_meta_data_ptr, "gpu_3d_storage", -1.0);
-
-    cpu_4d_storage_ptr = std::make_unique<typename storage_types::cpu_4d_storage_type>(
-        *cpu_4d_meta_data_ptr, "cpu_4d_storage", -1.0);
-    gpu_4d_storage_ptr = std::make_unique<typename storage_types::gpu_4d_storage_type>(
-        *gpu_4d_meta_data_ptr, "gpu_4d_storage", -1.0);
+  GridToolsStorageViewTest()
+      : dim1(2 + storage_types::halo1_left + storage_types::halo1_right),
+        dim2(3 + storage_types::halo2_left + storage_types::halo2_right),
+        dim3(4 + storage_types::halo3_left + storage_types::halo3_right),
+        dim4(5 + storage_types::halo4_left + storage_types::halo4_right),
+        cpu_2d_real_meta_data(dim1, dim2),                                       //
+        gpu_2d_real_meta_data(dim1, dim2),                                       //
+        cpu_2d_meta_data(dim1, dim2, 0),                                         //
+        gpu_2d_meta_data(dim1, dim2, 0),                                         //
+        cpu_3d_meta_data(dim1, dim2, dim3),                                      //
+        gpu_3d_meta_data(dim1, dim2, dim3),                                      //
+        cpu_4d_meta_data(dim1, dim2, dim3, dim4),                                //
+        gpu_4d_meta_data(dim1, dim2, dim3, dim4),                                //
+        cpu_2d_real_storage(cpu_2d_real_meta_data, "cpu_2d_real_storage", -1.0), //
+        gpu_2d_real_storage(gpu_2d_real_meta_data, "gpu_2d_real_storage", -1.0), //
+        cpu_2d_storage(cpu_2d_meta_data, "cpu_2d_storage", -1.0),                //
+        gpu_2d_storage(gpu_2d_meta_data, "gpu_2d_storage", -1.0),                //
+        cpu_3d_storage(cpu_3d_meta_data, "cpu_3d_storage", -1.0),                //
+        gpu_3d_storage(gpu_3d_meta_data, "gpu_3d_storage", -1.0),                //
+        cpu_4d_storage(cpu_4d_meta_data, "cpu_4d_storage", -1.0),                //
+        gpu_4d_storage(gpu_4d_meta_data, "gpu_4d_storage", -1.0) {
 
     // 2D
     T val_2d = 0.0;
     for(int j = 0; j < dim2; ++j)
       for(int i = 0; i < dim1; ++i, val_2d += 1.0) {
-        (*cpu_2d_real_storage_ptr)(i, j) = val_2d;
-        (*gpu_2d_real_storage_ptr)(i, j) = val_2d;
-        (*cpu_2d_storage_ptr)(i, j, 0) = val_2d;
-        (*gpu_2d_storage_ptr)(i, j, 0) = val_2d;
+        cpu_2d_real_storage(i, j) = val_2d;
+        gpu_2d_real_storage(i, j) = val_2d;
+        cpu_2d_storage(i, j, 0) = val_2d;
+        gpu_2d_storage(i, j, 0) = val_2d;
       }
 
     // 3D
@@ -127,8 +99,8 @@ protected:
     for(int k = 0; k < dim3; ++k)
       for(int j = 0; j < dim2; ++j)
         for(int i = 0; i < dim1; ++i, val_3d += 1.0) {
-          (*cpu_3d_storage_ptr)(i, j, k) = val_3d;
-          (*gpu_3d_storage_ptr)(i, j, k) = val_3d;
+          cpu_3d_storage(i, j, k) = val_3d;
+          gpu_3d_storage(i, j, k) = val_3d;
         }
 
     // 4D
@@ -137,12 +109,10 @@ protected:
       for(int k = 0; k < dim3; ++k)
         for(int j = 0; j < dim2; ++j)
           for(int i = 0; i < dim1; ++i, val_4d += 1.0) {
-            (*cpu_4d_storage_ptr)(i, j, k, l) = val_4d;
-            (*gpu_4d_storage_ptr)(i, j, k, l) = val_4d;
+            cpu_4d_storage(i, j, k, l) = val_4d;
+            gpu_4d_storage(i, j, k, l) = val_4d;
           }
   }
-
-  virtual void TearDown() override {}
 };
 
 using TestTypes = testing::Types<double, float, int>;
@@ -175,8 +145,8 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   // 2D Real CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_2d_real_storage = *this->cpu_2d_real_storage_ptr;
-  auto& cpu_2d_real_meta_data = *this->cpu_2d_real_meta_data_ptr;
+  auto& cpu_2d_real_storage = this->cpu_2d_real_storage;
+  auto& cpu_2d_real_meta_data = this->cpu_2d_real_meta_data;
 
   GET_DIMS_STRIDES_ORIGIN_PTR(cpu_2d_real_storage, cpu_2d_real)
 
@@ -195,8 +165,8 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   // 2D CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_2d_storage = *this->cpu_2d_storage_ptr;
-  auto& cpu_2d_meta_data = *this->cpu_2d_meta_data_ptr;
+  auto& cpu_2d_storage = this->cpu_2d_storage;
+  auto& cpu_2d_meta_data = this->cpu_2d_meta_data;
 
   GET_DIMS_STRIDES_ORIGIN_PTR(cpu_2d_storage, cpu_2d)
 
@@ -217,8 +187,8 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   // 3D CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_3d_storage = *this->cpu_3d_storage_ptr;
-  auto& cpu_3d_meta_data = *this->cpu_3d_meta_data_ptr;
+  auto& cpu_3d_storage = this->cpu_3d_storage;
+  auto& cpu_3d_meta_data = this->cpu_3d_meta_data;
 
   GET_DIMS_STRIDES_ORIGIN_PTR(cpu_3d_storage, cpu_3d)
 
@@ -239,8 +209,8 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   // 4D CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_4d_storage = *this->cpu_4d_storage_ptr;
-  auto& cpu_4d_meta_data = *this->cpu_4d_meta_data_ptr;
+  auto& cpu_4d_storage = this->cpu_4d_storage;
+  auto& cpu_4d_meta_data = this->cpu_4d_meta_data;
 
   GET_DIMS_STRIDES_ORIGIN_PTR(cpu_4d_storage, cpu_4d)
 
@@ -263,8 +233,8 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   // 2D GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_2d_real_storage = *this->gpu_2d_real_storage_ptr;
-  auto& gpu_2d_real_meta_data = *this->gpu_2d_real_meta_data_ptr;
+  auto& gpu_2d_real_storage = this->gpu_2d_real_storage;
+  auto& gpu_2d_real_meta_data = this->gpu_2d_real_meta_data;
 
   GET_DIMS_STRIDES_ORIGIN_PTR(gpu_2d_real_storage, gpu_2d_real)
 
@@ -283,8 +253,8 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   // 2D GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_2d_storage = *this->gpu_2d_storage_ptr;
-  auto& gpu_2d_meta_data = *this->gpu_2d_meta_data_ptr;
+  auto& gpu_2d_storage = this->gpu_2d_storage;
+  auto& gpu_2d_meta_data = this->gpu_2d_meta_data;
 
   GET_DIMS_STRIDES_ORIGIN_PTR(gpu_2d_storage, gpu_2d)
 
@@ -305,8 +275,8 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   // 3D GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_3d_storage = *this->gpu_3d_storage_ptr;
-  auto& gpu_3d_meta_data = *this->gpu_3d_meta_data_ptr;
+  auto& gpu_3d_storage = this->gpu_3d_storage;
+  auto& gpu_3d_meta_data = this->gpu_3d_meta_data;
 
   GET_DIMS_STRIDES_ORIGIN_PTR(gpu_3d_storage, gpu_3d)
 
@@ -327,8 +297,8 @@ TYPED_TEST(GridToolsStorageViewTest, Construction) {
   // 4D GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_4d_storage = *this->gpu_4d_storage_ptr;
-  auto& gpu_4d_meta_data = *this->gpu_4d_meta_data_ptr;
+  auto& gpu_4d_storage = this->gpu_4d_storage;
+  auto& gpu_4d_meta_data = this->gpu_4d_meta_data;
 
   GET_DIMS_STRIDES_ORIGIN_PTR(gpu_4d_storage, gpu_4d)
 
@@ -355,7 +325,7 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator) {
   // 2D Real CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_2d_real_storage = *this->cpu_2d_real_storage_ptr;
+  auto& cpu_2d_real_storage = this->cpu_2d_real_storage;
   serialbox::StorageView cpu_2d_real_storage_view = make_storage_view(cpu_2d_real_storage);
 
   auto cpu_2d_real_it = cpu_2d_real_storage_view.begin();
@@ -368,7 +338,7 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator) {
   // 2D CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_2d_storage = *this->cpu_2d_storage_ptr;
+  auto& cpu_2d_storage = this->cpu_2d_storage;
   serialbox::StorageView cpu_2d_storage_view = make_storage_view(cpu_2d_storage);
 
   auto cpu_2d_it = cpu_2d_storage_view.begin();
@@ -381,7 +351,7 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator) {
   // 3D CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_3d_storage = *this->cpu_3d_storage_ptr;
+  auto& cpu_3d_storage = this->cpu_3d_storage;
   serialbox::StorageView cpu_3d_storage_view = make_storage_view(cpu_3d_storage);
 
   auto cpu_3d_it = cpu_3d_storage_view.begin();
@@ -395,7 +365,7 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator) {
   // 4D CPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& cpu_4d_storage = *this->cpu_4d_storage_ptr;
+  auto& cpu_4d_storage = this->cpu_4d_storage;
   serialbox::StorageView cpu_4d_storage_view = make_storage_view(cpu_4d_storage);
 
   auto cpu_4d_it = cpu_4d_storage_view.begin();
@@ -410,7 +380,7 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator) {
   // 2D Real GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_2d_real_storage = *this->gpu_2d_real_storage_ptr;
+  auto& gpu_2d_real_storage = this->gpu_2d_real_storage;
   serialbox::StorageView gpu_2d_real_storage_view = make_storage_view(gpu_2d_real_storage);
 
   auto gpu_2d_real_it = gpu_2d_real_storage_view.begin();
@@ -423,7 +393,7 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator) {
   // 2D GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_2d_storage = *this->gpu_2d_storage_ptr;
+  auto& gpu_2d_storage = this->gpu_2d_storage;
   serialbox::StorageView gpu_2d_storage_view = make_storage_view(gpu_2d_storage);
 
   auto gpu_2d_it = gpu_2d_storage_view.begin();
@@ -436,7 +406,7 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator) {
   // 3D GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_3d_storage = *this->gpu_3d_storage_ptr;
+  auto& gpu_3d_storage = this->gpu_3d_storage;
   serialbox::StorageView gpu_3d_storage_view = make_storage_view(gpu_3d_storage);
 
   auto gpu_3d_it = gpu_3d_storage_view.begin();
@@ -450,7 +420,7 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator) {
   // 4D GPU Storage
   // -----------------------------------------------------------------------------------------------
 
-  auto& gpu_4d_storage = *this->gpu_4d_storage_ptr;
+  auto& gpu_4d_storage = this->gpu_4d_storage;
   serialbox::StorageView gpu_4d_storage_view = make_storage_view(gpu_4d_storage);
 
   auto gpu_4d_it = gpu_4d_storage_view.begin();
@@ -463,14 +433,14 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator) {
 }
 
 TYPED_TEST(GridToolsStorageViewTest, isMemCopyable) {
-  EXPECT_FALSE(make_storage_view(*this->cpu_2d_real_storage_ptr).isMemCopyable());
-  EXPECT_FALSE(make_storage_view(*this->gpu_2d_real_storage_ptr).isMemCopyable());
-  EXPECT_FALSE(make_storage_view(*this->cpu_2d_storage_ptr).isMemCopyable());
-  EXPECT_FALSE(make_storage_view(*this->gpu_2d_storage_ptr).isMemCopyable());
-  EXPECT_FALSE(make_storage_view(*this->cpu_3d_storage_ptr).isMemCopyable());
-  EXPECT_FALSE(make_storage_view(*this->gpu_3d_storage_ptr).isMemCopyable());
-  EXPECT_FALSE(make_storage_view(*this->cpu_4d_storage_ptr).isMemCopyable());
-  EXPECT_FALSE(make_storage_view(*this->gpu_4d_storage_ptr).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(this->cpu_2d_real_storage).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(this->gpu_2d_real_storage).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(this->cpu_2d_storage).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(this->gpu_2d_storage).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(this->cpu_3d_storage).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(this->gpu_3d_storage).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(this->cpu_4d_storage).isMemCopyable());
+  EXPECT_FALSE(make_storage_view(this->gpu_4d_storage).isMemCopyable());
 
   // Create a memcopyable stroage
   using layout_type = gridtools::layout_map<2, 1, 0>; // stride 1 on i (col-major)
