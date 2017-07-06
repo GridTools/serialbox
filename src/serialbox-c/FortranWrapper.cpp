@@ -60,7 +60,9 @@ static void checkRank(const char* name, ArrayType1&& array, ArrayType2&& arrayRe
   const int refRank = (arrayRef[0] > 0 ? 1 : 0) + (arrayRef[1] > 0 ? 1 : 0) +
                       (arrayRef[2] > 0 ? 1 : 0) + (arrayRef[3] > 0 ? 1 : 0);
 
-  if(rank != refRank)
+  bool scalar = rank == 0 && refRank == 1 && arrayRef[0] == 1;
+
+  if(rank != refRank && !scalar)
     throw Exception("field '%s' has rank %i but field with rank %i was passed", name, refRank,
                     rank);
 }
@@ -129,22 +131,10 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
     if(info.dims().size() != 4)
       throw Exception("number of dimensions is %i, required are 4", info.dims().size());
 
-    const auto& dims = info.dims();
-
-    // Check rank
-    checkRank(fieldname, strides, dims);
-
     // Reorder strides
-    for(int i = 0; i < 4; ++i) {
-      if(dims[i] <= 1) {
-
-        // Shift strides to the left and set the current one to 0
-        for(int j = 3; j > i; --j)
-          strides[j] = strides[j - 1];
-
-        strides[i] = 0;
-      }
-    }
+    for(int i = 2; i >= 0; --i)
+      if(strides[i] == 0)
+        strides[i] = strides[i + 1];
 
     // Convert to unit-strides
     const int bytesPerElement = serialbox::TypeUtil::sizeOf(info.type());

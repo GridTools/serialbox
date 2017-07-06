@@ -55,6 +55,46 @@ public:
   typename storage_types::cpu_4d_storage_type cpu_4d_storage;
   typename storage_types::gpu_4d_storage_type gpu_4d_storage;
 
+private:
+  template <typename Storage>
+  void init2DReal(Storage& storage) {
+    T val_2d = 0.0;
+    for(int j = 0; j < dim2; ++j)
+      for(int i = 0; i < dim1; ++i, val_2d += 1.0) {
+        storage(i, j) = val_2d;
+      }
+  }
+
+  template <typename Storage>
+  void init2D(Storage& storage) {
+    T val_2d = 0.0;
+    for(int j = 0; j < dim2; ++j)
+      for(int i = 0; i < dim1; ++i, val_2d += 1.0) {
+        storage(i, j, 0) = val_2d;
+      }
+  }
+
+  template <typename Storage>
+  void init3D(Storage& storage) {
+    T val_3d = 0.0;
+    for(int k = 0; k < dim3; ++k)
+      for(int j = 0; j < dim2; ++j)
+        for(int i = 0; i < dim1; ++i, val_3d += 1.0) {
+          storage(i, j, k) = val_3d;
+        }
+  }
+
+  template <typename Storage>
+  void init4D(Storage& storage) {
+    T val_4d = 0.0;
+    for(int l = 0; l < dim4; ++l)
+      for(int k = 0; k < dim3; ++k)
+        for(int j = 0; j < dim2; ++j)
+          for(int i = 0; i < dim1; ++i, val_4d += 1.0) {
+            storage(i, j, k, l) = val_4d;
+          }
+  }
+
 protected:
   GridToolsStorageViewTest()
       : dim1(2 + storage_types::halo1_left + storage_types::halo1_right),
@@ -78,34 +118,16 @@ protected:
         cpu_4d_storage(cpu_4d_meta_data, "cpu_4d_storage"),                //
         gpu_4d_storage(gpu_4d_meta_data, "gpu_4d_storage") {
 
-    // 2D
-    T val_2d = 0.0;
-    for(int j = 0; j < dim2; ++j)
-      for(int i = 0; i < dim1; ++i, val_2d += 1.0) {
-        cpu_2d_real_storage(i, j) = val_2d;
-        gpu_2d_real_storage(i, j) = val_2d;
-        cpu_2d_storage(i, j, 0) = val_2d;
-        gpu_2d_storage(i, j, 0) = val_2d;
-      }
+    init2DReal(cpu_2d_real_storage);
+    init2DReal(gpu_2d_real_storage);
+    init2D(cpu_2d_storage);
+    init2D(gpu_2d_storage);
 
-    // 3D
-    T val_3d = 0.0;
-    for(int k = 0; k < dim3; ++k)
-      for(int j = 0; j < dim2; ++j)
-        for(int i = 0; i < dim1; ++i, val_3d += 1.0) {
-          cpu_3d_storage(i, j, k) = val_3d;
-          gpu_3d_storage(i, j, k) = val_3d;
-        }
+    init3D(cpu_3d_storage);
+    init3D(gpu_3d_storage);
 
-    // 4D
-    T val_4d = 0.0;
-    for(int l = 0; l < dim4; ++l)
-      for(int k = 0; k < dim3; ++k)
-        for(int j = 0; j < dim2; ++j)
-          for(int i = 0; i < dim1; ++i, val_4d += 1.0) {
-            cpu_4d_storage(i, j, k, l) = val_4d;
-            gpu_4d_storage(i, j, k, l) = val_4d;
-          }
+    init4D(cpu_4d_storage);
+    init4D(gpu_4d_storage);
   }
 };
 
