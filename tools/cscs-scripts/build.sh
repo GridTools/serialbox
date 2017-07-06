@@ -169,6 +169,15 @@ else
     SERIALBOX_TESTING_STELLA=OFF
 fi
 
+# pFUnit
+if [ ! -z ${PFUNIT_ROOT+x} ]; then
+    SERIALBOX_TESTING_FORTRAN=ON
+elif [ -d "${EXTERNAL_DIR}/pfunit" ]; then
+    SERIALBOX_TESTING_FORTRAN=ON
+else
+    SERIALBOX_TESTING_FORTRAN=OFF
+fi
+
 #------------------------------ Build ------------------------------------------
 
 BUILD_DIR=${CURRENT_PATH}/../../build_gcc_${ARG_FC_COMPILER}
@@ -193,6 +202,7 @@ cmake                                                                          \
  -DSERIALBOX_ENABLE_FORTRAN:BOOL=${SERIALBOX_ENABLE_FORTRAN}                   \
  -DSERIALBOX_TESTING_GRIDTOOLS:BOOL=${SERIALBOX_TESTING_GRIDTOOLS}             \
  -DSERIALBOX_TESTING_STELLA:BOOL=${SERIALBOX_TESTING_STELLA}                   \
+ -DSERIALBOX_TESTING_FORTRAN:BOOL=${SERIALBOX_TESTING_FORTRAN}                 \
  ../
 
 # Run make
