@@ -139,6 +139,10 @@ public:
   using storage_types = serialbox::unittest::gridtools_storage_types<T>;
 
   // Dimensions
+  int dim1_no_halo;
+  int dim2_no_halo;
+  int dim3_no_halo;
+  int dim4_no_halo;
   int dim1;
   int dim2;
   int dim3;
@@ -176,34 +180,35 @@ public:
   typename storage_types::gpu_4d_storage_type gpu_4d_storage_output;
 
   GridToolsReadWriteTest()
-      : dim1(2 + storage_types::halo1_left + storage_types::halo1_right),
+      : dim1_no_halo(2), dim2_no_halo(3), dim3_no_halo(4), dim4_no_halo(5),
+        dim1(2 + storage_types::halo1_left + storage_types::halo1_right),
         dim2(3 + storage_types::halo2_left + storage_types::halo2_right),
         dim3(4 + storage_types::halo3_left + storage_types::halo3_right),
         dim4(5 + storage_types::halo4_left + storage_types::halo4_right),
-        cpu_2d_real_meta_data(dim1, dim2),                                                   //
-        gpu_2d_real_meta_data(dim1, dim2),                                                   //
-        cpu_2d_meta_data(dim1, dim2, 0),                                                     //
-        gpu_2d_meta_data(dim1, dim2, 0),                                                     //
-        cpu_3d_meta_data(dim1, dim2, dim3),                                                  //
-        gpu_3d_meta_data(dim1, dim2, dim3),                                                  //
-        cpu_4d_meta_data(dim1, dim2, dim3, dim4),                                            //
-        gpu_4d_meta_data(dim1, dim2, dim3, dim4),                                            //
-        cpu_2d_real_storage_input(cpu_2d_real_meta_data, "cpu_2d_real_storage_input", -1.0), //
-        gpu_2d_real_storage_input(gpu_2d_real_meta_data, "gpu_2d_real_storage_input", -1.0), //
-        cpu_2d_storage_input(cpu_2d_meta_data, "cpu_2d_storage_input", -1.0),                //
-        gpu_2d_storage_input(gpu_2d_meta_data, "gpu_2d_storage_input", -1.0),                //
-        cpu_3d_storage_input(cpu_3d_meta_data, "cpu_3d_storage_input", -1.0),                //
-        gpu_3d_storage_input(gpu_3d_meta_data, "gpu_3d_storage_input", -1.0),                //
-        cpu_4d_storage_input(cpu_4d_meta_data, "cpu_4d_storage_input", -1.0),                //
-        gpu_4d_storage_input(gpu_4d_meta_data, "gpu_4d_storage_input", -1.0),
-        cpu_2d_real_storage_output(cpu_2d_real_meta_data, "cpu_2d_real_storage_output", -1.0), //
-        gpu_2d_real_storage_output(gpu_2d_real_meta_data, "gpu_2d_real_storage_output", -1.0), //
-        cpu_2d_storage_output(cpu_2d_meta_data, "cpu_2d_storage_output", -1.0),                //
-        gpu_2d_storage_output(gpu_2d_meta_data, "gpu_2d_storage_output", -1.0),                //
-        cpu_3d_storage_output(cpu_3d_meta_data, "cpu_3d_storage_output", -1.0),                //
-        gpu_3d_storage_output(gpu_3d_meta_data, "gpu_3d_storage_output", -1.0),                //
-        cpu_4d_storage_output(cpu_4d_meta_data, "cpu_4d_storage_output", -1.0),                //
-        gpu_4d_storage_output(gpu_4d_meta_data, "gpu_4d_storage_output", -1.0) {
+        cpu_2d_real_meta_data(dim1_no_halo, dim2_no_halo),                             //
+        gpu_2d_real_meta_data(dim1_no_halo, dim2_no_halo),                             //
+        cpu_2d_meta_data(dim1_no_halo, dim2_no_halo, 1),                               //
+        gpu_2d_meta_data(dim1_no_halo, dim2_no_halo, 1),                               //
+        cpu_3d_meta_data(dim1_no_halo, dim2_no_halo, dim3_no_halo),                    //
+        gpu_3d_meta_data(dim1_no_halo, dim2_no_halo, dim3_no_halo),                    //
+        cpu_4d_meta_data(dim1_no_halo, dim2_no_halo, dim3_no_halo, dim4_no_halo),      //
+        gpu_4d_meta_data(dim1_no_halo, dim2_no_halo, dim3_no_halo, dim4_no_halo),      //
+        cpu_2d_real_storage_input(cpu_2d_real_meta_data, "cpu_2d_real_storage_input"), //
+        gpu_2d_real_storage_input(gpu_2d_real_meta_data, "gpu_2d_real_storage_input"), //
+        cpu_2d_storage_input(cpu_2d_meta_data, "cpu_2d_storage_input"),                //
+        gpu_2d_storage_input(gpu_2d_meta_data, "gpu_2d_storage_input"),                //
+        cpu_3d_storage_input(cpu_3d_meta_data, "cpu_3d_storage_input"),                //
+        gpu_3d_storage_input(gpu_3d_meta_data, "gpu_3d_storage_input"),                //
+        cpu_4d_storage_input(cpu_4d_meta_data, "cpu_4d_storage_input"),                //
+        gpu_4d_storage_input(gpu_4d_meta_data, "gpu_4d_storage_input"),
+        cpu_2d_real_storage_output(cpu_2d_real_meta_data, "cpu_2d_real_storage_output"), //
+        gpu_2d_real_storage_output(gpu_2d_real_meta_data, "gpu_2d_real_storage_output"), //
+        cpu_2d_storage_output(cpu_2d_meta_data, "cpu_2d_storage_output"),                //
+        gpu_2d_storage_output(gpu_2d_meta_data, "gpu_2d_storage_output"),                //
+        cpu_3d_storage_output(cpu_3d_meta_data, "cpu_3d_storage_output"),                //
+        gpu_3d_storage_output(gpu_3d_meta_data, "gpu_3d_storage_output"),                //
+        cpu_4d_storage_output(cpu_4d_meta_data, "cpu_4d_storage_output"),                //
+        gpu_4d_storage_output(gpu_4d_meta_data, "gpu_4d_storage_output") {
     storage_types::init2DReal(cpu_2d_real_storage_input, dim1, dim2);
     storage_types::init2DReal(gpu_2d_real_storage_input, dim1, dim2);
     storage_types::init2D(cpu_2d_storage_input, dim1, dim2);
@@ -217,6 +222,52 @@ public:
   }
 
   virtual void SetUp() override { Base::SetUp(); }
+
+  template <typename Storage>
+  void validate2DReal(Storage& in, Storage& out) {
+    auto vin = make_host_view(in);
+    auto vout = make_host_view(out);
+
+    for(int i = 0; i < this->dim1; ++i)
+      for(int j = 0; j < this->dim2; ++j) {
+        ASSERT_EQ(vin(i, j), vout(i, j)) << "(i,j) = (" << i << "," << j << ")";
+      }
+  }
+  template <typename Storage>
+  void validate2D(Storage& in, Storage& out) {
+    auto vin = make_host_view(in);
+    auto vout = make_host_view(out);
+
+    for(int i = 0; i < this->dim1; ++i)
+      for(int j = 0; j < this->dim2; ++j) {
+        ASSERT_EQ(vin(i, j, 0), vout(i, j, 0)) << "(i,j) = (" << i << "," << j << ")";
+      }
+  }
+  template <typename Storage>
+  void validate3D(Storage& in, Storage& out) {
+    auto vin = make_host_view(in);
+    auto vout = make_host_view(out);
+
+    for(int i = 0; i < this->dim1; ++i)
+      for(int j = 0; j < this->dim2; ++j)
+        for(int k = 0; k < this->dim3; ++k) {
+          ASSERT_EQ(vin(i, j, k), vout(i, j, k)) << "(i,j,k) = (" << i << "," << j << "," << k
+                                                 << ")";
+        }
+  }
+  template <typename Storage>
+  void validate4D(Storage& in, Storage& out) {
+    auto vin = make_host_view(in);
+    auto vout = make_host_view(out);
+
+    for(int i = 0; i < this->dim1; ++i)
+      for(int j = 0; j < this->dim2; ++j)
+        for(int k = 0; k < this->dim3; ++k)
+          for(int l = 0; l < this->dim4; ++l) {
+            ASSERT_EQ(vin(i, j, k, l), vout(i, j, k, l)) << "(i,j,k,l) = (" << i << "," << j << ","
+                                                         << k << "," << l << ")";
+          }
+  }
 };
 
 using TestTypes = testing::Types<double, float, int>;
@@ -235,7 +286,7 @@ TYPED_TEST(GridToolsReadWriteTest, WriteAndRead) {
     type_id type = serialbox::ToTypeID<TypeParam>::value;
     ser.register_field("2d_real", type, std::vector<int>{this->dim1, this->dim2});
 
-    // We set the empty dimension to 1 (gridtools sets it to 0 but this case should be handeled in
+    // We set the empty dimension to 1 (gridtools sets it to 0 but this case should be handled in
     // the SerializerImpl)
     ser.register_field("2d", type, std::vector<int>{this->dim1, this->dim2, 1});
 
@@ -281,68 +332,38 @@ TYPED_TEST(GridToolsReadWriteTest, WriteAndRead) {
   }
 
   // Validate
-  for(int i = 0; i < this->dim1; ++i)
-    for(int j = 0; j < this->dim2; ++j) {
-      // 2D (real) cpu
-      ASSERT_EQ(this->cpu_2d_real_storage_input(i, j), this->cpu_2d_real_storage_output(i, j))
-          << "(i,j) = (" << i << "," << j << ")";
-
-      // 2D (real) gpu
-      ASSERT_EQ(this->gpu_2d_real_storage_input(i, j), this->gpu_2d_real_storage_output(i, j))
-          << "(i,j) = (" << i << "," << j << ")";
-
-      // 2D cpu
-      ASSERT_EQ(this->cpu_2d_storage_input(i, j, 0), this->cpu_2d_storage_output(i, j, 0))
-          << "(i,j,0) = (" << i << "," << j << "," << 0 << ")";
-
-      // 2D gpu
-      ASSERT_EQ(this->gpu_2d_storage_input(i, j, 0), this->gpu_2d_storage_output(i, j, 0))
-          << "(i,j,0) = (" << i << "," << j << "," << 0 << ")";
-
-      for(int k = 0; k < this->dim3; ++k) {
-        // 3D cpu
-        ASSERT_EQ(this->cpu_3d_storage_input(i, j, k), this->cpu_3d_storage_output(i, j, k))
-            << "(i,j,k) = (" << i << "," << j << "," << k << ")";
-
-        // 3D cpu
-        ASSERT_EQ(this->gpu_3d_storage_input(i, j, k), this->gpu_3d_storage_output(i, j, k))
-            << "(i,j,k) = (" << i << "," << j << "," << k << ")";
-
-        for(int l = 0; l < this->dim4; ++l) {
-
-          // 4D cpu
-          ASSERT_EQ(this->cpu_4d_storage_input(i, j, k, l), this->cpu_4d_storage_output(i, j, k, l))
-              << "(i,j,k,l) = (" << i << "," << j << "," << k << "," << l << ")";
-
-          // 4D gpu
-          ASSERT_EQ(this->gpu_4d_storage_input(i, j, k, l), this->gpu_4d_storage_output(i, j, k, l))
-              << "(i,j,k,l) = (" << i << "," << j << "," << k << "," << l << ")";
-        }
-      }
-    }
+  this->validate2DReal(this->cpu_2d_real_storage_input, this->cpu_2d_real_storage_output);
+  this->validate2DReal(this->gpu_2d_real_storage_input, this->gpu_2d_real_storage_output);
+  this->validate2D(this->cpu_2d_storage_input, this->cpu_2d_storage_output);
+  this->validate2D(this->gpu_2d_storage_input, this->gpu_2d_storage_output);
+  this->validate3D(this->cpu_3d_storage_input, this->cpu_3d_storage_output);
+  this->validate3D(this->gpu_3d_storage_input, this->gpu_3d_storage_output);
+  this->validate4D(this->cpu_4d_storage_input, this->cpu_4d_storage_output);
+  this->validate4D(this->gpu_4d_storage_input, this->gpu_4d_storage_output);
 }
 
 TYPED_TEST(GridToolsReadWriteTest, ToAndFromFile) {
   using storage_types = serialbox::unittest::gridtools_storage_types<TypeParam>;
 
-  typename storage_types::cpu_3d_storage_type storage_in(this->cpu_3d_meta_data, "storage", -1.0);
-  typename storage_types::cpu_3d_storage_type storage_out(this->cpu_3d_meta_data, "storage", -1.0);
+  typename storage_types::cpu_3d_storage_type storage_in(this->cpu_3d_meta_data, -1.0, "storage");
+  typename storage_types::cpu_3d_storage_type storage_out(this->cpu_3d_meta_data, -1.0, "storage");
   // Fill data
+  auto vin = make_host_view(storage_in);
   for(int i = 0; i < this->dim1; ++i)
     for(int j = 0; j < this->dim2; ++j)
       for(int k = 0; k < this->dim3; ++k)
-        storage_in(i, j, k) = i * j * k;
+        vin(i, j, k) = i * j * k;
 
   // Write and read from file
   serializer::to_file((this->directory->path() / "test.dat").string(), storage_in, "Binary");
   serializer::from_file((this->directory->path() / "test.dat").string(), storage_out, "Binary");
 
   // Verify
+  auto vout = make_host_view(storage_in);
   for(int i = 0; i < this->dim1; ++i)
     for(int j = 0; j < this->dim2; ++j)
       for(int k = 0; k < this->dim3; ++k)
-        ASSERT_EQ(storage_in(i, j, k), storage_out(i, j, k)) << "(i,j,k) = (" << i << "," << j
-                                                             << "," << k << ")";
+        ASSERT_EQ(vin(i, j, k), vout(i, j, k)) << "(i,j,k) = (" << i << "," << j << "," << k << ")";
 }
 
 TYPED_TEST(GridToolsReadWriteTest, NonGridToolsWriteAndRead) {

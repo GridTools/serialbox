@@ -274,7 +274,7 @@ public:
   template <class StorageType>
   void write(const std::string& name, const savepoint& sp, const StorageType& storage,
              bool register_field = true) {
-    this->write(name, sp, storage, storage.meta_data(), register_field);
+    this->write(name, sp, storage, *storage.get_storage_info_ptr(), register_field);
   }
 
   /// \brief Write method used internally by gridtools
@@ -291,7 +291,7 @@ public:
       this->register_field(name, storage, meta_data);
 
     StorageView storageView(internal::get_origin_ptr(storage, meta_data, 0),
-                            ToTypeID<typename StorageType::value_type>::value,
+                            ToTypeID<typename StorageType::data_t>::value,
                             std::move(internal::get_dims(meta_data)),
                             std::move(internal::get_strides(storage, meta_data)));
     serializerImpl_->write(name, *sp.impl(), storageView);
@@ -327,15 +327,16 @@ public:
   ///                       deduced from the `file` extension.
   template <class StorageType>
   static void to_file(std::string file, const StorageType& storage, std::string archive_name = "") {
-    StorageView storageView(internal::get_origin_ptr(storage, storage.meta_data(), 0),
-                            ToTypeID<typename StorageType::value_type>::value,
-                            std::move(internal::get_dims(storage.meta_data())),
-                            std::move(internal::get_strides(storage, storage.meta_data())));
+    StorageView storageView(
+        internal::get_origin_ptr(storage, *storage.get_storage_info_ptr(), 0),
+        ToTypeID<typename StorageType::data_t>::value,
+        std::move(internal::get_dims(*storage.get_storage_info_ptr())),
+        std::move(internal::get_strides(storage, *storage.get_storage_info_ptr())));
 
     if(archive_name.empty())
       archive_name = ArchiveFactory::archiveFromExtension(file);
 
-    ArchiveFactory::writeToFile(file, storageView, archive_name, storage.get_name());
+    ArchiveFactory::writeToFile(file, storageView, archive_name, storage.name());
   }
 
   //===----------------------------------------------------------------------------------------===//
@@ -354,10 +355,11 @@ public:
   ///   SerializerImpl::read
   template <class StorageType>
   void read(const std::string& name, const savepoint& sp, StorageType& storage) {
-    StorageView storageView(internal::get_origin_ptr(storage, storage.meta_data(), 0),
-                            ToTypeID<typename StorageType::value_type>::value,
-                            std::move(internal::get_dims(storage.meta_data())),
-                            std::move(internal::get_strides(storage, storage.meta_data())));
+    StorageView storageView(
+        internal::get_origin_ptr(storage, *storage.get_storage_info_ptr(), 0),
+        ToTypeID<typename StorageType::data_t>::value,
+        std::move(internal::get_dims(*storage.get_storage_info_ptr())),
+        std::move(internal::get_strides(storage, *storage.get_storage_info_ptr())));
 
     serializerImpl_->read(name, *sp.impl(), storageView);
   }
@@ -378,7 +380,7 @@ public:
   template <class StorageType>
   void read_slice(const std::string& name, const savepoint& sp, StorageType& storage, Slice slice) {
     StorageView storageView(internal::get_origin_ptr(storage, storage.meta_data(), 0),
-                            ToTypeID<typename StorageType::value_type>::value,
+                            ToTypeID<typename StorageType::data_t>::value,
                             std::move(internal::get_dims(storage.meta_data())),
                             std::move(internal::get_strides(storage, storage.meta_data())));
     storageView.setSlice(slice);
@@ -416,15 +418,16 @@ public:
   /// \throw exception  Deserialization failed
   template <class StorageType>
   static void from_file(std::string file, StorageType& storage, std::string archive_name = "") {
-    StorageView storageView(internal::get_origin_ptr(storage, storage.meta_data(), 0),
-                            ToTypeID<typename StorageType::value_type>::value,
-                            std::move(internal::get_dims(storage.meta_data())),
-                            std::move(internal::get_strides(storage, storage.meta_data())));
+    StorageView storageView(
+        internal::get_origin_ptr(storage, *storage.get_storage_info_ptr(), 0),
+        ToTypeID<typename StorageType::data_t>::value,
+        std::move(internal::get_dims(*storage.get_storage_info_ptr())),
+        std::move(internal::get_strides(storage, *storage.get_storage_info_ptr())));
 
     if(archive_name.empty())
       archive_name = ArchiveFactory::archiveFromExtension(file);
 
-    ArchiveFactory::readFromFile(file, storageView, archive_name, storage.get_name());
+    ArchiveFactory::readFromFile(file, storageView, archive_name, storage.name());
   }
 
   /// \brief Convert to string
