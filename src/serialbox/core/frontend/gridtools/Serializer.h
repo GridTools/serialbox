@@ -379,10 +379,11 @@ public:
   ///
   template <class StorageType>
   void read_slice(const std::string& name, const savepoint& sp, StorageType& storage, Slice slice) {
-    StorageView storageView(internal::get_origin_ptr(storage, storage.meta_data(), 0),
-                            ToTypeID<typename StorageType::data_t>::value,
-                            std::move(internal::get_dims(storage.meta_data())),
-                            std::move(internal::get_strides(storage, storage.meta_data())));
+    StorageView storageView(
+        internal::get_origin_ptr(storage, *storage.get_storage_info_ptr(), 0),
+        ToTypeID<typename StorageType::data_t>::value,
+        std::move(internal::get_dims(*storage.get_storage_info_ptr())),
+        std::move(internal::get_strides(storage, *storage.get_storage_info_ptr())));
     storageView.setSlice(slice);
     serializerImpl_->read(name, *sp.impl(), storageView);
   }

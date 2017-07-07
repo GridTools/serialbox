@@ -37,8 +37,8 @@
 // Typedefs of the gridtools library
 //
 using storage_traits_t = gridtools::storage_traits<gridtools::enumtype::Host>;
-using meta_data_t = storage_traits_t::meta_storage_type<0, gridtools::layout_map<0, 1, 2>>;
-using storage_t = storage_traits_t::storage_type<double, meta_data_t>;
+using storage_info_t = storage_traits_t::storage_info_t<0, 3>;
+using storage_t = storage_traits_t::data_store_t<double, storage_info_t>;
 
 int main() {
   int N = 512, M = 512, K = 80;
@@ -58,17 +58,19 @@ int main() {
     //
     // Allocate 3D arrays and fill the input with some random numbers
     //
-    meta_data_t meta_data(N, M, K);
-    storage_t field_in(meta_data, "storage", -1);
-    storage_t field_out(meta_data, "storage", -1);
+    storage_info_t storage_info(N, M, K);
+    storage_t field_in(storage_info, -1., "storage");
+    storage_t field_out(storage_info, -1., "storage");
 
     std::default_random_engine gen;
     std::uniform_real_distribution<double> dist(0.0, 1.0);
-    for(int i = 0; i < N; ++i)
-      for(int j = 0; j < M; ++j)
-        for(int k = 0; k < K; ++k)
-          field_in(i, j, k) = dist(gen);
-
+    {
+      auto in = make_host_view(field_in);
+      for(int i = 0; i < N; ++i)
+        for(int j = 0; j < M; ++j)
+          for(int k = 0; k < K; ++k)
+            in(i, j, k) = dist(gen);
+    }
     //
     // Write the gridtools storage to disk at Savepoint `sp`
     //
@@ -103,11 +105,15 @@ int main() {
     //
     // Verify
     //
-    for(int i = 0; i < N; ++i)
-      for(int j = 0; j < M; ++j)
-        if(field_in(i, j, 50) != field_out(i, j, 50))
-          throw ser::exception("mismatch at (%i,%i) of in and out: %f vs. %f\n", i, j,
-                               field_in(i, j, 50), field_out(i, j, 50));
+    {
+      auto in = make_host_view(field_in);
+      auto out = make_host_view(field_out);
+      for(int i = 0; i < N; ++i)
+        for(int j = 0; j < M; ++j)
+          if(in(i, j, 50) != out(i, j, 50))
+            throw ser::exception("mismatch at (%i,%i) of in and out: %f vs. %f\n", i, j,
+                                 in(i, j, 50), out(i, j, 50));
+    }
 
     //
     // For comparison, let's load the full data.
@@ -121,11 +127,15 @@ int main() {
     //
     // Verify
     //
-    for(int i = 0; i < N; ++i)
-      for(int j = 0; j < M; ++j)
-        if(field_in(i, j, 50) != field_out(i, j, 50))
-          throw ser::exception("mismatch at (%i,%i) of in and out: %f vs. %f\n", i, j,
-                               field_in(i, j, 50), field_out(i, j, 50));
+    {
+      auto in = make_host_view(field_in);
+      auto out = make_host_view(field_out);
+      for(int i = 0; i < N; ++i)
+        for(int j = 0; j < M; ++j)
+          if(in(i, j, 50) != out(i, j, 50))
+            throw ser::exception("mismatch at (%i,%i) of in and out: %f vs. %f\n", i, j,
+                                 in(i, j, 50), out(i, j, 50));
+    }
 
     //
     // Remove directory
