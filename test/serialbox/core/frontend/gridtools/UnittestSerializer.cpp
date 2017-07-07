@@ -399,7 +399,7 @@ TYPED_TEST(GridToolsReadWriteTest, NonGridToolsWriteGridToolsRead) {
   Storage storage_in(Storage::RowMajor, {this->dim1, this->dim2, this->dim3}, Storage::random);
 
   using storage_types = serialbox::unittest::gridtools_storage_types<TypeParam>;
-  typename storage_types::gpu_3d_storage_type storage_out(this->gpu_3d_meta_data, "storage", -1.0);
+  typename storage_types::gpu_3d_storage_type storage_out(this->gpu_3d_meta_data, -1.0, "storage");
 
   auto sv_input = storage_in.toStorageView();
 
@@ -419,16 +419,17 @@ TYPED_TEST(GridToolsReadWriteTest, NonGridToolsWriteGridToolsRead) {
   }
 
   // Verify
+  auto gt_view_out = make_host_view(storage_out);
   for(int i = 0; i < this->dim1; ++i)
     for(int j = 0; j < this->dim2; ++j)
       for(int k = 0; k < this->dim3; ++k)
-        ASSERT_EQ(storage_in(i, j, k), storage_out(i, j, k)) << "(i,j,k) = (" << i << "," << j
+        ASSERT_EQ(storage_in(i, j, k), gt_view_out(i, j, k)) << "(i,j,k) = (" << i << "," << j
                                                              << "," << k << ")";
 }
 
 TYPED_TEST(GridToolsReadWriteTest, GridToolsWriteNonGridToolsRead) {
   using storage_types = serialbox::unittest::gridtools_storage_types<TypeParam>;
-  typename storage_types::gpu_3d_storage_type storage_in(this->gpu_3d_meta_data, "storage", -1.0);
+  typename storage_types::gpu_3d_storage_type storage_in(this->gpu_3d_meta_data, -1.0, "storage");
 
   storage_types::init3D(storage_in, this->dim1, this->dim2, this->dim3);
 
@@ -451,10 +452,11 @@ TYPED_TEST(GridToolsReadWriteTest, GridToolsWriteNonGridToolsRead) {
   }
 
   // Verify
+  auto gt_view_in = make_host_view(storage_in);
   for(int i = 0; i < this->dim1; ++i)
     for(int j = 0; j < this->dim2; ++j)
       for(int k = 0; k < this->dim3; ++k)
-        ASSERT_EQ(storage_in(i, j, k), storage_out(i, j, k)) << "(i,j,k) = (" << i << "," << j
+        ASSERT_EQ(gt_view_in(i, j, k), storage_out(i, j, k)) << "(i,j,k) = (" << i << "," << j
                                                              << "," << k << ")";
 }
 
