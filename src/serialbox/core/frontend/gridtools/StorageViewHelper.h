@@ -134,9 +134,7 @@ void* get_origin_ptr(const StorageType& storage, const MetaDataType& meta_data,
   //  }
 
   auto* data_ptr = storage.get_storage_ptr()->get_cpu_ptr();
-  auto index = meta_data.index({
-      0,
-  });
+  auto index = meta_data.index({}); // http://en.cppreference.com/w/cpp/language/zero_initialization
   return static_cast<void*>(data_ptr + index);
 }
 
