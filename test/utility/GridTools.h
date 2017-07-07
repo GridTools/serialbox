@@ -48,10 +48,10 @@ struct gridtools_storage_types {
   static constexpr int halo3_left = 3;
   static constexpr int halo4_left = 4;
 
-  static constexpr int halo1_right = 3;
-  static constexpr int halo2_right = 4;
-  static constexpr int halo3_right = 5;
-  static constexpr int halo4_right = 6;
+  static constexpr int halo1_right = halo1_left;
+  static constexpr int halo2_right = halo2_left;
+  static constexpr int halo3_right = halo3_left;
+  static constexpr int halo4_right = halo4_left;
 
   // Alignment for left halo boundaries
   using halo_2d_type = gridtools::halo<halo1_left, halo2_left>;
