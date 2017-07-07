@@ -394,4 +394,68 @@ TYPED_TEST(GridToolsReadWriteTest, NonGridToolsWriteAndRead) {
   ASSERT_TRUE(Storage::verify(storage_input, storage_output));
 }
 
+TYPED_TEST(GridToolsReadWriteTest, NonGridToolsWriteGridToolsRead) {
+  using Storage = serialbox::unittest::Storage<TypeParam>;
+  Storage storage_in(Storage::RowMajor, {this->dim1, this->dim2, this->dim3}, Storage::random);
+
+  using storage_types = serialbox::unittest::gridtools_storage_types<TypeParam>;
+  typename storage_types::gpu_3d_storage_type storage_out(this->gpu_3d_meta_data, "storage", -1.0);
+
+  auto sv_input = storage_in.toStorageView();
+
+  // Write
+  {
+    serializer ser(open_mode::Write, this->directory->path().string(), "Field", "Binary");
+    auto type = serialbox::ToTypeID<TypeParam>::value;
+    ser.register_field("storage", type, sv_input.dims());
+    ser.write("storage", savepoint("sp"), sv_input.template originPtrAs<TypeParam>(),
+              sv_input.strides());
+  }
+
+  // Read
+  {
+    serializer ser(open_mode::Read, this->directory->path().string(), "Field", "Binary");
+    ser.read("storage", savepoint("sp"), storage_out);
+  }
+
+  // Verify
+  for(int i = 0; i < this->dim1; ++i)
+    for(int j = 0; j < this->dim2; ++j)
+      for(int k = 0; k < this->dim3; ++k)
+        ASSERT_EQ(storage_in(i, j, k), storage_out(i, j, k)) << "(i,j,k) = (" << i << "," << j
+                                                             << "," << k << ")";
+}
+
+TYPED_TEST(GridToolsReadWriteTest, GridToolsWriteNonGridToolsRead) {
+  using storage_types = serialbox::unittest::gridtools_storage_types<TypeParam>;
+  typename storage_types::gpu_3d_storage_type storage_in(this->gpu_3d_meta_data, "storage", -1.0);
+
+  storage_types::init3D(storage_in, this->dim1, this->dim2, this->dim3);
+
+  using Storage = serialbox::unittest::Storage<TypeParam>;
+  Storage storage_out(Storage::RowMajor, {this->dim1, this->dim2, this->dim3}, Storage::random);
+
+  auto sv_output = storage_out.toStorageView();
+
+  // Write
+  {
+    serializer ser(open_mode::Write, this->directory->path().string(), "Field", "Binary");
+    ser.write("storage", savepoint("sp"), storage_in);
+  }
+
+  // Read
+  {
+    serializer ser(open_mode::Read, this->directory->path().string(), "Field", "Binary");
+    ser.read("storage", savepoint("sp"), sv_output.template originPtrAs<TypeParam>(),
+             sv_output.strides());
+  }
+
+  // Verify
+  for(int i = 0; i < this->dim1; ++i)
+    for(int j = 0; j < this->dim2; ++j)
+      for(int k = 0; k < this->dim3; ++k)
+        ASSERT_EQ(storage_in(i, j, k), storage_out(i, j, k)) << "(i,j,k) = (" << i << "," << j
+                                                             << "," << k << ")";
+}
+
 #endif // SERIALBOX_HAS_GRIDTOOLS
