@@ -59,50 +59,6 @@ public:
   //  typename storage_types::cpu_4d_storage_type cpu_4d_storage;
   //  typename storage_types::gpu_4d_storage_type gpu_4d_storage;
 
-private:
-  template <typename Storage>
-  void init2DReal(Storage& storage) {
-    T val_2d = 0.0;
-    for(int j = 0; j < dim2; ++j)
-      for(int i = 0; i < dim1; ++i, val_2d += 1.0) {
-        auto view = make_host_view(storage);
-        view(i, j) = val_2d;
-      }
-  }
-
-  template <typename Storage>
-  void init2D(Storage& storage) {
-    T val_2d = 0.0;
-    for(int j = 0; j < dim2; ++j)
-      for(int i = 0; i < dim1; ++i, val_2d += 1.0) {
-        auto view = make_host_view(storage);
-        view(i, j, 0) = val_2d;
-      }
-  }
-
-  template <typename Storage>
-  void init3D(Storage& storage) {
-    T val_3d = 0.0;
-    for(int k = 0; k < dim3; ++k)
-      for(int j = 0; j < dim2; ++j)
-        for(int i = 0; i < dim1; ++i, val_3d += 1.0) {
-          auto view = make_host_view(storage);
-          view(i, j, k) = val_3d;
-        }
-  }
-
-  template <typename Storage>
-  void init4D(Storage& storage) {
-    T val_4d = 0.0;
-    for(int l = 0; l < dim4; ++l)
-      for(int k = 0; k < dim3; ++k)
-        for(int j = 0; j < dim2; ++j)
-          for(int i = 0; i < dim1; ++i, val_4d += 1.0) {
-            auto view = make_host_view(storage);
-            view(i, j, k, l) = val_4d;
-          }
-  }
-
 protected:
   GridToolsStorageViewTest()
       : dim1_no_halo(2), dim2_no_halo(3), dim3_no_halo(4), dim4_no_halo(5),
@@ -127,17 +83,16 @@ protected:
         cpu_4d_storage(cpu_4d_meta_data, "cpu_4d_storage"),                //
         gpu_4d_storage(gpu_4d_meta_data, "gpu_4d_storage") */ {
 
-    init2DReal(cpu_2d_real_storage);
-    init2DReal(gpu_2d_real_storage);
-
-    init2D(cpu_2d_storage);
-    //    init2D(gpu_2d_storage);
+    storage_types::init2DReal(cpu_2d_real_storage, dim1, dim2);
+    storage_types::init2DReal(gpu_2d_real_storage, dim1, dim2);
+    storage_types::init2D(cpu_2d_storage, dim1, dim2);
+    //    storage_types::init2D(gpu_2d_storage, dim1, dim2);
     //
-    //    init3D(cpu_3d_storage);
-    //    init3D(gpu_3d_storage);
+    //    storage_types::init3D(cpu_3d_storage, dim1, dim2, dim3);
+    //    storage_types::init3D(gpu_3d_storage, dim1, dim2, dim3);
     //
-    //    init4D(cpu_4d_storage);
-    //    init4D(gpu_4d_storage);
+    //    storage_types::init4D(cpu_4d_storage, dim1, dim2, dim3, dim4);
+    //    storage_types::init4D(gpu_4d_storage, dim1, dim2, dim3, dim4);
   }
 };
 

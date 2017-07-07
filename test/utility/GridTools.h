@@ -76,7 +76,7 @@ struct gridtools_storage_types {
   //     Meta Data
   //===----------------------------------------------------------------------------------------===//
 
-  using cpu_2d_real_meta_data_type = storage_traits_type::storage_info_t<0, 2, halo_2d_type>;
+  using cpu_2d_real_meta_data_type = storage_traits_type::storage_info_t<1, 2, halo_2d_type>;
   //  using cpu_2d_real_meta_data_type =
   //      storage_traits_type::meta_storage_type<1, cpu_2d_real_layout_type, halo_2d_type,
   //                                             gridtools::aligned<cpu_alignment>>;
@@ -132,6 +132,49 @@ struct gridtools_storage_types {
 
   using cpu_4d_storage_type = storage_traits_type::data_store_t<T, cpu_4d_meta_data_type>;
   using gpu_4d_storage_type = storage_traits_type::data_store_t<T, gpu_4d_meta_data_type>;
+
+  template <typename Storage>
+  static void init2DReal(Storage& storage, int dim1, int dim2) {
+    T val_2d = 0.0;
+    for(int j = 0; j < dim2; ++j)
+      for(int i = 0; i < dim1; ++i, val_2d += 1.0) {
+        auto view = make_host_view(storage);
+        view(i, j) = val_2d;
+      }
+  }
+
+  template <typename Storage>
+  static void init2D(Storage& storage, int dim1, int dim2) {
+    T val_2d = 0.0;
+    for(int j = 0; j < dim2; ++j)
+      for(int i = 0; i < dim1; ++i, val_2d += 1.0) {
+        auto view = make_host_view(storage);
+        view(i, j, 0) = val_2d;
+      }
+  }
+
+  template <typename Storage>
+  static void init3D(Storage& storage, int dim1, int dim2, int dim3) {
+    T val_3d = 0.0;
+    for(int k = 0; k < dim3; ++k)
+      for(int j = 0; j < dim2; ++j)
+        for(int i = 0; i < dim1; ++i, val_3d += 1.0) {
+          auto view = make_host_view(storage);
+          view(i, j, k) = val_3d;
+        }
+  }
+
+  template <typename Storage>
+  static void init4D(Storage& storage, int dim1, int dim2, int dim3, int dim4) {
+    T val_4d = 0.0;
+    for(int l = 0; l < dim4; ++l)
+      for(int k = 0; k < dim3; ++k)
+        for(int j = 0; j < dim2; ++j)
+          for(int i = 0; i < dim1; ++i, val_4d += 1.0) {
+            auto view = make_host_view(storage);
+            view(i, j, k, l) = val_4d;
+          }
+  }
 };
 
 } // namespace unittest
