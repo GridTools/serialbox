@@ -74,15 +74,11 @@ TEST(GridToolsFieldMetainfoImplTest, Construction) {
 TEST(GridToolsFieldMetainfoImplTest, ConstructionWithGridToolsStorage) {
   using types = serialbox::unittest::gridtools_storage_types<double>;
 
-  const int dim1_no_halo = 4; // TODO cleanup after gridtools fix
-  const int dim2_no_halo = 5;
-  const int dim3_no_halo = 6;
+  const int dim1 = 4 + types::halo1_left + types::halo1_right;
+  const int dim2 = 5 + types::halo2_left + types::halo2_right;
+  const int dim3 = 6 + types::halo3_left + types::halo3_right;
 
-  const int dim1 = dim1_no_halo + types::halo1_left + types::halo1_right;
-  const int dim2 = dim2_no_halo + types::halo2_left + types::halo2_right;
-  const int dim3 = dim3_no_halo + types::halo3_left + types::halo3_right;
-
-  types::cpu_3d_meta_data_type meta_data(dim1_no_halo, dim2_no_halo, dim3_no_halo);
+  types::cpu_3d_meta_data_type meta_data(dim1, dim2, dim3);
   types::cpu_3d_storage_type storage(meta_data, "storage");
 
   ser::field_meta_info info(storage);
