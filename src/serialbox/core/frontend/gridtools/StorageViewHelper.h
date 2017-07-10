@@ -24,31 +24,30 @@ namespace serialbox {
 namespace gridtools {
 
 namespace internal {
-template <typename MetaDataType, typename StorageType>
-std::vector<int> get_strides(const StorageType& storage, const MetaDataType& meta_data) {
-  // TODO FIXME Should be unsigned int in Serialbox
-  std::vector<int> v;
-  for(const auto elem : storage.strides()) {
-    v.push_back(elem);
-  }
-  return v;
+
+inline std::vector<int> unsigned_to_int(const std::vector<unsigned int>& in) {
+  std::vector<int> out;
+  for(const auto elem : in)
+    out.push_back(elem);
+  return out;
 }
 
-template <typename MetaDataType>
-std::vector<int> get_dims(const MetaDataType& meta_data) noexcept {
-  // TODO FIXME Should be unsigned int in Serialbox
-  std::vector<int> v;
-  for(const auto elem : ::gridtools::to_vector(meta_data.m_dims)) {
-    v.push_back(elem);
-  }
-  return v;
+template <typename StorageType>
+std::vector<int> get_strides(const StorageType& storage) {
+  return unsigned_to_int(storage.strides());
 }
 
-template <typename StorageType, class MetaDataType>
-void* get_origin_ptr(const StorageType& storage, const MetaDataType& meta_data,
-                     unsigned int field_idx) noexcept {
+template <typename StorageType>
+std::vector<int> get_dims(const StorageType& storage) noexcept {
+  return unsigned_to_int(storage.dims());
+}
+
+template <typename StorageType>
+void* get_origin_ptr(const StorageType& storage, unsigned int field_idx) noexcept {
+  // TODO test data_fields
   auto* data_ptr = storage.get_storage_ptr()->get_cpu_ptr();
-  auto index = meta_data.index({}); // http://en.cppreference.com/w/cpp/language/zero_initialization
+  auto index = storage.get_storage_info_ptr()->index(
+      {}); // http://en.cppreference.com/w/cpp/language/zero_initialization
   return static_cast<void*>(data_ptr + index);
 }
 
