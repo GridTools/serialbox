@@ -139,10 +139,6 @@ public:
   using storage_types = serialbox::unittest::gridtools_storage_types<T>;
 
   // Dimensions
-  int dim1_no_halo;
-  int dim2_no_halo;
-  int dim3_no_halo;
-  int dim4_no_halo;
   int dim1;
   int dim2;
   int dim3;
@@ -180,19 +176,18 @@ public:
   typename storage_types::gpu_4d_storage_type gpu_4d_storage_output;
 
   GridToolsReadWriteTest()
-      : dim1_no_halo(2), dim2_no_halo(3), dim3_no_halo(4), dim4_no_halo(5),
-        dim1(2 + storage_types::halo1_left + storage_types::halo1_right),
+      : dim1(2 + storage_types::halo1_left + storage_types::halo1_right),
         dim2(3 + storage_types::halo2_left + storage_types::halo2_right),
         dim3(4 + storage_types::halo3_left + storage_types::halo3_right),
         dim4(5 + storage_types::halo4_left + storage_types::halo4_right),
-        cpu_2d_real_meta_data(dim1_no_halo, dim2_no_halo),                             //
-        gpu_2d_real_meta_data(dim1_no_halo, dim2_no_halo),                             //
-        cpu_2d_meta_data(dim1_no_halo, dim2_no_halo, 1),                               //
-        gpu_2d_meta_data(dim1_no_halo, dim2_no_halo, 1),                               //
-        cpu_3d_meta_data(dim1_no_halo, dim2_no_halo, dim3_no_halo),                    //
-        gpu_3d_meta_data(dim1_no_halo, dim2_no_halo, dim3_no_halo),                    //
-        cpu_4d_meta_data(dim1_no_halo, dim2_no_halo, dim3_no_halo, dim4_no_halo),      //
-        gpu_4d_meta_data(dim1_no_halo, dim2_no_halo, dim3_no_halo, dim4_no_halo),      //
+        cpu_2d_real_meta_data(dim1, dim2),                                             //
+        gpu_2d_real_meta_data(dim1, dim2),                                             //
+        cpu_2d_meta_data(dim1, dim2, 1),                                               //
+        gpu_2d_meta_data(dim1, dim2, 1),                                               //
+        cpu_3d_meta_data(dim1, dim2, dim3),                                            //
+        gpu_3d_meta_data(dim1, dim2, dim3),                                            //
+        cpu_4d_meta_data(dim1, dim2, dim3, dim4),                                      //
+        gpu_4d_meta_data(dim1, dim2, dim3, dim4),                                      //
         cpu_2d_real_storage_input(cpu_2d_real_meta_data, "cpu_2d_real_storage_input"), //
         gpu_2d_real_storage_input(gpu_2d_real_meta_data, "gpu_2d_real_storage_input"), //
         cpu_2d_storage_input(cpu_2d_meta_data, "cpu_2d_storage_input"),                //
