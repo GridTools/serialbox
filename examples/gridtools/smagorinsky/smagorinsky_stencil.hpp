@@ -51,7 +51,7 @@ struct tension_shear_stage {
   using arg_list = boost::mpl::vector<T_sqr_s, S_sqr_uv, acrlat0, eddlon, eddlat, u_in, v_in>;
 
   template <typename Evaluation>
-  GT_FUNCTION static void Do(const Evaluation& eval, full_domain_t) {
+  GT_FUNCTION static void Do(Evaluation& eval, full_domain_t) {
     const float_type frac_1_dx = eval(acrlat0(i, j, k) * eddlon(i, j, k));
     const float_type frac_1_dy = eval(eddlat(i, j, k)) / float_type(6371.229e3);
 
@@ -86,7 +86,7 @@ struct smag_coeff_stage {
       boost::mpl::vector<smag_u, smag_v, T_sqr_s, S_sqr_uv, hdmaskvel, tau_smag, weight_smag>;
 
   template <typename Evaluation>
-  GT_FUNCTION static void Do(const Evaluation& eval, full_domain_t) {
+  GT_FUNCTION static void Do(Evaluation& eval, full_domain_t) {
     const float_type hdweight = eval(weight_smag(i, j, k) * hdmaskvel(i, j, k));
 
     // i-direction
@@ -131,7 +131,7 @@ struct laplacian {
   using arg_list = boost::mpl::vector<lap, in, crlato, crlatu>;
 
   template <typename Evaluation>
-  GT_FUNCTION static void Do(const Evaluation& eval, full_domain_t) {
+  GT_FUNCTION static void Do(Evaluation& eval, full_domain_t) {
     eval(lap()) = eval(in(i + 1, j, k)) + eval(in(i - 1, j, k)) -
                   (float_type)2.0 * eval(in(i, j, k)) +
                   eval(crlato(i, j) * (in(i, j + 1, k) - in(i, j, k))) +
@@ -157,7 +157,7 @@ struct smag_update_stage {
       boost::mpl::vector<u_out, v_out, u_in, v_in, smag_u, smag_v, crlato, crlatu, crlavo, crlavu>;
 
   template <typename Evaluation>
-  GT_FUNCTION static void Do(const Evaluation& eval, full_domain_t) {
+  GT_FUNCTION static void Do(Evaluation& eval, full_domain_t) {
     const float_type lapu =
         call<laplacian, full_domain_t>::at<0, 0, 0>::with(eval, u_in(), crlato(), crlatu());
 
@@ -182,10 +182,10 @@ void run_stencil(repository& repo, SerializerType& serializer, int invocation_co
   //
 
   // Temporaries
-  using T_sqr_s = arg<0, repository::storage_ijk_tmp_t>;
-  using S_sqr_uv = arg<1, repository::storage_ijk_tmp_t>;
-  using smag_u = arg<2, repository::storage_ijk_tmp_t>;
-  using smag_v = arg<3, repository::storage_ijk_tmp_t>;
+  using T_sqr_s = tmp_arg<0, repository::storage_ijk_t>;
+  using S_sqr_uv = tmp_arg<1, repository::storage_ijk_t>;
+  using smag_u = tmp_arg<2, repository::storage_ijk_t>;
+  using smag_v = tmp_arg<3, repository::storage_ijk_t>;
 
   // Output fields
   using u_out = arg<4, repository::storage_ijk_t>;
@@ -220,40 +220,26 @@ void run_stencil(repository& repo, SerializerType& serializer, int invocation_co
       // Scalar fields
       eddlon, eddlat, tau_smag, weight_smag>;
 
-  //
-  //    Domain
-  //
-
-  auto domain = aggregator_type<arg_list>(boost::fusion::make_vector(
+  gridtools::aggregator_type<arg_list> domain(
       // Output fields
-      &repo.u_out(), &repo.v_out(),
+      repo.u_out(), repo.v_out(),
 
       // Input fields
-      &repo.u_in(), &repo.v_in(), &repo.hdmaskvel(), &repo.crlavo(), &repo.crlavu(), &repo.crlato(),
-      &repo.crlatu(), &repo.acrlat0(),
+      repo.u_in(), repo.v_in(), repo.hdmaskvel(), repo.crlavo(), repo.crlavu(), repo.crlato(),
+      repo.crlatu(), repo.acrlat0(),
 
       // Scalar fields
-      &repo.eddlon(), &repo.eddlat(), &repo.tau_smag(), &repo.weight_smag()));
+      repo.eddlon(), repo.eddlat(), repo.tau_smag(), repo.weight_smag());
 
-  //
-  //    Grid
-  //
-
-  const int halo_size = 3;
+  const int halo_size = 2;
 
   // minus, plus, begin, end, length
-  uint_t di[5] = {halo_size, halo_size, halo_size, repo.isize() - halo_size - 2,
-                  repo.isize() - 2 * halo_size};
-  uint_t dj[5] = {halo_size, halo_size, halo_size, repo.jsize() - halo_size - 2,
-                  repo.jsize() - 2 * halo_size};
+  halo_descriptor di{halo_size, halo_size, halo_size, repo.isize() - halo_size - 1, repo.isize()};
+  halo_descriptor dj{halo_size, halo_size, halo_size, repo.jsize() - halo_size - 1, repo.jsize()};
 
   gridtools::grid<axis_t> grid(di, dj);
   grid.value_list[0] = 0;
   grid.value_list[1] = repo.ksize() - 1;
-
-  //
-  //    Computation
-  //
 
   auto computation = make_computation<backend>(
       domain, grid,
@@ -272,17 +258,15 @@ void run_stencil(repository& repo, SerializerType& serializer, int invocation_co
                                                     smag_v(), crlato(), crlatu(), crlavo(),
                                                     crlavu())));
 
-  //
   // Run stencil
-  //
-
   computation->ready();
   computation->steady();
 
   std::cout << "Running smagorinsky stencil ... " << std::endl;
   for(int i = 0; i < invocation_count; ++i) {
     std::cout << "Invocation: " << i << std::endl;
-    computation->run(serializer, "Smagorinsky");
+    //    computation->run(serializer, "Smagorinsky"); TODO re-enable serialization
+    computation->run();
   }
 
   computation->finalize();
