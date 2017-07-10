@@ -100,9 +100,9 @@ template <typename Storage>
 serialbox::StorageView make_storage_view(const Storage& storage) {
   using namespace serialbox::gridtools;
 
-  std::vector<int> dims(internal::get_dims(*storage.get_storage_info_ptr()));
-  std::vector<int> strides(internal::get_strides(storage, *storage.get_storage_info_ptr()));
-  void* originPtr = internal::get_origin_ptr(storage, *storage.get_storage_info_ptr(), 0);
+  std::vector<int> dims(internal::get_dims(storage));
+  std::vector<int> strides(internal::get_strides(storage));
+  void* originPtr = internal::get_origin_ptr(storage, 0);
 
   return serialbox::StorageView(originPtr, serialbox::ToTypeID<typename Storage::data_t>::value,
                                 std::move(dims), std::move(strides));
@@ -110,10 +110,9 @@ serialbox::StorageView make_storage_view(const Storage& storage) {
 
 using namespace serialbox::gridtools;
 #define GET_DIMS_STRIDES_ORIGIN_PTR(storage, prefix)                                               \
-  std::vector<int> prefix##_dims(internal::get_dims(*storage.get_storage_info_ptr()));             \
-  std::vector<int> prefix##_strides(                                                               \
-      internal::get_strides(storage, *storage.get_storage_info_ptr()));                            \
-  void* prefix##_origin_ptr = internal::get_origin_ptr(storage, *storage.get_storage_info_ptr(), 0);
+  std::vector<int> prefix##_dims(internal::get_dims(storage));                                     \
+  std::vector<int> prefix##_strides(internal::get_strides(storage));                               \
+  void* prefix##_origin_ptr = internal::get_origin_ptr(storage, 0);
 
 TYPED_TEST(GridToolsStorageViewTest, Construction_2DRealCPU) {
   auto& cpu_2d_real_storage = this->cpu_2d_real_storage;

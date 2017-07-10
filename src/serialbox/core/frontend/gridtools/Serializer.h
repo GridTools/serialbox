@@ -274,26 +274,12 @@ public:
   template <class StorageType>
   void write(const std::string& name, const savepoint& sp, const StorageType& storage,
              bool register_field = true) {
-    this->write(name, sp, storage, *storage.get_storage_info_ptr(), register_field);
-  }
-
-  /// \brief Write method used internally by gridtools
-  ///
-  /// Note that `StorageType` can be a `gridtools::storage` or `gridtools::base_storage`.
-  ///
-  /// \see
-  ///   gridtools::serializer::write
-  template <class StorageType, class MetaDataType>
-  void write(const std::string& name, const savepoint& sp, const StorageType& storage,
-             const MetaDataType& meta_data, bool register_field = true) {
-
     if(register_field && !serializerImpl_->fieldMap().hasField(name))
-      this->register_field(name, storage, meta_data);
+      this->register_field(name, storage);
 
-    StorageView storageView(internal::get_origin_ptr(storage, meta_data, 0),
-                            ToTypeID<typename StorageType::data_t>::value,
-                            std::move(internal::get_dims(meta_data)),
-                            std::move(internal::get_strides(storage, meta_data)));
+    StorageView storageView(
+        internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::data_t>::value,
+        std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
     serializerImpl_->write(name, *sp.impl(), storageView);
   }
 
@@ -328,10 +314,8 @@ public:
   template <class StorageType>
   static void to_file(std::string file, const StorageType& storage, std::string archive_name = "") {
     StorageView storageView(
-        internal::get_origin_ptr(storage, *storage.get_storage_info_ptr(), 0),
-        ToTypeID<typename StorageType::data_t>::value,
-        std::move(internal::get_dims(*storage.get_storage_info_ptr())),
-        std::move(internal::get_strides(storage, *storage.get_storage_info_ptr())));
+        internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::data_t>::value,
+        std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
 
     if(archive_name.empty())
       archive_name = ArchiveFactory::archiveFromExtension(file);
@@ -356,10 +340,8 @@ public:
   template <class StorageType>
   void read(const std::string& name, const savepoint& sp, StorageType& storage) {
     StorageView storageView(
-        internal::get_origin_ptr(storage, *storage.get_storage_info_ptr(), 0),
-        ToTypeID<typename StorageType::data_t>::value,
-        std::move(internal::get_dims(*storage.get_storage_info_ptr())),
-        std::move(internal::get_strides(storage, *storage.get_storage_info_ptr())));
+        internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::data_t>::value,
+        std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
 
     serializerImpl_->read(name, *sp.impl(), storageView);
   }
@@ -380,10 +362,8 @@ public:
   template <class StorageType>
   void read_slice(const std::string& name, const savepoint& sp, StorageType& storage, Slice slice) {
     StorageView storageView(
-        internal::get_origin_ptr(storage, *storage.get_storage_info_ptr(), 0),
-        ToTypeID<typename StorageType::data_t>::value,
-        std::move(internal::get_dims(*storage.get_storage_info_ptr())),
-        std::move(internal::get_strides(storage, *storage.get_storage_info_ptr())));
+        internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::data_t>::value,
+        std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
     storageView.setSlice(slice);
     serializerImpl_->read(name, *sp.impl(), storageView);
   }
@@ -420,10 +400,8 @@ public:
   template <class StorageType>
   static void from_file(std::string file, StorageType& storage, std::string archive_name = "") {
     StorageView storageView(
-        internal::get_origin_ptr(storage, *storage.get_storage_info_ptr(), 0),
-        ToTypeID<typename StorageType::data_t>::value,
-        std::move(internal::get_dims(*storage.get_storage_info_ptr())),
-        std::move(internal::get_strides(storage, *storage.get_storage_info_ptr())));
+        internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::data_t>::value,
+        std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
 
     if(archive_name.empty())
       archive_name = ArchiveFactory::archiveFromExtension(file);
