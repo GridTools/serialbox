@@ -178,6 +178,11 @@ PRIVATE
   !------------------------------------------------------------------------------
   INTERFACE fs_write_field
     MODULE PROCEDURE &
+      fs_write_logical_0d, &
+      fs_write_logical_1d, &
+      fs_write_logical_2d, &
+      fs_write_logical_3d, &
+      fs_write_logical_4d, &
       fs_write_int_0d, &
       fs_write_int_1d, &
       fs_write_int_2d, &
@@ -201,6 +206,11 @@ PRIVATE
   !------------------------------------------------------------------------------
   INTERFACE fs_read_field
     MODULE PROCEDURE &
+      fs_read_logical_0d, &
+      fs_read_logical_1d, &
+      fs_read_logical_2d, &
+      fs_read_logical_3d, &
+      fs_read_logical_4d, &
       fs_read_int_0d, &
       fs_read_int_1d, &
       fs_read_int_2d, &
@@ -939,6 +949,140 @@ END SUBROUTINE fs_add_savepoint_metainfo_s
 !=============================================================================
 !=============================================================================
 
+SUBROUTINE fs_write_logical_0d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  LOGICAL(KIND=C_BOOL), POINTER :: padd
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), 1, 0, 0, 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                        TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_write_logical_0d
+
+
+SUBROUTINE fs_write_logical_1d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  LOGICAL(KIND=C_BOOL), POINTER :: padd(:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), 0, 0, 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)))), &
+                       C_LOC(padd(1)), &
+                       C_LOC(padd(1)), &
+                       C_LOC(padd(1)), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                        TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_write_logical_1d
+
+
+SUBROUTINE fs_write_logical_2d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  LOGICAL(KIND=C_BOOL), POINTER :: padd(:,:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1, 1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
+                       C_LOC(padd(1, MIN(2, SIZE(field, 2)))), &
+                       C_LOC(padd(1, 1)), &
+                       C_LOC(padd(1, 1)), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                        TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1,1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_write_logical_2d
+
+
+SUBROUTINE fs_write_logical_3d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:,:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  LOGICAL(KIND=C_BOOL), POINTER :: padd(:,:,:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1, 1, 1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1)), &
+                       C_LOC(padd(1, MIN(2, SIZE(field, 2)), 1)), &
+                       C_LOC(padd(1, 1, MIN(2, SIZE(field, 3)))), &
+                       C_LOC(padd(1, 1, 1)), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                        TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1,1,1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_write_logical_3d
+
+
+SUBROUTINE fs_write_logical_4d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:,:,:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  LOGICAL(KIND=C_BOOL), POINTER :: padd(:,:,:,:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), SIZE(field, 2), &
+                                                                 SIZE(field, 3), SIZE(field, 4))
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1, 1, 1, 1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1, 1)), &
+                       C_LOC(padd(1, MIN(2, SIZE(field, 2)), 1, 1)), &
+                       C_LOC(padd(1, 1, MIN(2, SIZE(field, 3)), 1)), &
+                       C_LOC(padd(1, 1, 1, MIN(2, SIZE(field, 4)))), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                        TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_write_logical_4d
+
+!=============================================================================
+!=============================================================================
+
 SUBROUTINE fs_write_int_0d(serializer, savepoint, fieldname, field)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
@@ -1339,6 +1483,139 @@ SUBROUTINE fs_write_double_4d(serializer, savepoint, fieldname, field)
                         TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
 END SUBROUTINE fs_write_double_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE fs_read_logical_0d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  LOGICAL(KIND=C_BOOL), POINTER :: padd
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), 0, 0, 0, 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                      TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_read_logical_0d
+
+
+SUBROUTINE fs_read_logical_1d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  LOGICAL(KIND=C_BOOL), POINTER :: padd(:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), 0, 0, 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)))), &
+                       C_LOC(padd(1)), &
+                       C_LOC(padd(1)), &
+                       C_LOC(padd(1)), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                       TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_read_logical_1d
+
+
+SUBROUTINE fs_read_logical_2d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  LOGICAL(KIND=C_BOOL), POINTER :: padd(:,:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1, 1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
+                       C_LOC(padd(1, MIN(2, SIZE(field, 2)))), &
+                       C_LOC(padd(1, 1)), &
+                       C_LOC(padd(1, 1)), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                       TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1,1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_read_logical_2d
+
+
+SUBROUTINE fs_read_logical_3d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:,:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  LOGICAL(KIND=C_BOOL), POINTER :: padd(:,:,:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1, 1, 1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1)), &
+                       C_LOC(padd(1, MIN(2, SIZE(field, 2)), 1)), &
+                       C_LOC(padd(1, 1, MIN(2, SIZE(field, 3)))), &
+                       C_LOC(padd(1, 1, 1)), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                       TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1,1,1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_read_logical_3d
+
+SUBROUTINE fs_read_logical_4d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:,:,:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  LOGICAL(KIND=C_BOOL), POINTER :: padd(:,:,:,:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), SIZE(field, 2), &
+                                                      SIZE(field, 3), SIZE(field, 4))
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1, 1, 1, 1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1, 1)), &
+                       C_LOC(padd(1, MIN(2, SIZE(field, 2)), 1, 1)), &
+                       C_LOC(padd(1, 1, MIN(2, SIZE(field, 3)), 1)), &
+                       C_LOC(padd(1, 1, 1, MIN(2, SIZE(field, 4)))), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                       TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_read_logical_4d
 
 !=============================================================================
 !=============================================================================
