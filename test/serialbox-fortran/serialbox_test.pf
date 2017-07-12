@@ -126,6 +126,8 @@ CONTAINS
       CALL fs_create_serializer(dir, base_name, 'w', serializer)
       CALL fs_write_field(serializer, savepoint, "testfield_i0", w_testfield_i0)
       CALL fs_write_field(serializer, savepoint, "testfield_i1", w_testfield_i1)
+      CALL fs_write_field(serializer, savepoint, "testfield_l0", w_testfield_l0)
+      CALL fs_write_field(serializer, savepoint, "testfield_l1", w_testfield_l1)
       CALL fs_destroy_serializer(serializer)
       
       CALL fs_create_serializer(dir, base_name, 'r', serializer)
