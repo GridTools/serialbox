@@ -183,6 +183,11 @@ PRIVATE
       fs_write_logical_2d, &
       fs_write_logical_3d, &
       fs_write_logical_4d, &
+      fs_write_bool_0d, &
+      fs_write_bool_1d, &
+      fs_write_bool_2d, &
+      fs_write_bool_3d, &
+      fs_write_bool_4d, &
       fs_write_int_0d, &
       fs_write_int_1d, &
       fs_write_int_2d, &
@@ -211,6 +216,11 @@ PRIVATE
       fs_read_logical_2d, &
       fs_read_logical_3d, &
       fs_read_logical_4d, &
+      fs_read_bool_0d, &
+      fs_read_bool_1d, &
+      fs_read_bool_2d, &
+      fs_read_bool_3d, &
+      fs_read_bool_4d, &
       fs_read_int_0d, &
       fs_read_int_1d, &
       fs_read_int_2d, &
@@ -953,6 +963,87 @@ SUBROUTINE fs_write_logical_0d(serializer, savepoint, fieldname, field)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
+  LOGICAL, INTENT(IN), TARGET :: field
+
+  ! Local variables
+  LOGICAL(KIND=C_BOOL) :: bool
+
+  bool = field .EQV. .TRUE.
+  CALL fs_write_field(serializer, savepoint, fieldname, bool)
+
+END SUBROUTINE fs_write_logical_0d
+
+
+SUBROUTINE fs_write_logical_1d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
+  LOGICAL, INTENT(IN), TARGET :: field(:)
+
+  ! Local variables
+  LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:)
+
+  ALLOCATE(bool(SIZE(field, 1)))
+  bool = field
+  CALL fs_write_field(serializer, savepoint, fieldname, bool)
+
+END SUBROUTINE fs_write_logical_1d
+
+
+SUBROUTINE fs_write_logical_2d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
+  LOGICAL, INTENT(IN), TARGET :: field(:,:)
+
+  ! Local variables
+  LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:,:)
+
+  ALLOCATE(bool(SIZE(field, 1), SIZE(field, 2)))
+  bool = field
+  CALL fs_write_field(serializer, savepoint, fieldname, bool)
+
+END SUBROUTINE fs_write_logical_2d
+
+
+SUBROUTINE fs_write_logical_3d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
+  LOGICAL, INTENT(IN), TARGET :: field(:,:,:)
+
+  ! Local variables
+  LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:,:,:)
+
+  ALLOCATE(bool(SIZE(field, 1), SIZE(field, 2), SIZE(field, 3)))
+  bool = field
+  CALL fs_write_field(serializer, savepoint, fieldname, bool)
+
+END SUBROUTINE fs_write_logical_3d
+
+
+SUBROUTINE fs_write_logical_4d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
+  LOGICAL, INTENT(IN), TARGET :: field(:,:,:,:)
+
+  ! Local variables
+  LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:,:,:,:)
+
+  ALLOCATE(bool(SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), SIZE(field, 4)))
+  bool = field
+  CALL fs_write_field(serializer, savepoint, fieldname, bool)
+
+END SUBROUTINE fs_write_logical_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE fs_write_bool_0d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field
 
   ! Local variables
@@ -969,10 +1060,10 @@ SUBROUTINE fs_write_logical_0d(serializer, savepoint, fieldname, field)
   CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
                         TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd), istride, jstride, kstride, lstride)
-END SUBROUTINE fs_write_logical_0d
+END SUBROUTINE fs_write_bool_0d
 
 
-SUBROUTINE fs_write_logical_1d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_bool_1d(serializer, savepoint, fieldname, field)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
@@ -996,10 +1087,10 @@ SUBROUTINE fs_write_logical_1d(serializer, savepoint, fieldname, field)
   CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
                         TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1)), istride, jstride, kstride, lstride)
-END SUBROUTINE fs_write_logical_1d
+END SUBROUTINE fs_write_bool_1d
 
 
-SUBROUTINE fs_write_logical_2d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_bool_2d(serializer, savepoint, fieldname, field)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
@@ -1023,10 +1114,10 @@ SUBROUTINE fs_write_logical_2d(serializer, savepoint, fieldname, field)
   CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
                         TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1,1)), istride, jstride, kstride, lstride)
-END SUBROUTINE fs_write_logical_2d
+END SUBROUTINE fs_write_bool_2d
 
 
-SUBROUTINE fs_write_logical_3d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_bool_3d(serializer, savepoint, fieldname, field)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
@@ -1050,10 +1141,10 @@ SUBROUTINE fs_write_logical_3d(serializer, savepoint, fieldname, field)
   CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
                         TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1,1,1)), istride, jstride, kstride, lstride)
-END SUBROUTINE fs_write_logical_3d
+END SUBROUTINE fs_write_bool_3d
 
 
-SUBROUTINE fs_write_logical_4d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_bool_4d(serializer, savepoint, fieldname, field)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
@@ -1078,7 +1169,7 @@ SUBROUTINE fs_write_logical_4d(serializer, savepoint, fieldname, field)
   CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
                         TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
-END SUBROUTINE fs_write_logical_4d
+END SUBROUTINE fs_write_bool_4d
 
 !=============================================================================
 !=============================================================================
@@ -1491,6 +1582,86 @@ SUBROUTINE fs_read_logical_0d(serializer, savepoint, fieldname, field)
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET :: field
+
+  ! Local variables
+  LOGICAL(KIND=C_BOOL) :: bool
+
+  CALL fs_read_field(serializer, savepoint, fieldname, bool)
+  field = bool
+
+END SUBROUTINE fs_read_logical_0d
+
+
+SUBROUTINE fs_read_logical_1d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET :: field(:)
+
+  ! Local variables
+  LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:)
+
+  ALLOCATE(bool(SIZE(field, 1)))
+  CALL fs_read_field(serializer, savepoint, fieldname, bool)
+  field = bool
+
+END SUBROUTINE fs_read_logical_1d
+
+
+SUBROUTINE fs_read_logical_2d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET :: field(:,:)
+
+  ! Local variables
+  LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:,:)
+
+  ALLOCATE(bool(SIZE(field, 1), SIZE(field, 2)))
+  CALL fs_read_field(serializer, savepoint, fieldname, bool)
+  field = bool
+
+END SUBROUTINE fs_read_logical_2d
+
+
+SUBROUTINE fs_read_logical_3d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET :: field(:,:,:)
+
+  ! Local variables
+  LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:,:,:)
+
+  ALLOCATE(bool(SIZE(field, 1), SIZE(field, 2), SIZE(field, 3)))
+  CALL fs_read_field(serializer, savepoint, fieldname, bool)
+  field = bool
+
+END SUBROUTINE fs_read_logical_3d
+
+SUBROUTINE fs_read_logical_4d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET :: field(:,:,:,:)
+
+  ! Local variables
+  LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:,:,:,:)
+
+  ALLOCATE(bool(SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), SIZE(field, 4)))
+  CALL fs_read_field(serializer, savepoint, fieldname, bool)
+  field = bool
+
+END SUBROUTINE fs_read_logical_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE fs_read_bool_0d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field
 
   ! Local variables
@@ -1507,10 +1678,10 @@ SUBROUTINE fs_read_logical_0d(serializer, savepoint, fieldname, field)
   CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
                       TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd), istride, jstride, kstride, lstride)
-END SUBROUTINE fs_read_logical_0d
+END SUBROUTINE fs_read_bool_0d
 
 
-SUBROUTINE fs_read_logical_1d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_read_bool_1d(serializer, savepoint, fieldname, field)
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
@@ -1534,10 +1705,10 @@ SUBROUTINE fs_read_logical_1d(serializer, savepoint, fieldname, field)
   CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
                        TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1)), istride, jstride, kstride, lstride)
-END SUBROUTINE fs_read_logical_1d
+END SUBROUTINE fs_read_bool_1d
 
 
-SUBROUTINE fs_read_logical_2d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_read_bool_2d(serializer, savepoint, fieldname, field)
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
@@ -1561,10 +1732,10 @@ SUBROUTINE fs_read_logical_2d(serializer, savepoint, fieldname, field)
   CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
                        TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1,1)), istride, jstride, kstride, lstride)
-END SUBROUTINE fs_read_logical_2d
+END SUBROUTINE fs_read_bool_2d
 
 
-SUBROUTINE fs_read_logical_3d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_read_bool_3d(serializer, savepoint, fieldname, field)
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
@@ -1588,9 +1759,9 @@ SUBROUTINE fs_read_logical_3d(serializer, savepoint, fieldname, field)
   CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
                        TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1,1,1)), istride, jstride, kstride, lstride)
-END SUBROUTINE fs_read_logical_3d
+END SUBROUTINE fs_read_bool_3d
 
-SUBROUTINE fs_read_logical_4d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_read_bool_4d(serializer, savepoint, fieldname, field)
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
@@ -1615,7 +1786,7 @@ SUBROUTINE fs_read_logical_4d(serializer, savepoint, fieldname, field)
   CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
                        TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
-END SUBROUTINE fs_read_logical_4d
+END SUBROUTINE fs_read_bool_4d
 
 !=============================================================================
 !=============================================================================
