@@ -264,6 +264,15 @@ CONTAINS
 
 !============================================================================
 
+FUNCTION fs_boolsize()
+  INTEGER(KIND=C_INT) :: fs_boolsize
+
+  CHARACTER(LEN=1), DIMENSION(128) :: buffer
+  LOGICAL(KIND=C_BOOL) :: boolvalue
+
+  fs_boolsize = INT(SIZE(TRANSFER(boolvalue, buffer)))
+END FUNCTION fs_boolsize
+
 FUNCTION fs_intsize()
   INTEGER(KIND=C_INT) :: fs_intsize
 
@@ -968,7 +977,7 @@ SUBROUTINE fs_write_logical_0d(serializer, savepoint, fieldname, field)
   ! Local variables
   LOGICAL(KIND=C_BOOL) :: bool
 
-  bool = field .EQV. .TRUE.
+  bool = field
   CALL fs_write_field(serializer, savepoint, fieldname, bool)
 
 END SUBROUTINE fs_write_logical_0d
@@ -1053,7 +1062,7 @@ SUBROUTINE fs_write_bool_0d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), 1, 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), 1, 0, 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), &
                        istride, jstride, kstride, lstride)
@@ -1076,7 +1085,7 @@ SUBROUTINE fs_write_bool_1d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), 0, 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)))), &
@@ -1103,7 +1112,7 @@ SUBROUTINE fs_write_bool_2d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
+  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
@@ -1130,7 +1139,7 @@ SUBROUTINE fs_write_bool_3d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1)), &
@@ -1157,7 +1166,7 @@ SUBROUTINE fs_write_bool_4d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), SIZE(field, 2), &
+  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), SIZE(field, 2), &
                                                                  SIZE(field, 3), SIZE(field, 4))
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1, 1)), &
@@ -1671,7 +1680,7 @@ SUBROUTINE fs_read_bool_0d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), 0, 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), 0, 0, 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), &
                        istride, jstride, kstride, lstride)
@@ -1694,7 +1703,7 @@ SUBROUTINE fs_read_bool_1d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), 0, 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)))), &
@@ -1721,7 +1730,7 @@ SUBROUTINE fs_read_bool_2d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
+  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
@@ -1748,7 +1757,7 @@ SUBROUTINE fs_read_bool_3d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1)), &
@@ -1774,7 +1783,7 @@ SUBROUTINE fs_read_bool_4d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "bool", fs_intsize(), SIZE(field, 1), SIZE(field, 2), &
+  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), SIZE(field, 2), &
                                                       SIZE(field, 3), SIZE(field, 4))
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1, 1)), &
