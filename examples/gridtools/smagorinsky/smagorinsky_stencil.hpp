@@ -265,8 +265,7 @@ void run_stencil(repository& repo, SerializerType& serializer, int invocation_co
   std::cout << "Running smagorinsky stencil ... " << std::endl;
   for(int i = 0; i < invocation_count; ++i) {
     std::cout << "Invocation: " << i << std::endl;
-    //    computation->run(serializer, "Smagorinsky"); TODO re-enable serialization
-    computation->run();
+    computation->run(serializer, "Smagorinsky");
   }
 
   computation->finalize();

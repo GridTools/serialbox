@@ -73,10 +73,9 @@ public:
   /// \brief Allocate the storages
   repository(int i, int j, int k)
       : isize_(i + 2 * halo_size), jsize_(j + 2 * halo_size), ksize_(k), //
-        isize_no_halo_(i), jsize_no_halo_(j), ksize_no_halo_(k),
 
-        storage_info_scalar_(1, 1, 1), storage_info_j_(1, jsize_no_halo_, 1),
-        storage_info_ijk_(isize_no_halo_, jsize_no_halo_, ksize_no_halo_),
+        storage_info_scalar_(1, 1, 1), storage_info_j_(1, jsize_, 1),
+        storage_info_ijk_(isize_, jsize_, ksize_),
 
         // Output fields
         u_out_(storage_info_ijk_, -1.0, "u_out"), v_out_(storage_info_ijk_, -1.0, "v_out"),
@@ -119,10 +118,6 @@ public:
   gridtools::uint_t isize() const { return isize_; }
   gridtools::uint_t jsize() const { return jsize_; }
   gridtools::uint_t ksize() const { return ksize_; }
-
-  gridtools::uint_t isize_no_halo() const { return isize_no_halo_; }
-  gridtools::uint_t jsize_no_halo() const { return jsize_no_halo_; }
-  gridtools::uint_t ksize_no_halo() const { return ksize_no_halo_; }
 
   /// \brief Load input data
   void init_fields() {
@@ -175,7 +170,6 @@ public:
 
 private:
   gridtools::uint_t isize_, jsize_, ksize_;
-  gridtools::uint_t isize_no_halo_, jsize_no_halo_, ksize_no_halo_;
 
   // Meta-data
   storage_info_scalar_t storage_info_scalar_;
