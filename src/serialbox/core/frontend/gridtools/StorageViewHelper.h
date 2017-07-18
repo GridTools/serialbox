@@ -34,12 +34,12 @@ inline std::vector<int> unsigned_to_int(const std::vector<unsigned int>& in) {
 
 template <typename StorageType>
 std::vector<int> get_strides(const StorageType& storage) {
-  return unsigned_to_int(storage.strides());
+  return unsigned_to_int(::gridtools::to_vector(storage.strides()));
 }
 
 template <typename StorageType>
 std::vector<int> get_dims(const StorageType& storage) noexcept {
-  return unsigned_to_int(storage.dims());
+  return unsigned_to_int(::gridtools::to_vector(storage.dims()));
 }
 
 template <typename StorageType>
