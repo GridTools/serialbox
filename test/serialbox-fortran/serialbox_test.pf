@@ -69,37 +69,100 @@ CONTAINS
     END SUBROUTINE testIntegerArrays
    
 @Test
+    SUBROUTINE testLogicalArrays()
+    
+      TYPE(t_serializer) :: serializer
+      LOGICAL :: w_testfield_l1(5), w_testfield_l2(4,3), w_testfield_l3(3,2,2), w_testfield_l4(2,2,2,2)
+      LOGICAL :: r_testfield_l1(5), r_testfield_l2(4,3), r_testfield_l3(3,2,2), r_testfield_l4(2,2,2,2)
+      INTEGER :: w_testfield_i2(4,3), w_testfield_i3(3,2,2), w_testfield_i4(2,2,2,2)
+      INTEGER :: r_testfield_i2(4,3), r_testfield_i3(3,2,2), r_testfield_i4(2,2,2,2)
+      
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_logical'
+      
+      w_testfield_l1 = (/ .TRUE., .FALSE., .FALSE., .TRUE., .FALSE. /)
+      w_testfield_l2 = RESHAPE((/ .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE. /), SHAPE(w_testfield_l2))
+      w_testfield_l3 = RESHAPE((/ .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE. /), SHAPE(w_testfield_l3))
+      w_testfield_l4 = RESHAPE((/ .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE. /), SHAPE(w_testfield_l4))
+            
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL fs_write_field(serializer, savepoint, "testfield_l1", w_testfield_l1)
+      CALL fs_write_field(serializer, savepoint, "testfield_l2", w_testfield_l2)
+      CALL fs_write_field(serializer, savepoint, "testfield_l3", w_testfield_l3)
+      CALL fs_write_field(serializer, savepoint, "testfield_l4", w_testfield_l4)
+      CALL fs_destroy_serializer(serializer)
+      
+      CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      @assertTrue(fs_field_exists(serializer, "testfield_l1"))
+      @assertTrue(fs_field_exists(serializer, "testfield_l2"))
+      @assertTrue(fs_field_exists(serializer, "testfield_l3"))
+      @assertTrue(fs_field_exists(serializer, "testfield_l4"))
+      CALL fs_read_field(serializer, savepoint, "testfield_l1", r_testfield_l1)
+      CALL fs_read_field(serializer, savepoint, "testfield_l2", r_testfield_l2)
+      CALL fs_read_field(serializer, savepoint, "testfield_l3", r_testfield_l3)
+      CALL fs_read_field(serializer, savepoint, "testfield_l4", r_testfield_l4)
+      CALL fs_destroy_serializer(serializer)
+      
+      @assertEquivalent(w_testfield_l1, r_testfield_l1)
+      
+      !Convert to INTEGER since pFUnit doesn't support multi-dimensional LOGICAL arrays
+      w_testfield_i2 = w_testfield_l2
+      r_testfield_i2 = r_testfield_l2
+      @assertEqual(w_testfield_i2, r_testfield_i2)
+      w_testfield_i3 = w_testfield_l3
+      r_testfield_i3 = r_testfield_l3
+      @assertEqual(w_testfield_i3, r_testfield_i3)
+      w_testfield_i4 = w_testfield_l4
+      r_testfield_i4 = r_testfield_l4
+      @assertEqual(w_testfield_i4, r_testfield_i4)
+    
+    END SUBROUTINE testLogicalArrays
+   
+@Test
     SUBROUTINE testScalars()
     
       TYPE(t_serializer) :: serializer
       INTEGER :: w_testfield_i0, r_testfield_i0
       INTEGER :: w_testfield_i1(1), r_testfield_i1(1), w_testfield_i1_size(1), w_testfield_i1_bounds(2)
+      LOGICAL :: w_testfield_l0, r_testfield_l0
+      LOGICAL :: w_testfield_l1(1), r_testfield_l1(1), w_testfield_l1_size(1), w_testfield_l1_bounds(2)
       
       CHARACTER(len=*), PARAMETER :: base_name = 'test_scalars'
       
       w_testfield_i0 = 42
       w_testfield_i1 = (/ 999 /)
+      w_testfield_l0 = .TRUE.
+      w_testfield_l1 = (/ .FALSE. /)
             
       CALL fs_create_serializer(dir, base_name, 'w', serializer)
       CALL fs_write_field(serializer, savepoint, "testfield_i0", w_testfield_i0)
       CALL fs_write_field(serializer, savepoint, "testfield_i1", w_testfield_i1)
+      CALL fs_write_field(serializer, savepoint, "testfield_l0", w_testfield_l0)
+      CALL fs_write_field(serializer, savepoint, "testfield_l1", w_testfield_l1)
       CALL fs_destroy_serializer(serializer)
       
       CALL fs_create_serializer(dir, base_name, 'r', serializer)
       
       @assertTrue(fs_field_exists(serializer, "testfield_i0"))
-      
       @assertTrue(fs_field_exists(serializer, "testfield_i1"))
-      !@assertEqual(w_testfield_i1a_size, fs_get_field_size(serializer, "testfield_i1a_rank"))
-      !@assertEqual(w_testfield_i1a_bounds, fs_get_field_bounds(serializer, "testfield_i1a_rank"))
+      !@assertEqual(w_testfield_i1a_size, fs_get_field_size(serializer, "testfield_i1"))
+      !@assertEqual(w_testfield_i1a_bounds, fs_get_field_bounds(serializer, "testfield_i1"))
+      
+      @assertTrue(fs_field_exists(serializer, "testfield_l0"))
+      @assertTrue(fs_field_exists(serializer, "testfield_l1"))
+      !@assertEqual(w_testfield_l1a_size, fs_get_field_size(serializer, "testfield_l1"))
+      !@assertEqual(w_testfield_l1a_bounds, fs_get_field_bounds(serializer, "testfield_l1"))
       
       CALL fs_read_field(serializer, savepoint, "testfield_i0", r_testfield_i0)
       CALL fs_read_field(serializer, savepoint, "testfield_i1", r_testfield_i1)
+      CALL fs_read_field(serializer, savepoint, "testfield_l0", r_testfield_l0)
+      CALL fs_read_field(serializer, savepoint, "testfield_l1", r_testfield_l1)
       
       CALL fs_destroy_serializer(serializer)
       
       @assertEqual(w_testfield_i0, r_testfield_i0)
       @assertEqual(w_testfield_i1, r_testfield_i1)
+      @assertEquivalent(w_testfield_l0, r_testfield_l0)
+      @assertEquivalent(w_testfield_l1, r_testfield_l1)
     
     END SUBROUTINE testScalars
    
