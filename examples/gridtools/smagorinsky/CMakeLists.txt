@@ -50,8 +50,10 @@ string(REPLACE "-g" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 #
 add_executable(smagorinsky smagorinsky.cpp smagorinsky_stencil.hpp smagorinsky_repository.hpp)
 target_link_libraries(smagorinsky ${SERIALBOX_CXX_LIBRARIES})
+target_compile_definitions(smagorinsky PUBLIC BOOST_NO_CXX11_DECLTYPE)
 
 add_executable(smagorinsky-error smagorinsky.cpp smagorinsky_stencil.hpp smagorinsky_repository.hpp)
 target_compile_definitions(smagorinsky-error PUBLIC -DERROR)
 target_link_libraries(smagorinsky-error ${SERIALBOX_CXX_LIBRARIES})
+target_compile_definitions(smagorinsky-error PUBLIC BOOST_NO_CXX11_DECLTYPE)
 

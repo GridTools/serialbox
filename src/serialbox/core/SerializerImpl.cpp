@@ -141,7 +141,7 @@ void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoi
     throw Exception("serializer not open in write mode, but write operation requested");
 
   //
-  // 1) Check if field is registred within the Serializer and perform some consistency checks
+  // 1) Check if field is registered within the Serializer and perform some consistency checks
   //
   auto info = checkStorageView(name, storageView);
 

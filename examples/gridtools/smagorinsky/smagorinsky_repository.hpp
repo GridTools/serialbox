@@ -16,9 +16,14 @@
 
 #define CXX11_ENABLED
 #define STRUCTURED_GRIDS
+#define FUSION_MAX_VECTOR_SIZE 20
+#define FUSION_MAX_MAP_SIZE FUSION_MAX_VECTOR_SIZE
+#define BOOST_MPL_LIMIT_VECTOR_SIZE FUSION_MAX_VECTOR_SIZE
+#define BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS
+
 #include <gridtools.hpp>
 #include <stencil-composition/stencil-composition.hpp>
-#include <stencil-composition/structured_grids/call_interfaces.hpp>
+#include <stencil-composition/stencil-functions/stencil-functions.hpp>
 #include <serialbox/gridtools/serialbox.hpp>
 
 #include <string>
@@ -30,8 +35,10 @@ namespace smagorinsky {
 using backend = gridtools::backend<gridtools::enumtype::Host, gridtools::enumtype::structured,
                                    gridtools::enumtype::Naive>;
 
+using storage_traits_t = gridtools::storage_traits<gridtools::enumtype::Host>;
+
 /// @brief Axis of the Grid including the entire vertical domain
-using axis_t = gridtools::interval<gridtools::level<0, -1>, gridtools::level<1, 3>>;
+using axis_t = gridtools::interval<gridtools::level<0, -1>, gridtools::level<1, 1>>;
 
 /// \brief All layers, meaning [0, k)
 using full_domain_t = gridtools::interval<gridtools::level<0, -1>, gridtools::level<1, -1>>;
@@ -48,48 +55,44 @@ public:
   using halo_ijk_t = gridtools::halo<3, 3, 0>;
   using halo_j_t = gridtools::halo<0, 3, 0>;
 
-  /// \brief Layout types
+  /// \brief Storage-info types
   /// @{
-  using layout_ijk_t = gridtools::layout_map<0, 1, 2>;
-  using layout_j_t = gridtools::layout_map<-1, 0, -1>;
-  using layout_scalar_t = gridtools::layout_map<-1, -1, -1>;
-  /// @}
-
-  /// \brief Meta-data types
-  /// @{
-  using metadata_ijk_t = backend::storage_info<0, layout_ijk_t, halo_ijk_t>;
-  using metadata_j_t = backend::storage_info<1, layout_j_t, halo_j_t>;
-  using metadata_scalar_t = backend::storage_info<2, layout_scalar_t>;
+  using storage_info_ijk_t = storage_traits_t::storage_info_t<0, 3, halo_ijk_t>;
+  using storage_info_j_t =
+      storage_traits_t::special_storage_info_t<1, gridtools::selector<0, 1, 0>, halo_j_t>;
+  using storage_info_scalar_t =
+      storage_traits_t::special_storage_info_t<2, gridtools::selector<0, 0, 0>>;
   /// @}
 
   /// \brief Storage types
   /// @{
-  using storage_ijk_t = backend::storage_type<float_type, metadata_ijk_t>::type;
-  using storage_ijk_tmp_t = backend::temporary_storage_type<float_type, metadata_ijk_t>::type;
-  using storage_j_t = backend::storage_type<float_type, metadata_j_t>::type;
-  using storage_scalar_t = backend::storage_type<float_type, metadata_scalar_t>::type;
+  using storage_ijk_t = storage_traits_t::data_store_t<float_type, storage_info_ijk_t>;
+  using storage_j_t = storage_traits_t::data_store_t<float_type, storage_info_j_t>;
+  using storage_scalar_t = storage_traits_t::data_store_t<float_type, storage_info_scalar_t>;
 
   /// \brief Allocate the storages
   repository(int i, int j, int k)
-      : isize_(i + 2 * halo_size), jsize_(j + 2 * halo_size), ksize_(k),
+      : isize_(i + 2 * halo_size), jsize_(j + 2 * halo_size), ksize_(k), //
 
-        metadata_scalar_(1, 1, 1), metadata_j_(1, jsize_, 1), metadata_ijk_(isize_, jsize_, ksize_),
+        storage_info_scalar_(1, 1, 1), storage_info_j_(1, jsize_, 1),
+        storage_info_ijk_(isize_, jsize_, ksize_),
 
         // Output fields
-        u_out_(metadata_ijk_, -1.0, "u_out"), v_out_(metadata_ijk_, -1.0, "v_out"),
+        u_out_(storage_info_ijk_, -1.0, "u_out"), v_out_(storage_info_ijk_, -1.0, "v_out"),
 
         // Input fields
-        u_in_(metadata_ijk_, -1.0, "u_in"), v_in_(metadata_ijk_, -1.0, "v_in"),
-        hdmaskvel_(metadata_ijk_, -1.0, "hdmaskvel"),
+        u_in_(storage_info_ijk_, -1.0, "u_in"), v_in_(storage_info_ijk_, -1.0, "v_in"),
+        hdmaskvel_(storage_info_ijk_, -1.0, "hdmaskvel"),
 
-        crlavo_(metadata_j_, -1.0, "crlavo"), crlavu_(metadata_j_, -1.0, "crlavu"),
-        crlato_(metadata_j_, -1.0, "crlato"), crlatu_(metadata_j_, -1.0, "crlatu"),
-        acrlat0_(metadata_j_, -1.0, "acrlat0"),
+        crlavo_(storage_info_j_, -1.0, "crlavo"), crlavu_(storage_info_j_, -1.0, "crlavu"),
+        crlato_(storage_info_j_, -1.0, "crlato"), crlatu_(storage_info_j_, -1.0, "crlatu"),
+        acrlat0_(storage_info_j_, -1.0, "acrlat0"),
 
         // Scalar fields
-        eddlon_(metadata_scalar_, -1.0, "eddlon"), eddlat_(metadata_scalar_, -1.0, "eddlat"),
-        tau_smag_(metadata_scalar_, -1.0, "tau_smag"),
-        weight_smag_(metadata_scalar_, -1.0, "weight_smag") {}
+        eddlon_(storage_info_scalar_, -1.0, "eddlon"),
+        eddlat_(storage_info_scalar_, -1.0, "eddlat"),
+        tau_smag_(storage_info_scalar_, -1.0, "tau_smag"),
+        weight_smag_(storage_info_scalar_, -1.0, "weight_smag") {}
 
   /// \brief Getter
   /// @{
@@ -123,38 +126,55 @@ public:
 
     std::default_random_engine generator;
     std::uniform_real_distribution<double> distribution(0.0, 1.0);
-    
+
+    auto u_out_view = make_host_view(u_out_);
+    auto v_out_view = make_host_view(v_out_);
+    auto u_in_view = make_host_view(u_in_);
+    auto v_in_view = make_host_view(v_in_);
+    auto hdmaskvel_view = make_host_view(hdmaskvel_);
+
+    auto crlavo_view = make_host_view(crlavo_);
+    auto crlavu_view = make_host_view(crlavu_);
+    auto crlato_view = make_host_view(crlato_);
+    auto crlatu_view = make_host_view(crlatu_);
+    auto acrlat0_view = make_host_view(acrlat0_);
+
+    auto eddlon_view = make_host_view(eddlon_);
+    auto eddlat_view = make_host_view(eddlat_);
+    auto tau_smag_view = make_host_view(tau_smag_);
+    auto weight_smag_view = make_host_view(weight_smag_);
+
     for(int i = 0; i < isize_; i++)
       for(int j = 0; j < jsize_; j++)
         for(int k = 0; k < ksize_; k++) {
-          u_out_(i, j, k) = distribution(generator);
-          v_out_(i, j, k) = distribution(generator);
-          u_in_(i, j, k) = distribution(generator);
-          v_in_(i, j, k) = distribution(generator);
-          hdmaskvel_(i, j, k) = distribution(generator);
+          u_out_view(i, j, k) = distribution(generator);
+          v_out_view(i, j, k) = distribution(generator);
+          u_in_view(i, j, k) = distribution(generator);
+          v_in_view(i, j, k) = distribution(generator);
+          hdmaskvel_view(i, j, k) = distribution(generator);
         }
 
     for(int j = 0; j < jsize_; j++) {
-      crlavo_(0, j, 0) = distribution(generator);
-      crlavu_(0, j, 0) = distribution(generator);
-      crlato_(0, j, 0) = distribution(generator);
-      crlatu_(0, j, 0) = distribution(generator);
-      acrlat0_(0, j, 0) = distribution(generator);
+      crlavo_view(0, j, 0) = distribution(generator);
+      crlavu_view(0, j, 0) = distribution(generator);
+      crlato_view(0, j, 0) = distribution(generator);
+      crlatu_view(0, j, 0) = distribution(generator);
+      acrlat0_view(0, j, 0) = distribution(generator);
     }
 
-    eddlon_(0, 0, 0) = distribution(generator);
-    eddlat_(0, 0, 0) = distribution(generator);
-    tau_smag_(0, 0, 0) = distribution(generator);
-    weight_smag_(0, 0, 0) = distribution(generator);
+    eddlon_view(0, 0, 0) = distribution(generator);
+    eddlat_view(0, 0, 0) = distribution(generator);
+    tau_smag_view(0, 0, 0) = distribution(generator);
+    weight_smag_view(0, 0, 0) = distribution(generator);
   }
 
 private:
   gridtools::uint_t isize_, jsize_, ksize_;
 
   // Meta-data
-  metadata_scalar_t metadata_scalar_;
-  metadata_j_t metadata_j_;
-  metadata_ijk_t metadata_ijk_;
+  storage_info_scalar_t storage_info_scalar_;
+  storage_info_j_t storage_info_j_;
+  storage_info_ijk_t storage_info_ijk_;
 
   // Output fields
   storage_ijk_t u_out_, v_out_;
