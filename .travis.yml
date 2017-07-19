@@ -233,7 +233,7 @@ install:
   # supported and thus the versions may change]
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
-      PYTHON_DIR=/opt/python/3.5.2
+      PYTHON_DIR=/opt/python/3.5.3
       ${PYTHON_DIR}/bin/pip3 install nose numpy
     fi
     
