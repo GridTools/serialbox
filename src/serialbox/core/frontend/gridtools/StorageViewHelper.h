@@ -18,6 +18,7 @@
 #include <boost/mpl/max_element.hpp>
 #include <utility>
 #include <vector>
+#include <storage/common/storage_info_rt.hpp>
 
 namespace serialbox {
 
@@ -37,9 +38,13 @@ std::vector<int> get_strides(const StorageType& storage) {
   return unsigned_to_int(::gridtools::to_vector(storage.strides()));
 }
 
+/*
+ * @brief gets the unaligned dims from gridtools (not including alignment)
+ */
 template <typename StorageType>
 std::vector<int> get_dims(const StorageType& storage) noexcept {
-  return unsigned_to_int(::gridtools::to_vector(storage.dims()));
+  return unsigned_to_int(::gridtools::to_vector(
+      ::gridtools::make_unaligned_dims_array(*storage.get_storage_info_ptr())));
 }
 
 template <typename StorageType>
