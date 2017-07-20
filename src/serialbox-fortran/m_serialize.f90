@@ -42,8 +42,9 @@ PUBLIC :: &
   t_serializer, t_savepoint, &
   fs_create_serializer, fs_destroy_serializer, fs_serializer_openmode, fs_add_serializer_metainfo, &
   fs_create_savepoint, fs_destroy_savepoint, fs_add_savepoint_metainfo, &
-  fs_field_exists, fs_register_field, fs_add_field_metainfo, fs_write_field, fs_read_field,        &
-  fs_enable_serialization, fs_disable_serialization, fs_print_debuginfo, fs_read_and_perturb_field
+  fs_field_exists, fs_register_field, fs_add_field_metainfo, fs_write_field, fs_read_field, &
+  fs_enable_serialization, fs_disable_serialization, fs_print_debuginfo, fs_read_and_perturb_field, &
+  fs_get_field_size
 
   INTEGER, PARAMETER :: MODE_READ = 0
   INTEGER, PARAMETER :: MODE_WRITE = 1
@@ -796,6 +797,18 @@ SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, is
   END IF
 
 END SUBROUTINE fs_check_size
+
+!==============================================================================
+!+ Module function that returns the size of the requested field
+!------------------------------------------------------------------------------
+FUNCTION fs_get_field_size(serializer, fieldname)
+  TYPE(t_serializer) :: serializer
+  CHARACTER(LEN=*)   :: fieldname
+  INTEGER, DIMENSION(4) :: fs_get_field_size
+
+  fs_get_field_size = (/ 0, 0, 0, 0 /)
+
+END FUNCTION fs_get_field_size
 
 !=============================================================================
 !=============================================================================
