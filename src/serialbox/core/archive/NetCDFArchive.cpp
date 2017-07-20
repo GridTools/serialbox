@@ -396,10 +396,6 @@ void NetCDFArchive::writeToFile(std::string filename, const StorageView& storage
 
 void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID,
                          std::shared_ptr<FieldMetainfoImpl> info) const throw(Exception) {
-
-  if(mode_ != OpenModeKind::Read)
-    throw Exception("Archive is not initialized with OpenModeKind set to 'Read'");
-
   LOG(info) << "Attempting to read field \"" << fieldID.name << "\" (id = " << fieldID.id
             << ") via NetCDFArchive ... ";
 
