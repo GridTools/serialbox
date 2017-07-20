@@ -472,10 +472,6 @@ TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
 
     auto sv_7d_1_input = storage_7d_1_input.toStorageView();
     archiveWrite.write(sv_7d_1_input, "storage_7d", nullptr);
-
-    // Check all exceptional cases
-    auto sv_u_2_input = u_2_input.toStorageView();
-    ASSERT_THROW(archiveWrite.read(sv_u_2_input, FieldID{"u", 2}, nullptr), Exception);
   }
 
   // -----------------------------------------------------------------------------------------------
