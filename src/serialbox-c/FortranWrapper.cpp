@@ -102,7 +102,7 @@ void serialboxFortranSerializerCheckField(const void* serializer, const char* na
         actualSizes[i] = 1;
         continue;
       } else
-        throw Exception("dimensions of field '%s' do not match regsitered ones:"
+        throw Exception("dimensions of field '%s' do not match registered ones:"
                         "\nRegistred as: [ %i, %i, %i, %i ]"
                         "\nGiven     as: [ %i, %i, %i, %i ]",
                         name, refSizes[0], refSizes[1], refSizes[2], refSizes[3], actualSizes[0],
@@ -142,6 +142,28 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
     *jstride = strides[1] / bytesPerElement;
     *kstride = strides[2] / bytesPerElement;
     *lstride = strides[3] / bytesPerElement;
+
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
+void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const char* name,
+                                                  int* isize, int* jsize, int* ksize, int* lsize) {
+
+  const Serializer* ser = toConstSerializer(static_cast<const serialboxSerializer_t*>(serializer));
+
+  try {
+    const auto& dims = ser->getFieldMetainfoImplOf(name).dims();
+
+    if(dims.size() != 4)
+      throw Exception("number of dimensions is %i, required are 4", dims.size());
+
+
+	*isize = dims[0];
+	*jsize = dims[1];
+	*ksize = dims[2];
+	*lsize = dims[3];
 
   } catch(std::exception& e) {
     serialboxFatalError(e.what());

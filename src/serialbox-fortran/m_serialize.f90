@@ -802,11 +802,30 @@ END SUBROUTINE fs_check_size
 !+ Module function that returns the size of the requested field
 !------------------------------------------------------------------------------
 FUNCTION fs_get_field_size(serializer, fieldname)
-  TYPE(t_serializer) :: serializer
-  CHARACTER(LEN=*)   :: fieldname
+  TYPE(t_serializer)    :: serializer
+  CHARACTER(LEN=*)      :: fieldname
   INTEGER, DIMENSION(4) :: fs_get_field_size
 
-  fs_get_field_size = (/ 0, 0, 0, 0 /)
+  INTERFACE
+    SUBROUTINE fs_get_field_dimensions_(serializer, name, isize, jsize, ksize, lsize) &
+        BIND(c, name='serialboxFortranSerializerGetFieldDimensions')
+     USE, INTRINSIC :: iso_c_binding
+     TYPE(C_PTR), VALUE                    :: serializer
+     CHARACTER(KIND=C_CHAR), DIMENSION(*)  :: name
+     INTEGER(C_INT), INTENT(OUT)           :: isize, jsize, ksize, lsize
+    END SUBROUTINE fs_get_field_dimensions_
+  END INTERFACE
+
+  INTEGER(KIND=C_INT) :: isize, jsize, ksize, lsize
+
+  IF (fs_field_exists(serializer, fieldname)) THEN
+    CALL fs_get_field_dimensions_(serializer%serializer_ptr, TRIM(fieldname), &
+                                  isize, jsize, ksize, lsize)
+    fs_get_field_size = (/ isize, jsize, ksize, lsize /)
+  ELSE
+    WRITE(*,*) "Serialbox: ERROR: field ", fieldname, " does not exist in the serializer"
+    STOP
+  END IF
 
 END FUNCTION fs_get_field_size
 

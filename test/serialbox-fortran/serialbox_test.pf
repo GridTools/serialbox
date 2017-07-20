@@ -12,13 +12,13 @@ MODULE serialbox_test
   
   CHARACTER(len=*), PARAMETER :: dir = 'sbdata'
   CHARACTER(len=*), PARAMETER :: savepoint_name = 'test'
-  INTEGER, PARAMETER :: exp_size_scalar(4) = (/ 0, 0, 0, 0 /) 
+  INTEGER, PARAMETER :: exp_size_scalar(4) = (/ 1, 0, 0, 0 /) 
 
 CONTAINS
    
    FUNCTION exp_size(var_shape)
       INTEGER :: var_shape(:), exp_size(4)
-      exp_size = RESHAPE(var_shape, (/ 4 /), exp_size_scalar)
+      exp_size = RESHAPE(var_shape, (/ 4 /), (/ 0, 0, 0, 0 /))
    END FUNCTION exp_size
 
 @Before
