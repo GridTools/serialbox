@@ -191,7 +191,7 @@ void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoin
 
   LOG(info) << "Deserializing field \"" << name << "\" at savepoint \"" << savepoint << "\" ... ";
 
-  if(mode_ != OpenModeKind::Read)
+  if(mode_ != OpenModeKind::Read && mode_ != OpenModeKind::Append)
     throw Exception("serializer not open in read mode, but read operation requested");
 
   //
