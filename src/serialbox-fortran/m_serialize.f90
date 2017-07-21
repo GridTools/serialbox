@@ -800,6 +800,9 @@ END SUBROUTINE fs_check_size
 
 !==============================================================================
 !+ Module function that returns the size of the requested field
+!  Always returns an array with 4 elements.
+!  For fields with a rank less than 4, the upper dimensions are given with size 0.
+!  For scalars the result is {1,0,0,0}.
 !------------------------------------------------------------------------------
 FUNCTION fs_get_size(serializer, fieldname)
   TYPE(t_serializer)    :: serializer
