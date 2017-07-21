@@ -159,13 +159,12 @@ void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const 
     if(dims.size() != 4)
       throw Exception("number of dimensions is %i, required are 4", dims.size());
 
-
 	*isize = dims[0];
 	*jsize = dims[1];
 	*ksize = dims[2];
 	*lsize = dims[3];
-
-  } catch(std::exception& e) {
+  }
+  catch(std::exception& e) {
     serialboxFatalError(e.what());
   }
 }
