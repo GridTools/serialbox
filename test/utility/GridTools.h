@@ -47,7 +47,7 @@ struct gridtools_storage_types {
   static constexpr int halo2_left = 2;
   static constexpr int halo3_left = 3;
   static constexpr int halo4_left = 4;
-  
+
   static constexpr int halo1_right = 3;
   static constexpr int halo2_right = 4;
   static constexpr int halo3_right = 5;
@@ -75,7 +75,7 @@ struct gridtools_storage_types {
   //===----------------------------------------------------------------------------------------===//
   //     Meta Data
   //===----------------------------------------------------------------------------------------===//
-  
+
   using cpu_2d_real_meta_data_type =
       storage_traits_type::meta_storage_type<1, cpu_2d_real_layout_type, halo_2d_type,
                                              gridtools::aligned<cpu_alignment>>;
@@ -117,6 +117,45 @@ struct gridtools_storage_types {
 
   using cpu_4d_storage_type = storage_traits_type::storage_type<T, cpu_4d_meta_data_type>;
   using gpu_4d_storage_type = storage_traits_type::storage_type<T, gpu_4d_meta_data_type>;
+
+  template <typename Storage>
+  static void init2DReal(Storage& storage, int dim1, int dim2) {
+    T val_2d = 0.0;
+    for(int j = 0; j < dim2; ++j)
+      for(int i = 0; i < dim1; ++i, val_2d += 1.0) {
+        storage(i, j) = val_2d;
+      }
+  }
+
+  template <typename Storage>
+  static void init2D(Storage& storage, int dim1, int dim2) {
+    T val_2d = 0.0;
+    for(int j = 0; j < dim2; ++j)
+      for(int i = 0; i < dim1; ++i, val_2d += 1.0) {
+        storage(i, j, 0) = val_2d;
+      }
+  }
+
+  template <typename Storage>
+  static void init3D(Storage& storage, int dim1, int dim2, int dim3) {
+    T val_3d = 0.0;
+    for(int k = 0; k < dim3; ++k)
+      for(int j = 0; j < dim2; ++j)
+        for(int i = 0; i < dim1; ++i, val_3d += 1.0) {
+          storage(i, j, k) = val_3d;
+        }
+  }
+
+  template <typename Storage>
+  static void init4D(Storage& storage, int dim1, int dim2, int dim3, int dim4) {
+    T val_4d = 0.0;
+    for(int l = 0; l < dim4; ++l)
+      for(int k = 0; k < dim3; ++k)
+        for(int j = 0; j < dim2; ++j)
+          for(int i = 0; i < dim1; ++i, val_4d += 1.0) {
+            storage(i, j, k, l) = val_4d;
+          }
+  }
 };
 
 } // namespace unittest
