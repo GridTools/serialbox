@@ -263,8 +263,6 @@ public:
                                                          << k << "," << l << ")";
           }
   }
-
-  virtual void SetUp() override { Base::SetUp(); }
 };
 
 using TestTypes = testing::Types<double, float, int>;
