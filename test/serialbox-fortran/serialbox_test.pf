@@ -12,8 +12,14 @@ MODULE serialbox_test
   
   CHARACTER(len=*), PARAMETER :: dir = 'sbdata'
   CHARACTER(len=*), PARAMETER :: savepoint_name = 'test'
+  INTEGER, PARAMETER :: exp_size_scalar(4) = (/ 1, 0, 0, 0 /) 
 
 CONTAINS
+   
+   FUNCTION exp_size(var_shape)
+      INTEGER :: var_shape(:), exp_size(4)
+      exp_size = RESHAPE(var_shape, (/ 4 /), (/ 0, 0, 0, 0 /))
+   END FUNCTION exp_size
 
 @Before
    SUBROUTINE mySetup()
@@ -55,6 +61,10 @@ CONTAINS
       @assertTrue(fs_field_exists(serializer, "testfield_i2"))
       @assertTrue(fs_field_exists(serializer, "testfield_i3"))
       @assertTrue(fs_field_exists(serializer, "testfield_i4"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i1)), fs_get_size(serializer, "testfield_i1"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i2)), fs_get_size(serializer, "testfield_i2"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i3)), fs_get_size(serializer, "testfield_i3"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4)), fs_get_size(serializer, "testfield_i4"))
       CALL fs_read_field(serializer, savepoint, "testfield_i1", r_testfield_i1)
       CALL fs_read_field(serializer, savepoint, "testfield_i2", r_testfield_i2)
       CALL fs_read_field(serializer, savepoint, "testfield_i3", r_testfield_i3)
@@ -96,6 +106,10 @@ CONTAINS
       @assertTrue(fs_field_exists(serializer, "testfield_l2"))
       @assertTrue(fs_field_exists(serializer, "testfield_l3"))
       @assertTrue(fs_field_exists(serializer, "testfield_l4"))
+      @assertEqual(exp_size(SHAPE(w_testfield_l1)), fs_get_size(serializer, "testfield_l1"))
+      @assertEqual(exp_size(SHAPE(w_testfield_l2)), fs_get_size(serializer, "testfield_l2"))
+      @assertEqual(exp_size(SHAPE(w_testfield_l3)), fs_get_size(serializer, "testfield_l3"))
+      @assertEqual(exp_size(SHAPE(w_testfield_l4)), fs_get_size(serializer, "testfield_l4"))
       CALL fs_read_field(serializer, savepoint, "testfield_l1", r_testfield_l1)
       CALL fs_read_field(serializer, savepoint, "testfield_l2", r_testfield_l2)
       CALL fs_read_field(serializer, savepoint, "testfield_l3", r_testfield_l3)
@@ -122,9 +136,10 @@ CONTAINS
     
       TYPE(t_serializer) :: serializer
       INTEGER :: w_testfield_i0, r_testfield_i0
-      INTEGER :: w_testfield_i1(1), r_testfield_i1(1), w_testfield_i1_size(1), w_testfield_i1_bounds(2)
+      INTEGER :: w_testfield_i1(1), r_testfield_i1(1), w_testfield_i1_bounds(2)
       LOGICAL :: w_testfield_l0, r_testfield_l0
-      LOGICAL :: w_testfield_l1(1), r_testfield_l1(1), w_testfield_l1_size(1), w_testfield_l1_bounds(2)
+      LOGICAL :: w_testfield_l1(1), r_testfield_l1(1)
+      INTEGER :: w_testfield_l1_bounds(2)
       
       CHARACTER(len=*), PARAMETER :: base_name = 'test_scalars'
       
@@ -144,13 +159,16 @@ CONTAINS
       
       @assertTrue(fs_field_exists(serializer, "testfield_i0"))
       @assertTrue(fs_field_exists(serializer, "testfield_i1"))
-      !@assertEqual(w_testfield_i1a_size, fs_get_field_size(serializer, "testfield_i1"))
-      !@assertEqual(w_testfield_i1a_bounds, fs_get_field_bounds(serializer, "testfield_i1"))
-      
       @assertTrue(fs_field_exists(serializer, "testfield_l0"))
       @assertTrue(fs_field_exists(serializer, "testfield_l1"))
-      !@assertEqual(w_testfield_l1a_size, fs_get_field_size(serializer, "testfield_l1"))
-      !@assertEqual(w_testfield_l1a_bounds, fs_get_field_bounds(serializer, "testfield_l1"))
+      
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "testfield_i0"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i1)), fs_get_size(serializer, "testfield_i1"))
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "testfield_l0"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i1)), fs_get_size(serializer, "testfield_l1"))
+      
+      !@assertEqual(w_testfield_i1_bounds, fs_get_field_bounds(serializer, "testfield_i1"))
+      !@assertEqual(w_testfield_l1_bounds, fs_get_field_bounds(serializer, "testfield_l1"))
       
       CALL fs_read_field(serializer, savepoint, "testfield_i0", r_testfield_i0)
       CALL fs_read_field(serializer, savepoint, "testfield_i1", r_testfield_i1)
@@ -171,22 +189,19 @@ CONTAINS
     
       TYPE(t_serializer) :: serializer
       
-      INTEGER :: w_testfield_i2a(3,1), r_testfield_i2a(3,1), w_testfield_i2a_size(2), w_testfield_i2a_bounds(2, 2)
-      INTEGER :: w_testfield_i2b(1,3), r_testfield_i2b(1,3), w_testfield_i2b_size(2), w_testfield_i2b_bounds(2, 2)
-      INTEGER :: w_testfield_i2c(1,1), r_testfield_i2c(1,1), w_testfield_i2c_size(2), w_testfield_i2c_bounds(2, 2)
+      INTEGER :: w_testfield_i2a(3,1), r_testfield_i2a(3,1), w_testfield_i2a_bounds(2, 2)
+      INTEGER :: w_testfield_i2b(1,3), r_testfield_i2b(1,3), w_testfield_i2b_bounds(2, 2)
+      INTEGER :: w_testfield_i2c(1,1), r_testfield_i2c(1,1), w_testfield_i2c_bounds(2, 2)
       
       CHARACTER(len=*), PARAMETER :: base_name = 'test_rank_2d'
       
       w_testfield_i2a = RESHAPE((/ 0, 4, 8 /), SHAPE(w_testfield_i2a))
-      w_testfield_i2a_size = (/ 3, 1 /)
       w_testfield_i2a_bounds = RESHAPE((/ 1, 1, 3, 1 /), SHAPE(w_testfield_i2a_bounds))
       
       w_testfield_i2b = RESHAPE((/ 0, 4, 8 /), SHAPE(w_testfield_i2b))
-      w_testfield_i2b_size = (/ 1, 3 /)
       w_testfield_i2b_bounds = RESHAPE((/ 1, 1, 1, 3 /), SHAPE(w_testfield_i2b_bounds))
       
       w_testfield_i2c = RESHAPE((/ 23 /), SHAPE(w_testfield_i2c))
-      w_testfield_i2c_size = (/ 1, 1 /)
       w_testfield_i2c_bounds = RESHAPE((/ 1, 1, 1, 1 /), SHAPE(w_testfield_i2c_bounds))
       
       CALL fs_create_serializer(dir, base_name, 'w', serializer)
@@ -198,15 +213,15 @@ CONTAINS
       CALL fs_create_serializer(dir, base_name, 'r', serializer)
 
       @assertTrue(fs_field_exists(serializer, "testfield_i2a_rank"))
-      !@assertEqual(w_testfield_i2a_size, fs_get_field_size(serializer, "testfield_i2a_rank"))
-      !@assertEqual(w_testfield_i2a_bounds, fs_get_field_bounds(serializer, "testfield_i2a_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i2b_rank"))
-      !@assertEqual(w_testfield_i2b_size, fs_get_field_size(serializer, "testfield_i2b_rank"))
-      !@assertEqual(w_testfield_i2b_bounds, fs_get_field_bounds(serializer, "testfield_i2b_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i2c_rank"))
-      !@assertEqual(w_testfield_i2c_size, fs_get_field_size(serializer, "testfield_i2c_rank"))
+      
+      @assertEqual(exp_size(SHAPE(w_testfield_i2a)), fs_get_size(serializer, "testfield_i2a_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i2b)), fs_get_size(serializer, "testfield_i2b_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i2c)), fs_get_size(serializer, "testfield_i2c_rank"))
+      
+      !@assertEqual(w_testfield_i2a_bounds, fs_get_field_bounds(serializer, "testfield_i2a_rank"))
+      !@assertEqual(w_testfield_i2b_bounds, fs_get_field_bounds(serializer, "testfield_i2b_rank"))
       !@assertEqual(w_testfield_i2c_bounds, fs_get_field_bounds(serializer, "testfield_i2c_rank"))
 
       CALL fs_read_field(serializer, savepoint, "testfield_i2a_rank", r_testfield_i2a)
@@ -226,42 +241,35 @@ CONTAINS
     
       TYPE(t_serializer) :: serializer
       
-      INTEGER :: w_testfield_i3a(3,1,4), r_testfield_i3a(3,1,4), w_testfield_i3a_size(3), w_testfield_i3a_bounds(3, 2)
-      INTEGER :: w_testfield_i3b(3,4,1), r_testfield_i3b(3,4,1), w_testfield_i3b_size(3), w_testfield_i3b_bounds(3, 2)
-      INTEGER :: w_testfield_i3c(3,1,1), r_testfield_i3c(3,1,1), w_testfield_i3c_size(3), w_testfield_i3c_bounds(3, 2)
-      INTEGER :: w_testfield_i3d(1,1,1), r_testfield_i3d(1,1,1), w_testfield_i3d_size(3), w_testfield_i3d_bounds(3, 2)
-      INTEGER :: w_testfield_i3e(1,1,3), r_testfield_i3e(1,1,3), w_testfield_i3e_size(3), w_testfield_i3e_bounds(3, 2)
-      INTEGER :: w_testfield_i3f(1,4,3), r_testfield_i3f(1,4,3), w_testfield_i3f_size(3), w_testfield_i3f_bounds(3, 2)
-      INTEGER :: w_testfield_i3g(1,3,1), r_testfield_i3g(1,3,1), w_testfield_i3g_size(3), w_testfield_i3g_bounds(3, 2)
+      INTEGER :: w_testfield_i3a(3,1,4), r_testfield_i3a(3,1,4), w_testfield_i3a_bounds(3, 2)
+      INTEGER :: w_testfield_i3b(3,4,1), r_testfield_i3b(3,4,1), w_testfield_i3b_bounds(3, 2)
+      INTEGER :: w_testfield_i3c(3,1,1), r_testfield_i3c(3,1,1), w_testfield_i3c_bounds(3, 2)
+      INTEGER :: w_testfield_i3d(1,1,1), r_testfield_i3d(1,1,1), w_testfield_i3d_bounds(3, 2)
+      INTEGER :: w_testfield_i3e(1,1,3), r_testfield_i3e(1,1,3), w_testfield_i3e_bounds(3, 2)
+      INTEGER :: w_testfield_i3f(1,4,3), r_testfield_i3f(1,4,3), w_testfield_i3f_bounds(3, 2)
+      INTEGER :: w_testfield_i3g(1,3,1), r_testfield_i3g(1,3,1), w_testfield_i3g_bounds(3, 2)
       
       CHARACTER(len=*), PARAMETER :: base_name = 'test_rank_3d'
       
       w_testfield_i3a = RESHAPE((/ 0, 4, 8, 1, 5, 9, 2, 6, 10, 3, 7, 11 /), SHAPE(w_testfield_i3a))
-      w_testfield_i3a_size = (/ 3, 1, 4 /)
       w_testfield_i3a_bounds = RESHAPE((/ 1, 1, 1, 3, 1, 4 /), SHAPE(w_testfield_i3a_bounds))
       
       w_testfield_i3b = RESHAPE((/ 0, 4, 8, 1, 5, 9, 2, 6, 10, 3, 7, 11 /), SHAPE(w_testfield_i3b))
-      w_testfield_i3b_size = (/ 3, 4, 1 /)
       w_testfield_i3b_bounds = RESHAPE((/ 1, 1, 1, 3, 4, 1 /), SHAPE(w_testfield_i3b_bounds))
       
       w_testfield_i3c = RESHAPE((/ 0, 4, 8 /), SHAPE(w_testfield_i3c))
-      w_testfield_i3c_size = (/ 3, 1, 1 /)
       w_testfield_i3c_bounds = RESHAPE((/ 1, 1, 1, 3, 1, 1 /), SHAPE(w_testfield_i3c_bounds))
       
       w_testfield_i3d = RESHAPE((/ 109 /), SHAPE(w_testfield_i3d))
-      w_testfield_i3d_size = (/ 1, 1, 1 /)
       w_testfield_i3d_bounds = RESHAPE((/ 1, 1, 1, 1, 1, 1 /), SHAPE(w_testfield_i3d_bounds))
       
       w_testfield_i3e = RESHAPE((/ 0, 4, 8 /), SHAPE(w_testfield_i3e))
-      w_testfield_i3e_size = (/ 1, 1, 3 /)
       w_testfield_i3e_bounds = RESHAPE((/ 1, 1, 1, 1, 1, 3 /), SHAPE(w_testfield_i3e_bounds))
       
       w_testfield_i3f = RESHAPE((/ 0, 4, 8, 1, 5, 9, 2, 6, 10, 3, 7, 11 /), SHAPE(w_testfield_i3f))
-      w_testfield_i3f_size = (/ 1, 4, 3 /)
       w_testfield_i3f_bounds = RESHAPE((/ 1, 1, 1, 1, 4, 3 /), SHAPE(w_testfield_i3f_bounds))
       
       w_testfield_i3g = RESHAPE((/ 0, 4, 8, 1, 5, 9, 2, 6, 10, 3, 7, 11 /), SHAPE(w_testfield_i3g))
-      w_testfield_i3g_size = (/ 1, 4, 3 /)
       w_testfield_i3g_bounds = RESHAPE((/ 1, 1, 1, 1, 4, 3 /), SHAPE(w_testfield_i3g_bounds))
       
       CALL fs_create_serializer(dir, base_name, 'w', serializer)
@@ -277,31 +285,27 @@ CONTAINS
       CALL fs_create_serializer(dir, base_name, 'r', serializer)
 
       @assertTrue(fs_field_exists(serializer, "testfield_i3a_rank"))
-      !@assertEqual(w_testfield_i3a_size, fs_get_field_size(serializer, "testfield_i3a_rank"))
-      !@assertEqual(w_testfield_i3a_bounds, fs_get_field_bounds(serializer, "testfield_i3a_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i3b_rank"))
-      !@assertEqual(w_testfield_i3b_size, fs_get_field_size(serializer, "testfield_i3b_rank"))
-      !@assertEqual(w_testfield_i3b_bounds, fs_get_field_bounds(serializer, "testfield_i3b_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i3c_rank"))
-      !@assertEqual(w_testfield_i3c_size, fs_get_field_size(serializer, "testfield_i3c_rank"))
-      !@assertEqual(w_testfield_i3c_bounds, fs_get_field_bounds(serializer, "testfield_i3c_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i3d_rank"))
-      !@assertEqual(w_testfield_i3d_size, fs_get_field_size(serializer, "testfield_i3d_rank"))
-      !@assertEqual(w_testfield_i3d_bounds, fs_get_field_bounds(serializer, "testfield_i3d_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i3e_rank"))
-      !@assertEqual(w_testfield_i3e_size, fs_get_field_size(serializer, "testfield_i3e_rank"))
-      !@assertEqual(w_testfield_i3e_bounds, fs_get_field_bounds(serializer, "testfield_i3e_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i3f_rank"))
-      !@assertEqual(w_testfield_i3f_size, fs_get_field_size(serializer, "testfield_i3f_rank"))
-      !@assertEqual(w_testfield_i3f_bounds, fs_get_field_bounds(serializer, "testfield_i3f_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i3g_rank"))
-      !@assertEqual(w_testfield_i3g_size, fs_get_field_size(serializer, "testfield_i3g_rank"))
+      
+      @assertEqual(exp_size(SHAPE(w_testfield_i3a)), fs_get_size(serializer, "testfield_i3a_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i3b)), fs_get_size(serializer, "testfield_i3b_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i3c)), fs_get_size(serializer, "testfield_i3c_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i3d)), fs_get_size(serializer, "testfield_i3d_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i3e)), fs_get_size(serializer, "testfield_i3e_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i3f)), fs_get_size(serializer, "testfield_i3f_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i3g)), fs_get_size(serializer, "testfield_i3g_rank"))
+      
+      !@assertEqual(w_testfield_i3a_bounds, fs_get_field_bounds(serializer, "testfield_i3a_rank"))
+      !@assertEqual(w_testfield_i3b_bounds, fs_get_field_bounds(serializer, "testfield_i3b_rank"))
+      !@assertEqual(w_testfield_i3c_bounds, fs_get_field_bounds(serializer, "testfield_i3c_rank"))
+      !@assertEqual(w_testfield_i3d_bounds, fs_get_field_bounds(serializer, "testfield_i3d_rank"))
+      !@assertEqual(w_testfield_i3e_bounds, fs_get_field_bounds(serializer, "testfield_i3e_rank"))
+      !@assertEqual(w_testfield_i3f_bounds, fs_get_field_bounds(serializer, "testfield_i3f_rank"))
       !@assertEqual(w_testfield_i3g_bounds, fs_get_field_bounds(serializer, "testfield_i3g_rank"))
 
       CALL fs_read_field(serializer, savepoint, "testfield_i3a_rank", r_testfield_i3a)
@@ -329,83 +333,68 @@ CONTAINS
     
       TYPE(t_serializer) :: serializer
       
-      INTEGER :: w_testfield_i4a(3,1,1,4), r_testfield_i4a(3,1,1,4), w_testfield_i4a_size(4), w_testfield_i4a_bounds(4, 2)
-      INTEGER :: w_testfield_i4b(3,2,2,1), r_testfield_i4b(3,2,2,1), w_testfield_i4b_size(4), w_testfield_i4b_bounds(4, 2)
-      INTEGER :: w_testfield_i4c(3,2,1,1), r_testfield_i4c(3,2,1,1), w_testfield_i4c_size(4), w_testfield_i4c_bounds(4, 2)
-      INTEGER :: w_testfield_i4d(3,1,1,1), r_testfield_i4d(3,1,1,1), w_testfield_i4d_size(4), w_testfield_i4d_bounds(4, 2)
-      INTEGER :: w_testfield_i4e(1,1,1,1), r_testfield_i4e(1,1,1,1), w_testfield_i4e_size(4), w_testfield_i4e_bounds(4, 2)
-      INTEGER :: w_testfield_i4f(1,1,1,3), r_testfield_i4f(1,1,1,3), w_testfield_i4f_size(4), w_testfield_i4f_bounds(4, 2)
-      INTEGER :: w_testfield_i4g(1,1,2,3), r_testfield_i4g(1,1,2,3), w_testfield_i4g_size(4), w_testfield_i4g_bounds(4, 2)
-      INTEGER :: w_testfield_i4h(1,3,2,2), r_testfield_i4h(1,3,2,2), w_testfield_i4h_size(4), w_testfield_i4h_bounds(4, 2)
+      INTEGER :: w_testfield_i4a(3,1,1,4), r_testfield_i4a(3,1,1,4), w_testfield_i4a_bounds(4, 2)
+      INTEGER :: w_testfield_i4b(3,2,2,1), r_testfield_i4b(3,2,2,1), w_testfield_i4b_bounds(4, 2)
+      INTEGER :: w_testfield_i4c(3,2,1,1), r_testfield_i4c(3,2,1,1), w_testfield_i4c_bounds(4, 2)
+      INTEGER :: w_testfield_i4d(3,1,1,1), r_testfield_i4d(3,1,1,1), w_testfield_i4d_bounds(4, 2)
+      INTEGER :: w_testfield_i4e(1,1,1,1), r_testfield_i4e(1,1,1,1), w_testfield_i4e_bounds(4, 2)
+      INTEGER :: w_testfield_i4f(1,1,1,3), r_testfield_i4f(1,1,1,3), w_testfield_i4f_bounds(4, 2)
+      INTEGER :: w_testfield_i4g(1,1,2,3), r_testfield_i4g(1,1,2,3), w_testfield_i4g_bounds(4, 2)
+      INTEGER :: w_testfield_i4h(1,3,2,2), r_testfield_i4h(1,3,2,2), w_testfield_i4h_bounds(4, 2)
       
-      INTEGER :: w_testfield_i4i(3,2,1,2), r_testfield_i4i(3,2,1,2), w_testfield_i4i_size(4), w_testfield_i4i_bounds(4, 2)
-      INTEGER :: w_testfield_i4j(3,1,2,2), r_testfield_i4j(3,1,2,2), w_testfield_i4j_size(4), w_testfield_i4j_bounds(4, 2)
-      INTEGER :: w_testfield_i4k(1,3,4,1), r_testfield_i4k(1,3,4,1), w_testfield_i4k_size(4), w_testfield_i4k_bounds(4, 2)
-      INTEGER :: w_testfield_i4l(1,3,1,1), r_testfield_i4l(1,3,1,1), w_testfield_i4l_size(4), w_testfield_i4l_bounds(4, 2)
-      INTEGER :: w_testfield_i4m(1,1,3,1), r_testfield_i4m(1,1,3,1), w_testfield_i4m_size(4), w_testfield_i4m_bounds(4, 2)
-      INTEGER :: w_testfield_i4n(1,3,1,4), r_testfield_i4n(1,3,1,4), w_testfield_i4n_size(4), w_testfield_i4n_bounds(4, 2)
-      INTEGER :: w_testfield_i4o(3,1,4,1), r_testfield_i4o(3,1,4,1), w_testfield_i4o_size(4), w_testfield_i4o_bounds(4, 2)
+      INTEGER :: w_testfield_i4i(3,2,1,2), r_testfield_i4i(3,2,1,2), w_testfield_i4i_bounds(4, 2)
+      INTEGER :: w_testfield_i4j(3,1,2,2), r_testfield_i4j(3,1,2,2), w_testfield_i4j_bounds(4, 2)
+      INTEGER :: w_testfield_i4k(1,3,4,1), r_testfield_i4k(1,3,4,1), w_testfield_i4k_bounds(4, 2)
+      INTEGER :: w_testfield_i4l(1,3,1,1), r_testfield_i4l(1,3,1,1), w_testfield_i4l_bounds(4, 2)
+      INTEGER :: w_testfield_i4m(1,1,3,1), r_testfield_i4m(1,1,3,1), w_testfield_i4m_bounds(4, 2)
+      INTEGER :: w_testfield_i4n(1,3,1,4), r_testfield_i4n(1,3,1,4), w_testfield_i4n_bounds(4, 2)
+      INTEGER :: w_testfield_i4o(3,1,4,1), r_testfield_i4o(3,1,4,1), w_testfield_i4o_bounds(4, 2)
       
       CHARACTER(len=*), PARAMETER :: base_name = 'test_rank_4d'
       
       w_testfield_i4a = RESHAPE((/ 0, 4, 8, 1, 5, 9, 2, 6, 10, 3, 7, 11 /), SHAPE(w_testfield_i4a))
-      w_testfield_i4a_size = (/ 3, 1, 1, 4 /)
       w_testfield_i4a_bounds = RESHAPE((/ 1, 1, 1, 1, 3, 1, 1, 4 /), SHAPE(w_testfield_i4a_bounds))
       
       w_testfield_i4b = RESHAPE((/ 0, 4, 8, 1, 5, 9, 2, 6, 10, 3, 7, 11 /), SHAPE(w_testfield_i4b))
-      w_testfield_i4b_size = (/ 3, 2, 2, 1 /)
       w_testfield_i4b_bounds = RESHAPE((/ 1, 1, 1, 1, 3, 2, 2, 1 /), SHAPE(w_testfield_i4b_bounds))
       
       w_testfield_i4c = RESHAPE((/ 0, 4, 8, 1, 5, 9 /), SHAPE(w_testfield_i4c))
-      w_testfield_i4c_size = (/ 3, 2, 1, 1 /)
       w_testfield_i4c_bounds = RESHAPE((/ 1, 1, 1, 1, 3, 2, 1, 1 /), SHAPE(w_testfield_i4c_bounds))
       
       w_testfield_i4d = RESHAPE((/ 0, 4, 8 /), SHAPE(w_testfield_i4d))
-      w_testfield_i4d_size = (/ 3, 1, 1, 1 /)
       w_testfield_i4d_bounds = RESHAPE((/ 1, 1, 1, 1, 3, 1, 1, 1 /), SHAPE(w_testfield_i4d_bounds))
       
       w_testfield_i4e = RESHAPE((/ 42 /), SHAPE(w_testfield_i4e))
-      w_testfield_i4e_size = (/ 1, 1, 1, 1 /)
       w_testfield_i4e_bounds = RESHAPE((/ 1, 1, 1, 1, 1, 1, 1, 1 /), SHAPE(w_testfield_i4e_bounds))
       
       w_testfield_i4f = RESHAPE((/ 0, 4, 8 /), SHAPE(w_testfield_i4f))
-      w_testfield_i4f_size = (/ 1, 1, 1, 3 /)
       w_testfield_i4f_bounds = RESHAPE((/ 1, 1, 1, 1, 1, 1, 1, 3 /), SHAPE(w_testfield_i4f_bounds))
       
       w_testfield_i4g = RESHAPE((/ 0, 4, 8, 1, 5, 9 /), SHAPE(w_testfield_i4g))
-      w_testfield_i4g_size = (/ 1, 1, 2, 3 /)
       w_testfield_i4g_bounds = RESHAPE((/ 1, 1, 1, 1, 1, 1, 2, 3 /), SHAPE(w_testfield_i4g_bounds))
       
       w_testfield_i4h = RESHAPE((/ 0, 4, 8, 2, 6, 10, 1, 5, 9, 3, 7, 11 /), SHAPE(w_testfield_i4h))
-      w_testfield_i4h_size = (/ 1, 3, 2, 2 /)
       w_testfield_i4h_bounds = RESHAPE((/ 1, 1, 1, 1, 1, 3, 2, 2 /), SHAPE(w_testfield_i4h_bounds))
 
       w_testfield_i4i = RESHAPE((/ 0, 4, 8, 2, 6, 10, 1, 5, 9, 3, 7, 11 /), SHAPE(w_testfield_i4i))
-      w_testfield_i4i_size = (/ 3, 2, 1, 2 /)
       w_testfield_i4i_bounds = RESHAPE((/ 1, 1, 1, 1, 3, 2, 1, 2 /), SHAPE(w_testfield_i4i_bounds))
       
       w_testfield_i4j = RESHAPE((/ 0, 4, 8, 2, 6, 10, 1, 5, 9, 3, 7, 11 /), SHAPE(w_testfield_i4j))
-      w_testfield_i4j_size = (/ 3, 1, 2, 2 /)
       w_testfield_i4j_bounds = RESHAPE((/ 1, 1, 1, 1, 3, 1, 2, 2 /), SHAPE(w_testfield_i4j_bounds))
       
       w_testfield_i4k = RESHAPE((/ 0, 4, 8, 2, 6, 10, 1, 5, 9, 3, 7, 11 /), SHAPE(w_testfield_i4k))
-      w_testfield_i4k_size = (/ 1, 3, 4, 1 /)
       w_testfield_i4k_bounds = RESHAPE((/ 1, 1, 1, 1, 1, 3, 4, 1 /), SHAPE(w_testfield_i4k_bounds))
       
       w_testfield_i4l = RESHAPE((/ 0, 4, 8 /), SHAPE(w_testfield_i4l))
-      w_testfield_i4l_size = (/ 1, 3, 1, 1 /)
       w_testfield_i4l_bounds = RESHAPE((/ 1, 1, 1, 1, 1, 3, 1, 1 /), SHAPE(w_testfield_i4l_bounds))
       
       w_testfield_i4m = RESHAPE((/ 0, 4, 8 /), SHAPE(w_testfield_i4m))
-      w_testfield_i4m_size = (/ 1, 1, 3, 1 /)
       w_testfield_i4m_bounds = RESHAPE((/ 1, 1, 1, 1, 1, 1, 3, 1 /), SHAPE(w_testfield_i4m_bounds))
       
       w_testfield_i4n = RESHAPE((/ 0, 4, 8, 2, 6, 10, 1, 5, 9, 3, 7, 11 /), SHAPE(w_testfield_i4n))
-      w_testfield_i4n_size = (/ 1, 3, 1, 4 /)
       w_testfield_i4n_bounds = RESHAPE((/ 1, 1, 1, 1, 1, 3, 1, 4 /), SHAPE(w_testfield_i4n_bounds))
       
       w_testfield_i4o = RESHAPE((/ 0, 4, 8, 2, 6, 10, 1, 5, 9, 3, 7, 11 /), SHAPE(w_testfield_i4o))
-      w_testfield_i4o_size = (/ 3, 1, 4, 1 /)
       w_testfield_i4o_bounds = RESHAPE((/ 1, 1, 1, 1, 3, 1, 4, 1 /), SHAPE(w_testfield_i4o_bounds))
       
       CALL fs_create_serializer(dir, base_name, 'w', serializer)
@@ -429,63 +418,51 @@ CONTAINS
       CALL fs_create_serializer(dir, base_name, 'r', serializer)
 
       @assertTrue(fs_field_exists(serializer, "testfield_i4a_rank"))
-      !@assertEqual(w_testfield_i4a_size, fs_get_field_size(serializer, "testfield_i4a_rank"))
-      !@assertEqual(w_testfield_i4a_bounds, fs_get_field_bounds(serializer, "testfield_i4a_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i4b_rank"))
-      !@assertEqual(w_testfield_i4b_size, fs_get_field_size(serializer, "testfield_i4b_rank"))
-      !@assertEqual(w_testfield_i4b_bounds, fs_get_field_bounds(serializer, "testfield_i4b_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i4c_rank"))
-      !@assertEqual(w_testfield_i4c_size, fs_get_field_size(serializer, "testfield_i4c_rank"))
-      !@assertEqual(w_testfield_i4c_bounds, fs_get_field_bounds(serializer, "testfield_i4c_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i4d_rank"))
-      !@assertEqual(w_testfield_i4d_size, fs_get_field_size(serializer, "testfield_i4d_rank"))
-      !@assertEqual(w_testfield_i4d_bounds, fs_get_field_bounds(serializer, "testfield_i4d_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i4e_rank"))
-      !@assertEqual(w_testfield_i4e_size, fs_get_field_size(serializer, "testfield_i4e_rank"))
-      !@assertEqual(w_testfield_i4e_bounds, fs_get_field_bounds(serializer, "testfield_i4e_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i4f_rank"))
-      !@assertEqual(w_testfield_i4f_size, fs_get_field_size(serializer, "testfield_i4f_rank"))
-      !@assertEqual(w_testfield_i4f_bounds, fs_get_field_bounds(serializer, "testfield_i4f_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i4g_rank"))
-      !@assertEqual(w_testfield_i4g_size, fs_get_field_size(serializer, "testfield_i4g_rank"))
-      !@assertEqual(w_testfield_i4g_bounds, fs_get_field_bounds(serializer, "testfield_i4g_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i4h_rank"))
-      !@assertEqual(w_testfield_i4h_size, fs_get_field_size(serializer, "testfield_i4h_rank"))
-      !@assertEqual(w_testfield_i4h_bounds, fs_get_field_bounds(serializer, "testfield_i4h_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i4i_rank"))
-      !@assertEqual(w_testfield_i4i_size, fs_get_field_size(serializer, "testfield_i4i_rank"))
-      !@assertEqual(w_testfield_i4i_bounds, fs_get_field_bounds(serializer, "testfield_i4i_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i4j_rank"))
-      !@assertEqual(w_testfield_i4j_size, fs_get_field_size(serializer, "testfield_i4j_rank"))
-      !@assertEqual(w_testfield_i4j_bounds, fs_get_field_bounds(serializer, "testfield_i4j_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i4k_rank"))
-      !@assertEqual(w_testfield_i4k_size, fs_get_field_size(serializer, "testfield_i4k_rank"))
-      !@assertEqual(w_testfield_i4k_bounds, fs_get_field_bounds(serializer, "testfield_i4k_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i4l_rank"))
-      !@assertEqual(w_testfield_i4l_size, fs_get_field_size(serializer, "testfield_i4l_rank"))
-      !@assertEqual(w_testfield_i4l_bounds, fs_get_field_bounds(serializer, "testfield_i4l_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i4m_rank"))
-      !@assertEqual(w_testfield_i4m_size, fs_get_field_size(serializer, "testfield_i4m_rank"))
-      !@assertEqual(w_testfield_i4m_bounds, fs_get_field_bounds(serializer, "testfield_i4m_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i4n_rank"))
-      !@assertEqual(w_testfield_i4n_size, fs_get_field_size(serializer, "testfield_i4n_rank"))
-      !@assertEqual(w_testfield_i4n_bounds, fs_get_field_bounds(serializer, "testfield_i4n_rank"))
-
       @assertTrue(fs_field_exists(serializer, "testfield_i4o_rank"))
-      !@assertEqual(w_testfield_i4o_size, fs_get_field_size(serializer, "testfield_i4o_rank"))
+      
+      @assertEqual(exp_size(SHAPE(w_testfield_i4a)), fs_get_size(serializer, "testfield_i4a_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4b)), fs_get_size(serializer, "testfield_i4b_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4c)), fs_get_size(serializer, "testfield_i4c_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4d)), fs_get_size(serializer, "testfield_i4d_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4e)), fs_get_size(serializer, "testfield_i4e_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4f)), fs_get_size(serializer, "testfield_i4f_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4g)), fs_get_size(serializer, "testfield_i4g_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4h)), fs_get_size(serializer, "testfield_i4h_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4i)), fs_get_size(serializer, "testfield_i4i_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4j)), fs_get_size(serializer, "testfield_i4j_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4k)), fs_get_size(serializer, "testfield_i4k_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4l)), fs_get_size(serializer, "testfield_i4l_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4m)), fs_get_size(serializer, "testfield_i4m_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4n)), fs_get_size(serializer, "testfield_i4n_rank"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4o)), fs_get_size(serializer, "testfield_i4o_rank"))
+      
+      !@assertEqual(w_testfield_i4a_bounds, fs_get_field_bounds(serializer, "testfield_i4a_rank"))
+      !@assertEqual(w_testfield_i4b_bounds, fs_get_field_bounds(serializer, "testfield_i4b_rank"))
+      !@assertEqual(w_testfield_i4c_bounds, fs_get_field_bounds(serializer, "testfield_i4c_rank"))
+      !@assertEqual(w_testfield_i4d_bounds, fs_get_field_bounds(serializer, "testfield_i4d_rank"))
+      !@assertEqual(w_testfield_i4e_bounds, fs_get_field_bounds(serializer, "testfield_i4e_rank"))
+      !@assertEqual(w_testfield_i4f_bounds, fs_get_field_bounds(serializer, "testfield_i4f_rank"))
+      !@assertEqual(w_testfield_i4g_bounds, fs_get_field_bounds(serializer, "testfield_i4g_rank"))
+      !@assertEqual(w_testfield_i4h_bounds, fs_get_field_bounds(serializer, "testfield_i4h_rank"))
+      !@assertEqual(w_testfield_i4i_bounds, fs_get_field_bounds(serializer, "testfield_i4i_rank"))
+      !@assertEqual(w_testfield_i4j_bounds, fs_get_field_bounds(serializer, "testfield_i4j_rank"))
+      !@assertEqual(w_testfield_i4k_bounds, fs_get_field_bounds(serializer, "testfield_i4k_rank"))
+      !@assertEqual(w_testfield_i4l_bounds, fs_get_field_bounds(serializer, "testfield_i4l_rank"))
+      !@assertEqual(w_testfield_i4m_bounds, fs_get_field_bounds(serializer, "testfield_i4m_rank"))
+      !@assertEqual(w_testfield_i4n_bounds, fs_get_field_bounds(serializer, "testfield_i4n_rank"))
       !@assertEqual(w_testfield_i4o_bounds, fs_get_field_bounds(serializer, "testfield_i4o_rank"))
 
       CALL fs_read_field(serializer, savepoint, "testfield_i4a_rank", r_testfield_i4a)

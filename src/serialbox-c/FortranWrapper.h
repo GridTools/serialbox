@@ -65,6 +65,12 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
                                     int* lstride);
 
 /**
+ * \brief Returns the dimensions of the field `name`
+ */
+void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const char* name,
+                                                  int* isize, int* jsize, int* ksize, int* lsize);
+
+/**
  * \brief Add a global meta-information `key=value` pair to the Serializer
  *
  * This function corresponds to `fs_add_serializer_metainfo_X`

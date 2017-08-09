@@ -42,8 +42,9 @@ PUBLIC :: &
   t_serializer, t_savepoint, &
   fs_create_serializer, fs_destroy_serializer, fs_serializer_openmode, fs_add_serializer_metainfo, &
   fs_create_savepoint, fs_destroy_savepoint, fs_add_savepoint_metainfo, &
-  fs_field_exists, fs_register_field, fs_add_field_metainfo, fs_write_field, fs_read_field,        &
-  fs_enable_serialization, fs_disable_serialization, fs_print_debuginfo, fs_read_and_perturb_field
+  fs_field_exists, fs_register_field, fs_add_field_metainfo, fs_write_field, fs_read_field, &
+  fs_enable_serialization, fs_disable_serialization, fs_print_debuginfo, fs_read_and_perturb_field, &
+  fs_get_size
 
   INTEGER, PARAMETER :: MODE_READ = 0
   INTEGER, PARAMETER :: MODE_WRITE = 1
@@ -796,6 +797,40 @@ SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, is
   END IF
 
 END SUBROUTINE fs_check_size
+
+!==============================================================================
+!+ Module function that returns the size of the requested field
+!  Always returns an array with 4 elements.
+!  For fields with a rank less than 4, the upper dimensions are given with size 0.
+!  For scalars the result is {1,0,0,0}.
+!------------------------------------------------------------------------------
+FUNCTION fs_get_size(serializer, fieldname)
+  TYPE(t_serializer)    :: serializer
+  CHARACTER(LEN=*)      :: fieldname
+  INTEGER, DIMENSION(4) :: fs_get_size
+
+  INTERFACE
+    SUBROUTINE fs_get_field_dimensions_(serializer, name, isize, jsize, ksize, lsize) &
+        BIND(c, name='serialboxFortranSerializerGetFieldDimensions')
+     USE, INTRINSIC :: iso_c_binding
+     TYPE(C_PTR), VALUE                    :: serializer
+     CHARACTER(KIND=C_CHAR), DIMENSION(*)  :: name
+     INTEGER(C_INT), INTENT(OUT)           :: isize, jsize, ksize, lsize
+    END SUBROUTINE fs_get_field_dimensions_
+  END INTERFACE
+
+  INTEGER(KIND=C_INT) :: isize, jsize, ksize, lsize
+
+  IF (fs_field_exists(serializer, fieldname)) THEN
+    CALL fs_get_field_dimensions_(serializer%serializer_ptr, TRIM(fieldname), &
+                                  isize, jsize, ksize, lsize)
+    fs_get_size = (/ isize, jsize, ksize, lsize /)
+  ELSE
+    WRITE(*,*) "Serialbox: ERROR: field ", fieldname, " does not exist in the serializer"
+    STOP
+  END IF
+
+END FUNCTION fs_get_size
 
 !=============================================================================
 !=============================================================================
