@@ -46,10 +46,17 @@ struct gridtools_storage_types {
   static constexpr int halo3_left = 3;
   static constexpr int halo4_left = 4;
 
+<<<<<<< HEAD
   static constexpr int halo1_right = halo1_left;
   static constexpr int halo2_right = halo2_left;
   static constexpr int halo3_right = halo3_left;
   static constexpr int halo4_right = halo4_left;
+=======
+  static constexpr int halo1_right = 3;
+  static constexpr int halo2_right = 4;
+  static constexpr int halo3_right = 5;
+  static constexpr int halo4_right = 6;
+>>>>>>> remove_dynamic_exception_specification
 
   // Alignment for left halo boundaries
   using halo_2d_type = gridtools::halo<halo1_left, halo2_left>;
@@ -63,12 +70,26 @@ struct gridtools_storage_types {
   using gpu_3d_layout_type = gridtools::layout_map<2, 1, 0>;
   using gpu_4d_layout_type = gridtools::layout_map<3, 2, 1, 0>;
 
+<<<<<<< HEAD
   // Storage Info
   using cpu_2d_real_meta_data_type = storage_traits_type::storage_info_t<1, 2, halo_2d_type>;
+=======
+  using cpu_4d_layout_type = gridtools::layout_map<0, 1, 2, 3>; // stride 1 on l (row-major)
+  using gpu_4d_layout_type = gridtools::layout_map<3, 2, 1, 0>; // stride 1 on i (col-major)
+
+  //===----------------------------------------------------------------------------------------===//
+  //     Meta Data
+  //===----------------------------------------------------------------------------------------===//
+
+  using cpu_2d_real_meta_data_type =
+      storage_traits_type::meta_storage_type<1, cpu_2d_real_layout_type, halo_2d_type,
+                                             gridtools::aligned<cpu_alignment>>;
+>>>>>>> remove_dynamic_exception_specification
   using gpu_2d_real_meta_data_type =
       gridtools::host_storage_info<2, gpu_2d_real_layout_type, halo_2d_type,
                                    gridtools::alignment<gpu_alignment>>;
   using cpu_2d_meta_data_type =
+<<<<<<< HEAD
       storage_traits_type::special_storage_info_t<3, gridtools::selector<1, 1, 0>, halo_3d_type>;
   using gpu_2d_meta_data_type = gridtools::host_storage_info<4, gpu_2d_layout_type, halo_3d_type,
                                                              gridtools::alignment<gpu_alignment>>;
@@ -88,14 +109,53 @@ struct gridtools_storage_types {
   using gpu_3d_storage_type = storage_traits_type::data_store_t<T, gpu_3d_meta_data_type>;
   using cpu_4d_storage_type = storage_traits_type::data_store_t<T, cpu_4d_meta_data_type>;
   using gpu_4d_storage_type = storage_traits_type::data_store_t<T, gpu_4d_meta_data_type>;
+=======
+      storage_traits_type::meta_storage_type<3, cpu_2d_layout_type, halo_3d_type,
+                                             gridtools::aligned<cpu_alignment>>;
+  using gpu_2d_meta_data_type =
+      storage_traits_type::meta_storage_type<4, gpu_2d_layout_type, halo_3d_type,
+                                             gridtools::aligned<gpu_alignment>>;
+
+  using cpu_3d_meta_data_type =
+      storage_traits_type::meta_storage_type<5, cpu_3d_layout_type, halo_3d_type,
+                                             gridtools::aligned<cpu_alignment>>;
+  using gpu_3d_meta_data_type =
+      storage_traits_type::meta_storage_type<6, gpu_3d_layout_type, halo_3d_type,
+                                             gridtools::aligned<gpu_alignment>>;
+
+  using cpu_4d_meta_data_type =
+      storage_traits_type::meta_storage_type<7, cpu_4d_layout_type, halo_4d_type,
+                                             gridtools::aligned<cpu_alignment>>;
+  using gpu_4d_meta_data_type =
+      storage_traits_type::meta_storage_type<8, gpu_4d_layout_type, halo_4d_type,
+                                             gridtools::aligned<gpu_alignment>>;
+
+  //===----------------------------------------------------------------------------------------===//
+  //     Storage
+  //===----------------------------------------------------------------------------------------===//
+  using cpu_2d_real_storage_type = storage_traits_type::storage_type<T, cpu_2d_real_meta_data_type>;
+  using gpu_2d_real_storage_type = storage_traits_type::storage_type<T, gpu_2d_real_meta_data_type>;
+  using cpu_2d_storage_type = storage_traits_type::storage_type<T, cpu_2d_meta_data_type>;
+  using gpu_2d_storage_type = storage_traits_type::storage_type<T, gpu_2d_meta_data_type>;
+
+  using cpu_3d_storage_type = storage_traits_type::storage_type<T, cpu_3d_meta_data_type>;
+  using gpu_3d_storage_type = storage_traits_type::storage_type<T, gpu_3d_meta_data_type>;
+
+  using cpu_4d_storage_type = storage_traits_type::storage_type<T, cpu_4d_meta_data_type>;
+  using gpu_4d_storage_type = storage_traits_type::storage_type<T, gpu_4d_meta_data_type>;
+>>>>>>> remove_dynamic_exception_specification
 
   template <typename Storage>
   static void init2DReal(Storage& storage, int dim1, int dim2) {
     T val_2d = 0.0;
     for(int j = 0; j < dim2; ++j)
       for(int i = 0; i < dim1; ++i, val_2d += 1.0) {
+<<<<<<< HEAD
         auto view = make_host_view(storage);
         view(i, j) = val_2d;
+=======
+        storage(i, j) = val_2d;
+>>>>>>> remove_dynamic_exception_specification
       }
   }
 
@@ -104,8 +164,12 @@ struct gridtools_storage_types {
     T val_2d = 0.0;
     for(int j = 0; j < dim2; ++j)
       for(int i = 0; i < dim1; ++i, val_2d += 1.0) {
+<<<<<<< HEAD
         auto view = make_host_view(storage);
         view(i, j, 0) = val_2d;
+=======
+        storage(i, j, 0) = val_2d;
+>>>>>>> remove_dynamic_exception_specification
       }
   }
 
@@ -115,8 +179,12 @@ struct gridtools_storage_types {
     for(int k = 0; k < dim3; ++k)
       for(int j = 0; j < dim2; ++j)
         for(int i = 0; i < dim1; ++i, val_3d += 1.0) {
+<<<<<<< HEAD
           auto view = make_host_view(storage);
           view(i, j, k) = val_3d;
+=======
+          storage(i, j, k) = val_3d;
+>>>>>>> remove_dynamic_exception_specification
         }
   }
 
@@ -127,8 +195,12 @@ struct gridtools_storage_types {
       for(int k = 0; k < dim3; ++k)
         for(int j = 0; j < dim2; ++j)
           for(int i = 0; i < dim1; ++i, val_4d += 1.0) {
+<<<<<<< HEAD
             auto view = make_host_view(storage);
             view(i, j, k, l) = val_4d;
+=======
+            storage(i, j, k, l) = val_4d;
+>>>>>>> remove_dynamic_exception_specification
           }
   }
 };

@@ -29,16 +29,16 @@ namespace stella {
 class SerializationException : public std::exception {
 public:
   /// \brief Default constructor
-  SerializationException() throw() {}
+  SerializationException() {}
 
   /// \brief Virtual destructor
-  virtual ~SerializationException() throw() {}
+  virtual ~SerializationException() {}
 
   /// \brief Initialize the exception with an explanatory string `errormsg`
   void Init(const std::string& errormsg) { message_ = errormsg; }
 
   /// \brief Returns an explanatory string
-  const char* what() const throw() { return message_.c_str(); }
+  const char* what() const { return message_.c_str(); }
 
   /// \brief Returns an explanatory string
   const std::string& message() const { return message_; }

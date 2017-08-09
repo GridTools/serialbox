@@ -213,7 +213,6 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_2DRealGPU) {
   EXPECT_EQ(gpu_2d_real_strides[1], gpu_2d_real_meta_data.template stride<1>());
 
   // Data
-
   auto view = make_host_view(gpu_2d_real_storage);
   EXPECT_EQ(gpu_2d_real_origin_ptr, static_cast<void*>(&view(0, 0)));
 }
