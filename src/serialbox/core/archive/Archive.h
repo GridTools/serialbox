@@ -42,7 +42,7 @@ public:
   /// \param info           Field meta-information (can be a `nullptr`)
   /// \return Unique identidier of the field
   virtual FieldID write(const StorageView& storageView, const std::string& field,
-                        const std::shared_ptr<FieldMetainfoImpl> info) throw(Exception) = 0;
+                        const std::shared_ptr<FieldMetainfoImpl> info) = 0;
 
   /// \brief Read the field identified by `fieldID` and given by `storageView` from disk
   ///
@@ -50,7 +50,7 @@ public:
   /// \param fieldID        Name and and Id of the field
   /// \param info           Field meta-information (can be a `nullptr`)
   virtual void read(StorageView& storageView, const FieldID& fieldID,
-                    std::shared_ptr<FieldMetainfoImpl> info) const throw(Exception) = 0;
+                    std::shared_ptr<FieldMetainfoImpl> info) const = 0;
 
   /// \brief Update the meta-data on disk
   virtual void updateMetaData() = 0;

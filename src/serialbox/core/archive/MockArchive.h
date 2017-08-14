@@ -42,10 +42,10 @@ public:
   /// \see Archive
   /// @{
   virtual FieldID write(const StorageView& storageView, const std::string& fieldID,
-                        const std::shared_ptr<FieldMetainfoImpl> info) throw(Exception) override;
+                        const std::shared_ptr<FieldMetainfoImpl> info) override;
 
   virtual void read(StorageView& storageView, const FieldID& fieldID,
-                    std::shared_ptr<FieldMetainfoImpl> info) const throw(Exception) override;
+                    std::shared_ptr<FieldMetainfoImpl> info) const override;
 
   virtual void updateMetaData() override {}
 
