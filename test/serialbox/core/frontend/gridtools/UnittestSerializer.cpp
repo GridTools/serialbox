@@ -12,6 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#ifdef SERIALBOX_HAS_GRIDTOOLS
+
 #include "utility/GridTools.h"
 #include "utility/SerializerTestBase.h"
 #include "utility/Storage.h"
@@ -126,8 +128,6 @@ TEST_F(GridToolsSerializerUtilityTest, RegisterFields) {
   // Register existing field -> Exception
   EXPECT_THROW(ser.register_field("field1", info1), exception);
 }
-
-#ifdef SERIALBOX_HAS_GRIDTOOLS
 
 namespace {
 

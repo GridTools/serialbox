@@ -26,9 +26,8 @@ namespace gridtools {
 namespace internal {
 
 inline std::vector<int> unsigned_to_int(const std::vector<unsigned int>& in) {
-  std::vector<int> out;
-  for(const auto elem : in)
-    out.push_back(elem);
+  std::vector<int> out(in.size());
+  std::copy(in.begin(), in.end(), out.begin());
   return out;
 }
 

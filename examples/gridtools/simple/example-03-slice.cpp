@@ -59,18 +59,13 @@ int main() {
     // Allocate 3D arrays and fill the input with some random numbers
     //
     storage_info_t storage_info(N, M, K);
-    storage_t field_in(storage_info, -1., "storage");
-    storage_t field_out(storage_info, -1., "storage");
 
     std::default_random_engine gen;
     std::uniform_real_distribution<double> dist(0.0, 1.0);
-    {
-      auto in = make_host_view(field_in);
-      for(int i = 0; i < N; ++i)
-        for(int j = 0; j < M; ++j)
-          for(int k = 0; k < K; ++k)
-            in(i, j, k) = dist(gen);
-    }
+
+    storage_t field_in(storage_info, [&](int i, int j, int k) { return dist(gen); }, "storage");
+    storage_t field_out(storage_info, -1., "storage");
+
     //
     // Write the gridtools storage to disk at Savepoint `sp`
     //

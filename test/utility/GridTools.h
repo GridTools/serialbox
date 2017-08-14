@@ -57,7 +57,8 @@ struct gridtools_storage_types {
   using halo_4d_type = gridtools::halo<halo1_left, halo2_left, halo3_left, halo4_left>;
 
   // Layout maps to use GPU layouts with GPU compilation of gridtools disabled.
-  // TODO should be replaced by a real GPU test (a CUDA compiler would be required)
+  // TODO should be replaced by a real GPU test using the GPU backend
+  // (a CUDA compiler would be  required)
   using gpu_2d_real_layout_type = gridtools::layout_map<1, 0>; // stride 1 on i (col-major)
   using gpu_2d_layout_type = gridtools::layout_map<1, 0, -1>;
   using gpu_3d_layout_type = gridtools::layout_map<2, 1, 0>;

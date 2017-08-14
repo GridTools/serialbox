@@ -99,15 +99,11 @@ void write() {
   //
   storage_info_t storage_info(N, M, 1);
 
-  storage_t phi(storage_info, -1., "phi");
-  storage_t lap(storage_info, -1., "lap");
-
   std::default_random_engine gen;
   std::uniform_real_distribution<double> dist(0.0, 1.0);
-  auto phi_view = make_host_view(phi);
-  for(int i = 0; i < N; ++i)
-    for(int j = 0; j < M; ++j)
-      phi_view(i, j, 0) = dist(gen);
+
+  storage_t phi(storage_info, [&](int i, int j, int k) { return dist(gen); }, "phi");
+  storage_t lap(storage_info, -1., "lap");
 
   //
   // Create the field meta-information of `phi` directly with the gridtools storage and register it
@@ -205,6 +201,7 @@ void write() {
     // task!)
     //
     auto lap_view = make_host_view(lap);
+    auto phi_view = make_host_view(phi);
     for(int i = 0; i < N; ++i)
       for(int j = 0; j < M; ++j)
         std::swap(phi_view(i, j, 0), lap_view(i, j, 0));

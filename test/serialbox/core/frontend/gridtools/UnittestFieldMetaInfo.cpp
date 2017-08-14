@@ -13,6 +13,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#ifdef SERIALBOX_HAS_GRIDTOOLS
+
 #include "utility/GridTools.h"
 #include "serialbox/core/frontend/gridtools/FieldMetainfo.h"
 #include <gtest/gtest.h>
@@ -68,8 +70,6 @@ TEST(GridToolsFieldMetainfoImplTest, Construction) {
   ASSERT_EQ(info_eq, info3);
   ASSERT_NE(info_ne, info3);
 }
-
-#ifdef SERIALBOX_HAS_GRIDTOOLS
 
 TEST(GridToolsFieldMetainfoImplTest, ConstructionWithGridToolsStorage) {
   using types = serialbox::unittest::gridtools_storage_types<double>;
