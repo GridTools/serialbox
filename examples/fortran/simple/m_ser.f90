@@ -48,7 +48,8 @@ USE utils_ppser, ONLY:  &
       CASE(1)
         call fs_read_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a)
       CASE(2)
-        call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a, ppser_zrperturb)
+        call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint,&
+                                                 'ser_a', a, ppser_zrperturb)
     END SELECT
 
   END SUBROUTINE serialize
@@ -57,7 +58,8 @@ USE utils_ppser, ONLY:  &
     IMPLICIT NONE
     REAL(KIND=8), DIMENSION(:,:,:) :: a
     ! setup serialization environment
-    call ppser_initialize(directory='.',prefix='SerialboxTest-output',prefix_ref='SerialboxTest')
+    call ppser_initialize(directory='.',prefix='SerialboxTest-output', &
+                                                prefix_ref='SerialboxTest')
     call fs_create_savepoint('sp1', ppser_savepoint)
     call ppser_set_mode(1)
 
@@ -67,7 +69,8 @@ USE utils_ppser, ONLY:  &
       CASE(1)
         call fs_read_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a)
       CASE(2)
-        call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a, ppser_zrperturb)
+        call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint,& 
+                                                'ser_a', a, ppser_zrperturb)
     END SELECT
     call ppser_set_mode(0)
 
@@ -77,7 +80,8 @@ USE utils_ppser, ONLY:  &
       CASE(1)
         call fs_read_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a)
       CASE(2)
-        call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a, ppser_zrperturb)
+        call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint,&
+                                                 'ser_a', a, ppser_zrperturb)
     END SELECT
 
   END SUBROUTINE deserialize
@@ -89,7 +93,8 @@ USE utils_ppser, ONLY:  &
     rprecision = 10.0**(-PRECISION(1.0))
 
     ! setup serialization environment
-    call ppser_initialize(directory='.',prefix='SerialboxTest-output',prefix_ref='SerialboxTest',rprecision=rprecision,rperturb=1.0e-5_8)
+    call ppser_initialize(directory='.',prefix='SerialboxTest-output', &
+          prefix_ref='SerialboxTest',rprecision=rprecision,rperturb=1.0e-5_8)
     call fs_create_savepoint('sp1', ppser_savepoint)
     call ppser_set_mode(2)
     ! file: /Volumes/MeteoSwissCode/serialbox2/examples/Fortran/with_pp_ser/m_ser.f90 lineno: #40
@@ -99,7 +104,8 @@ USE utils_ppser, ONLY:  &
       CASE(1)
         call fs_read_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a)
       CASE(2)
-        call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a, ppser_zrperturb)
+        call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint,&
+                                                 'ser_a', a, ppser_zrperturb)
     END SELECT
 
   END SUBROUTINE deserialize_with_perturb
