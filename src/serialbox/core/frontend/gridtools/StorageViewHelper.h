@@ -18,6 +18,7 @@
 #include <boost/mpl/max_element.hpp>
 #include <utility>
 #include <vector>
+#include <storage/common/storage_info_rt.hpp>
 
 namespace serialbox {
 
