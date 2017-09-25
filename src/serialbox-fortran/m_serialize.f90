@@ -194,6 +194,11 @@ PRIVATE
       fs_write_int_2d, &
       fs_write_int_3d, &
       fs_write_int_4d, &
+      fs_write_long_0d, &
+      fs_write_long_1d, &
+      fs_write_long_2d, &
+      fs_write_long_3d, &
+      fs_write_long_4d, &
       fs_write_float_0d, &
       fs_write_float_1d, &
       fs_write_float_2d, &
@@ -227,6 +232,11 @@ PRIVATE
       fs_read_int_2d, &
       fs_read_int_3d, &
       fs_read_int_4d, &
+      fs_read_long_0d, &
+      fs_read_long_1d, &
+      fs_read_long_2d, &
+      fs_read_long_3d, &
+      fs_read_long_4d, &
       fs_read_float_0d, &
       fs_read_float_1d, &
       fs_read_float_2d, &
@@ -1349,6 +1359,141 @@ SUBROUTINE fs_write_int_4d(serializer, savepoint, fieldname, field)
                       C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
 END SUBROUTINE fs_write_int_4d
 
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE fs_write_long_0d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  INTEGER(KIND=C_LONG), POINTER :: padd
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), 1, 0, 0, 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                        TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_write_long_0d
+
+
+SUBROUTINE fs_write_long_1d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  INTEGER(KIND=C_LONG), POINTER :: padd(:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), 0, 0, 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)))), &
+                       C_LOC(padd(1)), &
+                       C_LOC(padd(1)), &
+                       C_LOC(padd(1)), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                        TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_write_long_1d
+
+
+SUBROUTINE fs_write_long_2d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  INTEGER(KIND=C_LONG), POINTER :: padd(:,:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1, 1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
+                       C_LOC(padd(1, MIN(2, SIZE(field, 2)))), &
+                       C_LOC(padd(1, 1)), &
+                       C_LOC(padd(1, 1)), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                        TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1,1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_write_long_2d
+
+
+SUBROUTINE fs_write_long_3d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:,:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  INTEGER(KIND=C_LONG), POINTER :: padd(:,:,:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1, 1, 1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1)), &
+                       C_LOC(padd(1, MIN(2, SIZE(field, 2)), 1)), &
+                       C_LOC(padd(1, 1, MIN(2, SIZE(field, 3)))), &
+                       C_LOC(padd(1, 1, 1)), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                        TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1,1,1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_write_long_3d
+
+
+SUBROUTINE fs_write_long_4d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*)                        :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:,:,:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  INTEGER(KIND=C_LONG), POINTER :: padd(:,:,:,:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), &
+                                                                 SIZE(field, 3), SIZE(field, 4))
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1, 1, 1, 1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1, 1)), &
+                       C_LOC(padd(1, MIN(2, SIZE(field, 2)), 1, 1)), &
+                       C_LOC(padd(1, 1, MIN(2, SIZE(field, 3)), 1)), &
+                       C_LOC(padd(1, 1, 1, MIN(2, SIZE(field, 4)))), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                        TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_write_long_4d
+
 !=============================================================================
 !=============================================================================
 
@@ -1964,6 +2109,140 @@ SUBROUTINE fs_read_int_4d(serializer, savepoint, fieldname, field)
                        TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
 END SUBROUTINE fs_read_int_4d
+
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE fs_read_long_0d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  INTEGER(KIND=C_LONG), POINTER :: padd
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), 0, 0, 0, 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                      TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_read_long_0d
+
+
+SUBROUTINE fs_read_long_1d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  INTEGER(KIND=C_LONG), POINTER :: padd(:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), 0, 0, 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)))), &
+                       C_LOC(padd(1)), &
+                       C_LOC(padd(1)), &
+                       C_LOC(padd(1)), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                       TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_read_long_1d
+
+
+SUBROUTINE fs_read_long_2d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  INTEGER(KIND=C_LONG), POINTER :: padd(:,:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1, 1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
+                       C_LOC(padd(1, MIN(2, SIZE(field, 2)))), &
+                       C_LOC(padd(1, 1)), &
+                       C_LOC(padd(1, 1)), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                       TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1,1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_read_long_2d
+
+
+SUBROUTINE fs_read_long_3d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:,:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  INTEGER(KIND=C_LONG), POINTER :: padd(:,:,:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1, 1, 1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1)), &
+                       C_LOC(padd(1, MIN(2, SIZE(field, 2)), 1)), &
+                       C_LOC(padd(1, 1, MIN(2, SIZE(field, 3)))), &
+                       C_LOC(padd(1, 1, 1)), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                       TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1,1,1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_read_long_3d
+
+SUBROUTINE fs_read_long_4d(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:,:,:)
+
+  ! Local variables
+  INTEGER(C_INT) :: istride, jstride, kstride, lstride
+  INTEGER(KIND=C_LONG), POINTER :: padd(:,:,:,:)
+
+  ! This workaround is needed for gcc < 4.9
+  padd=>field
+
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), &
+                                                      SIZE(field, 3), SIZE(field, 4))
+  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+                       C_LOC(padd(1, 1, 1, 1)), &
+                       C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1, 1)), &
+                       C_LOC(padd(1, MIN(2, SIZE(field, 2)), 1, 1)), &
+                       C_LOC(padd(1, 1, MIN(2, SIZE(field, 3)), 1)), &
+                       C_LOC(padd(1, 1, 1, MIN(2, SIZE(field, 4)))), &
+                       istride, jstride, kstride, lstride)
+  CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                       TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
+END SUBROUTINE fs_read_long_4d
 
 !=============================================================================
 !=============================================================================
