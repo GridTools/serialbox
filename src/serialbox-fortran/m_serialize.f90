@@ -293,6 +293,15 @@ FUNCTION fs_intsize()
   fs_intsize = INT(SIZE(TRANSFER(intvalue, buffer)))
 END FUNCTION fs_intsize
 
+FUNCTION fs_longsize()
+  INTEGER(KIND=C_INT) :: fs_longsize
+
+  CHARACTER(LEN=1), DIMENSION(128) :: buffer
+  INTEGER(KIND=C_LONG) :: intvalue
+
+  fs_longsize = INT(SIZE(TRANSFER(intvalue, buffer)))
+END FUNCTION fs_longsize
+
 FUNCTION fs_floatsize()
   INTEGER(KIND=C_INT) :: fs_floatsize
 
@@ -599,6 +608,8 @@ SUBROUTINE fs_register_field(serializer, fieldname, data_type, bytes_per_element
     c_type = SERIALBOX_FIELD_TYPE_BOOLEAN
   CASE('int')
     c_type = SERIALBOX_FIELD_TYPE_INT32
+  CASE('long')
+    c_type = SERIALBOX_FIELD_TYPE_INT64
   CASE('float')
     c_type = SERIALBOX_FIELD_TYPE_FLOAT32
   CASE('double')
@@ -786,6 +797,8 @@ SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, is
     c_type = SERIALBOX_FIELD_TYPE_BOOLEAN
   CASE('int')
     c_type = SERIALBOX_FIELD_TYPE_INT32
+  CASE('long')
+    c_type = SERIALBOX_FIELD_TYPE_INT64
   CASE('float')
     c_type = SERIALBOX_FIELD_TYPE_FLOAT32
   CASE('double')
@@ -1376,7 +1389,7 @@ SUBROUTINE fs_write_long_0d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), 1, 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), 1, 0, 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), &
                        istride, jstride, kstride, lstride)
@@ -1399,7 +1412,7 @@ SUBROUTINE fs_write_long_1d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), 0, 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)))), &
@@ -1426,7 +1439,7 @@ SUBROUTINE fs_write_long_2d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
+  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
@@ -1453,7 +1466,7 @@ SUBROUTINE fs_write_long_3d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1)), &
@@ -1480,7 +1493,7 @@ SUBROUTINE fs_write_long_4d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), &
+  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), SIZE(field, 2), &
                                                                  SIZE(field, 3), SIZE(field, 4))
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1, 1)), &
@@ -2127,7 +2140,7 @@ SUBROUTINE fs_read_long_0d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), 0, 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), 0, 0, 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), &
                        istride, jstride, kstride, lstride)
@@ -2150,7 +2163,7 @@ SUBROUTINE fs_read_long_1d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), 0, 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)))), &
@@ -2177,7 +2190,7 @@ SUBROUTINE fs_read_long_2d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
+  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
@@ -2204,7 +2217,7 @@ SUBROUTINE fs_read_long_3d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1)), &
@@ -2230,7 +2243,7 @@ SUBROUTINE fs_read_long_4d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), &
+  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), SIZE(field, 2), &
                                                       SIZE(field, 3), SIZE(field, 4))
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1, 1)), &
