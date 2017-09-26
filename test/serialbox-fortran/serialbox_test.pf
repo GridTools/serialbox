@@ -249,9 +249,7 @@ CONTAINS
       CHARACTER(len=*), PARAMETER :: base_name = 'test_rank_2d'
       
       w_testfield_i2a = RESHAPE((/ 0, 4, 8 /), SHAPE(w_testfield_i2a))
-      
       w_testfield_i2b = RESHAPE((/ 0, 4, 8 /), SHAPE(w_testfield_i2b))
-      
       w_testfield_i2c = RESHAPE((/ 23 /), SHAPE(w_testfield_i2c))
       
       CALL fs_create_serializer(dir, base_name, 'w', serializer)
