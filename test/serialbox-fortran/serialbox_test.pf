@@ -179,10 +179,11 @@ CONTAINS
     
       TYPE(t_serializer) :: serializer
       INTEGER :: w_testfield_i0, r_testfield_i0
-      INTEGER :: w_testfield_i1(1), r_testfield_i1(1), w_testfield_i1_bounds(2)
+      INTEGER :: w_testfield_i1(1), r_testfield_i1(1)
       LOGICAL :: w_testfield_l0, r_testfield_l0
       LOGICAL :: w_testfield_l1(1), r_testfield_l1(1)
-      INTEGER :: w_testfield_l1_bounds(2)
+      INTEGER(8) :: w_testfield_long0, r_testfield_long0
+      INTEGER(8) :: w_testfield_long1(1), r_testfield_long1(1)
       
       CHARACTER(len=*), PARAMETER :: base_name = 'test_scalars'
       
@@ -190,12 +191,16 @@ CONTAINS
       w_testfield_i1 = (/ 999 /)
       w_testfield_l0 = .TRUE.
       w_testfield_l1 = (/ .FALSE. /)
+      w_testfield_long0 = 999888777666555_8
+      w_testfield_long1 = (/ -1234567890123_8 /)
             
       CALL fs_create_serializer(dir, base_name, 'w', serializer)
       CALL fs_write_field(serializer, savepoint, "testfield_i0", w_testfield_i0)
       CALL fs_write_field(serializer, savepoint, "testfield_i1", w_testfield_i1)
       CALL fs_write_field(serializer, savepoint, "testfield_l0", w_testfield_l0)
       CALL fs_write_field(serializer, savepoint, "testfield_l1", w_testfield_l1)
+      CALL fs_write_field(serializer, savepoint, "testfield_long0", w_testfield_long0)
+      CALL fs_write_field(serializer, savepoint, "testfield_long1", w_testfield_long1)
       CALL fs_destroy_serializer(serializer)
       
       CALL fs_create_serializer(dir, base_name, 'r', serializer)
@@ -204,19 +209,22 @@ CONTAINS
       @assertTrue(fs_field_exists(serializer, "testfield_i1"))
       @assertTrue(fs_field_exists(serializer, "testfield_l0"))
       @assertTrue(fs_field_exists(serializer, "testfield_l1"))
+      @assertTrue(fs_field_exists(serializer, "testfield_long0"))
+      @assertTrue(fs_field_exists(serializer, "testfield_long1"))
       
       @assertEqual(exp_size_scalar, fs_get_size(serializer, "testfield_i0"))
       @assertEqual(exp_size(SHAPE(w_testfield_i1)), fs_get_size(serializer, "testfield_i1"))
       @assertEqual(exp_size_scalar, fs_get_size(serializer, "testfield_l0"))
-      @assertEqual(exp_size(SHAPE(w_testfield_i1)), fs_get_size(serializer, "testfield_l1"))
-      
-      !@assertEqual(w_testfield_i1_bounds, fs_get_field_bounds(serializer, "testfield_i1"))
-      !@assertEqual(w_testfield_l1_bounds, fs_get_field_bounds(serializer, "testfield_l1"))
+      @assertEqual(exp_size(SHAPE(w_testfield_l1)), fs_get_size(serializer, "testfield_l1"))
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "testfield_long0"))
+      @assertEqual(exp_size(SHAPE(w_testfield_long1)), fs_get_size(serializer, "testfield_long1"))
       
       CALL fs_read_field(serializer, savepoint, "testfield_i0", r_testfield_i0)
       CALL fs_read_field(serializer, savepoint, "testfield_i1", r_testfield_i1)
       CALL fs_read_field(serializer, savepoint, "testfield_l0", r_testfield_l0)
       CALL fs_read_field(serializer, savepoint, "testfield_l1", r_testfield_l1)
+      CALL fs_read_field(serializer, savepoint, "testfield_long0", r_testfield_long0)
+      CALL fs_read_field(serializer, savepoint, "testfield_long1", r_testfield_long1)
       
       CALL fs_destroy_serializer(serializer)
       
@@ -224,6 +232,8 @@ CONTAINS
       @assertEqual(w_testfield_i1, r_testfield_i1)
       @assertEquivalent(w_testfield_l0, r_testfield_l0)
       @assertEquivalent(w_testfield_l1, r_testfield_l1)
+      @assertEqual(w_testfield_long0, r_testfield_long0)
+      @assertEqual(w_testfield_long1, r_testfield_long1)
     
     END SUBROUTINE testScalars
    
