@@ -79,6 +79,49 @@ CONTAINS
     END SUBROUTINE testIntegerArrays
    
 @Test
+    SUBROUTINE testLongArrays()
+    
+      TYPE(t_serializer) :: serializer
+      INTEGER(KIND=8) :: w_testfield_long1(5), w_testfield_long2(4,3), w_testfield_long3(3,2,2), w_testfield_long4(2,2,2,2)
+      INTEGER(KIND=8) :: r_testfield_long1(5), r_testfield_long2(4,3), r_testfield_long3(3,2,2), r_testfield_long4(2,2,2,2)
+      
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_long'
+      
+      w_testfield_long1 = (/ 0_8, 1_8, 2_8, 3_8, 999888777666555_8 /)
+      w_testfield_long2 = RESHAPE((/ 0_8, 3_8, 2_8, 9223372036854775807_8, 1_8, 4_8, 7_8, 10_8, 2_8, 5_8, 8_8, 11_8 /), SHAPE(w_testfield_long2))
+      w_testfield_long3 = RESHAPE((/ 0_8, 4_8, 8_8, 2_8, 6_8, 10_8, 1_8, 5_8, -9223372036854775807_8, 3_8, 7_8, 11_8 /), SHAPE(w_testfield_long3))
+      w_testfield_long4 = RESHAPE((/ 0_8, 1_8, 2_8, 3_8, 4_8, 5_8, 6_8, 7_8, 2147483647_8, 2147483648_8, -2147483648_8, -2147483649_8, 12_8, 13_8, 14_8, 15_8 /), SHAPE(w_testfield_long4))
+            
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL fs_write_field(serializer, savepoint, "testfield_long1", w_testfield_long1)
+      CALL fs_write_field(serializer, savepoint, "testfield_long2", w_testfield_long2)
+      CALL fs_write_field(serializer, savepoint, "testfield_long3", w_testfield_long3)
+      CALL fs_write_field(serializer, savepoint, "testfield_long4", w_testfield_long4)
+      CALL fs_destroy_serializer(serializer)
+      
+      CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      @assertTrue(fs_field_exists(serializer, "testfield_long1"))
+      @assertTrue(fs_field_exists(serializer, "testfield_long2"))
+      @assertTrue(fs_field_exists(serializer, "testfield_long3"))
+      @assertTrue(fs_field_exists(serializer, "testfield_long4"))
+      @assertEqual(exp_size(SHAPE(w_testfield_long1)), fs_get_size(serializer, "testfield_long1"))
+      @assertEqual(exp_size(SHAPE(w_testfield_long2)), fs_get_size(serializer, "testfield_long2"))
+      @assertEqual(exp_size(SHAPE(w_testfield_long3)), fs_get_size(serializer, "testfield_long3"))
+      @assertEqual(exp_size(SHAPE(w_testfield_long4)), fs_get_size(serializer, "testfield_long4"))
+      CALL fs_read_field(serializer, savepoint, "testfield_long1", r_testfield_long1)
+      CALL fs_read_field(serializer, savepoint, "testfield_long2", r_testfield_long2)
+      CALL fs_read_field(serializer, savepoint, "testfield_long3", r_testfield_long3)
+      CALL fs_read_field(serializer, savepoint, "testfield_long4", r_testfield_long4)
+      CALL fs_destroy_serializer(serializer)
+      
+      @assertEqual(w_testfield_long1, r_testfield_long1)
+      @assertEqual(w_testfield_long2, r_testfield_long2)
+      @assertEqual(w_testfield_long3, r_testfield_long3)
+      @assertEqual(w_testfield_long4, r_testfield_long4)
+    
+    END SUBROUTINE testLongArrays
+   
+@Test
     SUBROUTINE testLogicalArrays()
     
       TYPE(t_serializer) :: serializer
