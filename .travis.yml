@@ -93,7 +93,7 @@ matrix:
   # Linux / Clang
   - os: linux
     env: 
-      - LLVM_VERSION=3.6.2
+      - LLVM_VERSION=3.8.1
       - CONFIG=Release
     compiler: clang
     addons:
@@ -104,7 +104,7 @@ matrix:
           
   - os: linux
     env: 
-      - LLVM_VERSION=3.6.2
+      - LLVM_VERSION=3.8.1
       - CONFIG=Debug
     compiler: clang
     addons:
@@ -115,7 +115,7 @@ matrix:
 
   - os: linux
     env: 
-      - LLVM_VERSION=3.7.1
+      - LLVM_VERSION=4.0.1
       - CONFIG=Release
     compiler: clang
     addons:
@@ -126,7 +126,7 @@ matrix:
 
   - os: linux
     env: 
-      - LLVM_VERSION=3.8.1
+      - LLVM_VERSION=5.0.0
       - CONFIG=Release
     compiler: clang
     addons:
@@ -138,9 +138,9 @@ matrix:
 # Set directories to cache
 cache:
   directories:
-    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.6.2
-    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.7.1
     - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8.1
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-4.0.1
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-5.0.0
     - ${TRAVIS_BUILD_DIR}/deps/boost-1.60.0-gcc-5
     - ${TRAVIS_BUILD_DIR}/deps/boost-1.60.0-gcc-6
 
