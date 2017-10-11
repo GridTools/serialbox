@@ -48,29 +48,51 @@ if [[ "${FC_COMPILER}" != "" ]]; then
   export FC=${FC_COMPILER}
 else
   export SERIALBOX_ENABLE_FORTRAN=OFF
-
 fi
 
-pushd $(pwd)
-mkdir -p build && cd build
 
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+  pushd $(pwd)
+  mkdir -p build && cd build
+  
   cmake ..                                                                                         \
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                                                     \
         -DSERIALBOX_TESTING=ON                                                                     \
-        -DSERIALBOX_ENABLE_FORTRAN=OFF
+        -DSERIALBOX_ENABLE_FORTRAN=OFF                                                             \
+      || fatal_error "failed to configure cmake"
   make -j2 install || fatal_error "failed to build"
+  
+  popd
 else # Linux 
+  pushd $(pwd)
+  mkdir -p build && cd build
+
   cmake ..                                                                                         \
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                                                     \
         -DPYTHON_EXECUTABLE="$SERIALBOX_PYTHON_DIR/bin/python3"                                    \
         -DSERIALBOX_TESTING=ON                                                                     \
         -DSERIALBOX_ENABLE_FORTRAN=$SERIALBOX_ENABLE_FORTRAN                                       \
-        -DBOOST_ROOT="$BOOST_ROOT"
+        -DBOOST_ROOT="$BOOST_ROOT"                                                                 \
+      || fatal_error "failed to configure cmake"
   make -j2 install || fatal_error "failed to build"
+
+  popd
+
+  if [[ "${FC_COMPILER}" != "" ]]; then
+    pushd $(pwd)
+    cd examples/fortran/perturbation
+    mkdir -p build && cd build
+    
+    cmake ..         
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                                                     \
+        -DPYTHON_EXECUTABLE="$SERIALBOX_PYTHON_DIR/bin/python3"                                    \
+        -DBOOST_ROOT="$BOOST_ROOT"                                                                 \
+        || fatal_error "failed to configure cmake"
+    make || fatal_error "failed to build"
+    
+    popd
 fi
 
-popd
 
 # Run Python, C and C++ unittests
 pushd $(pwd)
@@ -84,7 +106,7 @@ popd
 # Run stand-alone Fortran example
 if [[ "${FC_COMPILER}" != "" ]]; then
   pushd $(pwd)
-  cd examples/fortran/perturbation/build || fatal_error "failed to run stand-alone Fortran example"
-  bash run.sh
+  cd examples/fortran/perturbation/build
+  bash run.sh || fatal_error "failed to run stand-alone Fortran example"
   popd
 fi
