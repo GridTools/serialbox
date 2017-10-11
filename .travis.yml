@@ -45,7 +45,7 @@ jobs:
     - <<: *prepare_cache_stage
       compiler: clang
       os: linux
-      env: CXX_COMPILER=clang++-4.0 C_COMPILER=clang-4.0
+      env: CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8
 
     # Linux GCC 5.4 (Release) [Linux]
     - &test_stage
