@@ -1,330 +1,138 @@
-sudo: required
+#!/usr/bin/env bash
+##===-------------------------------------------------------------------------------*- bash -*-===##
+##
+##                                   S E R I A L B O X
+##
+## This file is distributed under terms of BSD license. 
+## See LICENSE.txt for more information.
+##
+##===------------------------------------------------------------------------------------------===##
+
 dist: trusty
-language: cpp
-
-#===---------------------------------------------------------------------------------------------===
-#   Build Matrix
-#===---------------------------------------------------------------------------------------------===
-
-matrix:
- include:
-  # OSX / Clang
-  - os: osx
-    osx_image: xcode7.3
-    env: CONFIG=Debug
-      
-  - os: osx
-    osx_image: xcode7.3
-    env: CONFIG=Release
-
-  - os: osx
-    osx_image: xcode8
-    env: CONFIG=Debug
-
-  - os: osx
-    osx_image: xcode8
-    env: CONFIG=Release
+sudo: false
   
-  # Linux / GCC
-  - os: linux
-    compiler: gcc
-    env: 
-      - CXX_COMPILER=g++-4.9
-      - C_COMPILER=gcc-4.9
-      - FC_COMPILER=gfortran-4.9
-      - CONFIG=Release
-    addons:
-      apt:
-        sources: ['ubuntu-toolchain-r-test']
-        packages: 
-          - gcc-4.9
-          - g++-4.9
-          - gfortran-4.9
-          - libboost-all-dev
-  
-  - os: linux
-    compiler: gcc
-    env: 
-      - CXX_COMPILER=g++-4.9
-      - C_COMPILER=gcc-4.9
-      - FC_COMPILER=gfortran-4.9
-      - CONFIG=Debug
-    addons:
-      apt:
-        sources: ['ubuntu-toolchain-r-test']
-        packages: 
-          - gcc-4.9
-          - g++-4.9
-          - gfortran-4.9
-          - libboost-all-dev
+language: c++
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-trusty-3.8
+    packages:
+      - g++-5
+      - gcc-5
+      - g++-6
+      - gcc-6
+      - clang-3.8
+      - clang++-3.8
+
+env:
+  global:
+    - SCRIPT_DIR=${TRAVIS_BUILD_DIR}/tools/travis
+    - CACHE_DIR=${TRAVIS_BUILD_DIR}/deps/install
+    - CMAKE_VERSION=3.8.1
+    - BOOST_VERSION=1.60.0
+    - PACKAGES_TO_INSTALL=cmake,boost
+
+jobs:
+  include:
+    - &prepare_cache_stage
+      stage: Prepare Cache
+      compiler: gcc
+      os: linux
+      env: CXX_COMPILER=g++-5 C_COMPILER=gcc-5
+      script: bash ${SCRIPT_DIR}/driver-install.sh -i ${CACHE_DIR} -b cmake,boost
+
+    - <<: *prepare_cache_stage
+      compiler: clang
+      os: linux
+      env: CXX_COMPILER=clang++-4.0 C_COMPILER=clang-4.0
+
+    # Linux GCC 5.4 (Release) [Linux]
+    - &test_stage
+      stage: Test
+      compiler: gcc
+      os: linux
+      script: bash ${SCRIPT_DIR}/driver-test.sh
+      env: CONFIG=Release CXX_COMPILER=g++-5 C_COMPILER=gcc-5
     
-  - os: linux
-    compiler: gcc
-    env: 
-      - CXX_COMPILER=g++-5
-      - C_COMPILER=gcc-5
-      - FC_COMPILER=gfortran-5
-      - CONFIG=Release
-      - BOOST_VERSION=1.60.0
-    addons:
-      apt:
-        sources: ['ubuntu-toolchain-r-test']
-        packages: 
-          - g++-5
-          - gcc-5
-          - gfortran-5
+    # Linux GCC 5.4 (RelWithDebInfo) [Linux]
+    - <<: *test_stage
+      compiler: gcc
+      env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-5 C_COMPILER=gcc-5
 
-  - os: linux
-    compiler: gcc
-    env:
-      - CXX_COMPILER=g++-6
-      - C_COMPILER=gcc-6
-      - FC_COMPILER=gfortran-6
-      - CONFIG=Release
-      - BOOST_VERSION=1.60.0
-    addons:
-      apt:
-        sources: ['ubuntu-toolchain-r-test']
-        packages: 
-          - g++-6
-          - gcc-6
-          - gfortran-6
-
-  # Linux / Clang
-  - os: linux
-    env: 
-      - LLVM_VERSION=3.6.2
-      - CONFIG=Release
-    compiler: clang
-    addons:
-      apt:
-        sources: ['ubuntu-toolchain-r-test']
-        packages: 
-          - libboost-all-dev
-          
-  - os: linux
-    env: 
-      - LLVM_VERSION=3.6.2
-      - CONFIG=Debug
-    compiler: clang
-    addons:
-      apt:
-        sources: ['ubuntu-toolchain-r-test']
-        packages: 
-          - libboost-all-dev
-
-  - os: linux
-    env: 
-      - LLVM_VERSION=3.7.1
-      - CONFIG=Release
-    compiler: clang
-    addons:
-      apt:
-        sources: ['ubuntu-toolchain-r-test']
-        packages: 
-          - libboost-all-dev
-
-  - os: linux
-    env: 
-      - LLVM_VERSION=3.8.1
-      - CONFIG=Release
-    compiler: clang
-    addons:
-      apt:
-        sources: ['ubuntu-toolchain-r-test']
-        packages: 
-          - libboost-all-dev
+    # Linux GCC 6.3 (Release) [Linux]
+    - <<: *test_stage      
+      compiler: gcc
+      env: CONFIG=Release CXX_COMPILER=g++-6 C_COMPILER=gcc-6
     
-# Set directories to cache
+    # Linux GCC 6.3 (RelWithDebInfo) [Linux]
+    - <<: *test_stage      
+      compiler: gcc
+      env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-6 C_COMPILER=gcc-6
+
+    # Clang 3.8 (Release) [Linux]
+    - <<: *test_stage      
+      compiler: clang
+      env: CONFIG=Release CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8
+
+    # Clang 3.8 (RelWithDebInfo) [Linux]
+    - <<: *test_stage      
+      compiler: clang
+      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8
+
+    # Clang 4.0 (Release) [Linux]
+    - <<: *test_stage      
+      compiler: clang
+      env: CONFIG=Release CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8 CLANG_VERSION=4.0.0
+
+    # Clang 4.0 (RelWithDebInfo) [Linux]
+    - <<: *test_stage      
+      compiler: clang
+      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8 CLANG_VERSION=4.0.0
+
+    # Clang 5.0 (Release) [Linux]
+    - <<: *test_stage      
+      compiler: clang
+      env: CONFIG=Release CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8 CLANG_VERSION=5.0.0
+
+    # Clang 5.0 (RelWithDebInfo) [Linux]
+    - <<: *test_stage      
+      compiler: clang
+      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8 CLANG_VERSION=5.0.0
+
+    # XCode 7.3 (Release) [OSX]
+    - <<: *test_stage  
+      os: osx 
+      osx_image: xcode7.3
+      compiler: clang   
+      env: CONFIG=Release
+
+    # XCode 7.3 (RelWithDebInfo) [OSX]
+    - <<: *test_stage
+      os: osx 
+      osx_image: xcode7.3
+      compiler: clang    
+      env: CONFIG=RelWithDebInfo
+
+    # XCode 8.0 (Release) [OSX]
+    - <<: *test_stage
+      os: osx   
+      osx_image: xcode8
+      compiler: clang        
+      env: CONFIG=Release
+
+    # XCode 8.0 (RelWithDebInfo) [OSX]
+    - <<: *test_stage 
+      os: osx   
+      osx_image: xcode8
+      compiler: clang       
+      env: CONFIG=RelWithDebInfo
+
 cache:
   directories:
-    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.6.2
-    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.7.1
-    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8.1
-    - ${TRAVIS_BUILD_DIR}/deps/boost-1.60.0-gcc-5
-    - ${TRAVIS_BUILD_DIR}/deps/boost-1.60.0-gcc-6
-
-#===---------------------------------------------------------------------------------------------===
-#   Installation
-#===---------------------------------------------------------------------------------------------===
-
-install:
-  # Create deps dir if not existing
-  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
-  - mkdir -p ${DEPS_DIR}
-  - pushd $(pwd)
-  - cd ${DEPS_DIR}
-
-  # Make sure CXX and C are set correctly for Linux builds
-  - if [[ "${CXX_COMPILER}" != "" ]]; then export CXX=${CXX_COMPILER}; fi
-  - if [[ "${C_COMPILER}" != "" ]]; then export CC=${C_COMPILER}; fi
-  
-  # Make sure FC is correctly set
-  - if [[ "${FC_COMPILER}" != "" ]]; then export FC=${FC_COMPILER}; fi
-  
-  # Make sure CMAKE_BUILD_TYPE is correctly set
-  - if [[ "${CONFIG}" != "" ]]; then export CMAKE_BUILD_TYPE=${CONFIG}; fi
-
-  # Install LLVM/clang when LLVM_VERSION is set (this may use the cached version)
-  - |
-     if [[ "${LLVM_VERSION}" != "" ]]; then
-       LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
-       if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
-         travis_retry wget --quiet https://cmake.org/files/v3.6/cmake-3.6.1.tar.gz
-         tar xfz cmake-3.6.1.tar.gz
-         (cd cmake-3.6.1 && ./configure --prefix=${LLVM_DIR}/cmake && make install)
-         export PATH="${LLVM_DIR}/cmake/bin:${PATH}"
-         LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
-         LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
-         LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
-         CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
-         mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
-         travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
-         travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
-         travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
-         travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
-         (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
-         (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
-         (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
-       fi
-       
-       export CC="${LLVM_DIR}/clang/bin/clang"
-       export CXX="${LLVM_DIR}/clang/bin/clang++"
-     fi
-    
-  # Compile and install Boost when BOOST_VERSION is set (only works with gcc at the moment) 
-  # this may use the cached version
-  - |
-    if [[ "${BOOST_VERSION}" != "" ]]; then
-      BOOST_DIR=${DEPS_DIR}/boost-${BOOST_VERSION}-${C_COMPILER}
-      if [[ -z "$(ls -A ${BOOST_DIR})" ]]; then
-        BOOST_URL="http://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/boost_${BOOST_VERSION//\./_}.tar.gz"
-        mkdir -p ${BOOST_DIR}
-        { travis_retry wget --quiet -O - ${BOOST_URL} | tar --strip-components=1 -xz -C ${BOOST_DIR}; } || exit 1
-        
-        GCC_VERSION=$(${CXX} -dumpversion)
-        
-        pushd $(pwd)
-        cd ${BOOST_DIR}
-        echo "using gcc : ${GCC_VERSION} : ${CXX} ;" > user-config.jam
-        ./bootstrap.sh
-        ./b2 -j2 --toolset=gcc-${GCC_VERSION} --prefix="${BOOST_DIR}" \
-             --user-config=${BOOST_DIR}/user-config.jam --with-filesystem \
-                                                        --with-chrono \
-                                                        --with-system \
-                                                        --with-log --d+2 install
-        popd
-      fi
-
-      CMAKE_OPTIONS="-DBOOST_ROOT=${BOOST_DIR}"
-    fi
-     
-  # Install a recent CMake (unless already installed on OS X)
-  - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      CMAKE_URL="http://www.cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.tar.gz"
-      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-      export PATH=${DEPS_DIR}/cmake/bin:$PATH
-    else 
-      if ! brew ls --version cmake &>/dev/null; then brew install cmake; fi
-    fi
-  
-  # Install Python dependencies (Linux) [using python directly in opt/python is not officially 
-  # supported and thus the versions may change]
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
-      PYTHON_DIR=/opt/python/3.5.3
-      ${PYTHON_DIR}/bin/pip3 install nose numpy
-    fi
-    
-  # Install Python dependencies (Mac OSX)
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
-      brew update
-      brew install python3
-      pip3 install numpy nose
-      
-      brew tap homebrew/science
-      brew install netcdf
-
-      export PATH=/usr/local/bin:${PATH}
-    fi
-  
-  - popd
-  
-#===---------------------------------------------------------------------------------------------===
-#   Building
-#===---------------------------------------------------------------------------------------------=== 
-  
-before_script:
-  - mkdir build
-  - pushd $(pwd)
-  - cd build
-  
-  - |
-    if [[ "${FC_COMPILER}" != "" ]]; then
-      SERIALBOX_ENABLE_FORTRAN=ON
-    else
-      SERIALBOX_ENABLE_FORTRAN=OFF
-    fi
-
-  # Linux build
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
-      cmake ../ -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
-                -DPYTHON_EXECUTABLE=${PYTHON_DIR}/bin/python3 \
-                -DSERIALBOX_TESTING=ON \
-                -DSERIALBOX_ENABLE_FORTRAN=${SERIALBOX_ENABLE_FORTRAN} \
-                ${CMAKE_OPTIONS}
-    fi
-  
-  # OSX build
-  - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then 
-      cmake ../ -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
-                -DSERIALBOX_TESTING=ON
-    fi
-  
-  - make
-  - make install
-  
-  - popd
-  
-  # Build standalone fortran examples
-  - pushd $(pwd)
-  - |
-    if [[ "${FC_COMPILER}" != "" ]]; then
-      cd examples/fortran/perturbation
-      mkdir build && cd build
-      cmake ../ ${CMAKE_OPTIONS}
-      make
-    fi
-  - popd
-
-#===---------------------------------------------------------------------------------------------===
-#   Testing
-#===---------------------------------------------------------------------------------------------=== 
-
-script:
-  - pushd $(pwd)
-  - cd build
-
-  # Run Python, C and C++ unittests
-  - ctest --output-on-failure --force-new-ctest-process
-
-  - popd
-
-  # Run stand-alone Fortran examples
-  - |
-    if [[ "${FC_COMPILER}" != "" ]]; then
-      cd examples/fortran/perturbation/build
-      bash run.sh
-    fi
+    - ${CACHE_DIR}/protobuf-${BOOST_VERSION}
 
 notifications:
-  email:
-    recipients:
-      - thfabian@student.ethz.ch
-    on_success: never
-    on_failure: always
-
+  on_success: never
+  on_failure: never
