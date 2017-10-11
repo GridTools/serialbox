@@ -1,4 +1,5 @@
-//===-- serialbox/core/UnittestFieldMetainfoImpl.cpp ------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestFieldMetainfoImpl.cpp ------------------------------------*- C++
+//-*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -11,6 +12,8 @@
 /// This implements the unittests of the gridtools::field_meta_info.
 ///
 //===------------------------------------------------------------------------------------------===//
+
+#ifdef SERIALBOX_HAS_GRIDTOOLS
 
 #include "utility/GridTools.h"
 #include "serialbox/core/frontend/gridtools/FieldMetainfo.h"
@@ -68,17 +71,19 @@ TEST(GridToolsFieldMetainfoImplTest, Construction) {
   ASSERT_NE(info_ne, info3);
 }
 
-#ifdef SERIALBOX_HAS_GRIDTOOLS
-
 TEST(GridToolsFieldMetainfoImplTest, ConstructionWithGridToolsStorage) {
   using types = serialbox::unittest::gridtools_storage_types<double>;
 
-  types::cpu_3d_meta_data_type meta_data(4, 5, 6);
-  types::cpu_3d_storage_type storage(meta_data, "storage", -1.0);
+  const int dim1 = 4 + types::halo1_left + types::halo1_right;
+  const int dim2 = 5 + types::halo2_left + types::halo2_right;
+  const int dim3 = 6 + types::halo3_left + types::halo3_right;
+
+  types::cpu_3d_meta_data_type meta_data(dim1, dim2, dim3);
+  types::cpu_3d_storage_type storage(meta_data, "storage");
 
   ser::field_meta_info info(storage);
   ASSERT_EQ(info.type(), serialbox::TypeID::Float64);
-  ASSERT_EQ(info.dims(), (std::vector<int>{4, 5, 6}));
+  ASSERT_EQ(info.dims(), (std::vector<int>{dim1, dim2, dim3}));
 }
 
 #endif
