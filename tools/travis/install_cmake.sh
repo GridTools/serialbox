@@ -29,12 +29,12 @@ function install_cmake() {
   local cmake_version_short=${cmake_version%.*}
 
   abort_and_cleanup() {
-    rm -rf $cmake_install_dir && mkdir -p $cmake_install_dir 
+    rm -rf" $cmake_install_dir" && mkdir -p "$cmake_install_dir"
     fatal_error "$1"
   }
 
   NOTICE "${FUNCNAME[0]}: Installing cmake $cmake_version into \"$cmake_install_dir\" ..."
-  mkdir -p ${cmake_install_dir}
+  mkdir -p "${cmake_install_dir}"
   if [[ ! -z "$(ls -A ${cmake_install_dir})" ]]; then
     NOTICE "${FUNCNAME[0]}: Package already installed. Skipping."
   else
