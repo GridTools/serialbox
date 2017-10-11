@@ -61,23 +61,22 @@ protected:
         dim2(3 + storage_types::halo2_left + storage_types::halo2_right),
         dim3(4 + storage_types::halo3_left + storage_types::halo3_right),
         dim4(5 + storage_types::halo4_left + storage_types::halo4_right),
-        cpu_2d_real_meta_data(dim1, dim2),                                       //
-        gpu_2d_real_meta_data(dim1, dim2),                                       //
-        cpu_2d_meta_data(dim1, dim2, 0),                                         //
-        gpu_2d_meta_data(dim1, dim2, 0),                                         //
-        cpu_3d_meta_data(dim1, dim2, dim3),                                      //
-        gpu_3d_meta_data(dim1, dim2, dim3),                                      //
-        cpu_4d_meta_data(dim1, dim2, dim3, dim4),                                //
-        gpu_4d_meta_data(dim1, dim2, dim3, dim4),                                //
-        cpu_2d_real_storage(cpu_2d_real_meta_data, "cpu_2d_real_storage", -1.0), //
-        gpu_2d_real_storage(gpu_2d_real_meta_data, "gpu_2d_real_storage", -1.0), //
-        cpu_2d_storage(cpu_2d_meta_data, "cpu_2d_storage", -1.0),                //
-        gpu_2d_storage(gpu_2d_meta_data, "gpu_2d_storage", -1.0),                //
-        cpu_3d_storage(cpu_3d_meta_data, "cpu_3d_storage", -1.0),                //
-        gpu_3d_storage(gpu_3d_meta_data, "gpu_3d_storage", -1.0),                //
-        cpu_4d_storage(cpu_4d_meta_data, "cpu_4d_storage", -1.0),                //
-        gpu_4d_storage(gpu_4d_meta_data, "gpu_4d_storage", -1.0) {
-
+        cpu_2d_real_meta_data(dim1, dim2),                                 //
+        gpu_2d_real_meta_data(dim1, dim2),                                 //
+        cpu_2d_meta_data(dim1, dim2, 1),                                   //
+        gpu_2d_meta_data(dim1, dim2, 1),                                   //
+        cpu_3d_meta_data(dim1, dim2, dim3),                                //
+        gpu_3d_meta_data(dim1, dim2, dim3),                                //
+        cpu_4d_meta_data(dim1, dim2, dim3, dim4),                          //
+        gpu_4d_meta_data(dim1, dim2, dim3, dim4),                          //
+        cpu_2d_real_storage(cpu_2d_real_meta_data, "cpu_2d_real_storage"), //
+        gpu_2d_real_storage(gpu_2d_real_meta_data, "gpu_2d_real_storage"), //
+        cpu_2d_storage(cpu_2d_meta_data, "cpu_2d_storage"),                //
+        gpu_2d_storage(gpu_2d_meta_data, "gpu_2d_storage"),                //
+        cpu_3d_storage(cpu_3d_meta_data, "cpu_3d_storage"),                //
+        gpu_3d_storage(gpu_3d_meta_data, "gpu_3d_storage"),                //
+        cpu_4d_storage(cpu_4d_meta_data, "cpu_4d_storage"),                //
+        gpu_4d_storage(gpu_4d_meta_data, "gpu_4d_storage") {
     storage_types::init2DReal(cpu_2d_real_storage, dim1, dim2);
     storage_types::init2DReal(gpu_2d_real_storage, dim1, dim2);
     storage_types::init2D(cpu_2d_storage, dim1, dim2);
@@ -101,19 +100,19 @@ template <typename Storage>
 serialbox::StorageView make_storage_view(const Storage& storage) {
   using namespace serialbox::gridtools;
 
-  std::vector<int> dims(internal::get_dims(storage.meta_data()));
-  std::vector<int> strides(internal::get_strides(storage, storage.meta_data()));
-  void* originPtr = internal::get_origin_ptr(storage, storage.meta_data(), 0);
+  std::vector<int> dims(internal::get_dims(storage));
+  std::vector<int> strides(internal::get_strides(storage));
+  void* originPtr = internal::get_origin_ptr(storage, 0);
 
-  return serialbox::StorageView(originPtr, serialbox::ToTypeID<typename Storage::value_type>::value,
+  return serialbox::StorageView(originPtr, serialbox::ToTypeID<typename Storage::data_t>::value,
                                 std::move(dims), std::move(strides));
 }
 
 using namespace serialbox::gridtools;
 #define GET_DIMS_STRIDES_ORIGIN_PTR(storage, prefix)                                               \
-  std::vector<int> prefix##_dims(internal::get_dims(storage.meta_data()));                         \
-  std::vector<int> prefix##_strides(internal::get_strides(storage, storage.meta_data()));          \
-  void* prefix##_origin_ptr = internal::get_origin_ptr(storage, storage.meta_data(), 0);
+  std::vector<int> prefix##_dims(internal::get_dims(storage));                                     \
+  std::vector<int> prefix##_strides(internal::get_strides(storage));                               \
+  void* prefix##_origin_ptr = internal::get_origin_ptr(storage, 0);
 
 TYPED_TEST(GridToolsStorageViewTest, Construction_2DRealCPU) {
   auto& cpu_2d_real_storage = this->cpu_2d_real_storage;
@@ -126,17 +125,15 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_2DRealCPU) {
   EXPECT_EQ(cpu_2d_real_dims[1], this->dim2);
 
   // Strides
-  EXPECT_EQ(cpu_2d_real_strides[0], cpu_2d_real_meta_data.template strides<0>());
-  EXPECT_EQ(cpu_2d_real_strides[1], cpu_2d_real_meta_data.template strides<1>());
+  EXPECT_EQ(cpu_2d_real_strides[0], cpu_2d_real_meta_data.template stride<0>());
+  EXPECT_EQ(cpu_2d_real_strides[1], cpu_2d_real_meta_data.template stride<1>());
 
   // Data
-  EXPECT_EQ(cpu_2d_real_origin_ptr, static_cast<void*>(&cpu_2d_real_storage(0, 0)));
+  auto view = make_host_view(cpu_2d_real_storage);
+  EXPECT_EQ(cpu_2d_real_origin_ptr, static_cast<void*>(&view(0, 0)));
 }
 
 TYPED_TEST(GridToolsStorageViewTest, Construction_2DCPU) {
-  // -----------------------------------------------------------------------------------------------
-  // 2D CPU Storage
-  // -----------------------------------------------------------------------------------------------
   auto& cpu_2d_storage = this->cpu_2d_storage;
   auto& cpu_2d_meta_data = this->cpu_2d_meta_data;
 
@@ -145,15 +142,16 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_2DCPU) {
   // Dimensions
   EXPECT_EQ(cpu_2d_dims[0], this->dim1);
   EXPECT_EQ(cpu_2d_dims[1], this->dim2);
-  EXPECT_EQ(cpu_2d_dims[2], 0);
+  EXPECT_EQ(cpu_2d_dims[2], 1);
 
   // Strides
-  EXPECT_EQ(cpu_2d_strides[0], cpu_2d_meta_data.template strides<0>());
-  EXPECT_EQ(cpu_2d_strides[1], cpu_2d_meta_data.template strides<1>());
-  EXPECT_EQ(cpu_2d_strides[2], cpu_2d_meta_data.template strides<2>());
+  EXPECT_EQ(cpu_2d_strides[0], cpu_2d_meta_data.template stride<0>());
+  EXPECT_EQ(cpu_2d_strides[1], cpu_2d_meta_data.template stride<1>());
+  EXPECT_EQ(cpu_2d_strides[2], cpu_2d_meta_data.template stride<2>());
 
   // Data
-  EXPECT_EQ(cpu_2d_origin_ptr, static_cast<void*>(&cpu_2d_storage(0, 0, 0)));
+  auto view = make_host_view(cpu_2d_storage);
+  EXPECT_EQ(cpu_2d_origin_ptr, static_cast<void*>(&view(0, 0, 0)));
 }
 
 TYPED_TEST(GridToolsStorageViewTest, Construction_3DCPU) {
@@ -168,12 +166,13 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_3DCPU) {
   EXPECT_EQ(cpu_3d_dims[2], this->dim3);
 
   // Strides
-  EXPECT_EQ(cpu_3d_strides[0], cpu_3d_meta_data.template strides<0>());
-  EXPECT_EQ(cpu_3d_strides[1], cpu_3d_meta_data.template strides<1>());
-  EXPECT_EQ(cpu_3d_strides[2], cpu_3d_meta_data.template strides<2>());
+  EXPECT_EQ(cpu_3d_strides[0], cpu_3d_meta_data.template stride<0>());
+  EXPECT_EQ(cpu_3d_strides[1], cpu_3d_meta_data.template stride<1>());
+  EXPECT_EQ(cpu_3d_strides[2], cpu_3d_meta_data.template stride<2>());
 
   // Data
-  EXPECT_EQ(cpu_3d_origin_ptr, static_cast<void*>(&cpu_3d_storage(0, 0, 0)));
+  auto view = make_host_view(cpu_3d_storage);
+  EXPECT_EQ(cpu_3d_origin_ptr, static_cast<void*>(&view(0, 0, 0)));
 }
 
 TYPED_TEST(GridToolsStorageViewTest, Construction_4DCPU) {
@@ -189,13 +188,14 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_4DCPU) {
   EXPECT_EQ(cpu_4d_dims[3], this->dim4);
 
   // Strides
-  EXPECT_EQ(cpu_4d_strides[0], cpu_4d_meta_data.template strides<0>());
-  EXPECT_EQ(cpu_4d_strides[1], cpu_4d_meta_data.template strides<1>());
-  EXPECT_EQ(cpu_4d_strides[2], cpu_4d_meta_data.template strides<2>());
-  EXPECT_EQ(cpu_4d_strides[3], cpu_4d_meta_data.template strides<3>());
+  EXPECT_EQ(cpu_4d_strides[0], cpu_4d_meta_data.template stride<0>());
+  EXPECT_EQ(cpu_4d_strides[1], cpu_4d_meta_data.template stride<1>());
+  EXPECT_EQ(cpu_4d_strides[2], cpu_4d_meta_data.template stride<2>());
+  EXPECT_EQ(cpu_4d_strides[3], cpu_4d_meta_data.template stride<3>());
 
   // Data
-  EXPECT_EQ(cpu_4d_origin_ptr, static_cast<void*>(&cpu_4d_storage(0, 0, 0, 0)));
+  auto view = make_host_view(cpu_4d_storage);
+  EXPECT_EQ(cpu_4d_origin_ptr, static_cast<void*>(&view(0, 0, 0, 0)));
 }
 
 TYPED_TEST(GridToolsStorageViewTest, Construction_2DRealGPU) {
@@ -209,11 +209,12 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_2DRealGPU) {
   EXPECT_EQ(gpu_2d_real_dims[1], this->dim2);
 
   // Strides
-  EXPECT_EQ(gpu_2d_real_strides[0], gpu_2d_real_meta_data.template strides<0>());
-  EXPECT_EQ(gpu_2d_real_strides[1], gpu_2d_real_meta_data.template strides<1>());
+  EXPECT_EQ(gpu_2d_real_strides[0], gpu_2d_real_meta_data.template stride<0>());
+  EXPECT_EQ(gpu_2d_real_strides[1], gpu_2d_real_meta_data.template stride<1>());
 
   // Data
-  EXPECT_EQ(gpu_2d_real_origin_ptr, static_cast<void*>(&gpu_2d_real_storage(0, 0)));
+  auto view = make_host_view(gpu_2d_real_storage);
+  EXPECT_EQ(gpu_2d_real_origin_ptr, static_cast<void*>(&view(0, 0)));
 }
 
 TYPED_TEST(GridToolsStorageViewTest, Construction_2DGPU) {
@@ -225,15 +226,16 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_2DGPU) {
   // Dimensions
   EXPECT_EQ(gpu_2d_dims[0], this->dim1);
   EXPECT_EQ(gpu_2d_dims[1], this->dim2);
-  EXPECT_EQ(gpu_2d_dims[2], 0);
+  EXPECT_EQ(gpu_2d_dims[2], 1);
 
   // Strides
-  EXPECT_EQ(gpu_2d_strides[0], gpu_2d_meta_data.template strides<0>());
-  EXPECT_EQ(gpu_2d_strides[1], gpu_2d_meta_data.template strides<1>());
-  EXPECT_EQ(gpu_2d_strides[2], gpu_2d_meta_data.template strides<2>());
+  EXPECT_EQ(gpu_2d_strides[0], gpu_2d_meta_data.template stride<0>());
+  EXPECT_EQ(gpu_2d_strides[1], gpu_2d_meta_data.template stride<1>());
+  EXPECT_EQ(gpu_2d_strides[2], gpu_2d_meta_data.template stride<2>());
 
   // Data
-  EXPECT_EQ(gpu_2d_origin_ptr, static_cast<void*>(&gpu_2d_storage(0, 0, 0)));
+  auto view = make_host_view(gpu_2d_storage);
+  EXPECT_EQ(gpu_2d_origin_ptr, static_cast<void*>(&view(0, 0, 0)));
 }
 
 TYPED_TEST(GridToolsStorageViewTest, Construction_3DGPU) {
@@ -248,12 +250,13 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_3DGPU) {
   EXPECT_EQ(gpu_3d_dims[2], this->dim3);
 
   // Strides
-  EXPECT_EQ(gpu_3d_strides[0], gpu_3d_meta_data.template strides<0>());
-  EXPECT_EQ(gpu_3d_strides[1], gpu_3d_meta_data.template strides<1>());
-  EXPECT_EQ(gpu_3d_strides[2], gpu_3d_meta_data.template strides<2>());
+  EXPECT_EQ(gpu_3d_strides[0], gpu_3d_meta_data.template stride<0>());
+  EXPECT_EQ(gpu_3d_strides[1], gpu_3d_meta_data.template stride<1>());
+  EXPECT_EQ(gpu_3d_strides[2], gpu_3d_meta_data.template stride<2>());
 
   // Data
-  EXPECT_EQ(gpu_3d_origin_ptr, static_cast<void*>(&gpu_3d_storage(0, 0, 0)));
+  auto view = make_host_view(gpu_3d_storage);
+  EXPECT_EQ(gpu_3d_origin_ptr, static_cast<void*>(&view(0, 0, 0)));
 }
 
 TYPED_TEST(GridToolsStorageViewTest, Construction_4DGPU) {
@@ -269,13 +272,14 @@ TYPED_TEST(GridToolsStorageViewTest, Construction_4DGPU) {
   EXPECT_EQ(gpu_4d_dims[3], this->dim4);
 
   // Strides
-  EXPECT_EQ(gpu_4d_strides[0], gpu_4d_meta_data.template strides<0>());
-  EXPECT_EQ(gpu_4d_strides[1], gpu_4d_meta_data.template strides<1>());
-  EXPECT_EQ(gpu_4d_strides[2], gpu_4d_meta_data.template strides<2>());
-  EXPECT_EQ(gpu_4d_strides[3], gpu_4d_meta_data.template strides<3>());
+  EXPECT_EQ(gpu_4d_strides[0], gpu_4d_meta_data.template stride<0>());
+  EXPECT_EQ(gpu_4d_strides[1], gpu_4d_meta_data.template stride<1>());
+  EXPECT_EQ(gpu_4d_strides[2], gpu_4d_meta_data.template stride<2>());
+  EXPECT_EQ(gpu_4d_strides[3], gpu_4d_meta_data.template stride<3>());
 
   // Data
-  EXPECT_EQ(gpu_4d_origin_ptr, static_cast<void*>(&gpu_4d_storage(0, 0, 0, 0)));
+  auto view = make_host_view(gpu_4d_storage);
+  EXPECT_EQ(gpu_4d_origin_ptr, static_cast<void*>(&view(0, 0, 0, 0)));
 }
 
 TYPED_TEST(GridToolsStorageViewTest, Iterator_2DRealCPU) {
@@ -283,9 +287,11 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator_2DRealCPU) {
   serialbox::StorageView cpu_2d_real_storage_view = make_storage_view(cpu_2d_real_storage);
 
   auto cpu_2d_real_it = cpu_2d_real_storage_view.begin();
+
+  auto gt_view = make_host_view(cpu_2d_real_storage);
   for(int j = 0; j < this->dim2; ++j)
     for(int i = 0; i < this->dim1; ++i, ++cpu_2d_real_it) {
-      ASSERT_EQ(cpu_2d_real_it.as<TypeParam>(), cpu_2d_real_storage(i, j));
+      ASSERT_EQ(cpu_2d_real_it.as<TypeParam>(), gt_view(i, j));
     }
 }
 
@@ -294,9 +300,11 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator_2DCPU) {
   serialbox::StorageView cpu_2d_storage_view = make_storage_view(cpu_2d_storage);
 
   auto cpu_2d_it = cpu_2d_storage_view.begin();
+
+  auto gt_view = make_host_view(cpu_2d_storage);
   for(int j = 0; j < this->dim2; ++j)
     for(int i = 0; i < this->dim1; ++i, ++cpu_2d_it) {
-      ASSERT_EQ(cpu_2d_it.as<TypeParam>(), cpu_2d_storage(i, j, 0));
+      ASSERT_EQ(cpu_2d_it.as<TypeParam>(), gt_view(i, j, 0));
     }
 }
 
@@ -305,23 +313,27 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator_3DCPU) {
   serialbox::StorageView cpu_3d_storage_view = make_storage_view(cpu_3d_storage);
 
   auto cpu_3d_it = cpu_3d_storage_view.begin();
+
+  auto gt_view = make_host_view(cpu_3d_storage);
   for(int k = 0; k < this->dim3; ++k)
     for(int j = 0; j < this->dim2; ++j)
       for(int i = 0; i < this->dim1; ++i, ++cpu_3d_it) {
-        ASSERT_EQ(cpu_3d_it.as<TypeParam>(), cpu_3d_storage(i, j, k));
+        ASSERT_EQ(cpu_3d_it.as<TypeParam>(), gt_view(i, j, k));
       }
 }
-TYPED_TEST(GridToolsStorageViewTest, Iterator_4DCPU) {
 
+TYPED_TEST(GridToolsStorageViewTest, Iterator_4DCPU) {
   auto& cpu_4d_storage = this->cpu_4d_storage;
   serialbox::StorageView cpu_4d_storage_view = make_storage_view(cpu_4d_storage);
 
   auto cpu_4d_it = cpu_4d_storage_view.begin();
+
+  auto gt_view = make_host_view(cpu_4d_storage);
   for(int l = 0; l < this->dim4; ++l)
     for(int k = 0; k < this->dim3; ++k)
       for(int j = 0; j < this->dim2; ++j)
         for(int i = 0; i < this->dim1; ++i, ++cpu_4d_it) {
-          ASSERT_EQ(cpu_4d_it.as<TypeParam>(), cpu_4d_storage(i, j, k, l));
+          ASSERT_EQ(cpu_4d_it.as<TypeParam>(), gt_view(i, j, k, l));
         }
 }
 
@@ -330,9 +342,11 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator_2DRealGPU) {
   serialbox::StorageView gpu_2d_real_storage_view = make_storage_view(gpu_2d_real_storage);
 
   auto gpu_2d_real_it = gpu_2d_real_storage_view.begin();
+
+  auto gt_view = make_host_view(gpu_2d_real_storage);
   for(int j = 0; j < this->dim2; ++j)
     for(int i = 0; i < this->dim1; ++i, ++gpu_2d_real_it) {
-      ASSERT_EQ(gpu_2d_real_it.as<TypeParam>(), gpu_2d_real_storage(i, j));
+      ASSERT_EQ(gpu_2d_real_it.as<TypeParam>(), gt_view(i, j));
     }
 }
 
@@ -341,9 +355,11 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator_2DGPU) {
   serialbox::StorageView gpu_2d_storage_view = make_storage_view(gpu_2d_storage);
 
   auto gpu_2d_it = gpu_2d_storage_view.begin();
+
+  auto gt_view = make_host_view(gpu_2d_storage);
   for(int j = 0; j < this->dim2; ++j)
     for(int i = 0; i < this->dim1; ++i, ++gpu_2d_it) {
-      ASSERT_EQ(gpu_2d_it.as<TypeParam>(), gpu_2d_storage(i, j, 0));
+      ASSERT_EQ(gpu_2d_it.as<TypeParam>(), gt_view(i, j, 0));
     }
 }
 
@@ -352,10 +368,12 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator_3DGPU) {
   serialbox::StorageView gpu_3d_storage_view = make_storage_view(gpu_3d_storage);
 
   auto gpu_3d_it = gpu_3d_storage_view.begin();
+
+  auto gt_view = make_host_view(gpu_3d_storage);
   for(int k = 0; k < this->dim3; ++k)
     for(int j = 0; j < this->dim2; ++j)
       for(int i = 0; i < this->dim1; ++i, ++gpu_3d_it) {
-        ASSERT_EQ(gpu_3d_it.as<TypeParam>(), gpu_3d_storage(i, j, k));
+        ASSERT_EQ(gpu_3d_it.as<TypeParam>(), gt_view(i, j, k));
       }
 }
 
@@ -364,11 +382,13 @@ TYPED_TEST(GridToolsStorageViewTest, Iterator_4DGPU) {
   serialbox::StorageView gpu_4d_storage_view = make_storage_view(gpu_4d_storage);
 
   auto gpu_4d_it = gpu_4d_storage_view.begin();
+
+  auto gt_view = make_host_view(gpu_4d_storage);
   for(int l = 0; l < this->dim4; ++l)
     for(int k = 0; k < this->dim3; ++k)
       for(int j = 0; j < this->dim2; ++j)
         for(int i = 0; i < this->dim1; ++i, ++gpu_4d_it) {
-          ASSERT_EQ(gpu_4d_it.as<TypeParam>(), gpu_4d_storage(i, j, k, l));
+          ASSERT_EQ(gpu_4d_it.as<TypeParam>(), gt_view(i, j, k, l));
         }
 }
 
@@ -384,13 +404,13 @@ TYPED_TEST(GridToolsStorageViewTest, isMemCopyable) {
 
   // Create a memcopyable storage
   using layout_type = gridtools::layout_map<2, 1, 0>; // stride 1 on i (col-major)
-  using meta_data_type = typename GridToolsStorageViewTest<
-      TypeParam>::storage_types::storage_traits_type::template meta_storage_type<9, layout_type>;
+  using meta_data_type = typename GridToolsStorageViewTest<TypeParam>::storage_types::
+      storage_traits_type::template custom_layout_storage_info_t<9, layout_type>;
   using storage_type = typename GridToolsStorageViewTest<TypeParam>::storage_types::
-      storage_traits_type::template storage_type<TypeParam, meta_data_type>;
+      storage_traits_type::template data_store_t<TypeParam, meta_data_type>;
 
   meta_data_type meta_data(this->dim1, this->dim2, this->dim3);
-  storage_type storage(meta_data, "storage", -1.0);
+  storage_type storage(meta_data, -1.0, "storage");
   EXPECT_TRUE(make_storage_view(storage).isMemCopyable());
 }
 

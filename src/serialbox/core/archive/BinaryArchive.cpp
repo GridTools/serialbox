@@ -222,7 +222,7 @@ void BinaryArchive::readMetaDataFromJson() {
   std::string hashAlgorithm = json_["hash_algorithm"];
 
   // Check consistency
-  if(!Version::match(serialboxVersion))
+  if(!Version::isCompatible(serialboxVersion))
     throw Exception("serialbox version of binary archive (%s) does not match the version "
                     "of the library (%s)",
                     Version::toString(serialboxVersion), SERIALBOX_VERSION_STRING);

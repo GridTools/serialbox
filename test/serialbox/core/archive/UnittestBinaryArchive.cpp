@@ -117,11 +117,11 @@ TEST_F(BinaryArchiveUtilityTest, MetaData) {
   };
 
   // -----------------------------------------------------------------------------------------------
-  // Invlaid serialbox version
+  // Invalid serialbox version
   // -----------------------------------------------------------------------------------------------
   {
     json::json corrupted = j;
-    corrupted["serialbox_version"] = 100 * (SERIALBOX_VERSION_MAJOR - 1) +
+    corrupted["serialbox_version"] = 100 * (SERIALBOX_VERSION_MAJOR + 1) +
                                      10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
     toFile(corrupted);
 
