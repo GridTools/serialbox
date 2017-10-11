@@ -27,6 +27,7 @@
 #define STRUCTURED_GRIDS
 #include <gridtools.hpp>
 #include <stencil-composition/stencil-composition.hpp>
+#include <storage/storage-facility.hpp>
 
 //
 // Include Serialbox headers
@@ -45,15 +46,15 @@ static constexpr int halo_size = 1;
 // Typedefs of the gridtools library
 //
 using storage_traits_t = gridtools::storage_traits<gridtools::enumtype::Host>;
-using layout_t = gridtools::layout_map<0, 1, -1>;
 using backend_t = gridtools::backend<gridtools::enumtype::Host, gridtools::enumtype::structured,
                                      gridtools::enumtype::Naive>;
 using halo_t = gridtools::halo<halo_size, halo_size, 0>;
-using meta_data_t = storage_traits_t::meta_storage_type<0, layout_t, halo_t>;
-using storage_t = storage_traits_t::storage_type<double, meta_data_t>;
+using storage_info_t =
+    storage_traits_t::special_storage_info_t<0, gridtools::selector<1, 1, 0>, halo_t>;
+using storage_t = storage_traits_t::data_store_t<double, storage_info_t>;
 
 using full_domain = gridtools::interval<gridtools::level<0, -1>, gridtools::level<1, -1>>;
-using axis = gridtools::interval<gridtools::level<0, -2>, gridtools::level<1, 3>>;
+using axis = gridtools::interval<gridtools::level<0, -1>, gridtools::level<1, 1>>;
 
 //
 // Laplacian stage
@@ -65,7 +66,7 @@ struct laplacian_stage {
   using arg_list = boost::mpl::vector<lap, phi>;
 
   template <typename Evaluation>
-  GT_FUNCTION static void Do(const Evaluation& eval, full_domain) {
+  GT_FUNCTION static void Do(Evaluation& eval, full_domain) {
     eval(lap()) =
         eval(phi(1, 0)) + eval(phi(-1, 0)) + eval(phi(0, -1)) + eval(phi(0, 1)) - 4 * eval(phi());
   }
@@ -96,19 +97,16 @@ void write() {
   //
   // Allocate the 2D arrays phi and lap and fill it with some random numbers
   //
-  meta_data_t meta_data(N, M, 1);
-
-  storage_t phi(meta_data, "phi", -1);
-  storage_t lap(meta_data, "lap", -1);
+  storage_info_t storage_info(N, M, 1);
 
   std::default_random_engine gen;
   std::uniform_real_distribution<double> dist(0.0, 1.0);
-  for(int i = 0; i < N; ++i)
-    for(int j = 0; j < M; ++j)
-      phi(i, j, 0) = dist(gen);
-  
+
+  storage_t phi(storage_info, [&](int i, int j, int k) { return dist(gen); }, "phi");
+  storage_t lap(storage_info, -1., "lap");
+
   //
-  // Create the field meta-information of `phi` directly with the gridtools storage and register it 
+  // Create the field meta-information of `phi` directly with the gridtools storage and register it
   // within the Serializer. For the gridtools interface this can also be done implicitly in the
   // write method (see below).
   //
@@ -130,7 +128,7 @@ void write() {
   // './laplacian/ArchiveMetaData-field.json'
   //
   serializer.update_meta_data();
-  
+
   //
   // We now assemble the gridtools stencil
   //
@@ -139,11 +137,11 @@ void write() {
   using arg_list = boost::mpl::vector<p_lap, p_phi>;
 
   // Setup domain
-  gridtools::aggregator_type<arg_list> domain(boost::fusion::make_vector(&lap, &phi));
+  gridtools::aggregator_type<arg_list> domain((p_lap() = lap), (p_phi() = phi));
 
   // Setup grid
-  gridtools::uint_t di[5] = {halo_size, halo_size, halo_size, N - halo_size - 1, N};
-  gridtools::uint_t dj[5] = {halo_size, halo_size, halo_size, M - halo_size - 1, M};
+  gridtools::halo_descriptor di{halo_size, halo_size, halo_size, N - halo_size - 1, N};
+  gridtools::halo_descriptor dj{halo_size, halo_size, halo_size, M - halo_size - 1, M};
   gridtools::grid<axis> grid(di, dj);
   grid.value_list[0] = 0;
   grid.value_list[1] = 1;
@@ -154,7 +152,7 @@ void write() {
       gridtools::make_multistage(gridtools::enumtype::execute<gridtools::enumtype::forward>(),
                                  gridtools::make_stage<laplacian_stage>(p_lap(), p_phi())));
   laplacian_stencil->ready();
-  
+
   //
   // Now, we apply the `laplacian_stencil` three times to phi. In each iteration we will create
   // an input and output savepoint where we save the current `phi` field (input) and `lap` field
@@ -179,19 +177,19 @@ void write() {
     // first invocation and afterwards the data is appended.
     //
     serializer.write("phi", savepoint_in, phi);
-    
+
     //
     // Apply the laplacian_stencil to phi
     //
     laplacian_stencil->steady();
     laplacian_stencil->run();
-    
+
     //
     // Create the output savepoint. This time we directly initialize the meta-information of the
     // savepoint.
     //
     ser::savepoint savepoint_out("laplacian-out", {{"time", ser::meta_info_value(t)}});
-  
+
     //
     // Write lap to disk. Note that here we implicitly register the field `lap` upon first
     // invocation. Same goes for the output savepoint.
@@ -199,38 +197,40 @@ void write() {
     serializer.write("lap", savepoint_out, lap);
 
     //
-    // Finally, we swap phi with lap (usually you want to use a gridtools::data_field for this 
+    // Finally, we swap phi with lap (usually you want to use a gridtools::data_field for this
     // task!)
     //
+    auto lap_view = make_host_view(lap);
+    auto phi_view = make_host_view(phi);
     for(int i = 0; i < N; ++i)
       for(int j = 0; j < M; ++j)
-        std::swap(phi(i, j, 0), lap(i, j, 0));
+        std::swap(phi_view(i, j, 0), lap_view(i, j, 0));
   }
-  
-  laplacian_stencil->finalize();  
+
+  laplacian_stencil->finalize();
 }
 
-template<class VectorType>
+template <class VectorType>
 std::string vec_to_string(VectorType&& vec) {
   std::stringstream ss;
   ss << "[ ";
-  for(auto it = vec.begin(), end  = vec.end(); it != end; ++it)
-    ss << *it << " ";    
+  for(auto it = vec.begin(), end = vec.end(); it != end; ++it)
+    ss << *it << " ";
   ss << "]";
-  return ss.str(); 
+  return ss.str();
 }
 
 //===------------------------------------------------------------------------------------------===//
 //  read()
 //
-// In this function we initialize the Serializer for reading with our serialized data from the 
-// write() method. First, we query some meta-data, like the global meta-information, the 
-// dimensions of field `phi` or the vector of savepoints. 
-// Afterwards, we apply the same three time steps of the `laplacianStencil` to `phi` to compute 
-// `lap`. However, this time we compare the result (i.e the content of `lap`) to the reference 
-// loaded from disk (`lap_reference`) which we computed in the write() method. Obviously, the 
+// In this function we initialize the Serializer for reading with our serialized data from the
+// write() method. First, we query some meta-data, like the global meta-information, the
+// dimensions of field `phi` or the vector of savepoints.
+// Afterwards, we apply the same three time steps of the `laplacianStencil` to `phi` to compute
+// `lap`. However, this time we compare the result (i.e the content of `lap`) to the reference
+// loaded from disk (`lap_reference`) which we computed in the write() method. Obviously, the
 // results will match as we apply the exact same stencil but in a real world scenario you might use
-// a different implementations of the stencil and this is where Serialbox has it's use case. 
+// a different implementations of the stencil and this is where Serialbox has it's use case.
 //
 //===------------------------------------------------------------------------------------------===//
 void read() {
@@ -269,17 +269,17 @@ void read() {
   //
   // Allocate the 2D arrays phi and lap and assemble the gridtools stencil
   //
-  meta_data_t meta_data(N, M, 1);
-  storage_t phi(meta_data, "phi", -1);
-  storage_t lap(meta_data, "lap", -1);
-  storage_t lap_reference(meta_data, "lap_reference", -1);
+  storage_info_t meta_data(N, M, 1);
+  storage_t phi(meta_data, -1., "phi");
+  storage_t lap(meta_data, -1., "lap");
+  storage_t lap_reference(meta_data, -1., "lap_reference");
 
   using p_lap = gridtools::arg<0, storage_t>;
   using p_phi = gridtools::arg<1, storage_t>;
   using arg_list = boost::mpl::vector<p_lap, p_phi>;
 
   // Setup domain
-  gridtools::aggregator_type<arg_list> domain(boost::fusion::make_vector(&lap, &phi));
+  gridtools::aggregator_type<arg_list> domain((p_lap() = lap), (p_phi() = phi));
 
   // Setup grid
   gridtools::uint_t di[5] = {halo_size, halo_size, halo_size, N - halo_size - 1, N};
@@ -327,11 +327,13 @@ void read() {
     //
     // ... and compare the results.
     //
+    auto lap_view = make_host_view(lap);
+    auto lap_reference_view = make_host_view(lap_reference);
     for(int i = 1; i < N - 1; ++i)
       for(int j = 1; j < M - 1; ++j)
-        if(lap(i, j, 0) != lap_reference(i, j, 0))
+        if(lap_view(i, j, 0) != lap_reference_view(i, j, 0))
           throw ser::exception("mismatch at (%i,%i) of lap and lap_reference: %f vs. %f\n", i, j,
-                               lap(i, j, 0), lap_reference(i, j, 0));
+                               lap_view(i, j, 0), lap_reference_view(i, j, 0));
   }
 
   laplacian_stencil->finalize();

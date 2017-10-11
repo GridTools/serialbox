@@ -133,12 +133,13 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   EXPECT_EQ(numDimension, 4);
 
   // Dimensions
-  const int* dimension = serialboxFieldMetainfoGetDimensions(info);
+  int isize, jsize, ksize, lsize;
+  serialboxFortranSerializerGetFieldDimensions(serializer, "field", &isize, &jsize, &ksize, &lsize);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-  EXPECT_EQ(dimension[0], 30);
-  EXPECT_EQ(dimension[1], 40);
-  EXPECT_EQ(dimension[2], 50);
-  EXPECT_EQ(dimension[3], 60);
+  EXPECT_EQ(isize, 30);
+  EXPECT_EQ(jsize, 40);
+  EXPECT_EQ(ksize, 50);
+  EXPECT_EQ(lsize, 60);
 
   // Type
   serialboxTypeID type = serialboxFieldMetainfoGetTypeID(info);

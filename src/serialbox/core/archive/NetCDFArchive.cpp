@@ -273,7 +273,7 @@ void NetCDFArchive::readMetaDataFromJson() {
 //===------------------------------------------------------------------------------------------===//
 
 FieldID NetCDFArchive::write(const StorageView& storageView, const std::string& field,
-                             const std::shared_ptr<FieldMetainfoImpl> info) throw(Exception) {
+                             const std::shared_ptr<FieldMetainfoImpl> info) {
   if(mode_ == OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Write' or 'Append'");
 
@@ -395,11 +395,7 @@ void NetCDFArchive::writeToFile(std::string filename, const StorageView& storage
 //===------------------------------------------------------------------------------------------===//
 
 void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID,
-                         std::shared_ptr<FieldMetainfoImpl> info) const throw(Exception) {
-
-  if(mode_ != OpenModeKind::Read)
-    throw Exception("Archive is not initialized with OpenModeKind set to 'Read'");
-
+                         std::shared_ptr<FieldMetainfoImpl> info) const {
   LOG(info) << "Attempting to read field \"" << fieldID.name << "\" (id = " << fieldID.id
             << ") via NetCDFArchive ... ";
 

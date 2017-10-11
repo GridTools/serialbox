@@ -72,13 +72,13 @@ MockArchive::MockArchive(OpenModeKind mode)
     : mode_(mode), directory_(""), prefix_(""), metaDataFile_("") {}
 
 FieldID MockArchive::write(const StorageView& storageView, const std::string& fieldID,
-                           const std::shared_ptr<FieldMetainfoImpl> info) throw(Exception) {
+                           const std::shared_ptr<FieldMetainfoImpl> info) {
   throw Exception("MockArchive does not support writing");
   return FieldID{fieldID, 0};
 }
 
 void MockArchive::read(StorageView& storageView, const FieldID& fieldID,
-                       std::shared_ptr<FieldMetainfoImpl> info) const throw(Exception) {
+                       std::shared_ptr<FieldMetainfoImpl> info) const {
   switch(storageView.type()) {
   case TypeID::Boolean:
     fillRandom<bool>(storageView);

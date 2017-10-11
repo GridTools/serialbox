@@ -25,6 +25,12 @@ namespace serialbox {
 
 /// \brief Utility to deal with Serialbox versions
 struct Version {
+private:
+  static int getVersion() {
+    return SERIALBOX_VERSION_MAJOR * 100 + SERIALBOX_VERSION_MINOR * 10 + SERIALBOX_VERSION_PATCH;
+  }
+
+public:
   Version() = delete;
 
   /// \brief Convert to string
@@ -44,16 +50,15 @@ struct Version {
   ///
   /// \return Return true if the versions match
   /// @{
-  static bool match(int version) noexcept {
-    int major = version / 100;
-    int minor = (version - major * 100) / 10;
-    return Version::match(major, minor, version - 100 * major - 10 * minor);
-  }
+  static bool match(int version) noexcept { return version == getVersion(); }
+  /// @}
 
-  static bool match(int major, int minor, int patch) noexcept {
-    return ((major == SERIALBOX_VERSION_MAJOR) && (minor == SERIALBOX_VERSION_MINOR) &&
-            (patch == SERIALBOX_VERSION_PATCH));
-  }
+  /// \brief Check if the given version is compatible with the current library version (i.e. is
+  /// older)
+  ///
+  /// \return Return true if the versions is compatible
+  /// @{
+  static bool isCompatible(int version) noexcept { return version <= getVersion(); }
   /// @}
 };
 

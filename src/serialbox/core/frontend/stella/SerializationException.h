@@ -15,6 +15,7 @@
 #ifndef SERIALBOX_CORE_FRONTEND_STELLA_SERIALIZATIONEXCEPTION_H
 #define SERIALBOX_CORE_FRONTEND_STELLA_SERIALIZATIONEXCEPTION_H
 
+#include "serialbox/core/Exception.h"
 #include "serialbox/core/frontend/stella/ForwardDecl.h"
 #include <exception>
 #include <string>
@@ -29,16 +30,16 @@ namespace stella {
 class SerializationException : public std::exception {
 public:
   /// \brief Default constructor
-  SerializationException() throw() {}
+  SerializationException() SERIALBOX_NOEXCEPT {}
 
   /// \brief Virtual destructor
-  virtual ~SerializationException() throw() {}
+  virtual ~SerializationException() SERIALBOX_NOEXCEPT {}
 
   /// \brief Initialize the exception with an explanatory string `errormsg`
   void Init(const std::string& errormsg) { message_ = errormsg; }
 
   /// \brief Returns an explanatory string
-  const char* what() const throw() { return message_.c_str(); }
+  const char* what() const SERIALBOX_NOEXCEPT { return message_.c_str(); }
 
   /// \brief Returns an explanatory string
   const std::string& message() const { return message_; }

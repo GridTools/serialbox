@@ -222,7 +222,7 @@ void BinaryArchive::readMetaDataFromJson() {
   std::string hashAlgorithm = json_["hash_algorithm"];
 
   // Check consistency
-  if(!Version::match(serialboxVersion))
+  if(!Version::isCompatible(serialboxVersion))
     throw Exception("serialbox version of binary archive (%s) does not match the version "
                     "of the library (%s)",
                     Version::toString(serialboxVersion), SERIALBOX_VERSION_STRING);
@@ -286,7 +286,7 @@ void BinaryArchive::updateMetaData() { writeMetaDataToJson(); }
 //===------------------------------------------------------------------------------------------===//
 
 FieldID BinaryArchive::write(const StorageView& storageView, const std::string& field,
-                             const std::shared_ptr<FieldMetainfoImpl> info) throw(Exception) {
+                             const std::shared_ptr<FieldMetainfoImpl> info) {
   if(mode_ == OpenModeKind::Read)
     throw Exception("Archive is not initialized with OpenModeKind set to 'Write' or 'Append'");
 
@@ -376,10 +376,7 @@ void BinaryArchive::writeToFile(std::string filename, const StorageView& storage
 //===------------------------------------------------------------------------------------------===//
 
 void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID,
-                         std::shared_ptr<FieldMetainfoImpl> info) const throw(Exception) {
-  if(mode_ != OpenModeKind::Read)
-    throw Exception("Archive is not initialized with OpenModeKind set to 'Read'");
-
+                         std::shared_ptr<FieldMetainfoImpl> info) const {
   LOG(info) << "Attempting to read field \"" << fieldID.name << "\" (id = " << fieldID.id
             << ") via BinaryArchive ... ";
 
