@@ -103,53 +103,10 @@ if(SERIALBOX_ROOT)
 endif()
 
 #===---------------------------------------------------------------------------------------------===
-#   Read config file (serialbox/core/Config.h)
+#   Read config file (serialbox/cmake/SerialboxConfiguration.cmake)
 #====--------------------------------------------------------------------------------------------===
 if(SERIALBOX_ROOT)
-  file(READ ${SERIALBOX_ROOT}/include/serialbox/core/Config.h _CONFIG_FILE)
-
-  # Get version  
-  string(REGEX MATCH "define[ \t]+SERIALBOX_VERSION_MAJOR[ \t]+([0-9]+)" _MAJOR "${_CONFIG_FILE}")
-  set(SERIALBOX_MAJOR_VERSION "${CMAKE_MATCH_1}")
-  string(REGEX MATCH "define[ \t]+SERIALBOX_VERSION_MINOR[ \t]+([0-9]+)" _MINOR "${_CONFIG_FILE}")
-  set(SERIALBOX_MINOR_VERSION "${CMAKE_MATCH_1}")
-  string(REGEX MATCH "define[ \t]+SERIALBOX_VERSION_PATCH[ \t]+([0-9]+)" _PATCH "${_CONFIG_FILE}")
-  set(SERIALBOX_PATCH_VERSION "${CMAKE_MATCH_1}")
-
-  set(SERIALBOX_VERSION 
-      "${SERIALBOX_MAJOR_VERSION}.${SERIALBOX_MINOR_VERSION}.${SERIALBOX_PATCH_VERSION}")
-
-  # Get Boost version
-  #
-  #   BOOST_VERSION % 100 is the patch level
-  #   BOOST_VERSION / 100 % 1000 is the minor version
-  #   BOOST_VERSION / 100000 is the major version
-  #
-  string(REGEX MATCH "define[ \t]+SERIALBOX_BOOST_VERSION[ \t]+([0-9]+)" _BOOST "${_CONFIG_FILE}")
-  set(_BOOST_VERSION "${CMAKE_MATCH_1}")
-  math(EXPR _BOOST_MAJOR_VERSION "${_BOOST_VERSION} / 100000")
-  math(EXPR _BOOST_MINOR_VERSION "${_BOOST_VERSION} / 100 % 1000")
-  set(SERIALBOX_BOOST_VERSION "${_BOOST_MAJOR_VERSION}.${_BOOST_MINOR_VERSION}")
-
-  # Check for OpenSSL support
-  string(REGEX MATCH "define[ \t]+SERIALBOX_HAS_OPENSSL[ \t]+([0-9]+)" _OPENSSL "${_CONFIG_FILE}")
-  if(CMAKE_MATCH_1)
-    set(SERIALBOX_HAS_OPENSSL TRUE)
-  else()
-    set(SERIALBOX_HAS_OPENSSL FALSE)
-  endif()
-  
-  # Check for NetCDF support
-  string(REGEX MATCH "define[ \t]+SERIALBOX_HAS_NETCDF[ \t]+([0-9]+)" _NETCDF "${_CONFIG_FILE}")
-  if(CMAKE_MATCH_1)
-    set(SERIALBOX_HAS_NETCDF TRUE)
-  else()
-    set(SERIALBOX_HAS_NETCDF FALSE)
-  endif()
-  
-  # Check if logging is ON
-  string(REGEX MATCH "define[ \t]+SERIALBOX_HAS_LOGGING[ \t]+([0-9]+)" _LOGGING "${_CONFIG_FILE}")
-  set(SERIALBOX_HAS_LOGGING "${CMAKE_MATCH_1}")
+  include(${SERIALBOX_ROOT}/cmake/SerialboxConfiguration.cmake)
 endif()
 
 #===---------------------------------------------------------------------------------------------===
@@ -227,13 +184,12 @@ if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
   set(Boost_USE_STATIC_RUNTIME OFF)
   set(Boost_USE_MULTITHREADED ON)  
   
-  set(_REQUIRED_BOOST_COMPONENTS filesystem system)
-  if(SERIALBOX_HAS_LOGGING)
-    list(APPEND _REQUIRED_BOOST_COMPONENTS log)
-  endif()
-  
+  set(BOOST_LIBRARYDIR "${SERIALBOX_BOOST_LIBRARY_DIRS}")
+  set(BOOST_INCLUDEDIR "${SERIALBOX_BOOST_INCLUDE_DIRS}")
+  set(Boost_NO_SYSTEM_PATHS "ON") # Force boost to search locations specified above
+
   find_package(Boost 
-               ${SERIALBOX_BOOST_VERSION} EXACT COMPONENTS ${_REQUIRED_BOOST_COMPONENTS})
+               ${SERIALBOX_BOOST_VERSION} EXACT COMPONENTS ${SERIALBOX_REQUIRED_BOOST_COMPONENTS})
   if(Boost_FOUND)
     list(APPEND SERIALBOX_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
     list(APPEND SERIALBOX_EXTERNAL_LIBRARIES ${Boost_LIBRARIES})
@@ -249,7 +205,7 @@ if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
     
     list(APPEND WARN_STR "\nRequired components:")
     
-    foreach(component ${_REQUIRED_BOOST_COMPONENTS})
+    foreach(component ${SERIALBOX_REQUIRED_BOOST_COMPONENTS})
       list(APPEND WARN_STR "\n - ${component}")
     endforeach()
     
@@ -259,7 +215,7 @@ if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
   #
   # OpenSSL
   #
-  if(SERIALBOX_HAS_OPENSSL)
+  if(SERIALBOX_OPENSSL)
     find_package(OpenSSL QUIET)
     if(OpenSSL_FOUND)  
       list(APPEND SERIALBOX_EXTERNAL_LIBRARIES ${OPENSSL_LIBRARIES})
@@ -271,8 +227,7 @@ if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
   #
   # NetCDF
   #
-  if(SERIALBOX_HAS_NETCDF)
-
+  if(SERIALBOX_NETCDF)
     set(NETCDF_ROOT_ENV $ENV{NETCDF_ROOT})
     if(NETCDF_ROOT_ENV)
       set(NETCDF_ROOT ${NETCDF_ROOT_ENV} CACHE "NetCDF install path.")
