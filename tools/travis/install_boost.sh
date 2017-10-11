@@ -35,7 +35,7 @@ function install_boost() {
   }
 
   NOTICE "${FUNCNAME[0]}: Installing boost $boost_version into \"$boost_install_dir\" ..."
-  mkdir -p ${boost_install_dir}
+  mkdir -p "${boost_install_dir}"
 
   if [[ ! -z "$(ls -A ${boost_install_dir})" ]]; then
     NOTICE "${FUNCNAME[0]}: Package already installed. Skipping."
