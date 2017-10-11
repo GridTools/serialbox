@@ -41,16 +41,16 @@ public:
   template <class StringType,
             class = typename std::enable_if<!std::is_same<StringType, json::json>::value>::type>
   explicit SavepointImpl(const StringType& name)
-      : name_(name), metaInfo_(std::make_shared<MetainfoMapImpl>()){};
+      : name_(name), metaInfo_(std::make_shared<MetainfoMapImpl>()) {}
 
   /// \brief Construct savepoint with `name` and `metaInfo`
   template <class StringType, class MetainfoType>
   SavepointImpl(StringType&& name, MetainfoType&& metaInfo)
       : name_(name),
-        metaInfo_(std::make_shared<MetainfoMapImpl>(std::forward<MetainfoType>(metaInfo))){};
+        metaInfo_(std::make_shared<MetainfoMapImpl>(std::forward<MetainfoType>(metaInfo))) {}
 
   /// \brief Copy constructor
-  SavepointImpl(const SavepointImpl& other) { *this = other; };
+  SavepointImpl(const SavepointImpl& other) { *this = other; }
 
   /// \brief Move constructor
   SavepointImpl(SavepointImpl&&) = default;
