@@ -83,7 +83,7 @@ else # Linux
     cd examples/fortran/perturbation
     mkdir -p build && cd build
     
-    cmake ..         
+    cmake ..                                                                                       \
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                                                     \
         -DPYTHON_EXECUTABLE="$SERIALBOX_PYTHON_DIR/bin/python3"                                    \
         -DBOOST_ROOT="$BOOST_ROOT"                                                                 \
