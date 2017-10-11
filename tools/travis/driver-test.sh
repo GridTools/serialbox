@@ -91,6 +91,7 @@ else # Linux
     make || fatal_error "failed to build"
     
     popd
+  fi
 fi
 
 
