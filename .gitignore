@@ -14,7 +14,7 @@
 
 # Build directories
 build*/
-install*
+install/*
 buildenv*
 
 # External projects
