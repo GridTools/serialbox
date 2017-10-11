@@ -130,7 +130,7 @@ jobs:
 
 cache:
   directories:
-    - ${CACHE_DIR}/protobuf-${BOOST_VERSION}
+    - ${CACHE_DIR}/boost-${BOOST_VERSION}
 
 notifications:
   on_success: never
