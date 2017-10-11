@@ -15,7 +15,7 @@ Serialbox builds are run on Travis CI [here](https://travis-ci.org/eth-cscs/seri
 ### Linux
 
 |  Toolchain   | Config         |                                                     Status                                                         |
-|:-------------|:---------------|-------------------------------------------------------------------------------------------------------------------:|
+|:-------------|:---------------|:-------------------------------------------------------------------------------------------------------------------|
 | GCC 5.4      | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 5.4][GCC_54_Release.Badge]</a>            |
 | GCC 5.4      | RelWithDebInfo |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 5.4][GCC_54_RelWithDebInfo.Badge]</a>     |
 | GCC 6.3      | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 6.3][GCC_63_Release.Badge]</a>            |
@@ -31,7 +31,7 @@ Serialbox builds are run on Travis CI [here](https://travis-ci.org/eth-cscs/seri
 ### OSX
 
 |  Toolchain   | Config         |                                                     Status                                                           |
-|:-------------|:---------------|---------------------------------------------------------------------------------------------------------------------:|
+|:-------------|:---------------|:---------------------------------------------------------------------------------------------------------------------|
 | Xcode 7.3    | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 5.4][Xcode_73_Release.Badge]</a>            |
 | Xcode 7.3    | RelWithDebInfo |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 5.4][Xcode_73_RelWithDebInfo.Badge]</a>     |
 | Xcode 8.0    | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 6.3][Xcode_80_Release.Badge]</a>            |
