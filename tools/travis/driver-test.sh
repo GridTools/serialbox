@@ -45,8 +45,10 @@ $CXX --version
 # Build Serialbox2
 if [[ "${FC_COMPILER}" != "" ]]; then
   export SERIALBOX_ENABLE_FORTRAN=ON
+  export FC=${FC_COMPILER}
 else
   export SERIALBOX_ENABLE_FORTRAN=OFF
+
 fi
 
 pushd $(pwd)
