@@ -59,7 +59,7 @@ USE utils_ppser, ONLY:  &
     REAL(KIND=8), DIMENSION(:,:,:) :: a
     ! setup serialization environment
     call ppser_initialize(directory='.',prefix='SerialboxTest-output', &
-                                                prefix_ref='SerialboxTest')
+                          prefix_ref='SerialboxTest')
     call fs_create_savepoint('sp1', ppser_savepoint)
     call ppser_set_mode(1)
 
