@@ -298,7 +298,7 @@ void SerializerImpl::constructMetaDataFromJson() {
 
     int serialboxVersion = jsonNode["serialbox_version"];
 
-    if(!Version::match(serialboxVersion))
+    if(!Version::isCompatible(serialboxVersion))
       throw Exception(
           "serialbox version of MetaData (%s) does not match the version of the library (%s)",
           Version::toString(serialboxVersion), SERIALBOX_VERSION_STRING);
