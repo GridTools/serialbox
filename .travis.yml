@@ -20,8 +20,10 @@ addons:
     packages:
       - g++-5
       - gcc-5
+      - gfortran-5
       - g++-6
       - gcc-6
+      - gfortran-6
       - clang-3.8
       - clang++-3.8
 
@@ -53,22 +55,22 @@ jobs:
       compiler: gcc
       os: linux
       script: bash ${SCRIPT_DIR}/driver-test.sh
-      env: CONFIG=Release CXX_COMPILER=g++-5 C_COMPILER=gcc-5
+      env: CONFIG=Release CXX_COMPILER=g++-5 C_COMPILER=gcc-5 FC_COMPILER=gfortran-5
     
     # Linux GCC 5.4 (RelWithDebInfo) [Linux]
     - <<: *test_stage
       compiler: gcc
-      env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-5 C_COMPILER=gcc-5
+      env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-5 C_COMPILER=gcc-5 FC_COMPILER=gfortran-5
 
     # Linux GCC 6.3 (Release) [Linux]
     - <<: *test_stage      
       compiler: gcc
-      env: CONFIG=Release CXX_COMPILER=g++-6 C_COMPILER=gcc-6
+      env: CONFIG=Release CXX_COMPILER=g++-6 C_COMPILER=gcc-6 FC_COMPILER=gfortran-6
     
     # Linux GCC 6.3 (RelWithDebInfo) [Linux]
     - <<: *test_stage      
       compiler: gcc
-      env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-6 C_COMPILER=gcc-6
+      env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-6 C_COMPILER=gcc-6 FC_COMPILER=gfortran-6
 
     # Clang 3.8 (Release) [Linux]
     - <<: *test_stage      
