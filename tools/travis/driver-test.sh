@@ -57,7 +57,7 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                                                     \
         -DSERIALBOX_TESTING=ON                                                                     \
         -DSERIALBOX_ENABLE_FORTRAN=OFF
-
+  make -j2 install || fatal_error "failed to build"
 else # Linux 
   cmake ..                                                                                         \
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                                                     \
@@ -65,6 +65,7 @@ else # Linux
         -DSERIALBOX_TESTING=ON                                                                     \
         -DSERIALBOX_ENABLE_FORTRAN=$SERIALBOX_ENABLE_FORTRAN                                       \
         -DBOOST_ROOT="$BOOST_ROOT"
+  make -j2 install || fatal_error "failed to build"
 fi
 
 popd
