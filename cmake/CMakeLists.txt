@@ -9,10 +9,20 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-## Install FindSerialbox.cmake
-install(FILES ${CMAKE_SOURCE_DIR}/cmake/FindSerialbox.cmake DESTINATION cmake/)
+include(CMakePackageConfigHelpers)
+
+## Generate and install SerialboxConfig.cmake
+configure_file(${CMAKE_SOURCE_DIR}/cmake/SerialboxConfig.cmake.in
+    "${PROJECT_BINARY_DIR}/cmake/SerialboxConfig.cmake" @ONLY)
+install(FILES "${PROJECT_BINARY_DIR}/cmake/SerialboxConfig.cmake" DESTINATION cmake)
+
+## Install SerialboxTooling.cmake
 install(FILES ${CMAKE_SOURCE_DIR}/cmake/SerialboxTooling.cmake DESTINATION cmake/)
 
-configure_file(${CMAKE_SOURCE_DIR}/cmake/SerialboxConfiguration.cmake.in
-    "${PROJECT_BINARY_DIR}/cmake/SerialboxConfiguration.cmake" @ONLY)
-install(FILES "${PROJECT_BINARY_DIR}/cmake/SerialboxConfiguration.cmake" DESTINATION cmake)
+# Generate and install SerialboxConfigVersion.cmake
+write_basic_package_version_file(
+  "${PROJECT_BINARY_DIR}/cmake/SerialboxConfigVersion.cmake"
+  VERSION ${SERIALBOX_VERSION_STRING}
+  COMPATIBILITY AnyNewerVersion
+)
+install(FILES "${PROJECT_BINARY_DIR}/cmake/SerialboxConfigVersion.cmake" DESTINATION cmake)

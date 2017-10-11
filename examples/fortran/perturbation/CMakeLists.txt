@@ -25,19 +25,25 @@ project(SerialboxPerturbationExample CXX Fortran)
 # to define SERIALBOX_ROOT (either directly in CMake or pass it as -DSERIALBOX_ROOT=<> via 
 # command-line).
 #
-set(SERIALBOX_ROOT "${CMAKE_SOURCE_DIR}/../../../install")
+if(NOT(DEFINED SERIALBOX_ROOT))
+	set(SERIALBOX_ROOT "${CMAKE_SOURCE_DIR}/../../../install")
+endif()
 
 #
 # Serialbox has a find_package-module. Usually you want to bundle this module with your own project
 # and therefore we copied it into "cmake/". We need to tell CMake about this.
 #
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 #
 # Now, we call the find_package-module and specifically request the Fortran interface. Note that 
 # this obviously required you to compile Serialbox with SERIALBOX_FORTRAN_ENABLE=ON.
 #
-find_package(Serialbox REQUIRED COMPONENTS Fortran)
+find_package(Serialbox REQUIRED COMPONENTS Fortran HINTS
+    "${CMAKE_CURRENT_LIST_DIR}/../serialbox2/install/cmake"
+    "${SERIALBOX_ROOT}/cmake"
+    "${SERIALBOX_DIR}/cmake"
+    "$ENV{SERIALBOX_ROOT}/cmake")
+
 
 #
 # Set some Fortran specific compiler flags (e.g enable preprocessing) and set the corresponding 
