@@ -66,9 +66,10 @@ if [ "$(hostname | grep greina)" != "" ] ; then
     MYHOST="greina"
 elif [ "$(hostname | grep kesch)" != "" ] ; then
     MYHOST="kesch"
+elif [ "$(hostname | grep daint)" != "" ] ; then
+    MYHOST="daint"
 else
-    echo "build: host '$(hostname)' not known"
-    exit 1
+    echo "build: host '$(hostname)' not known. Assuming environment is already setup."
 fi
 
 #------------------------------ Parse options ----------------------------------
@@ -87,7 +88,7 @@ while true; do
     case "$1" in
         -h|--h*) print_help; exit 0;;
         -b|--build-type) ARG_BUILD=$(to_lower_and_trim $2); shift 2;;
-        -i|--install) ARG_INSTALL=$(to_lower_and_trim $2); shift 2;;
+        -i|--install) ARG_INSTALL=$2; shift 2;;
         -f|--fc-compiler) ARG_FC_COMPILER=$(to_lower_and_trim $2); shift 2;;
         -t|--run-tests ) ARG_RUN_TESTS=true; shift 2;;
         -r|--rerun-cmake) 			
@@ -110,7 +111,7 @@ else
 fi
 
 # Install
-if [ "${ARG_INSTALL}" = "install" ]; then
+if [ ! -z "${ARG_INSTALL}" ]; then
     INSTALL_PREFIX="${ARG_INSTALL}"
     printf "%-20s: %s\n" "Install directory" "${INSTALL_PREFIX}"
 fi
@@ -143,7 +144,9 @@ SERIALBOX_ENABLE_FORTRAN=ON
 CURRENT_PATH=$(pwd)
 
 #------------------------------ Load environment -------------------------------
-source ${CURRENT_PATH}/env_${MYHOST}.sh -f ${FC_COMPILER}
+if [ ! -z ${MY_HOST} ]; then
+    source ${CURRENT_PATH}/env_${MYHOST}.sh -f ${FC_COMPILER}
+fi
 
 #------------------------------ Check for external libraries -------------------
 
@@ -180,7 +183,7 @@ fi
 
 #------------------------------ Build ------------------------------------------
 
-BUILD_DIR=${CURRENT_PATH}/../../build_gcc_${ARG_FC_COMPILER}
+BUILD_DIR=${CURRENT_PATH}/build_gcc_${ARG_FC_COMPILER}
 
 # Create build directory
 if [ -d "$BUILD_DIR" ]; then
@@ -193,9 +196,18 @@ mkdir -p ${BUILD_DIR}
 
 cd ${BUILD_DIR}
 
+if [ ! -z "${INSTALL_PREFIX}" ]; then
+    CMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}
+else
+    CMAKE_INSTALL_PREFIX=${BUILD_DIR}/install
+fi
+
+echo "BUILD_DIR=${BUILD_DIR}"
+
 # Run Cmake
 cmake                                                                          \
  -DBoost_NO_BOOST_CMAKE="true"                                                 \
+ -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_INSTALL_PREFIX}                         \
  -DCMAKE_BUILD_TYPE:STRING="$BUILD_TYPE"                                       \
  -DSERIALBOX_TESTING:BOOL=${SERIALBOX_TESTING}                                 \
  -DSERIALBOX_ENABLE_C:BOOL=${SERIALBOX_ENABLE_C}                               \
@@ -206,7 +218,13 @@ cmake                                                                          \
  ../
 
 # Run make
-make -j5
+if [ -z "${INSTALL_PREFIX}" ]; then
+    # don't install if no install path was specified
+    make -j5
+else
+    # make and install if a path was specified
+    make install -j5
+fi
 
 # Run tests
 if [ "$ARG_RUN_TESTS" == "true" ]; then
