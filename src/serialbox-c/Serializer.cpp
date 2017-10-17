@@ -15,6 +15,8 @@
 #include "serialbox-c/Serializer.h"
 #include "serialbox-c/Logging.h"
 #include "serialbox-c/Savepoint.h"
+#include "serialbox-c/FieldMetainfo.h"
+#include "serialbox-c/Metainfo.h"
 #include "serialbox-c/Utility.h"
 #include "serialbox/core/Exception.h"
 #include "serialbox/core/Logging.h"
@@ -310,6 +312,37 @@ serialboxSerializerGetFieldMetainfo(const serialboxSerializer_t* serializer, con
     return info;
   }
   return NULL;
+}
+
+void serialboxSerializerGetFieldMetainfo2(serialboxSerializer_t* serializer, const char* name,
+										  char* storedName, int* type, int* bytesPerElement, int* rank,
+										  int* iSize, int* jSize, int* kSize, int* lSize,
+										  int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
+										  int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo) {
+
+  try {
+		serialboxFieldMetainfo_t* fieldMetainfo = serialboxSerializerGetFieldMetainfo(serializer, name);
+		serialboxMetainfo_t* metainfo = serialboxFieldMetainfoGetMetainfo(fieldMetainfo);
+
+		storedName = serialboxMetainfoGetString(metainfo, "__name");
+		*type = serialboxMetainfoGetInt32(metainfo, "__elementtype");
+		*bytesPerElement = serialboxMetainfoGetInt32(metainfo, "__bytesperelement");
+		*rank = serialboxMetainfoGetInt32(metainfo, "__rank");
+		*iSize = serialboxMetainfoGetInt32(metainfo, "__iSize");
+		*jSize = serialboxMetainfoGetInt32(metainfo, "__jSize");
+		*kSize = serialboxMetainfoGetInt32(metainfo, "__kSize");
+		*lSize = serialboxMetainfoGetInt32(metainfo, "__lSize");
+		*iMinusHalo = serialboxMetainfoGetInt32(metainfo, "__iminushalosize");
+		*jMinusHalo = serialboxMetainfoGetInt32(metainfo, "__jminushalosize");
+		*kMinusHalo = serialboxMetainfoGetInt32(metainfo, "__kminushalosize");
+		*lMinusHalo = serialboxMetainfoGetInt32(metainfo, "__lminushalosize");
+		*iPlusHalo = serialboxMetainfoGetInt32(metainfo, "__iplushalosize");
+		*jPlusHalo = serialboxMetainfoGetInt32(metainfo, "__jplushalosize");
+		*kPlusHalo = serialboxMetainfoGetInt32(metainfo, "__kplushalosize");
+		*lPlusHalo = serialboxMetainfoGetInt32(metainfo, "__lplushalosize");
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
 }
 
 /*===------------------------------------------------------------------------------------------===*\
