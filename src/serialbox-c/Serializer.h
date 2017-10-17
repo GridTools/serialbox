@@ -298,7 +298,7 @@ serialboxSerializerGetFieldMetainfo(const serialboxSerializer_t* serializer, con
  */
 SERIALBOX_API void
 serialboxSerializerGetFieldMetainfo2(serialboxSerializer_t* serializer, const char* name,
-							     char* storedName, int* type,
+							     char* storedName, char* elementType,
                                  int* bytesPerElement, int* iSize, int* jSize, int* kSize, int* lSize,
                                  int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
                                  int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo);

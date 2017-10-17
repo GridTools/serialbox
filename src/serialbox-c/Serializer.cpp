@@ -315,7 +315,7 @@ serialboxSerializerGetFieldMetainfo(const serialboxSerializer_t* serializer, con
 }
 
 void serialboxSerializerGetFieldMetainfo2(serialboxSerializer_t* serializer, const char* name,
-										  char* storedName, int* type, int* bytesPerElement, int* rank,
+										  char* storedName, char* elementType, int* bytesPerElement, int* rank,
 										  int* iSize, int* jSize, int* kSize, int* lSize,
 										  int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
 										  int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo) {
@@ -325,7 +325,7 @@ void serialboxSerializerGetFieldMetainfo2(serialboxSerializer_t* serializer, con
 		serialboxMetainfo_t* metainfo = serialboxFieldMetainfoGetMetainfo(fieldMetainfo);
 
 		storedName = serialboxMetainfoGetString(metainfo, "__name");
-		*type = serialboxMetainfoGetInt32(metainfo, "__elementtype");
+		elementType = serialboxMetainfoGetString(metainfo, "__elementtype");
 		*bytesPerElement = serialboxMetainfoGetInt32(metainfo, "__bytesperelement");
 		*rank = serialboxMetainfoGetInt32(metainfo, "__rank");
 		*iSize = serialboxMetainfoGetInt32(metainfo, "__iSize");
