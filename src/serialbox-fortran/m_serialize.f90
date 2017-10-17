@@ -771,10 +771,12 @@ END FUNCTION fs_field_exists
 !  If the field is not registered and the serializer is open in write or
 !  append mode, the field is automatically registered with the given sizes.
 !------------------------------------------------------------------------------
-SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, isize, jsize, ksize, lsize)
+SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, isize, jsize, ksize, lsize, minushalos, plushalos)
   TYPE(t_serializer) :: serializer
   CHARACTER(LEN=*)   :: fieldname, data_type
   INTEGER            :: bytes_per_element, isize, jsize, ksize, lsize
+  INTEGER, OPTIONAL  :: minushalos(:), plushalos(:)
+  INTEGER            :: iminushalo, iplushalo, jminushalo, jplushalo, kminushalo, kplushalo, lminushalo, lplushalo
 
   ! External functions
   INTERFACE
@@ -812,8 +814,48 @@ SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, is
 
   ! Else register field
   ELSE IF(fs_serializer_openmode(serializer) /= 'r') THEN
+    iminushalo = 0
+    iplushalo = 0
+    jminushalo = 0
+    jplushalo = 0
+    kminushalo = 0
+    kplushalo = 0
+    lminushalo = 0
+    lplushalo = 0
+
+    IF (PRESENT(minushalos)) THEN
+      IF (SIZE(minushalos) > 0) THEN
+        iminushalo = minushalos(1)
+        IF (SIZE(minushalos) > 1) THEN
+          jminushalo = minushalos(2)
+          IF (SIZE(minushalos) > 2) THEN
+            kminushalo = minushalos(3)
+            IF (SIZE(minushalos) > 3) THEN
+              lminushalo = minushalos(4)
+            END IF
+          END IF
+        END IF
+      END IF
+    END IF
+
+    IF (PRESENT(plushalos)) THEN
+      IF (SIZE(plushalos) > 0) THEN
+        iplushalo = plushalos(1)
+        IF (SIZE(plushalos) > 1) THEN
+          jplushalo = plushalos(2)
+          IF (SIZE(plushalos) > 2) THEN
+            kplushalo = plushalos(3)
+            IF (SIZE(plushalos) > 3) THEN
+              lplushalo = plushalos(4)
+            END IF
+          END IF
+        END IF
+      END IF
+    END IF
+
     CALL fs_register_field(serializer, fieldname, data_type, bytes_per_element, &
-                           isize, jsize, ksize, lsize, 0, 0, 0, 0, 0, 0, 0, 0)
+                           isize, jsize, ksize, lsize, &
+                           iminushalo, iplushalo, jminushalo, jplushalo, kminushalo, kplushalo, lminushalo, lplushalo)
   ELSE
     WRITE(*,*) "Serialbox: ERROR: field ", fieldname, " does not exist in the serializer"
     STOP
@@ -1041,66 +1083,70 @@ SUBROUTINE fs_write_logical_0d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_logical_0d
 
 
-SUBROUTINE fs_write_logical_1d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_logical_1d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL, INTENT(IN), TARGET :: field(:)
+  INTEGER, OPTIONAL  :: minushalos(1), plushalos(1)
 
   ! Local variables
   LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:)
 
   ALLOCATE(bool(SIZE(field, 1)))
   bool = field
-  CALL fs_write_field(serializer, savepoint, fieldname, bool)
+  CALL fs_write_field(serializer, savepoint, fieldname, bool, minushalos, plushalos)
 
 END SUBROUTINE fs_write_logical_1d
 
 
-SUBROUTINE fs_write_logical_2d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_logical_2d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL, INTENT(IN), TARGET :: field(:,:)
+  INTEGER, OPTIONAL  :: minushalos(2), plushalos(2)
 
   ! Local variables
   LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:,:)
 
   ALLOCATE(bool(SIZE(field, 1), SIZE(field, 2)))
   bool = field
-  CALL fs_write_field(serializer, savepoint, fieldname, bool)
+  CALL fs_write_field(serializer, savepoint, fieldname, bool, minushalos, plushalos)
 
 END SUBROUTINE fs_write_logical_2d
 
 
-SUBROUTINE fs_write_logical_3d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_logical_3d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL, INTENT(IN), TARGET :: field(:,:,:)
+  INTEGER, OPTIONAL  :: minushalos(3), plushalos(3)
 
   ! Local variables
   LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:,:,:)
 
   ALLOCATE(bool(SIZE(field, 1), SIZE(field, 2), SIZE(field, 3)))
   bool = field
-  CALL fs_write_field(serializer, savepoint, fieldname, bool)
+  CALL fs_write_field(serializer, savepoint, fieldname, bool, minushalos, plushalos)
 
 END SUBROUTINE fs_write_logical_3d
 
 
-SUBROUTINE fs_write_logical_4d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_logical_4d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL, INTENT(IN), TARGET :: field(:,:,:,:)
+  INTEGER, OPTIONAL  :: minushalos(4), plushalos(4)
 
   ! Local variables
   LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:,:,:,:)
 
   ALLOCATE(bool(SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), SIZE(field, 4)))
   bool = field
-  CALL fs_write_field(serializer, savepoint, fieldname, bool)
+  CALL fs_write_field(serializer, savepoint, fieldname, bool, minushalos, plushalos)
 
 END SUBROUTINE fs_write_logical_4d
 
@@ -1130,11 +1176,12 @@ SUBROUTINE fs_write_bool_0d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_bool_0d
 
 
-SUBROUTINE fs_write_bool_1d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_bool_1d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:)
+  INTEGER, OPTIONAL  :: minushalos(1), plushalos(1)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1143,7 +1190,7 @@ SUBROUTINE fs_write_bool_1d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), 0, 0, 0, minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)))), &
@@ -1157,11 +1204,12 @@ SUBROUTINE fs_write_bool_1d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_bool_1d
 
 
-SUBROUTINE fs_write_bool_2d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_bool_2d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:)
+  INTEGER, OPTIONAL  :: minushalos(2), plushalos(2)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1170,7 +1218,7 @@ SUBROUTINE fs_write_bool_2d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
+  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), SIZE(field, 2), 0, 0, minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
@@ -1184,11 +1232,12 @@ SUBROUTINE fs_write_bool_2d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_bool_2d
 
 
-SUBROUTINE fs_write_bool_3d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_bool_3d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:,:)
+  INTEGER, OPTIONAL  :: minushalos(3), plushalos(3)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1197,7 +1246,8 @@ SUBROUTINE fs_write_bool_3d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+  CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0, &
+                                                                   minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1)), &
@@ -1211,11 +1261,12 @@ SUBROUTINE fs_write_bool_3d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_bool_3d
 
 
-SUBROUTINE fs_write_bool_4d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_bool_4d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:,:,:)
+  INTEGER, OPTIONAL  :: minushalos(4), plushalos(4)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1225,7 +1276,7 @@ SUBROUTINE fs_write_bool_4d(serializer, savepoint, fieldname, field)
   padd=>field
 
   CALL fs_check_size(serializer, fieldname, "bool", fs_boolsize(), SIZE(field, 1), SIZE(field, 2), &
-                                                                 SIZE(field, 3), SIZE(field, 4))
+                                                                   SIZE(field, 3), SIZE(field, 4), minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1, 1)), &
@@ -1264,11 +1315,12 @@ SUBROUTINE fs_write_int_0d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_int_0d
 
 
-SUBROUTINE fs_write_int_1d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_int_1d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_INT), INTENT(IN), TARGET :: field(:)
+  INTEGER, OPTIONAL  :: minushalos(1), plushalos(1)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1277,7 +1329,7 @@ SUBROUTINE fs_write_int_1d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), 0, 0, 0, minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)))), &
@@ -1291,11 +1343,12 @@ SUBROUTINE fs_write_int_1d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_int_1d
 
 
-SUBROUTINE fs_write_int_2d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_int_2d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_INT), INTENT(IN), TARGET :: field(:,:)
+  INTEGER, OPTIONAL  :: minushalos(2), plushalos(2)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1304,7 +1357,7 @@ SUBROUTINE fs_write_int_2d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), 0, 0, minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
@@ -1318,11 +1371,12 @@ SUBROUTINE fs_write_int_2d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_int_2d
 
 
-SUBROUTINE fs_write_int_3d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_int_3d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_INT), INTENT(IN), TARGET :: field(:,:,:)
+  INTEGER, OPTIONAL  :: minushalos(3), plushalos(3)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1331,7 +1385,8 @@ SUBROUTINE fs_write_int_3d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0, &
+                                                                   minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1)), &
@@ -1345,11 +1400,12 @@ SUBROUTINE fs_write_int_3d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_int_3d
 
 
-SUBROUTINE fs_write_int_4d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_int_4d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_INT), INTENT(IN), TARGET :: field(:,:,:,:)
+  INTEGER, OPTIONAL  :: minushalos(4), plushalos(4)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1359,7 +1415,7 @@ SUBROUTINE fs_write_int_4d(serializer, savepoint, fieldname, field)
   padd=>field
 
   CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), &
-                                                                 SIZE(field, 3), SIZE(field, 4))
+                                                                 SIZE(field, 3), SIZE(field, 4), minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1, 1)), &
@@ -1399,11 +1455,12 @@ SUBROUTINE fs_write_long_0d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_long_0d
 
 
-SUBROUTINE fs_write_long_1d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_long_1d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:)
+  INTEGER, OPTIONAL  :: minushalos(1), plushalos(1)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1412,7 +1469,7 @@ SUBROUTINE fs_write_long_1d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), 0, 0, 0, minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)))), &
@@ -1426,11 +1483,12 @@ SUBROUTINE fs_write_long_1d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_long_1d
 
 
-SUBROUTINE fs_write_long_2d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_long_2d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:)
+  INTEGER, OPTIONAL  :: minushalos(2), plushalos(2)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1439,7 +1497,7 @@ SUBROUTINE fs_write_long_2d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
+  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), SIZE(field, 2), 0, 0, minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
@@ -1453,11 +1511,12 @@ SUBROUTINE fs_write_long_2d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_long_2d
 
 
-SUBROUTINE fs_write_long_3d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_long_3d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:,:)
+  INTEGER, OPTIONAL  :: minushalos(3), plushalos(3)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1466,7 +1525,8 @@ SUBROUTINE fs_write_long_3d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+  CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0, &
+                                                                   minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1)), &
@@ -1480,11 +1540,12 @@ SUBROUTINE fs_write_long_3d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_long_3d
 
 
-SUBROUTINE fs_write_long_4d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_long_4d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:,:,:)
+  INTEGER, OPTIONAL  :: minushalos(4), plushalos(4)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1494,7 +1555,7 @@ SUBROUTINE fs_write_long_4d(serializer, savepoint, fieldname, field)
   padd=>field
 
   CALL fs_check_size(serializer, fieldname, "long", fs_longsize(), SIZE(field, 1), SIZE(field, 2), &
-                                                                 SIZE(field, 3), SIZE(field, 4))
+                                                                   SIZE(field, 3), SIZE(field, 4), minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1, 1)), &
@@ -1533,11 +1594,12 @@ SUBROUTINE fs_write_float_0d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_float_0d
 
 
-SUBROUTINE fs_write_float_1d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_float_1d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:)
+  INTEGER, OPTIONAL  :: minushalos(1), plushalos(1)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1546,7 +1608,7 @@ SUBROUTINE fs_write_float_1d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "float", fs_floatsize(), SIZE(field, 1), 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "float", fs_floatsize(), SIZE(field, 1), 0, 0, 0, minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)))), &
@@ -1560,11 +1622,12 @@ SUBROUTINE fs_write_float_1d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_float_1d
 
 
-SUBROUTINE fs_write_float_2d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_float_2d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:,:)
+  INTEGER, OPTIONAL  :: minushalos(2), plushalos(2)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1573,7 +1636,7 @@ SUBROUTINE fs_write_float_2d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "float", fs_floatsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
+  CALL fs_check_size(serializer, fieldname, "float", fs_floatsize(), SIZE(field, 1), SIZE(field, 2), 0, 0, minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
@@ -1587,11 +1650,12 @@ SUBROUTINE fs_write_float_2d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_float_2d
 
 
-SUBROUTINE fs_write_float_3d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_float_3d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:,:,:)
+  INTEGER, OPTIONAL  :: minushalos(3), plushalos(3)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1600,7 +1664,8 @@ SUBROUTINE fs_write_float_3d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "float", fs_floatsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+  CALL fs_check_size(serializer, fieldname, "float", fs_floatsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0, &
+                                                                   minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1)), &
@@ -1614,11 +1679,12 @@ SUBROUTINE fs_write_float_3d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_float_3d
 
 
-SUBROUTINE fs_write_float_4d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_float_4d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:,:,:,:)
+  INTEGER, OPTIONAL  :: minushalos(4), plushalos(4)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1628,7 +1694,7 @@ SUBROUTINE fs_write_float_4d(serializer, savepoint, fieldname, field)
   padd=>field
 
   CALL fs_check_size(serializer, fieldname, "float", fs_floatsize(), SIZE(field, 1), SIZE(field, 2), &
-                                                      SIZE(field, 3), SIZE(field, 4))
+                                                                     SIZE(field, 3), SIZE(field, 4), minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1, 1)), &
@@ -1667,11 +1733,12 @@ SUBROUTINE fs_write_double_0d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_double_0d
 
 
-SUBROUTINE fs_write_double_1d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_double_1d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:)
+  INTEGER, OPTIONAL  :: minushalos(1), plushalos(1)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1680,7 +1747,7 @@ SUBROUTINE fs_write_double_1d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "double", fs_doublesize(), SIZE(field, 1), 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "double", fs_doublesize(), SIZE(field, 1), 0, 0, 0, minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)))), &
@@ -1694,11 +1761,12 @@ SUBROUTINE fs_write_double_1d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_double_1d
 
 
-SUBROUTINE fs_write_double_2d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_double_2d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:,:)
+  INTEGER, OPTIONAL  :: minushalos(2), plushalos(2)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1707,7 +1775,8 @@ SUBROUTINE fs_write_double_2d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "double", fs_doublesize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
+  CALL fs_check_size(serializer, fieldname, "double", fs_doublesize(), SIZE(field, 1), SIZE(field, 2), 0, 0, &
+                     minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
@@ -1721,11 +1790,12 @@ SUBROUTINE fs_write_double_2d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_double_2d
 
 
-SUBROUTINE fs_write_double_3d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_double_3d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:,:,:)
+  INTEGER, OPTIONAL  :: minushalos(3), plushalos(3)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1734,7 +1804,8 @@ SUBROUTINE fs_write_double_3d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "double", fs_doublesize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+  CALL fs_check_size(serializer, fieldname, "double", fs_doublesize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0, &
+                                                                   minushalos, plushalos)
 
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1)), &
@@ -1750,11 +1821,12 @@ SUBROUTINE fs_write_double_3d(serializer, savepoint, fieldname, field)
 END SUBROUTINE fs_write_double_3d
 
 
-SUBROUTINE fs_write_double_4d(serializer, savepoint, fieldname, field)
+SUBROUTINE fs_write_double_4d(serializer, savepoint, fieldname, field, minushalos, plushalos)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:,:,:,:)
+  INTEGER, OPTIONAL  :: minushalos(4), plushalos(4)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1764,7 +1836,7 @@ SUBROUTINE fs_write_double_4d(serializer, savepoint, fieldname, field)
   padd=>field
 
   CALL fs_check_size(serializer, fieldname, "double", fs_doublesize(), SIZE(field, 1), SIZE(field, 2), &
-                                                      SIZE(field, 3), SIZE(field, 4))
+                                                                       SIZE(field, 3), SIZE(field, 4), minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1, 1)), &
