@@ -315,7 +315,7 @@ serialboxSerializerGetFieldMetainfo(const serialboxSerializer_t* serializer, con
 }
 
 void serialboxSerializerGetFieldMetainfo2(serialboxSerializer_t* serializer, const char* name,
-										  char* storedName, char* elementType, int* bytesPerElement, int* rank,
+										  char** storedName, char** elementType, int* bytesPerElement, int* rank,
 										  int* iSize, int* jSize, int* kSize, int* lSize,
 										  int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
 										  int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo) {
@@ -324,14 +324,14 @@ void serialboxSerializerGetFieldMetainfo2(serialboxSerializer_t* serializer, con
 		serialboxFieldMetainfo_t* fieldMetainfo = serialboxSerializerGetFieldMetainfo(serializer, name);
 		serialboxMetainfo_t* metainfo = serialboxFieldMetainfoGetMetainfo(fieldMetainfo);
 
-		storedName = serialboxMetainfoGetString(metainfo, "__name");
-		elementType = serialboxMetainfoGetString(metainfo, "__elementtype");
+		*storedName = serialboxMetainfoGetString(metainfo, "__name");
+		*elementType = serialboxMetainfoGetString(metainfo, "__elementtype");
 		*bytesPerElement = serialboxMetainfoGetInt32(metainfo, "__bytesperelement");
 		*rank = serialboxMetainfoGetInt32(metainfo, "__rank");
-		*iSize = serialboxMetainfoGetInt32(metainfo, "__iSize");
-		*jSize = serialboxMetainfoGetInt32(metainfo, "__jSize");
-		*kSize = serialboxMetainfoGetInt32(metainfo, "__kSize");
-		*lSize = serialboxMetainfoGetInt32(metainfo, "__lSize");
+		*iSize = serialboxMetainfoGetInt32(metainfo, "__isize");
+		*jSize = serialboxMetainfoGetInt32(metainfo, "__jsize");
+		*kSize = serialboxMetainfoGetInt32(metainfo, "__ksize");
+		*lSize = serialboxMetainfoGetInt32(metainfo, "__lsize");
 		*iMinusHalo = serialboxMetainfoGetInt32(metainfo, "__iminushalosize");
 		*jMinusHalo = serialboxMetainfoGetInt32(metainfo, "__jminushalosize");
 		*kMinusHalo = serialboxMetainfoGetInt32(metainfo, "__kminushalosize");
