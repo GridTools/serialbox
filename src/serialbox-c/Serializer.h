@@ -297,7 +297,7 @@ serialboxSerializerGetFieldMetainfo(const serialboxSerializer_t* serializer, con
  * \return 1 if field was added successfully, 0 otherwise
  */
 SERIALBOX_API void
-serialboxSerializerGetFieldMetainfo2(serialboxSerializer_t* serializer, const char* name,
+serialboxSerializerGetFieldMetainfo2(const serialboxSerializer_t* serializer, const char* name,
 							     char** storedName, char** elementType, int* rank,
                                  int* bytesPerElement, int* iSize, int* jSize, int* kSize, int* lSize,
                                  int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
