@@ -202,8 +202,6 @@ else
     CMAKE_INSTALL_PREFIX=${BUILD_DIR}/install
 fi
 
-echo "BUILD_DIR=${BUILD_DIR}"
-
 # Run Cmake
 cmake                                                                          \
  -DBoost_NO_BOOST_CMAKE="true"                                                 \
