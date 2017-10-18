@@ -45,11 +45,11 @@ $CXX --version
 # Build Serialbox2
 if [[ "${FC_COMPILER}" != "" ]]; then
   export SERIALBOX_ENABLE_FORTRAN=ON
-  export SERIALBOX_FORTRAN_TESTING=ON
+  export SERIALBOX_TESTING_FORTRAN=ON
   export FC=${FC_COMPILER}
 else
   export SERIALBOX_ENABLE_FORTRAN=OFF
-  export SERIALBOX_FORTRAN_TESTING=OFF
+  export SERIALBOX_TESTING_FORTRAN=OFF
 fi
 
 
@@ -74,8 +74,7 @@ else # Linux
         -DPYTHON_EXECUTABLE="$SERIALBOX_PYTHON_DIR/bin/python3"                                    \
         -DSERIALBOX_TESTING=ON                                                                     \
         -DSERIALBOX_ENABLE_FORTRAN=$SERIALBOX_ENABLE_FORTRAN                                       \
-        -DSERIALBOX_FORTRAN_TESTING=$SERIALBOX_FORTRAN_TESTING                                     \
-        -DPFUNIT_ROOT="$PFUNIT_ROOT"                                                               \
+        -DSERIALBOX_TESTING_FORTRAN=$SERIALBOX_TESTING_FORTRAN                                     \
         -DBOOST_ROOT="$BOOST_ROOT"                                                                 \
       || fatal_error "failed to configure cmake"
   make -j2 install || fatal_error "failed to build"
