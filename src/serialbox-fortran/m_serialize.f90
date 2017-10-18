@@ -897,6 +897,43 @@ FUNCTION fs_get_size(serializer, fieldname)
 
 END FUNCTION fs_get_size
 
+
+!==============================================================================
+!+ Module function that returns the halos of the requested field
+!  Always returns an array with 8 elements, containing the values
+!  iminushalo, iplushalo, jminushalo, jplushalo, kminushalo, kplushalo, lminushalo, lplushalo
+!  All non-applicable dimensions are given with 0.
+!------------------------------------------------------------------------------
+FUNCTION fs_get_halos(serializer, fieldname)
+  TYPE(t_serializer)    :: serializer
+  CHARACTER(LEN=*)      :: fieldname
+  INTEGER, DIMENSION(8) :: fs_get_halos
+
+  INTERFACE
+    SUBROUTINE fs_get_halos_(serializer, name, &
+                             iminushalo, iplushalo, jminushalo, jplushalo, kminushalo, kplushalo, lminushalo, lplushalo) &
+        BIND(c, name='serialboxFortranSerializerGetFieldHalos')
+     USE, INTRINSIC :: iso_c_binding
+     TYPE(C_PTR), VALUE                    :: serializer
+     CHARACTER(KIND=C_CHAR), DIMENSION(*)  :: name
+     INTEGER(C_INT), INTENT(OUT)           :: iminushalo, iplushalo, jminushalo, jplushalo, &
+                                              kminushalo, kplushalo, lminushalo, lplushalo
+    END SUBROUTINE fs_get_halos_
+  END INTERFACE
+
+  INTEGER(KIND=C_INT) :: iminushalo, iplushalo, jminushalo, jplushalo, kminushalo, kplushalo, lminushalo, lplushalo
+
+  IF (fs_field_exists(serializer, fieldname)) THEN
+    CALL fs_get_halos_(serializer%serializer_ptr, TRIM(fieldname), &
+                       iminushalo, iplushalo, jminushalo, jplushalo, kminushalo, kplushalo, lminushalo, lplushalo)
+    fs_get_halos = (/ iminushalo, iplushalo, jminushalo, jplushalo, kminushalo, kplushalo, lminushalo, lplushalo /)
+  ELSE
+    WRITE(*,*) "Serialbox: ERROR: field ", fieldname, " does not exist in the serializer"
+    STOP
+  END IF
+
+END FUNCTION fs_get_halos
+
 !=============================================================================
 !=============================================================================
 
