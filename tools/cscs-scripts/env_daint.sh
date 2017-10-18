@@ -67,19 +67,21 @@ fi
 #------------------------------ Set environment --------------------------------
 
 module load CMake
+module load daint-gpu
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
-
+    
     module swap PrgEnv-cray PrgEnv-pgi
     module load gcc
     
 elif [ "$FC_COMPILER" = "ftn" ]; then
-
+  
     module load cray-netcdf
     module load cray-hdf5
     module load gcc
     
 else
+    module swap PrgEnv-cray PrgEnv-gnu
 fi
 
 export CXX=$(which g++)
