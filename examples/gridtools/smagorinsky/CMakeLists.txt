@@ -17,7 +17,9 @@ project(SerialboxSmagorinskyExample CXX)
 # to define SERIALBOX_ROOT (either directly in CMake or pass it as -DSERIALBOX_ROOT=<> via 
 # command-line).
 #
-set(SERIALBOX_ROOT "${CMAKE_SOURCE_DIR}/../../../install")
+if(NOT(DEFINED SERIALBOX_ROOT))
+	set(SERIALBOX_ROOT "${CMAKE_SOURCE_DIR}/../../../install")
+endif()
 
 #
 # Serialbox has a find_package-module which takes care of looking for the dependency libraries. 
@@ -29,7 +31,12 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 #
 # We call the find_package-module of Serialbox and gridtools and set the include directories
 #
-find_package(Serialbox REQUIRED)
+find_package(Serialbox REQUIRED HINTS
+    "${CMAKE_CURRENT_LIST_DIR}/../serialbox2/install/cmake"
+    "${SERIALBOX_ROOT}/cmake"
+    "${SERIALBOX_DIR}/cmake"
+    "$ENV{SERIALBOX_ROOT}/cmake")
+
 find_package(GridTools REQUIRED)
 
 include_directories(SYSTEM ${SERIALBOX_INCLUDE_DIRS})

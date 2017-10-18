@@ -196,6 +196,9 @@ This process created the file `CMakeCache.txt' and the directory `CMakeFiles'.
 Please delete them.")
 endif()
 
+## IDE Support
+include(IDESupport)
+
 #---------------------------------------- GTest ----------------------------------------------------
 if(SERIALBOX_TESTING)
   if(APPLE AND NOT(CMAKE_CXX_COMPILER_ID MATCHES "GNU"))
