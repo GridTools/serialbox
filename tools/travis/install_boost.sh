@@ -67,9 +67,11 @@ function install_boost() {
     NOTICE "${FUNCNAME[0]}: Building components: $boost_components ..."
     IFS=',' read -r -a boost_components_split <<< "$boost_components"
     local boost_components_arg=""
-    for component in $boost_components_split; do
+    for component in "${boost_components_split[@]}"; do
       boost_components_arg="$boost_components_arg --with-$component"
     done
+
+    echo $boost_components_arg
 
     NOTICE "${FUNCNAME[0]}: Starting to build boost ..."
     ./bootstrap.sh || abort_and_cleanup "Failed to configure boost"
