@@ -41,10 +41,8 @@ jobs:
       stage: Prepare Cache
       compiler: gcc
       os: linux
-      env: CXX_COMPILER=g++-5 C_COMPILER=gcc-5
-      script: |
-          bash ${SCRIPT_DIR}/driver-install.sh -i ${CACHE_DIR} -b cmake,boost
-                                               -c boost:filesystem,chrono,system,log
+      env: CXX_COMPILER=g++-5 C_COMPILER=gcc-5 FC_COMPILER=gfortran-5
+      script: bash ${SCRIPT_DIR}/driver-install.sh -i ${CACHE_DIR} -b cmake,boost -c boost:filesystem,chrono,system,log
 
     - <<: *prepare_cache_stage
       compiler: clang
