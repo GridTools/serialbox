@@ -27,7 +27,7 @@ Serialbox builds are run on Travis CI [here](https://travis-ci.org/eth-cscs/seri
 | Clang 5.0    | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![Clang 5.0][Clang_50_Release.Badge]</a>        |
 | Clang 5.0    | RelWithDebInfo |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![Clang 5.0][Clang_50_RelWithDebInfo.Badge]</a> |
 
-
+<!-- 
 ### OSX
 
 |  Toolchain   | Config         |                                                     Status                                                           |
@@ -36,7 +36,7 @@ Serialbox builds are run on Travis CI [here](https://travis-ci.org/eth-cscs/seri
 | Xcode 7.3    | RelWithDebInfo |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 5.4][Xcode_73_RelWithDebInfo.Badge]</a>     |
 | Xcode 8.0    | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 6.3][Xcode_80_Release.Badge]</a>            |
 | Xcode 8.0    | RelWithDebInfo |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 6.3][Xcode_80_RelWithDebInfo.Badge]</a>     |
-
+ -->
 ## License
 
 > You can check out the full license [here](LICENSE.txt).
