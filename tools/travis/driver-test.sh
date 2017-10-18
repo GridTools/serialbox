@@ -75,6 +75,7 @@ else # Linux
         -DSERIALBOX_TESTING=ON                                                                     \
         -DSERIALBOX_ENABLE_FORTRAN=$SERIALBOX_ENABLE_FORTRAN                                       \
         -DSERIALBOX_FORTRAN_TESTING=$SERIALBOX_FORTRAN_TESTING                                     \
+        -DPFUNIT_ROOT="$PFUNIT_ROOT"                                                               \
         -DBOOST_ROOT="$BOOST_ROOT"                                                                 \
       || fatal_error "failed to configure cmake"
   make -j2 install || fatal_error "failed to build"
