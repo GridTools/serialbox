@@ -71,8 +71,6 @@ function install_boost() {
       boost_components_arg="$boost_components_arg --with-$component"
     done
 
-    echo $boost_components_arg
-
     NOTICE "${FUNCNAME[0]}: Starting to build boost ..."
     ./bootstrap.sh || abort_and_cleanup "Failed to configure boost"
     ./b2 -j2 --toolset=${toolset}-${toolset_version} --prefix=${boost_install_dir}                 \
