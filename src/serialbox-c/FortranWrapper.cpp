@@ -173,13 +173,11 @@ void serialboxFortranSerializerGetFieldHalos(const void* serializer, const char*
 											 int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
 											 int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo) {
 
-	const serialboxSerializer_t* ser = static_cast<const serialboxSerializer_t*>(serializer);
-
 	char *notUsedHere_storedName, *notUsedHere_elementType;
 	int notUsedHere_bytesPerElement, notUsedHere_rank;
 	int notUsedHere_iSize, notUsedHere_jSize, notUsedHere_kSize, notUsedHere_lSize;
 
-	serialboxSerializerGetFieldMetainfo2(ser, name,
+	serialboxSerializerGetFieldMetainfo2(static_cast<const serialboxSerializer_t*>(serializer), name,
 									   &notUsedHere_storedName, &notUsedHere_elementType,
 									   &notUsedHere_bytesPerElement, &notUsedHere_rank,
 									   &notUsedHere_iSize, &notUsedHere_jSize, &notUsedHere_kSize, &notUsedHere_lSize,
