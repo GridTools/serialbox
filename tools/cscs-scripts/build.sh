@@ -146,7 +146,7 @@ SERIALBOX_ENABLE_FORTRAN=ON
 CURRENT_PATH=$(pwd)
 
 #------------------------------ Load environment -------------------------------
-if [ -z ${MYHOST} ]; then
+if [ -n ${MYHOST} ]; then
     source ${CURRENT_PATH}/env_${MYHOST}.sh -f ${FC_COMPILER}
 fi
 
