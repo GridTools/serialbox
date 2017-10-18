@@ -12,7 +12,7 @@
 #
 # @param $1   Install directory
 # @param $2   Boost version triple (X.Y.Z)
-# @param $*   Boost components to build (e.g program_options)
+# @param $3   Boost components to build (',' separated)
 function install_boost() {
   pushd $(pwd)
   local start_time=$(date +%s)
@@ -25,7 +25,8 @@ function install_boost() {
   shift
   local boost_version=$1
   shift
-  
+  local boost_components=$1
+
   local boost_install_dir=$install_dir/boost-$boost_version
   local boost_version_underscore=${boost_version//\./_}
 
@@ -60,12 +61,13 @@ function install_boost() {
       local toolset_version=$($CXX -dumpversion)
     fi
 
-    echo "using ${toolset} : ${toolset_version} : ${CXX} ;" > user-config.jam
     NOTICE "${FUNCNAME[0]}: Building boost with toolset $toolset : $toolset_version ..."
+    echo "using ${toolset} : ${toolset_version} : ${CXX} ;" > user-config.jam
     
-    NOTICE "${FUNCNAME[0]}: Building components: $*"
+    NOTICE "${FUNCNAME[0]}: Building components: $boost_components ..."
+    IFS=',' read -r -a boost_components_split <<< "$boost_components"
     local boost_components_arg=""
-    for component in $*; do
+    for component in $boost_components_split; do
       boost_components_arg="$boost_components_arg --with-$component"
     done
 

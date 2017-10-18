@@ -26,7 +26,7 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
   export PATH="/usr/local/bin:${PATH}"
 
 else # Linux 
-  install_driver -i ${CACHE_DIR} -b cmake,boost
+  install_driver -i ${CACHE_DIR} -b cmake,boost -c boost:filesystem,chrono,system,log
 
   if [ ! -z ${CLANG_VERSION+x} ]; then
     install_driver -i ${CACHE_DIR} -b clang
@@ -93,7 +93,6 @@ else # Linux
     popd
   fi
 fi
-
 
 # Run Python, C and C++ unittests
 pushd $(pwd)
