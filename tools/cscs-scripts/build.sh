@@ -226,6 +226,9 @@ fi
 
 # Run tests
 if [ "$ARG_RUN_TESTS" == "true" ]; then
-    cmake --build . --target test
+chmod  +x run_tests.sh
+./run_tests.sh
+ret=$?
+exit $ret
 fi
 
