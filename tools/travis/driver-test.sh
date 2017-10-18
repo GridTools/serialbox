@@ -42,6 +42,8 @@ export CC=${C_COMPILER}
 $CC --version
 $CXX --version
 
+local cmake_fortran_options=""
+
 # Build Serialbox2
 if [[ "${FC_COMPILER}" != "" ]]; then
   export SERIALBOX_ENABLE_FORTRAN=ON
@@ -76,6 +78,7 @@ else # Linux
         -DSERIALBOX_ENABLE_FORTRAN=$SERIALBOX_ENABLE_FORTRAN                                       \
         -DSERIALBOX_TESTING_FORTRAN=$SERIALBOX_TESTING_FORTRAN                                     \
         -DBOOST_ROOT="$BOOST_ROOT"                                                                 \
+        -DPFUNIT_ROOT="$PFUNIT_ROOT"                                                               \
       || fatal_error "failed to configure cmake"
   make -j2 install || fatal_error "failed to build"
 
