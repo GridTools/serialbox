@@ -27,10 +27,12 @@ function install_pfunit() {
   
   local pfunit_install_dir=$install_dir/pfunit-$pfunit_version
 
+  echo "$FC_COMPILER"
+
   # No fortran compiler available
-  if [ ! -z ${!FC_COMPILER+x} ]; then
+  if [ -z ${FC_COMPILER+x} ]; then
     NOTICE "${FUNCNAME[0]}: No Fortran compiler set (FC_COMPILER is empty). Skipping."
-    return
+    return 0
   fi
 
   abort_and_cleanup() {
@@ -55,6 +57,7 @@ function install_pfunit() {
     cd ${pfunit_install_dir}
     NOTICE "${FUNCNAME[0]}: Starting to build pFUnit ..."
     mkdir build && cd build
+    export FC="$FC_COMPILER"
     cmake .. -DCMAKE_BUILD_TYPE=Release                                                            \
              -DCMAKE_INSTALL_PREFIX="${pfunit_install_dir}"                                        \
              -DINSTALL_PATH="${pfunit_install_dir}"                                                \
