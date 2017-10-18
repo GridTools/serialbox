@@ -144,7 +144,7 @@ SERIALBOX_ENABLE_FORTRAN=ON
 CURRENT_PATH=$(pwd)
 
 #------------------------------ Load environment -------------------------------
-if [ ! -z ${MY_HOST} ]; then
+if [ -z ${MY_HOST} ]; then
     source ${CURRENT_PATH}/env_${MYHOST}.sh -f ${FC_COMPILER}
 fi
 
@@ -183,7 +183,7 @@ fi
 
 #------------------------------ Build ------------------------------------------
 
-BUILD_DIR=${CURRENT_PATH}/build_gcc_${ARG_FC_COMPILER}
+BUILD_DIR=${CURRENT_PATH}/../../build_gcc_${ARG_FC_COMPILER}
 
 # Create build directory
 if [ -d "$BUILD_DIR" ]; then
