@@ -775,7 +775,7 @@ SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, is
   TYPE(t_serializer) :: serializer
   CHARACTER(LEN=*)   :: fieldname, data_type
   INTEGER            :: bytes_per_element, isize, jsize, ksize, lsize
-  INTEGER, OPTIONAL  :: minushalos(:), plushalos(:)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(:), plushalos(:)
   INTEGER            :: iminushalo, iplushalo, jminushalo, jplushalo, kminushalo, kplushalo, lminushalo, lplushalo
 
   ! External functions
@@ -1125,7 +1125,7 @@ SUBROUTINE fs_write_logical_1d(serializer, savepoint, fieldname, field, minushal
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL, INTENT(IN), TARGET :: field(:)
-  INTEGER, OPTIONAL  :: minushalos(1), plushalos(1)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(1), plushalos(1)
 
   ! Local variables
   LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:)
@@ -1142,7 +1142,7 @@ SUBROUTINE fs_write_logical_2d(serializer, savepoint, fieldname, field, minushal
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL, INTENT(IN), TARGET :: field(:,:)
-  INTEGER, OPTIONAL  :: minushalos(2), plushalos(2)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(2), plushalos(2)
 
   ! Local variables
   LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:,:)
@@ -1159,7 +1159,7 @@ SUBROUTINE fs_write_logical_3d(serializer, savepoint, fieldname, field, minushal
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL, INTENT(IN), TARGET :: field(:,:,:)
-  INTEGER, OPTIONAL  :: minushalos(3), plushalos(3)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(3), plushalos(3)
 
   ! Local variables
   LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:,:,:)
@@ -1176,7 +1176,7 @@ SUBROUTINE fs_write_logical_4d(serializer, savepoint, fieldname, field, minushal
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL, INTENT(IN), TARGET :: field(:,:,:,:)
-  INTEGER, OPTIONAL  :: minushalos(4), plushalos(4)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(4), plushalos(4)
 
   ! Local variables
   LOGICAL(KIND=C_BOOL), ALLOCATABLE :: bool(:,:,:,:)
@@ -1218,7 +1218,7 @@ SUBROUTINE fs_write_bool_1d(serializer, savepoint, fieldname, field, minushalos,
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:)
-  INTEGER, OPTIONAL  :: minushalos(1), plushalos(1)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(1), plushalos(1)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1246,7 +1246,7 @@ SUBROUTINE fs_write_bool_2d(serializer, savepoint, fieldname, field, minushalos,
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:)
-  INTEGER, OPTIONAL  :: minushalos(2), plushalos(2)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(2), plushalos(2)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1274,7 +1274,7 @@ SUBROUTINE fs_write_bool_3d(serializer, savepoint, fieldname, field, minushalos,
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:,:)
-  INTEGER, OPTIONAL  :: minushalos(3), plushalos(3)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(3), plushalos(3)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1303,7 +1303,7 @@ SUBROUTINE fs_write_bool_4d(serializer, savepoint, fieldname, field, minushalos,
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:,:,:)
-  INTEGER, OPTIONAL  :: minushalos(4), plushalos(4)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(4), plushalos(4)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1357,7 +1357,7 @@ SUBROUTINE fs_write_int_1d(serializer, savepoint, fieldname, field, minushalos, 
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_INT), INTENT(IN), TARGET :: field(:)
-  INTEGER, OPTIONAL  :: minushalos(1), plushalos(1)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(1), plushalos(1)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1385,7 +1385,7 @@ SUBROUTINE fs_write_int_2d(serializer, savepoint, fieldname, field, minushalos, 
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_INT), INTENT(IN), TARGET :: field(:,:)
-  INTEGER, OPTIONAL  :: minushalos(2), plushalos(2)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(2), plushalos(2)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1413,7 +1413,7 @@ SUBROUTINE fs_write_int_3d(serializer, savepoint, fieldname, field, minushalos, 
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_INT), INTENT(IN), TARGET :: field(:,:,:)
-  INTEGER, OPTIONAL  :: minushalos(3), plushalos(3)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(3), plushalos(3)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1442,7 +1442,7 @@ SUBROUTINE fs_write_int_4d(serializer, savepoint, fieldname, field, minushalos, 
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_INT), INTENT(IN), TARGET :: field(:,:,:,:)
-  INTEGER, OPTIONAL  :: minushalos(4), plushalos(4)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(4), plushalos(4)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1497,7 +1497,7 @@ SUBROUTINE fs_write_long_1d(serializer, savepoint, fieldname, field, minushalos,
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:)
-  INTEGER, OPTIONAL  :: minushalos(1), plushalos(1)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(1), plushalos(1)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1525,7 +1525,7 @@ SUBROUTINE fs_write_long_2d(serializer, savepoint, fieldname, field, minushalos,
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:)
-  INTEGER, OPTIONAL  :: minushalos(2), plushalos(2)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(2), plushalos(2)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1553,7 +1553,7 @@ SUBROUTINE fs_write_long_3d(serializer, savepoint, fieldname, field, minushalos,
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:,:)
-  INTEGER, OPTIONAL  :: minushalos(3), plushalos(3)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(3), plushalos(3)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1582,7 +1582,7 @@ SUBROUTINE fs_write_long_4d(serializer, savepoint, fieldname, field, minushalos,
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:,:,:)
-  INTEGER, OPTIONAL  :: minushalos(4), plushalos(4)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(4), plushalos(4)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1636,7 +1636,7 @@ SUBROUTINE fs_write_float_1d(serializer, savepoint, fieldname, field, minushalos
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:)
-  INTEGER, OPTIONAL  :: minushalos(1), plushalos(1)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(1), plushalos(1)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1664,7 +1664,7 @@ SUBROUTINE fs_write_float_2d(serializer, savepoint, fieldname, field, minushalos
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:,:)
-  INTEGER, OPTIONAL  :: minushalos(2), plushalos(2)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(2), plushalos(2)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1692,7 +1692,7 @@ SUBROUTINE fs_write_float_3d(serializer, savepoint, fieldname, field, minushalos
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:,:,:)
-  INTEGER, OPTIONAL  :: minushalos(3), plushalos(3)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(3), plushalos(3)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1721,7 +1721,7 @@ SUBROUTINE fs_write_float_4d(serializer, savepoint, fieldname, field, minushalos
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:,:,:,:)
-  INTEGER, OPTIONAL  :: minushalos(4), plushalos(4)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(4), plushalos(4)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1775,7 +1775,7 @@ SUBROUTINE fs_write_double_1d(serializer, savepoint, fieldname, field, minushalo
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:)
-  INTEGER, OPTIONAL  :: minushalos(1), plushalos(1)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(1), plushalos(1)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1803,7 +1803,7 @@ SUBROUTINE fs_write_double_2d(serializer, savepoint, fieldname, field, minushalo
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:,:)
-  INTEGER, OPTIONAL  :: minushalos(2), plushalos(2)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(2), plushalos(2)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1832,7 +1832,7 @@ SUBROUTINE fs_write_double_3d(serializer, savepoint, fieldname, field, minushalo
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:,:,:)
-  INTEGER, OPTIONAL  :: minushalos(3), plushalos(3)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(3), plushalos(3)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
@@ -1863,7 +1863,7 @@ SUBROUTINE fs_write_double_4d(serializer, savepoint, fieldname, field, minushalo
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*)                        :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:,:,:,:)
-  INTEGER, OPTIONAL  :: minushalos(4), plushalos(4)
+  INTEGER, INTENT(IN), OPTIONAL :: minushalos(4), plushalos(4)
 
   ! Local variables
   INTEGER(C_INT) :: istride, jstride, kstride, lstride
