@@ -88,8 +88,8 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   //
   // Register field
   //
-  serialboxFortranSerializerRegisterField(serializer, "field", Float64, 8, 30, 40, 50, 60, 0, 0, 0,
-                                          0, 0, 0, 0, 0);
+  serialboxFortranSerializerRegisterField(serializer, "field", Float64, 8, 30, 40, 50, 60, 1, 1, 23,
+                                          42, 0, 0, -2, 2);
 
   //
   // Add field meta-info
@@ -133,13 +133,26 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   EXPECT_EQ(numDimension, 4);
 
   // Dimensions
-  int isize, jsize, ksize, lsize;
-  serialboxFortranSerializerGetFieldDimensions(serializer, "field", &isize, &jsize, &ksize, &lsize);
+  int iSize, jSize, kSize, lSize;
+  serialboxFortranSerializerGetFieldDimensions(serializer, "field", &iSize, &jSize, &kSize, &lSize);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-  EXPECT_EQ(isize, 30);
-  EXPECT_EQ(jsize, 40);
-  EXPECT_EQ(ksize, 50);
-  EXPECT_EQ(lsize, 60);
+  EXPECT_EQ(iSize, 30);
+  EXPECT_EQ(jSize, 40);
+  EXPECT_EQ(kSize, 50);
+  EXPECT_EQ(lSize, 60);
+
+  // Halos
+  int iMinusHalo, iPlusHalo, jMinusHalo, jPlusHalo, kMinusHalo, kPlusHalo, lMinusHalo, lPlusHalo;
+  serialboxFortranSerializerGetFieldHalos(serializer, "field", &iMinusHalo, &iPlusHalo, &jMinusHalo, &jPlusHalo, &kMinusHalo, &kPlusHalo, &lMinusHalo, &lPlusHalo);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(iMinusHalo, 1);
+  EXPECT_EQ(iPlusHalo, 1);
+  EXPECT_EQ(jMinusHalo, 23);
+  EXPECT_EQ(jPlusHalo, 42);
+  EXPECT_EQ(kMinusHalo, 0);
+  EXPECT_EQ(kPlusHalo, 0);
+  EXPECT_EQ(lMinusHalo, -2);
+  EXPECT_EQ(lPlusHalo, 2);
 
   // Type
   serialboxTypeID type = serialboxFieldMetainfoGetTypeID(info);

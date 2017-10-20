@@ -71,6 +71,13 @@ void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const 
                                                   int* isize, int* jsize, int* ksize, int* lsize);
 
 /**
+ * \brief Returns the halos of the field `name`
+ */
+void serialboxFortranSerializerGetFieldHalos(const void* serializer, const char* name,
+											 int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
+											 int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo);
+
+/**
  * \brief Add a global meta-information `key=value` pair to the Serializer
  *
  * This function corresponds to `fs_add_serializer_metainfo_X`
