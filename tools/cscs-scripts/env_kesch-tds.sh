@@ -104,6 +104,5 @@ export FC=$(which $FC_COMPILER)
 export Boost_NO_SYSTEM_PATHS=true
 export Boost_NO_BOOST_CMAKE=true
 
-#module load boost
 export BOOST_ROOT=/apps/escha/UES/jenkins/RH7.3-gnu_PE17.02/easybuild/software/boost/1.63.0-gmvolf-17.02-python-2.7.13
 export LD_LIBRARY_PATH=${BOOST_ROOT}/lib:$LD_LIBRARY_PATH
