@@ -73,7 +73,7 @@ elif [ "$(hostname | grep daint)" != "" ] ; then
 else
     echo "build: host '$(hostname)' not known. Assuming environment is already setup."
 fi
-echo $MYHOST
+
 #------------------------------ Parse options ----------------------------------
 ARGS=$(getopt                                                                  \
        -o b:i:f:r::h::t::                                                      \
