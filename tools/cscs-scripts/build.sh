@@ -64,6 +64,8 @@ to_lower_and_trim()
 #------------------------------ Identify CSCS host -----------------------------
 if [ "$(hostname | grep greina)" != "" ] ; then
     MYHOST="greina"
+elif [ "$(hostname | grep keschcn-0001)" != "" ]; then
+    MYHOST="kesch-tds"
 elif [ "$(hostname | grep kesch)" != "" ] ; then
     MYHOST="kesch"
 elif [ "$(hostname | grep daint)" != "" ] ; then
@@ -144,7 +146,7 @@ SERIALBOX_ENABLE_FORTRAN=ON
 CURRENT_PATH=$(pwd)
 
 #------------------------------ Load environment -------------------------------
-if [ -z ${MY_HOST} ]; then
+if [ -n ${MYHOST} ]; then
     source ${CURRENT_PATH}/env_${MYHOST}.sh -f ${FC_COMPILER}
 fi
 
@@ -218,10 +220,10 @@ cmake                                                                          \
 # Run make
 if [ -z "${INSTALL_PREFIX}" ]; then
     # don't install if no install path was specified
-    make -j5
+    make -j1
 else
     # make and install if a path was specified
-    make install -j5
+    make install -j1
 fi
 
 # Run tests
