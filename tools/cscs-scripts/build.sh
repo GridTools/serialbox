@@ -73,7 +73,7 @@ elif [ "$(hostname | grep daint)" != "" ] ; then
 else
     echo "build: host '$(hostname)' not known. Assuming environment is already setup."
 fi
-
+echo $MYHOST
 #------------------------------ Parse options ----------------------------------
 ARGS=$(getopt                                                                  \
        -o b:i:f:r::h::t::                                                      \
@@ -220,10 +220,10 @@ cmake                                                                          \
 # Run make
 if [ -z "${INSTALL_PREFIX}" ]; then
     # don't install if no install path was specified
-    make -j5
+    make -j1
 else
     # make and install if a path was specified
-    make install -j5
+    make install -j1
 fi
 
 # Run tests

@@ -66,10 +66,6 @@ fi
 
 #------------------------------ Set environment --------------------------------
 
-module purge
-module load cmake/3.9.1
-module load craype-haswell
-
 if [ "$FC_COMPILER" = "pgfortran" ]; then
 
 echo "pgi not supported"
@@ -79,7 +75,7 @@ exit 1
 #    module load PrgEnv-pgi/16.7
     
 elif [ "$FC_COMPILER" = "ftn" ]; then
-
+    module purge
     module load craype-haswell
     module load craype-accel-nvidia35
     module load craype-network-infiniband
@@ -87,9 +83,18 @@ elif [ "$FC_COMPILER" = "ftn" ]; then
     module load netCDF-Fortran/4.4.4-CrayCCE-17.06
     module switch mvapich2_cce/2.2rc1.0.3_cuda80 mvapich2gdr_gnu/2.2_cuda_8.0
     module load gcc/5.4.0-2.26
+    module load cmake/3.9.1
 
 else
-    module load PrgEnv-gnu
+    module purge
+    module load craype-network-infiniband
+    module load craype-haswell
+    module load craype-accel-nvidia35
+    module load cray-libsci
+    module load cudatoolkit/8.0.61
+    module load mvapich2gdr_gnu/2.2_cuda_8.0
+    module load gcc/5.4.0-2.26
+    module load cmake/3.9.1
 fi
 
 export CXX=$(which g++)
@@ -99,5 +104,6 @@ export FC=$(which $FC_COMPILER)
 export Boost_NO_SYSTEM_PATHS=true
 export Boost_NO_BOOST_CMAKE=true
 
-module load boost
-
+#module load boost
+export BOOST_ROOT=/apps/escha/UES/jenkins/RH7.3-gnu_PE17.02/easybuild/software/boost/1.63.0-gmvolf-17.02-python-2.7.13
+export LD_LIBRARY_PATH=${BOOST_ROOT}/lib:$LD_LIBRARY_PATH
