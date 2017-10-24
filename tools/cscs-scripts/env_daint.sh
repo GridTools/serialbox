@@ -91,7 +91,5 @@ export FC=$(which $FC_COMPILER)
 export Boost_NO_SYSTEM_PATHS=true
 export Boost_NO_BOOST_CMAKE=true
 
-module load Boost
-
-export BOOST_INCLUDE={BOOST_ROOT}/include/
-
+export BOOST_ROOT=/project/c14/install/daint/boost_1.65.1
+export BOOST_INCLUDE=${BOOST_ROOT}/include
