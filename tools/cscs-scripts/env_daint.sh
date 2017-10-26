@@ -93,4 +93,4 @@ export Boost_NO_BOOST_CMAKE=true
 
 export BOOST_ROOT=/project/c14/install/daint/boost/boost_1_65_1
 export BOOST_INCLUDE={BOOST_ROOT}/include/
-
+export LD_LIBRARY_PATH=${BOOST_ROOT}/lib:$LD_LIBRARY_PATH
