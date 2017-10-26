@@ -347,11 +347,13 @@ endif(SERIALBOX_TESTING_GRIDTOOLS)
 if(WIN32)
     set(Boost_USE_STATIC_LIBS OFF)
     set(Boost_USE_STATIC_RUNTIME OFF)
-    set(Boost_USE_MULTITHREADED ON)  
-
+    set(Boost_USE_MULTITHREADED ON)
     add_definitions(-DBOOST_ALL_DYN_LINK)
 endif()
-add_definitions(-DBOOST_LOG_DYN_LINK)  
+# Workaround for Crays
+if (TARGET_SUPPORTS_SHARED_LIBS)
+    add_definitions(-DBOOST_LOG_DYN_LINK)
+endif()
 
 set(REQUIRED_BOOST_COMPONENTS filesystem system)
 
