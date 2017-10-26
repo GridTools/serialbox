@@ -344,11 +344,13 @@ if(SERIALBOX_TESTING_GRIDTOOLS)
 endif(SERIALBOX_TESTING_GRIDTOOLS)
 
 #---------------------------------------- Boost ----------------------------------------------------
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_STATIC_RUNTIME OFF)
-set(Boost_USE_MULTITHREADED ON)  
-add_definitions(-DBOOST_LOG_DYN_LINK)  
-add_definitions(-DBOOST_ALL_DYN_LINK)
+if(WIN32)
+    set(Boost_USE_STATIC_LIBS OFF)
+    set(Boost_USE_STATIC_RUNTIME OFF)
+    set(Boost_USE_MULTITHREADED ON)  
+    add_definitions(-DBOOST_LOG_DYN_LINK)  
+    add_definitions(-DBOOST_ALL_DYN_LINK)
+endif()
 
 set(REQUIRED_BOOST_COMPONENTS filesystem system)
 
