@@ -344,13 +344,12 @@ if(SERIALBOX_TESTING_GRIDTOOLS)
 endif(SERIALBOX_TESTING_GRIDTOOLS)
 
 #---------------------------------------- Boost ----------------------------------------------------
-if(WIN32)
+# Workaround for Cray
+get_property(SHARED_LIB_SUPPORT GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
+if (SHARED_LIB_SUPPORT)
     set(Boost_USE_STATIC_LIBS OFF)
     set(Boost_USE_STATIC_RUNTIME OFF)
     set(Boost_USE_MULTITHREADED ON)
-endif()
-# Workaround for Crays
-if (TARGET_SUPPORTS_SHARED_LIBS)
     add_definitions(-DBOOST_ALL_DYN_LINK)
     add_definitions(-DBOOST_LOG_DYN_LINK)
 endif()
