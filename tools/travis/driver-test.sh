@@ -26,7 +26,7 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
   export PATH="/usr/local/bin:${PATH}"
 
 else # Linux 
-  install_driver -i ${CACHE_DIR} -b cmake,boost
+  install_driver -i ${CACHE_DIR} -b cmake,boost,pfunit -c boost:filesystem,chrono,system,log
 
   if [ ! -z ${CLANG_VERSION+x} ]; then
     install_driver -i ${CACHE_DIR} -b clang
@@ -42,12 +42,16 @@ export CC=${C_COMPILER}
 $CC --version
 $CXX --version
 
+local cmake_fortran_options=""
+
 # Build Serialbox2
 if [[ "${FC_COMPILER}" != "" ]]; then
   export SERIALBOX_ENABLE_FORTRAN=ON
+  export SERIALBOX_TESTING_FORTRAN=ON
   export FC=${FC_COMPILER}
 else
   export SERIALBOX_ENABLE_FORTRAN=OFF
+  export SERIALBOX_TESTING_FORTRAN=OFF
 fi
 
 
@@ -72,7 +76,9 @@ else # Linux
         -DPYTHON_EXECUTABLE="$SERIALBOX_PYTHON_DIR/bin/python3"                                    \
         -DSERIALBOX_TESTING=ON                                                                     \
         -DSERIALBOX_ENABLE_FORTRAN=$SERIALBOX_ENABLE_FORTRAN                                       \
+        -DSERIALBOX_TESTING_FORTRAN=$SERIALBOX_TESTING_FORTRAN                                     \
         -DBOOST_ROOT="$BOOST_ROOT"                                                                 \
+        -DPFUNIT_ROOT="$PFUNIT_ROOT"                                                               \
       || fatal_error "failed to configure cmake"
   make -j2 install || fatal_error "failed to build"
 
@@ -94,8 +100,7 @@ else # Linux
   fi
 fi
 
-
-# Run Python, C and C++ unittests
+# Run Python, C and C++ (and possibly Fortran) unittests
 pushd $(pwd)
 cd build
 

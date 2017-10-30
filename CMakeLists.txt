@@ -13,7 +13,7 @@
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "CMake install prefix")
 
-project(serialbox C CXX)
+project(serialbox2 C CXX)
 cmake_minimum_required(VERSION 3.1)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
@@ -344,11 +344,15 @@ if(SERIALBOX_TESTING_GRIDTOOLS)
 endif(SERIALBOX_TESTING_GRIDTOOLS)
 
 #---------------------------------------- Boost ----------------------------------------------------
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_STATIC_RUNTIME OFF)
-set(Boost_USE_MULTITHREADED ON)  
-add_definitions(-DBOOST_LOG_DYN_LINK)  
-add_definitions(-DBOOST_ALL_DYN_LINK)
+# Workaround for Cray
+get_property(SHARED_LIB_SUPPORT GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
+if (SHARED_LIB_SUPPORT)
+    set(Boost_USE_STATIC_LIBS OFF)
+    set(Boost_USE_STATIC_RUNTIME OFF)
+    set(Boost_USE_MULTITHREADED ON)
+    add_definitions(-DBOOST_ALL_DYN_LINK)
+    add_definitions(-DBOOST_LOG_DYN_LINK)
+endif()
 
 set(REQUIRED_BOOST_COMPONENTS filesystem system)
 
