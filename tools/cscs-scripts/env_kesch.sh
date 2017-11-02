@@ -101,3 +101,5 @@ export Boost_NO_BOOST_CMAKE=true
 
 export BOOST_ROOT=/project/c14/install/kesch/boost/boost_1_64_0/
 export BOOST_INCLUDE=/project/c14/install/kesch/boost/boost_1_65_1/include/
+export NETCDF_ROOT=/opt/cray/netcdf/4.3.2/cray/83/
+

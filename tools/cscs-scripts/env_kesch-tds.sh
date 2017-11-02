@@ -70,10 +70,7 @@ if [ "$FC_COMPILER" = "pgfortran" ]; then
 
 echo "pgi not supported"
 exit 1
-#    module load craype-haswell
-#    module load GCC/4.9.3-binutils-2.25
-#    module load PrgEnv-pgi/16.7
-    
+
 elif [ "$FC_COMPILER" = "ftn" ]; then
     module purge
     module load craype-haswell
@@ -92,6 +89,7 @@ else
     module load craype-accel-nvidia35
     module load cray-libsci
     module load cudatoolkit/8.0.61
+    module load netCDF-Fortran
     module load mvapich2gdr_gnu/2.2_cuda_8.0
     module load gcc/5.4.0-2.26
     module load cmake/3.9.1
@@ -106,3 +104,5 @@ export Boost_NO_BOOST_CMAKE=true
 
 export BOOST_ROOT=/project/c14/install/kesch-test/boost/boost_1_64_0/
 export LD_LIBRARY_PATH=${BOOST_ROOT}/lib:$LD_LIBRARY_PATH
+export NETCDF_ROOT=${EBROOTNETCDF}
+
