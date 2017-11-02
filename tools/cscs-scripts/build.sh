@@ -142,7 +142,6 @@ fi
 SERIALBOX_TESTING=ON
 SERIALBOX_ENABLE_C=ON
 SERIALBOX_ENABLE_FORTRAN=ON
-SERIALBOX_USE_NETCDF=ON
 
 CURRENT_PATH=$(pwd)
 
@@ -183,6 +182,14 @@ elif [ -d "${EXTERNAL_DIR}/pfunit" ]; then
 else
     SERIALBOX_TESTING_FORTRAN=OFF
 fi
+
+#NetCDF
+if [ ! -z ${NETCDF_ROOT+x} ]; then
+    SERIALBOX_USE_NETCDF=ON
+else
+    SERIALBOX_USE_NETCDF=OFF
+fi
+
 
 #------------------------------ Build ------------------------------------------
 

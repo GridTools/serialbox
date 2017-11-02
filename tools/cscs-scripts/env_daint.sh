@@ -68,13 +68,14 @@ fi
 
 module load CMake
 module load daint-gpu
-module load cray-netcdf
-module load cray-hdf5
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
     
     module swap PrgEnv-cray PrgEnv-pgi
     module load gcc
+    module load cray-netcdf
+    module load cray-hdf5
+    export NETCDF_ROOT=${NETCDF_DIR}
     
 elif [ "$FC_COMPILER" = "ftn" ]; then
   
@@ -82,6 +83,9 @@ elif [ "$FC_COMPILER" = "ftn" ]; then
     
 else
     module swap PrgEnv-cray PrgEnv-gnu
+    module load cray-netcdf
+    module load cray-hdf5
+    export NETCDF_ROOT=${NETCDF_DIR}
 fi
 
 export CXX=$(which g++)
@@ -94,4 +98,4 @@ export Boost_NO_BOOST_CMAKE=true
 export BOOST_ROOT=/project/c14/install/daint/boost/boost_1_64_0
 export BOOST_INCLUDE={BOOST_ROOT}/include/
 export LD_LIBRARY_PATH=${BOOST_ROOT}/lib:$LD_LIBRARY_PATH
-export NETCDF_ROOT=${NETCDF_DIR}
+
