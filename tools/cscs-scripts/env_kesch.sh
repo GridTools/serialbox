@@ -68,6 +68,8 @@ fi
 
 module purge
 module load CMake/3.3.2
+module load cray-netcdf
+module load cray-hdf5
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
 
@@ -84,8 +86,6 @@ elif [ "$FC_COMPILER" = "ftn" ]; then
     module unload mvapich2_cce
     module load cray-libsci_acc/3.3.0
     module load mvapich2gdr_gnu/2.1_cuda_7.0
-    module load cray-netcdf/4.3.2
-    module load cray-hdf5/1.8.13
     module load GCC/4.9.3-binutils-2.25
     
 else

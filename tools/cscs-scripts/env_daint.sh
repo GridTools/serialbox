@@ -68,6 +68,8 @@ fi
 
 module load CMake
 module load daint-gpu
+module load cray-netcdf
+module load cray-hdf5
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
     
@@ -76,8 +78,6 @@ if [ "$FC_COMPILER" = "pgfortran" ]; then
     
 elif [ "$FC_COMPILER" = "ftn" ]; then
   
-    module load cray-netcdf
-    module load cray-hdf5
     module load gcc
     
 else
