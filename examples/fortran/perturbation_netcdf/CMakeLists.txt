@@ -79,19 +79,19 @@ include_directories(${SERIALBOX_INCLUDE_DIRS})
 #
 
 ## Producer
-add_executable(fortran_producer ${PP_OUTPUT}/main_producer.f90 ${PP_OUTPUT}/m_ser.f90)
-target_link_libraries(fortran_producer ${SERIALBOX_FORTRAN_LIBRARIES})
-set_target_properties(fortran_producer PROPERTIES LINKER_LANGUAGE CXX)
+add_executable(fortran_producer_netcdf ${PP_OUTPUT}/main_producer.f90 ${PP_OUTPUT}/m_ser.f90)
+target_link_libraries(fortran_producer_netcdf ${SERIALBOX_FORTRAN_LIBRARIES})
+set_target_properties(fortran_producer_netcdf PROPERTIES LINKER_LANGUAGE CXX)
 
 ## Consumer
-add_executable(fortran_consumer ${PP_OUTPUT}/main_consumer.f90 ${PP_OUTPUT}/m_ser.f90)
-target_link_libraries(fortran_consumer ${SERIALBOX_FORTRAN_LIBRARIES})
-set_target_properties(fortran_consumer PROPERTIES LINKER_LANGUAGE CXX)
+add_executable(fortran_consumer_netcdf ${PP_OUTPUT}/main_consumer.f90 ${PP_OUTPUT}/m_ser.f90)
+target_link_libraries(fortran_consumer_netcdf ${SERIALBOX_FORTRAN_LIBRARIES})
+set_target_properties(fortran_consumer_netcdf PROPERTIES LINKER_LANGUAGE CXX)
 
 ## Perturbed Consumer
-add_executable(fortran_consumer_perturb ${PP_OUTPUT}/main_consumer_perturb.f90 ${PP_OUTPUT}/m_ser.f90)
-target_link_libraries(fortran_consumer_perturb ${SERIALBOX_FORTRAN_LIBRARIES})
-set_target_properties(fortran_consumer_perturb PROPERTIES LINKER_LANGUAGE CXX)
+add_executable(fortran_consumer_perturb_netcdf ${PP_OUTPUT}/main_consumer_perturb.f90 ${PP_OUTPUT}/m_ser.f90)
+target_link_libraries(fortran_consumer_perturb_netcdf ${SERIALBOX_FORTRAN_LIBRARIES})
+set_target_properties(fortran_consumer_perturb_netcdf PROPERTIES LINKER_LANGUAGE CXX)
 
 #
 # Finally, copy our run script to the build directory
