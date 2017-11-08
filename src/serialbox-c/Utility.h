@@ -123,7 +123,7 @@ T* allocate(std::size_t n) noexcept {
   T* data = (T*)std::malloc(n * sizeof(T));
   if(!data)
     serialboxFatalError("out of memory");
-  std::memset(data, 0, sizeof(T));
+  std::memset(data, 0, sizeof(T) * n);
   return data;
 }
 
