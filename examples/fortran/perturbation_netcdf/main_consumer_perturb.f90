@@ -7,20 +7,13 @@
 !
 !------------------------------------------------------------------------------
 
-PROGRAM main_consumer
+PROGRAM main_consumer_perturb
   USE m_ser
   IMPLICIT NONE
   REAL(KIND=8), DIMENSION(5,5,5) :: a
 
   a = 0.0
   PRINT*,'Before read from serializer: sum(a)=', sum(a)
-  CALL deserialize(a)
+  CALL deserialize_with_perturb(a)
   PRINT*,'After read from serializer: sum(a)=', sum(a)
-  
-  IF (sum(a) .NE. 625.0 ) THEN
-    PRINT*,'Expected ', 625.0, ', got ', sum(a)
-    call EXIT(1)
-  ELSE
-    PRINT*,'Got expected result.'
-  END IF
-END PROGRAM main_consumer
+END PROGRAM main_consumer_perturb

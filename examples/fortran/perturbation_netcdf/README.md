@@ -15,9 +15,9 @@ make
 
 ### Run the example
 ```bash
-./fortran_producer
-./fortran_consumer
-./fortran_consumer_perturb
+./fortran_producer_netcdf
+./fortran_consumer_netcdf
+./fortran_consumer_perturb_netcdf
 ```
 
 or
