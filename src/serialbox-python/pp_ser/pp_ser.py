@@ -136,33 +136,33 @@ class PpSer:
         l = []
         if re.match('(^$|[IJK][IJK1-9]*)', shortcut):
             if shortcut == '':
-                l = '1 1 1 1 0 0 0 0 0 0 0 0'.split()
+                l = '0 0 0 0 0 0 0 0 0 0 0 0'.split()
             elif shortcut == 'I':
-                l = 'ie 1 1 1 nboundlines nboundlines 0 0 0 0 0 0'.split()
+                l = 'ie 0 0 0 nboundlines nboundlines 0 0 0 0 0 0'.split()
             elif shortcut == 'J':
-                l = '1 je 1 1 0 0 nboundlines nboundlines 0 0 0 0'.split()
+                l = '0 je 0 0 0 0 nboundlines nboundlines 0 0 0 0'.split()
             elif shortcut == 'J2':
-                l = '1 je 2 1 0 0 nboundlines nboundlines 0 0 0 0'.split()
+                l = '0 je 2 0 0 0 nboundlines nboundlines 0 0 0 0'.split()
             elif shortcut == 'K':
-                l = '1 1 ke 1 0 0 0 0 0 0 0 0'.split()
+                l = '0 0 ke 0 0 0 0 0 0 0 0 0'.split()
             elif shortcut == 'K1':
-                l = '1 1 ke1 1 0 0 0 0 0 1 0 0'.split()
+                l = '0 0 ke1 0 0 0 0 0 0 1 0 0'.split()
             elif shortcut == 'IJ':
-                l = 'ie je 1 1 nboundlines nboundlines nboundlines nboundlines 0 0 0 0'.split()
+                l = 'ie je 0 0 nboundlines nboundlines nboundlines nboundlines 0 0 0 0'.split()
             elif shortcut == 'IJ3':
-                l = 'ie je 3 1 nboundlines nboundlines nboundlines nboundlines 0 0 0 0'.split()
+                l = 'ie je 3 0 nboundlines nboundlines nboundlines nboundlines 0 0 0 0'.split()
             elif shortcut == 'IK':
-                l = 'ie 1 ke 1 nboundlines nboundlines 0 0 0 0 0 0'.split()
+                l = 'ie 0 ke 0 nboundlines nboundlines 0 0 0 0 0 0'.split()
             elif shortcut == 'IK1':
-                l = 'ie 1 ke1 1 nboundlines nboundlines 0 0 0 1 0 0'.split()
+                l = 'ie 0 ke1 0 nboundlines nboundlines 0 0 0 1 0 0'.split()
             elif shortcut == 'JK':
-                l = '1 je ke 1 0 0 nboundlines nboundlines 0 0 0 0'.split()
+                l = '0 je ke 0 0 0 nboundlines nboundlines 0 0 0 0'.split()
             elif shortcut == 'JK1':
-                l = '1 je ke1 1 0 0 nboundlines nboundlines 0 1 0 0'.split()
+                l = '0 je ke1 0 0 0 nboundlines nboundlines 0 1 0 0'.split()
             elif shortcut == 'IJK':
-                l = 'ie je ke 1 nboundlines nboundlines nboundlines nboundlines 0 0 0 0'.split()
+                l = 'ie je ke 0 nboundlines nboundlines nboundlines nboundlines 0 0 0 0'.split()
             elif shortcut == 'IJK1':
-                l = 'ie je ke1 1 nboundlines nboundlines nboundlines nboundlines 0 1 0 0'.split()
+                l = 'ie je ke1 0 nboundlines nboundlines nboundlines nboundlines 0 1 0 0'.split()
         return l
 
     # error handling
