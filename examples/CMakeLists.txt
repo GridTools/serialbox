@@ -71,6 +71,7 @@ function(serialbox_add_fortran_example NAME)
                         ${SERIALBOX_EXTERNAL_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT})
   target_include_directories(${NAME} PUBLIC ${CMAKE_BINARY_DIR}/src/serialbox-fortran)
+  set_target_properties( ${NAME} PROPERTIES LINKER_LANGUAGE Fortran)
   link_directories(${CMAKE_BINARY_DIR}/src/serialbox-fortran)
   install(TARGETS ${NAME} DESTINATION bin)
 endfunction(serialbox_add_fortran_example)
