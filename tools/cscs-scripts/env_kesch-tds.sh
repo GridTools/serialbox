@@ -66,22 +66,35 @@ fi
 
 #------------------------------ Set environment --------------------------------
 
-module load CMake
-module load daint-gpu
-
 if [ "$FC_COMPILER" = "pgfortran" ]; then
-    
-    module swap PrgEnv-cray PrgEnv-pgi
-    module load gcc
+
+echo "pgi not supported"
+exit 1
+#    module load craype-haswell
+#    module load GCC/4.9.3-binutils-2.25
+#    module load PrgEnv-pgi/16.7
     
 elif [ "$FC_COMPILER" = "ftn" ]; then
-  
-    module load cray-netcdf
-    module load cray-hdf5
-    module load gcc
-    
+    module purge
+    module load craype-haswell
+    module load craype-accel-nvidia35
+    module load craype-network-infiniband
+    module use /apps/escha/UES/RH7.3_PE17.02/sandbox-hdf5-17.06-2/modules/all
+    module load netCDF-Fortran/4.4.4-CrayCCE-17.06
+    module switch mvapich2_cce/2.2rc1.0.3_cuda80 mvapich2gdr_gnu/2.2_cuda_8.0
+    module load gcc/5.4.0-2.26
+    module load cmake/3.9.1
+
 else
-    module swap PrgEnv-cray PrgEnv-gnu
+    module purge
+    module load craype-network-infiniband
+    module load craype-haswell
+    module load craype-accel-nvidia35
+    module load cray-libsci
+    module load cudatoolkit/8.0.61
+    module load mvapich2gdr_gnu/2.2_cuda_8.0
+    module load gcc/5.4.0-2.26
+    module load cmake/3.9.1
 fi
 
 export CXX=$(which g++)
@@ -91,6 +104,5 @@ export FC=$(which $FC_COMPILER)
 export Boost_NO_SYSTEM_PATHS=true
 export Boost_NO_BOOST_CMAKE=true
 
-export BOOST_ROOT=/project/c14/install/daint/boost/boost_1_64_0
-export BOOST_INCLUDE={BOOST_ROOT}/include/
+export BOOST_ROOT=/project/c14/install/kesch-test/boost/boost_1_64_0/
 export LD_LIBRARY_PATH=${BOOST_ROOT}/lib:$LD_LIBRARY_PATH

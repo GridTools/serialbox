@@ -175,9 +175,14 @@ if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
   #
   # Boost (Serialbox always uses the shared Boost libraries)
   #
-  set(Boost_USE_STATIC_LIBS OFF)
-  set(Boost_USE_STATIC_RUNTIME OFF)
-  set(Boost_USE_MULTITHREADED ON)  
+  get_property(SHARED_LIB_SUPPORT GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
+  if (SHARED_LIB_SUPPORT)
+      set(Boost_USE_STATIC_LIBS OFF)
+      set(Boost_USE_STATIC_RUNTIME OFF)
+      set(Boost_USE_MULTITHREADED ON)
+      add_definitions(-DBOOST_ALL_DYN_LINK)
+      add_definitions(-DBOOST_LOG_DYN_LINK)
+  endif()
   
   set(BOOST_LIBRARYDIR "${SERIALBOX_BOOST_LIBRARY_DIRS}")
   set(BOOST_INCLUDEDIR "${SERIALBOX_BOOST_INCLUDE_DIRS}")

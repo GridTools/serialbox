@@ -633,7 +633,7 @@ class PpSer:
 
     # LINE: end module/end program
     def __re_endmodule(self):
-        r = re.compile('^ *end *(module|program) ([a-z][a-z0-9_]*)', re.IGNORECASE)
+        r = re.compile('^ *end *(module|program) +([a-z][a-z0-9_]*)', re.IGNORECASE)
         m = r.search(self.__line)
         if m:
             if not self.__module:

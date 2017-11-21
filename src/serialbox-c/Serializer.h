@@ -272,6 +272,37 @@ serialboxSerializerGetFieldnames(const serialboxSerializer_t* serializer);
 SERIALBOX_API serialboxFieldMetainfo_t*
 serialboxSerializerGetFieldMetainfo(const serialboxSerializer_t* serializer, const char* name);
 
+
+/**
+ * \brief Get values of standard meta info pairs of field with name `name`
+ *
+ * This function returns all the meta info as set in `serialboxSerializerAddField2`.
+ *
+ * \param serializer        Serializer to use
+ * \param name              The name of the field
+ * \param type              TypeID of the field (\ref serialboxTypeID)
+ * \param bytesPerElement   The size in bytes of a scalar value (e.g. 8 for doubles)
+ * \param iSize             The size of the first dimension
+ * \param jSize             The size of the second dimension
+ * \param kSize             The size of the third dimension
+ * \param lsize             The size of the fourth dimension
+ * \param iMinusHalo        The dimension of the halo in negative i-direction
+ * \param iPlusHalo         The dimension of the halo in positive i-direction
+ * \param jMinusHalo        The dimension of the halo in negative j-direction
+ * \param jPlusHalo         The dimension of the halo in positive j-direction
+ * \param kMinusHalo        The dimension of the halo in negative k-direction
+ * \param kPlusHalo         The dimension of the halo in positive k-direction
+ * \param lMinusHalo        The dimension of the halo in negative l-direction
+ * \param lPlusHalo         The dimension of the halo in positive l-direction
+ * \return 1 if field was added successfully, 0 otherwise
+ */
+SERIALBOX_API void
+serialboxSerializerGetFieldMetainfo2(const serialboxSerializer_t* serializer, const char* name,
+							     char** storedName, char** elementType, int* rank,
+                                 int* bytesPerElement, int* iSize, int* jSize, int* kSize, int* lSize,
+                                 int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
+                                 int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo);
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Writing & Reading
 \*===------------------------------------------------------------------------------------------===*/

@@ -282,6 +282,33 @@ TEST_F(CSerializerUtilityTest, RegisterFields) {
 
   serialboxFieldMetainfoDestroy(info);
   serialboxFieldMetainfoDestroy(infoField);
+
+
+  char *storedName, *elementType;
+  int bytesPerElement, rank, iSize, jSize, kSize, lSize;
+  int iMinusHalo, iPlusHalo, jMinusHalo, jPlusHalo, kMinusHalo, kPlusHalo, lMinusHalo, lPlusHalo;
+  serialboxSerializerGetFieldMetainfo2(ser, "field2",
+		  	  	  	  	  	  	  	   &storedName, &elementType, &bytesPerElement, &rank,
+									   &iSize, &jSize, &kSize, &lSize,
+									   &iMinusHalo, &iPlusHalo, &jMinusHalo, &jPlusHalo,
+									   &kMinusHalo, &kPlusHalo, &lMinusHalo, &lPlusHalo);
+  EXPECT_STREQ(storedName, "field2");
+  EXPECT_STREQ(elementType, "int");
+  EXPECT_EQ(bytesPerElement, 4);
+  EXPECT_EQ(rank, 4);
+  EXPECT_EQ(iSize, 42);
+  EXPECT_EQ(jSize, 1);
+  EXPECT_EQ(kSize, 1);
+  EXPECT_EQ(lSize, 12);
+  EXPECT_EQ(iMinusHalo, 1);
+  EXPECT_EQ(iPlusHalo, 1);
+  EXPECT_EQ(jMinusHalo, 0);
+  EXPECT_EQ(jPlusHalo, 0);
+  EXPECT_EQ(kMinusHalo, 0);
+  EXPECT_EQ(kPlusHalo, 0);
+  EXPECT_EQ(lMinusHalo, 2);
+  EXPECT_EQ(lPlusHalo, 2);
+
   serialboxSerializerDestroy(ser);
 }
 
