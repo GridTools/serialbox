@@ -25,6 +25,27 @@ using namespace serialboxC;
 using serialbox::Exception;
 using serialbox::TypeID;
 
+namespace {
+void make_4D(std::vector<int>& v) {
+  while(v.size() < 4) {
+    v.push_back(0);
+  }
+}
+
+std::vector<int> make_strides(int istride, int jstride, int kstride, int lstride) {
+  std::vector<int> strides;
+  if(istride >= 0)
+    strides.push_back(istride);
+  if(jstride >= 0)
+    strides.push_back(jstride);
+  if(kstride >= 0)
+    strides.push_back(kstride);
+  if(lstride >= 0)
+    strides.push_back(lstride);
+  return strides;
+}
+}
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Serializer
 \*===------------------------------------------------------------------------------------------===*/
@@ -32,19 +53,19 @@ using serialbox::TypeID;
 void serialboxFortranSerializerWrite(void* serializer, const void* savepoint, const char* name,
                                      void* originPtr, int istride, int jstride, int kstride,
                                      int lstride) {
-  std::array<int, 4> strides{{istride, jstride, kstride, lstride}};
+  auto strides = ::make_strides(istride, jstride, kstride, lstride);
   serialboxSerializerWrite(static_cast<serialboxSerializer_t*>(serializer), name,
                            static_cast<const serialboxSavepoint_t*>(savepoint), originPtr,
-                           strides.data(), 4);
+                           strides.data(), strides.size());
 }
 
 void serialboxFortranSerializerRead(void* serializer, const void* savepoint, const char* name,
                                     void* originPtr, int istride, int jstride, int kstride,
                                     int lstride) {
-  std::array<int, 4> strides{{istride, jstride, kstride, lstride}};
+  auto strides = ::make_strides(istride, jstride, kstride, lstride);
   serialboxSerializerRead(static_cast<serialboxSerializer_t*>(serializer), name,
                           static_cast<const serialboxSavepoint_t*>(savepoint), originPtr,
-                          strides.data(), 4);
+                          strides.data(), strides.size());
 }
 
 void serialboxFortranSerializerPrintDebugInfo(void* serializer) {
@@ -75,11 +96,9 @@ void serialboxFortranSerializerCheckField(const void* serializer, const char* na
   try {
     const auto& info = ser->getFieldMetainfoImplOf(name);
 
-    if(info.dims().size() != 4)
-      throw Exception("number of dimensions is %i, required are 4", info.dims().size());
-
     std::array<int, 4> actualSizes{{*isize, *jsize, *ksize, *lsize}};
-    const auto& refSizes = info.dims();
+    auto refSizes = info.dims();
+    ::make_4D(refSizes);
 
     // Check rank
     checkRank(name, actualSizes, refSizes);
@@ -87,7 +106,7 @@ void serialboxFortranSerializerCheckField(const void* serializer, const char* na
     // Check type (be careful with converting *type as it is an arbitrary int)
     TypeID typeID = *type <= Float64 ? (TypeID)*type : TypeID::Invalid;
     if(typeID != info.type())
-      throw Exception("field '%s' has type '%s' but was registrered as type '%s'", name,
+      throw Exception("field '%s' has type '%s' but was registered as type '%s'", name,
                       serialbox::TypeUtil::toString(info.type()),
                       serialbox::TypeUtil::toString(typeID));
 
@@ -103,8 +122,8 @@ void serialboxFortranSerializerCheckField(const void* serializer, const char* na
         continue;
       } else
         throw Exception("dimensions of field '%s' do not match registered ones:"
-                        "\nRegistred as: [ %i, %i, %i, %i ]"
-                        "\nGiven     as: [ %i, %i, %i, %i ]",
+                        "\nRegistered as: [ %i, %i, %i, %i ]"
+                        "\nGiven      as: [ %i, %i, %i, %i ]",
                         name, refSizes[0], refSizes[1], refSizes[2], refSizes[3], actualSizes[0],
                         actualSizes[1], actualSizes[2], actualSizes[3]);
     }
@@ -127,9 +146,6 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
          reinterpret_cast<const char*>(jplus1) - reinterpret_cast<const char*>(basePtr),
          reinterpret_cast<const char*>(kplus1) - reinterpret_cast<const char*>(basePtr),
          reinterpret_cast<const char*>(lplus1) - reinterpret_cast<const char*>(basePtr)}};
-
-    if(info.dims().size() != 4)
-      throw Exception("number of dimensions is %i, required are 4", info.dims().size());
 
     // Reorder strides
     for(int i = 2; i >= 0; --i)
@@ -154,35 +170,33 @@ void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const 
   const Serializer* ser = toConstSerializer(static_cast<const serialboxSerializer_t*>(serializer));
 
   try {
-    const auto& dims = ser->getFieldMetainfoImplOf(name).dims();
+    auto dims = ser->getFieldMetainfoImplOf(name).dims();
 
-    if(dims.size() != 4)
-      throw Exception("number of dimensions is %i, required are 4", dims.size());
+    ::make_4D(dims);
 
-	*isize = dims[0];
-	*jsize = dims[1];
-	*ksize = dims[2];
-	*lsize = dims[3];
-  }
-  catch(std::exception& e) {
+    *isize = dims[0];
+    *jsize = dims[1];
+    *ksize = dims[2];
+    *lsize = dims[3];
+  } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }
 }
 
 void serialboxFortranSerializerGetFieldHalos(const void* serializer, const char* name,
-											 int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
-											 int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo) {
+                                             int* iMinusHalo, int* iPlusHalo, int* jMinusHalo,
+                                             int* jPlusHalo, int* kMinusHalo, int* kPlusHalo,
+                                             int* lMinusHalo, int* lPlusHalo) {
 
-	char *notUsedHere_storedName, *notUsedHere_elementType;
-	int notUsedHere_bytesPerElement, notUsedHere_rank;
-	int notUsedHere_iSize, notUsedHere_jSize, notUsedHere_kSize, notUsedHere_lSize;
+  char *notUsedHere_storedName, *notUsedHere_elementType;
+  int notUsedHere_bytesPerElement, notUsedHere_rank;
+  int notUsedHere_iSize, notUsedHere_jSize, notUsedHere_kSize, notUsedHere_lSize;
 
-	serialboxSerializerGetFieldMetainfo2(static_cast<const serialboxSerializer_t*>(serializer), name,
-									   &notUsedHere_storedName, &notUsedHere_elementType,
-									   &notUsedHere_bytesPerElement, &notUsedHere_rank,
-									   &notUsedHere_iSize, &notUsedHere_jSize, &notUsedHere_kSize, &notUsedHere_lSize,
-									   iMinusHalo, iPlusHalo, jMinusHalo, jPlusHalo,
-									   kMinusHalo, kPlusHalo, lMinusHalo, lPlusHalo);
+  serialboxSerializerGetFieldMetainfo2(
+      static_cast<const serialboxSerializer_t*>(serializer), name, &notUsedHere_storedName,
+      &notUsedHere_elementType, &notUsedHere_bytesPerElement, &notUsedHere_rank, &notUsedHere_iSize,
+      &notUsedHere_jSize, &notUsedHere_kSize, &notUsedHere_lSize, iMinusHalo, iPlusHalo, jMinusHalo,
+      jPlusHalo, kMinusHalo, kPlusHalo, lMinusHalo, lPlusHalo);
 }
 
 void serialboxFortranSerializerAddMetainfoBoolean(void* serializer, const char* key, int value) {

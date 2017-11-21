@@ -136,7 +136,7 @@ class PpSer:
         l = []
         if re.match('(^$|[IJK][IJK1-9]*)', shortcut):
             if shortcut == '':
-                l = '0 0 0 0 0 0 0 0 0 0 0 0'.split()
+                l = '1 0 0 0 0 0 0 0 0 0 0 0'.split()
             elif shortcut == 'I':
                 l = 'ie 0 0 0 nboundlines nboundlines 0 0 0 0 0 0'.split()
             elif shortcut == 'J':
