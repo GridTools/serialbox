@@ -235,6 +235,12 @@ else
     make install -j1
 fi
 
+ret=$?
+if [ ${ret} -ne 0 ]; then
+    exit ${ret}
+fi
+
+
 # Run tests
 if [ "$ARG_RUN_TESTS" == "true" ]; then
 chmod  +x run_tests.sh
