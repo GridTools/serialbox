@@ -64,7 +64,7 @@ to_lower_and_trim()
 #------------------------------ Identify CSCS host -----------------------------
 if [ "$(hostname | grep greina)" != "" ] ; then
     MYHOST="greina"
-elif [ "$(hostname | grep keschcn-0001)" != "" ]; then
+elif [ "$(hostname | grep keschcn-0002)" != "" ]; then
     MYHOST="kesch-tds"
 elif [ "$(hostname | grep kesch)" != "" ] ; then
     MYHOST="kesch"
@@ -237,6 +237,9 @@ fi
 
 # Run tests
 if [ "$ARG_RUN_TESTS" == "true" ]; then
-    cmake --build . --target test
+chmod  +x run_tests.sh
+./run_tests.sh
+ret=$?
+exit $ret
 fi
 
