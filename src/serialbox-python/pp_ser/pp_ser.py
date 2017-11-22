@@ -539,7 +539,6 @@ class PpSer:
                     fargs.append(argname + '=' + t[i])
 
             # Put together function call
-            self.__calls.add(function)
             l += tab + 'call ' + function + '(' + ', '.join(fargs) + ')\n'
 
         if if_statement:
