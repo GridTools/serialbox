@@ -19,14 +19,6 @@
 #include <exception>
 #include <string>
 
-#ifndef SERIALBOX_NOEXCEPT
-#if __cplusplus >= 201103L
-#define SERIALBOX_NOEXCEPT noexcept
-#else
-#define SERIALBOX_NOEXCEPT throw()
-#endif
-#endif
-
 namespace serialbox {
 
 namespace stella {
@@ -37,16 +29,16 @@ namespace stella {
 class SerializationException : public std::exception {
 public:
   /// \brief Default constructor
-  SerializationException() SERIALBOX_NOEXCEPT {}
+  SerializationException() throw() {}
 
   /// \brief Virtual destructor
-  virtual ~SerializationException() SERIALBOX_NOEXCEPT {}
+  virtual ~SerializationException() throw() {}
 
   /// \brief Initialize the exception with an explanatory string `errormsg`
   void Init(const std::string& errormsg) { message_ = errormsg; }
 
   /// \brief Returns an explanatory string
-  const char* what() const SERIALBOX_NOEXCEPT { return message_.c_str(); }
+  const char* what() const throw() { return message_.c_str(); }
 
   /// \brief Returns an explanatory string
   const std::string& message() const { return message_; }
