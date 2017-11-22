@@ -15,10 +15,17 @@
 #ifndef SERIALBOX_CORE_FRONTEND_STELLA_SERIALIZATIONEXCEPTION_H
 #define SERIALBOX_CORE_FRONTEND_STELLA_SERIALIZATIONEXCEPTION_H
 
-#include "serialbox/core/Exception.h"
 #include "serialbox/core/frontend/stella/ForwardDecl.h"
 #include <exception>
 #include <string>
+
+#ifndef SERIALBOX_NOEXCEPT
+#if __cplusplus >= 201103L
+#define SERIALBOX_NOEXCEPT noexcept
+#else
+#define SERIALBOX_NOEXCEPT throw()
+#endif
+#endif
 
 namespace serialbox {
 
