@@ -52,7 +52,7 @@ class PpSer:
 
     def __init__(self, infile, outfile='', ifdef='SERIALIZE', real='ireals',
                  module='m_serialize', identical=True, verbose=False,
-                 acc_prefix=True, acc_if=''):
+                 acc_prefix=True, acc_if='', modules=''):
 
         # public variables
         self.verbose = verbose
@@ -125,6 +125,10 @@ class PpSer:
         self.__calls = set()      # calls to serialization module
         self.__outputBuffer = ''  # preprocessed file
         self.__use_stmt_in_module = False  # USE statement was inserted in module
+        self.__extra_module = []  # extra module to add to use statement
+
+        if modules: 
+            self.__extra_module = modules.split(',')
 
         # define compute sign used in field definition. If one is matched,
         # the read call is not added
@@ -715,6 +719,10 @@ class PpSer:
                     self.__line += '  ' + s + ', &\n'
                 self.__line += '  ' + calls_pp[-1] + '\n'
 
+            if len(self.__extra_module) > 0:
+                for mod in self.__extra_module:
+                    self.__line += 'USE ' + mod + '\n'
+
             if self.ifdef:
                 self.__line += '#endif\n'
             self.__line += '\n'
@@ -908,6 +916,8 @@ def parse_args():
                       default=True, action='store_false', dest='acc_prefix')
     parser.add_option('-a', '--acc-if', help='Add IF clause to OpenACC update statement',
                       default='', type=str, dest='acc_if')
+    parser.add_option('-m', '--module', help='Extra MODULE to be add to the use statement',
+                      default='', type=str, dest='modules')
     (options, args) = parser.parse_args()
     if len(args) < 1:
         parser.error('Need at least one source file to process')
@@ -927,5 +937,6 @@ if __name__ == "__main__":
         else:
             print('Processing file', infile)
             ser = PpSer(infile, real='wp', outfile=outfile, identical=(not options.ignore_identical),
-                        verbose=options.verbose, acc_prefix=options.acc_prefix, acc_if=options.acc_if)
+                        verbose=options.verbose, acc_prefix=options.acc_prefix, acc_if=options.acc_if,
+                        modules=options.modules)
             ser.preprocess()
