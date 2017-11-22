@@ -11,21 +11,21 @@
 ret=0
 
 echo ''
-echo 'Produce serialized data'
+echo 'Produce serialized data using netcdf'
 echo ''
-./fortran_producer
+./fortran_producer_netcdf
 ret=$((ret || $? ))
 
 echo ''
-echo 'Consume serialized data without pertubation'
+echo 'Consume serialized data without pertubation using netcdf'
 echo ''
-./fortran_consumer
+./fortran_consumer_netcdf
 ret=$((ret || $? ))
 
 echo ''
-echo 'Consume serialized data WITH pertubation'
+echo 'Consume serialized data WITH pertubation using netcdf'
 echo ''
-./fortran_consumer_perturb
+./fortran_consumer_perturb_netcdf
 ret=$((ret || $? ))
 
 exit $ret

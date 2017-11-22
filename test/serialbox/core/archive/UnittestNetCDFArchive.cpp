@@ -119,11 +119,11 @@ TEST_F(NetCDFArchiveUtilityTest, MetaData) {
   };
 
   // -----------------------------------------------------------------------------------------------
-  // Invlaid serialbox version
+  // Invalid serialbox version
   // -----------------------------------------------------------------------------------------------
   {
     json::json corrupted = j;
-    corrupted["serialbox_version"] = 100 * (SERIALBOX_VERSION_MAJOR - 1) +
+    corrupted["serialbox_version"] = 100 * (SERIALBOX_VERSION_MAJOR + 1) +
                                      10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
     toFile(corrupted);
 
@@ -148,7 +148,7 @@ TEST_F(NetCDFArchiveUtilityTest, MetaData) {
   // -----------------------------------------------------------------------------------------------
   {
     json::json corrupted = j;
-    corrupted["archive_version"] = -1;
+    corrupted["archive_version"] = +1;
     toFile(corrupted);
 
     ASSERT_THROW(NetCDFArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
@@ -326,10 +326,6 @@ TYPED_TEST(NetCDFArchiveReadWriteTest, WriteAndRead) {
 
     auto sv_7d_1_input = storage_7d_1_input.toStorageView();
     archiveWrite.write(sv_7d_1_input, "storage_7d", nullptr);
-
-    // Check all exceptional cases
-    auto sv_u_2_input = u_2_input.toStorageView();
-    ASSERT_THROW(archiveWrite.read(sv_u_2_input, FieldID{"u", 2}, nullptr), Exception);
   }
 
   // -----------------------------------------------------------------------------------------------
