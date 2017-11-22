@@ -29,7 +29,11 @@ from matplotlib.colors import SymLogNorm, Normalize
 from matplotlib.widgets import Slider, CheckButtons
 
 
-class Visualizer:
+class Visualizer(object):
+    """Visualization a field in a matplotlib window
+
+
+    """
     def __init__(self, field, fieldname, halospec=None):
         """Visualization a field in a matplotlib window
 
@@ -65,35 +69,35 @@ class Visualizer:
         self.__slider = Slider(slideraxes, 'K level', 0, field.shape[2] - 1, valinit=0)
         self.__slider.valfmt = '%2d'
         self.__slider.set_val(0)
-        self.__slider.on_changed(self.update_slider)
+        self.__slider.on_changed(self.__update_slider)
 
         # CheckButton
         self.__cbaxes = plt.axes([0.8, -.04, 0.12, 0.15])
         self.__cbaxes.set_axis_off()
         self.__cb = CheckButtons(self.__cbaxes, ('Halo', 'Logscale'),
                                  (self.__plotHalo, self.__plotLogLog))
-        self.__cb.on_clicked(self.update_button)
+        self.__cb.on_clicked(self.__update_button)
 
         # Initial plot
         self.__fieldaxes = self.__figure.add_axes([0.1, 0.15, 0.9, 0.75])
-        self.__collection = plt.pcolor(self._get_field(), axes=self.__fieldaxes)
+        self.__collection = plt.pcolor(self.__get_field(), axes=self.__fieldaxes)
         self.__colorbar = plt.colorbar()
-        self.__fieldaxes.set_xlim(right=self._get_field().shape[1])
-        self.__fieldaxes.set_ylim(top=self._get_field().shape[0])
+        self.__fieldaxes.set_xlim(right=self.__get_field().shape[1])
+        self.__fieldaxes.set_ylim(top=self.__get_field().shape[0])
 
         plt.xlabel('i')
         plt.ylabel('j')
         self.__title = plt.title('%s - Level 0' % (fieldname,))
         plt.show(block=True)
 
-    def update_slider(self, val):
+    def __update_slider(self, val):
         if val == self.__curklevel:
             return
         self.__curklevel = round(val)
         self.__title.set_text('%s - Level %d' % (self.__fieldname, self.__curklevel))
 
         # Draw new field level
-        field = self._get_field()
+        field = self.__get_field()
         size = field.shape[0] * field.shape[1]
         array = field.reshape(size)
         self.__collection.set_array(array)
@@ -103,17 +107,17 @@ class Visualizer:
         self.__colorbar.update_normal(self.__collection)
         self.__figure.canvas.draw_idle()
 
-    def update_button(self, label):
+    def __update_button(self, label):
         if label == 'Halo':
             self.__plotHalo = not self.__plotHalo
         if label == 'Logscale':
             self.__plotLogLog = not self.__plotLogLog
-        self.update_plot()
+        self.__update_plot()
 
-    def update_plot(self):
+    def __update_plot(self):
         # Redraw field
         self.__collection.remove()
-        field = self._get_field()
+        field = self.__get_field()
 
         if self.__plotLogLog:
             minvalue = field.min()
@@ -132,7 +136,7 @@ class Visualizer:
         self.__colorbar.update_normal(self.__collection)
         self.__figure.canvas.draw_idle()
 
-    def _get_field(self):
+    def __get_field(self):
         if self.__plotHalo:
             return np.rot90(self.__field[:, :, int(self.__curklevel)])
         else:
