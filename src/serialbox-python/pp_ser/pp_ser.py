@@ -144,13 +144,13 @@ class PpSer:
             elif shortcut == 'I':
                 l = 'ie 0 0 0 nboundlines nboundlines 0 0 0 0 0 0'.split()
             elif shortcut == 'J':
-                l = 'je 0 0 0 0 0 nboundlines nboundlines 0 0 0 0'.split()
+                l = 'je 0 0 0 nboundlines nboundlines 0 0 0 0 0 0'.split()
             elif shortcut == 'J2':
-                l = 'je 2 0 0 0 0 nboundlines nboundlines 0 0 0 0'.split()
+                l = 'je 2 0 0 nboundlines nboundlines 0 0 0 0 0 0'.split()
             elif shortcut == 'K':
                 l = 'ke 0 0 0 0 0 0 0 0 0 0 0'.split()
             elif shortcut == 'K1':
-                l = 'ke1 0 0 0 0 0 0 0 0 1 0 0'.split()
+                l = 'ke1 0 0 0 0 1 0 0 0 0 0 0'.split()
             elif shortcut == 'IJ':
                 l = 'ie je 0 0 nboundlines nboundlines nboundlines nboundlines 0 0 0 0'.split()
             elif shortcut == 'IJ3':
@@ -160,9 +160,9 @@ class PpSer:
             elif shortcut == 'IK1':
                 l = 'ie ke1 0 0 nboundlines nboundlines 0 0 0 1 0 0'.split()
             elif shortcut == 'JK':
-                l = 'je ke 0 0 0 0 nboundlines nboundlines 0 0 0 0'.split()
+                l = 'je ke 0 0 nboundlines nboundlines 0 0 0 0 0 0'.split()
             elif shortcut == 'JK1':
-                l = 'je ke1 0 0 0 0 nboundlines nboundlines 0 1 0 0'.split()
+                l = 'je ke1 0 0 nboundlines nboundlines 0 1 0 0 0 0'.split()
             elif shortcut == 'IJK':
                 l = 'ie je ke 0 nboundlines nboundlines nboundlines nboundlines 0 0 0 0'.split()
             elif shortcut == 'IJK1':
