@@ -1,35 +1,34 @@
 
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>C interface &mdash; Serialbox 2.0.1 documentation</title>
-    
+    <title>C interface &#8212; Serialbox 2.0.1 documentation</title>
     <link rel="stylesheet" href="_static/serialbox-theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
         VERSION:     '2.0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="Serialbox 2.0.1 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Serialbox Python" href="Python.html" />
     <link rel="prev" title="C++ interface" href="C++.html" /> 
   </head>
-  <body role="document">
+  <body>
 <div class="logo">
   <a href="index.html">
     <img src="_static/logo.png"
@@ -48,7 +47,7 @@
         <li class="right" >
           <a href="C++.html" title="C++ interface"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Serialbox 2.0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Serialbox 2.0.1 documentation</a> &#187;</li> 
       </ul>
     </div>
 
@@ -72,21 +71,18 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/C.txt"
+      <li><a href="_sources/C.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -103,7 +99,7 @@
 <div class="section" id="building">
 <h2>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
 <p>The C interface of Serialbox is built if the CMake variable <code class="docutils literal"><span class="pre">SERIALBOX_ENABLE_C</span></code> is ON (which is the default behaviour) and installed in <code class="docutils literal"><span class="pre">install/lib/</span></code> and <code class="docutils literal"><span class="pre">install/include/serialbox-c</span></code>. To get started, include the <code class="docutils literal"><span class="pre">Serialbox.h</span></code> header, which exposes the complete API:</p>
-<div class="highlight-C"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;serialbox-c/Serialbox.h&gt;</span><span class="cp"></span>
+<div class="highlight-C"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;serialbox-c/Serialbox.h&gt;</span><span class="cp"></span>
 </pre></div>
 </div>
 <p>To get an overview of the full API, you can take a look at the doxygen generate documentation: <a class="reference external" href="_doxygen/html/group__serialboxC.html">here</a>.</p>
@@ -111,7 +107,7 @@
 <div class="section" id="linking">
 <h2>Linking<a class="headerlink" href="#linking" title="Permalink to this headline">¶</a></h2>
 <p>Consider the following minimalistic example, <code class="docutils literal"><span class="pre">test.c</span></code>, which simply creates and destroys a serializer:</p>
-<div class="highlight-C"><div class="highlight"><pre><span class="cp">#include</span> <span class="cpf">&lt;serialbox-c/Serialbox.h&gt;</span><span class="cp"></span>
+<div class="highlight-C"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;serialbox-c/Serialbox.h&gt;</span><span class="cp"></span>
 
 <span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
   <span class="n">serialboxSerializer_t</span><span class="o">*</span> <span class="n">serializer</span> <span class="o">=</span> <span class="n">serialboxSerializerCreate</span><span class="p">(</span><span class="n">Write</span><span class="p">,</span> <span class="s">&quot;./ser-test&quot;</span><span class="p">,</span> <span class="s">&quot;field&quot;</span><span class="p">,</span> <span class="s">&quot;Binary&quot;</span><span class="p">);</span>
@@ -120,12 +116,12 @@
 </pre></div>
 </div>
 <p>To compile this sample program, you have to link against <code class="docutils literal"><span class="pre">SerialboxC</span></code> and the dependency libraries. The dependency libraries include the Boost libraries (filesystem, system, chrono, log, date_time, log_setup, thread, regex and atomic) as well as the NetCDF and OpenSSL libraries. However, if you choose to link dynamically (i.e against <code class="docutils literal"><span class="pre">libSerialboxC.so</span></code>), the dependencies will be resolved automatically:</p>
-<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> <span class="nb">export</span> <span class="nv">SERIALBOX_INSTALL_PATH</span><span class="o">=</span>&lt;path-to-serialbox-installation&gt;
-<span class="gp">$</span> gcc test.c -o <span class="nb">test</span> -I$SERIALBOX_INSTALL_PATH/include -L$SERIALBOX_INSTALL_PATH/lib -lSerialboxC
-<span class="gp">$</span> <span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>$SERIALBOX_INSTALL_PATH/lib<span class="p">;</span> ./test
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">export</span> <span class="nv">SERIALBOX_INSTALL_PATH</span><span class="o">=</span>&lt;path-to-serialbox-installation&gt;
+<span class="gp">$</span> gcc test.c -o <span class="nb">test</span> -I<span class="nv">$SERIALBOX_INSTALL_PATH</span>/include -L<span class="nv">$SERIALBOX_INSTALL_PATH</span>/lib -lSerialboxC
+<span class="gp">$</span> <span class="nb">export</span> <span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$SERIALBOX_INSTALL_PATH</span>/lib<span class="p">;</span> ./test
 </pre></div>
 </div>
-<p>In general, it is <strong>strongly</strong> advised to use the CMake find_package-module of Serialbox which takes care of linking against the correct libraries (see <a class="reference internal" href="Usage.html"><em>Using Serialbox as an external library</em></a>).</p>
+<p>In general, it is <strong>strongly</strong> advised to use the CMake find_package-module of Serialbox which takes care of linking against the correct libraries (see <a class="reference internal" href="Usage.html"><span class="doc">Using Serialbox as an external library</span></a>).</p>
 </div>
 </div>
 
@@ -147,12 +143,12 @@
         <li class="right" >
           <a href="C++.html" title="C++ interface"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Serialbox 2.0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Serialbox 2.0.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Fabian Thüring.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+        &#169; Copyright 2016, Fabian Thüring.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
     </div>
   </body>
 </html>

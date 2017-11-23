@@ -5,6 +5,8 @@ var group__fortran__wrapper =
     [ "serialboxFortranSerializerAddFieldMetainfoBoolean", "group__fortran__wrapper.html#ga04a16df5b9fdd4f3b539850cc8e074af", null ],
     [ "serialboxFortranSerializerAddMetainfoBoolean", "group__fortran__wrapper.html#gab2870e09bd77e82085c0a92227facbe0", null ],
     [ "serialboxFortranSerializerCheckField", "group__fortran__wrapper.html#ga7b95f1a7739f1bc8565f56ae9440ed0e", null ],
+    [ "serialboxFortranSerializerGetFieldDimensions", "group__fortran__wrapper.html#ga0b04b4193f21f484c49040b150e6ffb9", null ],
+    [ "serialboxFortranSerializerGetFieldHalos", "group__fortran__wrapper.html#ga719172eecc1c8a0a8246c472a796d8a9", null ],
     [ "serialboxFortranSerializerPrintDebugInfo", "group__fortran__wrapper.html#ga54887dca64f14f510deff40cef3cfd6b", null ],
     [ "serialboxFortranSerializerRead", "group__fortran__wrapper.html#ga6bee9f702664da0b6ad68eef7cb7cdb3", null ],
     [ "serialboxFortranSerializerRegisterField", "group__fortran__wrapper.html#ga276364734a2963ae27aa5c69737c2c61", null ],

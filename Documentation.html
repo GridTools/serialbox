@@ -1,35 +1,34 @@
 
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Building the Documentation &mdash; Serialbox 2.0.1 documentation</title>
-    
+    <title>Building the Documentation &#8212; Serialbox 2.0.1 documentation</title>
     <link rel="stylesheet" href="_static/serialbox-theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
         VERSION:     '2.0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="Serialbox 2.0.1 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Using Serialbox as an external library" href="Usage.html" />
     <link rel="prev" title="Building Serialbox" href="Building.html" /> 
   </head>
-  <body role="document">
+  <body>
 <div class="logo">
   <a href="index.html">
     <img src="_static/logo.png"
@@ -48,7 +47,7 @@
         <li class="right" >
           <a href="Building.html" title="Building Serialbox"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Serialbox 2.0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Serialbox 2.0.1 documentation</a> &#187;</li> 
       </ul>
     </div>
 
@@ -73,21 +72,18 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/Documentation.txt"
+      <li><a href="_sources/Documentation.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -104,11 +100,11 @@
 <div class="section" id="prerequisite">
 <span id="id1"></span><h2>Prerequisite<a class="headerlink" href="#prerequisite" title="Permalink to this headline">¶</a></h2>
 <p>Serialbox requires <a class="reference external" href="http://www.stack.nl/~dimitri/doxygen/">doxygen</a> and <a class="reference external" href="http://www.sphinx-doc.org/en/1.4.8/">sphinx</a>. As sphinx imports the Python module of Serialbox to obtain the doc-strings, we require the <strong>Python3</strong> version of sphinx. In Ubuntu (16.04), the following installs the necessary packages:</p>
-<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> sudo apt-get install doxygen python3-sphinx
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo apt-get install doxygen python3-sphinx
 </pre></div>
 </div>
 <p>To enable the documentation, configure the project with the CMake variable <code class="docutils literal"><span class="pre">SERIALBOX_DOCUMENTATION</span></code> set to ON:</p>
-<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> cmake -DSERIALBOX_DOCUMENTATION<span class="o">=</span>ON ../
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> cmake -DSERIALBOX_DOCUMENTATION<span class="o">=</span>ON ../
 </pre></div>
 </div>
 <p>As mentioned, sphinx imports the Python module and thus Serialbox should be built with <code class="docutils literal"><span class="pre">SERIALBOX_ENABLE_PYTHON=ON</span></code> (which is default).</p>
@@ -116,7 +112,7 @@
 <div class="section" id="building">
 <span id="id2"></span><h2>Building<a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
 <p>If CMake was able to pick up doxygen and sphinx, it will provide a <code class="docutils literal"><span class="pre">docs</span></code> target:</p>
-<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> make docs
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> make docs
 </pre></div>
 </div>
 <p>This will install the documentation into <code class="docutils literal"><span class="pre">docs/sphinx/_build/html</span></code> and you can immedialtly view it by opening <code class="docutils literal"><span class="pre">docs/sphinx/_build/html/index.html</span></code> in your favorite browser.</p>
@@ -124,7 +120,7 @@
 <div class="section" id="deploying">
 <h2>Deploying<a class="headerlink" href="#deploying" title="Permalink to this headline">¶</a></h2>
 <p>GitHub provides the ability to upload your website to <a class="reference external" href="https://pages.github.com/">GitHub Pages</a>. To to this, we need to push the website to the <code class="docutils literal"><span class="pre">gh-pages</span></code> branch. The script <code class="docutils literal"><span class="pre">tools/deploy-docs.sh</span></code> does exactly this, meaning: Cloning the branch <code class="docutils literal"><span class="pre">gh-pages</span></code>, copying the website from <code class="docutils literal"><span class="pre">docs/sphinx/_build/html/</span></code> and commiting and pushing the changes to your remote. To ease the burden, CMake was configured to provide a target to invoke the script:</p>
-<div class="highlight-console"><div class="highlight"><pre><span class="gp">$</span> make deploy-docs
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="gp">$</span> make deploy-docs
 </pre></div>
 </div>
 <p>To view your website, head to <a class="reference external" href="http://username.github.io/serialbox2">http://username.github.io/serialbox2</a> . You may need to adjust the GitHub settings of your Serialbox repository: <code class="docutils literal"><span class="pre">&quot;Settings&quot;</span></code> -&gt; <code class="docutils literal"><span class="pre">&quot;GitHub</span> <span class="pre">Pages&quot;</span></code> set the <code class="docutils literal"><span class="pre">&quot;Source&quot;</span></code> to <code class="docutils literal"><span class="pre">&quot;gh-pages</span> <span class="pre">branch&quot;</span></code> to enable GitHub Pages.</p>
@@ -149,12 +145,12 @@
         <li class="right" >
           <a href="Building.html" title="Building Serialbox"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Serialbox 2.0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Serialbox 2.0.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Fabian Thüring.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+        &#169; Copyright 2016, Fabian Thüring.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
     </div>
   </body>
 </html>

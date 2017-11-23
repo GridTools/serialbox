@@ -18,8 +18,8 @@ var classserialbox_1_1FieldMetainfoImpl =
     [ "operator=", "classserialbox_1_1FieldMetainfoImpl.html#a9a3afc7fad4961f8c248a31d5032a5a3", null ],
     [ "operator==", "classserialbox_1_1FieldMetainfoImpl.html#adce29f2781bec5c6666c9091233f436b", null ],
     [ "swap", "classserialbox_1_1FieldMetainfoImpl.html#a52b703b9c145f770c1896cdf9ce6008e", null ],
-    [ "toJSON", "classserialbox_1_1FieldMetainfoImpl.html#a30d05bba9207bd8edda96cb8c4bb7929", null ],
-    [ "toString", "classserialbox_1_1FieldMetainfoImpl.html#a83bfe66b79a8d5a8249ddb040fc5b489", null ],
+    [ "toJSON", "classserialbox_1_1FieldMetainfoImpl.html#a16629d9364089feec5cda3a3d470ee16", null ],
+    [ "toString", "classserialbox_1_1FieldMetainfoImpl.html#a9b00f5e1ef2ab393bd98172951896f09", null ],
     [ "type", "classserialbox_1_1FieldMetainfoImpl.html#a4a99ebbfcc0ab1fe2319d6d687818831", null ],
     [ "type", "classserialbox_1_1FieldMetainfoImpl.html#a3030a0a20ad64df26cadbd12291edc7d", null ],
     [ "operator<<", "classserialbox_1_1FieldMetainfoImpl.html#ae82d153321f1cf5c3cd23f3403b2e215", null ]
