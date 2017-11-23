@@ -64,7 +64,7 @@ to_lower_and_trim()
 #------------------------------ Identify CSCS host -----------------------------
 if [ "$(hostname | grep greina)" != "" ] ; then
     MYHOST="greina"
-elif [ "$(hostname | grep keschcn-0001)" != "" ]; then
+elif [ "$(hostname | grep keschcn-0002)" != "" ]; then
     MYHOST="kesch-tds"
 elif [ "$(hostname | grep kesch)" != "" ] ; then
     MYHOST="kesch"
@@ -183,6 +183,14 @@ else
     SERIALBOX_TESTING_FORTRAN=OFF
 fi
 
+#NetCDF
+if [ ! -z ${NETCDF_ROOT+x} ]; then
+    SERIALBOX_USE_NETCDF=ON
+else
+    SERIALBOX_USE_NETCDF=OFF
+fi
+
+
 #------------------------------ Build ------------------------------------------
 
 BUILD_DIR=${CURRENT_PATH}/../../build_gcc_${ARG_FC_COMPILER}
@@ -215,6 +223,7 @@ cmake                                                                          \
  -DSERIALBOX_TESTING_GRIDTOOLS:BOOL=${SERIALBOX_TESTING_GRIDTOOLS}             \
  -DSERIALBOX_TESTING_STELLA:BOOL=${SERIALBOX_TESTING_STELLA}                   \
  -DSERIALBOX_TESTING_FORTRAN:BOOL=${SERIALBOX_TESTING_FORTRAN}                 \
+ -DSERIALBOX_USE_NETCDF:BOOL=${SERIALBOX_USE_NETCDF}                           \
  ../
 
 # Run make
@@ -226,8 +235,17 @@ else
     make install -j1
 fi
 
+ret=$?
+if [ ${ret} -ne 0 ]; then
+    exit ${ret}
+fi
+
+
 # Run tests
 if [ "$ARG_RUN_TESTS" == "true" ]; then
-    cmake --build . --target test
+chmod  +x run_tests.sh
+./run_tests.sh
+ret=$?
+exit $ret
 fi
 

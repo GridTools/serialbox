@@ -84,8 +84,6 @@ elif [ "$FC_COMPILER" = "ftn" ]; then
     module unload mvapich2_cce
     module load cray-libsci_acc/3.3.0
     module load mvapich2gdr_gnu/2.1_cuda_7.0
-    module load cray-netcdf/4.3.2
-    module load cray-hdf5/1.8.13
     module load GCC/4.9.3-binutils-2.25
     
 else
@@ -101,3 +99,4 @@ export Boost_NO_BOOST_CMAKE=true
 
 export BOOST_ROOT=/project/c14/install/kesch/boost/boost_1_64_0/
 export BOOST_INCLUDE=/project/c14/install/kesch/boost/boost_1_65_1/include/
+

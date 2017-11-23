@@ -248,15 +248,15 @@ void NetCDFArchive::readMetaDataFromJson() {
   int archiveVersion = json_["archive_version"];
 
   // Check consistency
-  if(!Version::match(serialboxVersion))
-    throw Exception("serialbox version of NetCDF archive (%s) does not match the version "
+  if(!Version::isCompatible(serialboxVersion))
+    throw Exception("serialbox version of NetCDF archive (%s) is not compatible with the version "
                     "of the library (%s)",
                     Version::toString(serialboxVersion), SERIALBOX_VERSION_STRING);
 
   if(archiveName != NetCDFArchive::Name)
     throw Exception("archive is not a NetCDF archive");
 
-  if(archiveVersion != NetCDFArchive::Version)
+  if(archiveVersion > NetCDFArchive::Version)
     throw Exception("NetCDF archive version (%s) does not match the version of the library (%s)",
                     archiveVersion, NetCDFArchive::Version);
 
@@ -282,8 +282,15 @@ FieldID NetCDFArchive::write(const StorageView& storageView, const std::string& 
   int ncID, varID, errorCode;
 
   TypeID type = storageView.type();
-  const std::vector<int>& dims = storageView.dims();
-  const std::vector<int>& strides = storageView.strides();
+
+  std::vector<int> dims;
+  std::vector<int> strides;
+  for(size_t i = 0; i < storageView.dims().size(); ++i) {
+    if(storageView.dims()[i] > 0) {
+      dims.push_back(storageView.dims()[i]);
+      strides.push_back(storageView.strides()[i]);
+    }
+  }
 
   std::size_t numDims = dims.size();
   std::size_t numDimsID = numDims + 1;
