@@ -118,14 +118,15 @@ class PpSer:
         self.intentin_removed = []
 
         # private variables
-        self.__ser = False        # currently processing !$SER directives
-        self.__line = ''          # current line
-        self.__linenum = 0        # current line number
-        self.__module = ''        # current module
-        self.__calls = set()      # calls to serialization module
-        self.__outputBuffer = ''  # preprocessed file
+        self.__ser = False           # currently processing !$SER directives
+        self.__line = ''             # current line
+        self.__linenum = 0           # current line number
+        self.__module = ''           # current module
+        self.__calls = set()         # calls to serialization module
+        self.__outputBuffer = ''     # preprocessed file
         self.__use_stmt_in_module = False  # USE statement was inserted in module
-        self.__extra_module = []  # extra module to add to use statement
+        self.__extra_module = []     # extra module to add to use statement
+        self.__skip_next_n_lines = 0 # Number of line to skip (use for lookahead)
 
         if modules: 
             self.__extra_module = modules.split(',')
@@ -586,8 +587,25 @@ class PpSer:
         if self.__use_stmt_in_module:  # Statement produced at module level
             return
         r = re.compile('^ *(subroutine|function).*', re.IGNORECASE)
+        r_cont = re.compile('^ *(subroutine|function)([^!]*)&', re.IGNORECASE)
         m = r.search(self.__line)
-        if m:
+        m_cont = r_cont.search(self.__line)
+        if m and not m_cont:
+            self.__produce_use_stmt()
+        elif m and m_cont: 
+            # look ahead to find the correct line to insert the use statement
+            lookahead_index = self.__linenum
+            # set to line after the subroutine/function declaration
+            lookahead_index += 1
+            # look ahead
+            nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
+            r_continued_line = re.compile('^([^!]*)&', re.IGNORECASE)
+            while r_continued_line.search(nextline):
+                self.__line += nextline 
+                lookahead_index += 1
+                nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
+            self.__line += nextline
+            self.__skip_next_n_lines = lookahead_index - self.__linenum
             self.__produce_use_stmt()
         return m
 
@@ -774,6 +792,9 @@ class PpSer:
         try:
             self.line = ''
             for line in input_file:
+                if(self.__skip_next_n_lines > 0):
+                    self.__skip_next_n_lines -= 1
+                    continue
                 # handle line continuation (next line coming in)
                 if self.__line:
                     if re.match('^ *!\$ser& ', line, re.IGNORECASE):
