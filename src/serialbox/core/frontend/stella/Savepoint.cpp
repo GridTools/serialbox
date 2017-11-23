@@ -58,6 +58,7 @@ Savepoint& Savepoint::operator=(const Savepoint& other) {
 
   // Use the assignment operator of the implementation class
   *savepointImpl_ = *other.savepointImpl_;
+  metainfo_.setImpl(internal::make_shared_ptr<MetainfoMapImpl>(savepointImpl_->metaInfoPtr()));
   return (*this);
 }
 
