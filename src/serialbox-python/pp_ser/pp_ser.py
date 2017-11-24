@@ -52,7 +52,7 @@ class PpSer:
 
     def __init__(self, infile, outfile='', ifdef='SERIALIZE', real='ireals',
                  module='m_serialize', identical=True, verbose=False,
-                 acc_prefix=True, acc_if=''):
+                 acc_prefix=True, acc_if='', modules=''):
 
         # public variables
         self.verbose = verbose
@@ -118,13 +118,18 @@ class PpSer:
         self.intentin_removed = []
 
         # private variables
-        self.__ser = False        # currently processing !$SER directives
-        self.__line = ''          # current line
-        self.__linenum = 0        # current line number
-        self.__module = ''        # current module
-        self.__calls = set()      # calls to serialization module
-        self.__outputBuffer = ''  # preprocessed file
+        self.__ser = False           # currently processing !$SER directives
+        self.__line = ''             # current line
+        self.__linenum = 0           # current line number
+        self.__module = ''           # current module
+        self.__calls = set()         # calls to serialization module
+        self.__outputBuffer = ''     # preprocessed file
         self.__use_stmt_in_module = False  # USE statement was inserted in module
+        self.__extra_module = []     # extra module to add to use statement
+        self.__skip_next_n_lines = 0 # Number of line to skip (use for lookahead)
+
+        if modules: 
+            self.__extra_module = modules.split(',')
 
         # define compute sign used in field definition. If one is matched,
         # the read call is not added
@@ -136,33 +141,33 @@ class PpSer:
         l = []
         if re.match('(^$|[IJK][IJK1-9]*)', shortcut):
             if shortcut == '':
-                l = '1 1 1 1 0 0 0 0 0 0 0 0'.split()
+                l = '1 0 0 0 0 0 0 0 0 0 0 0'.split()
             elif shortcut == 'I':
-                l = 'ie 1 1 1 nboundlines nboundlines 0 0 0 0 0 0'.split()
+                l = 'ie 0 0 0 nboundlines nboundlines 0 0 0 0 0 0'.split()
             elif shortcut == 'J':
-                l = '1 je 1 1 0 0 nboundlines nboundlines 0 0 0 0'.split()
+                l = 'je 0 0 0 nboundlines nboundlines 0 0 0 0 0 0'.split()
             elif shortcut == 'J2':
-                l = '1 je 2 1 0 0 nboundlines nboundlines 0 0 0 0'.split()
+                l = 'je 2 0 0 nboundlines nboundlines 0 0 0 0 0 0'.split()
             elif shortcut == 'K':
-                l = '1 1 ke 1 0 0 0 0 0 0 0 0'.split()
+                l = 'ke 0 0 0 0 0 0 0 0 0 0 0'.split()
             elif shortcut == 'K1':
-                l = '1 1 ke1 1 0 0 0 0 0 1 0 0'.split()
+                l = 'ke1 0 0 0 0 1 0 0 0 0 0 0'.split()
             elif shortcut == 'IJ':
-                l = 'ie je 1 1 nboundlines nboundlines nboundlines nboundlines 0 0 0 0'.split()
+                l = 'ie je 0 0 nboundlines nboundlines nboundlines nboundlines 0 0 0 0'.split()
             elif shortcut == 'IJ3':
-                l = 'ie je 3 1 nboundlines nboundlines nboundlines nboundlines 0 0 0 0'.split()
+                l = 'ie je 3 0 nboundlines nboundlines nboundlines nboundlines 0 0 0 0'.split()
             elif shortcut == 'IK':
-                l = 'ie 1 ke 1 nboundlines nboundlines 0 0 0 0 0 0'.split()
+                l = 'ie ke 0 0 nboundlines nboundlines 0 0 0 0 0 0'.split()
             elif shortcut == 'IK1':
-                l = 'ie 1 ke1 1 nboundlines nboundlines 0 0 0 1 0 0'.split()
+                l = 'ie ke1 0 0 nboundlines nboundlines 0 0 0 1 0 0'.split()
             elif shortcut == 'JK':
-                l = '1 je ke 1 0 0 nboundlines nboundlines 0 0 0 0'.split()
+                l = 'je ke 0 0 nboundlines nboundlines 0 0 0 0 0 0'.split()
             elif shortcut == 'JK1':
-                l = '1 je ke1 1 0 0 nboundlines nboundlines 0 1 0 0'.split()
+                l = 'je ke1 0 0 nboundlines nboundlines 0 1 0 0 0 0'.split()
             elif shortcut == 'IJK':
-                l = 'ie je ke 1 nboundlines nboundlines nboundlines nboundlines 0 0 0 0'.split()
+                l = 'ie je ke 0 nboundlines nboundlines nboundlines nboundlines 0 0 0 0'.split()
             elif shortcut == 'IJK1':
-                l = 'ie je ke1 1 nboundlines nboundlines nboundlines nboundlines 0 1 0 0'.split()
+                l = 'ie je ke1 0 nboundlines nboundlines nboundlines nboundlines 0 1 0 0'.split()
         return l
 
     # error handling
@@ -535,7 +540,6 @@ class PpSer:
                     fargs.append(argname + '=' + t[i])
 
             # Put together function call
-            self.__calls.add(function)
             l += tab + 'call ' + function + '(' + ', '.join(fargs) + ')\n'
 
         if if_statement:
@@ -583,8 +587,25 @@ class PpSer:
         if self.__use_stmt_in_module:  # Statement produced at module level
             return
         r = re.compile('^ *(subroutine|function).*', re.IGNORECASE)
+        r_cont = re.compile('^ *(subroutine|function)([^!]*)&', re.IGNORECASE)
         m = r.search(self.__line)
-        if m:
+        m_cont = r_cont.search(self.__line)
+        if m and not m_cont:
+            self.__produce_use_stmt()
+        elif m and m_cont: 
+            # look ahead to find the correct line to insert the use statement
+            lookahead_index = self.__linenum
+            # set to line after the subroutine/function declaration
+            lookahead_index += 1
+            # look ahead
+            nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
+            r_continued_line = re.compile('^([^!]*)&', re.IGNORECASE)
+            while r_continued_line.search(nextline):
+                self.__line += nextline 
+                lookahead_index += 1
+                nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
+            self.__line += nextline
+            self.__skip_next_n_lines = lookahead_index - self.__linenum
             self.__produce_use_stmt()
         return m
 
@@ -715,6 +736,10 @@ class PpSer:
                     self.__line += '  ' + s + ', &\n'
                 self.__line += '  ' + calls_pp[-1] + '\n'
 
+            if len(self.__extra_module) > 0:
+                for mod in self.__extra_module:
+                    self.__line += 'USE ' + mod + '\n'
+
             if self.ifdef:
                 self.__line += '#endif\n'
             self.__line += '\n'
@@ -767,6 +792,9 @@ class PpSer:
         try:
             self.line = ''
             for line in input_file:
+                if(self.__skip_next_n_lines > 0):
+                    self.__skip_next_n_lines -= 1
+                    continue
                 # handle line continuation (next line coming in)
                 if self.__line:
                     if re.match('^ *!\$ser& ', line, re.IGNORECASE):
@@ -908,6 +936,8 @@ def parse_args():
                       default=True, action='store_false', dest='acc_prefix')
     parser.add_option('-a', '--acc-if', help='Add IF clause to OpenACC update statement',
                       default='', type=str, dest='acc_if')
+    parser.add_option('-m', '--module', help='Extra MODULE to be add to the use statement',
+                      default='', type=str, dest='modules')
     (options, args) = parser.parse_args()
     if len(args) < 1:
         parser.error('Need at least one source file to process')
@@ -927,5 +957,6 @@ if __name__ == "__main__":
         else:
             print('Processing file', infile)
             ser = PpSer(infile, real='wp', outfile=outfile, identical=(not options.ignore_identical),
-                        verbose=options.verbose, acc_prefix=options.acc_prefix, acc_if=options.acc_if)
+                        verbose=options.verbose, acc_prefix=options.acc_prefix, acc_if=options.acc_if,
+                        modules=options.modules)
             ser.preprocess()
