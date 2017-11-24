@@ -106,6 +106,7 @@ def make_serializer_and_extract_field(file):
         is '/home/foo/MetaData-bar.json' we will return None for field and compare every field in
         the archive.
     """
+    file = path.abspath(file)
     directory = path.dirname(file)
     basename = path.basename(file)
     filename, extension = path.splitext(basename)
