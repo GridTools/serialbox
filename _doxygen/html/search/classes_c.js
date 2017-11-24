@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['savepoint',['savepoint',['../classserialbox_1_1gridtools_1_1savepoint.html',1,'serialbox::gridtools']]],
-  ['savepoint',['Savepoint',['../classserialbox_1_1stella_1_1Savepoint.html',1,'serialbox::stella']]],
+  ['savepoint',['savepoint',['../classserialbox_1_1gridtools_1_1savepoint.html',1,'serialbox::gridtools::savepoint'],['../classserialbox_1_1stella_1_1Savepoint.html',1,'serialbox::stella::Savepoint']]],
   ['savepointimpl',['SavepointImpl',['../classserialbox_1_1SavepointImpl.html',1,'serialbox']]],
   ['savepointvector',['SavepointVector',['../classserialbox_1_1SavepointVector.html',1,'serialbox']]],
   ['serialboxarrayofboolean_5ft',['serialboxArrayOfBoolean_t',['../structserialboxArrayOfBoolean__t.html',1,'']]],
@@ -16,8 +15,7 @@ var searchData=
   ['serialboxsavepoint_5ft',['serialboxSavepoint_t',['../structserialboxSavepoint__t.html',1,'']]],
   ['serialboxserializer_5ft',['serialboxSerializer_t',['../structserialboxSerializer__t.html',1,'']]],
   ['serializationexception',['SerializationException',['../classserialbox_1_1stella_1_1SerializationException.html',1,'serialbox::stella']]],
-  ['serializer',['serializer',['../classserialbox_1_1gridtools_1_1serializer.html',1,'serialbox::gridtools']]],
-  ['serializer',['Serializer',['../classserialbox_1_1stella_1_1Serializer.html',1,'serialbox::stella']]],
+  ['serializer',['serializer',['../classserialbox_1_1gridtools_1_1serializer.html',1,'serialbox::gridtools::serializer'],['../classserialbox_1_1stella_1_1Serializer.html',1,'serialbox::stella::Serializer']]],
   ['serializerimpl',['SerializerImpl',['../classserialbox_1_1SerializerImpl.html',1,'serialbox']]],
   ['sha256',['SHA256',['../classserialbox_1_1SHA256.html',1,'serialbox']]],
   ['slice',['Slice',['../classserialbox_1_1Slice.html',1,'serialbox']]],

@@ -12,6 +12,7 @@ var group__serializer =
     [ "serialboxSerializerDestroySavepointVector", "group__serializer.html#gaa35f948e3fd1d20a21770ede30cc868f", null ],
     [ "serialboxSerializerGetDirectory", "group__serializer.html#gaf5dee035b813a43a333e2d296190f146", null ],
     [ "serialboxSerializerGetFieldMetainfo", "group__serializer.html#gaabbff974271e03322cba3102f9f0cb5e", null ],
+    [ "serialboxSerializerGetFieldMetainfo2", "group__serializer.html#ga3b49ea7f22cfebfb972aac14e474c571", null ],
     [ "serialboxSerializerGetFieldnames", "group__serializer.html#ga9929d63b9736911bfa34d573cfd93e91", null ],
     [ "serialboxSerializerGetFieldnamesAtSavepoint", "group__serializer.html#gac219439892a9a317ef2027c8d36f826d", null ],
     [ "serialboxSerializerGetGlobalMetainfo", "group__serializer.html#gaf683684725e005003dc90f15cf81b7b2", null ],
