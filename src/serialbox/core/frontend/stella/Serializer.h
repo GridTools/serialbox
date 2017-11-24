@@ -15,6 +15,11 @@
 #ifndef SERIALBOX_CORE_FRONTEND_STELLA_SERIALIZER_H
 #define SERIALBOX_CORE_FRONTEND_STELLA_SERIALIZER_H
 
+#ifdef SERIALBOX_HAS_STELLA
+#include "DataFieldStorageFormat.h"
+#include "DataFieldStorageStrides.h"
+#endif
+
 #include "serialbox/core/frontend/stella/DataFieldInfo.h"
 #include "serialbox/core/frontend/stella/ForwardDecl.h"
 #include "serialbox/core/frontend/stella/KBoundary.h"
@@ -168,22 +173,6 @@ public:
   }
   /// @}
 
-  /// \brief Initializes the field according to the information present in the serializer
-  ///
-  /// The provided field will be initialized with the provided name and with the ize and boundary
-  /// present in the serializer.
-  ///
-  /// This method requires the STELLA headers (i.e expects `IJKSize` and `KBoundary` to be present
-  /// in global namespace) and thus requires you to define:
-  /// \code
-  ///   #define SERIALBOX_HAS_STELLA 1
-  /// \endcode
-  ///
-  /// \throw SerializationException The field is not registered or the field type is incompatible
-  ///                               with the ij boundary specified in the serializer
-  template <typename TDataField>
-  void InitializeField(const std::string& fieldname, TDataField& field, bool hasStorageInI,
-                       bool hasStorageInJ) const;
 
   /// \brief Gives access to the registered fields
   ///
@@ -227,6 +216,7 @@ public:
   void WriteField(const std::string& fieldName, const Savepoint& savepoint, const void* pData,
                   int iStride, int jStride, int kStride, int lStride);
 
+#ifdef SERIALBOX_HAS_STELLA
   /// \brief Serializes a data field
   ///
   /// This overload of the method works only with STELLA data types. This will automatically
@@ -246,8 +236,8 @@ public:
   ///                               fields with same name and different properties or the field is
   ///                               already saved at the savepoint
   template <typename TDataField>
-  void WriteField(std::string name, const TDataField& field, const Savepoint& savepoint,
-                  const int iStride, const int jStride, const int kStride);
+  void WriteField(std::string name, const TDataField& field, const Savepoint& savepoint);
+#endif
 
   //===----------------------------------------------------------------------------------------===//
   //     Reading
@@ -274,6 +264,7 @@ public:
   void ReadField(const std::string& fieldName, const Savepoint& savepoint, void* pData, int iStride,
                  int jStride, int kStride, int lStride, bool alsoPrevious = false) const;
 
+#ifdef SERIALBOX_HAS_STELLA
   /// \brief Deserializes a data field
   ///
   /// This overload of the method works only with STELLA data types. If the provided name is empty
@@ -293,8 +284,8 @@ public:
   ///                       valid entry is found [IGNORED]
   template <typename TDataField>
   void ReadField(std::string name, TDataField& field, const Savepoint& savepoint,
-                 bool hasStorageInI, bool hasStorageInJ, const int iStride, const int jStride,
-                 const int kStride, bool alsoPrevious = false) const;
+                 bool alsoPrevious = false) const;
+#endif
 
   /// \brief Convert to string
   std::string ToString() const;
@@ -330,9 +321,10 @@ private:
 //     Implementation of template methods
 //===------------------------------------------------------------------------------------------===//
 
+#ifdef SERIALBOX_HAS_STELLA
 template <typename TDataField>
-void Serializer::WriteField(std::string name, const TDataField& field, const Savepoint& savepoint,
-                            const int iStride, const int jStride, const int kStride) {
+void Serializer::WriteField(std::string name, const TDataField& field, const Savepoint& savepoint)
+{
 
   if(name.empty())
     name = field.name();
@@ -349,6 +341,12 @@ void Serializer::WriteField(std::string name, const TDataField& field, const Sav
 
   const int bytesPerElement = sizeof(typename TDataField::ValueType);
 
+  DataFieldStorageStrides<typename TDataField::StorageFormat::StorageOrder> strides;
+  strides.Init(field.storage().paddedSize());
+  const int iStride = strides.ComputeStride(1, 0, 0) * bytesPerElement;
+  const int jStride = strides.ComputeStride(0, 1, 0) * bytesPerElement;
+  const int kStride = strides.ComputeStride(0, 0, 1) * bytesPerElement;
+
   // Register field
   this->RegisterField(name, type_name<typename TDataField::ValueType>(), bytesPerElement,
                       size.iSize(), size.jSize(), size.kSize(), 1, -boundary.iMinusOffset(),
@@ -358,10 +356,11 @@ void Serializer::WriteField(std::string name, const TDataField& field, const Sav
   this->WriteField(name, savepoint, field.storage().pStorageBase(), iStride, jStride, kStride, 0);
 }
 
+
 template <typename TDataField>
 void Serializer::ReadField(std::string name, TDataField& field, const Savepoint& savepoint,
-                           bool hasStorageInI, bool hasStorageInJ, const int iStride,
-                           const int jStride, const int kStride, bool alsoPrevious) const {
+                 bool alsoPrevious) const
+{
   typedef typename TDataField::ValueType ValueType;
 
   if(name.empty())
@@ -369,6 +368,7 @@ void Serializer::ReadField(std::string name, TDataField& field, const Savepoint&
 
   // Get info of serialized field
   const DataFieldInfo& info = FindField(name);
+  const int bytesPerElement = sizeof(typename TDataField::ValueType);
 
   // Check size and boundaries
   IJKSize size;
@@ -379,6 +379,12 @@ void Serializer::ReadField(std::string name, TDataField& field, const Savepoint&
   boundary.Init(field.boundary().iMinusOffset(), field.boundary().iPlusOffset(),
                 field.boundary().jMinusOffset(), field.boundary().jPlusOffset(),
                 field.boundary().kMinusOffset(), field.boundary().kPlusOffset());
+
+  DataFieldStorageStrides<typename TDataField::StorageFormat::StorageOrder> strides;
+  strides.Init(field.storage().paddedSize());
+  const int iStride = strides.ComputeStride(1, 0, 0) * bytesPerElement;
+  const int jStride = strides.ComputeStride(0, 1, 0) * bytesPerElement;
+  const int kStride = strides.ComputeStride(0, 0, 1) * bytesPerElement;
 
   if((info.iSize() != size.iSize()) || (info.jSize() != size.jSize()) ||
      (info.kSize() != size.kSize()) || (info.lSize() != 1)) {
@@ -394,6 +400,10 @@ void Serializer::ReadField(std::string name, TDataField& field, const Savepoint&
     exception.Init(errorstr.str());
     throw exception;
   }
+
+  // Check whether we have storage in I and J
+  const bool hasStorageInI  = has_storage_in<typename TDataField::StorageFormat, cDimI>::value;
+  const bool hasStorageInJ = has_storage_in<typename TDataField::StorageFormat, cDimJ>::value;
 
   // Boundaries are usually set to 3 even if there is storage in that direction
   // Correct this interesting yet totally nonsense behavior
@@ -435,47 +445,8 @@ void Serializer::ReadField(std::string name, TDataField& field, const Savepoint&
   // Perform the read
   this->ReadField(name, savepoint, data, iStride, jStride, kStride, 0, alsoPrevious);
 }
-
-#ifdef SERIALBOX_HAS_STELLA
-
-template <typename TDataField>
-void Serializer::InitializeField(const std::string& fieldname, TDataField& field,
-                                 bool hasStorageInI, bool hasStorageInJ) const {
-  // Get info (will throw if does not exist)
-  const serialbox::stella::DataFieldInfo& info = FindField(fieldname);
-
-  const int ct_iminus = TDataField::StorageFormat::IJBoundary::IMinusOffset::value;
-  const int ct_iplus = TDataField::StorageFormat::IJBoundary::IPlusOffset::value;
-  const int ct_jminus = TDataField::StorageFormat::IJBoundary::JMinusOffset::value;
-  const int ct_jplus = TDataField::StorageFormat::IJBoundary::JPlusOffset::value;
-
-  const bool ok_i = (info.iMinusHaloSize() == (hasStorageInI ? -ct_iminus : 0)) &&
-                    (info.iPlusHaloSize() == (hasStorageInI ? ct_iplus : 0));
-  const bool ok_j = (info.jMinusHaloSize() == (hasStorageInJ ? -ct_jminus : 0)) &&
-                    (info.jPlusHaloSize() == (hasStorageInJ ? ct_jplus : 0));
-
-  // Check IJ boundary
-  if(!(ok_i && ok_j)) {
-    std::stringstream errorstr;
-    errorstr << "Error: the requested field " << fieldname << " has a different ij-boundary than"
-             << " what the provided data field object supports.\n";
-    serialbox::stella::SerializationException exception;
-    exception.Init(errorstr.str());
-    throw exception;
-  }
-
-  // Put together size and k boundary (Note that IJKSize and KBoundary come from STELLA!)
-  ::IJKSize calculationDomain;
-  calculationDomain.Init(info.calculationDomain().iSize(), info.calculationDomain().jSize(),
-                         info.calculationDomain().kSize());
-  ::KBoundary kBoundary;
-  kBoundary.Init(info.kMinusHaloSize(), info.kPlusHaloSize());
-
-  // Initialize field
-  field.Init(fieldname, calculationDomain, kBoundary);
-}
-
 #endif
+
 
 } // namespace stella
 
