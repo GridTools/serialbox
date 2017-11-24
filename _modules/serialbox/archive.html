@@ -1,34 +1,32 @@
 
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>serialbox.archive &mdash; Serialbox 2.0.1 documentation</title>
-    
+    <title>serialbox.archive &#8212; Serialbox 2.0.1 documentation</title>
     <link rel="stylesheet" href="../../_static/serialbox-theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
         VERSION:     '2.0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
-    <link rel="top" title="Serialbox 2.0.1 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" /> 
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
   </head>
-  <body role="document">
+  <body>
 <div class="logo">
   <a href="../../index.html">
     <img src="../../_static/logo.png"
@@ -41,8 +39,8 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.0.1 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>
 
@@ -51,14 +49,11 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -70,7 +65,7 @@
           <div class="body" role="main">
             
   <h1>Source code for serialbox.archive</h1><div class="highlight"><pre>
-<span class="ch">#!/usr/bin/python3</span>
+<span></span><span class="ch">#!/usr/bin/python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1">##===-----------------------------------------------------------------------------*- Python -*-===##</span>
 <span class="c1">##</span>
@@ -85,17 +80,17 @@
 <span class="c1">##</span>
 <span class="c1">##===------------------------------------------------------------------------------------------===##</span>
 
-<span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">POINTER</span><span class="p">,</span> <span class="n">c_char_p</span>
+<span class="kn">from</span> <span class="nn">ctypes</span> <span class="k">import</span> <span class="n">POINTER</span><span class="p">,</span> <span class="n">c_char_p</span>
 
-<span class="kn">from</span> <span class="nn">.common</span> <span class="kn">import</span> <span class="n">get_library</span><span class="p">,</span> <span class="n">extract_string</span>
-<span class="kn">from</span> <span class="nn">.error</span> <span class="kn">import</span> <span class="n">invoke</span>
-<span class="kn">from</span> <span class="nn">.metainfomap</span> <span class="kn">import</span> <span class="n">ArrayOfStringImpl</span>
+<span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">get_library</span><span class="p">,</span> <span class="n">extract_string</span>
+<span class="kn">from</span> <span class="nn">.error</span> <span class="k">import</span> <span class="n">invoke</span>
+<span class="kn">from</span> <span class="nn">.metainfomap</span> <span class="k">import</span> <span class="n">ArrayOfStringImpl</span>
 
 <span class="n">lib</span> <span class="o">=</span> <span class="n">get_library</span><span class="p">()</span>
 
 
 <span class="k">def</span> <span class="nf">register_library</span><span class="p">(</span><span class="n">library</span><span class="p">):</span>
-    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArchiveGetRegisteredArchives</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxArchiveGetRegisteredArchives</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">library</span><span class="o">.</span><span class="n">serialboxArchiveGetRegisteredArchives</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">ArrayOfStringImpl</span><span class="p">)</span>
 
     <span class="n">library</span><span class="o">.</span><span class="n">serialboxArchiveGetArchiveFromExtension</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_char_p</span><span class="p">]</span>
@@ -105,8 +100,8 @@
     <span class="sd">&quot;&quot;&quot;Provide information about the registered archives</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="Archive.registered_archives"><a class="viewcode-back" href="../../Python.html#serialbox.Archive.registered_archives">[docs]</a>    <span class="k">def</span> <span class="nf">registered_archives</span><span class="p">():</span>
+<div class="viewcode-block" id="Archive.registered_archives"><a class="viewcode-back" href="../../Python.html#serialbox.Archive.registered_archives">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">registered_archives</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot;Get a list of strings of the registered archives.</span>
 
 <span class="sd">        :return: Registered archives</span>
@@ -120,8 +115,8 @@
         <span class="k">return</span> <span class="n">list_array</span></div>
 
 
-    <span class="nd">@staticmethod</span>
-<div class="viewcode-block" id="Archive.archive_from_extension"><a class="viewcode-back" href="../../Python.html#serialbox.Archive.archive_from_extension">[docs]</a>    <span class="k">def</span> <span class="nf">archive_from_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="Archive.archive_from_extension"><a class="viewcode-back" href="../../Python.html#serialbox.Archive.archive_from_extension">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">archive_from_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Deduce the name of the `archive` according to the extension of the `filename`.</span>
 
 <span class="sd">        Only the registered archives are taken into account!</span>
@@ -157,13 +152,13 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.0.1 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Fabian Thüring.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+        &#169; Copyright 2016, Fabian Thüring.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
     </div>
   </body>
 </html>

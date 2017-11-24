@@ -1,34 +1,32 @@
 
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>serialbox.savepoint &mdash; Serialbox 2.0.1 documentation</title>
-    
+    <title>serialbox.savepoint &#8212; Serialbox 2.0.1 documentation</title>
     <link rel="stylesheet" href="../../_static/serialbox-theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
         VERSION:     '2.0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
-    <link rel="top" title="Serialbox 2.0.1 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" /> 
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
   </head>
-  <body role="document">
+  <body>
 <div class="logo">
   <a href="../../index.html">
     <img src="../../_static/logo.png"
@@ -41,8 +39,8 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.0.1 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>
 
@@ -51,14 +49,11 @@
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -70,7 +65,7 @@
           <div class="body" role="main">
             
   <h1>Source code for serialbox.savepoint</h1><div class="highlight"><pre>
-<span class="ch">#!/usr/bin/python3</span>
+<span></span><span class="ch">#!/usr/bin/python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1">##===-----------------------------------------------------------------------------*- Python -*-===##</span>
 <span class="c1">##</span>
@@ -85,14 +80,14 @@
 <span class="c1">##</span>
 <span class="c1">##===------------------------------------------------------------------------------------------===##</span>
 
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span>
-<span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_void_p</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">,</span> <span class="n">c_size_t</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span>
+<span class="kn">from</span> <span class="nn">ctypes</span> <span class="k">import</span> <span class="n">c_char_p</span><span class="p">,</span> <span class="n">c_void_p</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">,</span> <span class="n">c_size_t</span>
 
-<span class="kn">from</span> <span class="nn">.common</span> <span class="kn">import</span> <span class="n">get_library</span><span class="p">,</span> <span class="n">extract_string</span>
-<span class="kn">from</span> <span class="nn">.error</span> <span class="kn">import</span> <span class="n">invoke</span><span class="p">,</span> <span class="n">SerialboxError</span>
-<span class="kn">from</span> <span class="nn">.metainfomap</span> <span class="kn">import</span> <span class="n">MetainfoMap</span><span class="p">,</span> <span class="n">MetainfoImpl</span>
-<span class="kn">from</span> <span class="nn">.type</span> <span class="kn">import</span> <span class="n">StringTypes</span>
-<span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="n">levenshtein</span>
+<span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">get_library</span><span class="p">,</span> <span class="n">extract_string</span>
+<span class="kn">from</span> <span class="nn">.error</span> <span class="k">import</span> <span class="n">invoke</span><span class="p">,</span> <span class="n">SerialboxError</span>
+<span class="kn">from</span> <span class="nn">.metainfomap</span> <span class="k">import</span> <span class="n">MetainfoMap</span><span class="p">,</span> <span class="n">MetainfoImpl</span>
+<span class="kn">from</span> <span class="nn">.type</span> <span class="k">import</span> <span class="n">StringTypes</span>
+<span class="kn">from</span> <span class="nn">.util</span> <span class="k">import</span> <span class="n">levenshtein</span>
 
 <span class="n">lib</span> <span class="o">=</span> <span class="n">get_library</span><span class="p">()</span>
 
@@ -110,7 +105,7 @@
     <span class="n">library</span><span class="o">.</span><span class="n">serialboxSavepointCreateFromSavepoint</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">POINTER</span><span class="p">(</span><span class="n">SavepointImpl</span><span class="p">)</span>
 
     <span class="n">library</span><span class="o">.</span><span class="n">serialboxSavepointDestroy</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">SavepointImpl</span><span class="p">)]</span>
-    <span class="n">library</span><span class="o">.</span><span class="n">serialboxSavepointDestroy</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">library</span><span class="o">.</span><span class="n">serialboxSavepointDestroy</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">library</span><span class="o">.</span><span class="n">serialboxSavepointGetName</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">POINTER</span><span class="p">(</span><span class="n">SavepointImpl</span><span class="p">)]</span>
     <span class="n">library</span><span class="o">.</span><span class="n">serialboxSavepointGetName</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_char_p</span>
@@ -150,7 +145,7 @@
 <span class="sd">        &gt;&gt;&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Savepoint.__init__"><a class="viewcode-back" href="../../Python.html#serialbox.Savepoint.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">metainfo</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">impl</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Savepoint.__init__"><a class="viewcode-back" href="../../Python.html#serialbox.Savepoint.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">metainfo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">impl</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize the Savepoint.</span>
 
 <span class="sd">        This method prepares the Savepoint for usage and gives a name, which is the only required</span>
@@ -258,7 +253,7 @@
 <span class="sd">        :return: `True` if self != other, `False` otherwise</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">impl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__savepoint</span>
@@ -267,7 +262,7 @@
         <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxSavepointDestroy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__savepoint</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;&lt;Savepoint {0}&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__str__</span><span class="p">())</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;Savepoint </span><span class="si">{0}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxSavepointToString</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__savepoint</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
@@ -329,7 +324,7 @@
         <span class="k">if</span> <span class="n">num_savepoints</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">errstr</span> <span class="o">=</span> <span class="s2">&quot;Savepoint is ambiguous. Candidates are:</span><span class="se">\n</span><span class="s2">&quot;</span>
             <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">savepoints</span><span class="p">():</span>
-                <span class="n">errstr</span> <span class="o">+=</span> <span class="s2">&quot;  {0}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sp</span><span class="p">))</span>
+                <span class="n">errstr</span> <span class="o">+=</span> <span class="s2">&quot;  </span><span class="si">{0}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sp</span><span class="p">))</span>
             <span class="k">raise</span> <span class="n">SerialboxError</span><span class="p">(</span><span class="n">errstr</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">SerialboxError</span><span class="p">(</span><span class="s2">&quot;SavepointCollection is empty&quot;</span><span class="p">)</span></div>
@@ -337,11 +332,11 @@
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;[&quot;</span>
         <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">savepoints</span><span class="p">():</span>
-            <span class="n">s</span> <span class="o">+=</span> <span class="n">sp</span><span class="o">.</span><span class="n">__str__</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="n">sp</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span>
         <span class="k">return</span> <span class="n">s</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;&lt;SavepointCollection {0}&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__str__</span><span class="p">())</span></div>
+        <span class="k">return</span> <span class="s1">&#39;&lt;SavepointCollection </span><span class="si">{0}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">())</span></div>
 
 
 <span class="k">def</span> <span class="nf">transformed_equal</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -370,7 +365,7 @@
     <span class="k">def</span> <span class="nf">savepoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__savepoint_list</span>
 
-    <span class="k">def</span> <span class="nf">__make_savepoint_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">match_exact</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__make_savepoint_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">match_exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">savepoint_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__savepoint_list</span><span class="p">:</span>
             <span class="n">sp_name</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">name</span>
@@ -393,7 +388,7 @@
 
             <span class="k">raise</span> <span class="n">SerialboxError</span><span class="p">(</span><span class="n">errstr</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">SavepointNamedCollection</span><span class="p">(</span><span class="n">savepoint_list</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">SavepointNamedCollection</span><span class="p">(</span><span class="n">savepoint_list</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Access a collection of savepoints identified by `name`</span>
@@ -403,7 +398,7 @@
 <span class="sd">        :return: Collection of savepoints sharing the same `name`</span>
 <span class="sd">        :rtype: SavepointNamedCollection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__make_savepoint_collection</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__make_savepoint_collection</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Access a collection of savepoints identified by `index`</span>
@@ -418,7 +413,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__savepoint_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__make_savepoint_collection</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__make_savepoint_collection</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">SavepointNamedCollection</span><span class="p">(</span><span class="n">SavepointCollection</span><span class="p">):</span>
@@ -432,7 +427,7 @@
     <span class="k">def</span> <span class="nf">savepoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__savepoint_list</span>
 
-    <span class="k">def</span> <span class="nf">__make_named_savepoint_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">match_exact</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__make_named_savepoint_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">match_exact</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="n">savepoint_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__savepoint_list</span><span class="p">:</span>
@@ -472,7 +467,7 @@
         <span class="k">return</span> <span class="n">SavepointNamedCollection</span><span class="p">(</span><span class="n">savepoint_list</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__make_named_savepoint_collection</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__make_named_savepoint_collection</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="c1">#</span>
@@ -494,16 +489,16 @@
                 <span class="n">errstr</span> <span class="o">=</span> <span class="s2">&quot;no savepoint named &#39;</span><span class="si">%s</span><span class="s2">&#39; has meta-info: {</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2">: </span><span class="si">%s</span><span class="s2">}. Candidates are:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">__savepoint_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prev_key</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">savepoints</span><span class="p">():</span>
-                    <span class="n">errstr</span> <span class="o">+=</span> <span class="s2">&quot;  {0}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sp</span><span class="p">))</span>
+                    <span class="n">errstr</span> <span class="o">+=</span> <span class="s2">&quot;  </span><span class="si">{0}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sp</span><span class="p">))</span>
                 <span class="k">raise</span> <span class="n">SerialboxError</span><span class="p">(</span><span class="n">errstr</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">SavepointNamedCollection</span><span class="p">(</span><span class="n">savepoint_list</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">SavepointNamedCollection</span><span class="p">(</span><span class="n">savepoint_list</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="ow">in</span> <span class="n">StringTypes</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">SerialboxError</span><span class="p">(</span><span class="s2">&quot;expected string in query for meta-info of Savepoint &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span>
                                      <span class="bp">self</span><span class="o">.</span><span class="n">__savepoint_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__make_named_savepoint_collection</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__make_named_savepoint_collection</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
 
 <span class="n">register_library</span><span class="p">(</span><span class="n">lib</span><span class="p">)</span>
@@ -520,13 +515,13 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.0.1 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2016, Fabian Thüring.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+        &#169; Copyright 2016, Fabian Thüring.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
     </div>
   </body>
 </html>
