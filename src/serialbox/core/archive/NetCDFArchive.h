@@ -73,13 +73,13 @@ public:
 
   virtual OpenModeKind mode() const override { return mode_; }
 
-  virtual const std::string& directory() const override { return directory_.string(); }
+  virtual std::string directory() const override { return directory_.string(); }
 
-  virtual const std::string& prefix() const override { return prefix_; }
+  virtual std::string prefix() const override { return prefix_; }
 
-  virtual const std::string& name() const override { return NetCDFArchive::Name; }
+  virtual std::string name() const override { return NetCDFArchive::Name; }
 
-  virtual const std::string& metaDataFile() const override { return metaDatafile_.string(); }
+  virtual std::string metaDataFile() const override { return metaDatafile_.string(); }
 
   virtual std::ostream& toStream(std::ostream& stream) const override;
 
