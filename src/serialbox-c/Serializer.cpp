@@ -257,10 +257,8 @@ int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* 
                                  "type '%s' expected '%i'",
                                  bytesPerElement, typeName, serialbox::TypeUtil::sizeOf(typeID));
 
-    int rank =
-        (iSize > 0 ? 1 : 0) + (jSize > 0 ? 1 : 0) + (kSize > 0 ? 1 : 0) + (lSize > 0 ? 1 : 0);
-
     auto dims = ::make_dims(iSize, jSize, kSize, lSize);
+    int rank = dims.size();
 
     MetainfoMap metaInfo;
     metaInfo.insert("__name", name);

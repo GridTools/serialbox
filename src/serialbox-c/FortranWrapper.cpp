@@ -27,9 +27,12 @@ using serialbox::TypeID;
 
 namespace {
 void make_4D(std::vector<int>& v) {
-  while(v.size() < 4) {
-    v.push_back(0);
-  }
+  if(v.size() > 4)
+    throw Exception(
+        "The FortranWrapper supports up to 4 dimensions (field with %i dimensions was passed).",
+        v.size());
+  else
+    v.resize(4, 0);
 }
 
 std::vector<int> make_strides(int istride, int jstride, int kstride, int lstride) {
@@ -169,18 +172,14 @@ void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const 
 
   const Serializer* ser = toConstSerializer(static_cast<const serialboxSerializer_t*>(serializer));
 
-  try {
-    auto dims = ser->getFieldMetainfoImplOf(name).dims();
+  auto dims = ser->getFieldMetainfoImplOf(name).dims();
 
-    ::make_4D(dims);
+  ::make_4D(dims);
 
-    *isize = dims[0];
-    *jsize = dims[1];
-    *ksize = dims[2];
-    *lsize = dims[3];
-  } catch(std::exception& e) {
-    serialboxFatalError(e.what());
-  }
+  *isize = dims[0];
+  *jsize = dims[1];
+  *ksize = dims[2];
+  *lsize = dims[3];
 }
 
 void serialboxFortranSerializerGetFieldHalos(const void* serializer, const char* name,
