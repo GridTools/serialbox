@@ -354,7 +354,8 @@ find_library( STD_FILESYSTEM_LIB NAMES stdc++fs PATHS
     /usr/lib/x86_64-linux-gnu/
     /usr/local/lib64/
     /usr/lib64/
-    /usr/lib/)
+    /usr/lib/
+    ENV LD_LIBRARY_PATH)
 if( STD_FILESYSTEM_LIB )
   message(STATUS "Using std::experimental::filesystem (no dependency on compiled boost libs)")
   set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} 
