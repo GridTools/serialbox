@@ -224,6 +224,7 @@ cmake                                                                          \
  -DSERIALBOX_TESTING_STELLA:BOOL=${SERIALBOX_TESTING_STELLA}                   \
  -DSERIALBOX_TESTING_FORTRAN:BOOL=${SERIALBOX_TESTING_FORTRAN}                 \
  -DSERIALBOX_USE_NETCDF:BOOL=${SERIALBOX_USE_NETCDF}                           \
+ -DSERIALBOX_LOGGING=OFF                                                       \
  ../
 
 # Run make
