@@ -22,7 +22,7 @@
 #include "serialbox/core/archive/BinaryArchive.h"
 #include "serialbox/core/hash/HashFactory.h"
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
+#include "Filesystem.h"
 #include <fstream>
 #include <memory>
 #include <type_traits>
@@ -54,10 +54,12 @@ SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
   LOG(info) << "Creating Serializer (mode = " << mode_ << ") from directory " << directory_;
 
   // Validate integrity of directory (non-existent directories are created by the archive)
+
   try {
-    if(mode_ == OpenModeKind::Read && !boost::filesystem::exists(directory_))
+    if(mode_ == OpenModeKind::Read && !SB_FILESYSTEM::exists(directory_))
+      //    if(mode_ == OpenModeKind::Read && !SB_FILESYSTEM::exists(directory_))
       throw Exception("cannot create Serializer: directory %s does not exist", directory_);
-  } catch(boost::filesystem::filesystem_error& e) {
+  } catch(SB_FILESYSTEM::filesystem_error& e) {
     throw Exception("filesystem error: %s", e.what());
   }
 
@@ -274,7 +276,7 @@ void SerializerImpl::constructMetaDataFromJson() {
   LOG(info) << "Constructing Serializer from MetaData ... ";
 
   // Try open meta-data file
-  if(!boost::filesystem::exists(metaDataFile_)) {
+  if(!SB_FILESYSTEM::exists(metaDataFile_)) {
     if(mode_ != OpenModeKind::Read)
       return;
     else
@@ -399,7 +401,7 @@ void SerializerImpl::constructArchive(const std::string& archiveName) {
 //===------------------------------------------------------------------------------------------===//
 
 bool SerializerImpl::upgradeMetaData() {
-  boost::filesystem::path oldMetaDataFile = directory_ / (prefix_ + ".json");
+  SB_FILESYSTEM::path oldMetaDataFile = directory_ / (prefix_ + ".json");
 
   //
   // Check if upgrade is necessary
@@ -407,18 +409,17 @@ bool SerializerImpl::upgradeMetaData() {
 
   try {
     // Check if prefix.json exists
-    if(!boost::filesystem::exists(oldMetaDataFile))
+    if(!SB_FILESYSTEM::exists(oldMetaDataFile))
       return false;
 
     LOG(info) << "Detected old serialbox meta-data " << oldMetaDataFile;
 
     // Check if we already upgraded this archive
-    if(boost::filesystem::exists(metaDataFile_) &&
-       (boost::filesystem::last_write_time(oldMetaDataFile) <
-        boost::filesystem::last_write_time(metaDataFile_))) {
+    if(SB_FILESYSTEM::exists(metaDataFile_) && (SB_FILESYSTEM::last_write_time(oldMetaDataFile) <
+                                                SB_FILESYSTEM::last_write_time(metaDataFile_))) {
       return false;
     }
-  } catch(boost::filesystem::filesystem_error& e) {
+  } catch(SB_FILESYSTEM::filesystem_error& e) {
     throw Exception("filesystem error: %s", e.what());
   }
 

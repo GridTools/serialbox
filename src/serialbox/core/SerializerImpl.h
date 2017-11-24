@@ -21,7 +21,7 @@
 #include "serialbox/core/SavepointVector.h"
 #include "serialbox/core/StorageView.h"
 #include "serialbox/core/archive/Archive.h"
-#include <boost/filesystem.hpp>
+#include "Filesystem.h"
 #include <iosfwd>
 
 namespace serialbox {
@@ -102,16 +102,16 @@ public:
   OpenModeKind mode() const noexcept { return mode_; }
 
   /// \brief Access the directory in which the Serializer and Archive are opened
-  const boost::filesystem::path& directory() const noexcept { return directory_; }
+  const SB_FILESYSTEM::path& directory() const noexcept { return directory_; }
 
   /// \brief Access prefix of all filenames
-  const std::string& prefix() const noexcept { return prefix_; }
+  std::string prefix() const noexcept { return prefix_; }
 
   /// \brief Name of the archive in use
-  const std::string& archiveName() const noexcept { return archive_->name(); }
+  std::string archiveName() const noexcept { return archive_->name(); }
 
   /// \brief Access the path to the meta-data file
-  const boost::filesystem::path& metaDataFile() const noexcept { return metaDataFile_; }
+  const SB_FILESYSTEM::path& metaDataFile() const noexcept { return metaDataFile_; }
 
   /// \brief Drop all field and savepoint meta-data.
   ///
@@ -195,8 +195,8 @@ public:
   /// \throw Exception  Field with name `name` does not exist in FieldMap
   template <class StringType, class KeyType, class ValueType>
   bool addFieldMetainfoImpl(StringType&& name, KeyType&& key, ValueType&& value) {
-    return fieldMap_->getMetainfoOf(name).insert(std::forward<KeyType>(key),
-                                                 std::forward<ValueType>(value));
+    return fieldMap_->getMetainfoOf(name)
+        .insert(std::forward<KeyType>(key), std::forward<ValueType>(value));
   }
 
   /// \brief Query FieldMap for field with `name` and return a refrence to FieldMetainfoImpl
@@ -427,8 +427,8 @@ protected:
 
 protected:
   OpenModeKind mode_;
-  boost::filesystem::path directory_;
-  boost::filesystem::path metaDataFile_;
+  SB_FILESYSTEM::path directory_;
+  SB_FILESYSTEM::path metaDataFile_;
   std::string prefix_;
 
   std::shared_ptr<SavepointVector> savepointVector_;

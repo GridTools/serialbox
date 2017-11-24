@@ -15,6 +15,7 @@
 #include "utility/CInterfaceTestBase.h"
 #include "serialbox-c/Archive.h"
 #include <algorithm>
+#include <cstring>
 #include <gtest/gtest.h>
 
 namespace {

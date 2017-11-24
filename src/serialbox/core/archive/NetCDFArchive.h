@@ -20,7 +20,7 @@
 
 #include "serialbox/core/Json.h"
 #include "serialbox/core/archive/Archive.h"
-#include <boost/filesystem.hpp>
+#include "../Filesystem.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -118,9 +118,9 @@ public:
 
 private:
   OpenModeKind mode_;
-  boost::filesystem::path directory_;
+  SB_FILESYSTEM::path directory_;
   std::string prefix_;
-  boost::filesystem::path metaDatafile_;
+  SB_FILESYSTEM::path metaDatafile_;
 
   std::unordered_map<std::string, int> fieldMap_;
   json::json json_;

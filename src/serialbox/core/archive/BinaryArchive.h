@@ -19,7 +19,7 @@
 #include "serialbox/core/Json.h"
 #include "serialbox/core/archive/Archive.h"
 #include "serialbox/core/hash/Hash.h"
-#include <boost/filesystem.hpp>
+#include "../Filesystem.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -95,13 +95,13 @@ public:
 
   virtual OpenModeKind mode() const override { return mode_; }
 
-  virtual const std::string& directory() const override { return directory_.string(); }
+  virtual std::string directory() const override { return directory_.string(); }
 
-  virtual const std::string& prefix() const override { return prefix_; }
+  virtual std::string prefix() const override { return prefix_; }
 
-  virtual const std::string& name() const override { return BinaryArchive::Name; }
+  virtual std::string name() const override { return BinaryArchive::Name; }
 
-  virtual const std::string& metaDataFile() const override { return metaDatafile_.string(); }
+  virtual std::string metaDataFile() const override { return metaDatafile_.string(); }
 
   virtual std::ostream& toStream(std::ostream& stream) const override;
 
@@ -149,10 +149,10 @@ public:
 
 private:
   OpenModeKind mode_;
-  boost::filesystem::path directory_;
+  SB_FILESYSTEM::path directory_;
   std::string prefix_;
 
-  boost::filesystem::path metaDatafile_;
+  SB_FILESYSTEM::path metaDatafile_;
   std::unique_ptr<Hash> hash_;
   json::json json_;
   FieldTable fieldTable_;

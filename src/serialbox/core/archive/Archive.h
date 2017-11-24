@@ -56,19 +56,19 @@ public:
   virtual void updateMetaData() = 0;
 
   /// \brief Name of the archive
-  virtual const std::string& name() const = 0;
+  virtual std::string name() const = 0;
 
   /// \brief Open-policy of the archive
   virtual OpenModeKind mode() const = 0;
 
   /// \brief Directory to write/read files
-  virtual const std::string& directory() const = 0;
+  virtual std::string directory() const = 0;
 
   /// \brief Prefix of all files
-  virtual const std::string& prefix() const = 0;
+  virtual std::string prefix() const = 0;
 
   /// \brief Full file path to the meta-data file
-  virtual const std::string& metaDataFile() const = 0;
+  virtual std::string metaDataFile() const = 0;
 
   /// \brief Clear the archive i.e remove all data from disk and reset the internal data-structures
   virtual void clear() = 0;

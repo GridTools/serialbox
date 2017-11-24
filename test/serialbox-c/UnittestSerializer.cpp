@@ -57,7 +57,7 @@ TEST_F(CSerializerUtilityTest, Construction) {
         Write, (directory->path() / "dir-is-created-from-write").c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-    ASSERT_TRUE(boost::filesystem::exists(directory->path() / "dir-is-created-from-write"));
+    ASSERT_TRUE(SB_FILESYSTEM::exists(directory->path() / "dir-is-created-from-write"));
 
     serialboxSerializerUpdateMetaData(ser);
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
@@ -85,8 +85,8 @@ TEST_F(CSerializerUtilityTest, Construction) {
 
   {
     // MetaData-prefix.json does not exist -> Exception
-    boost::filesystem::remove((directory->path() / "dir-is-created-from-write") /
-                              "MetaData-Field.json");
+    SB_FILESYSTEM::remove((directory->path() / "dir-is-created-from-write") /
+                          "MetaData-Field.json");
 
     serialboxSerializer_t* ser = serialboxSerializerCreate(
         Read, (directory->path() / "dir-is-created-from-write").c_str(), "Field", "Binary");
@@ -110,7 +110,7 @@ TEST_F(CSerializerUtilityTest, Construction) {
     serialboxSerializer_t* ser = serialboxSerializerCreate(
         Append, (directory->path() / "dir-is-created-from-append").c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-    ASSERT_TRUE(boost::filesystem::exists(directory->path() / "dir-is-created-from-append"));
+    ASSERT_TRUE(SB_FILESYSTEM::exists(directory->path() / "dir-is-created-from-append"));
     serialboxSerializerDestroy(ser);
   }
 }
@@ -283,15 +283,13 @@ TEST_F(CSerializerUtilityTest, RegisterFields) {
   serialboxFieldMetainfoDestroy(info);
   serialboxFieldMetainfoDestroy(infoField);
 
-
   char *storedName, *elementType;
   int bytesPerElement, rank, iSize, jSize, kSize, lSize;
   int iMinusHalo, iPlusHalo, jMinusHalo, jPlusHalo, kMinusHalo, kPlusHalo, lMinusHalo, lPlusHalo;
-  serialboxSerializerGetFieldMetainfo2(ser, "field2",
-		  	  	  	  	  	  	  	   &storedName, &elementType, &bytesPerElement, &rank,
-									   &iSize, &jSize, &kSize, &lSize,
-									   &iMinusHalo, &iPlusHalo, &jMinusHalo, &jPlusHalo,
-									   &kMinusHalo, &kPlusHalo, &lMinusHalo, &lPlusHalo);
+  serialboxSerializerGetFieldMetainfo2(ser, "field2", &storedName, &elementType, &bytesPerElement,
+                                       &rank, &iSize, &jSize, &kSize, &lSize, &iMinusHalo,
+                                       &iPlusHalo, &jMinusHalo, &jPlusHalo, &kMinusHalo, &kPlusHalo,
+                                       &lMinusHalo, &lPlusHalo);
   EXPECT_STREQ(storedName, "field2");
   EXPECT_STREQ(elementType, "int");
   EXPECT_EQ(bytesPerElement, 4);
@@ -604,26 +602,24 @@ TYPED_TEST(CSerializerReadWriteTest, SliceWriteAndRead) {
 
     {
       auto sv = storage_1d_output.toStorageView();
-      
+
       int slice[] = {0, -1, 1};
       serialboxSerializerReadSliced(ser_read, "1d", sp, (void*)storage_1d_output.originPtr(),
                                     storage_1d_output.strides().data(),
-                                    storage_1d_output.strides().size(),
-                                    slice);
+                                    storage_1d_output.strides().size(), slice);
       ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
       ASSERT_TRUE(Storage::verify(storage_1d_input, storage_1d_output));
     }
 
     storage_1d_output.forEach(Storage::random);
-    
+
     {
       auto sv = storage_1d_output.toStorageView();
-      
+
       int slice[] = {0, -1, 2};
       serialboxSerializerReadSliced(ser_read, "1d", sp, (void*)storage_1d_output.originPtr(),
                                     storage_1d_output.strides().data(),
-                                    storage_1d_output.strides().size(),
-                                    slice);
+                                    storage_1d_output.strides().size(), slice);
       ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
       ASSERT_EQ(storage_1d_input(0), storage_1d_output(0));
       ASSERT_EQ(storage_1d_input(2), storage_1d_output(2));

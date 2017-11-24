@@ -33,29 +33,29 @@ struct Size {
 struct BenchmarkResult {
   std::string name;
   std::vector<std::pair<Size, double>> timingsWrite;
-  std::vector<std::pair<Size, double>> timingsRead;  
+  std::vector<std::pair<Size, double>> timingsRead;
 };
 
 /// \brief Global access to the benchmarking infrastructure
 class BenchmarkEnvironment : public ::testing::Environment /* singleton */ {
 public:
   static constexpr int NumRepetitions = 5;
-  
+
   /// \brief Return the instance of this singleton class
   static BenchmarkEnvironment& getInstance() noexcept;
 
   virtual void SetUp() override;
   virtual void TearDown() override;
 
-  const boost::filesystem::path& directory() const noexcept { return (*directory_); }
-  boost::filesystem::path& directory() noexcept { return (*directory_); }
+  const SB_FILESYSTEM::path& directory() const noexcept { return (*directory_); }
+  SB_FILESYSTEM::path& directory() noexcept { return (*directory_); }
 
   /// \brief Add a benchmark results
   void appendResult(const BenchmarkResult& result) { results_.push_back(result); }
 
   /// \brief Report results
   void reportResults() const;
-  
+
   /// \brief Get the sizes of the benchmark
   const std::vector<Size>& sizes() const noexcept { return sizes_; }
 
@@ -63,11 +63,11 @@ public:
   std::string testName() const;
 
 private:
-  std::unique_ptr<boost::filesystem::path> directory_;
+  std::unique_ptr<SB_FILESYSTEM::path> directory_;
   std::vector<BenchmarkResult> results_;
-  
+
   std::vector<Size> sizes_;
-  
+
   static BenchmarkEnvironment* instance_;
 };
 

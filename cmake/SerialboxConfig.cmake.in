@@ -94,6 +94,15 @@ set(SERIALBOX_BOOST_LIBRARY_DIRS "@Boost_LIBRARY_DIRS@")
 set(SERIALBOX_BOOST_INCLUDE_DIRS "@Boost_INCLUDE_DIRS@")
 set(SERIALBOX_REQUIRED_BOOST_COMPONENTS "@REQUIRED_BOOST_COMPONENTS@")
 
+# Set std::experimental::filesystem
+set(STD_FILESYSTEM_LIB "@STD_FILESYSTEM_LIB@")
+if( STD_FILESYSTEM_LIB )
+  set(SERIALBOX_STD_FILESYSTEM "ON")
+  add_definitions(-DSERIALBOX_USE_EXPERIMENTAL_FILESYSTEM)
+else()
+  set(SERIALBOX_STD_FILESYSTEM "OFF")
+endif()
+
 #===---------------------------------------------------------------------------------------------===
 #   Setting SERIALBOX_ROOT
 #====--------------------------------------------------------------------------------------------===
@@ -164,6 +173,13 @@ if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
 
   set(SERIALBOX_EXTERNAL_LIBRARIES)
 
+  #
+  # std::experimental::filesystem
+  #
+  if( STD_FILESYSTEM_LIB )
+    list(APPEND SERIALBOX_EXTERNAL_LIBRARIES ${STD_FILESYSTEM_LIB})
+  endif()
+  
   #
   # Pthreads
   #
