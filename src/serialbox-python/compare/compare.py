@@ -57,7 +57,7 @@ class Config(object):
         self.TOL = 1e-12
 
         # Tolerance used for field comparison
-        self.SAVEPOINT_REGEX = ".*-in"
+        self.SAVEPOINT_REGEX = ""
 
 
 g_config = Config()
