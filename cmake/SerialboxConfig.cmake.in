@@ -98,7 +98,7 @@ set(SERIALBOX_REQUIRED_BOOST_COMPONENTS "@REQUIRED_BOOST_COMPONENTS@")
 #   Setting SERIALBOX_ROOT
 #====--------------------------------------------------------------------------------------------===
 if(NOT(DEFINED SERIALBOX_ROOT))
-  set(SERIALBOX_ROOT "${CMAKE_CURRENT_LIST_DIR}/../")
+  get_filename_component(SERIALBOX_ROOT  "${CMAKE_CURRENT_LIST_DIR}/../" REALPATH)
 endif()
 
 #===---------------------------------------------------------------------------------------------===
