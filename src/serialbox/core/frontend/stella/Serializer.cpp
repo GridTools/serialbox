@@ -270,15 +270,13 @@ void Serializer::ReadField(const std::string& fieldName, const Savepoint& savepo
   if(SerializerImpl::serializationStatus() < 0)
     return;
 
-  (void)alsoPrevious;
-
   try {
     const FieldMetainfoImpl& info = serializerImpl_->getFieldMetainfoImplOf(fieldName);
 
     StorageView storageView =
         makeStorageView(pData, info.type(), info.dims(), {iStride, jStride, kStride, lStride});
 
-    serializerImpl_->read(fieldName, *savepoint.getImpl(), storageView);
+    serializerImpl_->read(fieldName, *savepoint.getImpl(), storageView, alsoPrevious);
 
   } catch(Exception& e) {
     internal::throwSerializationException("Error: %s", e.what());
