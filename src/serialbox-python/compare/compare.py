@@ -260,10 +260,18 @@ def compare(serializers, field_to_check, dim_bounds, info_only):
         get_config().SAVEPOINT_REGEX)
 
     for savepoint in serializer_1.savepoint_list():
+        # Savepoint not present in both serializers -> skip
+        if not serializer_2.has_savepoint(savepoint):
+            continue
+
+        # Do we check this savepoint?
         if savepoint_regex is not None and not savepoint_regex.match(savepoint.name):
             continue
 
-        fields_at_savepoint = serializer_1.fields_at_savepoint(savepoint)
+        # Find the intersection of the fields at this savepoint
+        fields_at_savepoint_1 = serializer_1.fields_at_savepoint(savepoint)
+        fields_at_savepoint_2 = serializer_2.fields_at_savepoint(savepoint)
+        fields_at_savepoint = list(set(fields_at_savepoint_1).intersection(fields_at_savepoint_2))
 
         # If field_to_check is None, we always check all fields at the savepoint
         if field_to_check is None:
