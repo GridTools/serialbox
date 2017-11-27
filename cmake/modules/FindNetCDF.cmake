@@ -30,7 +30,7 @@ else()
 endif()
 
 find_path(NETCDF_INCLUDES netcdf.h HINTS ${NETCDF_ROOT}/include)
-find_library(NETCDF_LIBRARIES NAMES netcdf HINTS ${NETCDF_ROOT}/lib)
+find_library(NETCDF_LIBRARIES NAMES libnetcdf.a netcdf HINTS ${NETCDF_ROOT}/lib)
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (NetCDF DEFAULT_MSG NETCDF_LIBRARIES NETCDF_INCLUDES)
