@@ -18,13 +18,6 @@
 #include <boost/format.hpp>
 #include <stdexcept>
 
-/* No except or throw() depending on cxx std */
-#if __cplusplus >= 201103L
-#define SERIALBOX_NOEXCEPT noexcept
-#else
-#define SERIALBOX_NOEXCEPT throw()
-#endif
-
 namespace serialbox {
 
 /// \addtogroup core

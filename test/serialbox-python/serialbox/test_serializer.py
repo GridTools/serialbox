@@ -173,7 +173,7 @@ class TestSerializer(unittest.TestCase):
         # Access sp
         self.assertEqual(ser.savepoint.sp.key[1].as_savepoint(), Savepoint('sp', {"key": 1}))
         self.assertEqual(ser.savepoint.sp.key[2].key2[5.0].as_savepoint(),
-                         Savepoint('sp',  {"key": 2, "key2": 5.0}))
+                         Savepoint('sp', {"key": 2, "key2": 5.0}))
         self.assertEqual(ser.savepoint[0], Savepoint('sp', {"key": 1}))
 
         # Access sp-2
@@ -194,7 +194,7 @@ class TestSerializer(unittest.TestCase):
         # Access sp
         self.assertEqual(ser.savepoint['sp']['key'][1].as_savepoint(), Savepoint('sp', {"key": 1}))
         self.assertEqual(ser.savepoint['sp']['key'][2]['key2'][5.0].as_savepoint(),
-                         Savepoint('sp',  {"key": 2, "key2": 5.0}))
+                         Savepoint('sp', {"key": 2, "key2": 5.0}))
         self.assertEqual(ser.savepoint[0], Savepoint('sp', {"key": 1}))
 
         # Access sp-2
@@ -228,7 +228,6 @@ class TestSerializer(unittest.TestCase):
 
         # Indexing not supported -> Error
         self.assertRaises(SerialboxError, ser.savepoint.sp.key[1].__getitem__, 3)
-
 
     def test_field(self):
         ser_write = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
@@ -439,7 +438,6 @@ class TestSerializer(unittest.TestCase):
         self.assertTrue(np.allclose(field, field_2))
         self.assertTrue(np.allclose(field, field_3))
 
-
     def test_write_and_read_sliced(self):
         field_input = np.random.rand(10, 15, 20)
 
@@ -497,9 +495,9 @@ class TestSerializer(unittest.TestCase):
         #
         self.assertRaises(SerialboxError, Serializer.to_file, "field", field_input, "test.X")
 
-
     def test_to_string(self):
         ser = Serializer(OpenModeKind.Write, self.path, "field", self.archive)
+
 
 if __name__ == "__main__":
     unittest.main()

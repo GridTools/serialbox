@@ -136,6 +136,20 @@ To read ``foo`` at Savepoint with ``time=1``, you can use one of the `read` meth
 
 ``foo`` is a newly allocated :class:`numpy.array` containing the deserialized data.
 
+.. _QSVisualization:
+
+Quick start - Visualization
+---------------------------
+
+To help visualizing the data serialbox2 contains a built-in :class:`Visualizer <serialbox.visualizer.Visualizer>` based on `matplotlib <https://matplotlib.org/>`_ . The visualizer is able to visualize any 3D numpy field and expects two arguments: a reference to the numpy field and the name of the plot. For exmaple, to visualize the field ``pp``:
+
+  >>> from serialbox.visualizer import Visualizer
+  >>> Visualizer(pp, 'pp')
+
+This will open a window displaying the data:
+
+.. image:: _static/visualizer.png
+
 .. _Serializer:
 
 Serializer
@@ -263,4 +277,10 @@ SerialboxError
 .. autoclass:: serialbox.SerialboxError
   :members:
 
+.. _Visualizer:
 
+Visualizer
+----------
+
+.. autoclass:: serialbox.visualizer.Visualizer
+  :members: __init__
