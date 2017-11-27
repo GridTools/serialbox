@@ -282,6 +282,11 @@ if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
   endif()
 endif()
 
+# to be used in SerialboxConfig.sh.in
+string (REPLACE ";" " " SERIALBOX_CXX_LIBRARIES_AS_STRING "${SERIALBOX_CXX_LIBRARIES}")
+string (REPLACE ";" " " SERIALBOX_C_LIBRARIES_AS_STRING "${SERIALBOX_C_LIBRARIES}")
+string (REPLACE ";" " " SERIALBOX_FORTRAN_LIBRARIES_AS_STRING "${SERIALBOX_FORTRAN_LIBRARIES}")
+
 #===---------------------------------------------------------------------------------------------===
 #   Find pp_ser.py
 #====--------------------------------------------------------------------------------------------===
