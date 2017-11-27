@@ -371,10 +371,6 @@ if( NOT STD_FILESYSTEM_LIB )
   set(REQUIRED_BOOST_COMPONENTS filesystem system)
 endif()
 
-if(SERIALBOX_LOGGING)
-  list(APPEND REQUIRED_BOOST_COMPONENTS log)
-endif()
-
 find_package(Boost 1.54 REQUIRED ${REQUIRED_BOOST_COMPONENTS})
 
 if(NOT(${Boost_FOUND}))

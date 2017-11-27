@@ -16,7 +16,8 @@
 #define SERIALBOX_CORE_LOGGING_H
 
 #ifndef SERIALBOX_DISABLE_LOGGING
-#include <boost/log/trivial.hpp>
+// TODO reintroduce a proper logger
+//#include <boost/log/trivial.hpp>
 #endif
 
 namespace serialbox {
@@ -79,15 +80,18 @@ public:
 ///
 #define LOG(severity) SERIALBOX_INTERNAL_LOG(severity)
 
-#ifdef SERIALBOX_DISABLE_LOGGING
+// TODO reintroduce a logger
+//#ifdef SERIALBOX_DISABLE_LOGGING
+
 #define SERIALBOX_INTERNAL_LOG(severity)                                                           \
   while(0)                                                                                         \
   serialbox::internal::NullLogger::getInstance()
-#else
-#define SERIALBOX_INTERNAL_LOG(severity)                                                           \
-  if(serialbox::Logging::isEnabled())                                                              \
-  BOOST_LOG_TRIVIAL(severity)
-#endif
+
+//#else
+//#define SERIALBOX_INTERNAL_LOG(severity)
+//  if(serialbox::Logging::isEnabled())
+//  BOOST_LOG_TRIVIAL(severity)
+//#endif
 
 /// @}
 
