@@ -245,10 +245,6 @@ if [ "${REBUILD}" = "true" ]; then
 fi
 
 # Run Cmake
-MAKE_ARGS="all"
-if [ ! -z "${INSTALL_PREFIX}" ]; then
-    MAKE_ARGS="${MAKE_ARGS} install"
-fi
 cmakebuild -e ${ENV} -s ${SOURCE_DIR} -b ${BUILD_DIR}                          \
     -c Boost_NO_BOOST_CMAKE="true"                                             \
        CMAKE_INSTALL_PREFIX:STRING=${CMAKE_INSTALL_PREFIX}                     \
@@ -260,13 +256,14 @@ cmakebuild -e ${ENV} -s ${SOURCE_DIR} -b ${BUILD_DIR}                          \
        SERIALBOX_TESTING_STELLA:BOOL=${SERIALBOX_TESTING_STELLA}               \
        SERIALBOX_TESTING_FORTRAN:BOOL=${SERIALBOX_TESTING_FORTRAN}             \
        SERIALBOX_USE_NETCDF:BOOL=${SERIALBOX_USE_NETCDF}                       \
-    -m ${MAKE_ARGS} -j 1 $args
+    -m all install -j 1 $args
 
 ret=$?
 if [ ${ret} -ne 0 ]; then
     exit ${ret}
 fi
 
+cp "${ENV}" "${CMAKE_INSTALL_PREFIX}/modules.env"
 
 # Run tests
 if [ "$ARG_RUN_TESTS" == "true" ]; then
