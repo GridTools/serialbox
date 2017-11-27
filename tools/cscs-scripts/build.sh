@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 ##===-----------------------------------------------------------*- bash -*-===##
 ##
 ##                           S E R I A L B O X
@@ -61,18 +62,67 @@ to_lower_and_trim()
     echo "${trim_whitespaces}"
 }
 
+## Get source directory
+get_source_dir()
+{
+    local scriptfile=${BASH_SOURCE[0]}
+    if [ -z "${scriptfile}" ]; then
+        scriptfile=$0
+    fi
+    local scriptdir=$(dirname "${scriptfile}")
+    local source_dir=$(cd ${scriptdir}/../../; pwd)
+    echo $source_dir
+}
+
+## Download and update a git repository
+git_download () {
+    repo=$1
+    branch=$2
+    dir=$3
+    echo "------------------------------------------------------"
+    echo "Downloading ${repo} (branch: ${branch}) into ${dir}"
+    if [ ! -d "${dir}" ]; then
+        git clone ${repo} ${dir}
+        if [ "${branch}" != "master" ]; then
+            git -C $dir checkout -t origin/$branch
+        fi
+    fi
+    git -C $dir pull
+}
+
 #------------------------------ Identify CSCS host -----------------------------
 if [ "$(hostname | grep greina)" != "" ] ; then
     MYHOST="greina"
-elif [ "$(hostname | grep keschcn-0002)" != "" ]; then
-    MYHOST="kesch-tds"
-elif [ "$(hostname | grep kesch)" != "" ] ; then
-    MYHOST="kesch"
-elif [ "$(hostname | grep daint)" != "" ] ; then
-    MYHOST="daint"
+elif [[ "$(hostname)" == "keschcn-"* ]]; then
+    MYHOST=kesch-test
+    module load python/3.6.2-gmvolf-17.02
+    module load git
+elif [ "`hostname | grep kesch`" != "" -o "`hostname | grep escha`" != "" ] ; then
+    MYHOST=kesch
+    module load Python/3.5.0-gmvolf-15.11
+    module load git
+elif [ "`hostname | grep daint`" != "" ]; then
+    MYHOST=daint
+    module load cray-python/17.09.1
+    module load git/2.13.1
 else
     echo "build: host '$(hostname)' not known. Assuming environment is already setup."
 fi
+
+#------------------------------ Build dependencies -----------------------------
+APEPI_REPO=https://github.com/MeteoSwiss-APN/apepi.git
+APEPI_BRANCH=master
+APEPI_DIR=$(pwd)/apepi
+
+ENVIRONMENT_REPO=https://github.com/MeteoSwiss-APN/environment.git
+ENVIRONMENT_BRANCH=master
+ENVIRONMENT_DIR=$(pwd)/environment
+
+# Download   Repository        Branch              Target Directory
+git_download $APEPI_REPO       $APEPI_BRANCH       $APEPI_DIR
+git_download $ENVIRONMENT_REPO $ENVIRONMENT_BRANCH $ENVIRONMENT_DIR
+
+export PATH=${APEPI_DIR}/bin:${ENVIRONMENT_DIR}:$PATH
 
 #------------------------------ Parse options ----------------------------------
 ARGS=$(getopt                                                                  \
@@ -118,17 +168,8 @@ if [ ! -z "${ARG_INSTALL}" ]; then
     printf "%-20s: %s\n" "Install directory" "${INSTALL_PREFIX}"
 fi
 
-# Fortran Compiler
-if [ "${ARG_FC_COMPILER}" = "cray" ]; then
-    printf "%-20s: %s\n" "Fortran compiler" "cray"
-    FC_COMPILER="ftn"
-elif [ "${ARG_FC_COMPILER}" = "pgi" ]; then
-    printf "%-20s: %s\n" "Fortran compiler" "pgi"
-    FC_COMPILER="pgfortran"
-else
-    printf "%-20s: %s\n" "Fortran compiler" "gnu"
-    FC_COMPILER="gfortran"
-fi
+# Setup environment
+ENV=$(getenv -e $ARG_FC_COMPILER)
 
 # Rebuild
 if [ "${ARG_RERUN}" = "true" ]; then
@@ -142,13 +183,6 @@ fi
 SERIALBOX_TESTING=ON
 SERIALBOX_ENABLE_C=ON
 SERIALBOX_ENABLE_FORTRAN=ON
-
-CURRENT_PATH=$(pwd)
-
-#------------------------------ Load environment -------------------------------
-if [ -n ${MYHOST} ]; then
-    source ${CURRENT_PATH}/env_${MYHOST}.sh -f ${FC_COMPILER}
-fi
 
 #------------------------------ Check for external libraries -------------------
 
@@ -193,18 +227,11 @@ fi
 
 #------------------------------ Build ------------------------------------------
 
-BUILD_DIR=${CURRENT_PATH}/../../build_gcc_${ARG_FC_COMPILER}
+SOURCE_DIR=$(get_source_dir)
+BUILD_DIR=$(pwd)/build_gcc_${ARG_FC_COMPILER}
 
-# Create build directory
-if [ -d "$BUILD_DIR" ]; then
-    if [ "$REBUILD" = "true" ]; then
-        rm -r ${BUILD_DIR}
-    fi
-fi
-
-mkdir -p ${BUILD_DIR}
-
-cd ${BUILD_DIR}
+echo "Source dir: ${SOURCE_DIR}"
+echo "Build dir:  ${BUILD_DIR}"
 
 if [ ! -z "${INSTALL_PREFIX}" ]; then
     CMAKE_INSTALL_PREFIX=${INSTALL_PREFIX}
@@ -212,28 +239,28 @@ else
     CMAKE_INSTALL_PREFIX=${BUILD_DIR}/install
 fi
 
-# Run Cmake
-cmake                                                                          \
- -DBoost_NO_BOOST_CMAKE="true"                                                 \
- -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_INSTALL_PREFIX}                         \
- -DCMAKE_BUILD_TYPE:STRING="$BUILD_TYPE"                                       \
- -DSERIALBOX_TESTING:BOOL=${SERIALBOX_TESTING}                                 \
- -DSERIALBOX_ENABLE_C:BOOL=${SERIALBOX_ENABLE_C}                               \
- -DSERIALBOX_ENABLE_FORTRAN:BOOL=${SERIALBOX_ENABLE_FORTRAN}                   \
- -DSERIALBOX_TESTING_GRIDTOOLS:BOOL=${SERIALBOX_TESTING_GRIDTOOLS}             \
- -DSERIALBOX_TESTING_STELLA:BOOL=${SERIALBOX_TESTING_STELLA}                   \
- -DSERIALBOX_TESTING_FORTRAN:BOOL=${SERIALBOX_TESTING_FORTRAN}                 \
- -DSERIALBOX_USE_NETCDF:BOOL=${SERIALBOX_USE_NETCDF}                           \
- ../
-
-# Run make
-if [ -z "${INSTALL_PREFIX}" ]; then
-    # don't install if no install path was specified
-    make -j1
-else
-    # make and install if a path was specified
-    make install -j1
+args=""
+if [ "${REBUILD}" = "true" ]; then
+    args="${args} -z"
 fi
+
+# Run Cmake
+MAKE_ARGS="all"
+if [ ! -z "${INSTALL_PREFIX}" ]; then
+    MAKE_ARGS="${MAKE_ARGS} install"
+fi
+cmakebuild -e ${ENV} -s ${SOURCE_DIR} -b ${BUILD_DIR}                          \
+    -c Boost_NO_BOOST_CMAKE="true"                                             \
+       CMAKE_INSTALL_PREFIX:STRING=${CMAKE_INSTALL_PREFIX}                     \
+       CMAKE_BUILD_TYPE:STRING="$BUILD_TYPE"                                   \
+       SERIALBOX_TESTING:BOOL=${SERIALBOX_TESTING}                             \
+       SERIALBOX_ENABLE_C:BOOL=${SERIALBOX_ENABLE_C}                           \
+       SERIALBOX_ENABLE_FORTRAN:BOOL=${SERIALBOX_ENABLE_FORTRAN}               \
+       SERIALBOX_TESTING_GRIDTOOLS:BOOL=${SERIALBOX_TESTING_GRIDTOOLS}         \
+       SERIALBOX_TESTING_STELLA:BOOL=${SERIALBOX_TESTING_STELLA}               \
+       SERIALBOX_TESTING_FORTRAN:BOOL=${SERIALBOX_TESTING_FORTRAN}             \
+       SERIALBOX_USE_NETCDF:BOOL=${SERIALBOX_USE_NETCDF}                       \
+    -m ${MAKE_ARGS} -j 1 $args
 
 ret=$?
 if [ ${ret} -ne 0 ]; then
@@ -243,9 +270,11 @@ fi
 
 # Run tests
 if [ "$ARG_RUN_TESTS" == "true" ]; then
-chmod  +x run_tests.sh
-./run_tests.sh
-ret=$?
-exit $ret
+    pushd $BUILD_DIR &>/dev/null
+        chmod  +x run_tests.sh
+        envrun $ENV ./run_tests.sh
+        ret=$?
+        exit $ret
+    popd &>/dev/null
 fi
 
