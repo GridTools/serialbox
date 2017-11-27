@@ -24,7 +24,7 @@ from sys import exit, stderr, version_info
 if version_info < (3, 4):
     from platform import python_version
 
-    print("compare: error: compare requires atleast python 3.4 (detected %s)" % python_version(),
+    print("compare: error: compare requires at least python 3.4 (detected %s)" % python_version(),
           file=stderr)
     exit(1)
 
