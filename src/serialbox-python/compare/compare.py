@@ -128,7 +128,12 @@ def make_serializer_and_extract_field(file):
         prefix = filename[:first_underscore]
         field = filename[first_underscore + 1:]
 
-    serializer = ser.Serializer(ser.OpenModeKind.Read, directory, prefix)
+    serializer = None
+    try:
+        serializer = ser.Serializer(ser.OpenModeKind.Read, directory, prefix)
+    except ser.SerialboxError as e:
+        fatal_error(e)
+
     return serializer, field
 
 
