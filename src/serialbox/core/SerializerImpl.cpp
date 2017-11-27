@@ -13,6 +13,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/core/SerializerImpl.h"
+#include "Filesystem.h"
 #include "serialbox/core/Compiler.h"
 #include "serialbox/core/STLExtras.h"
 #include "serialbox/core/Type.h"
@@ -22,7 +23,6 @@
 #include "serialbox/core/archive/BinaryArchive.h"
 #include "serialbox/core/hash/HashFactory.h"
 #include <boost/algorithm/string.hpp>
-#include "Filesystem.h"
 #include <fstream>
 #include <memory>
 #include <type_traits>
@@ -56,10 +56,10 @@ SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
   // Validate integrity of directory (non-existent directories are created by the archive)
 
   try {
-    if(mode_ == OpenModeKind::Read && !SB_FILESYSTEM::exists(directory_))
-      //    if(mode_ == OpenModeKind::Read && !SB_FILESYSTEM::exists(directory_))
+    if(mode_ == OpenModeKind::Read && !filesystem::exists(directory_))
+      //    if(mode_ == OpenModeKind::Read && !filesystem::exists(directory_))
       throw Exception("cannot create Serializer: directory %s does not exist", directory_);
-  } catch(SB_FILESYSTEM::filesystem_error& e) {
+  } catch(filesystem::filesystem_error& e) {
     throw Exception("filesystem error: %s", e.what());
   }
 
@@ -276,7 +276,7 @@ void SerializerImpl::constructMetaDataFromJson() {
   LOG(info) << "Constructing Serializer from MetaData ... ";
 
   // Try open meta-data file
-  if(!SB_FILESYSTEM::exists(metaDataFile_)) {
+  if(!filesystem::exists(metaDataFile_)) {
     if(mode_ != OpenModeKind::Read)
       return;
     else
@@ -401,7 +401,7 @@ void SerializerImpl::constructArchive(const std::string& archiveName) {
 //===------------------------------------------------------------------------------------------===//
 
 bool SerializerImpl::upgradeMetaData() {
-  SB_FILESYSTEM::path oldMetaDataFile = directory_ / (prefix_ + ".json");
+  filesystem::path oldMetaDataFile = directory_ / (prefix_ + ".json");
 
   //
   // Check if upgrade is necessary
@@ -409,17 +409,17 @@ bool SerializerImpl::upgradeMetaData() {
 
   try {
     // Check if prefix.json exists
-    if(!SB_FILESYSTEM::exists(oldMetaDataFile))
+    if(!filesystem::exists(oldMetaDataFile))
       return false;
 
     LOG(info) << "Detected old serialbox meta-data " << oldMetaDataFile;
 
     // Check if we already upgraded this archive
-    if(SB_FILESYSTEM::exists(metaDataFile_) && (SB_FILESYSTEM::last_write_time(oldMetaDataFile) <
-                                                SB_FILESYSTEM::last_write_time(metaDataFile_))) {
+    if(filesystem::exists(metaDataFile_) && (filesystem::last_write_time(oldMetaDataFile) <
+                                             filesystem::last_write_time(metaDataFile_))) {
       return false;
     }
-  } catch(SB_FILESYSTEM::filesystem_error& e) {
+  } catch(filesystem::filesystem_error& e) {
     throw Exception("filesystem error: %s", e.what());
   }
 

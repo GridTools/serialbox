@@ -42,17 +42,17 @@ void UnittestEnvironment::SetUp() {
 
   // Try to create a path to run our unittests in the form "$(pwd)/unittest-tmp-dir/"
   try {
-    directory_ = std::make_unique<SB_FILESYSTEM::path>(SB_FILESYSTEM::current_path() /
-                                                       SB_FILESYSTEM::path("unittest-tmp-dir"));
+    directory_ = std::make_unique<filesystem::path>(filesystem::current_path() /
+                                                       filesystem::path("unittest-tmp-dir"));
 
-    if(SB_FILESYSTEM::exists(*directory_))
-      SB_FILESYSTEM::remove_all(*directory_);
+    if(filesystem::exists(*directory_))
+      filesystem::remove_all(*directory_);
 
-    hasError = !SB_FILESYSTEM::create_directories(*directory_);
+    hasError = !filesystem::create_directories(*directory_);
 
     LOG(info) << "Creating unittest directory: " << directory_->string();
-  } catch(SB_FILESYSTEM::filesystem_error& e) {
-    LOG(warning) << "unresolved SB_FILESYSTEM::filesystem_error: " << e.what();
+  } catch(filesystem::filesystem_error& e) {
+    LOG(warning) << "unresolved filesystem::filesystem_error: " << e.what();
     hasError = true;
     errStr += e.what();
   }
@@ -68,10 +68,10 @@ void UnittestEnvironment::TearDown() {
   // Try to cleanup
   try {
     if(cleanup_) {
-      auto numFiles = SB_FILESYSTEM::remove_all(*directory_);
+      auto numFiles = filesystem::remove_all(*directory_);
       LOG(info) << "Removed " << numFiles << " files";
     }
-  } catch(SB_FILESYSTEM::filesystem_error& e) {
+  } catch(filesystem::filesystem_error& e) {
     LOG(warning) << e.what();
   }
 }

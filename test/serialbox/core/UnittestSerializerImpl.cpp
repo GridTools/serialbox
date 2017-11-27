@@ -44,7 +44,7 @@ TEST_F(SerializerImplUtilityTest, Construction) {
     // Directory does not exists (should be created by the Archive)
     SerializerImpl s(OpenModeKind::Append,
                      (directory->path() / "dir-is-created-from-write").string(), "Field", "Binary");
-    ASSERT_TRUE(SB_FILESYSTEM::exists(directory->path() / "dir-is-created-from-write"));
+    ASSERT_TRUE(filesystem::exists(directory->path() / "dir-is-created-from-write"));
     s.updateMetaData();
   }
 
@@ -65,7 +65,7 @@ TEST_F(SerializerImplUtilityTest, Construction) {
 
   {
     // MetaData-prefix.json does not exist -> Exception
-    SB_FILESYSTEM::remove((directory->path() / "dir-is-created-from-write") /
+    filesystem::remove((directory->path() / "dir-is-created-from-write") /
                           "MetaData-Field.json");
     ASSERT_THROW(SerializerImpl(OpenModeKind::Read,
                                 (directory->path() / "dir-is-created-from-write").string(), "Field",
@@ -86,7 +86,7 @@ TEST_F(SerializerImplUtilityTest, Construction) {
     SerializerImpl s(OpenModeKind::Append,
                      (directory->path() / "dir-is-created-from-append").string(), "Field",
                      "Binary");
-    ASSERT_TRUE(SB_FILESYSTEM::exists(directory->path() / "dir-is-created-from-append"));
+    ASSERT_TRUE(filesystem::exists(directory->path() / "dir-is-created-from-append"));
   }
 }
 

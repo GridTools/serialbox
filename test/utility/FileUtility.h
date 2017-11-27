@@ -30,24 +30,24 @@ namespace internal {
 template <class DerivedType>
 class FileBase : private boost::noncopyable {
 public:
-  using value_type = SB_FILESYSTEM::path::value_type;
-  using string_type = SB_FILESYSTEM::path::string_type;
+  using value_type = filesystem::path::value_type;
+  using string_type = filesystem::path::string_type;
 
-  FileBase(const SB_FILESYSTEM::path& path) : path_(path) { create(); }
-  FileBase(SB_FILESYSTEM::path& path) : path_(path) { create(); }
+  FileBase(const filesystem::path& path) : path_(path) { create(); }
+  FileBase(filesystem::path& path) : path_(path) { create(); }
   FileBase(const string_type& path) : path_(path) { create(); }
   FileBase(string_type& path) : path_(path) { create(); }
   FileBase(const value_type* path) : path_(path) { create(); }
   FileBase(value_type* path) : path_(path) { create(); }
 
-  const SB_FILESYSTEM::path& path() const noexcept { return path_; }
-  SB_FILESYSTEM::path& path() noexcept { return path_; }
+  const filesystem::path& path() const noexcept { return path_; }
+  filesystem::path& path() noexcept { return path_; }
 
 private:
   void create() { static_cast<DerivedType&>(*this).createImpl(path_); }
 
 protected:
-  SB_FILESYSTEM::path path_;
+  filesystem::path path_;
 };
 
 } // namespace internal
@@ -70,11 +70,11 @@ public:
 #else
       boost::system::error_code ec;
 #endif
-      SB_FILESYSTEM::remove(path_, ec);
+      filesystem::remove(path_, ec);
     }
   }
 
-  void createImpl(const SB_FILESYSTEM::path& path) {
+  void createImpl(const filesystem::path& path) {
     std::fstream fs(path.string());
     fs.close();
   }
@@ -98,11 +98,11 @@ public:
 #else
       boost::system::error_code ec;
 #endif
-      SB_FILESYSTEM::remove_all(path_, ec);
+      filesystem::remove_all(path_, ec);
     }
   }
 
-  void createImpl(const SB_FILESYSTEM::path& path) { SB_FILESYSTEM::create_directories(path); }
+  void createImpl(const filesystem::path& path) { filesystem::create_directories(path); }
 };
 
 } // namespace unittest

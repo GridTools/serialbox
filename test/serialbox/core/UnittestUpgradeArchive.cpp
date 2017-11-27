@@ -232,11 +232,11 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
 
   // Old archives can only be used in Read mode
   {
-    auto timeStampBeforeConstruction = SB_FILESYSTEM::last_write_time(
+    auto timeStampBeforeConstruction = filesystem::last_write_time(
         this->directory->path() / "MetaData-UpgradeArchiveTest.json");
 
     // Mark old serialbox data as newer
-    SB_FILESYSTEM::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
+    filesystem::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
                                    timeStampBeforeConstruction + 1);
 
     // Try to perform upgrade but fail because open mode is write -> Exception
@@ -247,18 +247,18 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
 
   // Old meta data is outdated -> no upgrade
   {
-    auto timeStampBeforeConstruction = SB_FILESYSTEM::last_write_time(
+    auto timeStampBeforeConstruction = filesystem::last_write_time(
         this->directory->path() / "MetaData-UpgradeArchiveTest.json");
 
     // Set old-meta data to be out-dated
-    SB_FILESYSTEM::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
+    filesystem::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
                                    timeStampBeforeConstruction - 1);
 
     // Should perform no upgrade
     SerializerImpl ser_read(OpenModeKind::Read, this->directory->path().string(),
                             "UpgradeArchiveTest", "Binary");
 
-    auto timeStampAfterConstruction = SB_FILESYSTEM::last_write_time(ser_read.metaDataFile());
+    auto timeStampAfterConstruction = filesystem::last_write_time(ser_read.metaDataFile());
 
     ASSERT_EQ(timeStampBeforeConstruction, timeStampAfterConstruction);
   }

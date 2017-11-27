@@ -53,7 +53,7 @@ std::vector<std::string> ArchiveFactory::registeredArchives() {
 }
 
 std::string ArchiveFactory::archiveFromExtension(std::string filename) {
-  std::string extension = SB_FILESYSTEM::path(filename).extension().string();
+  std::string extension = filesystem::path(filename).extension().string();
 
   if(extension == ".dat" || extension == ".bin")
     return BinaryArchive::Name;

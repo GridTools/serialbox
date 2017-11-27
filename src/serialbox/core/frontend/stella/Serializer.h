@@ -173,7 +173,6 @@ public:
   }
   /// @}
 
-
   /// \brief Gives access to the registered fields
   ///
   /// This function fills and returns a vector with the names of the registered fields
@@ -323,8 +322,7 @@ private:
 
 #ifdef SERIALBOX_HAS_STELLA
 template <typename TDataField>
-void Serializer::WriteField(std::string name, const TDataField& field, const Savepoint& savepoint)
-{
+void Serializer::WriteField(std::string name, const TDataField& field, const Savepoint& savepoint) {
 
   if(name.empty())
     name = field.name();
@@ -356,11 +354,9 @@ void Serializer::WriteField(std::string name, const TDataField& field, const Sav
   this->WriteField(name, savepoint, field.storage().pStorageBase(), iStride, jStride, kStride, 0);
 }
 
-
 template <typename TDataField>
 void Serializer::ReadField(std::string name, TDataField& field, const Savepoint& savepoint,
-                 bool alsoPrevious) const
-{
+                           bool alsoPrevious) const {
   typedef typename TDataField::ValueType ValueType;
 
   if(name.empty())
@@ -402,7 +398,7 @@ void Serializer::ReadField(std::string name, TDataField& field, const Savepoint&
   }
 
   // Check whether we have storage in I and J
-  const bool hasStorageInI  = has_storage_in<typename TDataField::StorageFormat, cDimI>::value;
+  const bool hasStorageInI = has_storage_in<typename TDataField::StorageFormat, cDimI>::value;
   const bool hasStorageInJ = has_storage_in<typename TDataField::StorageFormat, cDimJ>::value;
 
   // Boundaries are usually set to 3 even if there is storage in that direction
@@ -446,7 +442,6 @@ void Serializer::ReadField(std::string name, TDataField& field, const Savepoint&
   this->ReadField(name, savepoint, data, iStride, jStride, kStride, 0, alsoPrevious);
 }
 #endif
-
 
 } // namespace stella
 

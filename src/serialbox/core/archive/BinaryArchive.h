@@ -15,11 +15,11 @@
 #ifndef SERIALBOX_CORE_ARCHIVE_BINARYARCHIVE_H
 #define SERIALBOX_CORE_ARCHIVE_BINARYARCHIVE_H
 
+#include "../Filesystem.h"
 #include "serialbox/core/Compiler.h"
 #include "serialbox/core/Json.h"
 #include "serialbox/core/archive/Archive.h"
 #include "serialbox/core/hash/Hash.h"
-#include "../Filesystem.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -149,10 +149,10 @@ public:
 
 private:
   OpenModeKind mode_;
-  SB_FILESYSTEM::path directory_;
+  filesystem::path directory_;
   std::string prefix_;
 
-  SB_FILESYSTEM::path metaDatafile_;
+  filesystem::path metaDatafile_;
   std::unique_ptr<Hash> hash_;
   json::json json_;
   FieldTable fieldTable_;

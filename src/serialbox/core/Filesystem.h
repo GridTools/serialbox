@@ -18,10 +18,10 @@
 
 #ifdef SERIALBOX_USE_EXPERIMENTAL_FILESYSTEM
 #include <experimental/filesystem>
-#define SB_FILESYSTEM std::experimental::filesystem
+namespace filesystem = std::experimental::filesystem;
 #else
 #include <boost/filesystem.hpp>
-#define SB_FILESYSTEM boost::filesystem
+namespace filesystem = boost::filesystem;
 #endif
 
 #endif

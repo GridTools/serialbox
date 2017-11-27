@@ -18,9 +18,9 @@
 #include "serialbox/core/Compiler.h"
 #ifdef SERIALBOX_HAS_NETCDF
 
+#include "../Filesystem.h"
 #include "serialbox/core/Json.h"
 #include "serialbox/core/archive/Archive.h"
-#include "../Filesystem.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -118,9 +118,9 @@ public:
 
 private:
   OpenModeKind mode_;
-  SB_FILESYSTEM::path directory_;
+  filesystem::path directory_;
   std::string prefix_;
-  SB_FILESYSTEM::path metaDatafile_;
+  filesystem::path metaDatafile_;
 
   std::unordered_map<std::string, int> fieldMap_;
   json::json json_;

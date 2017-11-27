@@ -359,7 +359,7 @@ find_library( STD_FILESYSTEM_LIB NAMES stdc++fs PATHS
 if( STD_FILESYSTEM_LIB )
   message(STATUS "Using std::experimental::filesystem (no dependency on compiled boost libs)")
   set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} 
-                                   stdc++fs)
+                                   ${STD_FILESYSTEM_LIB})
   add_definitions(-DSERIALBOX_USE_EXPERIMENTAL_FILESYSTEM)
 else()
   message(STATUS "std::experimental::filesystem not found, using boost::filesystem")

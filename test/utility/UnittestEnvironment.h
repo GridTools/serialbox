@@ -33,8 +33,8 @@ public:
   virtual void SetUp() override;
   virtual void TearDown() override;
 
-  const SB_FILESYSTEM::path& directory() const noexcept { return (*directory_); }
-  SB_FILESYSTEM::path& directory() noexcept { return (*directory_); }
+  const filesystem::path& directory() const noexcept { return (*directory_); }
+  filesystem::path& directory() noexcept { return (*directory_); }
 
   bool cleanup() const noexcept { return cleanup_; }
 
@@ -43,7 +43,7 @@ public:
 
 private:
   bool cleanup_;
-  std::unique_ptr<SB_FILESYSTEM::path> directory_;
+  std::unique_ptr<filesystem::path> directory_;
   static UnittestEnvironment* instance_;
 };
 
