@@ -18,7 +18,7 @@
 #include "serialbox/core/Compiler.h"
 #ifdef SERIALBOX_HAS_NETCDF
 
-#include "../Filesystem.h"
+#include "serialbox/core/Filesystem.h"
 #include "serialbox/core/Json.h"
 #include "serialbox/core/archive/Archive.h"
 #include <string>

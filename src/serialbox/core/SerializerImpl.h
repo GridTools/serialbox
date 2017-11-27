@@ -15,8 +15,8 @@
 #ifndef SERIALBOX_CORE_SERIALIZERIMPL_H
 #define SERIALBOX_CORE_SERIALIZERIMPL_H
 
-#include "Filesystem.h"
 #include "serialbox/core/FieldMap.h"
+#include "serialbox/core/Filesystem.h"
 #include "serialbox/core/Json.h"
 #include "serialbox/core/MetainfoMapImpl.h"
 #include "serialbox/core/SavepointVector.h"

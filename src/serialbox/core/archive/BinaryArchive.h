@@ -15,8 +15,8 @@
 #ifndef SERIALBOX_CORE_ARCHIVE_BINARYARCHIVE_H
 #define SERIALBOX_CORE_ARCHIVE_BINARYARCHIVE_H
 
-#include "../Filesystem.h"
 #include "serialbox/core/Compiler.h"
+#include "serialbox/core/Filesystem.h"
 #include "serialbox/core/Json.h"
 #include "serialbox/core/archive/Archive.h"
 #include "serialbox/core/hash/Hash.h"
