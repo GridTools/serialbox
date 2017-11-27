@@ -59,6 +59,13 @@ class Config(object):
         # Tolerance used for field comparison
         self.SAVEPOINT_REGEX = ""
 
+        # Treat mismatches in the metainfo of fields as warnings (mismatches "in dimensions are
+        # still errors)
+        self.FIELD_INFO_MISMATCH_WARN = False
+
+        # Only compare field meta-info (no data comparison)
+        self.FIELD_INFO_ONLY = False
+
 
 g_config = Config()
 
@@ -83,9 +90,13 @@ class Alignment(Enum):
 
 
 class Color(Enum):
-    """ Colors used in report """
+    """ Colors used in report
+
+    https://stackoverflow.com/questions/15580303/python-output-complex-line-with-floats-colored-by-value
+    """
     GREEN = '\033[92m'
     RED = '\033[91m'
+    BOLD_WHITE = '\033[1;93m'
     RESET = '\033[0m'
 
 
@@ -129,6 +140,7 @@ def make_serializer_and_extract_field(file):
         field = filename[first_underscore + 1:]
 
     serializer = None
+
     try:
         serializer = ser.Serializer(ser.OpenModeKind.Read, directory, prefix)
     except ser.SerialboxError as e:
@@ -145,7 +157,10 @@ def compare_infos(serializers, field):
     if info_1 == info_2:
         return True
 
-    for attrname in ["type", "dims", "metainfo"]:
+    hard_error = False
+
+    # Compare type and dimensions
+    for attrname in ["type", "dims"]:
         attr_1, attr_2 = getattr(info_1, attrname), getattr(info_2, attrname)
         if attr_1 != attr_2:
             print(
@@ -153,7 +168,37 @@ def compare_infos(serializers, field):
                     attrname,
                     attr_1,
                     attr_2))
-    return False
+
+            hard_error = True
+
+    if hard_error:
+        return False
+
+    # Compare metainfo
+    metainfo_1 = info_1.metainfo.to_dict()
+    metainfo_2 = info_2.metainfo.to_dict()
+    diff = dict(set(metainfo_2.items()) - set(metainfo_1.items()))
+
+    if diff:
+        hard_error = False if get_config().FIELD_INFO_MISMATCH_WARN else True
+        list_1, list_2 = "", ""
+
+        for key, value in sorted(metainfo_1.items()):
+            list_1 += "{}{}: {}\n".format(6 * " ", key, value)
+
+        for key, value in sorted(metainfo_2.items()):
+            use_color = False
+            if get_config().USE_COLOR:
+                use_color = key in diff
+            list_2 += "{}{}{}: {}{}\n".format(Color.BOLD_WHITE.value if use_color else "",
+                                              6 * " ", key,
+                                              value, Color.RESET.value if use_color else "")
+
+        print(
+            "  Field meta-info mismatch: meta-info\n    Expected:\n{}\n    Actual:\n{}".format(
+                list_1, list_2))
+
+    return not hard_error
 
 
 def compare_fields(serializers, field, savepoint, dim_bounds):
@@ -237,7 +282,7 @@ def compare_fields(serializers, field, savepoint, dim_bounds):
     return False
 
 
-def compare(serializers, field_to_check, dim_bounds, info_only):
+def compare(serializers, field_to_check, dim_bounds):
     """ Compare the data and info at every savepoint of field_1 to field_2 and returns
         True on success
     """
@@ -252,6 +297,7 @@ def compare(serializers, field_to_check, dim_bounds, info_only):
     failures = []
     start_time = time()
 
+    # Compute elapsed time in ms
     def get_time(start):
         return int(1000 * (time() - start))
 
@@ -297,7 +343,8 @@ def compare(serializers, field_to_check, dim_bounds, info_only):
                        color=Color.RED)
             else:
                 # Compare the data of the fields
-                if not info_only and not compare_fields(serializers, field, savepoint, dim_bounds):
+                if not get_config().FIELD_INFO_ONLY and not compare_fields(serializers, field,
+                                                                           savepoint, dim_bounds):
                     failures += [{"savepoint": str(savepoint), "field": field}]
                     report("FAILED",
                            "{} ({} ms) ".format(field, get_time(field_start_time)),
@@ -356,19 +403,24 @@ def main(arguments=None):
     parser.add_argument("-m", "--max-errors", dest="max_errors", metavar="NUM",
                         default=get_config().MAX_ERRORS,
                         type=int,
-                        help="Report up to 'NUM' errors per field (default: {})".format(
+                        help="report up to 'NUM' errors per field (default: {})".format(
                             get_config().MAX_ERRORS))
+    parser.add_argument("-w", "--info-warn", dest="field_info_mismatch_warn", action='store_true',
+                        help="treat mismatches in the metainfo of fields as warnings (mismatches "
+                             "in dimensions and data type are still errors) (default: {})".format(
+                            get_config().FIELD_INFO_MISMATCH_WARN))
     parser.add_argument("-s", "--savepoint-filter", dest="savepoint_regex", metavar="REGEX",
                         default=get_config().SAVEPOINT_REGEX, type=str,
-                        help="Only compare fields of savepoints whose name matches REGEX. An "
+                        help="only compare fields of savepoints whose name matches REGEX. An "
                              "empty string will match every savepoint (default: \"{}\")".format(
                             get_config().SAVEPOINT_REGEX))
     parser.add_argument("-t", "--tolerance", dest="tolerance", metavar="TOL",
                         default=get_config().TOL,
                         help="set the tolerance used for comparison to 'TOL' (default : {})".format(
                             get_config().TOL))
-    parser.add_argument("-q", "--info-only", dest="info_only", action="store_true",
-                        help="Only compare field meta-info (no data comparison)")
+    parser.add_argument("-q", "--info-only", dest="field_info_only", action="store_true",
+                        help="only compare field meta-info (no data comparison) "
+                             "(default: {})".format(get_config().FIELD_INFO_ONLY))
     for dim in ["i", "j", "k", "l"]:
         parser.add_argument("-{}".format(dim), dest="{}".format(dim), metavar="START[:END]",
                             help="only compare the {} dimension 'START' or if 'END' is supplied "
@@ -378,14 +430,11 @@ def main(arguments=None):
     if args.verbose:
         ser.Logging.enable()
 
-    if args.no_color:
-        get_config().USE_COLOR = False
-
-    if args.max_errors is not None:
-        get_config().MAX_ERRORS = args.max_errors
-
-    if args.savepoint_regex is not None:
-        get_config().SAVEPOINT_REGEX = args.savepoint_regex
+    get_config().USE_COLOR = not args.no_color
+    get_config().FIELD_INFO_MISMATCH_WARN = args.field_info_mismatch_warn
+    get_config().FIELD_INFO_ONLY = args.field_info_only
+    get_config().MAX_ERRORS = args.max_errors
+    get_config().SAVEPOINT_REGEX = args.savepoint_regex
 
     path_1, path_2 = (args.FILE_1[0], args.FILE_2[0])
 
@@ -410,7 +459,12 @@ def main(arguments=None):
         fatal_error("field_1 '{}' is not equal to field_2 '{}'".format(field_1, field_2))
 
     # Perform comparison
-    return compare([serializer_1, serializer_2], field_1, dim_bounds, args.info_only)
+    ret = 1
+    try:
+        ret = compare([serializer_1, serializer_2], field_1, dim_bounds)
+    except ser.SerialboxError as e:
+        fatal_error(e)
+    return ret
 
 
 if __name__ == '__main__':
