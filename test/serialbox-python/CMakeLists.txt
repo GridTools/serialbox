@@ -16,7 +16,7 @@ if(NOT BASH_EXECUTABLE)
 endif()
 
 ## Location of python modules
-set(SERIALOBX_PYTHON_MODULE ${PROJECT_SOURCE_DIR}/src/serialbox-python)
+set(SERIALBOX_PYTHON_MODULE ${PROJECT_SOURCE_DIR}/src/serialbox-python)
 
 ## Configure the test script
 set(PYTHON_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})

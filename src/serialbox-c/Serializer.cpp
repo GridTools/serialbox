@@ -28,7 +28,7 @@
 
 using namespace serialboxC;
 
-namespace internal {
+namespace {
 
 template <class VecType>
 static std::string vecToString(VecType&& vec) {
@@ -41,7 +41,19 @@ static std::string vecToString(VecType&& vec) {
   return ss.str();
 }
 
-} // namespace internal
+std::vector<int> make_dims(int iSize, int jSize, int kSize, int lSize) {
+  std::vector<int> dims;
+  if(iSize > 0)
+    dims.push_back(iSize);
+  if(jSize > 0)
+    dims.push_back(jSize);
+  if(kSize > 0)
+    dims.push_back(kSize);
+  if(lSize > 0)
+    dims.push_back(lSize);
+  return dims;
+}
+}
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Construction & Destruction
@@ -245,10 +257,9 @@ int serialboxSerializerAddField2(serialboxSerializer_t* serializer, const char* 
                                  "type '%s' expected '%i'",
                                  bytesPerElement, typeName, serialbox::TypeUtil::sizeOf(typeID));
 
-    int rank =
-        (iSize > 0 ? 1 : 0) + (jSize > 0 ? 1 : 0) + (kSize > 0 ? 1 : 0) + (lSize > 0 ? 1 : 0);
+    auto dims = ::make_dims(iSize, jSize, kSize, lSize);
+    int rank = dims.size();
 
-    std::vector<int> dims{iSize, jSize, kSize, lSize};
     MetainfoMap metaInfo;
     metaInfo.insert("__name", name);
     metaInfo.insert("__elementtype", typeName);
@@ -315,31 +326,32 @@ serialboxSerializerGetFieldMetainfo(const serialboxSerializer_t* serializer, con
 }
 
 void serialboxSerializerGetFieldMetainfo2(const serialboxSerializer_t* serializer, const char* name,
-										  char** storedName, char** elementType, int* bytesPerElement, int* rank,
-										  int* iSize, int* jSize, int* kSize, int* lSize,
-										  int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
-										  int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo) {
+                                          char** storedName, char** elementType,
+                                          int* bytesPerElement, int* rank, int* iSize, int* jSize,
+                                          int* kSize, int* lSize, int* iMinusHalo, int* iPlusHalo,
+                                          int* jMinusHalo, int* jPlusHalo, int* kMinusHalo,
+                                          int* kPlusHalo, int* lMinusHalo, int* lPlusHalo) {
 
   try {
-		serialboxFieldMetainfo_t* fieldMetainfo = serialboxSerializerGetFieldMetainfo(serializer, name);
-		serialboxMetainfo_t* metainfo = serialboxFieldMetainfoGetMetainfo(fieldMetainfo);
+    serialboxFieldMetainfo_t* fieldMetainfo = serialboxSerializerGetFieldMetainfo(serializer, name);
+    serialboxMetainfo_t* metainfo = serialboxFieldMetainfoGetMetainfo(fieldMetainfo);
 
-		*storedName = serialboxMetainfoGetString(metainfo, "__name");
-		*elementType = serialboxMetainfoGetString(metainfo, "__elementtype");
-		*bytesPerElement = serialboxMetainfoGetInt32(metainfo, "__bytesperelement");
-		*rank = serialboxMetainfoGetInt32(metainfo, "__rank");
-		*iSize = serialboxMetainfoGetInt32(metainfo, "__isize");
-		*jSize = serialboxMetainfoGetInt32(metainfo, "__jsize");
-		*kSize = serialboxMetainfoGetInt32(metainfo, "__ksize");
-		*lSize = serialboxMetainfoGetInt32(metainfo, "__lsize");
-		*iMinusHalo = serialboxMetainfoGetInt32(metainfo, "__iminushalosize");
-		*jMinusHalo = serialboxMetainfoGetInt32(metainfo, "__jminushalosize");
-		*kMinusHalo = serialboxMetainfoGetInt32(metainfo, "__kminushalosize");
-		*lMinusHalo = serialboxMetainfoGetInt32(metainfo, "__lminushalosize");
-		*iPlusHalo = serialboxMetainfoGetInt32(metainfo, "__iplushalosize");
-		*jPlusHalo = serialboxMetainfoGetInt32(metainfo, "__jplushalosize");
-		*kPlusHalo = serialboxMetainfoGetInt32(metainfo, "__kplushalosize");
-		*lPlusHalo = serialboxMetainfoGetInt32(metainfo, "__lplushalosize");
+    *storedName = serialboxMetainfoGetString(metainfo, "__name");
+    *elementType = serialboxMetainfoGetString(metainfo, "__elementtype");
+    *bytesPerElement = serialboxMetainfoGetInt32(metainfo, "__bytesperelement");
+    *rank = serialboxMetainfoGetInt32(metainfo, "__rank");
+    *iSize = serialboxMetainfoGetInt32(metainfo, "__isize");
+    *jSize = serialboxMetainfoGetInt32(metainfo, "__jsize");
+    *kSize = serialboxMetainfoGetInt32(metainfo, "__ksize");
+    *lSize = serialboxMetainfoGetInt32(metainfo, "__lsize");
+    *iMinusHalo = serialboxMetainfoGetInt32(metainfo, "__iminushalosize");
+    *jMinusHalo = serialboxMetainfoGetInt32(metainfo, "__jminushalosize");
+    *kMinusHalo = serialboxMetainfoGetInt32(metainfo, "__kminushalosize");
+    *lMinusHalo = serialboxMetainfoGetInt32(metainfo, "__lminushalosize");
+    *iPlusHalo = serialboxMetainfoGetInt32(metainfo, "__iplushalosize");
+    *jPlusHalo = serialboxMetainfoGetInt32(metainfo, "__jplushalosize");
+    *kPlusHalo = serialboxMetainfoGetInt32(metainfo, "__kplushalosize");
+    *lPlusHalo = serialboxMetainfoGetInt32(metainfo, "__lplushalosize");
   } catch(std::exception& e) {
     serialboxFatalError(e.what());
   }
@@ -357,7 +369,7 @@ serialbox::StorageView makeStorageView(Serializer* ser, const char* name, void* 
   // Check if field exists
   auto it = ser->fieldMap().findField(name);
   if(it == ser->fieldMap().end())
-    throw serialbox::Exception("field '%s' is not registerd within the Serializer", name);
+    throw serialbox::Exception("field '%s' is not registered within the Serializer", name);
 
   // Get necessary meta-information to construct StorageView
   const auto& dims = it->second->dims();
@@ -367,8 +379,7 @@ serialbox::StorageView makeStorageView(Serializer* ser, const char* name, void* 
     throw serialbox::Exception("inconsistent number of dimensions and strides of field '%s'"
                                "\nDimensions as: [ %s ]"
                                "\nStrides    as: [ %s ]",
-                               name, internal::vecToString(dims),
-                               internal::vecToString(stridesVec));
+                               name, ::vecToString(dims), ::vecToString(stridesVec));
 
   return serialbox::StorageView(originPtr, it->second->type(), dims, stridesVec);
 }
