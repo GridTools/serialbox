@@ -8,17 +8,14 @@
 //===------------------------------------------------------------------------------------------===//
 //
 /// \file
-/// This file contains the logging infrastructure (based on Boost.Log).
+/// This file contains the logging infrastructure.
 ///
 //===------------------------------------------------------------------------------------------===//
 
 #ifndef SERIALBOX_CORE_LOGGING_H
 #define SERIALBOX_CORE_LOGGING_H
 
-#ifndef SERIALBOX_DISABLE_LOGGING
-// TODO reintroduce a proper logger
-//#include <boost/log/trivial.hpp>
-#endif
+#include <iostream>
 
 namespace serialbox {
 
@@ -29,8 +26,6 @@ namespace internal {
 
 class NullLogger {
 public:
-  NullLogger() = default;
-
   static NullLogger& getInstance() noexcept;
 
   template <class T>
@@ -42,6 +37,35 @@ private:
   static NullLogger* instance_;
 };
 
+class LoggerProxy {
+public:
+  /// @brief Unlock the mutex and flush stdout
+  ~LoggerProxy();
+
+  template <class StreamableValueType>
+  LoggerProxy& operator<<(StreamableValueType&& value) {
+    std::cout << value;
+    return *this;
+  }
+};
+
+class Logger {
+public:
+  Logger() = default;
+
+  static Logger& getInstance() noexcept;
+
+  LoggerProxy trace() noexcept;
+  LoggerProxy debug() noexcept;
+  LoggerProxy info() noexcept;
+  LoggerProxy warning() noexcept;
+  LoggerProxy error() noexcept;
+  LoggerProxy fatal() noexcept;
+
+private:
+  static Logger* instance_;
+};
+
 extern bool LoggingIsEnabled;
 
 } // namespace internal
@@ -50,9 +74,9 @@ extern bool LoggingIsEnabled;
 ///
 /// For logging use the macro LOG(severity)
 class Logging {
-  Logging();
-
 public:
+  Logging() = delete;
+
   /// \brief Disable logging
   static void enable() noexcept { internal::LoggingIsEnabled = true; }
 
@@ -64,7 +88,7 @@ public:
 };
 
 /// \macro LOG
-/// \brief Logging infrastructure based on trivial logger of Boost.Log
+/// \brief Logging infrastructure
 ///
 /// The macro is used to initiate logging. The `lvl` argument of the macro specifies one of the
 /// following severity levels: `trace`, `debug`, `info`, `warning`, `error` or `fatal`.
@@ -75,23 +99,21 @@ public:
 ///   LOG(info) << "Hello, world!";
 /// \endcode
 ///
-/// \see
-///   http://www.boost.org/doc/libs/1_62_0/libs/log/doc/html/index.html
-///
 #define LOG(severity) SERIALBOX_INTERNAL_LOG(severity)
 
-// TODO reintroduce a logger
-//#ifdef SERIALBOX_DISABLE_LOGGING
+#ifdef SERIALBOX_DISABLE_LOGGING
 
 #define SERIALBOX_INTERNAL_LOG(severity)                                                           \
   while(0)                                                                                         \
   serialbox::internal::NullLogger::getInstance()
 
-//#else
-//#define SERIALBOX_INTERNAL_LOG(severity)
-//  if(serialbox::Logging::isEnabled())
-//  BOOST_LOG_TRIVIAL(severity)
-//#endif
+#else
+
+#define SERIALBOX_INTERNAL_LOG(severity)                                                           \
+  if(serialbox::Logging::isEnabled())                                                              \
+  serialbox::internal::Logger::getInstance().severity()
+
+#endif
 
 /// @}
 
