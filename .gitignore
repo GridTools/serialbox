@@ -21,6 +21,10 @@ buildenv*
 external/*
 !external/gtest
 
+# CSCS Buildscripts
+apepi
+environment
+
 # Shared library in source dir
 *.so
 *.dylib
