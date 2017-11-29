@@ -73,17 +73,17 @@ SERIALBOX_API int serialboxSerializerGetMode(const serialboxSerializer_t* serial
  * \brief Return the directory of the Serializer
  *
  * \param serializer  Serializer to use
- * \return directory of the Serializer as a null-terminated string
+ * \return newly allocated null-terminated string of the directory of the Serializer
  */
-SERIALBOX_API const char* serialboxSerializerGetDirectory(const serialboxSerializer_t* serializer);
+SERIALBOX_API char* serialboxSerializerGetDirectory(const serialboxSerializer_t* serializer);
 
 /**
  * \brief Return the prefix of all filenames
  *
  * \param serializer  Serializer to use
- * \return prefix of the Serializer as a null-terminated string
+ * \return newly allocated null-terminated string of the prefix of the Serializer
  */
-SERIALBOX_API const char* serialboxSerializerGetPrefix(const serialboxSerializer_t* serializer);
+SERIALBOX_API char* serialboxSerializerGetPrefix(const serialboxSerializer_t* serializer);
 
 /**
  * \brief Write meta-data to disk

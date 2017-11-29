@@ -16,7 +16,7 @@
 from ctypes import (c_void_p, c_bool, c_int, c_int32, c_int64, c_float, c_double, c_char_p,
                     Structure, POINTER)
 
-from .common import get_library, extract_string
+from .common import get_library, to_c_string
 from .error import invoke, SerialboxError
 from .type import *
 
@@ -341,7 +341,7 @@ class MetainfoMap(object):
         :raises TypeError: if `typeid` is not a serialbox.TypeID or int
         """
         isArray = False
-        keystr = extract_string(key)[0]
+        keystr = to_c_string(key)[0]
 
         if typeid and isinstance(typeid, TypeID):
             typeid = typeid.value
@@ -404,7 +404,7 @@ class MetainfoMap(object):
 
         elif typeid is TypeID.String.value:
             ret = invoke(lib.serialboxMetainfoAddString, self.__metainfomap, keystr,
-                         extract_string(value)[0])
+                         to_c_string(value)[0])
 
         elif typeid is TypeID.ArrayOfBoolean.value:
             array = invoke(lib.serialboxArrayOfBooleanCreate, c_int(len(value)))
@@ -444,7 +444,7 @@ class MetainfoMap(object):
         elif typeid is TypeID.ArrayOfString.value:
             array = invoke(lib.serialboxArrayOfStringCreate, c_int(len(value)))
             for i in range(array.contents.len):
-                array.contents.data[i] = extract_string(value[i])[0]
+                array.contents.data[i] = to_c_string(value[i])[0]
             ret = invoke(lib.serialboxMetainfoAddArrayOfString, self.__metainfomap, keystr, array)
             invoke(lib.serialboxArrayOfStringDestroy, array)
 
@@ -478,7 +478,7 @@ class MetainfoMap(object):
         :return: True if element with `key` exists, False otherwise
         :rtype: bool
         """
-        keystr = extract_string(key)[0]
+        keystr = to_c_string(key)[0]
         return bool(invoke(lib.serialboxMetainfoHasKey, self.__metainfomap, keystr))
 
     def clear(self):
@@ -553,7 +553,7 @@ class MetainfoMap(object):
         """
         if type(key) not in StringTypes:
             raise TypeError("parameter 'key' is not a string (type: %s)" % type(key))
-        keystr = extract_string(key)[0]
+        keystr = to_c_string(key)[0]
 
         #
         # Get typeid
@@ -636,7 +636,7 @@ class MetainfoMap(object):
     def __delitem__(self, key):
         if type(key) not in StringTypes:
             raise TypeError("parameter 'key' is not a string (type: %s)" % type(key))
-        keystr = extract_string(key)[0]
+        keystr = to_c_string(key)[0]
         invoke(lib.serialboxMetainfoDeleteKey, self.__metainfomap, keystr)
 
     def __iter__(self):

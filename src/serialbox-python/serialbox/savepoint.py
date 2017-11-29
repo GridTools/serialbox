@@ -16,7 +16,7 @@
 from abc import ABCMeta
 from ctypes import c_char_p, c_void_p, c_int, Structure, POINTER, c_size_t
 
-from .common import get_library, extract_string
+from .common import get_library, to_c_string
 from .error import invoke, SerialboxError
 from .metainfomap import MetainfoMap, MetainfoImpl
 from .type import StringTypes
@@ -94,7 +94,7 @@ class Savepoint(object):
         if impl:
             self.__savepoint = impl
         else:
-            namestr = extract_string(name)[0]
+            namestr = to_c_string(name)[0]
             self.__savepoint = invoke(lib.serialboxSavepointCreate, namestr)
 
         if metainfo:
