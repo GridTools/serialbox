@@ -14,7 +14,14 @@ install(
   FILES ${CMAKE_SOURCE_DIR}/src/serialbox-python/pp_ser/pp_ser.py
   DESTINATION python/pp_ser
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-  )
+)
+
+## Install compare
+install(
+  FILES ${CMAKE_SOURCE_DIR}/src/serialbox-python/compare/compare.py
+  DESTINATION python/compare
+  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+)
 
 ## Install serialbox
 if(SERIALBOX_ENABLE_PYTHON)

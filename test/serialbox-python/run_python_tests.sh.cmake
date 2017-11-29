@@ -17,12 +17,12 @@
 #
 # Export paths
 #
-export PYTHONPATH=$PYTHONPATH:${SERIALOBX_PYTHON_MODULE}:${SERIALOBX_PYTHON_MODULE}/sdb
+export PYTHONPATH="$PYTHONPATH:${SERIALBOX_PYTHON_MODULE}:${SERIALBOX_PYTHON_MODULE}/sdb"
 
 #
 # Check if nose exists
 #
-${PYTHON_EXECUTABLE} -c "import nose"
+"${PYTHON_EXECUTABLE}" -c "import nose"
 if [ "$?" == "1" ]; then
   echo ">> Python tests require module 'nose'"
   exit 1
@@ -31,12 +31,11 @@ fi
 #
 # Run serialbox python tests with nose
 #
-cd ${PYTHON_TEST_DIR}/serialbox
-${PYTHON_EXECUTABLE} -m "nose"
+cd "${PYTHON_TEST_DIR}/serialbox"
+"${PYTHON_EXECUTABLE}" -m "nose"
 
 #
 # Run the sdb tests with nose
 #
-cd ${PYTHON_TEST_DIR}/sdb/sdbcore
-${PYTHON_EXECUTABLE} -m "nose"
-
+cd "${PYTHON_TEST_DIR}/sdb/sdbcore"
+"${PYTHON_EXECUTABLE}" -m "nose"
