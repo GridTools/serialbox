@@ -43,10 +43,10 @@ void UnittestEnvironment::SetUp() {
   // Try to create a path to run our unittests in the form "$(pwd)/unittest-tmp-dir/"
   try {
     directory_ = std::make_unique<filesystem::path>(filesystem::current_path() /
-                                                       filesystem::path("unittest-tmp-dir"));
+                                                    filesystem::path("unittest-tmp-dir"));
 
     if(filesystem::exists(*directory_))
-      filesystem::remove_all(*directory_);
+      serialbox::remove_all(*directory_);
 
     hasError = !filesystem::create_directories(*directory_);
 
@@ -68,7 +68,7 @@ void UnittestEnvironment::TearDown() {
   // Try to cleanup
   try {
     if(cleanup_) {
-      auto numFiles = filesystem::remove_all(*directory_);
+      auto numFiles = serialbox::remove_all(*directory_);
       LOG(info) << "Removed " << numFiles << " files";
     }
   } catch(filesystem::filesystem_error& e) {

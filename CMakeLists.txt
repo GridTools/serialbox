@@ -366,6 +366,8 @@ if(SERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM)
     else()
       message(STATUS "std::experimental::filesystem not found, using boost::filesystem")
     endif()
+else()
+  unset(STD_FILESYSTEM_LIB CACHE) #in case it was set by a previous run
 endif()
 
 #---------------------------------------- Boost ----------------------------------------------------

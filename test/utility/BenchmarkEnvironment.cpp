@@ -48,10 +48,10 @@ void BenchmarkEnvironment::SetUp() {
   // Try to create a path to run our unittests in the form "$(pwd)/benchmark-tmp-dir/"
   try {
     directory_ = std::make_unique<filesystem::path>(filesystem::current_path() /
-                                                       filesystem::path("benchmark-tmp-dir"));
+                                                    filesystem::path("benchmark-tmp-dir"));
 
     if(filesystem::exists(*directory_))
-      filesystem::remove_all(*directory_);
+      serialbox::remove_all(*directory_);
 
     hasError = !filesystem::create_directories(*directory_);
 
@@ -76,7 +76,7 @@ void BenchmarkEnvironment::SetUp() {
 void BenchmarkEnvironment::TearDown() {
   reportResults();
   try {
-    auto numFiles = filesystem::remove_all(*directory_);
+    auto numFiles = serialbox::remove_all(*directory_);
     LOG(info) << "Removed " << numFiles << " files";
   } catch(filesystem::filesystem_error& e) {
     LOG(warning) << e.what();

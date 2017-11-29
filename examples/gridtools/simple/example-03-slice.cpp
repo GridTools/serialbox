@@ -135,7 +135,7 @@ int main() {
     //
     // Remove directory
     //
-    filesystem::remove_all("./slice");
+    serialbox::remove_all("./slice");
 
   } catch(std::exception& e) {
     std::cerr << "Errror: " << e.what() << std::endl;

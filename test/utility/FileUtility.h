@@ -98,7 +98,7 @@ public:
 #else
       boost::system::error_code ec;
 #endif
-      filesystem::remove_all(path_, ec);
+      serialbox::remove_all(path_, ec);
     }
   }
 
