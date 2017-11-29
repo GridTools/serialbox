@@ -135,7 +135,7 @@ int main() {
     //
     // Remove directory
     //
-    boost::filesystem::remove_all("./slice");
+    filesystem::remove_all("./slice");
 
   } catch(std::exception& e) {
     std::cerr << "Errror: " << e.what() << std::endl;
