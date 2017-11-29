@@ -170,7 +170,8 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
     EXPECT_EQ(ser_read.getFieldMetainfoImplOf("v").dims(), (std::vector<int>{5, 1, 1}));
 
     EXPECT_EQ(ser_read.getFieldMetainfoImplOf("u").metaInfo().at("Day").as<int>(), 29);
-    EXPECT_EQ(ser_read.getFieldMetainfoImplOf("u").metaInfo().at("Month").as<std::string>(), "March");
+    EXPECT_EQ(ser_read.getFieldMetainfoImplOf("u").metaInfo().at("Month").as<std::string>(),
+              "March");
     EXPECT_EQ(ser_read.getFieldMetainfoImplOf("u").metaInfo().at("Year").as<TypeParam>(),
               TypeParam(2016.10));
     EXPECT_EQ(ser_read.getFieldMetainfoImplOf("v").metaInfo().at("boolean").as<bool>(), true);
@@ -231,13 +232,13 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
 
   // Old archives can only be used in Read mode
   {
-    auto timeStampBeforeConstruction = boost::filesystem::last_write_time(
+    auto timeStampBeforeConstruction = filesystem::last_write_time(
         this->directory->path() / "MetaData-UpgradeArchiveTest.json");
-    
+
     // Mark old serialbox data as newer
-    boost::filesystem::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
-                                       timeStampBeforeConstruction + 1);
-    
+    filesystem::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
+                                   timeStampBeforeConstruction + 1);
+
     // Try to perform upgrade but fail because open mode is write -> Exception
     ASSERT_THROW(SerializerImpl(OpenModeKind::Write, this->directory->path().string(),
                                 "UpgradeArchiveTest", "Binary"),
@@ -246,18 +247,18 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
 
   // Old meta data is outdated -> no upgrade
   {
-    auto timeStampBeforeConstruction = boost::filesystem::last_write_time(
+    auto timeStampBeforeConstruction = filesystem::last_write_time(
         this->directory->path() / "MetaData-UpgradeArchiveTest.json");
 
     // Set old-meta data to be out-dated
-    boost::filesystem::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
-                                       timeStampBeforeConstruction - 1);
+    filesystem::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
+                                   timeStampBeforeConstruction - 1);
 
     // Should perform no upgrade
     SerializerImpl ser_read(OpenModeKind::Read, this->directory->path().string(),
                             "UpgradeArchiveTest", "Binary");
 
-    auto timeStampAfterConstruction = boost::filesystem::last_write_time(ser_read.metaDataFile());
+    auto timeStampAfterConstruction = filesystem::last_write_time(ser_read.metaDataFile());
 
     ASSERT_EQ(timeStampBeforeConstruction, timeStampAfterConstruction);
   }

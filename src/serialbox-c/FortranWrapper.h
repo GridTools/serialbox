@@ -74,8 +74,9 @@ void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const 
  * \brief Returns the halos of the field `name`
  */
 void serialboxFortranSerializerGetFieldHalos(const void* serializer, const char* name,
-											 int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
-											 int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo);
+                                             int* iMinusHalo, int* iPlusHalo, int* jMinusHalo,
+                                             int* jPlusHalo, int* kMinusHalo, int* kPlusHalo,
+                                             int* lMinusHalo, int* lPlusHalo);
 
 /**
  * \brief Add a global meta-information `key=value` pair to the Serializer

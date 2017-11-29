@@ -47,17 +47,17 @@ void BenchmarkEnvironment::SetUp() {
 
   // Try to create a path to run our unittests in the form "$(pwd)/benchmark-tmp-dir/"
   try {
-    directory_ = std::make_unique<boost::filesystem::path>(
-        boost::filesystem::current_path() / boost::filesystem::path("benchmark-tmp-dir"));
+    directory_ = std::make_unique<filesystem::path>(filesystem::current_path() /
+                                                    filesystem::path("benchmark-tmp-dir"));
 
-    if(boost::filesystem::exists(*directory_))
-      boost::filesystem::remove_all(*directory_);
+    if(filesystem::exists(*directory_))
+      serialbox::remove_all(*directory_);
 
-    hasError = !boost::filesystem::create_directories(*directory_);
+    hasError = !filesystem::create_directories(*directory_);
 
     LOG(info) << "Creating unittest directory: " << directory_->string();
-  } catch(boost::filesystem::filesystem_error& e) {
-    LOG(warning) << "unresolved boost::filesystem::filesystem_error: " << e.what();
+  } catch(filesystem::filesystem_error& e) {
+    LOG(warning) << "unresolved filesystem::filesystem_error: " << e.what();
     hasError = true;
     errStr += e.what();
   }
@@ -76,9 +76,9 @@ void BenchmarkEnvironment::SetUp() {
 void BenchmarkEnvironment::TearDown() {
   reportResults();
   try {
-    auto numFiles = boost::filesystem::remove_all(*directory_);
+    auto numFiles = serialbox::remove_all(*directory_);
     LOG(info) << "Removed " << numFiles << " files";
-  } catch(boost::filesystem::filesystem_error& e) {
+  } catch(filesystem::filesystem_error& e) {
     LOG(warning) << e.what();
   }
 }
@@ -103,7 +103,7 @@ void BenchmarkEnvironment::reportResults() const {
       for(const auto& timingPair : result.timingsWrite)
         std::cout << (boost::format("  %-15s %-20s %15.5f\n") % "Writing" %
                       timingPair.first.toString() % timingPair.second);
-      
+
       for(const auto& timingPair : result.timingsRead)
         std::cout << (boost::format("  %-15s %-20s %15.5f\n") % "Reading" %
                       timingPair.first.toString() % timingPair.second);

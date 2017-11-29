@@ -104,7 +104,8 @@ function(serialbox_test_end)
        "  printf \"\\n  >>>>>>>>>>>>>>>> TESTS FAILED <<<<<<<<<<<<<<<<\\n\\n\"\n"
        "else\n"
        "  printf \"\\n  ALL TESTS PASSED\\n\\n\"\n"
-       "fi\n")
+       "fi\n"
+       "exit $res")
   file(INSTALL ${SERIALBOX_TEST_SCRIPT} DESTINATION ${CMAKE_BINARY_DIR}/install
        FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ)
 endfunction(serialbox_test_end)

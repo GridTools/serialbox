@@ -112,18 +112,16 @@ public:
   open_mode mode() const noexcept { return serializerImpl_->mode(); }
 
   /// \brief Access the directory in which the Serializer and Archive are opened
-  const std::string& directory() const noexcept { return serializerImpl_->directory().string(); }
+  std::string directory() const noexcept { return serializerImpl_->directory().string(); }
 
   /// \brief Access prefix of all filenames
-  const std::string& prefix() const noexcept { return serializerImpl_->prefix(); }
+  std::string prefix() const noexcept { return serializerImpl_->prefix(); }
 
   /// \brief Access the path to the meta-data file
-  const std::string& meta_data_file() const noexcept {
-    return serializerImpl_->metaDataFile().string();
-  }
+  std::string meta_data_file() const noexcept { return serializerImpl_->metaDataFile().string(); }
 
   /// \brief Name of the archive in use
-  const std::string& archive_name() const noexcept { return serializerImpl_->archiveName(); }
+  std::string archive_name() const noexcept { return serializerImpl_->archiveName(); }
 
   /// \brief Drop all field and savepoint meta-data.
   ///
