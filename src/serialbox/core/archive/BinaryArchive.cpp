@@ -173,7 +173,7 @@ BinaryArchive::BinaryArchive(OpenModeKind mode, const std::string& directory,
   hash_ = HashFactory::create(HashFactory::defaultHash());
 
   try {
-    bool isDir = boost::filesystem::is_directory(directory_);
+    bool isDir = filesystem::is_directory(directory_);
 
     switch(mode_) {
     // We are reading, the directory needs to exist
@@ -185,10 +185,10 @@ BinaryArchive::BinaryArchive(OpenModeKind mode, const std::string& directory,
     case OpenModeKind::Write:
     case OpenModeKind::Append:
       if(!isDir)
-        boost::filesystem::create_directories(directory_);
+        filesystem::create_directories(directory_);
       break;
     }
-  } catch(boost::filesystem::filesystem_error& e) {
+  } catch(filesystem::filesystem_error& e) {
     throw Exception(e.what());
   }
 
@@ -206,7 +206,7 @@ void BinaryArchive::readMetaDataFromJson() {
   LOG(info) << "Reading MetaData for BinaryArchive ... ";
 
   // Check if metaData file exists
-  if(!boost::filesystem::exists(metaDatafile_)) {
+  if(!filesystem::exists(metaDatafile_)) {
     if(mode_ != OpenModeKind::Read)
       return;
     throw Exception("archive meta data not found in directory '%s'", directory_.string());
@@ -292,7 +292,7 @@ FieldID BinaryArchive::write(const StorageView& storageView, const std::string& 
 
   LOG(info) << "Attempting to write field \"" << field << "\" to BinaryArchive ...";
 
-  boost::filesystem::path filename(directory_ / (prefix_ + "_" + field + ".dat"));
+  filesystem::path filename(directory_ / (prefix_ + "_" + field + ".dat"));
   std::ofstream fs;
 
   // Create binary data buffer
@@ -415,9 +415,9 @@ void BinaryArchive::read(StorageView& storageView, const FieldID& fieldID,
 }
 
 void BinaryArchive::readFromFile(std::string filename, StorageView& storageView) {
-  boost::filesystem::path filepath(filename);
+  filesystem::path filepath(filename);
 
-  if(!boost::filesystem::exists(filepath))
+  if(!filesystem::exists(filepath))
     throw Exception("cannot open %s: file does not exist", filepath);
 
   // Create binary data buffer
@@ -453,13 +453,13 @@ std::ostream& BinaryArchive::toStream(std::ostream& stream) const {
 }
 
 void BinaryArchive::clear() {
-  boost::filesystem::directory_iterator end;
-  for(boost::filesystem::directory_iterator it(directory_); it != end; ++it) {
-    if(boost::filesystem::is_regular_file(it->path()) &&
+  filesystem::directory_iterator end;
+  for(filesystem::directory_iterator it(directory_); it != end; ++it) {
+    if(filesystem::is_regular_file(it->path()) &&
        boost::algorithm::starts_with(it->path().filename().string(), prefix_ + "_") &&
-       boost::filesystem::extension(it->path()) == ".dat") {
+       filesystem::path(it->path()).extension() == ".dat") {
 
-      if(!boost::filesystem::remove(it->path()))
+      if(!filesystem::remove(it->path()))
         LOG(warning) << "BinaryArchive: cannot remove file " << it->path();
     }
   }

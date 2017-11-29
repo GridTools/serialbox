@@ -94,6 +94,15 @@ set(SERIALBOX_BOOST_LIBRARY_DIRS "@Boost_LIBRARY_DIRS@")
 set(SERIALBOX_BOOST_INCLUDE_DIRS "@Boost_INCLUDE_DIRS@")
 set(SERIALBOX_REQUIRED_BOOST_COMPONENTS "@REQUIRED_BOOST_COMPONENTS@")
 
+# Set std::experimental::filesystem
+set(STD_FILESYSTEM_LIB "@STD_FILESYSTEM_LIB@")
+if( STD_FILESYSTEM_LIB )
+  set(SERIALBOX_STD_FILESYSTEM "ON")
+  add_definitions(-DSERIALBOX_USE_EXPERIMENTAL_FILESYSTEM)
+else()
+  set(SERIALBOX_STD_FILESYSTEM "OFF")
+endif()
+
 #===---------------------------------------------------------------------------------------------===
 #   Setting SERIALBOX_ROOT
 #====--------------------------------------------------------------------------------------------===
@@ -165,6 +174,13 @@ if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
   set(SERIALBOX_EXTERNAL_LIBRARIES)
 
   #
+  # std::experimental::filesystem
+  #
+  if( STD_FILESYSTEM_LIB )
+    list(APPEND SERIALBOX_EXTERNAL_LIBRARIES ${STD_FILESYSTEM_LIB})
+  endif()
+  
+  #
   # Pthreads
   #
   find_package(Threads REQUIRED QUIET)
@@ -230,7 +246,7 @@ if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
   if(SERIALBOX_HAS_NETCDF)
     set(NETCDF_ROOT_ENV $ENV{NETCDF_ROOT})
     if(NETCDF_ROOT_ENV)
-      set(NETCDF_ROOT ${NETCDF_ROOT_ENV} CACHE "NetCDF install path.")
+      set(NETCDF_ROOT ${NETCDF_ROOT_ENV} CACHE PATH "NetCDF install path.")
     endif()
     
     if(NOT(DEFINED NETCDF_ROOT))
@@ -265,6 +281,28 @@ if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
     list(APPEND SERIALBOX_FORTRAN_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES})
   endif()
 endif()
+
+#===---------------------------------------------------------------------------------------------===
+#   Prepare variables to be used in shell script, i.e. in SerialboxConfig.sh.in
+#====--------------------------------------------------------------------------------------------===
+macro( prepare_export_library_for_sh _return )
+    foreach( _lib ${ARGN})
+      get_filename_component( _filename ${_lib} NAME )
+      string( REGEX MATCH "lib(.+)${CMAKE_SHARED_LIBRARY_SUFFIX}" _sharedlibname ${_filename} )
+      if( _sharedlibname )
+        # full path to shared libary was specified, replace by -LLIBDIR -lLIBNAME
+        get_filename_component( _path_to_lib ${_lib} DIRECTORY )
+        set(_result "${_result} -L${_path_to_lib} -l${CMAKE_MATCH_1}")
+      else()
+        set(_result "${_result} ${_lib}")
+      endif()
+    endforeach()
+    set( ${_return} "${_result}" )
+endmacro()
+
+prepare_export_library_for_sh(SERIALBOX_FORTRAN_LIBRARIES_AS_STRING "${SERIALBOX_FORTRAN_LIBRARIES}")
+prepare_export_library_for_sh(SERIALBOX_CXX_LIBRARIES_AS_STRING "${SERIALBOX_CXX_LIBRARIES}")
+prepare_export_library_for_sh(SERIALBOX_C_LIBRARIES_AS_STRING "${SERIALBOX_C_LIBRARIES}")
 
 #===---------------------------------------------------------------------------------------------===
 #   Find pp_ser.py

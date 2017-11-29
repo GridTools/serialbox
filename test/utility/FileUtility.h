@@ -15,9 +15,11 @@
 #ifndef SERIALBOX_UTILITY_FILEUTILITY_H
 #define SERIALBOX_UTILITY_FILEUTILITY_H
 
+#include <boost/core/noncopyable.hpp>
 #include "utility/UnittestEnvironment.h"
-#include <boost/filesystem.hpp>
+#include "serialbox/core/Filesystem.h"
 #include <fstream>
+#include <system_error>
 
 namespace serialbox {
 
@@ -28,24 +30,24 @@ namespace internal {
 template <class DerivedType>
 class FileBase : private boost::noncopyable {
 public:
-  using value_type = boost::filesystem::path::value_type;
-  using string_type = boost::filesystem::path::string_type;
+  using value_type = filesystem::path::value_type;
+  using string_type = filesystem::path::string_type;
 
-  FileBase(const boost::filesystem::path& path) : path_(path) { create(); }
-  FileBase(boost::filesystem::path& path) : path_(path) { create(); }
+  FileBase(const filesystem::path& path) : path_(path) { create(); }
+  FileBase(filesystem::path& path) : path_(path) { create(); }
   FileBase(const string_type& path) : path_(path) { create(); }
   FileBase(string_type& path) : path_(path) { create(); }
   FileBase(const value_type* path) : path_(path) { create(); }
   FileBase(value_type* path) : path_(path) { create(); }
 
-  const boost::filesystem::path& path() const noexcept { return path_; }
-  boost::filesystem::path& path() noexcept { return path_; }
+  const filesystem::path& path() const noexcept { return path_; }
+  filesystem::path& path() noexcept { return path_; }
 
 private:
   void create() { static_cast<DerivedType&>(*this).createImpl(path_); }
 
 protected:
-  boost::filesystem::path path_;
+  filesystem::path path_;
 };
 
 } // namespace internal
@@ -57,17 +59,22 @@ public:
 
   // Constructors
   template <class T>
-  File(T&& path) : Base(path) {}
+  File(T&& path)
+      : Base(path) {}
 
   // Destruction
   ~File() {
-    if(UnittestEnvironment::getInstance().cleanup()) {    
+    if(UnittestEnvironment::getInstance().cleanup()) {
+#ifdef SERIALBOX_USE_EXPERIMENTAL_FILESYSTEM
+      std::error_code ec;
+#else
       boost::system::error_code ec;
-      boost::filesystem::remove(path_, ec);
+#endif
+      filesystem::remove(path_, ec);
     }
   }
 
-  void createImpl(const boost::filesystem::path& path) {
+  void createImpl(const filesystem::path& path) {
     std::fstream fs(path.string());
     fs.close();
   }
@@ -80,19 +87,22 @@ public:
 
   // Constructors
   template <class T>
-  Directory(T&& path) : Base(path) {}
+  Directory(T&& path)
+      : Base(path) {}
 
   // Destruction
   ~Directory() {
     if(UnittestEnvironment::getInstance().cleanup()) {
+#ifdef SERIALBOX_USE_EXPERIMENTAL_FILESYSTEM
+      std::error_code ec;
+#else
       boost::system::error_code ec;
-      boost::filesystem::remove_all(path_, ec);
+#endif
+      serialbox::remove_all(path_, ec);
     }
   }
 
-  void createImpl(const boost::filesystem::path& path) {
-    boost::filesystem::create_directories(path);
-  }
+  void createImpl(const filesystem::path& path) { filesystem::create_directories(path); }
 };
 
 } // namespace unittest

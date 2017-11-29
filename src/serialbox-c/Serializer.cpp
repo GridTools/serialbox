@@ -13,10 +13,10 @@
 \*===------------------------------------------------------------------------------------------===*/
 
 #include "serialbox-c/Serializer.h"
-#include "serialbox-c/Logging.h"
-#include "serialbox-c/Savepoint.h"
 #include "serialbox-c/FieldMetainfo.h"
+#include "serialbox-c/Logging.h"
 #include "serialbox-c/Metainfo.h"
+#include "serialbox-c/Savepoint.h"
 #include "serialbox-c/Utility.h"
 #include "serialbox/core/Exception.h"
 #include "serialbox/core/Logging.h"

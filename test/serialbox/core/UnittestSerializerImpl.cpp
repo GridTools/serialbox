@@ -44,7 +44,7 @@ TEST_F(SerializerImplUtilityTest, Construction) {
     // Directory does not exists (should be created by the Archive)
     SerializerImpl s(OpenModeKind::Append,
                      (directory->path() / "dir-is-created-from-write").string(), "Field", "Binary");
-    ASSERT_TRUE(boost::filesystem::exists(directory->path() / "dir-is-created-from-write"));
+    ASSERT_TRUE(filesystem::exists(directory->path() / "dir-is-created-from-write"));
     s.updateMetaData();
   }
 
@@ -65,8 +65,8 @@ TEST_F(SerializerImplUtilityTest, Construction) {
 
   {
     // MetaData-prefix.json does not exist -> Exception
-    boost::filesystem::remove((directory->path() / "dir-is-created-from-write") /
-                              "MetaData-Field.json");
+    filesystem::remove((directory->path() / "dir-is-created-from-write") /
+                          "MetaData-Field.json");
     ASSERT_THROW(SerializerImpl(OpenModeKind::Read,
                                 (directory->path() / "dir-is-created-from-write").string(), "Field",
                                 "Binary"),
@@ -86,7 +86,7 @@ TEST_F(SerializerImplUtilityTest, Construction) {
     SerializerImpl s(OpenModeKind::Append,
                      (directory->path() / "dir-is-created-from-append").string(), "Field",
                      "Binary");
-    ASSERT_TRUE(boost::filesystem::exists(directory->path() / "dir-is-created-from-append"));
+    ASSERT_TRUE(filesystem::exists(directory->path() / "dir-is-created-from-append"));
   }
 }
 
@@ -763,7 +763,7 @@ TYPED_TEST(SerializerImplReadWriteTest, SliceWriteAndRead) {
 TYPED_TEST(SerializerImplReadWriteTest, LargeFile) {
   using Storage = Storage<TypeParam>;
 
-  // Allocate up to 4.1 GB storages. Note that binary archive creates a buffer which makes 
+  // Allocate up to 4.1 GB storages. Note that binary archive creates a buffer which makes
   // it ~8.2 GB.
   std::cout << "[          ] Running large file tests ... " << std::flush;
 

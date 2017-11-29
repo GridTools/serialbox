@@ -15,7 +15,7 @@
 #ifndef SERIALBOX_UTILITY_UNITTESTENVIRONMENT_H
 #define SERIALBOX_UTILITY_UNITTESTENVIRONMENT_H
 
-#include <boost/filesystem.hpp>
+#include "serialbox/core/Filesystem.h"
 #include <gtest/gtest.h>
 
 namespace serialbox {
@@ -26,24 +26,24 @@ namespace unittest {
 class UnittestEnvironment : public ::testing::Environment /* singleton */ {
 public:
   UnittestEnvironment(bool cleanup) : cleanup_(cleanup) {}
-  
+
   /// \brief Return the instance of this singleton class
   static UnittestEnvironment& getInstance() noexcept;
 
   virtual void SetUp() override;
   virtual void TearDown() override;
 
-  const boost::filesystem::path& directory() const noexcept { return (*directory_); }
-  boost::filesystem::path& directory() noexcept { return (*directory_); }
-  
+  const filesystem::path& directory() const noexcept { return (*directory_); }
+  filesystem::path& directory() noexcept { return (*directory_); }
+
   bool cleanup() const noexcept { return cleanup_; }
-  
-  std::string testCaseName() const; 
+
+  std::string testCaseName() const;
   std::string testName() const;
-  
+
 private:
   bool cleanup_;
-  std::unique_ptr<boost::filesystem::path> directory_; 
+  std::unique_ptr<filesystem::path> directory_;
   static UnittestEnvironment* instance_;
 };
 

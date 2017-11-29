@@ -52,7 +52,7 @@ TEST_F(BinaryArchiveUtilityTest, Construction) {
   {
     BinaryArchive b(OpenModeKind::Write, (this->directory->path() / "this-dir-is-created").string(),
                     "field");
-    EXPECT_TRUE(boost::filesystem::exists(this->directory->path() / "this-dir-is-created"));
+    EXPECT_TRUE(filesystem::exists(this->directory->path() / "this-dir-is-created"));
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ TEST_F(BinaryArchiveUtilityTest, Construction) {
   {
     BinaryArchive b(OpenModeKind::Append, (this->directory->path() / "nest1" / "nest2").string(),
                     "field");
-    EXPECT_TRUE(boost::filesystem::exists(this->directory->path() / "nest1" / "nest2"));
+    EXPECT_TRUE(filesystem::exists(this->directory->path() / "nest1" / "nest2"));
   }
 }
 
@@ -157,7 +157,7 @@ TEST_F(BinaryArchiveUtilityTest, MetaData) {
   // MetaData not found
   // -----------------------------------------------------------------------------------------------
   {
-    boost::filesystem::remove(filename);
+    filesystem::remove(filename);
     ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
                  Exception);
   }
@@ -544,9 +544,9 @@ TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
   // -----------------------------------------------------------------------------------------------
   {
     BinaryArchive archiveWrite(OpenModeKind::Write, this->directory->path().string(), "field");
-    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_u.dat")));
-    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_v.dat")));
-    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_storage_2d.dat")));
-    EXPECT_FALSE(boost::filesystem::exists(this->directory->path() / ("field_storage_7d.dat")));
+    EXPECT_FALSE(filesystem::exists(this->directory->path() / ("field_u.dat")));
+    EXPECT_FALSE(filesystem::exists(this->directory->path() / ("field_v.dat")));
+    EXPECT_FALSE(filesystem::exists(this->directory->path() / ("field_storage_2d.dat")));
+    EXPECT_FALSE(filesystem::exists(this->directory->path() / ("field_storage_7d.dat")));
   }
 }

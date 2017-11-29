@@ -57,6 +57,7 @@ option(SERIALBOX_LOGGING "Enable logging" ON)
 option(SERIALBOX_ASYNC_API "Enable the asynchronous API" ON)
 option(SERIALBOX_EXAMPLES "Build example exectuables" ON)
 
+option(SERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM "Use std::experimental::filesystem if available" ON)
 option(SERIALBOX_USE_OPENSSL "Use OpenSSL library" OFF)
 option(SERIALBOX_USE_NETCDF "Use NetCDF library" OFF)
 
@@ -343,25 +344,36 @@ if(SERIALBOX_TESTING_GRIDTOOLS)
   
 endif(SERIALBOX_TESTING_GRIDTOOLS)
 
+#---------------------------------------- std::experimental::filesystem ----------------------------
+if(SERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM)
+    find_library( STD_FILESYSTEM_LIB NAMES stdc++fs PATHS
+        /usr/lib/gcc/x86_64-linux-gnu/5
+        /usr/lib/gcc/x86_64-linux-gnu/6
+        /usr/lib/gcc/x86_64-linux-gnu/7
+        /usr/lib64/gcc/x86_64-suse-linux/5
+        /usr/lib64/gcc/x86_64-suse-linux/6
+        /usr/lib64/gcc/x86_64-suse-linux/7
+        /usr/lib/x86_64-linux-gnu/
+        /usr/local/lib64/
+        /usr/lib64/
+        /usr/lib/
+        ENV LD_LIBRARY_PATH)
+    if( STD_FILESYSTEM_LIB )
+      message(STATUS "Using std::experimental::filesystem (no dependency on compiled boost libs)")
+      set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} 
+                                       ${STD_FILESYSTEM_LIB})
+      add_definitions(-DSERIALBOX_USE_EXPERIMENTAL_FILESYSTEM)
+    else()
+      message(STATUS "std::experimental::filesystem not found, using boost::filesystem")
+    endif()
+else()
+  unset(STD_FILESYSTEM_LIB CACHE) #in case it was set by a previous run
+endif()
+
 #---------------------------------------- Boost ----------------------------------------------------
-# Workaround for Cray
-get_property(SHARED_LIB_SUPPORT GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
-if (SHARED_LIB_SUPPORT)
-    set(Boost_USE_STATIC_LIBS OFF)
-    set(Boost_USE_STATIC_RUNTIME OFF)
-    set(Boost_USE_MULTITHREADED ON)
-    add_definitions(-DBOOST_ALL_DYN_LINK)
-    add_definitions(-DBOOST_LOG_DYN_LINK)
-endif()
 
-set(REQUIRED_BOOST_COMPONENTS filesystem system)
-
-if(SERIALBOX_HAS_GRIDTOOLS)
-  list(APPEND REQUIRED_BOOST_COMPONENTS chrono)
-endif()
-
-if(SERIALBOX_LOGGING)
-  list(APPEND REQUIRED_BOOST_COMPONENTS log)
+if( NOT STD_FILESYSTEM_LIB )
+  set(REQUIRED_BOOST_COMPONENTS filesystem system)
 endif()
 
 find_package(Boost 1.54 REQUIRED ${REQUIRED_BOOST_COMPONENTS})
@@ -532,7 +544,6 @@ if(SERIALBOX_CODE_COVERAGE)
 endif(SERIALBOX_CODE_COVERAGE)
 
 #---------------------------------------- Compilation ----------------------------------------------
-
 # Generate serialbox/core/Config.h
 set(SERIALBOX_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
 set(SERIALBOX_CXX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/src/serialbox/core/Config.h.cmake)

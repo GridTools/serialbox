@@ -53,8 +53,8 @@ Savepoint::Savepoint(const Savepoint& other) {
 
 Savepoint& Savepoint::operator=(const Savepoint& other) {
   // Make sure savepointImpl_ is allocated
-  if (!savepointImpl_)
-      Init("");
+  if(!savepointImpl_)
+    Init("");
 
   // Use the assignment operator of the implementation class
   *savepointImpl_ = *other.savepointImpl_;
