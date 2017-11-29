@@ -323,7 +323,7 @@ public:
   ///
   /// \see
   ///   Archive::read
-  void read(const std::string& name, const SavepointImpl& savepoint, StorageView& storageView);
+  void read(const std::string& name, const SavepointImpl& savepoint, StorageView& storageView, bool alsoPrevious = false);
 
   /// \brief Deserialize sliced field `name` (given as `storageView` and `slice`) at `savepoint`
   /// from disk.

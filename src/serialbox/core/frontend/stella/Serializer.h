@@ -366,56 +366,44 @@ void Serializer::ReadField(std::string name, TDataField& field, const Savepoint&
   const DataFieldInfo& info = FindField(name);
   const int bytesPerElement = sizeof(typename TDataField::ValueType);
 
-  // Check size and boundaries
-  IJKSize size;
-  size.Init(field.storage().allocatedSize().iSize(), field.storage().allocatedSize().jSize(),
-            field.storage().allocatedSize().kSize());
+  // Get strides according to STELLA
+  DataFieldStorageStrides<typename TDataField::StorageFormat::StorageOrder> stridesSTELLA;
+  stridesSTELLA.Init(field.storage().paddedSize());
+
+  // Get rid of degenerated dimensions and fix strides
+  std::vector<int> allSizes, size, allStrides, strides;
+  allSizes.push_back(field.storage().allocatedSize().iSize());
+  allSizes.push_back(field.storage().allocatedSize().jSize());
+  allSizes.push_back(field.storage().allocatedSize().kSize());
+  allSizes.push_back(0);
+  allStrides.push_back(stridesSTELLA.ComputeStride(1, 0, 0) * bytesPerElement);
+  allStrides.push_back(stridesSTELLA.ComputeStride(0, 1, 0) * bytesPerElement);
+  allStrides.push_back(stridesSTELLA.ComputeStride(0, 0, 1) * bytesPerElement);
+  for (int i = 0; i < 4; ++i) {
+      if (allSizes[i] > 1)
+      {
+          size.push_back(allSizes[i]);
+          strides.push_back(allStrides[i]);
+      }
+  }
+  size.resize(4, 0);
 
   IJKBoundary boundary;
   boundary.Init(field.boundary().iMinusOffset(), field.boundary().iPlusOffset(),
                 field.boundary().jMinusOffset(), field.boundary().jPlusOffset(),
                 field.boundary().kMinusOffset(), field.boundary().kPlusOffset());
 
-  DataFieldStorageStrides<typename TDataField::StorageFormat::StorageOrder> strides;
-  strides.Init(field.storage().paddedSize());
-  const int iStride = strides.ComputeStride(1, 0, 0) * bytesPerElement;
-  const int jStride = strides.ComputeStride(0, 1, 0) * bytesPerElement;
-  const int kStride = strides.ComputeStride(0, 0, 1) * bytesPerElement;
 
-  if((info.iSize() != size.iSize()) || (info.jSize() != size.jSize()) ||
-     (info.kSize() != size.kSize()) || (info.lSize() != 1)) {
+  if((info.iSize() != size[0]) || (info.jSize() != size[1]) ||
+     (info.kSize() != size[2]) || (info.lSize() != 0)) {
     // Throw exception
     std::ostringstream errorstr;
     errorstr << "Error: the requested field " << name << " has a different size than"
              << " the provided data field.\n";
     errorstr << "Registerd as: " << info.iSize() << "x" << info.jSize() << "x" << info.kSize()
              << "x" << info.lSize() << "\n";
-    errorstr << "Given       : " << size.iSize() << "x" << size.jSize() << "x" << size.kSize()
-             << "x" << 1 << "\n";
-    SerializationException exception;
-    exception.Init(errorstr.str());
-    throw exception;
-  }
-
-  // Check whether we have storage in I and J
-  const bool hasStorageInI = has_storage_in<typename TDataField::StorageFormat, cDimI>::value;
-  const bool hasStorageInJ = has_storage_in<typename TDataField::StorageFormat, cDimJ>::value;
-
-  // Boundaries are usually set to 3 even if there is storage in that direction
-  // Correct this interesting yet totally nonsense behavior
-  const int actual_iminus = hasStorageInI ? boundary.iMinusOffset() : 0;
-  const int actual_jminus = hasStorageInJ ? boundary.jMinusOffset() : 0;
-  const int actual_iplus = hasStorageInI ? boundary.iPlusOffset() : 0;
-  const int actual_jplus = hasStorageInJ ? boundary.jPlusOffset() : 0;
-
-  if((info.iMinusHaloSize() != -actual_iminus) || (info.jMinusHaloSize() != -actual_jminus) ||
-     (info.kMinusHaloSize() != -boundary.kMinusOffset()) || (info.lMinusHaloSize() != -0) ||
-     (info.iPlusHaloSize() != actual_iplus) || (info.jPlusHaloSize() != actual_jplus) ||
-     (info.kPlusHaloSize() != boundary.kPlusOffset()) || (info.lPlusHaloSize() != 0)) {
-    // Throw exception
-    std::ostringstream errorstr;
-    errorstr << "Error: the requested field " << name << " has different boundaries than"
-             << " the provided data field.";
+    errorstr << "Given       : " << size[0] << "x" << size[1] << "x" << size[2]
+             << "x" << size[3] << "x0" << "\n";
     SerializationException exception;
     exception.Init(errorstr.str());
     throw exception;
@@ -439,7 +427,7 @@ void Serializer::ReadField(std::string name, TDataField& field, const Savepoint&
       &field(boundary.iMinusOffset(), boundary.jMinusOffset(), boundary.kMinusOffset());
 
   // Perform the read
-  this->ReadField(name, savepoint, data, iStride, jStride, kStride, 0, alsoPrevious);
+  this->ReadField(name, savepoint, data, strides[0], strides[1], strides[2], 0, alsoPrevious);
 }
 #endif
 

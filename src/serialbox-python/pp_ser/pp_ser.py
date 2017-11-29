@@ -600,12 +600,17 @@ class PpSer:
             # look ahead
             nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
             r_continued_line = re.compile('^([^!]*)&', re.IGNORECASE)
+            false_skip = 0
+            if nextline == self.__line:
+                lookahead_index += 1
+                nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
+                false_skip = 1
             while r_continued_line.search(nextline):
                 self.__line += nextline 
                 lookahead_index += 1
                 nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
             self.__line += nextline
-            self.__skip_next_n_lines = lookahead_index - self.__linenum
+            self.__skip_next_n_lines = lookahead_index - self.__linenum - false_skip
             self.__produce_use_stmt()
         return m
 

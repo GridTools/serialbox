@@ -187,7 +187,7 @@ void SerializerImpl::write(const std::string& name, const SavepointImpl& savepoi
 //===------------------------------------------------------------------------------------------===//
 
 void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoint,
-                          StorageView& storageView) {
+                          StorageView& storageView, bool alsoPrevious) {
   if(SerializerImpl::serializationStatus() < 0)
     return;
 
@@ -206,7 +206,24 @@ void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoin
   if(savepointIdx == -1)
     throw Exception("savepoint '%s' does not exist", savepoint.toString());
 
-  FieldID fieldID = savepointVector_->getFieldID(savepointIdx, name);
+  FieldID fieldID;
+  while (savepointIdx >= 0)
+  {
+      if (savepointVector_->hasField(savepointIdx, name) || !alsoPrevious)
+      {
+          fieldID = savepointVector_->getFieldID(savepointIdx, name);
+          break;
+      }
+      else
+      {
+          // If alsoPrevious is speicifed AND the field was not found,
+          // keep searching backwards
+          --savepointIdx;
+      }
+  }
+
+  if(savepointIdx == -1)
+    throw Exception("field '%s' not found at or before savepoint '%s'", name, savepoint.toString());
 
   //
   // 3) Pass the StorageView to the backend Archive and perform actual data-deserialization.
