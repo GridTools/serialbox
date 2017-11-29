@@ -15,7 +15,7 @@
 
 from ctypes import POINTER, c_char_p
 
-from .common import get_library, extract_string
+from .common import get_library, to_c_string
 from .error import invoke
 from .metainfomap import ArrayOfStringImpl
 
@@ -68,7 +68,7 @@ class Archive(object):
         :raises serialbox.SerialboxError: if extensions is invalid or no registered archive
                                           supports it.
         """
-        filestr = extract_string(filename)[0]
+        filestr = to_c_string(filename)[0]
         return invoke(lib.serialboxArchiveGetArchiveFromExtension, filestr).decode()
 
 register_library(lib)

@@ -43,8 +43,14 @@ TEST_F(CSerializerUtilityTest, Construction) {
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
     EXPECT_EQ(serialboxSerializerGetMode(ser), Write);
-    EXPECT_STREQ(serialboxSerializerGetDirectory(ser), directory->path().c_str());
-    EXPECT_STREQ(serialboxSerializerGetPrefix(ser), "Field");
+    
+    char* dir = serialboxSerializerGetDirectory(ser);
+    EXPECT_STREQ(dir, directory->path().c_str());
+    std::free(dir);
+
+    char* prefix = serialboxSerializerGetPrefix(ser);
+    EXPECT_STREQ(prefix, "Field");
+    std::free(prefix);    
 
     serialboxSerializerUpdateMetaData(ser);
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();

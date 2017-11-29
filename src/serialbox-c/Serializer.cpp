@@ -105,14 +105,14 @@ int serialboxSerializerGetMode(const serialboxSerializer_t* serializer) {
   return static_cast<int>(ser->mode());
 }
 
-const char* serialboxSerializerGetDirectory(const serialboxSerializer_t* serializer) {
+char* serialboxSerializerGetDirectory(const serialboxSerializer_t* serializer) {
   const Serializer* ser = toConstSerializer(serializer);
-  return toCharP(ser->directory().c_str());
+  return allocateAndCopyString(ser->directory().native());
 }
 
-const char* serialboxSerializerGetPrefix(const serialboxSerializer_t* serializer) {
+char* serialboxSerializerGetPrefix(const serialboxSerializer_t* serializer) {
   const Serializer* ser = toConstSerializer(serializer);
-  return ser->prefix().c_str();
+  return allocateAndCopyString(ser->prefix());
 }
 
 void serialboxSerializerUpdateMetaData(serialboxSerializer_t* serializer) {

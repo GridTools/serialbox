@@ -18,7 +18,7 @@ from ctypes import c_char_p, c_void_p, c_int, Structure, POINTER
 import numpy as np
 
 from .archive import Archive
-from .common import get_library, extract_string
+from .common import get_library, to_c_string
 from .error import invoke, SerialboxError
 from .fieldmetainfo import FieldMetainfo, FieldMetainfoImpl
 from .metainfomap import MetainfoMap, MetainfoImpl, ArrayOfStringImpl
@@ -249,9 +249,9 @@ class Serializer(object):
         #
         # Create serializer
         #
-        dirstr = extract_string(directory)[0]
-        prefixstr = extract_string(prefix)[0]
-        archivestr = extract_string(archive)[0]
+        dirstr = to_c_string(directory)[0]
+        prefixstr = to_c_string(prefix)[0]
+        archivestr = to_c_string(archive)[0]
 
         self.__serializer = invoke(lib.serialboxSerializerCreate, modeint, dirstr, prefixstr,
                                    archivestr)
@@ -568,7 +568,7 @@ class Serializer(object):
         if self.mode == OpenModeKind.Read:
             raise SerialboxError("registering fields is not permitted in OpenModeKind.Read")
 
-        namestr = extract_string(name)[0]
+        namestr = to_c_string(name)[0]
         if not invoke(lib.serialboxSerializerAddField, self.__serializer, namestr,
                       fieldmetainfo.impl()):
             raise SerialboxError("field '%s' already exists within the Serializer" % name)
@@ -581,7 +581,7 @@ class Serializer(object):
         :return: `True` if field exists, `False` otherwise
         :rtype: bool
         """
-        fieldstr = extract_string(field)[0]
+        fieldstr = to_c_string(field)[0]
         return bool(invoke(lib.serialboxSerializerHasField, self.__serializer, fieldstr))
 
     def get_field_metainfo(self, field):
@@ -593,7 +593,7 @@ class Serializer(object):
         :rtype: :class:`FieldMetainfo <serialbox.FieldMetainfo>`
         :raises serialbox.SerialboxError: if `field` does not exist within the Serializer
         """
-        fieldstr = extract_string(field)[0]
+        fieldstr = to_c_string(field)[0]
         return FieldMetainfo(None, [],
                              impl=invoke(lib.serialboxSerializerGetFieldMetainfo, self.__serializer,
                                          fieldstr))
@@ -713,7 +713,7 @@ class Serializer(object):
         # Write to disk
         #
         origin_ptr = c_void_p(field.ctypes.data)
-        namestr = extract_string(name)[0]
+        namestr = to_c_string(name)[0]
         invoke(lib.serialboxSerializerWrite, self.__serializer, namestr, savepoint.impl(),
                origin_ptr, strides, num_strides)
 
@@ -764,7 +764,7 @@ class Serializer(object):
         # Read from disk
         #
         origin_ptr = c_void_p(field.ctypes.data)
-        namestr = extract_string(name)[0]
+        namestr = to_c_string(name)[0]
         invoke(lib.serialboxSerializerRead, self.__serializer, namestr, savepoint.impl(),
                origin_ptr, strides, num_strides)
 
@@ -822,7 +822,7 @@ class Serializer(object):
         # Read from disk
         #
         origin_ptr = c_void_p(field.ctypes.data)
-        namestr = extract_string(name)[0]
+        namestr = to_c_string(name)[0]
         invoke(lib.serialboxSerializerReadAsync, self.__serializer, namestr, savepoint.impl(),
                origin_ptr, strides, num_strides)
 
@@ -939,7 +939,7 @@ class Serializer(object):
         # Read from disk
         #
         origin_ptr = c_void_p(field.ctypes.data)
-        namestr = extract_string(name)[0]
+        namestr = to_c_string(name)[0]
         invoke(lib.serialboxSerializerReadSliced, self.__serializer, namestr, savepoint.impl(),
                origin_ptr, strides, num_strides, c_slice_array)
 
@@ -979,9 +979,9 @@ class Serializer(object):
 
         origin_ptr = c_void_p(field.ctypes.data)
         typeint = c_int(numpy2TypeID(field.dtype).value)
-        namestr = extract_string(name)[0]
-        filestr = extract_string(filename)[0]
-        archivestr = extract_string(archive)[0]
+        namestr = to_c_string(name)[0]
+        filestr = to_c_string(filename)[0]
+        archivestr = to_c_string(archive)[0]
 
         invoke(lib.serialboxWriteToFile, filestr, origin_ptr, typeint, dims, num_dims, strides,
                namestr, archivestr)
@@ -1024,9 +1024,9 @@ class Serializer(object):
 
         origin_ptr = c_void_p(field.ctypes.data)
         typeint = c_int(numpy2TypeID(field.dtype).value)
-        namestr = extract_string(name)[0]
-        filestr = extract_string(filename)[0]
-        archivestr = extract_string(archive)[0]
+        namestr = to_c_string(name)[0]
+        filestr = to_c_string(filename)[0]
+        archivestr = to_c_string(archive)[0]
 
         invoke(lib.serialboxReadFromFile, filestr, origin_ptr, typeint, dims, num_dims, strides,
                namestr, archivestr)

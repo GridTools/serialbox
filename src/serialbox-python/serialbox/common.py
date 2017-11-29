@@ -18,9 +18,9 @@ from ctypes import cdll, c_char_p, util
 from os import path
 
 
-def extract_string(string):
+def to_c_string(string):
     """Convert python string to C-string.
-    
+
     :param str string: Python string
     :return: char* and length of the string
     :rtype: (ctypes.c_char_p, int)
