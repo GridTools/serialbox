@@ -15,7 +15,7 @@
 
 """'Serialbox Python Interface'"""
 
-__versioninfo__ = (2, 0, 1)
+__versioninfo__ = (2, 1, 1)
 __version__ = '.'.join(str(v) for v in __versioninfo__)
 
 #
