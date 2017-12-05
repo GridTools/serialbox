@@ -942,6 +942,8 @@ def parse_args():
                       default=False, action='store_true', dest='ignore_identical')
     parser.add_option('-d', '--output-dir', help='The target directory for writing pre-processed files',
                       default='', type=str, dest='output_dir')
+    parser.add_option('-o', '--output', help='Output file name to preprocess single file',
+                      default='', type=str, dest='output_file')
     parser.add_option('-v', '--verbose', help='Enable verbose execution',
                       default=False, action='store_true', dest='verbose')
     parser.add_option('-p', '--no-prefix', help='Don\'t generate preprocessing macro definition for ACC_PREFIX',
@@ -953,6 +955,8 @@ def parse_args():
     (options, args) = parser.parse_args()
     if len(args) < 1:
         parser.error('Need at least one source file to process')
+    if options.output_file and len(args) > 1:
+        parser.error('Single source file required if output file is given')
     return options, args
 
 if __name__ == "__main__":
@@ -960,6 +964,8 @@ if __name__ == "__main__":
     for infile in args:
         if options.output_dir:
             outfile = os.path.join(options.output_dir, os.path.basename(infile))
+        elif options.output_file:
+            outfile = options.output_file
         else:
             outfile = ''
 
