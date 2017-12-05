@@ -15,7 +15,7 @@
 
 """'Serialbox Python Interface'"""
 
-__versioninfo__ = (2, 1, 1)
+__versioninfo__ = (2, 2, 0)
 __version__ = '.'.join(str(v) for v in __versioninfo__)
 
 #
@@ -24,7 +24,7 @@ __version__ = '.'.join(str(v) for v in __versioninfo__)
 from sys import version_info
 
 if version_info < (3, 4):
-    raise Exception("Serialbox requires atleast python 3.4")
+    raise Exception("Serialbox requires at least python 3.4")
 
 #
 # Check if numpy is available
