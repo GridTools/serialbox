@@ -73,9 +73,9 @@ if [ "$FC_COMPILER" = "pgfortran" ]; then
     
     module swap PrgEnv-cray PrgEnv-pgi
     module load gcc
-    module load cray-netcdf
-    module load cray-hdf5
-    export NETCDF_ROOT=${NETCDF_DIR}
+#    module load cray-netcdf
+#    module load cray-hdf5
+#    export NETCDF_ROOT=${NETCDF_DIR}
     
 elif [ "$FC_COMPILER" = "ftn" ]; then
   
@@ -83,9 +83,9 @@ elif [ "$FC_COMPILER" = "ftn" ]; then
     
 else
     module swap PrgEnv-cray PrgEnv-gnu
-    module load cray-netcdf
-    module load cray-hdf5
-    export NETCDF_ROOT=${NETCDF_DIR}
+#    module load cray-netcdf
+#    module load cray-hdf5
+#    export NETCDF_ROOT=${NETCDF_DIR}
 fi
 
 export CXX=$(which g++)
