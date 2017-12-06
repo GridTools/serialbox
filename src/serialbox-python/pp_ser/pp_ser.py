@@ -666,11 +666,13 @@ class PpSer:
 
     # LINE: end module/end program
     def __re_endmodule(self):
-        r = re.compile('^ *end *(module|program)', re.IGNORECASE)
+        r = re.compile('^ *end *(module|program) *([a-z][a-z0-9_]*|)', re.IGNORECASE)
         m = r.search(self.__line)
         if m:
             if not self.__module:
                 self.__exit_error(msg='Unexpected "end '+m.group(1)+'" statement')
+            if m.group(2) and self.__module != m.group(2):
+                self.__exit_error(msg='Was expecting "end '+m.group(1)+' '+self.__module+'"')
             self.__module = ''
             self.__use_stmt_in_module = False
         return m
