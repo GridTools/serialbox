@@ -72,20 +72,18 @@ module load cmake/3.9.1
 if [ "$FC_COMPILER" = "pgfortran" ]; then
 
     module load craype-haswell
-    module load GCC/4.9.3-binutils-2.25
-    module load PrgEnv-pgi/16.7
+    module load craype-accel-nvidia35
+    module switch mvapich2_cce/2.2rc1.0.3_cuda80 mvapich2gdr_gnu/2.2_cuda_8.0
+    module load PrgEnv-pgi
+    module load gcc/5.4.0-2.26
     
 elif [ "$FC_COMPILER" = "ftn" ]; then
-
     module load craype-haswell
+    module load PrgEnv-cray
     module load craype-accel-nvidia35
-    module load PrgEnv-cray/15.10_cuda_7.0
-    module swap cce/8.4.0a
-    module unload mvapich2_cce
-    module load cray-libsci_acc/3.3.0
-    module load mvapich2gdr_gnu/2.1_cuda_7.0
-    module load GCC/4.9.3-binutils-2.25
-    
+    module load craype-network-infiniband
+    module switch mvapich2_cce/2.2rc1.0.3_cuda80 mvapich2gdr_gnu/2.2_cuda_8.0
+    module load gcc/5.4.0-2.26
 else
     module load PrgEnv-gnu
 fi
