@@ -54,6 +54,22 @@ def to_ascii(text):
     else:
         return str(text)
 
+def filter_fortran(f):
+    return (f.split('.')[-1].lower() == 'f90')
+
+def build_tree(src, dest, filtered_list, file_filter):
+    if os.path.isdir(src):
+        if not os.path.isdir(dest):
+            os.makedirs(dest)
+        filtered_list.extend([os.path.join(src,f) for f in os.listdir(src) if os.path.isfile(os.path.join(src,f)) and file_filter(f)])
+        dirs = [f for f in os.listdir(src) if os.path.isdir(os.path.join(src,f))]
+        for d in dirs:
+            build_tree(os.path.join(src, d),
+                                    os.path.join(dest, d),
+                                    filtered_list, file_filter)
+    else:
+        if os.path.isfile(src) and filter(src):
+            filtered_list.append(src)
 
 class PpSer:
 
@@ -666,12 +682,12 @@ class PpSer:
 
     # LINE: end module/end program
     def __re_endmodule(self):
-        r = re.compile('^ *end *(module|program) +([a-z][a-z0-9_]*)', re.IGNORECASE)
+        r = re.compile('^ *end *(module|program) *([a-z][a-z0-9_]*|)', re.IGNORECASE)
         m = r.search(self.__line)
         if m:
             if not self.__module:
                 self.__exit_error(msg='Unexpected "end '+m.group(1)+'" statement')
-            if self.__module != m.group(2):
+            if m.group(2) and self.__module != m.group(2):
                 self.__exit_error(msg='Was expecting "end '+m.group(1)+' '+self.__module+'"')
             self.__module = ''
             self.__use_stmt_in_module = False
@@ -944,6 +960,8 @@ def parse_args():
                       default='', type=str, dest='output_dir')
     parser.add_option('-o', '--output', help='Output file name to preprocess single file',
                       default='', type=str, dest='output_file')
+    parser.add_option('-r', '--recursive', help='Recursively process target directory and mirror tree',
+                      default=False, action='store_true', dest='recursive')
     parser.add_option('-v', '--verbose', help='Enable verbose execution',
                       default=False, action='store_true', dest='verbose')
     parser.add_option('-p', '--no-prefix', help='Don\'t generate preprocessing macro definition for ACC_PREFIX',
@@ -957,13 +975,28 @@ def parse_args():
         parser.error('Need at least one source file to process')
     if options.output_file and len(args) > 1:
         parser.error('Single source file required if output file is given')
+    if options.recursive:
+        if not options.output_dir:
+            parser.error('Output directory is required with recursive option')
+        for indir in args:
+            if not os.path.isdir(indir):
+                parser.error('Arguments need to be directories with recursive option')
     return options, args
 
 if __name__ == "__main__":
     (options, args) = parse_args()
+    if options.recursive:
+        file_list = []
+        for indir in args:
+            build_tree(indir, options.output_dir, file_list, filter_fortran)
+        args = file_list
+
     for infile in args:
         if options.output_dir:
-            outfile = os.path.join(options.output_dir, os.path.basename(infile))
+            if options.recursive:
+                outfile = os.path.join(options.output_dir,os.path.sep.join([part for part in os.path.dirname(infile).rsplit(os.path.sep) if part != ''][1:]),os.path.basename(infile))
+            else:
+                outfile = os.path.join(options.output_dir, os.path.basename(infile))
         elif options.output_file:
             outfile = options.output_file
         else:
