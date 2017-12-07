@@ -61,14 +61,13 @@ def build_tree(src, dest, filtered_list, file_filter):
     if os.path.isdir(src):
         if not os.path.isdir(dest):
             os.makedirs(dest)
-        filtered_list.extend([os.path.join(src,f) for f in os.listdir(src) if os.path.isfile(os.path.join(src,f)) and file_filter(f)])
-        dirs = [f for f in os.listdir(src) if os.path.isdir(os.path.join(src,f))]
+        files = os.listdir(src)
+        filtered_list.extend([os.path.join(src,f) for f in files if os.path.isfile(os.path.join(src,f)) and file_filter(f)])
+        dirs = [f for f in files if os.path.isdir(os.path.join(src,f))]
         for d in dirs:
-            build_tree(os.path.join(src, d),
-                                    os.path.join(dest, d),
-                                    filtered_list, file_filter)
+            build_tree(os.path.join(src, d), os.path.join(dest, d), filtered_list, file_filter)
     else:
-        if os.path.isfile(src) and filter(src):
+        if os.path.isfile(src) and file_filter(src):
             filtered_list.append(src)
 
 class PpSer:
@@ -994,7 +993,9 @@ if __name__ == "__main__":
     for infile in args:
         if options.output_dir:
             if options.recursive:
-                outfile = os.path.join(options.output_dir,os.path.sep.join([part for part in os.path.dirname(infile).rsplit(os.path.sep) if part != ''][1:]),os.path.basename(infile))
+                outfile = os.path.join(options.output_dir,
+                                       os.path.sep.join([part for part in os.path.dirname(infile).rsplit(os.path.sep) if part != ''][1:]),
+                                       os.path.basename(infile))
             else:
                 outfile = os.path.join(options.output_dir, os.path.basename(infile))
         elif options.output_file:
