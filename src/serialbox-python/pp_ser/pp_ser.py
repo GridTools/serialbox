@@ -994,7 +994,7 @@ if __name__ == "__main__":
         if options.output_dir:
             if options.recursive:
                 outfile = os.path.join(options.output_dir,
-                                       os.path.sep.join([part for part in os.path.dirname(infile).rsplit(os.path.sep) if part != ''][1:]),
+                                       os.path.sep.join([p for p in os.path.dirname(infile).rsplit(os.path.sep) if p][1:]),
                                        os.path.basename(infile))
             else:
                 outfile = os.path.join(options.output_dir, os.path.basename(infile))
