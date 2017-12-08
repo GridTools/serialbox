@@ -686,7 +686,7 @@ class PpSer:
         if m:
             if not self.__module:
                 self.__exit_error(msg='Unexpected "end '+m.group(1)+'" statement')
-            if m.group(2) and self.__module != m.group(2):
+            if m.group(2) and self.__module.lower() != m.group(2).lower():
                 self.__exit_error(msg='Was expecting "end '+m.group(1)+' '+self.__module+'"')
             self.__module = ''
             self.__use_stmt_in_module = False
