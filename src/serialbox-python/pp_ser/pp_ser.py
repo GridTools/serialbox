@@ -55,7 +55,7 @@ def to_ascii(text):
         return str(text)
 
 def filter_fortran(f):
-    return (f.split('.')[-1].lower() == 'f90')
+    return (f.split('.')[-1].lower() in ['f90','inc','incf'])
 
 def build_tree(src, dest, filtered_list, file_filter):
     if os.path.isdir(src):
