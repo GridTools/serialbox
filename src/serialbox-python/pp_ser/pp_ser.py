@@ -601,23 +601,17 @@ class PpSer:
             self.__produce_use_stmt()
         elif m and m_cont: 
             # look ahead to find the correct line to insert the use statement
-            lookahead_index = self.__linenum
-            # set to line after the subroutine/function declaration
-            lookahead_index += 1
+            lookahead_index = self.__linenum + 1
+
             # look ahead
             nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
             r_continued_line = re.compile('^([^!]*)&', re.IGNORECASE)
-            false_skip = 0
-            if nextline == self.__line:
-                lookahead_index += 1
-                nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
-                false_skip = 1
             while r_continued_line.search(nextline):
                 self.__line += nextline 
                 lookahead_index += 1
                 nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
             self.__line += nextline
-            self.__skip_next_n_lines = lookahead_index - self.__linenum - false_skip
+            self.__skip_next_n_lines = lookahead_index - self.__linenum
             self.__produce_use_stmt()
         return m
 
@@ -804,19 +798,20 @@ class PpSer:
         try:
             self.line = ''
             for line in input_file:
+                # Skip line already handled
                 if(self.__skip_next_n_lines > 0):
                     self.__skip_next_n_lines -= 1
                     self.__linenum += 1
                     continue
+                self.__linenum += 1
+
                 # handle line continuation (next line coming in)
                 if self.__line:
                     if re.match('^ *!\$ser& ', line, re.IGNORECASE):
                         line = re.sub('^ *!\$ser& *', ' ', line, re.IGNORECASE)
-                        self.__linenum += 1
                     else:
                         self.__exit_error(msg='Incorrect line continuation encountered')
                 self.__line += line
-                self.__linenum += 1
                 # handle line continuation (continued line going out)
                 if re.match('^ *!\$ser *(.*) & *$', self.__line, re.IGNORECASE):
                     # chop trailing &
