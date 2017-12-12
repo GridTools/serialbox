@@ -806,11 +806,13 @@ class PpSer:
             for line in input_file:
                 if(self.__skip_next_n_lines > 0):
                     self.__skip_next_n_lines -= 1
+                    self.__linenum += 1
                     continue
                 # handle line continuation (next line coming in)
                 if self.__line:
                     if re.match('^ *!\$ser& ', line, re.IGNORECASE):
                         line = re.sub('^ *!\$ser& *', ' ', line, re.IGNORECASE)
+                        self.__linenum += 1
                     else:
                         self.__exit_error(msg='Incorrect line continuation encountered')
                 self.__line += line
