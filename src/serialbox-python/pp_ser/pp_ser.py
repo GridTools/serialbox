@@ -840,6 +840,8 @@ class PpSer:
         # write output
         if self.outfile != '':
             output_file = tempfile.NamedTemporaryFile(delete=False)
+            # same permissions as infile
+            os.chmod(output_file.name, os.stat(self.infile).st_mode)
             output_file.write(to_ascii(self.__outputBuffer))
             output_file.close()
             useit = True
