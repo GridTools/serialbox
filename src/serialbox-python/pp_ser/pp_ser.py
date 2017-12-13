@@ -268,7 +268,7 @@ class PpSer:
         else:
             if_pos = len(args)
 
-        l += tab + 'call ' + self.methods['init'] + '(' + ','.join(args[1:if_pos]) + ')\n'
+        l += tab + 'call ' + self.methods['init'] + '( &\n' + ' '*11 + (', &\n' + ' '*11).join(args[1:if_pos]) + ')\n'
         if if_statement:
             l += 'ENDIF\n'
         self.__calls.add(self.methods['init'])
