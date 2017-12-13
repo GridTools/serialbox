@@ -119,7 +119,11 @@ SUBROUTINE ppser_initialize(directory, prefix, mode, prefix_ref, mpi_rank, rprec
   ppser_intlength = INT(SIZE(TRANSFER(intvalue, buffer)))
 
   ! Get name of real
-  ppser_realtype = 'double'
+  IF ( ppser_reallength == 4 ) THEN
+    ppser_realtype = 'float'
+  ELSE
+    ppser_realtype = 'double'
+  END IF
 
   IF ( PRESENT(rprecision) .AND. PRESENT(rperturb) ) THEN
     ! generate epsilon
