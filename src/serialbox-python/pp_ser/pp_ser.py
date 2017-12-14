@@ -4,7 +4,7 @@
 ##
 ##                                   S E R I A L B O X
 ##
-## This file is distributed under terms of BSD license. 
+## This file is distributed under terms of BSD license.
 ## See LICENSE.txt for more information.
 ##
 ##===------------------------------------------------------------------------------------------===##
@@ -54,21 +54,24 @@ def to_ascii(text):
     else:
         return str(text)
 
+
 def filter_fortran(f):
-    return (f.split('.')[-1].lower() in ['f90','inc','incf'])
+    return (f.split('.')[-1].lower() in ['f90', 'inc', 'incf', 'f', 'f03'])
+
 
 def build_tree(src, dest, filtered_list, file_filter):
     if os.path.isdir(src):
         if not os.path.isdir(dest):
             os.makedirs(dest)
         files = os.listdir(src)
-        filtered_list.extend([os.path.join(src,f) for f in files if os.path.isfile(os.path.join(src,f)) and file_filter(f)])
-        dirs = [f for f in files if os.path.isdir(os.path.join(src,f))]
+        filtered_list.extend([os.path.join(src, f) for f in files if os.path.isfile(os.path.join(src, f)) and file_filter(f)])
+        dirs = [f for f in files if os.path.isdir(os.path.join(src, f))]
         for d in dirs:
             build_tree(os.path.join(src, d), os.path.join(dest, d), filtered_list, file_filter)
     else:
         if os.path.isfile(src) and file_filter(src):
             filtered_list.append(src)
+
 
 class PpSer:
 
@@ -140,17 +143,17 @@ class PpSer:
         self.intentin_removed = []
 
         # private variables
-        self.__ser = False           # currently processing !$SER directives
-        self.__line = ''             # current line
-        self.__linenum = 0           # current line number
-        self.__module = ''           # current module
-        self.__calls = set()         # calls to serialization module
-        self.__outputBuffer = ''     # preprocessed file
+        self.__ser = False            # currently processing !$SER directives
+        self.__line = ''              # current line
+        self.__linenum = 0            # current line number
+        self.__module = ''            # current module
+        self.__calls = set()          # calls to serialization module
+        self.__outputBuffer = ''      # preprocessed file
         self.__use_stmt_in_module = False  # USE statement was inserted in module
-        self.__extra_module = []     # extra module to add to use statement
-        self.__skip_next_n_lines = 0 # Number of line to skip (use for lookahead)
+        self.__extra_module = []      # extra module to add to use statement
+        self.__skip_next_n_lines = 0  # Number of line to skip (use for lookahead)
 
-        if modules: 
+        if modules:
             self.__extra_module = modules.split(',')
 
         # define compute sign used in field definition. If one is matched,
@@ -614,7 +617,7 @@ class PpSer:
         m_cont = r_cont.search(self.__line)
         if m and not m_cont:
             self.__produce_use_stmt()
-        elif m and m_cont: 
+        elif m and m_cont:
             # look ahead to find the correct line to insert the use statement
             lookahead_index = self.__linenum
             # set to line after the subroutine/function declaration
@@ -628,7 +631,7 @@ class PpSer:
                 nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
                 false_skip = 1
             while r_continued_line.search(nextline):
-                self.__line += nextline 
+                self.__line += nextline
                 lookahead_index += 1
                 nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
             self.__line += nextline
