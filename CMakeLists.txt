@@ -364,8 +364,10 @@ if(SERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM)
       set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} 
                                        ${STD_FILESYSTEM_LIB})
       add_definitions(-DSERIALBOX_USE_EXPERIMENTAL_FILESYSTEM)
+      set(SERIALBOX_FILESYSTEM_LIBRARY_STRING "SERIALBOX_USE_STD_EXPERIMENTAL_FILESYSTEM")
     else()
       message(STATUS "std::experimental::filesystem not found, using boost::filesystem")
+      set(SERIALBOX_FILESYSTEM_LIBRARY_STRING "SERIALBOX_USE_BOOST_FILESYSTEM")
     endif()
 else()
   unset(STD_FILESYSTEM_LIB CACHE) #in case it was set by a previous run
@@ -548,7 +550,7 @@ endif(SERIALBOX_CODE_COVERAGE)
 # Generate serialbox/core/Config.h
 set(SERIALBOX_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
 set(SERIALBOX_CXX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/src/serialbox/core/Config.h.cmake)
-set(SERIALBOX_CXX_CONFIG_FILE ${CMAKE_BINARY_DIR}/src/serialbox/core/Config.h)
+set(SERIALBOX_CXX_CONFIG_FILE ${PROJECT_SOURCE_DIR}/src/serialbox/core/Config.h)
 configure_file(${SERIALBOX_CXX_CONFIG_FILE_IN} ${SERIALBOX_CXX_CONFIG_FILE})
 install(FILES ${SERIALBOX_CXX_CONFIG_FILE} 
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox/core)
