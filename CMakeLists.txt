@@ -346,7 +346,7 @@ endif(SERIALBOX_TESTING_GRIDTOOLS)
 
 #---------------------------------------- std::experimental::filesystem ----------------------------
 if(SERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM)
-    find_library( STD_FILESYSTEM_LIB NAMES stdc++fs PATHS
+    find_library( STD_FILESYSTEM_LIB_CHECK NAMES stdc++fs PATHS
         /usr/lib/gcc/x86_64-linux-gnu/5
         /usr/lib/gcc/x86_64-linux-gnu/6
         /usr/lib/gcc/x86_64-linux-gnu/7
@@ -358,8 +358,9 @@ if(SERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM)
         /usr/lib64/
         /usr/lib/
         ENV LD_LIBRARY_PATH)
-    if( STD_FILESYSTEM_LIB )
+    if( STD_FILESYSTEM_LIB_CHECK )
       message(STATUS "Using std::experimental::filesystem (no dependency on compiled boost libs)")
+      set(STD_FILESYSTEM_LIB "-lstdc++fs")
       set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} 
                                        ${STD_FILESYSTEM_LIB})
       add_definitions(-DSERIALBOX_USE_EXPERIMENTAL_FILESYSTEM)

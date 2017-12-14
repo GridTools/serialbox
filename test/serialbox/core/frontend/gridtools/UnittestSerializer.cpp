@@ -12,8 +12,6 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifdef SERIALBOX_HAS_GRIDTOOLS
-
 #include "utility/GridTools.h"
 #include "utility/SerializerTestBase.h"
 #include "utility/Storage.h"
@@ -21,6 +19,7 @@
 #include <gtest/gtest.h>
 #include <memory>
 
+#ifdef SERIALBOX_HAS_GRIDTOOLS
 using namespace serialbox::gridtools;
 using namespace serialbox::unittest;
 
