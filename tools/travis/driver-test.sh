@@ -33,7 +33,8 @@ else # Linux
   fi
 
   export SERIALBOX_PYTHON3_BIN=`which python3`
-  "$SERIALBOX_PYTHON3_BIN" install nose numpy
+  export SERIALBOX_PYTHON3_PIP=`which pip3`
+  "$SERIALBOX_PYTHON3_PIP" install nose numpy
 fi
   
 export CXX=${CXX_COMPILER}
