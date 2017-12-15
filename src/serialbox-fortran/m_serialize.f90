@@ -2382,7 +2382,7 @@ SUBROUTINE fs_read_float_0d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "float", fs_floatsize(), 1, 1, 1, 1)
+  CALL fs_check_size(serializer, fieldname, "float", fs_floatsize(), 1, 0, 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), &
                        istride, jstride, kstride, lstride)
@@ -2514,7 +2514,7 @@ SUBROUTINE fs_read_double_0d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "double", fs_doublesize(), 1, 1, 1, 1)
+  CALL fs_check_size(serializer, fieldname, "double", fs_doublesize(), 1, 0, 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), &
                        istride, jstride, kstride, lstride)
