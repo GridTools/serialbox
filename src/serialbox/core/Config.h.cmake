@@ -16,7 +16,6 @@
 
 #ifndef SERIALBOX_CORE_CONFIG_H
 #define SERIALBOX_CORE_CONFIG_H
-
 /* Define if this is Unixish platform */
 #cmakedefine SERIALBOX_ON_UNIX ${SERIALBOX_ON_UNIX}
 
@@ -44,8 +43,11 @@
 /* Define if NetCDF is available */
 #cmakedefine SERIALBOX_HAS_NETCDF ${SERIALBOX_HAS_NETCDF}
 
-/* SERIALBOX was compiled with logging support (requires Boost.Log) */
+/* SERIALBOX was compiled with logging support */
 #cmakedefine SERIALBOX_HAS_LOGGING ${SERIALBOX_HAS_LOGGING}
+
+/* SERIALBOX was compiled with the following filesystem */
+#define ${SERIALBOX_FILESYSTEM_LIBRARY_STRING}
 
 #endif
 

@@ -346,7 +346,7 @@ endif(SERIALBOX_TESTING_GRIDTOOLS)
 
 #---------------------------------------- std::experimental::filesystem ----------------------------
 if(SERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM)
-    find_library( STD_FILESYSTEM_LIB NAMES stdc++fs PATHS
+    find_library( STD_FILESYSTEM_LIB_CHECK NAMES stdc++fs PATHS
         /usr/lib/gcc/x86_64-linux-gnu/5
         /usr/lib/gcc/x86_64-linux-gnu/6
         /usr/lib/gcc/x86_64-linux-gnu/7
@@ -358,13 +358,16 @@ if(SERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM)
         /usr/lib64/
         /usr/lib/
         ENV LD_LIBRARY_PATH)
-    if( STD_FILESYSTEM_LIB )
+    if( STD_FILESYSTEM_LIB_CHECK )
       message(STATUS "Using std::experimental::filesystem (no dependency on compiled boost libs)")
+      set(STD_FILESYSTEM_LIB "-lstdc++fs")
       set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} 
                                        ${STD_FILESYSTEM_LIB})
       add_definitions(-DSERIALBOX_USE_EXPERIMENTAL_FILESYSTEM)
+      set(SERIALBOX_FILESYSTEM_LIBRARY_STRING "SERIALBOX_USE_STD_EXPERIMENTAL_FILESYSTEM")
     else()
       message(STATUS "std::experimental::filesystem not found, using boost::filesystem")
+      set(SERIALBOX_FILESYSTEM_LIBRARY_STRING "SERIALBOX_USE_BOOST_FILESYSTEM")
     endif()
 else()
   unset(STD_FILESYSTEM_LIB CACHE) #in case it was set by a previous run
@@ -547,7 +550,7 @@ endif(SERIALBOX_CODE_COVERAGE)
 # Generate serialbox/core/Config.h
 set(SERIALBOX_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
 set(SERIALBOX_CXX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/src/serialbox/core/Config.h.cmake)
-set(SERIALBOX_CXX_CONFIG_FILE ${CMAKE_BINARY_DIR}/src/serialbox/core/Config.h)
+set(SERIALBOX_CXX_CONFIG_FILE ${PROJECT_SOURCE_DIR}/src/serialbox/core/Config.h)
 configure_file(${SERIALBOX_CXX_CONFIG_FILE_IN} ${SERIALBOX_CXX_CONFIG_FILE})
 install(FILES ${SERIALBOX_CXX_CONFIG_FILE} 
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox/core)
