@@ -21,7 +21,7 @@ To build Serialbox you need a C++11 toolchain, `CMake <http://www.cmake.org/>`_ 
 
    .. code-block:: console
 
-     $ git clone https://github.com/thfabian/serialbox2.git
+     $ git clone https://github.com/eth-cscs/serialbox2.git
      $ cd serialbox2
      $ mkdir build
      $ cd build

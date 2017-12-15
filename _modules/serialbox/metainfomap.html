@@ -6,13 +6,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>serialbox.metainfomap &#8212; Serialbox 2.0.1 documentation</title>
+    <title>serialbox.metainfomap &#8212; Serialbox 2.2.0 documentation</title>
     <link rel="stylesheet" href="../../_static/serialbox-theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '2.0.1',
+        VERSION:     '2.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -39,7 +39,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.2.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>
@@ -83,7 +83,7 @@
 <span class="kn">from</span> <span class="nn">ctypes</span> <span class="k">import</span> <span class="p">(</span><span class="n">c_void_p</span><span class="p">,</span> <span class="n">c_bool</span><span class="p">,</span> <span class="n">c_int</span><span class="p">,</span> <span class="n">c_int32</span><span class="p">,</span> <span class="n">c_int64</span><span class="p">,</span> <span class="n">c_float</span><span class="p">,</span> <span class="n">c_double</span><span class="p">,</span> <span class="n">c_char_p</span><span class="p">,</span>
                     <span class="n">Structure</span><span class="p">,</span> <span class="n">POINTER</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">get_library</span><span class="p">,</span> <span class="n">extract_string</span>
+<span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">get_library</span><span class="p">,</span> <span class="n">to_c_string</span>
 <span class="kn">from</span> <span class="nn">.error</span> <span class="k">import</span> <span class="n">invoke</span><span class="p">,</span> <span class="n">SerialboxError</span>
 <span class="kn">from</span> <span class="nn">.type</span> <span class="k">import</span> <span class="o">*</span>
 
@@ -408,7 +408,7 @@
 <span class="sd">        :raises TypeError: if `typeid` is not a serialbox.TypeID or int</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">isArray</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">keystr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">key</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">keystr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">key</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">typeid</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">typeid</span><span class="p">,</span> <span class="n">TypeID</span><span class="p">):</span>
             <span class="n">typeid</span> <span class="o">=</span> <span class="n">typeid</span><span class="o">.</span><span class="n">value</span>
@@ -471,7 +471,7 @@
 
         <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">String</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="n">ret</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoAddString</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">,</span>
-                         <span class="n">extract_string</span><span class="p">(</span><span class="n">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                         <span class="n">to_c_string</span><span class="p">(</span><span class="n">value</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">ArrayOfBoolean</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="n">array</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfBooleanCreate</span><span class="p">,</span> <span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
@@ -511,7 +511,7 @@
         <span class="k">elif</span> <span class="n">typeid</span> <span class="ow">is</span> <span class="n">TypeID</span><span class="o">.</span><span class="n">ArrayOfString</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
             <span class="n">array</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfStringCreate</span><span class="p">,</span> <span class="n">c_int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">len</span><span class="p">):</span>
-                <span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">array</span><span class="o">.</span><span class="n">contents</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">ret</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoAddArrayOfString</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
             <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxArrayOfStringDestroy</span><span class="p">,</span> <span class="n">array</span><span class="p">)</span>
 
@@ -545,7 +545,7 @@
 <span class="sd">        :return: True if element with `key` exists, False otherwise</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">keystr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">key</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">keystr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">key</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoHasKey</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="MetainfoMap.clear"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -620,7 +620,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">StringTypes</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;parameter &#39;key&#39; is not a string (type: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
-        <span class="n">keystr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">key</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">keystr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">key</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="c1">#</span>
         <span class="c1"># Get typeid</span>
@@ -703,7 +703,7 @@
     <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">StringTypes</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;parameter &#39;key&#39; is not a string (type: </span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
-        <span class="n">keystr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">key</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">keystr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">key</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxMetainfoDeleteKey</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__metainfomap</span><span class="p">,</span> <span class="n">keystr</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MetainfoMap.__iter__"><a class="viewcode-back" href="../../Python.html#serialbox.MetainfoMap.__iter__">[docs]</a>    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -748,12 +748,12 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.2.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016, Fabian Thüring.
+        &#169; Copyright 2017, ETH Zurich.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
     </div>
   </body>

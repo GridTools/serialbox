@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo-small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Serialbox
-   &#160;<span id="projectnumber">2.1.1</span>
+   &#160;<span id="projectnumber">2.2.0</span>
    </div>
    <div id="projectbrief">Data serialization library and tools for C/C++, Python and Fortran</div>
   </td>
@@ -132,10 +132,6 @@ const <a class="el" href="classserialbox_1_1stella_1_1MetainfoSet.html">Metainfo
 <tr class="memitem:accf39f0d00064e919a0c221df1ec67f0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classserialbox_1_1stella_1_1DataFieldInfo.html">DataFieldInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1stella_1_1Serializer.html#accf39f0d00064e919a0c221df1ec67f0">FindField</a> (const std::string &amp;fieldname) const</td></tr>
 <tr class="memdesc:accf39f0d00064e919a0c221df1ec67f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gives access to field info.  <a href="#accf39f0d00064e919a0c221df1ec67f0">More...</a><br /></td></tr>
 <tr class="separator:accf39f0d00064e919a0c221df1ec67f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad742b7854c35409e1a26dc7d21d495eb"><td class="memTemplParams" colspan="2">template&lt;typename TDataField &gt; </td></tr>
-<tr class="memitem:ad742b7854c35409e1a26dc7d21d495eb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classserialbox_1_1stella_1_1Serializer.html#ad742b7854c35409e1a26dc7d21d495eb">InitializeField</a> (const std::string &amp;fieldname, TDataField &amp;field, bool hasStorageInI, bool hasStorageInJ) const</td></tr>
-<tr class="memdesc:ad742b7854c35409e1a26dc7d21d495eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the field according to the information present in the serializer.  <a href="#ad742b7854c35409e1a26dc7d21d495eb">More...</a><br /></td></tr>
-<tr class="separator:ad742b7854c35409e1a26dc7d21d495eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0e90d8dae476fedec3b8654f2e7d109d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1stella_1_1Serializer.html#a0e90d8dae476fedec3b8654f2e7d109d">fieldnames</a> () const</td></tr>
 <tr class="memdesc:a0e90d8dae476fedec3b8654f2e7d109d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gives access to the registered fields.  <a href="#a0e90d8dae476fedec3b8654f2e7d109d">More...</a><br /></td></tr>
 <tr class="separator:a0e90d8dae476fedec3b8654f2e7d109d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -148,17 +144,9 @@ const <a class="el" href="classserialbox_1_1stella_1_1MetainfoSet.html">Metainfo
 <tr class="memitem:abad2ef718e5d78622c0de3ec030dcba1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1stella_1_1Serializer.html#abad2ef718e5d78622c0de3ec030dcba1">WriteField</a> (const std::string &amp;fieldName, const <a class="el" href="classserialbox_1_1stella_1_1Savepoint.html">Savepoint</a> &amp;savepoint, const void *pData, int iStride, int jStride, int kStride, int lStride)</td></tr>
 <tr class="memdesc:abad2ef718e5d78622c0de3ec030dcba1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes data to file.  <a href="#abad2ef718e5d78622c0de3ec030dcba1">More...</a><br /></td></tr>
 <tr class="separator:abad2ef718e5d78622c0de3ec030dcba1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11f18169d615466347cc3b6d52c951e0"><td class="memTemplParams" colspan="2">template&lt;typename TDataField &gt; </td></tr>
-<tr class="memitem:a11f18169d615466347cc3b6d52c951e0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classserialbox_1_1stella_1_1Serializer.html#a11f18169d615466347cc3b6d52c951e0">WriteField</a> (std::string name, const TDataField &amp;field, const <a class="el" href="classserialbox_1_1stella_1_1Savepoint.html">Savepoint</a> &amp;savepoint, const int iStride, const int jStride, const int kStride)</td></tr>
-<tr class="memdesc:a11f18169d615466347cc3b6d52c951e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializes a data field.  <a href="#a11f18169d615466347cc3b6d52c951e0">More...</a><br /></td></tr>
-<tr class="separator:a11f18169d615466347cc3b6d52c951e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4401e417401b1298fd29cbf51363caef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1stella_1_1Serializer.html#a4401e417401b1298fd29cbf51363caef">ReadField</a> (const std::string &amp;fieldName, const <a class="el" href="classserialbox_1_1stella_1_1Savepoint.html">Savepoint</a> &amp;savepoint, void *pData, int iStride, int jStride, int kStride, int lStride, bool alsoPrevious=false) const</td></tr>
 <tr class="memdesc:a4401e417401b1298fd29cbf51363caef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserializes data from file.  <a href="#a4401e417401b1298fd29cbf51363caef">More...</a><br /></td></tr>
 <tr class="separator:a4401e417401b1298fd29cbf51363caef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab19293457603768f109c5d74126b98dd"><td class="memTemplParams" colspan="2">template&lt;typename TDataField &gt; </td></tr>
-<tr class="memitem:ab19293457603768f109c5d74126b98dd"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classserialbox_1_1stella_1_1Serializer.html#ab19293457603768f109c5d74126b98dd">ReadField</a> (std::string name, TDataField &amp;field, const <a class="el" href="classserialbox_1_1stella_1_1Savepoint.html">Savepoint</a> &amp;savepoint, bool hasStorageInI, bool hasStorageInJ, const int iStride, const int jStride, const int kStride, bool alsoPrevious=false) const</td></tr>
-<tr class="memdesc:ab19293457603768f109c5d74126b98dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deserializes a data field.  <a href="#ab19293457603768f109c5d74126b98dd">More...</a><br /></td></tr>
-<tr class="separator:ab19293457603768f109c5d74126b98dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a798dcf805a1d132f08cb8fdfe318295c"><td class="memItemLeft" align="right" valign="top"><a id="a798dcf805a1d132f08cb8fdfe318295c"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1stella_1_1Serializer.html#a798dcf805a1d132f08cb8fdfe318295c">ToString</a> () const</td></tr>
 <tr class="memdesc:a798dcf805a1d132f08cb8fdfe318295c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert to string. <br /></td></tr>
@@ -202,7 +190,7 @@ Static Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implementation of the STELLA <a class="el" href="classserialbox_1_1stella_1_1Serializer.html" title="Implementation of the STELLA Serializer. ">Serializer</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html#l00047">47</a> of file <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html">Serializer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html#l00052">52</a> of file <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html">Serializer.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="ab3d89ed30bd3ca17c0634a2b984a9b6f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab3d89ed30bd3ca17c0634a2b984a9b6f">&#9670;&nbsp;</a></span>AddFieldMetainfo()</h2>
@@ -291,7 +279,7 @@ template&lt;typename ValueType &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html#l00114">114</a> of file <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html">Serializer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html#l00119">119</a> of file <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html">Serializer.h</a>.</p>
 
 </div>
 </div>
@@ -502,57 +490,6 @@ template&lt;typename ValueType &gt; </div>
 
 </div>
 </div>
-<a id="ad742b7854c35409e1a26dc7d21d495eb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad742b7854c35409e1a26dc7d21d495eb">&#9670;&nbsp;</a></span>InitializeField()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename TDataField &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void serialbox::stella::Serializer::InitializeField </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>fieldname</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">TDataField &amp;&#160;</td>
-          <td class="paramname"><em>field</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>hasStorageInI</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>hasStorageInJ</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Initializes the field according to the information present in the serializer. </p>
-<p>The provided field will be initialized with the provided name and with the ize and boundary present in the serializer.</p>
-<p>This method requires the STELLA headers (i.e expects <code><a class="el" href="classserialbox_1_1stella_1_1IJKSize.html" title="Container for i, j, k Size. ">IJKSize</a></code> and <code><a class="el" href="classserialbox_1_1stella_1_1KBoundary.html" title="Container for boundary offsets in k direction. ">KBoundary</a></code> to be present in global namespace) and thus requires you to define: </p><div class="fragment"><div class="line"><span class="preprocessor">#define SERIALBOX_HAS_STELLA 1</span></div></div><!-- fragment --><dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classserialbox_1_1stella_1_1SerializationException.html" title="Exception of the STELLA frontend. ">SerializationException</a></td><td>The field is not registered or the field type is incompatible with the ij boundary specified in the serializer </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="a5582acc4c389f882c12de411531b98d4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5582acc4c389f882c12de411531b98d4">&#9670;&nbsp;</a></span>mode()</h2>
 
@@ -598,7 +535,7 @@ template&lt;typename TDataField &gt; </div>
 </div>
 </div>
 <a id="a4401e417401b1298fd29cbf51363caef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4401e417401b1298fd29cbf51363caef">&#9670;&nbsp;</a></span>ReadField() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a4401e417401b1298fd29cbf51363caef">&#9670;&nbsp;</a></span>ReadField()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -682,94 +619,6 @@ template&lt;typename TDataField &gt; </div>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="core_2frontend_2stella_2Serializer_8cpp_source.html#l00267">267</a> of file <a class="el" href="core_2frontend_2stella_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
-
-</div>
-</div>
-<a id="ab19293457603768f109c5d74126b98dd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab19293457603768f109c5d74126b98dd">&#9670;&nbsp;</a></span>ReadField() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename TDataField &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void serialbox::stella::Serializer::ReadField </td>
-          <td>(</td>
-          <td class="paramtype">std::string&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">TDataField &amp;&#160;</td>
-          <td class="paramname"><em>field</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classserialbox_1_1stella_1_1Savepoint.html">Savepoint</a> &amp;&#160;</td>
-          <td class="paramname"><em>savepoint</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>hasStorageInI</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>hasStorageInJ</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>iStride</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>jStride</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>kStride</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>alsoPrevious</em> = <code>false</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Deserializes a data field. </p>
-<p>This overload of the method works only with STELLA data types. If the provided name is empty the name of the data field will be used. The field must be initialized already with the correct size and boundaries. If these do not match with the serialized field a <a class="el" href="classserialbox_1_1stella_1_1SerializationException.html" title="Exception of the STELLA frontend. ">SerializationException</a> is raised.</p>
-<p>CUDA fields will be synchronized to the host before being accessed. They are <b>not</b> synchronized back to the device at the end.</p>
-<p>See the main ReadField method to see cases of exception raising.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">name</td><td>The name of the field (if empty the name of the field object is used) </td></tr>
-    <tr><td class="paramname">field</td><td>The STELLA data type where the data will be loaded </td></tr>
-    <tr><td class="paramname">savepoint</td><td>The savepoint at which the field will be registed. </td></tr>
-    <tr><td class="paramname">alsoPrevious</td><td>Whether to search in previous savepoints with the same name until a valid entry is found [IGNORED] </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html#l00362">362</a> of file <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html">Serializer.h</a>.</p>
 
 </div>
 </div>
@@ -937,12 +786,12 @@ template&lt;typename TDataField &gt; </div>
 <p>Gives access to the list of savepoints. </p>
 <dl class="section return"><dt>Returns</dt><dd>A constant reference to the underlying savepoints vector is returned </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html#l00198">198</a> of file <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html">Serializer.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html#l00186">186</a> of file <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html">Serializer.h</a>.</p>
 
 </div>
 </div>
 <a id="abad2ef718e5d78622c0de3ec030dcba1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abad2ef718e5d78622c0de3ec030dcba1">&#9670;&nbsp;</a></span>WriteField() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#abad2ef718e5d78622c0de3ec030dcba1">&#9670;&nbsp;</a></span>WriteField()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1022,81 +871,6 @@ template&lt;typename TDataField &gt; </div>
 
 </div>
 </div>
-<a id="a11f18169d615466347cc3b6d52c951e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a11f18169d615466347cc3b6d52c951e0">&#9670;&nbsp;</a></span>WriteField() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename TDataField &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void serialbox::stella::Serializer::WriteField </td>
-          <td>(</td>
-          <td class="paramtype">std::string&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const TDataField &amp;&#160;</td>
-          <td class="paramname"><em>field</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classserialbox_1_1stella_1_1Savepoint.html">Savepoint</a> &amp;&#160;</td>
-          <td class="paramname"><em>savepoint</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>iStride</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>jStride</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>kStride</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Serializes a data field. </p>
-<p>This overload of the method works only with STELLA data types. This will automatically register the field with the provided name and serialize the field. If the provided name is empty the name of the data field will be used.</p>
-<p>CUDA fields will be synchronized to the host before being accessed. They are <b>not</b> synchronized back to the device at the end.</p>
-<p>See the main WriteField method to see other cases of exception raising.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">name</td><td>The name of the field (if empty the name of the field object is used) </td></tr>
-    <tr><td class="paramname">field</td><td>The STELLA data type contianing the information </td></tr>
-    <tr><td class="paramname">savepoint</td><td>The savepoint at which the field will be registed.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"><a class="el" href="classserialbox_1_1stella_1_1SerializationException.html" title="Exception of the STELLA frontend. ">SerializationException</a></td><td>The registration fails because of inconsistent registration of fields with same name and different properties or the field is already saved at the savepoint </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html#l00334">334</a> of file <a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html">Serializer.h</a>.</p>
-
-</div>
-</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/serialbox/core/frontend/stella/<a class="el" href="core_2frontend_2stella_2Serializer_8h_source.html">Serializer.h</a></li>
 <li>src/serialbox/core/frontend/stella/<a class="el" href="core_2frontend_2stella_2Serializer_8cpp_source.html">Serializer.cpp</a></li>
@@ -1107,7 +881,7 @@ template&lt;typename TDataField &gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceserialbox.html">serialbox</a></li><li class="navelem"><b>stella</b></li><li class="navelem"><a class="el" href="classserialbox_1_1stella_1_1Serializer.html">Serializer</a></li>
-    <li class="footer">Generated on Fri Nov 24 2017 09:27:16 for Serialbox by
+    <li class="footer">Generated on Fri Dec 15 2017 10:48:31 for Serialbox by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>
