@@ -54,8 +54,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Serialbox'
-copyright = u'2016, Fabian Thüring'
-author = u'Fabian Thüring'
+copyright = u'2017, ETH Zurich'
+author = u'Fabian Thüring, ETH Zurich, MeteoSwiss'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -239,7 +239,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'Serialbox.tex', u'Serialbox Documentation',
-     u'Fabian Thüring', 'manual'),
+     u'Fabian Thüring, ETH Zurich, MeteoSwiss', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
