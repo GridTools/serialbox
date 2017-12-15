@@ -249,6 +249,7 @@ def compare_fields(serializers, field, savepoint, dim_bounds):
             rel_error = abs((value_2 - value_1) / value_2) if abs(value_2) > 1.0 else 0
             err = rel_error if abs(value_2) > 1.0 else abs_error
 
+
             # Check error
             if err > tol:
                 errors += [
@@ -435,6 +436,7 @@ def main(arguments=None):
     get_config().FIELD_INFO_ONLY = args.field_info_only
     get_config().MAX_ERRORS = args.max_errors
     get_config().SAVEPOINT_REGEX = args.savepoint_regex
+    get_config().TOL = float(args.tolerance)
 
     path_1, path_2 = (args.FILE_1[0], args.FILE_2[0])
 
