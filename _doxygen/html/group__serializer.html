@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo-small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Serialbox
-   &#160;<span id="projectnumber">2.1.1</span>
+   &#160;<span id="projectnumber">2.2.0</span>
    </div>
    <div id="projectbrief">Data serialization library and tools for C/C++, Python and Fortran</div>
   </td>
@@ -105,12 +105,12 @@ $(document).ready(function(){initNavTree('group__serializer.html','');});
 <tr class="memitem:ga8ae3dc4e0b0762a85a126244ae50327f"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__serializer.html#ga8ae3dc4e0b0762a85a126244ae50327f">serialboxSerializerGetMode</a> (const <a class="el" href="structserialboxSerializer__t.html">serialboxSerializer_t</a> *serializer)</td></tr>
 <tr class="memdesc:ga8ae3dc4e0b0762a85a126244ae50327f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return mode of the Serializer.  <a href="#ga8ae3dc4e0b0762a85a126244ae50327f">More...</a><br /></td></tr>
 <tr class="separator:ga8ae3dc4e0b0762a85a126244ae50327f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf5dee035b813a43a333e2d296190f146"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__serializer.html#gaf5dee035b813a43a333e2d296190f146">serialboxSerializerGetDirectory</a> (const <a class="el" href="structserialboxSerializer__t.html">serialboxSerializer_t</a> *serializer)</td></tr>
-<tr class="memdesc:gaf5dee035b813a43a333e2d296190f146"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the directory of the Serializer.  <a href="#gaf5dee035b813a43a333e2d296190f146">More...</a><br /></td></tr>
-<tr class="separator:gaf5dee035b813a43a333e2d296190f146"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae548f219da69861bdc86bc9d4b752374"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__serializer.html#gae548f219da69861bdc86bc9d4b752374">serialboxSerializerGetPrefix</a> (const <a class="el" href="structserialboxSerializer__t.html">serialboxSerializer_t</a> *serializer)</td></tr>
-<tr class="memdesc:gae548f219da69861bdc86bc9d4b752374"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the prefix of all filenames.  <a href="#gae548f219da69861bdc86bc9d4b752374">More...</a><br /></td></tr>
-<tr class="separator:gae548f219da69861bdc86bc9d4b752374"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0de36001675ac42941f8e9bb0f4cd6b8"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__serializer.html#ga0de36001675ac42941f8e9bb0f4cd6b8">serialboxSerializerGetDirectory</a> (const <a class="el" href="structserialboxSerializer__t.html">serialboxSerializer_t</a> *serializer)</td></tr>
+<tr class="memdesc:ga0de36001675ac42941f8e9bb0f4cd6b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the directory of the Serializer.  <a href="#ga0de36001675ac42941f8e9bb0f4cd6b8">More...</a><br /></td></tr>
+<tr class="separator:ga0de36001675ac42941f8e9bb0f4cd6b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga27f43a9da14009cdce54e1d9761e6a2f"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__serializer.html#ga27f43a9da14009cdce54e1d9761e6a2f">serialboxSerializerGetPrefix</a> (const <a class="el" href="structserialboxSerializer__t.html">serialboxSerializer_t</a> *serializer)</td></tr>
+<tr class="memdesc:ga27f43a9da14009cdce54e1d9761e6a2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the prefix of all filenames.  <a href="#ga27f43a9da14009cdce54e1d9761e6a2f">More...</a><br /></td></tr>
+<tr class="separator:ga27f43a9da14009cdce54e1d9761e6a2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadbfcb2c8557e489d261c5fca2a688c5f"><td class="memItemLeft" align="right" valign="top">SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__serializer.html#gadbfcb2c8557e489d261c5fca2a688c5f">serialboxSerializerUpdateMetaData</a> (<a class="el" href="structserialboxSerializer__t.html">serialboxSerializer_t</a> *serializer)</td></tr>
 <tr class="memdesc:gadbfcb2c8557e489d261c5fca2a688c5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write meta-data to disk.  <a href="#gadbfcb2c8557e489d261c5fca2a688c5f">More...</a><br /></td></tr>
 <tr class="separator:gadbfcb2c8557e489d261c5fca2a688c5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -272,7 +272,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00472">472</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00483">483</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -296,7 +296,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <p>The return value can be:</p>
 <p>0: the variable is not yet initialized -&gt; the serialization is enabled if the environment variable <code>STELLA_SERIALIZATION_DISABLE</code> or <code>SERIALBOX_SERIALIZATION_DISABLE</code> is not set to a positive value. The first Serializer which is initialized has to set this value either to +1 or to -1 according to the environment. +1: the serialization is enabled, independently of the environment -1: the serialization is disabled, independently of the environment </p>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00115">115</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00127">127</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -343,7 +343,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>1 if field was added successfully, 0 otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00214">214</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00226">226</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -482,7 +482,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>1 if field was added successfully, 0 otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00233">233</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00245">245</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -522,7 +522,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>1 if savepoint was added successfully, 0 otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00144">144</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00156">156</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -577,7 +577,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>refrence to the newly constructed Serializer or NULL if an error occurred </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00050">50</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00062">62</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -605,7 +605,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00078">78</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00090">90</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -644,18 +644,18 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00183">183</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00195">195</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
-<a id="gaf5dee035b813a43a333e2d296190f146"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaf5dee035b813a43a333e2d296190f146">&#9670;&nbsp;</a></span>serialboxSerializerGetDirectory()</h2>
+<a id="ga0de36001675ac42941f8e9bb0f4cd6b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga0de36001675ac42941f8e9bb0f4cd6b8">&#9670;&nbsp;</a></span>serialboxSerializerGetDirectory()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">SERIALBOX_API const char* serialboxSerializerGetDirectory </td>
+          <td class="memname">SERIALBOX_API char* serialboxSerializerGetDirectory </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structserialboxSerializer__t.html">serialboxSerializer_t</a> *&#160;</td>
           <td class="paramname"><em>serializer</em></td><td>)</td>
@@ -671,9 +671,9 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>directory of the Serializer as a null-terminated string </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>newly allocated null-terminated string of the directory of the Serializer </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00096">96</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00108">108</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -713,7 +713,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Refrence to the FieldMetainfoImpl if field exists, NULL otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00304">304</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00315">315</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -864,7 +864,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>1 if field was added successfully, 0 otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00317">317</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00328">328</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -893,7 +893,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Array of C-strings of the names of all registered fields </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00284">284</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00295">295</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -933,7 +933,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Array of C-strings of the names of all registered fields at <code>savepoint</code> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00190">190</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00202">202</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -962,7 +962,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>global meta-information of the serializer </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00132">132</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00144">144</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -991,7 +991,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>mode of the Serializer </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00091">91</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00103">103</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1020,18 +1020,18 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Number of registered savepoints </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00158">158</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00170">170</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
-<a id="gae548f219da69861bdc86bc9d4b752374"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gae548f219da69861bdc86bc9d4b752374">&#9670;&nbsp;</a></span>serialboxSerializerGetPrefix()</h2>
+<a id="ga27f43a9da14009cdce54e1d9761e6a2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga27f43a9da14009cdce54e1d9761e6a2f">&#9670;&nbsp;</a></span>serialboxSerializerGetPrefix()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">SERIALBOX_API const char* serialboxSerializerGetPrefix </td>
+          <td class="memname">SERIALBOX_API char* serialboxSerializerGetPrefix </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structserialboxSerializer__t.html">serialboxSerializer_t</a> *&#160;</td>
           <td class="paramname"><em>serializer</em></td><td>)</td>
@@ -1047,9 +1047,9 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>prefix of the Serializer as a null-terminated string </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>newly allocated null-terminated string of the prefix of the Serializer </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00101">101</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00113">113</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1080,7 +1080,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Newly allocated array of savepoints of length <a class="el" href="group__serializer.html#ga56181cfc0ec1a7642e6e48c3cea93c85">serialboxSerializerGetNumSavepoints</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00164">164</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00176">176</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1120,7 +1120,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>1 if <code>field</code> exists, 0 otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00228">228</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00240">240</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1160,7 +1160,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>1 if savepoint exists, 0 otherwise </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00151">151</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00163">163</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1227,7 +1227,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00393">393</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00404">404</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1296,7 +1296,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classserialbox_1_1SerializerImpl.html#a5ebd3d120f473628a5b4e9a2d2ec3b78" title="Asynchronously deserialize field name (given as storageView) at savepoint from disk using std::async...">serialbox::SerializerImpl::readAsync</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00429">429</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00440">440</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1370,7 +1370,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00408">408</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00419">419</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1398,7 +1398,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00106">106</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00118">118</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1465,7 +1465,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00378">378</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00389">389</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1547,7 +1547,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00457">457</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="c_2Serializer_8cpp_source.html#l00468">468</a> of file <a class="el" href="c_2Serializer_8cpp_source.html">Serializer.cpp</a>.</p>
 
 </div>
 </div>
@@ -1556,7 +1556,7 @@ SERIALBOX_API void&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Nov 24 2017 09:27:16 for Serialbox by
+    <li class="footer">Generated on Fri Dec 15 2017 10:48:31 for Serialbox by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

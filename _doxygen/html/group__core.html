@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo-small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Serialbox
-   &#160;<span id="projectnumber">2.1.1</span>
+   &#160;<span id="projectnumber">2.2.0</span>
    </div>
    <div id="projectbrief">Data serialization library and tools for C/C++, Python and Fortran</div>
   </td>
@@ -261,7 +261,7 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:gaccad43a85d781d53381cd53a9894b6ae"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core.html#gaccad43a85d781d53381cd53a9894b6ae">LOG</a>(severity)&#160;&#160;&#160;SERIALBOX_INTERNAL_LOG(severity)</td></tr>
-<tr class="memdesc:gaccad43a85d781d53381cd53a9894b6ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logging infrastructure based on trivial logger of Boost.Log.  <a href="#gaccad43a85d781d53381cd53a9894b6ae">More...</a><br /></td></tr>
+<tr class="memdesc:gaccad43a85d781d53381cd53a9894b6ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logging infrastructure.  <a href="#gaccad43a85d781d53381cd53a9894b6ae">More...</a><br /></td></tr>
 <tr class="separator:gaccad43a85d781d53381cd53a9894b6ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1381a767b442e157876afd363817cf9b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>SERIALBOX_INTERNAL_LOG</b>(severity)</td></tr>
 <tr class="separator:ga1381a767b442e157876afd363817cf9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -364,12 +364,11 @@ template&lt;&gt; </td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Logging infrastructure based on trivial logger of Boost.Log. </p>
+<p>Logging infrastructure. </p>
 <p>LOG The macro is used to initiate logging. The <code>lvl</code> argument of the macro specifies one of the following severity levels: <code>trace</code>, <code>debug</code>, <code>info</code>, <code>warning</code>, <code>error</code> or <code>fatal</code>.</p>
 <p>The logging can be completely turned off by defining <code>SERIALBOX_DISABLE_LOGGING</code>.</p>
-<div class="fragment"><div class="line"><a class="code" href="group__core.html#gaccad43a85d781d53381cd53a9894b6ae">LOG</a>(info) &lt;&lt; <span class="stringliteral">&quot;Hello, world!&quot;</span>;</div></div><!-- fragment --><dl class="section see"><dt>See also</dt><dd><a href="http://www.boost.org/doc/libs/1_62_0/libs/log/doc/html/index.html">http://www.boost.org/doc/libs/1_62_0/libs/log/doc/html/index.html</a> </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="core_2Logging_8h_source.html#l00080">80</a> of file <a class="el" href="core_2Logging_8h_source.html">Logging.h</a>.</p>
+<div class="fragment"><div class="line"><a class="code" href="group__core.html#gaccad43a85d781d53381cd53a9894b6ae">LOG</a>(info) &lt;&lt; <span class="stringliteral">&quot;Hello, world!&quot;</span>;</div></div><!-- fragment --> 
+<p class="definition">Definition at line <a class="el" href="core_2Logging_8h_source.html#l00102">102</a> of file <a class="el" href="core_2Logging_8h_source.html">Logging.h</a>.</p>
 
 </div>
 </div>
@@ -388,9 +387,9 @@ template&lt;&gt; </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span>(<a class="code" href="classserialbox_1_1Logging.html#ae9ab7426f28aaf49ceeee2f9f3d574db">serialbox::Logging::isEnabled</a>())                                                              \</div><div class="line">  BOOST_LOG_TRIVIAL(severity)</div><div class="ttc" id="classserialbox_1_1Logging_html_ae9ab7426f28aaf49ceeee2f9f3d574db"><div class="ttname"><a href="classserialbox_1_1Logging.html#ae9ab7426f28aaf49ceeee2f9f3d574db">serialbox::Logging::isEnabled</a></div><div class="ttdeci">static bool isEnabled() noexcept</div><div class="ttdoc">Return true if logging is eneabled. </div><div class="ttdef"><b>Definition:</b> <a href="core_2Logging_8h_source.html#l00062">Logging.h:62</a></div></div>
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">if</span>(<a class="code" href="classserialbox_1_1Logging.html#ae9ab7426f28aaf49ceeee2f9f3d574db">serialbox::Logging::isEnabled</a>())                                                              \</div><div class="line">  serialbox::internal::Logger::getInstance().severity()</div><div class="ttc" id="classserialbox_1_1Logging_html_ae9ab7426f28aaf49ceeee2f9f3d574db"><div class="ttname"><a href="classserialbox_1_1Logging.html#ae9ab7426f28aaf49ceeee2f9f3d574db">serialbox::Logging::isEnabled</a></div><div class="ttdeci">static bool isEnabled() noexcept</div><div class="ttdoc">Return true if logging is eneabled. </div><div class="ttdef"><b>Definition:</b> <a href="core_2Logging_8h_source.html#l00087">Logging.h:87</a></div></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="core_2Logging_8h_source.html#l00087">87</a> of file <a class="el" href="core_2Logging_8h_source.html">Logging.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="core_2Logging_8h_source.html#l00112">112</a> of file <a class="el" href="core_2Logging_8h_source.html">Logging.h</a>.</p>
 
 </div>
 </div>
@@ -451,7 +450,7 @@ template&lt;&gt; </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Nov 24 2017 09:27:16 for Serialbox by
+    <li class="footer">Generated on Fri Dec 15 2017 10:48:30 for Serialbox by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

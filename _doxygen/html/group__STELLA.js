@@ -125,11 +125,11 @@ var group__STELLA =
       [ "operator<<", "classserialbox_1_1stella_1_1Savepoint.html#aa0752c9a9cd68c66c629a9e25d996cf8", null ]
     ] ],
     [ "SerializationException", "classserialbox_1_1stella_1_1SerializationException.html", [
-      [ "SerializationException", "classserialbox_1_1stella_1_1SerializationException.html#a63cd6ce2b6e841095727990dcbb74cf0", null ],
-      [ "~SerializationException", "classserialbox_1_1stella_1_1SerializationException.html#acaedcece6e00e343fd4dcadcd36a03db", null ],
+      [ "SerializationException", "classserialbox_1_1stella_1_1SerializationException.html#a4a28f2b0c303e671235daa2d58b551eb", null ],
+      [ "~SerializationException", "classserialbox_1_1stella_1_1SerializationException.html#a038d1270976f96742eddb28fb7d43c34", null ],
       [ "Init", "classserialbox_1_1stella_1_1SerializationException.html#a867cbbe645cb181bda81d4666f6e40f6", null ],
       [ "message", "classserialbox_1_1stella_1_1SerializationException.html#a52745c7eaee9d02d82214f5153516dba", null ],
-      [ "what", "classserialbox_1_1stella_1_1SerializationException.html#a1cc4c58e43a97cf83fda325272b6ed2f", null ]
+      [ "what", "classserialbox_1_1stella_1_1SerializationException.html#af98bd92623523ef02b443d57caad9757", null ]
     ] ],
     [ "Serializer", "classserialbox_1_1stella_1_1Serializer.html", [
       [ "Serializer", "classserialbox_1_1stella_1_1Serializer.html#a550fae1fc2a60a3af7971fab76687f14", null ],
@@ -148,16 +148,13 @@ var group__STELLA =
       [ "getImpl", "classserialbox_1_1stella_1_1Serializer.html#ad706f55b0562d57e982eaa735fc80e56", null ],
       [ "globalMetainfo", "classserialbox_1_1stella_1_1Serializer.html#ad351f3caad6df0f0b79517bd28e818c9", null ],
       [ "Init", "classserialbox_1_1stella_1_1Serializer.html#a5005f186bd885f766f7345ae50e9afe4", null ],
-      [ "InitializeField", "classserialbox_1_1stella_1_1Serializer.html#ad742b7854c35409e1a26dc7d21d495eb", null ],
       [ "mode", "classserialbox_1_1stella_1_1Serializer.html#a5582acc4c389f882c12de411531b98d4", null ],
       [ "prefix", "classserialbox_1_1stella_1_1Serializer.html#a0c7d3731ec24a5d81b6752567fb8d56d", null ],
       [ "ReadField", "classserialbox_1_1stella_1_1Serializer.html#a4401e417401b1298fd29cbf51363caef", null ],
-      [ "ReadField", "classserialbox_1_1stella_1_1Serializer.html#ab19293457603768f109c5d74126b98dd", null ],
       [ "RegisterField", "classserialbox_1_1stella_1_1Serializer.html#a7c6e5cbcc0c89f9fd3009e230d78a7e4", null ],
       [ "savepoints", "classserialbox_1_1stella_1_1Serializer.html#a7b066ad00e8b9301a6eada6ccf18b273", null ],
       [ "ToString", "classserialbox_1_1stella_1_1Serializer.html#a798dcf805a1d132f08cb8fdfe318295c", null ],
-      [ "WriteField", "classserialbox_1_1stella_1_1Serializer.html#abad2ef718e5d78622c0de3ec030dcba1", null ],
-      [ "WriteField", "classserialbox_1_1stella_1_1Serializer.html#a11f18169d615466347cc3b6d52c951e0", null ]
+      [ "WriteField", "classserialbox_1_1stella_1_1Serializer.html#abad2ef718e5d78622c0de3ec030dcba1", null ]
     ] ],
     [ "SerializerOpenMode", "group__STELLA.html#ga584fd36403e4c865e55454b5f7aa08c9", null ]
 ];

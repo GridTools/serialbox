@@ -6,13 +6,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>serialbox.serializer &#8212; Serialbox 2.0.1 documentation</title>
+    <title>serialbox.serializer &#8212; Serialbox 2.2.0 documentation</title>
     <link rel="stylesheet" href="../../_static/serialbox-theme.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '2.0.1',
+        VERSION:     '2.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -39,7 +39,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.2.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>
@@ -85,7 +85,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">.archive</span> <span class="k">import</span> <span class="n">Archive</span>
-<span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">get_library</span><span class="p">,</span> <span class="n">extract_string</span>
+<span class="kn">from</span> <span class="nn">.common</span> <span class="k">import</span> <span class="n">get_library</span><span class="p">,</span> <span class="n">to_c_string</span>
 <span class="kn">from</span> <span class="nn">.error</span> <span class="k">import</span> <span class="n">invoke</span><span class="p">,</span> <span class="n">SerialboxError</span>
 <span class="kn">from</span> <span class="nn">.fieldmetainfo</span> <span class="k">import</span> <span class="n">FieldMetainfo</span><span class="p">,</span> <span class="n">FieldMetainfoImpl</span>
 <span class="kn">from</span> <span class="nn">.metainfomap</span> <span class="k">import</span> <span class="n">MetainfoMap</span><span class="p">,</span> <span class="n">MetainfoImpl</span><span class="p">,</span> <span class="n">ArrayOfStringImpl</span>
@@ -316,9 +316,9 @@
         <span class="c1">#</span>
         <span class="c1"># Create serializer</span>
         <span class="c1">#</span>
-        <span class="n">dirstr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">directory</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">prefixstr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">prefix</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">archivestr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">archive</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dirstr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">directory</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">prefixstr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">prefix</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">archivestr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">archive</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__serializer</span> <span class="o">=</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxSerializerCreate</span><span class="p">,</span> <span class="n">modeint</span><span class="p">,</span> <span class="n">dirstr</span><span class="p">,</span> <span class="n">prefixstr</span><span class="p">,</span>
                                    <span class="n">archivestr</span><span class="p">)</span>
@@ -635,7 +635,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">OpenModeKind</span><span class="o">.</span><span class="n">Read</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">SerialboxError</span><span class="p">(</span><span class="s2">&quot;registering fields is not permitted in OpenModeKind.Read&quot;</span><span class="p">)</span>
 
-        <span class="n">namestr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">namestr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxSerializerAddField</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__serializer</span><span class="p">,</span> <span class="n">namestr</span><span class="p">,</span>
                       <span class="n">fieldmetainfo</span><span class="o">.</span><span class="n">impl</span><span class="p">()):</span>
             <span class="k">raise</span> <span class="n">SerialboxError</span><span class="p">(</span><span class="s2">&quot;field &#39;</span><span class="si">%s</span><span class="s2">&#39; already exists within the Serializer&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span></div>
@@ -648,7 +648,7 @@
 <span class="sd">        :return: `True` if field exists, `False` otherwise</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">fieldstr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">field</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">fieldstr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">field</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxSerializerHasField</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__serializer</span><span class="p">,</span> <span class="n">fieldstr</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Serializer.get_field_metainfo"><a class="viewcode-back" href="../../Python.html#serialbox.Serializer.get_field_metainfo">[docs]</a>    <span class="k">def</span> <span class="nf">get_field_metainfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
@@ -660,7 +660,7 @@
 <span class="sd">        :rtype: :class:`FieldMetainfo &lt;serialbox.FieldMetainfo&gt;`</span>
 <span class="sd">        :raises serialbox.SerialboxError: if `field` does not exist within the Serializer</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">fieldstr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">field</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">fieldstr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">field</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">FieldMetainfo</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">[],</span>
                              <span class="n">impl</span><span class="o">=</span><span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxSerializerGetFieldMetainfo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__serializer</span><span class="p">,</span>
                                          <span class="n">fieldstr</span><span class="p">))</span></div>
@@ -780,7 +780,7 @@
         <span class="c1"># Write to disk</span>
         <span class="c1">#</span>
         <span class="n">origin_ptr</span> <span class="o">=</span> <span class="n">c_void_p</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-        <span class="n">namestr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">namestr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxSerializerWrite</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__serializer</span><span class="p">,</span> <span class="n">namestr</span><span class="p">,</span> <span class="n">savepoint</span><span class="o">.</span><span class="n">impl</span><span class="p">(),</span>
                <span class="n">origin_ptr</span><span class="p">,</span> <span class="n">strides</span><span class="p">,</span> <span class="n">num_strides</span><span class="p">)</span></div>
 
@@ -831,7 +831,7 @@
         <span class="c1"># Read from disk</span>
         <span class="c1">#</span>
         <span class="n">origin_ptr</span> <span class="o">=</span> <span class="n">c_void_p</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-        <span class="n">namestr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">namestr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxSerializerRead</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__serializer</span><span class="p">,</span> <span class="n">namestr</span><span class="p">,</span> <span class="n">savepoint</span><span class="o">.</span><span class="n">impl</span><span class="p">(),</span>
                <span class="n">origin_ptr</span><span class="p">,</span> <span class="n">strides</span><span class="p">,</span> <span class="n">num_strides</span><span class="p">)</span>
 
@@ -889,7 +889,7 @@
         <span class="c1"># Read from disk</span>
         <span class="c1">#</span>
         <span class="n">origin_ptr</span> <span class="o">=</span> <span class="n">c_void_p</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-        <span class="n">namestr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">namestr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxSerializerReadAsync</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__serializer</span><span class="p">,</span> <span class="n">namestr</span><span class="p">,</span> <span class="n">savepoint</span><span class="o">.</span><span class="n">impl</span><span class="p">(),</span>
                <span class="n">origin_ptr</span><span class="p">,</span> <span class="n">strides</span><span class="p">,</span> <span class="n">num_strides</span><span class="p">)</span>
 
@@ -1006,7 +1006,7 @@
         <span class="c1"># Read from disk</span>
         <span class="c1">#</span>
         <span class="n">origin_ptr</span> <span class="o">=</span> <span class="n">c_void_p</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-        <span class="n">namestr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">namestr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxSerializerReadSliced</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__serializer</span><span class="p">,</span> <span class="n">namestr</span><span class="p">,</span> <span class="n">savepoint</span><span class="o">.</span><span class="n">impl</span><span class="p">(),</span>
                <span class="n">origin_ptr</span><span class="p">,</span> <span class="n">strides</span><span class="p">,</span> <span class="n">num_strides</span><span class="p">,</span> <span class="n">c_slice_array</span><span class="p">)</span>
 
@@ -1046,9 +1046,9 @@
 
         <span class="n">origin_ptr</span> <span class="o">=</span> <span class="n">c_void_p</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="n">typeint</span> <span class="o">=</span> <span class="n">c_int</span><span class="p">(</span><span class="n">numpy2TypeID</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">namestr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">filestr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">archivestr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">archive</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">namestr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">filestr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">archivestr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">archive</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxWriteToFile</span><span class="p">,</span> <span class="n">filestr</span><span class="p">,</span> <span class="n">origin_ptr</span><span class="p">,</span> <span class="n">typeint</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">num_dims</span><span class="p">,</span> <span class="n">strides</span><span class="p">,</span>
                <span class="n">namestr</span><span class="p">,</span> <span class="n">archivestr</span><span class="p">)</span></div>
@@ -1091,9 +1091,9 @@
 
         <span class="n">origin_ptr</span> <span class="o">=</span> <span class="n">c_void_p</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="n">typeint</span> <span class="o">=</span> <span class="n">c_int</span><span class="p">(</span><span class="n">numpy2TypeID</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="n">namestr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">filestr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">archivestr</span> <span class="o">=</span> <span class="n">extract_string</span><span class="p">(</span><span class="n">archive</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">namestr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">filestr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">archivestr</span> <span class="o">=</span> <span class="n">to_c_string</span><span class="p">(</span><span class="n">archive</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">invoke</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">serialboxReadFromFile</span><span class="p">,</span> <span class="n">filestr</span><span class="p">,</span> <span class="n">origin_ptr</span><span class="p">,</span> <span class="n">typeint</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">num_dims</span><span class="p">,</span> <span class="n">strides</span><span class="p">,</span>
                <span class="n">namestr</span><span class="p">,</span> <span class="n">archivestr</span><span class="p">)</span></div>
@@ -1138,12 +1138,12 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Serialbox 2.2.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2016, Fabian Thüring.
+        &#169; Copyright 2017, ETH Zurich.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
     </div>
   </body>

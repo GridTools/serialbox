@@ -16,14 +16,11 @@ var classserialbox_1_1stella_1_1Serializer =
     [ "getImpl", "classserialbox_1_1stella_1_1Serializer.html#ad706f55b0562d57e982eaa735fc80e56", null ],
     [ "globalMetainfo", "classserialbox_1_1stella_1_1Serializer.html#ad351f3caad6df0f0b79517bd28e818c9", null ],
     [ "Init", "classserialbox_1_1stella_1_1Serializer.html#a5005f186bd885f766f7345ae50e9afe4", null ],
-    [ "InitializeField", "classserialbox_1_1stella_1_1Serializer.html#ad742b7854c35409e1a26dc7d21d495eb", null ],
     [ "mode", "classserialbox_1_1stella_1_1Serializer.html#a5582acc4c389f882c12de411531b98d4", null ],
     [ "prefix", "classserialbox_1_1stella_1_1Serializer.html#a0c7d3731ec24a5d81b6752567fb8d56d", null ],
     [ "ReadField", "classserialbox_1_1stella_1_1Serializer.html#a4401e417401b1298fd29cbf51363caef", null ],
-    [ "ReadField", "classserialbox_1_1stella_1_1Serializer.html#ab19293457603768f109c5d74126b98dd", null ],
     [ "RegisterField", "classserialbox_1_1stella_1_1Serializer.html#a7c6e5cbcc0c89f9fd3009e230d78a7e4", null ],
     [ "savepoints", "classserialbox_1_1stella_1_1Serializer.html#a7b066ad00e8b9301a6eada6ccf18b273", null ],
     [ "ToString", "classserialbox_1_1stella_1_1Serializer.html#a798dcf805a1d132f08cb8fdfe318295c", null ],
-    [ "WriteField", "classserialbox_1_1stella_1_1Serializer.html#abad2ef718e5d78622c0de3ec030dcba1", null ],
-    [ "WriteField", "classserialbox_1_1stella_1_1Serializer.html#a11f18169d615466347cc3b6d52c951e0", null ]
+    [ "WriteField", "classserialbox_1_1stella_1_1Serializer.html#abad2ef718e5d78622c0de3ec030dcba1", null ]
 ];

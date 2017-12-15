@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo-small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Serialbox
-   &#160;<span id="projectnumber">2.1.1</span>
+   &#160;<span id="projectnumber">2.2.0</span>
    </div>
    <div id="projectbrief">Data serialization library and tools for C/C++, Python and Fortran</div>
   </td>
@@ -136,7 +136,7 @@ using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cla
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9cfc6cd26e9191a0f07b1124e9196aa6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#a9cfc6cd26e9191a0f07b1124e9196aa6">BinaryArchive</a> (<a class="el" href="group__core.html#gab53276a06fe74a75f9baa083668e456f">OpenModeKind</a> <a class="el" href="classserialbox_1_1BinaryArchive.html#a61a18763e643483cb05afbd94c66cc7e">mode</a>, const std::string &amp;<a class="el" href="classserialbox_1_1BinaryArchive.html#a0a51564a5af9f64b84491f6691f3bdee">directory</a>, const std::string &amp;<a class="el" href="classserialbox_1_1BinaryArchive.html#a73ea6077d5dfb4ec3be2e1ce7dd74fda">prefix</a>, bool skipMetaData=false)</td></tr>
+<tr class="memitem:a9cfc6cd26e9191a0f07b1124e9196aa6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#a9cfc6cd26e9191a0f07b1124e9196aa6">BinaryArchive</a> (<a class="el" href="group__core.html#gab53276a06fe74a75f9baa083668e456f">OpenModeKind</a> <a class="el" href="classserialbox_1_1BinaryArchive.html#a61a18763e643483cb05afbd94c66cc7e">mode</a>, const std::string &amp;<a class="el" href="classserialbox_1_1BinaryArchive.html#a4238d89cbc35443efa22e1047674166a">directory</a>, const std::string &amp;<a class="el" href="classserialbox_1_1BinaryArchive.html#ad002673652ac40aa5d0d60b9bf784679">prefix</a>, bool skipMetaData=false)</td></tr>
 <tr class="memdesc:a9cfc6cd26e9191a0f07b1124e9196aa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the archive.  <a href="#a9cfc6cd26e9191a0f07b1124e9196aa6">More...</a><br /></td></tr>
 <tr class="separator:a9cfc6cd26e9191a0f07b1124e9196aa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a981ff0d3493b39758add12a7345e1b91"><td class="memItemLeft" align="right" valign="top"><a id="a981ff0d3493b39758add12a7345e1b91"></a>
@@ -195,22 +195,22 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 virtual <a class="el" href="group__core.html#gab53276a06fe74a75f9baa083668e456f">OpenModeKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#a61a18763e643483cb05afbd94c66cc7e">mode</a> () const override</td></tr>
 <tr class="memdesc:a61a18763e643483cb05afbd94c66cc7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Open-policy of the archive. <br /></td></tr>
 <tr class="separator:a61a18763e643483cb05afbd94c66cc7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a51564a5af9f64b84491f6691f3bdee"><td class="memItemLeft" align="right" valign="top"><a id="a0a51564a5af9f64b84491f6691f3bdee"></a>
-virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#a0a51564a5af9f64b84491f6691f3bdee">directory</a> () const override</td></tr>
-<tr class="memdesc:a0a51564a5af9f64b84491f6691f3bdee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directory to write/read files. <br /></td></tr>
-<tr class="separator:a0a51564a5af9f64b84491f6691f3bdee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73ea6077d5dfb4ec3be2e1ce7dd74fda"><td class="memItemLeft" align="right" valign="top"><a id="a73ea6077d5dfb4ec3be2e1ce7dd74fda"></a>
-virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#a73ea6077d5dfb4ec3be2e1ce7dd74fda">prefix</a> () const override</td></tr>
-<tr class="memdesc:a73ea6077d5dfb4ec3be2e1ce7dd74fda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prefix of all files. <br /></td></tr>
-<tr class="separator:a73ea6077d5dfb4ec3be2e1ce7dd74fda"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3630faac2e6285e4c8970b87f24d196"><td class="memItemLeft" align="right" valign="top"><a id="aa3630faac2e6285e4c8970b87f24d196"></a>
-virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#aa3630faac2e6285e4c8970b87f24d196">name</a> () const override</td></tr>
-<tr class="memdesc:aa3630faac2e6285e4c8970b87f24d196"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the archive. <br /></td></tr>
-<tr class="separator:aa3630faac2e6285e4c8970b87f24d196"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b6577b0d61481dba4bca81bcc6f53d1"><td class="memItemLeft" align="right" valign="top"><a id="a7b6577b0d61481dba4bca81bcc6f53d1"></a>
-virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#a7b6577b0d61481dba4bca81bcc6f53d1">metaDataFile</a> () const override</td></tr>
-<tr class="memdesc:a7b6577b0d61481dba4bca81bcc6f53d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full file path to the meta-data file. <br /></td></tr>
-<tr class="separator:a7b6577b0d61481dba4bca81bcc6f53d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4238d89cbc35443efa22e1047674166a"><td class="memItemLeft" align="right" valign="top"><a id="a4238d89cbc35443efa22e1047674166a"></a>
+virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#a4238d89cbc35443efa22e1047674166a">directory</a> () const override</td></tr>
+<tr class="memdesc:a4238d89cbc35443efa22e1047674166a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directory to write/read files. <br /></td></tr>
+<tr class="separator:a4238d89cbc35443efa22e1047674166a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad002673652ac40aa5d0d60b9bf784679"><td class="memItemLeft" align="right" valign="top"><a id="ad002673652ac40aa5d0d60b9bf784679"></a>
+virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#ad002673652ac40aa5d0d60b9bf784679">prefix</a> () const override</td></tr>
+<tr class="memdesc:ad002673652ac40aa5d0d60b9bf784679"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prefix of all files. <br /></td></tr>
+<tr class="separator:ad002673652ac40aa5d0d60b9bf784679"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcd9a0e53b2e665bbb7e7f94d3639096"><td class="memItemLeft" align="right" valign="top"><a id="afcd9a0e53b2e665bbb7e7f94d3639096"></a>
+virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#afcd9a0e53b2e665bbb7e7f94d3639096">name</a> () const override</td></tr>
+<tr class="memdesc:afcd9a0e53b2e665bbb7e7f94d3639096"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the archive. <br /></td></tr>
+<tr class="separator:afcd9a0e53b2e665bbb7e7f94d3639096"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9e6867be8a9632e8a46f9527ce2f1d8"><td class="memItemLeft" align="right" valign="top"><a id="ab9e6867be8a9632e8a46f9527ce2f1d8"></a>
+virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#ab9e6867be8a9632e8a46f9527ce2f1d8">metaDataFile</a> () const override</td></tr>
+<tr class="memdesc:ab9e6867be8a9632e8a46f9527ce2f1d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Full file path to the meta-data file. <br /></td></tr>
+<tr class="separator:ab9e6867be8a9632e8a46f9527ce2f1d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d6e457b725cc8161efe6132625628d1"><td class="memItemLeft" align="right" valign="top"><a id="a0d6e457b725cc8161efe6132625628d1"></a>
 virtual std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#a0d6e457b725cc8161efe6132625628d1">toStream</a> (std::ostream &amp;stream) const override</td></tr>
 <tr class="memdesc:a0d6e457b725cc8161efe6132625628d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert the archive to stream. <br /></td></tr>
@@ -240,7 +240,7 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a0880922dfd35bf7702ad4667023df82e"><td class="memItemLeft" align="right" valign="top"><a id="a0880922dfd35bf7702ad4667023df82e"></a>
-static std::unique_ptr&lt; <a class="el" href="classserialbox_1_1Archive.html">Archive</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#a0880922dfd35bf7702ad4667023df82e">create</a> (<a class="el" href="group__core.html#gab53276a06fe74a75f9baa083668e456f">OpenModeKind</a> <a class="el" href="classserialbox_1_1BinaryArchive.html#a61a18763e643483cb05afbd94c66cc7e">mode</a>, const std::string &amp;<a class="el" href="classserialbox_1_1BinaryArchive.html#a0a51564a5af9f64b84491f6691f3bdee">directory</a>, const std::string &amp;<a class="el" href="classserialbox_1_1BinaryArchive.html#a73ea6077d5dfb4ec3be2e1ce7dd74fda">prefix</a>)</td></tr>
+static std::unique_ptr&lt; <a class="el" href="classserialbox_1_1Archive.html">Archive</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#a0880922dfd35bf7702ad4667023df82e">create</a> (<a class="el" href="group__core.html#gab53276a06fe74a75f9baa083668e456f">OpenModeKind</a> <a class="el" href="classserialbox_1_1BinaryArchive.html#a61a18763e643483cb05afbd94c66cc7e">mode</a>, const std::string &amp;<a class="el" href="classserialbox_1_1BinaryArchive.html#a4238d89cbc35443efa22e1047674166a">directory</a>, const std::string &amp;<a class="el" href="classserialbox_1_1BinaryArchive.html#ad002673652ac40aa5d0d60b9bf784679">prefix</a>)</td></tr>
 <tr class="memdesc:a0880922dfd35bf7702ad4667023df82e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classserialbox_1_1BinaryArchive.html" title="Non-portable binary archive. ">BinaryArchive</a>. <br /></td></tr>
 <tr class="separator:a0880922dfd35bf7702ad4667023df82e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a182247f38635ace7517c895001b4f421"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classserialbox_1_1BinaryArchive.html#a182247f38635ace7517c895001b4f421">writeToFile</a> (std::string filename, const <a class="el" href="classserialbox_1_1StorageView.html">StorageView</a> &amp;storageView)</td></tr>
@@ -539,7 +539,7 @@ static const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespaceserialbox.html">serialbox</a></li><li class="navelem"><a class="el" href="classserialbox_1_1BinaryArchive.html">BinaryArchive</a></li>
-    <li class="footer">Generated on Fri Nov 24 2017 09:27:16 for Serialbox by
+    <li class="footer">Generated on Fri Dec 15 2017 10:48:31 for Serialbox by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.13 </li>
   </ul>

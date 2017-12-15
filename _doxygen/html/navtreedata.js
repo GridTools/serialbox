@@ -36,9 +36,9 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 ".html",
-"classserialbox_1_1FieldMap.html#a0df5521c280b25c2e9f72deacc21d0ba",
-"classserialbox_1_1SerializerImpl.html#a347c08d988a3c1022a31ec40855e76d9",
-"classserialbox_1_1stella_1_1DataFieldInfo.html#a21285176629d271b760c0826df51a236",
+"classserialbox_1_1FieldMap.html#a0406318caacabb8b30a9920b8146b1bf",
+"classserialbox_1_1SerializerImpl.html#a2e7f94e720c469924f79468389b1f37d",
+"classserialbox_1_1stella_1_1DataFieldInfo.html#a0e86c23bd22bcf9dc48fb11feecdb033",
 "functions_func_k.html",
 "structserialbox_1_1ToType_3_01TypeID_1_1ArrayOfFloat32_01_4.html"
 ];

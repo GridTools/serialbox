@@ -31,7 +31,7 @@ var namespaceserialbox =
     [ "IsArray", "structserialbox_1_1IsArray.html", null ],
     [ "IsArray< Array< T > >", "structserialbox_1_1IsArray_3_01Array_3_01T_01_4_01_4.html", null ],
     [ "IsSupported", "structserialbox_1_1IsSupported.html", "structserialbox_1_1IsSupported" ],
-    [ "Logging", "classserialbox_1_1Logging.html", null ],
+    [ "Logging", "classserialbox_1_1Logging.html", "classserialbox_1_1Logging" ],
     [ "MakePrimitive", "structserialbox_1_1MakePrimitive.html", "structserialbox_1_1MakePrimitive" ],
     [ "match_cv_qualifier", "classserialbox_1_1match__cv__qualifier.html", "classserialbox_1_1match__cv__qualifier" ],
     [ "MD5", "classserialbox_1_1MD5.html", "classserialbox_1_1MD5" ],
