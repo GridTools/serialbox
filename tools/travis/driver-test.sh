@@ -32,8 +32,8 @@ else # Linux
     install_driver -i ${CACHE_DIR} -b clang
   fi
 
-  export SERIALBOX_PYTHON_DIR=/opt/python/3.5.3
-  "$SERIALBOX_PYTHON_DIR/bin/pip3" install nose numpy
+  export SERIALBOX_PYTHON3_BIN=`which python3`
+  "$SERIALBOX_PYTHON3_BIN" install nose numpy
 fi
   
 export CXX=${CXX_COMPILER}
@@ -70,10 +70,9 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
 else # Linux 
   pushd $(pwd)
   mkdir -p build && cd build
-
   cmake ..                                                                                         \
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                                                     \
-        -DPYTHON_EXECUTABLE="$SERIALBOX_PYTHON_DIR/bin/python3"                                    \
+        -DPYTHON_EXECUTABLE="$SERIALBOX_PYTHON3_BIN"                                               \
         -DSERIALBOX_TESTING=ON                                                                     \
         -DSERIALBOX_ENABLE_FORTRAN=$SERIALBOX_ENABLE_FORTRAN                                       \
         -DSERIALBOX_TESTING_FORTRAN=$SERIALBOX_TESTING_FORTRAN                                     \
@@ -91,7 +90,7 @@ else # Linux
     
     cmake ..                                                                                       \
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}                                                     \
-        -DPYTHON_EXECUTABLE="$SERIALBOX_PYTHON_DIR/bin/python3"                                    \
+        -DPYTHON_EXECUTABLE="$SERIALBOX_PYTHON3_BIN"                                                \
         -DBOOST_ROOT="$BOOST_ROOT"                                                                 \
         || fatal_error "failed to configure cmake"
     make || fatal_error "failed to build"
