@@ -31,6 +31,8 @@ if(NOT SPHINX_FOUND)
   message(FATAL_ERROR "Sphinx is needed to build the documentation.")
 endif()
 
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/sphinx/conf.py.in" "${CMAKE_CURRENT_SOURCE_DIR}/sphinx/conf.py")
+
 add_custom_target(sphinx
   COMMAND ${SPHINX_EXECUTABLE} -b html -d ${CMAKE_CURRENT_SOURCE_DIR}/sphinx/_build/doctrees 
           ${CMAKE_CURRENT_SOURCE_DIR}/sphinx/ ${CMAKE_CURRENT_SOURCE_DIR}/sphinx/_build/html
