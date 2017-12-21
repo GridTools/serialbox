@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 3.1)
 
 if(SERIALBOX_ENABLE_FORTRAN)
 
-  set(SOURCES m_serialize.f90 m_ser_perturb.f90 utils_ppser.f90)
+  set(SOURCES m_serialize.f90 m_ser_perturb.f90 utils_ppser.f90 m_ser_ftg.f90)
   set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})
 
   serialbox_add_library(NAME SerialboxFortran 
