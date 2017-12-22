@@ -51,6 +51,12 @@ INTERFACE ftg_set_serializer
       ftg_set_serializer_existing
 END INTERFACE
 
+INTERFACE ftg_set_savepoint
+    MODULE PROCEDURE &
+      ftg_set_savepoint_create, &
+      ftg_set_savepoint_existing
+END INTERFACE
+
 LOGICAL :: ignore_bullshit = .TRUE.
 INTEGER :: ignore_bullshit_max_dim_size = 999999999
 LOGICAL :: ignore_bullshit_allow_negative_indices = .FALSE.
