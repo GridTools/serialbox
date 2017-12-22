@@ -60,6 +60,9 @@ TYPE(t_savepoint),  POINTER :: savepoint  => NULL()
 
 CONTAINS
 
+!=============================================================================
+!=============================================================================
+
 SUBROUTINE ftg_set_serializer_create(directory, prefix, mode, opt_archive)
 
   CHARACTER(LEN=*), INTENT(IN)    :: directory, prefix
@@ -103,9 +106,54 @@ TYPE(t_serializer) FUNCTION ftg_get_serializer()
 
 END FUNCTION ftg_get_serializer
 
+!=============================================================================
+!=============================================================================
 
-SUBROUTINE ftg_write_logical_0d(savepoint, fieldname, field)
-  TYPE(t_savepoint) , INTENT(IN) :: savepoint
+SUBROUTINE ftg_set_savepoint_create(name)
+
+  CHARACTER(LEN=*), INTENT(IN) :: name
+
+  TYPE(t_savepoint), TARGET :: new_savepoint
+
+  CALL fs_create_savepoint(name, new_savepoint)
+
+  savepoint => new_savepoint
+
+END SUBROUTINE ftg_set_savepoint_create
+
+
+SUBROUTINE ftg_set_savepoint_existing(new_savepoint)
+
+  TYPE(t_savepoint), INTENT(IN), TARGET :: new_savepoint
+
+  savepoint => new_savepoint
+
+END SUBROUTINE ftg_set_savepoint_existing
+
+
+SUBROUTINE ftg_unsset_savepoint()
+
+  CALL fs_destroy_savepoint(savepoint)
+  savepoint => NULL()
+
+END SUBROUTINE ftg_unsset_savepoint
+
+
+TYPE(t_savepoint) FUNCTION ftg_get_savepoint()
+
+  IF (.NOT. ASSOCIATED(savepoint)) THEN
+    WRITE(*,*) TRIM(module_name)//" - ERROR: No savepoint. Call ftg_set_savepoint() first"
+    STOP
+  ELSE
+    ftg_get_savepoint = savepoint
+  END IF
+
+END FUNCTION ftg_get_savepoint
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE ftg_write_logical_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)   :: fieldname
   LOGICAL, INTENT(IN), TARGET    :: field
 
@@ -124,8 +172,7 @@ SUBROUTINE ftg_write_logical_0d(savepoint, fieldname, field)
 
 END SUBROUTINE ftg_write_logical_0d
 
-SUBROUTINE ftg_write_logical_1d(savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_savepoint) , INTENT(IN)              :: savepoint
+SUBROUTINE ftg_write_logical_1d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL, INTENT(IN), TARGET                 :: field(:)
   INTEGER, DIMENSION(1), INTENT(IN), OPTIONAL :: lbounds, ubounds
@@ -150,8 +197,7 @@ SUBROUTINE ftg_write_logical_1d(savepoint, fieldname, field, lbounds, ubounds)
 
 END SUBROUTINE ftg_write_logical_1d
 
-SUBROUTINE ftg_write_logical_2d(savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_savepoint) , INTENT(IN)              :: savepoint
+SUBROUTINE ftg_write_logical_2d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL, INTENT(IN), TARGET                 :: field(:,:)
   INTEGER, DIMENSION(2), INTENT(IN), OPTIONAL :: lbounds, ubounds
@@ -177,8 +223,7 @@ SUBROUTINE ftg_write_logical_2d(savepoint, fieldname, field, lbounds, ubounds)
 
 END SUBROUTINE ftg_write_logical_2d
 
-SUBROUTINE ftg_write_logical_3d(savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_savepoint) , INTENT(IN)              :: savepoint
+SUBROUTINE ftg_write_logical_3d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL, INTENT(IN), TARGET                 :: field(:,:,:)
   INTEGER, DIMENSION(3), INTENT(IN), OPTIONAL :: lbounds, ubounds
@@ -205,8 +250,7 @@ SUBROUTINE ftg_write_logical_3d(savepoint, fieldname, field, lbounds, ubounds)
 
 END SUBROUTINE ftg_write_logical_3d
 
-SUBROUTINE ftg_write_logical_4d(savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+SUBROUTINE ftg_write_logical_4d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   LOGICAL, INTENT(IN), TARGET :: field(:,:,:,:)
   INTEGER, DIMENSION(4), INTENT(IN), OPTIONAL :: lbounds, ubounds
@@ -237,8 +281,7 @@ END SUBROUTINE ftg_write_logical_4d
 !=============================================================================
 !=============================================================================
 
-SUBROUTINE ftg_write_bool_0d(savepoint, fieldname, field)
-  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+SUBROUTINE ftg_write_bool_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field
 
@@ -257,8 +300,7 @@ SUBROUTINE ftg_write_bool_0d(savepoint, fieldname, field)
 
 END SUBROUTINE ftg_write_bool_0d
 
-SUBROUTINE ftg_write_bool_1d(savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_savepoint) , INTENT(IN)              :: savepoint
+SUBROUTINE ftg_write_bool_1d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET    :: field(:)
   INTEGER, DIMENSION(1), INTENT(IN), OPTIONAL :: lbounds, ubounds
@@ -283,8 +325,7 @@ SUBROUTINE ftg_write_bool_1d(savepoint, fieldname, field, lbounds, ubounds)
 
 END SUBROUTINE ftg_write_bool_1d
 
-SUBROUTINE ftg_write_bool_2d(savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_savepoint) , INTENT(IN)              :: savepoint
+SUBROUTINE ftg_write_bool_2d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET    :: field(:,:)
   INTEGER, DIMENSION(2), INTENT(IN), OPTIONAL :: lbounds, ubounds
@@ -310,8 +351,7 @@ SUBROUTINE ftg_write_bool_2d(savepoint, fieldname, field, lbounds, ubounds)
 
 END SUBROUTINE ftg_write_bool_2d
 
-SUBROUTINE ftg_write_bool_3d(savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_savepoint) , INTENT(IN)              :: savepoint
+SUBROUTINE ftg_write_bool_3d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET    :: field(:,:,:)
   INTEGER, DIMENSION(3), INTENT(IN), OPTIONAL :: lbounds, ubounds
@@ -338,8 +378,7 @@ SUBROUTINE ftg_write_bool_3d(savepoint, fieldname, field, lbounds, ubounds)
 
 END SUBROUTINE ftg_write_bool_3d
 
-SUBROUTINE ftg_write_bool_4d(savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_savepoint) , INTENT(IN)              :: savepoint
+SUBROUTINE ftg_write_bool_4d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET    :: field(:,:,:,:)
   INTEGER, DIMENSION(4), INTENT(IN), OPTIONAL :: lbounds, ubounds
