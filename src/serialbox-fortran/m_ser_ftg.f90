@@ -9,9 +9,7 @@ PUBLIC :: ftg_write, ignore_bullshit, ignore_bullshit_max_dim_size, ignore_bulls
 
 PRIVATE
 
-LOGICAL :: ignore_bullshit = .TRUE.
-INTEGER :: ignore_bullshit_max_dim_size = 999999999
-LOGICAL :: ignore_bullshit_allow_negative_indices = .FALSE.
+CHARACTER(LEN=*), PARAMETER :: module_name = 'm_ser_ftg'
 
 INTERFACE ftg_write
     MODULE PROCEDURE &
@@ -47,10 +45,66 @@ INTERFACE ftg_write
 !      ftg_write_double_4d
 END INTERFACE
 
+INTERFACE ftg_set_serializer
+    MODULE PROCEDURE &
+      ftg_set_serializer_create, &
+      ftg_set_serializer_existing
+END INTERFACE
+
+LOGICAL :: ignore_bullshit = .TRUE.
+INTEGER :: ignore_bullshit_max_dim_size = 999999999
+LOGICAL :: ignore_bullshit_allow_negative_indices = .FALSE.
+
+TYPE(t_serializer), POINTER :: serializer => NULL()
+TYPE(t_savepoint),  POINTER :: savepoint  => NULL()
+
 CONTAINS
 
-SUBROUTINE ftg_write_logical_0d(serializer, savepoint, fieldname, field)
-  TYPE(t_serializer), INTENT(IN) :: serializer
+SUBROUTINE ftg_set_serializer_create(directory, prefix, mode, opt_archive)
+
+  CHARACTER(LEN=*), INTENT(IN)    :: directory, prefix
+  CHARACTER, INTENT(IN)           :: mode
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: opt_archive
+
+  TYPE(t_serializer), TARGET :: new_serializer
+
+  CALL fs_create_serializer(directory, prefix, mode, new_serializer, opt_archive)
+
+  serializer => new_serializer
+
+END SUBROUTINE ftg_set_serializer_create
+
+
+SUBROUTINE ftg_set_serializer_existing(new_serializer)
+
+  TYPE(t_serializer), INTENT(IN), TARGET :: new_serializer
+
+  serializer => new_serializer
+
+END SUBROUTINE ftg_set_serializer_existing
+
+
+SUBROUTINE ftg_unsset_serializer()
+
+  CALL fs_destroy_serializer(serializer)
+  serializer => NULL()
+
+END SUBROUTINE ftg_unsset_serializer
+
+
+TYPE(t_serializer) FUNCTION ftg_get_serializer()
+
+  IF (.NOT. ASSOCIATED(serializer)) THEN
+    WRITE(*,*) TRIM(module_name)//" - ERROR: No serializer. Call ftg_set_serializer() first"
+    STOP
+  ELSE
+    ftg_get_serializer = serializer
+  END IF
+
+END FUNCTION ftg_get_serializer
+
+
+SUBROUTINE ftg_write_logical_0d(savepoint, fieldname, field)
   TYPE(t_savepoint) , INTENT(IN) :: savepoint
   CHARACTER(LEN=*), INTENT(IN)   :: fieldname
   LOGICAL, INTENT(IN), TARGET    :: field
@@ -70,8 +124,7 @@ SUBROUTINE ftg_write_logical_0d(serializer, savepoint, fieldname, field)
 
 END SUBROUTINE ftg_write_logical_0d
 
-SUBROUTINE ftg_write_logical_1d(serializer, savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_serializer), INTENT(IN)              :: serializer
+SUBROUTINE ftg_write_logical_1d(savepoint, fieldname, field, lbounds, ubounds)
   TYPE(t_savepoint) , INTENT(IN)              :: savepoint
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL, INTENT(IN), TARGET                 :: field(:)
@@ -97,8 +150,7 @@ SUBROUTINE ftg_write_logical_1d(serializer, savepoint, fieldname, field, lbounds
 
 END SUBROUTINE ftg_write_logical_1d
 
-SUBROUTINE ftg_write_logical_2d(serializer, savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_serializer), INTENT(IN)              :: serializer
+SUBROUTINE ftg_write_logical_2d(savepoint, fieldname, field, lbounds, ubounds)
   TYPE(t_savepoint) , INTENT(IN)              :: savepoint
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL, INTENT(IN), TARGET                 :: field(:,:)
@@ -125,8 +177,7 @@ SUBROUTINE ftg_write_logical_2d(serializer, savepoint, fieldname, field, lbounds
 
 END SUBROUTINE ftg_write_logical_2d
 
-SUBROUTINE ftg_write_logical_3d(serializer, savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_serializer), INTENT(IN)              :: serializer
+SUBROUTINE ftg_write_logical_3d(savepoint, fieldname, field, lbounds, ubounds)
   TYPE(t_savepoint) , INTENT(IN)              :: savepoint
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL, INTENT(IN), TARGET                 :: field(:,:,:)
@@ -154,8 +205,7 @@ SUBROUTINE ftg_write_logical_3d(serializer, savepoint, fieldname, field, lbounds
 
 END SUBROUTINE ftg_write_logical_3d
 
-SUBROUTINE ftg_write_logical_4d(serializer, savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_serializer), INTENT(IN)          :: serializer
+SUBROUTINE ftg_write_logical_4d(savepoint, fieldname, field, lbounds, ubounds)
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   LOGICAL, INTENT(IN), TARGET :: field(:,:,:,:)
@@ -187,8 +237,7 @@ END SUBROUTINE ftg_write_logical_4d
 !=============================================================================
 !=============================================================================
 
-SUBROUTINE ftg_write_bool_0d(serializer, savepoint, fieldname, field)
-  TYPE(t_serializer), INTENT(IN)           :: serializer
+SUBROUTINE ftg_write_bool_0d(savepoint, fieldname, field)
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field
@@ -208,8 +257,7 @@ SUBROUTINE ftg_write_bool_0d(serializer, savepoint, fieldname, field)
 
 END SUBROUTINE ftg_write_bool_0d
 
-SUBROUTINE ftg_write_bool_1d(serializer, savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_serializer), INTENT(IN)              :: serializer
+SUBROUTINE ftg_write_bool_1d(savepoint, fieldname, field, lbounds, ubounds)
   TYPE(t_savepoint) , INTENT(IN)              :: savepoint
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET    :: field(:)
@@ -235,8 +283,7 @@ SUBROUTINE ftg_write_bool_1d(serializer, savepoint, fieldname, field, lbounds, u
 
 END SUBROUTINE ftg_write_bool_1d
 
-SUBROUTINE ftg_write_bool_2d(serializer, savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_serializer), INTENT(IN)              :: serializer
+SUBROUTINE ftg_write_bool_2d(savepoint, fieldname, field, lbounds, ubounds)
   TYPE(t_savepoint) , INTENT(IN)              :: savepoint
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET    :: field(:,:)
@@ -263,8 +310,7 @@ SUBROUTINE ftg_write_bool_2d(serializer, savepoint, fieldname, field, lbounds, u
 
 END SUBROUTINE ftg_write_bool_2d
 
-SUBROUTINE ftg_write_bool_3d(serializer, savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_serializer), INTENT(IN)              :: serializer
+SUBROUTINE ftg_write_bool_3d(savepoint, fieldname, field, lbounds, ubounds)
   TYPE(t_savepoint) , INTENT(IN)              :: savepoint
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET    :: field(:,:,:)
@@ -292,8 +338,7 @@ SUBROUTINE ftg_write_bool_3d(serializer, savepoint, fieldname, field, lbounds, u
 
 END SUBROUTINE ftg_write_bool_3d
 
-SUBROUTINE ftg_write_bool_4d(serializer, savepoint, fieldname, field, lbounds, ubounds)
-  TYPE(t_serializer), INTENT(IN)              :: serializer
+SUBROUTINE ftg_write_bool_4d(savepoint, fieldname, field, lbounds, ubounds)
   TYPE(t_savepoint) , INTENT(IN)              :: savepoint
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET    :: field(:,:,:,:)
