@@ -173,7 +173,7 @@ SUBROUTINE ftg_write_logical_0d(fieldname, field)
   END IF
 
   IF (.NOT. bullshit) THEN
-    CALL fs_write_field(serializer, savepoint, fieldname, field)
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
   END IF
 
 END SUBROUTINE ftg_write_logical_0d
@@ -198,7 +198,7 @@ SUBROUTINE ftg_write_logical_1d(fieldname, field, lbounds, ubounds)
   END IF
 
   IF (.NOT. bullshit) THEN
-    CALL fs_write_field(serializer, savepoint, fieldname, field, lbounds, ubounds)
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
   END IF
 
 END SUBROUTINE ftg_write_logical_1d
@@ -224,7 +224,7 @@ SUBROUTINE ftg_write_logical_2d(fieldname, field, lbounds, ubounds)
   END IF
 
   IF (.NOT. bullshit) THEN
-    CALL fs_write_field(serializer, savepoint, fieldname, field, lbounds, ubounds)
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
   END IF
 
 END SUBROUTINE ftg_write_logical_2d
@@ -251,7 +251,7 @@ SUBROUTINE ftg_write_logical_3d(fieldname, field, lbounds, ubounds)
   END IF
 
   IF (.NOT. bullshit) THEN
-    CALL fs_write_field(serializer, savepoint, fieldname, field, lbounds, ubounds)
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
   END IF
 
 END SUBROUTINE ftg_write_logical_3d
@@ -279,7 +279,7 @@ SUBROUTINE ftg_write_logical_4d(fieldname, field, lbounds, ubounds)
   END IF
 
   IF (.NOT. bullshit) THEN
-    CALL fs_write_field(serializer, savepoint, fieldname, field, lbounds, ubounds)
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
   END IF
 
 END SUBROUTINE ftg_write_logical_4d
@@ -301,7 +301,7 @@ SUBROUTINE ftg_write_bool_0d(fieldname, field)
   END IF
 
   IF (.NOT. bullshit) THEN
-    CALL fs_write_field(serializer, savepoint, fieldname, field)
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
   END IF
 
 END SUBROUTINE ftg_write_bool_0d
@@ -326,7 +326,7 @@ SUBROUTINE ftg_write_bool_1d(fieldname, field, lbounds, ubounds)
   END IF
 
   IF (.NOT. bullshit) THEN
-    CALL fs_write_field(serializer, savepoint, fieldname, field, lbounds, ubounds)
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
   END IF
 
 END SUBROUTINE ftg_write_bool_1d
@@ -352,7 +352,7 @@ SUBROUTINE ftg_write_bool_2d(fieldname, field, lbounds, ubounds)
   END IF
 
   IF (.NOT. bullshit) THEN
-    CALL fs_write_field(serializer, savepoint, fieldname, field, lbounds, ubounds)
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
   END IF
 
 END SUBROUTINE ftg_write_bool_2d
@@ -379,7 +379,7 @@ SUBROUTINE ftg_write_bool_3d(fieldname, field, lbounds, ubounds)
   END IF
 
   IF (.NOT. bullshit) THEN
-    CALL fs_write_field(serializer, savepoint, fieldname, field, lbounds, ubounds)
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
   END IF
 
 END SUBROUTINE ftg_write_bool_3d
@@ -407,7 +407,7 @@ SUBROUTINE ftg_write_bool_4d(fieldname, field, lbounds, ubounds)
   END IF
 
   IF (.NOT. bullshit) THEN
-    CALL fs_write_field(serializer, savepoint, fieldname, field, lbounds, ubounds)
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
   END IF
 
 END SUBROUTINE ftg_write_bool_4d
