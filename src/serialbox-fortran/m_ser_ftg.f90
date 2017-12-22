@@ -104,7 +104,7 @@ END SUBROUTINE ftg_unsset_serializer
 TYPE(t_serializer) FUNCTION ftg_get_serializer()
 
   IF (.NOT. ASSOCIATED(serializer)) THEN
-    WRITE(*,*) TRIM(module_name)//" - ERROR: No serializer. Call ftg_set_serializer() first"
+    WRITE(*,*) TRIM(module_name)//" - ERROR: No serializer. Call ftg_set_serializer() first!"
     STOP
   ELSE
     ftg_get_serializer = serializer
@@ -148,7 +148,7 @@ END SUBROUTINE ftg_unsset_savepoint
 TYPE(t_savepoint) FUNCTION ftg_get_savepoint()
 
   IF (.NOT. ASSOCIATED(savepoint)) THEN
-    WRITE(*,*) TRIM(module_name)//" - ERROR: No savepoint. Call ftg_set_savepoint() first"
+    WRITE(*,*) TRIM(module_name)//" - ERROR: No savepoint. Call ftg_set_savepoint() first!"
     STOP
   ELSE
     ftg_get_savepoint = savepoint
