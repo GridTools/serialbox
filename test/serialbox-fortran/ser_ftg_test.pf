@@ -1,0 +1,48 @@
+MODULE ser_ftg_test
+
+  USE iso_c_binding
+  USE iso_fortran_env 
+  USE pfunit_mod  
+  USE m_ser_ftg
+  USE m_serialize
+  
+  IMPLICIT NONE
+  
+  PUBLIC 
+
+  TYPE(t_savepoint)  :: savepoint
+  
+  CHARACTER(len=*), PARAMETER :: dir = 'ftgdata'
+  CHARACTER(len=*), PARAMETER :: savepoint_name = 'test'
+
+CONTAINS
+   
+@Before
+   SUBROUTINE mySetup()
+      
+   END SUBROUTINE mySetup
+   
+@After
+   SUBROUTINE myTearDown()
+
+   END SUBROUTINE myTearDown
+   
+@Test
+    SUBROUTINE ftgTestSerializer()
+    
+      CHARACTER(len=*), PARAMETER :: prefix = 'ftgTestSerializer'
+      TYPE(t_serializer) :: serializer
+      
+      CALL ftg_set_serializer(dir, prefix, 'a')
+      @assertEqual('a', fs_serializer_openmode(ftg_get_serializer()))
+      ! TODO @assertEqual: Directory, Prefix => Getter functions needed
+      CALL ftg_destroy_serializer()
+      
+      CALL fs_create_serializer(dir, prefix, 'w', serializer)
+      CALL ftg_set_serializer(serializer)
+      @assertEqual('w', fs_serializer_openmode(ftg_get_serializer()))
+      CALL ftg_destroy_serializer()
+    
+    END SUBROUTINE ftgTestSerializer
+
+END MODULE ser_ftg_test
