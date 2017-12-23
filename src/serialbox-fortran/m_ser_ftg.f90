@@ -93,12 +93,14 @@ SUBROUTINE ftg_set_serializer_existing(new_serializer)
 END SUBROUTINE ftg_set_serializer_existing
 
 
-SUBROUTINE ftg_unsset_serializer()
+SUBROUTINE ftg_destroy_serializer()
 
-  CALL fs_destroy_serializer(serializer)
-  serializer => NULL()
+  IF (ASSOCIATED(serializer) THEN
+    CALL fs_destroy_serializer(serializer)
+    serializer => NULL()
+  END IF
 
-END SUBROUTINE ftg_unsset_serializer
+END SUBROUTINE ftg_destroy_serializer
 
 
 TYPE(t_serializer) FUNCTION ftg_get_serializer()
@@ -137,12 +139,14 @@ SUBROUTINE ftg_set_savepoint_existing(new_savepoint)
 END SUBROUTINE ftg_set_savepoint_existing
 
 
-SUBROUTINE ftg_unsset_savepoint()
+SUBROUTINE ftg_destroy_savepoint()
 
-  CALL fs_destroy_savepoint(savepoint)
-  savepoint => NULL()
+  IF (ASSOCIATED(savepoint) THEN
+    CALL fs_destroy_savepoint(savepoint)
+    savepoint => NULL()
+  END IF
 
-END SUBROUTINE ftg_unsset_savepoint
+END SUBROUTINE ftg_destroy_savepoint
 
 
 TYPE(t_savepoint) FUNCTION ftg_get_savepoint()
