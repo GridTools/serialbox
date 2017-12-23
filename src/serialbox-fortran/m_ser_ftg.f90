@@ -5,7 +5,10 @@ USE m_serialize
 
 IMPLICIT NONE
 
-PUBLIC :: ftg_write, ignore_bullshit, ignore_bullshit_max_dim_size, ignore_bullshit_allow_negative_indices
+PUBLIC :: ignore_bullshit, ignore_bullshit_max_dim_size, ignore_bullshit_allow_negative_indices, &
+          ftg_set_serializer, ftg_get_serializer, ftg_destroy_serializer, &
+          ftg_set_savepoint, ftg_get_savepoint, ftg_destroy_savepoint, &
+          ftg_write
 
 PRIVATE
 
@@ -75,10 +78,10 @@ SUBROUTINE ftg_set_serializer_create(directory, prefix, mode, opt_archive)
   CHARACTER, INTENT(IN)           :: mode
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: opt_archive
 
-  TYPE(t_serializer), TARGET :: new_serializer
+  TYPE(t_serializer), POINTER :: new_serializer
 
+  ALLOCATE(new_serializer)
   CALL fs_create_serializer(directory, prefix, mode, new_serializer, opt_archive)
-
   serializer => new_serializer
 
 END SUBROUTINE ftg_set_serializer_create
@@ -95,7 +98,7 @@ END SUBROUTINE ftg_set_serializer_existing
 
 SUBROUTINE ftg_destroy_serializer()
 
-  IF (ASSOCIATED(serializer) THEN
+  IF (ASSOCIATED(serializer)) THEN
     CALL fs_destroy_serializer(serializer)
     serializer => NULL()
   END IF
@@ -103,13 +106,15 @@ SUBROUTINE ftg_destroy_serializer()
 END SUBROUTINE ftg_destroy_serializer
 
 
-TYPE(t_serializer) FUNCTION ftg_get_serializer()
+FUNCTION ftg_get_serializer()
+
+  TYPE(t_serializer), POINTER :: ftg_get_serializer
 
   IF (.NOT. ASSOCIATED(serializer)) THEN
     WRITE(*,*) TRIM(module_name)//" - ERROR: No serializer. Call ftg_set_serializer() first!"
     STOP
   ELSE
-    ftg_get_serializer = serializer
+    ftg_get_serializer => serializer
   END IF
 
 END FUNCTION ftg_get_serializer
@@ -121,10 +126,10 @@ SUBROUTINE ftg_set_savepoint_create(name)
 
   CHARACTER(LEN=*), INTENT(IN) :: name
 
-  TYPE(t_savepoint), TARGET :: new_savepoint
+  TYPE(t_savepoint), POINTER :: new_savepoint
 
+  ALLOCATE(new_savepoint)
   CALL fs_create_savepoint(name, new_savepoint)
-
   savepoint => new_savepoint
 
 END SUBROUTINE ftg_set_savepoint_create
@@ -141,7 +146,7 @@ END SUBROUTINE ftg_set_savepoint_existing
 
 SUBROUTINE ftg_destroy_savepoint()
 
-  IF (ASSOCIATED(savepoint) THEN
+  IF (ASSOCIATED(savepoint)) THEN
     CALL fs_destroy_savepoint(savepoint)
     savepoint => NULL()
   END IF
