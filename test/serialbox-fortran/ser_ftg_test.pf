@@ -44,5 +44,21 @@ CONTAINS
       CALL ftg_destroy_serializer()
     
     END SUBROUTINE ftgTestSerializer
+   
+@Test
+    SUBROUTINE ftgTestSavepoint()
+    
+      CHARACTER(len=*), PARAMETER :: name = 'ftgTestSavepoint'
+      TYPE(t_savepoint) :: savepoint
+      
+      CALL ftg_set_savepoint(name)
+      ! TODO @assertEqual: Name => Getter functions needed
+      CALL ftg_destroy_savepoint()
+      
+      CALL fs_create_savepoint(name, savepoint)
+      CALL ftg_set_savepoint(savepoint)
+      CALL ftg_destroy_savepoint()
+    
+    END SUBROUTINE ftgTestSavepoint
 
 END MODULE ser_ftg_test
