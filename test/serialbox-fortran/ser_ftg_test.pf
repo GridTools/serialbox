@@ -294,12 +294,13 @@ CONTAINS
     
       CHARACTER(len=*), PARAMETER :: base_name = 'testBounds'
     
-      LOGICAL              :: logical1(2), logical2(2,2), logical3(2,2,2), logical4(2,2,2,2) 
-      LOGICAL(KIND=C_BOOL) :: boolean1(4), boolean2(4,4), boolean3(4,4,4), boolean4(4,4,4,4)
-      INTEGER              :: integer1(8), integer2(8,8), integer3(8,8,8), integer4(8,8,8,8) 
-      INTEGER(KIND=C_LONG) :: longint1(5), longint2(5,5), longint3(5,5,5), longint4(5,5,5,5) 
-      REAL(KIND=C_FLOAT)   :: float1(6),   float2(6,6),   float3(6,6,6),   float4(6,6,6,6) 
-      REAL(KIND=C_DOUBLE)  :: double1(7),  double2(7,7),  double3(7,7,7),  double4(7,7,7,7), double4zeros(7,7,7,7)
+      LOGICAL              :: logical1(-1:1), logical2(-2:2,-3:3), logical3(-4:4,-5:5,-6:6), logical4(7:8,23:42,-4:-2,0:16) 
+      LOGICAL(KIND=C_BOOL) :: boolean1(-1:2), boolean2(-2:2,-3:4), boolean3(-4:4,-5:5,-6:7), boolean4(7:8,23:42,-4:-2,0:17)
+      INTEGER              :: integer1(-1:3), integer2(-2:2,-3:5), integer3(-4:4,-5:5,-6:8), integer4(7:8,23:42,-4:-2,0:18) 
+      INTEGER(KIND=C_LONG) :: longint1(-1:4), longint2(-2:2,-3:6), longint3(-4:4,-5:5,-6:9), longint4(7:8,23:42,-4:-2,0:19) 
+      REAL(KIND=C_FLOAT)   :: float1(-1:5),   float2(-2:2,-3:7),   float3(-4:4,-5:5,-6:10),   float4(7:8,23:42,-4:-2,0:20) 
+      REAL(KIND=C_DOUBLE)  :: double1(-1:6),  double2(-2:2,-3:8),  double3(-4:4,-5:5,-6:11),  double4(7:8,23:42,-4:-2,0:21), & 
+                              double4zeros(7,7,7,7)
     
       logical1(:)       = .TRUE.
       logical2(:,:)     = .TRUE.
@@ -328,30 +329,30 @@ CONTAINS
       double4zeros(:,:,:,:) = 109.23
       
       CALL ftg_set_serializer(dir, base_name, 'w')
-      CALL ftg_write("logical1", logical1, (/ -1 /), (/ 1 /))
-      CALL ftg_write("logical2", logical2, (/ -2, -3 /), (/ 2, 3 /))
-      CALL ftg_write("logical3", logical3, (/ -4, -5, -6 /), (/ 4, 5, 6 /))
-      CALL ftg_write("logical4", logical4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 16 /))
-      CALL ftg_write("boolean1", boolean1, (/ -1 /), (/ 2 /))
-      CALL ftg_write("boolean2", boolean2, (/ -2, -3 /), (/ 2, 4 /))
-      CALL ftg_write("boolean3", boolean3, (/ -4, -5, -6 /), (/ 4, 5, 7 /))
-      CALL ftg_write("boolean4", boolean4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 17 /))
-      CALL ftg_write("integer1", integer1, (/ -1 /), (/ 3 /))
-      CALL ftg_write("integer2", integer2, (/ -2, -3 /), (/ 2, 5 /))
-      CALL ftg_write("integer3", integer3, (/ -4, -5, -6 /), (/ 4, 5, 8 /))
-      CALL ftg_write("integer4", integer4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 18 /))
-      CALL ftg_write("longint1", longint1, (/ -1 /), (/ 4 /))
-      CALL ftg_write("longint2", longint2, (/ -2, -3 /), (/ 2, 6 /))
-      CALL ftg_write("longint3", longint3, (/ -4, -5, -6 /), (/ 4, 5, 9 /))
-      CALL ftg_write("longint4", longint4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 19 /))
-      CALL ftg_write("float1", float1, (/ -1 /), (/ 5 /))
-      CALL ftg_write("float2", float2, (/ -2, -3 /), (/ 2, 7 /))
-      CALL ftg_write("float3", float3, (/ -4, -5, -6 /), (/ 4, 5, 10 /))
-      CALL ftg_write("float4", float4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 20 /))
-      CALL ftg_write("double1", double1, (/ -1 /), (/ 6 /))
-      CALL ftg_write("double2", double2, (/ -2, -3 /), (/ 2, 8 /))
-      CALL ftg_write("double3", double3, (/ -4, -5, -6 /), (/ 4, 5, 11 /))
-      CALL ftg_write("double4", double4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 21 /))
+      CALL ftg_write("logical1", logical1, LBOUND(logical1), UBOUND(logical1))
+      CALL ftg_write("logical2", logical2, LBOUND(logical2), UBOUND(logical2))
+      CALL ftg_write("logical3", logical3, LBOUND(logical3), UBOUND(logical3))
+      CALL ftg_write("logical4", logical4, LBOUND(logical4), UBOUND(logical4))
+      CALL ftg_write("boolean1", boolean1, LBOUND(boolean1), UBOUND(boolean1))
+      CALL ftg_write("boolean2", boolean2, LBOUND(boolean2), UBOUND(boolean2))
+      CALL ftg_write("boolean3", boolean3, LBOUND(boolean3), UBOUND(boolean3))
+      CALL ftg_write("boolean4", boolean4, LBOUND(boolean4), UBOUND(boolean4))
+      CALL ftg_write("integer1", integer1, LBOUND(integer1), UBOUND(integer1))
+      CALL ftg_write("integer2", integer2, LBOUND(integer2), UBOUND(integer2))
+      CALL ftg_write("integer3", integer3, LBOUND(integer3), UBOUND(integer3))
+      CALL ftg_write("integer4", integer4, LBOUND(integer4), UBOUND(integer4))
+      CALL ftg_write("longint1", longint1, LBOUND(longint1), UBOUND(longint1))
+      CALL ftg_write("longint2", longint2, LBOUND(longint2), UBOUND(longint2))
+      CALL ftg_write("longint3", longint3, LBOUND(longint3), UBOUND(longint3))
+      CALL ftg_write("longint4", longint4, LBOUND(longint4), UBOUND(longint4))
+      CALL ftg_write("float1", float1, LBOUND(float1), UBOUND(float1))
+      CALL ftg_write("float2", float2, LBOUND(float2), UBOUND(float2))
+      CALL ftg_write("float3", float3, LBOUND(float3), UBOUND(float3))
+      CALL ftg_write("float4", float4, LBOUND(float4), UBOUND(float4))
+      CALL ftg_write("double1", double1, LBOUND(double1), UBOUND(double1))
+      CALL ftg_write("double2", double2, LBOUND(double2), UBOUND(double2))
+      CALL ftg_write("double3", double3, LBOUND(double3), UBOUND(double3))
+      CALL ftg_write("double4", double4, LBOUND(double4), UBOUND(double4))
       CALL ftg_write("double4zeros", double4zeros)
       CALL ftg_destroy_serializer()      
       
@@ -359,30 +360,287 @@ CONTAINS
       @assertEqual((/ -1, 1, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("logical1"))
       @assertEqual((/ -2, 2, -3, 3, 0, 0, 0, 0 /),    ftg_get_bounds("logical2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 6, 0, 0 /),   ftg_get_bounds("logical3"))
-      @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 16 /), ftg_get_bounds("logical4"))
+      @assertEqual((/ 7, 8, 23, 42, -4, -2, 0, 16 /), ftg_get_bounds("logical4"))
       @assertEqual((/ -1, 2, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("boolean1"))
       @assertEqual((/ -2, 2, -3, 4, 0, 0, 0, 0 /),    ftg_get_bounds("boolean2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 7, 0, 0 /),   ftg_get_bounds("boolean3"))
-      @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 17 /), ftg_get_bounds("boolean4"))
+      @assertEqual((/ 7, 8, 23, 42, -4, -2, 0, 17 /), ftg_get_bounds("boolean4"))
       @assertEqual((/ -1, 3, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("integer1"))
       @assertEqual((/ -2, 2, -3, 5, 0, 0, 0, 0 /),    ftg_get_bounds("integer2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 8, 0, 0 /),   ftg_get_bounds("integer3"))
-      @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 18 /), ftg_get_bounds("integer4"))
+      @assertEqual((/ 7, 8, 23, 42, -4, -2, 0, 18 /), ftg_get_bounds("integer4"))
       @assertEqual((/ -1, 4, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("longint1"))
       @assertEqual((/ -2, 2, -3, 6, 0, 0, 0, 0 /),    ftg_get_bounds("longint2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 9, 0, 0 /),   ftg_get_bounds("longint3"))
-      @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 19 /), ftg_get_bounds("longint4"))
+      @assertEqual((/ 7, 8, 23, 42, -4, -2, 0, 19 /), ftg_get_bounds("longint4"))
       @assertEqual((/ -1, 5, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("float1"))
       @assertEqual((/ -2, 2, -3, 7, 0, 0, 0, 0 /),    ftg_get_bounds("float2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 10, 0, 0 /),   ftg_get_bounds("float3"))
-      @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 20 /), ftg_get_bounds("float4"))
+      @assertEqual((/ 7, 8, 23, 42, -4, -2, 0, 20 /), ftg_get_bounds("float4"))
       @assertEqual((/ -1, 6, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("double1"))
       @assertEqual((/ -2, 2, -3, 8, 0, 0, 0, 0 /),    ftg_get_bounds("double2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 11, 0, 0 /),   ftg_get_bounds("double3"))
-      @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 21 /), ftg_get_bounds("double4"))
+      @assertEqual((/ 7, 8, 23, 42, -4, -2, 0, 21 /), ftg_get_bounds("double4"))
       @assertEqual((/ 0, 0, 0, 0, 0, 0, 0, 0 /), ftg_get_bounds("double4zeros"))
       CALL ftg_destroy_serializer()      
     
     END SUBROUTINE testBounds
+    
+@Test
+    SUBROUTINE testAllocate()
+    
+      CHARACTER(len=*), PARAMETER :: base_name = 'testBounds'
+    
+      LOGICAL              :: logical1(-1:1), logical2(-2:2,-3:3), logical3(-4:4,-5:5,-6:6), logical4(7:8,23:42,-4:-2,0:16) 
+      LOGICAL(KIND=C_BOOL) :: boolean1(-1:2), boolean2(-2:2,-3:4), boolean3(-4:4,-5:5,-6:7), boolean4(7:8,23:42,-4:-2,0:17)
+      INTEGER              :: integer1(-1:3), integer2(-2:2,-3:5), integer3(-4:4,-5:5,-6:8), integer4(7:8,23:42,-4:-2,0:18) 
+      INTEGER(KIND=C_LONG) :: longint1(-1:4), longint2(-2:2,-3:6), longint3(-4:4,-5:5,-6:9), longint4(7:8,23:42,-4:-2,0:19) 
+      REAL(KIND=C_FLOAT)   :: float1(-1:5),   float2(-2:2,-3:7),   float3(-4:4,-5:5,-6:10),   float4(7:8,23:42,-4:-2,0:20) 
+      REAL(KIND=C_DOUBLE)  :: double1(-1:6),  double2(-2:2,-3:8),  double3(-4:4,-5:5,-6:11),  double4(7:8,23:42,-4:-2,0:21), & 
+                              double4zeros(7,7,7,7)
+    
+      LOGICAL, POINTER              :: p_logical1(:), p_logical2(:,:), p_logical3(:,:,:), p_logical4(:,:,:,:) 
+      LOGICAL(KIND=C_BOOL), POINTER :: p_boolean1(:), p_boolean2(:,:), p_boolean3(:,:,:), p_boolean4(:,:,:,:)
+      INTEGER, POINTER              :: p_integer1(:), p_integer2(:,:), p_integer3(:,:,:), p_integer4(:,:,:,:) 
+      INTEGER(KIND=C_LONG), POINTER :: p_longint1(:), p_longint2(:,:), p_longint3(:,:,:), p_longint4(:,:,:,:) 
+      REAL(KIND=C_FLOAT), POINTER   :: p_float1(:),   p_float2(:,:),   p_float3(:,:,:),   p_float4(:,:,:,:) 
+      REAL(KIND=C_DOUBLE), POINTER  :: p_double1(:),  p_double2(:,:),  p_double3(:,:,:),  p_double4(:,:,:,:), &
+                                       p_double4zeros(:,:,:,:)
+    
+      LOGICAL, ALLOCATABLE              :: a_logical1(:), a_logical2(:,:), a_logical3(:,:,:), a_logical4(:,:,:,:) 
+      LOGICAL(KIND=C_BOOL), ALLOCATABLE :: a_boolean1(:), a_boolean2(:,:), a_boolean3(:,:,:), a_boolean4(:,:,:,:)
+      INTEGER, ALLOCATABLE              :: a_integer1(:), a_integer2(:,:), a_integer3(:,:,:), a_integer4(:,:,:,:) 
+      INTEGER(KIND=C_LONG), ALLOCATABLE :: a_longint1(:), a_longint2(:,:), a_longint3(:,:,:), a_longint4(:,:,:,:) 
+      REAL(KIND=C_FLOAT), ALLOCATABLE   :: a_float1(:),   a_float2(:,:),   a_float3(:,:,:),   a_float4(:,:,:,:) 
+      REAL(KIND=C_DOUBLE), ALLOCATABLE  :: a_double1(:),  a_double2(:,:),  a_double3(:,:,:),  a_double4(:,:,:,:), &
+                                           a_double4zeros(:,:,:,:)
+    
+      logical1(:)       = .TRUE.
+      logical2(:,:)     = .TRUE.
+      logical3(:,:,:)   = .TRUE.
+      logical4(:,:,:,:) = .TRUE.
+      boolean1(:)       = .TRUE.
+      boolean2(:,:)     = .TRUE.
+      boolean3(:,:,:)   = .TRUE.
+      boolean4(:,:,:,:) = .TRUE.
+      integer1(:)       = 42
+      integer2(:,:)     = 42
+      integer3(:,:,:)   = 42
+      integer4(:,:,:,:) = 42
+      longint1(:)       = 42
+      longint2(:,:)     = 42
+      longint3(:,:,:)   = 42
+      longint4(:,:,:,:) = 42
+      float1(:)         = 109.23
+      float2(:,:)       = 109.23
+      float3(:,:,:)     = 109.23
+      float4(:,:,:,:)   = 109.23
+      double1(:)        = 109.23
+      double2(:,:)      = 109.23
+      double3(:,:,:)    = 109.23
+      double4(:,:,:,:)  = 109.23
+      double4zeros(:,:,:,:) = 109.23
+      
+      CALL ftg_set_serializer(dir, base_name, 'w')
+      CALL ftg_write("logical1", logical1, LBOUND(logical1), UBOUND(logical1))
+      CALL ftg_write("logical2", logical2, LBOUND(logical2), UBOUND(logical2))
+      CALL ftg_write("logical3", logical3, LBOUND(logical3), UBOUND(logical3))
+      CALL ftg_write("logical4", logical4, LBOUND(logical4), UBOUND(logical4))
+      CALL ftg_write("boolean1", boolean1, LBOUND(boolean1), UBOUND(boolean1))
+      CALL ftg_write("boolean2", boolean2, LBOUND(boolean2), UBOUND(boolean2))
+      CALL ftg_write("boolean3", boolean3, LBOUND(boolean3), UBOUND(boolean3))
+      CALL ftg_write("boolean4", boolean4, LBOUND(boolean4), UBOUND(boolean4))
+      CALL ftg_write("integer1", integer1, LBOUND(integer1), UBOUND(integer1))
+      CALL ftg_write("integer2", integer2, LBOUND(integer2), UBOUND(integer2))
+      CALL ftg_write("integer3", integer3, LBOUND(integer3), UBOUND(integer3))
+      CALL ftg_write("integer4", integer4, LBOUND(integer4), UBOUND(integer4))
+      CALL ftg_write("longint1", longint1, LBOUND(longint1), UBOUND(longint1))
+      CALL ftg_write("longint2", longint2, LBOUND(longint2), UBOUND(longint2))
+      CALL ftg_write("longint3", longint3, LBOUND(longint3), UBOUND(longint3))
+      CALL ftg_write("longint4", longint4, LBOUND(longint4), UBOUND(longint4))
+      CALL ftg_write("float1", float1, LBOUND(float1), UBOUND(float1))
+      CALL ftg_write("float2", float2, LBOUND(float2), UBOUND(float2))
+      CALL ftg_write("float3", float3, LBOUND(float3), UBOUND(float3))
+      CALL ftg_write("float4", float4, LBOUND(float4), UBOUND(float4))
+      CALL ftg_write("double1", double1, LBOUND(double1), UBOUND(double1))
+      CALL ftg_write("double2", double2, LBOUND(double2), UBOUND(double2))
+      CALL ftg_write("double3", double3, LBOUND(double3), UBOUND(double3))
+      CALL ftg_write("double4", double4, LBOUND(double4), UBOUND(double4))
+      CALL ftg_write("double4zeros", double4zeros)
+      CALL ftg_destroy_serializer()      
+      
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      
+      CALL ftg_allocate("logical1", p_logical1)
+      @assertEqual((/ -1 /), LBOUND(p_logical1))
+      @assertEqual((/ 1 /), UBOUND(p_logical1))
+      CALL ftg_allocate("logical1", a_logical1)
+      @assertEqual((/ -1 /), LBOUND(a_logical1))
+      @assertEqual((/ 1 /), UBOUND(a_logical1))
+      
+      CALL ftg_allocate("logical2", p_logical2)
+      @assertEqual((/ -2, -3 /), LBOUND(p_logical2))
+      @assertEqual((/ 2, 3 /), UBOUND(p_logical2))
+      CALL ftg_allocate("logical2", a_logical2)
+      @assertEqual((/ -2, -3 /), LBOUND(a_logical2))
+      @assertEqual((/ 2, 3 /), UBOUND(a_logical2))
+      
+      CALL ftg_allocate("logical3", p_logical3)
+      @assertEqual((/ -4, -5, -6 /), LBOUND(p_logical3))
+      @assertEqual((/ 4, 5, 6 /), UBOUND(p_logical3))
+      CALL ftg_allocate("logical3", a_logical3)
+      @assertEqual((/ -4, -5, -6 /), LBOUND(a_logical3))
+      @assertEqual((/ 4, 5, 6 /), UBOUND(a_logical3))
+      
+      CALL ftg_allocate("logical4", p_logical4)
+      @assertEqual((/ 7, 23, -4, 0 /), LBOUND(p_logical4))
+      @assertEqual((/ 8, 42, -2, 16 /), UBOUND(p_logical4))
+      CALL ftg_allocate("logical4", a_logical4)
+      @assertEqual((/ 7, 23, -4, 0 /), LBOUND(a_logical4))
+      @assertEqual((/ 8, 42, -2, 16 /), UBOUND(a_logical4))
+      
+      CALL ftg_allocate("boolean1", p_boolean1)
+      @assertEqual((/ -1 /), LBOUND(p_boolean1))
+      @assertEqual((/ 2 /), UBOUND(p_boolean1))
+      CALL ftg_allocate("boolean1", a_boolean1)
+      @assertEqual((/ -1 /), LBOUND(a_boolean1))
+      @assertEqual((/ 2 /), UBOUND(a_boolean1))
+      
+      CALL ftg_allocate("boolean2", p_boolean2)
+      @assertEqual((/ -2, -3 /), LBOUND(p_boolean2))
+      @assertEqual((/ 2, 4 /), UBOUND(p_boolean2))
+      CALL ftg_allocate("boolean2", a_boolean2)
+      @assertEqual((/ -2, -3 /), LBOUND(a_boolean2))
+      @assertEqual((/ 2, 4 /), UBOUND(a_boolean2))
+      
+      CALL ftg_allocate("boolean3", p_boolean3)
+      @assertEqual((/ -4, -5, -6 /), LBOUND(p_boolean3))
+      @assertEqual((/ 4, 5, 7 /), UBOUND(p_boolean3))
+      CALL ftg_allocate("boolean3", a_boolean3)
+      @assertEqual((/ -4, -5, -6 /), LBOUND(a_boolean3))
+      @assertEqual((/ 4, 5, 7 /), UBOUND(a_boolean3))
+      
+      CALL ftg_allocate("boolean4", p_boolean4)
+      @assertEqual((/ 7, 23, -4, 0 /), LBOUND(p_boolean4))
+      @assertEqual((/ 8, 42, -2, 17 /), UBOUND(p_boolean4))
+      CALL ftg_allocate("boolean4", a_boolean4)
+      @assertEqual((/ 7, 23, -4, 0 /), LBOUND(a_boolean4))
+      @assertEqual((/ 8, 42, -2, 17 /), UBOUND(a_boolean4))
+      
+      CALL ftg_allocate("integer1", p_integer1)
+      @assertEqual((/ -1 /), LBOUND(p_integer1))
+      @assertEqual((/ 3 /), UBOUND(p_integer1))
+      CALL ftg_allocate("integer1", a_integer1)
+      @assertEqual((/ -1 /), LBOUND(a_integer1))
+      @assertEqual((/ 3 /), UBOUND(a_integer1))
+      
+      CALL ftg_allocate("integer2", p_integer2)
+      @assertEqual((/ -2, -3 /), LBOUND(p_integer2))
+      @assertEqual((/ 2, 5 /), UBOUND(p_integer2))
+      CALL ftg_allocate("integer2", a_integer2)
+      @assertEqual((/ -2, -3 /), LBOUND(a_integer2))
+      @assertEqual((/ 2, 5 /), UBOUND(a_integer2))
+      
+      CALL ftg_allocate("integer3", p_integer3)
+      @assertEqual((/ -4, -5, -6 /), LBOUND(p_integer3))
+      @assertEqual((/ 4, 5, 8 /), UBOUND(p_integer3))
+      CALL ftg_allocate("integer3", a_integer3)
+      @assertEqual((/ -4, -5, -6 /), LBOUND(a_integer3))
+      @assertEqual((/ 4, 5, 8 /), UBOUND(a_integer3))
+      
+      CALL ftg_allocate("integer4", p_integer4)
+      @assertEqual((/ 7, 23, -4, 0 /), LBOUND(p_integer4))
+      @assertEqual((/ 8, 42, -2, 18 /), UBOUND(p_integer4))
+      CALL ftg_allocate("integer4", a_integer4)
+      @assertEqual((/ 7, 23, -4, 0 /), LBOUND(a_integer4))
+      @assertEqual((/ 8, 42, -2, 18 /), UBOUND(a_integer4))
+      
+      CALL ftg_allocate("longint1", p_longint1)
+      @assertEqual((/ -1 /), LBOUND(p_longint1))
+      @assertEqual((/ 4 /), UBOUND(p_longint1))
+      CALL ftg_allocate("longint1", a_longint1)
+      @assertEqual((/ -1 /), LBOUND(a_longint1))
+      @assertEqual((/ 4 /), UBOUND(a_longint1))
+      
+      CALL ftg_allocate("longint2", p_longint2)
+      @assertEqual((/ -2, -3 /), LBOUND(p_longint2))
+      @assertEqual((/ 2, 6 /), UBOUND(p_longint2))
+      CALL ftg_allocate("longint2", a_longint2)
+      @assertEqual((/ -2, -3 /), LBOUND(a_longint2))
+      @assertEqual((/ 2, 6 /), UBOUND(a_longint2))
+      
+      CALL ftg_allocate("longint3", p_longint3)
+      @assertEqual((/ -4, -5, -6 /), LBOUND(p_longint3))
+      @assertEqual((/ 4, 5, 9 /), UBOUND(p_longint3))
+      CALL ftg_allocate("longint3", a_longint3)
+      @assertEqual((/ -4, -5, -6 /), LBOUND(a_longint3))
+      @assertEqual((/ 4, 5, 9 /), UBOUND(a_longint3))
+      
+      CALL ftg_allocate("longint4", p_longint4)
+      @assertEqual((/ 7, 23, -4, 0 /), LBOUND(p_longint4))
+      @assertEqual((/ 8, 42, -2, 19 /), UBOUND(p_longint4))
+      CALL ftg_allocate("longint4", a_longint4)
+      @assertEqual((/ 7, 23, -4, 0 /), LBOUND(a_longint4))
+      @assertEqual((/ 8, 42, -2, 19 /), UBOUND(a_longint4))
+      
+      CALL ftg_allocate("float1", p_float1)
+      @assertEqual((/ -1 /), LBOUND(p_float1))
+      @assertEqual((/ 5 /), UBOUND(p_float1))
+      CALL ftg_allocate("float1", a_float1)
+      @assertEqual((/ -1 /), LBOUND(a_float1))
+      @assertEqual((/ 5 /), UBOUND(a_float1))
+      
+      CALL ftg_allocate("float2", p_float2)
+      @assertEqual((/ -2, -3 /), LBOUND(p_float2))
+      @assertEqual((/ 2, 7 /), UBOUND(p_float2))
+      CALL ftg_allocate("float2", a_float2)
+      @assertEqual((/ -2, -3 /), LBOUND(a_float2))
+      @assertEqual((/ 2, 7 /), UBOUND(a_float2))
+      
+      CALL ftg_allocate("float3", p_float3)
+      @assertEqual((/ -4, -5, -6 /), LBOUND(p_float3))
+      @assertEqual((/ 4, 5, 10 /), UBOUND(p_float3))
+      CALL ftg_allocate("float3", a_float3)
+      @assertEqual((/ -4, -5, -6 /), LBOUND(a_float3))
+      @assertEqual((/ 4, 5, 10 /), UBOUND(a_float3))
+      
+      CALL ftg_allocate("float4", p_float4)
+      @assertEqual((/ 7, 23, -4, 0 /), LBOUND(p_float4))
+      @assertEqual((/ 8, 42, -2, 20 /), UBOUND(p_float4))
+      CALL ftg_allocate("float4", a_float4)
+      @assertEqual((/ 7, 23, -4, 0 /), LBOUND(a_float4))
+      @assertEqual((/ 8, 42, -2, 20 /), UBOUND(a_float4))
+      
+      CALL ftg_allocate("double1", p_double1)
+      @assertEqual((/ -1 /), LBOUND(p_double1))
+      @assertEqual((/ 6 /), UBOUND(p_double1))
+      CALL ftg_allocate("double1", a_double1)
+      @assertEqual((/ -1 /), LBOUND(a_double1))
+      @assertEqual((/ 6 /), UBOUND(a_double1))
+      
+      CALL ftg_allocate("double2", p_double2)
+      @assertEqual((/ -2, -3 /), LBOUND(p_double2))
+      @assertEqual((/ 2, 8 /), UBOUND(p_double2))
+      CALL ftg_allocate("double2", a_double2)
+      @assertEqual((/ -2, -3 /), LBOUND(a_double2))
+      @assertEqual((/ 2, 8 /), UBOUND(a_double2))
+      
+      CALL ftg_allocate("double3", p_double3)
+      @assertEqual((/ -4, -5, -6 /), LBOUND(p_double3))
+      @assertEqual((/ 4, 5, 11 /), UBOUND(p_double3))
+      CALL ftg_allocate("double3", a_double3)
+      @assertEqual((/ -4, -5, -6 /), LBOUND(a_double3))
+      @assertEqual((/ 4, 5, 11 /), UBOUND(a_double3))
+      
+      CALL ftg_allocate("double4", p_double4)
+      @assertEqual((/ 7, 23, -4, 0 /), LBOUND(p_double4))
+      @assertEqual((/ 8, 42, -2, 21 /), UBOUND(p_double4))
+      CALL ftg_allocate("double4", a_double4)
+      @assertEqual((/ 7, 23, -4, 0 /), LBOUND(a_double4))
+      @assertEqual((/ 8, 42, -2, 21 /), UBOUND(a_double4))
+      
+      CALL ftg_destroy_serializer()      
+    
+    END SUBROUTINE testAllocate
     
 END MODULE ser_ftg_test
