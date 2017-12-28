@@ -8,7 +8,7 @@ IMPLICIT NONE
 PUBLIC :: ignore_bullshit, ignore_bullshit_max_dim_size, ignore_bullshit_allow_negative_indices, &
           ftg_set_serializer, ftg_get_serializer, ftg_destroy_serializer, &
           ftg_set_savepoint, ftg_get_savepoint, ftg_destroy_savepoint, &
-          ftg_write
+          ftg_field_exists, ftg_write
 
 PRIVATE
 
