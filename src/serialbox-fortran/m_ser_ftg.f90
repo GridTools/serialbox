@@ -25,27 +25,27 @@ INTERFACE ftg_write
       ftg_write_bool_1d, &
       ftg_write_bool_2d, &
       ftg_write_bool_3d, &
-      ftg_write_bool_4d!, &
-!      ftg_write_int_0d, &
-!      ftg_write_int_1d, &
-!      ftg_write_int_2d, &
-!      ftg_write_int_3d, &
-!      ftg_write_int_4d, &
-!      ftg_write_long_0d, &
-!      ftg_write_long_1d, &
-!      ftg_write_long_2d, &
-!      ftg_write_long_3d, &
-!      ftg_write_long_4d, &
-!      ftg_write_float_0d, &
-!      ftg_write_float_1d, &
-!      ftg_write_float_2d, &
-!      ftg_write_float_3d, &
-!      ftg_write_float_4d, &
-!      ftg_write_double_0d, &
-!      ftg_write_double_1d, &
-!      ftg_write_double_2d, &
-!      ftg_write_double_3d, &
-!      ftg_write_double_4d
+      ftg_write_bool_4d, &
+      ftg_write_int_0d, &
+      ftg_write_int_1d, &
+      ftg_write_int_2d, &
+      ftg_write_int_3d, &
+      ftg_write_int_4d, &
+      ftg_write_long_0d, &
+      ftg_write_long_1d, &
+      ftg_write_long_2d, &
+      ftg_write_long_3d, &
+      ftg_write_long_4d, &
+      ftg_write_float_0d, &
+      ftg_write_float_1d, &
+      ftg_write_float_2d, &
+      ftg_write_float_3d, &
+      ftg_write_float_4d, &
+      ftg_write_double_0d, &
+      ftg_write_double_1d, &
+      ftg_write_double_2d, &
+      ftg_write_double_3d, &
+      ftg_write_double_4d
 END INTERFACE
 
 INTERFACE ftg_set_serializer
@@ -456,11 +456,11 @@ END SUBROUTINE ftg_write_bool_4d
 
 SUBROUTINE ftg_write_int_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
-  INTEGER, INTENT(IN), TARGET :: field
+  INTEGER, INTENT(IN), TARGET              :: field
 
   INTEGER, POINTER :: padd
-  LOGICAL                       :: bullshit
-  CHARACTER(16)                 :: loc
+  LOGICAL          :: bullshit
+  CHARACTER(16)    :: loc
 
   padd => field
   bullshit = .FALSE.
@@ -478,12 +478,12 @@ END SUBROUTINE ftg_write_int_0d
 
 SUBROUTINE ftg_write_int_1d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  INTEGER, INTENT(IN), TARGET    :: field(:)
+  INTEGER, INTENT(IN), TARGET                 :: field(:)
   INTEGER, DIMENSION(1), INTENT(IN), OPTIONAL :: lbounds, ubounds
 
   INTEGER, POINTER :: padd(:)
-  LOGICAL                       :: bullshit
-  CHARACTER(16)                 :: loc
+  LOGICAL          :: bullshit
+  CHARACTER(16)    :: loc
 
   padd=>field
   bullshit = .FALSE.
@@ -506,12 +506,12 @@ END SUBROUTINE ftg_write_int_1d
 
 SUBROUTINE ftg_write_int_2d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  INTEGER, INTENT(IN), TARGET    :: field(:,:)
+  INTEGER, INTENT(IN), TARGET                 :: field(:,:)
   INTEGER, DIMENSION(2), INTENT(IN), OPTIONAL :: lbounds, ubounds
 
   INTEGER, POINTER :: padd(:,:)
-  LOGICAL                       :: bullshit
-  CHARACTER(16)                 :: loc
+  LOGICAL          :: bullshit
+  CHARACTER(16)    :: loc
 
   padd=>field
   bullshit = .FALSE.
@@ -535,12 +535,12 @@ END SUBROUTINE ftg_write_int_2d
 
 SUBROUTINE ftg_write_int_3d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  INTEGER, INTENT(IN), TARGET    :: field(:,:,:)
+  INTEGER, INTENT(IN), TARGET                 :: field(:,:,:)
   INTEGER, DIMENSION(3), INTENT(IN), OPTIONAL :: lbounds, ubounds
 
   INTEGER, POINTER :: padd(:,:,:)
-  LOGICAL                       :: bullshit
-  CHARACTER(16)                 :: loc
+  LOGICAL          :: bullshit
+  CHARACTER(16)    :: loc
 
   padd=>field
   bullshit = .FALSE.
@@ -565,10 +565,153 @@ END SUBROUTINE ftg_write_int_3d
 
 SUBROUTINE ftg_write_int_4d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  INTEGER, INTENT(IN), TARGET    :: field(:,:,:,:)
+  INTEGER, INTENT(IN), TARGET                 :: field(:,:,:,:)
   INTEGER, DIMENSION(4), INTENT(IN), OPTIONAL :: lbounds, ubounds
 
   INTEGER, POINTER :: padd(:,:,:,:)
+  LOGICAL          :: bullshit
+  CHARACTER(16)    :: loc
+
+  padd=>field
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
+               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 4) > ignore_bullshit_max_dim_size .OR. &
+               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_int_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE ftg_write_long_0d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field
+
+  INTEGER(KIND=C_LONG), POINTER :: padd
+  LOGICAL                       :: bullshit
+  CHARACTER(16)                 :: loc
+
+  padd => field
+  bullshit = .FALSE.
+  IF (ignore_bullshit) THEN
+    bullshit = ASSOCIATED(padd, field)
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_long_0d
+
+SUBROUTINE ftg_write_long_1d(fieldname, field, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), TARGET    :: field(:)
+  INTEGER, DIMENSION(1), INTENT(IN), OPTIONAL :: lbounds, ubounds
+
+  INTEGER(KIND=C_LONG), POINTER :: padd(:)
+  LOGICAL                       :: bullshit
+  CHARACTER(16)                 :: loc
+
+  padd=>field
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
+               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
+               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+      bullshit = lbounds(1) < 0 .OR. ubounds(1) < 0
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_long_1d
+
+SUBROUTINE ftg_write_long_2d(fieldname, field, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), TARGET    :: field(:,:)
+  INTEGER, DIMENSION(2), INTENT(IN), OPTIONAL :: lbounds, ubounds
+
+  INTEGER(KIND=C_LONG), POINTER :: padd(:,:)
+  LOGICAL                       :: bullshit
+  CHARACTER(16)                 :: loc
+
+  padd=>field
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
+               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
+               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_long_2d
+
+SUBROUTINE ftg_write_long_3d(fieldname, field, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), TARGET    :: field(:,:,:)
+  INTEGER, DIMENSION(3), INTENT(IN), OPTIONAL :: lbounds, ubounds
+
+  INTEGER(KIND=C_LONG), POINTER :: padd(:,:,:)
+  LOGICAL                       :: bullshit
+  CHARACTER(16)                 :: loc
+
+  padd=>field
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
+               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
+               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_long_3d
+
+SUBROUTINE ftg_write_long_4d(fieldname, field, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), TARGET    :: field(:,:,:,:)
+  INTEGER, DIMENSION(4), INTENT(IN), OPTIONAL :: lbounds, ubounds
+
+  INTEGER(KIND=C_LONG), POINTER :: padd(:,:,:,:)
   LOGICAL                       :: bullshit
   CHARACTER(16)                 :: loc
 
@@ -592,7 +735,293 @@ SUBROUTINE ftg_write_int_4d(fieldname, field, lbounds, ubounds)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
   END IF
 
-END SUBROUTINE ftg_write_int_4d
+END SUBROUTINE ftg_write_long_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE ftg_write_float_0d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field
+
+  REAL(KIND=C_FLOAT), POINTER :: padd
+  LOGICAL                     :: bullshit
+  CHARACTER(16)               :: loc
+
+  padd => field
+  bullshit = .FALSE.
+  IF (ignore_bullshit) THEN
+    bullshit = ASSOCIATED(padd, field)
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_float_0d
+
+SUBROUTINE ftg_write_float_1d(fieldname, field, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN), TARGET      :: field(:)
+  INTEGER, DIMENSION(1), INTENT(IN), OPTIONAL :: lbounds, ubounds
+
+  REAL(KIND=C_FLOAT), POINTER :: padd(:)
+  LOGICAL                     :: bullshit
+  CHARACTER(16)               :: loc
+
+  padd=>field
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
+               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
+               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+      bullshit = lbounds(1) < 0 .OR. ubounds(1) < 0
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_float_1d
+
+SUBROUTINE ftg_write_float_2d(fieldname, field, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN), TARGET      :: field(:,:)
+  INTEGER, DIMENSION(2), INTENT(IN), OPTIONAL :: lbounds, ubounds
+
+  REAL(KIND=C_FLOAT), POINTER :: padd(:,:)
+  LOGICAL                     :: bullshit
+  CHARACTER(16)               :: loc
+
+  padd=>field
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
+               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
+               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_float_2d
+
+SUBROUTINE ftg_write_float_3d(fieldname, field, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN), TARGET      :: field(:,:,:)
+  INTEGER, DIMENSION(3), INTENT(IN), OPTIONAL :: lbounds, ubounds
+
+  REAL(KIND=C_FLOAT), POINTER :: padd(:,:,:)
+  LOGICAL                     :: bullshit
+  CHARACTER(16)               :: loc
+
+  padd=>field
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
+               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
+               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_float_3d
+
+SUBROUTINE ftg_write_float_4d(fieldname, field, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN), TARGET      :: field(:,:,:,:)
+  INTEGER, DIMENSION(4), INTENT(IN), OPTIONAL :: lbounds, ubounds
+
+  REAL(KIND=C_FLOAT), POINTER :: padd(:,:,:,:)
+  LOGICAL                     :: bullshit
+  CHARACTER(16)               :: loc
+
+  padd=>field
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
+               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 4) > ignore_bullshit_max_dim_size .OR. &
+               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_float_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE ftg_write_double_0d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET  :: field
+
+  REAL(KIND=C_DOUBLE), POINTER :: padd
+  LOGICAL                      :: bullshit
+  CHARACTER(16)                :: loc
+
+  padd => field
+  bullshit = .FALSE.
+  IF (ignore_bullshit) THEN
+    bullshit = ASSOCIATED(padd, field)
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_double_0d
+
+SUBROUTINE ftg_write_double_1d(fieldname, field, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET     :: field(:)
+  INTEGER, DIMENSION(1), INTENT(IN), OPTIONAL :: lbounds, ubounds
+
+  REAL(KIND=C_DOUBLE), POINTER :: padd(:)
+  LOGICAL                      :: bullshit
+  CHARACTER(16)                :: loc
+
+  padd=>field
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
+               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
+               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+      bullshit = lbounds(1) < 0 .OR. ubounds(1) < 0
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_double_1d
+
+SUBROUTINE ftg_write_double_2d(fieldname, field, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET     :: field(:,:)
+  INTEGER, DIMENSION(2), INTENT(IN), OPTIONAL :: lbounds, ubounds
+
+  REAL(KIND=C_DOUBLE), POINTER :: padd(:,:)
+  LOGICAL                      :: bullshit
+  CHARACTER(16)                :: loc
+
+  padd=>field
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
+               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
+               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_double_2d
+
+SUBROUTINE ftg_write_double_3d(fieldname, field, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET      :: field(:,:,:)
+  INTEGER, DIMENSION(3), INTENT(IN), OPTIONAL  :: lbounds, ubounds
+
+  REAL(KIND=C_DOUBLE), POINTER :: padd(:,:,:)
+  LOGICAL                      :: bullshit
+  CHARACTER(16)                :: loc
+
+  padd=>field
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
+               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
+               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_double_3d
+
+SUBROUTINE ftg_write_double_4d(fieldname, field, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET      :: field(:,:,:,:)
+  INTEGER, DIMENSION(4), INTENT(IN), OPTIONAL  :: lbounds, ubounds
+
+  REAL(KIND=C_DOUBLE), POINTER :: padd(:,:,:,:)
+  LOGICAL                      :: bullshit
+  CHARACTER(16)                :: loc
+
+  padd=>field
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
+               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
+               SIZE(field, 4) > ignore_bullshit_max_dim_size .OR. &
+               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  END IF
+
+END SUBROUTINE ftg_write_double_4d
 
 !=============================================================================
 !=============================================================================
