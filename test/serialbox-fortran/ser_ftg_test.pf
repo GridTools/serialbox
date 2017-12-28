@@ -61,4 +61,52 @@ CONTAINS
     
     END SUBROUTINE ftgTestSavepoint
 
+   
+@Test
+    SUBROUTINE testIntegerArrays()
+    
+      CHARACTER(len=*), PARAMETER :: base_name = 'testIntegerArrays'
+    
+      INTEGER :: w_testfield_i1(5), w_testfield_i2(4,3), w_testfield_i3(3,2,2), w_testfield_i4(2,2,2,2)
+      INTEGER :: r_testfield_i1(5), r_testfield_i2(4,3), r_testfield_i3(3,2,2), r_testfield_i4(2,2,2,2)
+      
+      w_testfield_i1 = (/ 0, 1, 2, 3, 4 /)
+      w_testfield_i2 = RESHAPE((/ 0, 3, 2, 9, 1, 4, 7, 10, 2, 5, 8, 11 /), SHAPE(w_testfield_i2))
+      w_testfield_i3 = RESHAPE((/ 0, 4, 8, 2, 6, 10, 1, 5, 9, 3, 7, 11 /), SHAPE(w_testfield_i3))
+      w_testfield_i4 = RESHAPE((/ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 /), SHAPE(w_testfield_i4))
+            
+      CALL ftg_set_serializer(dir, base_name, 'w')
+      CALL ftg_set_savepoint(savepoint_name)
+      CALL ftg_write("testfield_i1", w_testfield_i1)
+      CALL ftg_write("testfield_i2", w_testfield_i2)
+      CALL ftg_write("testfield_i3", w_testfield_i3)
+      CALL ftg_write("testfield_i4", w_testfield_i4)
+      CALL ftg_destroy_savepoint()
+      CALL ftg_destroy_serializer()
+      
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      CALL ftg_set_savepoint(savepoint_name)
+      @assertTrue(ftg_field_exists("testfield_i1"))
+      @assertTrue(ftg_field_exists("testfield_i2"))
+      @assertTrue(ftg_field_exists("testfield_i3"))
+      @assertTrue(ftg_field_exists("testfield_i4"))
+!      @assertEqual(exp_size(SHAPE(w_testfield_i1)), fs_get_size(serializer, "testfield_i1"))
+!      @assertEqual(exp_size(SHAPE(w_testfield_i2)), fs_get_size(serializer, "testfield_i2"))
+!      @assertEqual(exp_size(SHAPE(w_testfield_i3)), fs_get_size(serializer, "testfield_i3"))
+!      @assertEqual(exp_size(SHAPE(w_testfield_i4)), fs_get_size(serializer, "testfield_i4"))
+!      CALL fs_read_field(serializer, savepoint, "testfield_i1", r_testfield_i1)
+!      CALL fs_read_field(serializer, savepoint, "testfield_i2", r_testfield_i2)
+!      CALL fs_read_field(serializer, savepoint, "testfield_i3", r_testfield_i3)
+!      CALL fs_read_field(serializer, savepoint, "testfield_i4", r_testfield_i4)
+      CALL ftg_destroy_savepoint()
+      CALL ftg_destroy_serializer()
+      
+!      @assertEqual(w_testfield_i1, r_testfield_i1)
+!      @assertEqual(w_testfield_i2, r_testfield_i2)
+!      @assertEqual(w_testfield_i3, r_testfield_i3)
+!      @assertEqual(w_testfield_i4, r_testfield_i4)
+    
+    END SUBROUTINE testIntegerArrays
+   
+
 END MODULE ser_ftg_test
