@@ -225,7 +225,7 @@ SUBROUTINE ftg_write_logical_0d(fieldname, field)
   padd => field
   bullshit = .FALSE.
   IF (ignore_bullshit) THEN
-    bullshit = ASSOCIATED(padd, field)
+    bullshit = .NOT. ASSOCIATED(padd, field)
   END IF
 
   IF (.NOT. bullshit) THEN
@@ -368,7 +368,7 @@ SUBROUTINE ftg_write_bool_0d(fieldname, field)
   padd => field
   bullshit = .FALSE.
   IF (ignore_bullshit) THEN
-    bullshit = ASSOCIATED(padd, field)
+    bullshit = .NOT. ASSOCIATED(padd, field)
   END IF
 
   IF (.NOT. bullshit) THEN
@@ -511,7 +511,7 @@ SUBROUTINE ftg_write_int_0d(fieldname, field)
   padd => field
   bullshit = .FALSE.
   IF (ignore_bullshit) THEN
-    bullshit = ASSOCIATED(padd, field)
+    bullshit = .NOT. ASSOCIATED(padd, field)
   END IF
 
   IF (.NOT. bullshit) THEN
@@ -654,7 +654,7 @@ SUBROUTINE ftg_write_long_0d(fieldname, field)
   padd => field
   bullshit = .FALSE.
   IF (ignore_bullshit) THEN
-    bullshit = ASSOCIATED(padd, field)
+    bullshit = .NOT. ASSOCIATED(padd, field)
   END IF
 
   IF (.NOT. bullshit) THEN
@@ -797,7 +797,7 @@ SUBROUTINE ftg_write_float_0d(fieldname, field)
   padd => field
   bullshit = .FALSE.
   IF (ignore_bullshit) THEN
-    bullshit = ASSOCIATED(padd, field)
+    bullshit = .NOT. ASSOCIATED(padd, field)
   END IF
 
   IF (.NOT. bullshit) THEN
@@ -940,7 +940,7 @@ SUBROUTINE ftg_write_double_0d(fieldname, field)
   padd => field
   bullshit = .FALSE.
   IF (ignore_bullshit) THEN
-    bullshit = ASSOCIATED(padd, field)
+    bullshit = .NOT. ASSOCIATED(padd, field)
   END IF
 
   IF (.NOT. bullshit) THEN
