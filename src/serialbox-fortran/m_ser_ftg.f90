@@ -5,10 +5,10 @@ USE m_serialize
 
 IMPLICIT NONE
 
-PUBLIC :: ignore_bullshit, ignore_bullshit_max_dim_size, ignore_bullshit_allow_negative_indices, &
+PUBLIC :: ignore_bullshit, ignore_bullshit_max_dim_size, ignore_bullshit_allow_negative_indices, ignore_not_existing, &
           ftg_set_serializer, ftg_get_serializer, ftg_destroy_serializer, &
           ftg_set_savepoint, ftg_get_savepoint, ftg_destroy_savepoint, &
-          ftg_field_exists, ftg_write, ftg_read
+          ftg_field_exists, ftg_get_bounds, ftg_write, ftg_read
 
 PRIVATE
 
@@ -205,11 +205,23 @@ END FUNCTION ftg_get_savepoint
 
 LOGICAL FUNCTION ftg_field_exists(fieldname)
 
-  CHARACTER(LEN=*)   :: fieldname
+  CHARACTER(LEN=*), INTENT(IN)   :: fieldname
 
   ftg_field_exists = fs_field_exists(serializer,  fieldname)
 
 END FUNCTION ftg_field_exists
+
+!=============================================================================
+!=============================================================================
+
+FUNCTION ftg_get_bounds(fieldname)
+
+  CHARACTER(LEN=*), INTENT(IN)   :: fieldname
+  INTEGER, DIMENSION(8) :: ftg_get_bounds
+
+  ftg_get_bounds = fs_get_halos(serializer,  fieldname)
+
+END FUNCTION ftg_get_bounds
 
 !=============================================================================
 !=============================================================================
