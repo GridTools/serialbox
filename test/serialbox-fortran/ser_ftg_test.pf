@@ -16,6 +16,11 @@ MODULE ser_ftg_test
   CHARACTER(len=*), PARAMETER :: savepoint_name = 'test'
 
 CONTAINS
+
+   FUNCTION exp_size(var_shape)
+      INTEGER :: var_shape(:), exp_size(4)
+      exp_size = RESHAPE(var_shape, (/ 4 /), (/ 0, 0, 0, 0 /))
+   END FUNCTION exp_size
    
 @Before
    SUBROUTINE mySetup()
@@ -90,21 +95,21 @@ CONTAINS
       @assertTrue(ftg_field_exists("testfield_i2"))
       @assertTrue(ftg_field_exists("testfield_i3"))
       @assertTrue(ftg_field_exists("testfield_i4"))
-!      @assertEqual(exp_size(SHAPE(w_testfield_i1)), fs_get_size(serializer, "testfield_i1"))
-!      @assertEqual(exp_size(SHAPE(w_testfield_i2)), fs_get_size(serializer, "testfield_i2"))
-!      @assertEqual(exp_size(SHAPE(w_testfield_i3)), fs_get_size(serializer, "testfield_i3"))
-!      @assertEqual(exp_size(SHAPE(w_testfield_i4)), fs_get_size(serializer, "testfield_i4"))
-!      CALL fs_read_field(serializer, savepoint, "testfield_i1", r_testfield_i1)
-!      CALL fs_read_field(serializer, savepoint, "testfield_i2", r_testfield_i2)
-!      CALL fs_read_field(serializer, savepoint, "testfield_i3", r_testfield_i3)
-!      CALL fs_read_field(serializer, savepoint, "testfield_i4", r_testfield_i4)
+      @assertEqual(exp_size(SHAPE(w_testfield_i1)), fs_get_size(ftg_get_serializer(), "testfield_i1"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i2)), fs_get_size(ftg_get_serializer(), "testfield_i2"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i3)), fs_get_size(ftg_get_serializer(), "testfield_i3"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i4)), fs_get_size(ftg_get_serializer(), "testfield_i4"))
+      CALL ftg_read("testfield_i1", r_testfield_i1)
+      CALL ftg_read("testfield_i2", r_testfield_i2)
+      CALL ftg_read("testfield_i3", r_testfield_i3)
+      CALL ftg_read("testfield_i4", r_testfield_i4)
       CALL ftg_destroy_savepoint()
       CALL ftg_destroy_serializer()
       
-!      @assertEqual(w_testfield_i1, r_testfield_i1)
-!      @assertEqual(w_testfield_i2, r_testfield_i2)
-!      @assertEqual(w_testfield_i3, r_testfield_i3)
-!      @assertEqual(w_testfield_i4, r_testfield_i4)
+      @assertEqual(w_testfield_i1, r_testfield_i1)
+      @assertEqual(w_testfield_i2, r_testfield_i2)
+      @assertEqual(w_testfield_i3, r_testfield_i3)
+      @assertEqual(w_testfield_i4, r_testfield_i4)
     
     END SUBROUTINE testIntegerArrays
    

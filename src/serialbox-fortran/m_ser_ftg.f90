@@ -54,32 +54,32 @@ INTERFACE ftg_read
       ftg_read_logical_1d, &
       ftg_read_logical_2d, &
       ftg_read_logical_3d, &
-      ftg_read_logical_4d!, &
-!      ftg_read_bool_0d, &
-!      ftg_read_bool_1d, &
-!      ftg_read_bool_2d, &
-!      ftg_read_bool_3d, &
-!      ftg_read_bool_4d, &
-!      ftg_read_int_0d, &
-!      ftg_read_int_1d, &
-!      ftg_read_int_2d, &
-!      ftg_read_int_3d, &
-!      ftg_read_int_4d, &
-!      ftg_read_long_0d, &
-!      ftg_read_long_1d, &
-!      ftg_read_long_2d, &
-!      ftg_read_long_3d, &
-!      ftg_read_long_4d, &
-!      ftg_read_float_0d, &
-!      ftg_read_float_1d, &
-!      ftg_read_float_2d, &
-!      ftg_read_float_3d, &
-!      ftg_read_float_4d, &
-!      ftg_read_double_0d, &
-!      ftg_read_double_1d, &
-!      ftg_read_double_2d, &
-!      ftg_read_double_3d, &
-!      ftg_read_double_4d
+      ftg_read_logical_4d, &
+      ftg_read_bool_0d, &
+      ftg_read_bool_1d, &
+      ftg_read_bool_2d, &
+      ftg_read_bool_3d, &
+      ftg_read_bool_4d, &
+      ftg_read_int_0d, &
+      ftg_read_int_1d, &
+      ftg_read_int_2d, &
+      ftg_read_int_3d, &
+      ftg_read_int_4d, &
+      ftg_read_long_0d, &
+      ftg_read_long_1d, &
+      ftg_read_long_2d, &
+      ftg_read_long_3d, &
+      ftg_read_long_4d, &
+      ftg_read_float_0d, &
+      ftg_read_float_1d, &
+      ftg_read_float_2d, &
+      ftg_read_float_3d, &
+      ftg_read_float_4d, &
+      ftg_read_double_0d, &
+      ftg_read_double_1d, &
+      ftg_read_double_2d, &
+      ftg_read_double_3d, &
+      ftg_read_double_4d
 END INTERFACE
 
 INTERFACE ftg_set_serializer
