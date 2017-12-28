@@ -8,7 +8,7 @@ IMPLICIT NONE
 PUBLIC :: ignore_bullshit, ignore_bullshit_max_dim_size, ignore_bullshit_allow_negative_indices, &
           ftg_set_serializer, ftg_get_serializer, ftg_destroy_serializer, &
           ftg_set_savepoint, ftg_get_savepoint, ftg_destroy_savepoint, &
-          ftg_field_exists, ftg_write
+          ftg_field_exists, ftg_write, ftg_read
 
 PRIVATE
 
@@ -48,6 +48,40 @@ INTERFACE ftg_write
       ftg_write_double_4d
 END INTERFACE
 
+INTERFACE ftg_read
+    MODULE PROCEDURE &
+      ftg_read_logical_0d, &
+      ftg_read_logical_1d, &
+      ftg_read_logical_2d, &
+      ftg_read_logical_3d, &
+      ftg_read_logical_4d!, &
+!      ftg_read_bool_0d, &
+!      ftg_read_bool_1d, &
+!      ftg_read_bool_2d, &
+!      ftg_read_bool_3d, &
+!      ftg_read_bool_4d, &
+!      ftg_read_int_0d, &
+!      ftg_read_int_1d, &
+!      ftg_read_int_2d, &
+!      ftg_read_int_3d, &
+!      ftg_read_int_4d, &
+!      ftg_read_long_0d, &
+!      ftg_read_long_1d, &
+!      ftg_read_long_2d, &
+!      ftg_read_long_3d, &
+!      ftg_read_long_4d, &
+!      ftg_read_float_0d, &
+!      ftg_read_float_1d, &
+!      ftg_read_float_2d, &
+!      ftg_read_float_3d, &
+!      ftg_read_float_4d, &
+!      ftg_read_double_0d, &
+!      ftg_read_double_1d, &
+!      ftg_read_double_2d, &
+!      ftg_read_double_3d, &
+!      ftg_read_double_4d
+END INTERFACE
+
 INTERFACE ftg_set_serializer
     MODULE PROCEDURE &
       ftg_set_serializer_create, &
@@ -63,6 +97,7 @@ END INTERFACE
 LOGICAL :: ignore_bullshit = .TRUE.
 INTEGER :: ignore_bullshit_max_dim_size = 999999999
 LOGICAL :: ignore_bullshit_allow_negative_indices = .FALSE.
+LOGICAL :: ignore_not_existing = .TRUE.
 
 TYPE(t_serializer), POINTER :: serializer => NULL()
 TYPE(t_savepoint),  POINTER :: savepoint  => NULL()
@@ -1033,6 +1068,294 @@ SUBROUTINE ftg_write_double_4d(fieldname, field, lbounds, ubounds)
   END IF
 
 END SUBROUTINE ftg_write_double_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE ftg_read_logical_0d(fieldname, field)
+  CHARACTER(LEN=*)             :: fieldname
+  LOGICAL, INTENT(OUT), TARGET :: field
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_logical_0d
+
+SUBROUTINE ftg_read_logical_1d(fieldname, field)
+  CHARACTER(LEN=*)             :: fieldname
+  LOGICAL, INTENT(OUT), TARGET :: field(:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_logical_1d
+
+SUBROUTINE ftg_read_logical_2d(fieldname, field)
+  CHARACTER(LEN=*)             :: fieldname
+  LOGICAL, INTENT(OUT), TARGET :: field(:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_logical_2d
+
+SUBROUTINE ftg_read_logical_3d(fieldname, field)
+  CHARACTER(LEN=*)             :: fieldname
+  LOGICAL, INTENT(OUT), TARGET :: field(:,:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_logical_3d
+
+SUBROUTINE ftg_read_logical_4d(fieldname, field)
+  CHARACTER(LEN=*)             :: fieldname
+  LOGICAL, INTENT(OUT), TARGET :: field(:,:,:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_logical_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE ftg_read_bool_0d(fieldname, field)
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_bool_0d
+
+SUBROUTINE ftg_read_bool_1d(fieldname, field)
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_bool_1d
+
+SUBROUTINE ftg_read_bool_2d(fieldname, field)
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_bool_2d
+
+SUBROUTINE ftg_read_bool_3d(fieldname, field)
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_bool_3d
+
+SUBROUTINE ftg_read_bool_4d(fieldname, field)
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:,:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_bool_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE ftg_read_int_0d(fieldname, field)
+  CHARACTER(LEN=*)             :: fieldname
+  INTEGER, INTENT(OUT), TARGET :: field
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_int_0d
+
+SUBROUTINE ftg_read_int_1d(fieldname, field)
+  CHARACTER(LEN=*)             :: fieldname
+  INTEGER, INTENT(OUT), TARGET :: field(:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_int_1d
+
+SUBROUTINE ftg_read_int_2d(fieldname, field)
+  CHARACTER(LEN=*)             :: fieldname
+  INTEGER, INTENT(OUT), TARGET :: field(:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_int_2d
+
+SUBROUTINE ftg_read_int_3d(fieldname, field)
+  CHARACTER(LEN=*)             :: fieldname
+  INTEGER, INTENT(OUT), TARGET :: field(:,:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_int_3d
+
+SUBROUTINE ftg_read_int_4d(fieldname, field)
+  CHARACTER(LEN=*)             :: fieldname
+  INTEGER, INTENT(OUT), TARGET :: field(:,:,:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_int_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE ftg_read_long_0d(fieldname, field)
+  CHARACTER(LEN=*)                          :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_long_0d
+
+SUBROUTINE ftg_read_long_1d(fieldname, field)
+  CHARACTER(LEN=*)                          :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_long_1d
+
+SUBROUTINE ftg_read_long_2d(fieldname, field)
+  CHARACTER(LEN=*)                          :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_long_2d
+
+SUBROUTINE ftg_read_long_3d(fieldname, field)
+  CHARACTER(LEN=*)                          :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_long_3d
+
+SUBROUTINE ftg_read_long_4d(fieldname, field)
+  CHARACTER(LEN=*)                          :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:,:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_long_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE ftg_read_float_0d(fieldname, field)
+  CHARACTER(LEN=*)                        :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_float_0d
+
+SUBROUTINE ftg_read_float_1d(fieldname, field)
+  CHARACTER(LEN=*)                        :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_float_1d
+
+SUBROUTINE ftg_read_float_2d(fieldname, field)
+  CHARACTER(LEN=*)                        :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_float_2d
+
+SUBROUTINE ftg_read_float_3d(fieldname, field)
+  CHARACTER(LEN=*)                        :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:,:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_float_3d
+
+SUBROUTINE ftg_read_float_4d(fieldname, field)
+  CHARACTER(LEN=*)                        :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:,:,:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_float_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE ftg_read_double_0d(fieldname, field)
+  CHARACTER(LEN=*)                          :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_double_0d
+
+SUBROUTINE ftg_read_double_1d(fieldname, field)
+  CHARACTER(LEN=*)                         :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_double_1d
+
+SUBROUTINE ftg_read_double_2d(fieldname, field)
+  CHARACTER(LEN=*)                         :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_double_2d
+
+SUBROUTINE ftg_read_double_3d(fieldname, field)
+  CHARACTER(LEN=*)                         :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:,:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_double_3d
+
+SUBROUTINE ftg_read_double_4d(fieldname, field)
+  CHARACTER(LEN=*)                         :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:,:,:,:)
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL fs_read_field(serializer, savepoint, fieldname, field)
+  END IF
+END SUBROUTINE ftg_read_double_4d
 
 !=============================================================================
 !=============================================================================
