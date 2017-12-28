@@ -168,6 +168,17 @@ END FUNCTION ftg_get_savepoint
 !=============================================================================
 !=============================================================================
 
+LOGICAL FUNCTION ftg_field_exists(fieldname)
+
+  CHARACTER(LEN=*)   :: fieldname
+
+  ftg_field_exists = fs_field_exists(serializer,  fieldname)
+
+END FUNCTION ftg_field_exists
+
+!=============================================================================
+!=============================================================================
+
 SUBROUTINE ftg_write_logical_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)   :: fieldname
   LOGICAL, INTENT(IN), TARGET    :: field
