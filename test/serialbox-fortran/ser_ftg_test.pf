@@ -27,6 +27,10 @@ CONTAINS
    SUBROUTINE mySetup()
 
       CALL ftg_set_savepoint(savepoint_name)
+      ignore_bullshit = .TRUE.
+      ignore_bullshit_max_dim_size = 999999999
+      ignore_bullshit_allow_negative_indices = .TRUE.
+      ignore_not_existing = .TRUE.
       
    END SUBROUTINE mySetup
    
@@ -284,5 +288,101 @@ CONTAINS
       @assertEqual(w_testfield_d0, r_testfield_d0)
     
     END SUBROUTINE testScalars   
-
+    
+@Test
+    SUBROUTINE testBounds()
+    
+      CHARACTER(len=*), PARAMETER :: base_name = 'testBounds'
+    
+      LOGICAL              :: logical1(2), logical2(2,2), logical3(2,2,2), logical4(2,2,2,2) 
+      LOGICAL(KIND=C_BOOL) :: boolean1(4), boolean2(4,4), boolean3(4,4,4), boolean4(4,4,4,4)
+      INTEGER              :: integer1(8), integer2(8,8), integer3(8,8,8), integer4(8,8,8,8) 
+      INTEGER(KIND=C_LONG) :: longint1(5), longint2(5,5), longint3(5,5,5), longint4(5,5,5,5) 
+      REAL(KIND=C_FLOAT)   :: float1(6),   float2(6,6),   float3(6,6,6),   float4(6,6,6,6) 
+      REAL(KIND=C_DOUBLE)  :: double1(7),  double2(7,7),  double3(7,7,7),  double4(7,7,7,7), double4zeros(7,7,7,7)
+    
+      logical1(:)       = .TRUE.
+      logical2(:,:)     = .TRUE.
+      logical3(:,:,:)   = .TRUE.
+      logical4(:,:,:,:) = .TRUE.
+      boolean1(:)       = .TRUE.
+      boolean2(:,:)     = .TRUE.
+      boolean3(:,:,:)   = .TRUE.
+      boolean4(:,:,:,:) = .TRUE.
+      integer1(:)       = 42
+      integer2(:,:)     = 42
+      integer3(:,:,:)   = 42
+      integer4(:,:,:,:) = 42
+      longint1(:)       = 42
+      longint2(:,:)     = 42
+      longint3(:,:,:)   = 42
+      longint4(:,:,:,:) = 42
+      float1(:)         = 109.23
+      float2(:,:)       = 109.23
+      float3(:,:,:)     = 109.23
+      float4(:,:,:,:)   = 109.23
+      double1(:)        = 109.23
+      double2(:,:)      = 109.23
+      double3(:,:,:)    = 109.23
+      double4(:,:,:,:)  = 109.23
+      double4zeros(:,:,:,:) = 109.23
+      
+      CALL ftg_set_serializer(dir, base_name, 'w')
+      CALL ftg_write("logical1", logical1, (/ -1 /), (/ 1 /))
+      CALL ftg_write("logical2", logical2, (/ -2, -3 /), (/ 2, 3 /))
+      CALL ftg_write("logical3", logical3, (/ -4, -5, -6 /), (/ 4, 5, 6 /))
+      CALL ftg_write("logical4", logical4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 16 /))
+      CALL ftg_write("boolean1", boolean1, (/ -1 /), (/ 2 /))
+      CALL ftg_write("boolean2", boolean2, (/ -2, -3 /), (/ 2, 4 /))
+      CALL ftg_write("boolean3", boolean3, (/ -4, -5, -6 /), (/ 4, 5, 7 /))
+      CALL ftg_write("boolean4", boolean4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 17 /))
+      CALL ftg_write("integer1", integer1, (/ -1 /), (/ 3 /))
+      CALL ftg_write("integer2", integer2, (/ -2, -3 /), (/ 2, 5 /))
+      CALL ftg_write("integer3", integer3, (/ -4, -5, -6 /), (/ 4, 5, 8 /))
+      CALL ftg_write("integer4", integer4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 18 /))
+      CALL ftg_write("longint1", longint1, (/ -1 /), (/ 4 /))
+      CALL ftg_write("longint2", longint2, (/ -2, -3 /), (/ 2, 6 /))
+      CALL ftg_write("longint3", longint3, (/ -4, -5, -6 /), (/ 4, 5, 9 /))
+      CALL ftg_write("longint4", longint4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 19 /))
+      CALL ftg_write("float1", float1, (/ -1 /), (/ 5 /))
+      CALL ftg_write("float2", float2, (/ -2, -3 /), (/ 2, 7 /))
+      CALL ftg_write("float3", float3, (/ -4, -5, -6 /), (/ 4, 5, 10 /))
+      CALL ftg_write("float4", float4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 20 /))
+      CALL ftg_write("double1", double1, (/ -1 /), (/ 6 /))
+      CALL ftg_write("double2", double2, (/ -2, -3 /), (/ 2, 8 /))
+      CALL ftg_write("double3", double3, (/ -4, -5, -6 /), (/ 4, 5, 11 /))
+      CALL ftg_write("double4", double4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 21 /))
+      CALL ftg_write("double4zeros", double4zeros)
+      CALL ftg_destroy_serializer()      
+      
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      @assertEqual((/ -1, 1, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("logical1"))
+      @assertEqual((/ -2, 2, -3, 3, 0, 0, 0, 0 /),    ftg_get_bounds("logical2"))
+      @assertEqual((/ -4, 4, -5, 5, -6, 6, 0, 0 /),   ftg_get_bounds("logical3"))
+      @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 16 /), ftg_get_bounds("logical4"))
+      @assertEqual((/ -1, 2, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("boolean1"))
+      @assertEqual((/ -2, 2, -3, 4, 0, 0, 0, 0 /),    ftg_get_bounds("boolean2"))
+      @assertEqual((/ -4, 4, -5, 5, -6, 7, 0, 0 /),   ftg_get_bounds("boolean3"))
+      @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 17 /), ftg_get_bounds("boolean4"))
+      @assertEqual((/ -1, 3, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("integer1"))
+      @assertEqual((/ -2, 2, -3, 5, 0, 0, 0, 0 /),    ftg_get_bounds("integer2"))
+      @assertEqual((/ -4, 4, -5, 5, -6, 8, 0, 0 /),   ftg_get_bounds("integer3"))
+      @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 18 /), ftg_get_bounds("integer4"))
+      @assertEqual((/ -1, 4, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("longint1"))
+      @assertEqual((/ -2, 2, -3, 6, 0, 0, 0, 0 /),    ftg_get_bounds("longint2"))
+      @assertEqual((/ -4, 4, -5, 5, -6, 9, 0, 0 /),   ftg_get_bounds("longint3"))
+      @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 19 /), ftg_get_bounds("longint4"))
+      @assertEqual((/ -1, 5, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("float1"))
+      @assertEqual((/ -2, 2, -3, 7, 0, 0, 0, 0 /),    ftg_get_bounds("float2"))
+      @assertEqual((/ -4, 4, -5, 5, -6, 10, 0, 0 /),   ftg_get_bounds("float3"))
+      @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 20 /), ftg_get_bounds("float4"))
+      @assertEqual((/ -1, 6, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("double1"))
+      @assertEqual((/ -2, 2, -3, 8, 0, 0, 0, 0 /),    ftg_get_bounds("double2"))
+      @assertEqual((/ -4, 4, -5, 5, -6, 11, 0, 0 /),   ftg_get_bounds("double3"))
+      @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 21 /), ftg_get_bounds("double4"))
+      @assertEqual((/ 0, 0, 0, 0, 0, 0, 0, 0 /), ftg_get_bounds("double4zeros"))
+      CALL ftg_destroy_serializer()      
+    
+    END SUBROUTINE testBounds
+    
 END MODULE ser_ftg_test
