@@ -14,6 +14,7 @@ MODULE ser_ftg_test
   
   CHARACTER(len=*), PARAMETER :: dir = 'ftgdata'
   CHARACTER(len=*), PARAMETER :: savepoint_name = 'test'
+  INTEGER, PARAMETER :: exp_size_scalar(4) = (/ 1, 0, 0, 0 /) 
 
 CONTAINS
 
@@ -24,12 +25,16 @@ CONTAINS
    
 @Before
    SUBROUTINE mySetup()
+
+      CALL ftg_set_savepoint(savepoint_name)
       
    END SUBROUTINE mySetup
    
 @After
    SUBROUTINE myTearDown()
 
+      CALL ftg_destroy_savepoint()
+      
    END SUBROUTINE myTearDown
    
 @Test
@@ -81,16 +86,13 @@ CONTAINS
       w_testfield_i4 = RESHAPE((/ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 /), SHAPE(w_testfield_i4))
             
       CALL ftg_set_serializer(dir, base_name, 'w')
-      CALL ftg_set_savepoint(savepoint_name)
       CALL ftg_write("testfield_i1", w_testfield_i1)
       CALL ftg_write("testfield_i2", w_testfield_i2)
       CALL ftg_write("testfield_i3", w_testfield_i3)
       CALL ftg_write("testfield_i4", w_testfield_i4)
-      CALL ftg_destroy_savepoint()
       CALL ftg_destroy_serializer()
       
       CALL ftg_set_serializer(dir, base_name, 'r')
-      CALL ftg_set_savepoint(savepoint_name)
       @assertTrue(ftg_field_exists("testfield_i1"))
       @assertTrue(ftg_field_exists("testfield_i2"))
       @assertTrue(ftg_field_exists("testfield_i3"))
@@ -103,7 +105,6 @@ CONTAINS
       CALL ftg_read("testfield_i2", r_testfield_i2)
       CALL ftg_read("testfield_i3", r_testfield_i3)
       CALL ftg_read("testfield_i4", r_testfield_i4)
-      CALL ftg_destroy_savepoint()
       CALL ftg_destroy_serializer()
       
       @assertEqual(w_testfield_i1, r_testfield_i1)
@@ -112,6 +113,176 @@ CONTAINS
       @assertEqual(w_testfield_i4, r_testfield_i4)
     
     END SUBROUTINE testIntegerArrays
+
    
+@Test
+    SUBROUTINE testLongArrays()
+    
+      CHARACTER(len=*), PARAMETER :: base_name = 'testLongArrays'
+
+      INTEGER(KIND=8) :: w_testfield_long1(5), w_testfield_long2(4,3), w_testfield_long3(3,2,2), w_testfield_long4(2,2,2,2)
+      INTEGER(KIND=8) :: r_testfield_long1(5), r_testfield_long2(4,3), r_testfield_long3(3,2,2), r_testfield_long4(2,2,2,2)
+      
+      w_testfield_long1 = (/ 0_8, 1_8, 2_8, 3_8, 999888777666555_8 /)
+      w_testfield_long2 = RESHAPE((/ 0_8, 3_8, 2_8, 9223372036854775807_8, 1_8, 4_8, 7_8, 10_8, 2_8, 5_8, 8_8, 11_8 /), SHAPE(w_testfield_long2))
+      w_testfield_long3 = RESHAPE((/ 0_8, 4_8, 8_8, 2_8, 6_8, 10_8, 1_8, 5_8, -9223372036854775807_8, 3_8, 7_8, 11_8 /), SHAPE(w_testfield_long3))
+      w_testfield_long4 = RESHAPE((/ 0_8, 1_8, 2_8, 3_8, 4_8, 5_8, 6_8, 7_8, 2147483647_8, 2147483648_8, -2147483648_8, -2147483649_8, 12_8, 13_8, 14_8, 15_8 /), SHAPE(w_testfield_long4))
+            
+      CALL ftg_set_serializer(dir, base_name, 'w')
+      CALL ftg_write("testfield_long1", w_testfield_long1)
+      CALL ftg_write("testfield_long2", w_testfield_long2)
+      CALL ftg_write("testfield_long3", w_testfield_long3)
+      CALL ftg_write("testfield_long4", w_testfield_long4)
+      CALL ftg_destroy_serializer()
+      
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      @assertTrue(ftg_field_exists("testfield_long1"))
+      @assertTrue(ftg_field_exists("testfield_long2"))
+      @assertTrue(ftg_field_exists("testfield_long3"))
+      @assertTrue(ftg_field_exists("testfield_long4"))
+      @assertEqual(exp_size(SHAPE(w_testfield_long1)), fs_get_size(ftg_get_serializer(), "testfield_long1"))
+      @assertEqual(exp_size(SHAPE(w_testfield_long2)), fs_get_size(ftg_get_serializer(), "testfield_long2"))
+      @assertEqual(exp_size(SHAPE(w_testfield_long3)), fs_get_size(ftg_get_serializer(), "testfield_long3"))
+      @assertEqual(exp_size(SHAPE(w_testfield_long4)), fs_get_size(ftg_get_serializer(), "testfield_long4"))
+      CALL ftg_read("testfield_long1", r_testfield_long1)
+      CALL ftg_read("testfield_long2", r_testfield_long2)
+      CALL ftg_read("testfield_long3", r_testfield_long3)
+      CALL ftg_read("testfield_long4", r_testfield_long4)
+      CALL ftg_destroy_serializer()
+      
+      @assertEqual(w_testfield_long1, r_testfield_long1)
+      @assertEqual(w_testfield_long2, r_testfield_long2)
+      @assertEqual(w_testfield_long3, r_testfield_long3)
+      @assertEqual(w_testfield_long4, r_testfield_long4)
+    
+    END SUBROUTINE testLongArrays
+   
+@Test
+    SUBROUTINE testLogicalArrays()
+    
+      CHARACTER(len=*), PARAMETER :: base_name = 'testLogicalArrays'
+      
+      LOGICAL :: w_testfield_l1(5), w_testfield_l2(4,3), w_testfield_l3(3,2,2), w_testfield_l4(2,2,2,2)
+      LOGICAL :: r_testfield_l1(5), r_testfield_l2(4,3), r_testfield_l3(3,2,2), r_testfield_l4(2,2,2,2)
+      INTEGER :: w_testfield_i2(4,3), w_testfield_i3(3,2,2), w_testfield_i4(2,2,2,2)
+      INTEGER :: r_testfield_i2(4,3), r_testfield_i3(3,2,2), r_testfield_i4(2,2,2,2)
+      
+      w_testfield_l1 = (/ .TRUE., .FALSE., .FALSE., .TRUE., .FALSE. /)
+      w_testfield_l2 = RESHAPE((/ .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE. /), SHAPE(w_testfield_l2))
+      w_testfield_l3 = RESHAPE((/ .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE. /), SHAPE(w_testfield_l3))
+      w_testfield_l4 = RESHAPE((/ .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE. /), SHAPE(w_testfield_l4))
+            
+      CALL ftg_set_serializer(dir, base_name, 'w')
+      CALL ftg_write("testfield_l1", w_testfield_l1)
+      CALL ftg_write("testfield_l2", w_testfield_l2)
+      CALL ftg_write("testfield_l3", w_testfield_l3)
+      CALL ftg_write("testfield_l4", w_testfield_l4)
+      CALL ftg_destroy_serializer()
+      
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      @assertTrue(ftg_field_exists("testfield_l1"))
+      @assertTrue(ftg_field_exists("testfield_l2"))
+      @assertTrue(ftg_field_exists("testfield_l3"))
+      @assertTrue(ftg_field_exists("testfield_l4"))
+      @assertEqual(exp_size(SHAPE(w_testfield_l1)), fs_get_size(ftg_get_serializer(), "testfield_l1"))
+      @assertEqual(exp_size(SHAPE(w_testfield_l2)), fs_get_size(ftg_get_serializer(), "testfield_l2"))
+      @assertEqual(exp_size(SHAPE(w_testfield_l3)), fs_get_size(ftg_get_serializer(), "testfield_l3"))
+      @assertEqual(exp_size(SHAPE(w_testfield_l4)), fs_get_size(ftg_get_serializer(), "testfield_l4"))
+      CALL ftg_read("testfield_l1", r_testfield_l1)
+      CALL ftg_read("testfield_l2", r_testfield_l2)
+      CALL ftg_read("testfield_l3", r_testfield_l3)
+      CALL ftg_read("testfield_l4", r_testfield_l4)
+      CALL ftg_destroy_serializer()
+      
+      @assertEquivalent(w_testfield_l1, r_testfield_l1)
+      
+      !Convert to INTEGER since pFUnit doesn't support multi-dimensional LOGICAL arrays
+      w_testfield_i2 = w_testfield_l2
+      r_testfield_i2 = r_testfield_l2
+      @assertEqual(w_testfield_i2, r_testfield_i2)
+      w_testfield_i3 = w_testfield_l3
+      r_testfield_i3 = r_testfield_l3
+      @assertEqual(w_testfield_i3, r_testfield_i3)
+      w_testfield_i4 = w_testfield_l4
+      r_testfield_i4 = r_testfield_l4
+      @assertEqual(w_testfield_i4, r_testfield_i4)
+    
+    END SUBROUTINE testLogicalArrays
+   
+@Test
+    SUBROUTINE testScalars()
+    
+      CHARACTER(len=*), PARAMETER :: base_name = 'testScalars'
+    
+      INTEGER :: w_testfield_i0, r_testfield_i0
+      INTEGER :: w_testfield_i1(1), r_testfield_i1(1)
+      LOGICAL :: w_testfield_l0, r_testfield_l0
+      LOGICAL :: w_testfield_l1(1), r_testfield_l1(1)
+      INTEGER(8) :: w_testfield_long0, r_testfield_long0
+      INTEGER(8) :: w_testfield_long1(1), r_testfield_long1(1)
+      REAL(KIND=C_FLOAT)  :: w_testfield_f0, r_testfield_f0
+      REAL(KIND=C_DOUBLE) :: w_testfield_d0, r_testfield_d0
+      
+      w_testfield_i0 = 42
+      w_testfield_i1 = (/ 999 /)
+      w_testfield_l0 = .TRUE.
+      w_testfield_l1 = (/ .FALSE. /)
+      w_testfield_long0 = 999888777666555_8
+      w_testfield_long1 = (/ -1234567890123_8 /)
+      w_testfield_f0 = 3.14159274
+      w_testfield_d0 = 3.1415926535897931
+            
+      CALL ftg_set_serializer(dir, base_name, 'w')
+      CALL ftg_write("testfield_i0", w_testfield_i0)
+      CALL ftg_write("testfield_i1", w_testfield_i1)
+      CALL ftg_write("testfield_l0", w_testfield_l0)
+      CALL ftg_write("testfield_l1", w_testfield_l1)
+      CALL ftg_write("testfield_long0", w_testfield_long0)
+      CALL ftg_write("testfield_long1", w_testfield_long1)
+      CALL ftg_write("testfield_f0", w_testfield_f0)
+      CALL ftg_write("testfield_d0", w_testfield_d0)
+      CALL ftg_destroy_serializer()
+      
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      
+      @assertTrue(ftg_field_exists("testfield_i0"))
+      @assertTrue(ftg_field_exists("testfield_i1"))
+      @assertTrue(ftg_field_exists("testfield_l0"))
+      @assertTrue(ftg_field_exists("testfield_l1"))
+      @assertTrue(ftg_field_exists("testfield_long0"))
+      @assertTrue(ftg_field_exists("testfield_long1"))
+      @assertTrue(ftg_field_exists("testfield_f0"))
+      @assertTrue(ftg_field_exists("testfield_d0"))
+      
+      @assertEqual(exp_size_scalar, fs_get_size(ftg_get_serializer(), "testfield_i0"))
+      @assertEqual(exp_size(SHAPE(w_testfield_i1)), fs_get_size(ftg_get_serializer(), "testfield_i1"))
+      @assertEqual(exp_size_scalar, fs_get_size(ftg_get_serializer(), "testfield_l0"))
+      @assertEqual(exp_size(SHAPE(w_testfield_l1)), fs_get_size(ftg_get_serializer(), "testfield_l1"))
+      @assertEqual(exp_size_scalar, fs_get_size(ftg_get_serializer(), "testfield_long0"))
+      @assertEqual(exp_size(SHAPE(w_testfield_long1)), fs_get_size(ftg_get_serializer(), "testfield_long1"))
+      @assertEqual(exp_size_scalar, fs_get_size(ftg_get_serializer(), "testfield_f0"))
+      @assertEqual(exp_size_scalar, fs_get_size(ftg_get_serializer(), "testfield_d0"))
+      
+      CALL ftg_read("testfield_i0", r_testfield_i0)
+      CALL ftg_read("testfield_i1", r_testfield_i1)
+      CALL ftg_read("testfield_l0", r_testfield_l0)
+      CALL ftg_read("testfield_l1", r_testfield_l1)
+      CALL ftg_read("testfield_long0", r_testfield_long0)
+      CALL ftg_read("testfield_long1", r_testfield_long1)
+      CALL ftg_read("testfield_f0", r_testfield_f0)
+      CALL ftg_read("testfield_d0", r_testfield_d0)
+      
+      CALL ftg_destroy_serializer()
+      
+      @assertEqual(w_testfield_i0, r_testfield_i0)
+      @assertEqual(w_testfield_i1, r_testfield_i1)
+      @assertEquivalent(w_testfield_l0, r_testfield_l0)
+      @assertEquivalent(w_testfield_l1, r_testfield_l1)
+      @assertEqual(w_testfield_long0, r_testfield_long0)
+      @assertEqual(w_testfield_long1, r_testfield_long1)
+      @assertEqual(w_testfield_f0, r_testfield_f0)
+      @assertEqual(w_testfield_d0, r_testfield_d0)
+    
+    END SUBROUTINE testScalars   
 
 END MODULE ser_ftg_test
