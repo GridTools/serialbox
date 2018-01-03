@@ -278,9 +278,36 @@ END FUNCTION ftg_get_bounds
 !=============================================================================
 !=============================================================================
 
+SUBROUTINE ftg_register_only(fieldname, field, typename)
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  CLASS(*), INTENT(IN), TARGET           :: field
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: typename
+
+  CLASS(*), POINTER :: padd
+  LOGICAL           :: bullshit
+  CHARACTER(16)     :: loc
+
+  padd => field
+  bullshit = .FALSE.
+  IF (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field)
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    !CALL fs_check_size(serializer, fieldname, typename, 0, 1, 0, 0, 0)
+    !WRITE (loc,'(Z16)') C_LOC(field)
+    !CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
+  END IF
+
+END SUBROUTINE ftg_register_only
+
+!=============================================================================
+!=============================================================================
+
 SUBROUTINE ftg_write_logical_0d(fieldname, field)
-  CHARACTER(LEN=*), INTENT(IN)   :: fieldname
-  LOGICAL, INTENT(IN), TARGET    :: field
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  LOGICAL, INTENT(IN), TARGET  :: field
 
   LOGICAL, POINTER :: padd
   LOGICAL          :: bullshit
@@ -301,9 +328,9 @@ SUBROUTINE ftg_write_logical_0d(fieldname, field)
 END SUBROUTINE ftg_write_logical_0d
 
 SUBROUTINE ftg_write_logical_1d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  LOGICAL, INTENT(IN), TARGET                 :: field(:)
-  INTEGER, DIMENSION(1), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
+  LOGICAL, INTENT(IN), TARGET       :: field(:)
+  INTEGER, DIMENSION(1), INTENT(IN) :: lbounds, ubounds
 
   LOGICAL, POINTER :: padd(:)
   LOGICAL          :: bullshit
@@ -312,10 +339,8 @@ SUBROUTINE ftg_write_logical_1d(fieldname, field, lbounds, ubounds)
   padd=>field
   bullshit = .FALSE.
   if (ignore_bullshit) THEN
-    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
-               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. SIZE(field, 1) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = lbounds(1) < 0 .OR. ubounds(1) < 0
     END IF
   END IF
@@ -329,9 +354,9 @@ SUBROUTINE ftg_write_logical_1d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_logical_1d
 
 SUBROUTINE ftg_write_logical_2d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  LOGICAL, INTENT(IN), TARGET                 :: field(:,:)
-  INTEGER, DIMENSION(2), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
+  LOGICAL, INTENT(IN), TARGET       :: field(:,:)
+  INTEGER, DIMENSION(2), INTENT(IN) :: lbounds, ubounds
 
   LOGICAL, POINTER :: padd(:,:)
   LOGICAL          :: bullshit
@@ -342,9 +367,8 @@ SUBROUTINE ftg_write_logical_2d(fieldname, field, lbounds, ubounds)
   if (ignore_bullshit) THEN
     bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 2) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -358,9 +382,9 @@ SUBROUTINE ftg_write_logical_2d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_logical_2d
 
 SUBROUTINE ftg_write_logical_3d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  LOGICAL, INTENT(IN), TARGET                 :: field(:,:,:)
-  INTEGER, DIMENSION(3), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
+  LOGICAL, INTENT(IN), TARGET       :: field(:,:,:)
+  INTEGER, DIMENSION(3), INTENT(IN) :: lbounds, ubounds
 
   LOGICAL, POINTER :: padd(:,:,:)
   LOGICAL          :: bullshit
@@ -372,9 +396,8 @@ SUBROUTINE ftg_write_logical_3d(fieldname, field, lbounds, ubounds)
     bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 3) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -388,9 +411,9 @@ SUBROUTINE ftg_write_logical_3d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_logical_3d
 
 SUBROUTINE ftg_write_logical_4d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)            :: fieldname
-  LOGICAL, INTENT(IN), TARGET :: field(:,:,:,:)
-  INTEGER, DIMENSION(4), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
+  LOGICAL, INTENT(IN), TARGET       :: field(:,:,:,:)
+  INTEGER, DIMENSION(4), INTENT(IN) :: lbounds, ubounds
 
   LOGICAL, POINTER :: padd(:,:,:,:)
   LOGICAL          :: bullshit
@@ -403,9 +426,8 @@ SUBROUTINE ftg_write_logical_4d(fieldname, field, lbounds, ubounds)
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 4) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 4) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -444,9 +466,9 @@ SUBROUTINE ftg_write_bool_0d(fieldname, field)
 END SUBROUTINE ftg_write_bool_0d
 
 SUBROUTINE ftg_write_bool_1d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET    :: field(:)
-  INTEGER, DIMENSION(1), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:)
+  INTEGER, DIMENSION(1), INTENT(IN)        :: lbounds, ubounds
 
   LOGICAL(KIND=C_BOOL), POINTER :: padd(:)
   LOGICAL                       :: bullshit
@@ -455,10 +477,8 @@ SUBROUTINE ftg_write_bool_1d(fieldname, field, lbounds, ubounds)
   padd=>field
   bullshit = .FALSE.
   if (ignore_bullshit) THEN
-    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
-               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. SIZE(field, 1) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = lbounds(1) < 0 .OR. ubounds(1) < 0
     END IF
   END IF
@@ -472,9 +492,9 @@ SUBROUTINE ftg_write_bool_1d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_bool_1d
 
 SUBROUTINE ftg_write_bool_2d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET    :: field(:,:)
-  INTEGER, DIMENSION(2), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:)
+  INTEGER, DIMENSION(2), INTENT(IN)        :: lbounds, ubounds
 
   LOGICAL(KIND=C_BOOL), POINTER :: padd(:,:)
   LOGICAL                       :: bullshit
@@ -485,9 +505,8 @@ SUBROUTINE ftg_write_bool_2d(fieldname, field, lbounds, ubounds)
   if (ignore_bullshit) THEN
     bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 2) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -501,9 +520,9 @@ SUBROUTINE ftg_write_bool_2d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_bool_2d
 
 SUBROUTINE ftg_write_bool_3d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET    :: field(:,:,:)
-  INTEGER, DIMENSION(3), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:,:)
+  INTEGER, DIMENSION(3), INTENT(IN)        :: lbounds, ubounds
 
   LOGICAL(KIND=C_BOOL), POINTER :: padd(:,:,:)
   LOGICAL                       :: bullshit
@@ -515,9 +534,8 @@ SUBROUTINE ftg_write_bool_3d(fieldname, field, lbounds, ubounds)
     bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 3) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -531,9 +549,9 @@ SUBROUTINE ftg_write_bool_3d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_bool_3d
 
 SUBROUTINE ftg_write_bool_4d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET    :: field(:,:,:,:)
-  INTEGER, DIMENSION(4), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:,:,:)
+  INTEGER, DIMENSION(4), INTENT(IN)        :: lbounds, ubounds
 
   LOGICAL(KIND=C_BOOL), POINTER :: padd(:,:,:,:)
   LOGICAL                       :: bullshit
@@ -546,9 +564,8 @@ SUBROUTINE ftg_write_bool_4d(fieldname, field, lbounds, ubounds)
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 4) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 4) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -565,8 +582,8 @@ END SUBROUTINE ftg_write_bool_4d
 !=============================================================================
 
 SUBROUTINE ftg_write_int_0d(fieldname, field)
-  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
-  INTEGER, INTENT(IN), TARGET              :: field
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  INTEGER, INTENT(IN), TARGET  :: field
 
   INTEGER, POINTER :: padd
   LOGICAL          :: bullshit
@@ -587,9 +604,9 @@ SUBROUTINE ftg_write_int_0d(fieldname, field)
 END SUBROUTINE ftg_write_int_0d
 
 SUBROUTINE ftg_write_int_1d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  INTEGER, INTENT(IN), TARGET                 :: field(:)
-  INTEGER, DIMENSION(1), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
+  INTEGER, INTENT(IN), TARGET       :: field(:)
+  INTEGER, DIMENSION(1), INTENT(IN) :: lbounds, ubounds
 
   INTEGER, POINTER :: padd(:)
   LOGICAL          :: bullshit
@@ -598,10 +615,8 @@ SUBROUTINE ftg_write_int_1d(fieldname, field, lbounds, ubounds)
   padd=>field
   bullshit = .FALSE.
   if (ignore_bullshit) THEN
-    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
-               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. SIZE(field, 1) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = lbounds(1) < 0 .OR. ubounds(1) < 0
     END IF
   END IF
@@ -615,9 +630,9 @@ SUBROUTINE ftg_write_int_1d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_int_1d
 
 SUBROUTINE ftg_write_int_2d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  INTEGER, INTENT(IN), TARGET                 :: field(:,:)
-  INTEGER, DIMENSION(2), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
+  INTEGER, INTENT(IN), TARGET       :: field(:,:)
+  INTEGER, DIMENSION(2), INTENT(IN) :: lbounds, ubounds
 
   INTEGER, POINTER :: padd(:,:)
   LOGICAL          :: bullshit
@@ -628,9 +643,8 @@ SUBROUTINE ftg_write_int_2d(fieldname, field, lbounds, ubounds)
   if (ignore_bullshit) THEN
     bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 2) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -644,9 +658,9 @@ SUBROUTINE ftg_write_int_2d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_int_2d
 
 SUBROUTINE ftg_write_int_3d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  INTEGER, INTENT(IN), TARGET                 :: field(:,:,:)
-  INTEGER, DIMENSION(3), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
+  INTEGER, INTENT(IN), TARGET       :: field(:,:,:)
+  INTEGER, DIMENSION(3), INTENT(IN) :: lbounds, ubounds
 
   INTEGER, POINTER :: padd(:,:,:)
   LOGICAL          :: bullshit
@@ -658,9 +672,8 @@ SUBROUTINE ftg_write_int_3d(fieldname, field, lbounds, ubounds)
     bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 3) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -674,9 +687,9 @@ SUBROUTINE ftg_write_int_3d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_int_3d
 
 SUBROUTINE ftg_write_int_4d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  INTEGER, INTENT(IN), TARGET                 :: field(:,:,:,:)
-  INTEGER, DIMENSION(4), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
+  INTEGER, INTENT(IN), TARGET       :: field(:,:,:,:)
+  INTEGER, DIMENSION(4), INTENT(IN) :: lbounds, ubounds
 
   INTEGER, POINTER :: padd(:,:,:,:)
   LOGICAL          :: bullshit
@@ -689,9 +702,8 @@ SUBROUTINE ftg_write_int_4d(fieldname, field, lbounds, ubounds)
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 4) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 4) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -730,9 +742,9 @@ SUBROUTINE ftg_write_long_0d(fieldname, field)
 END SUBROUTINE ftg_write_long_0d
 
 SUBROUTINE ftg_write_long_1d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  INTEGER(KIND=C_LONG), INTENT(IN), TARGET    :: field(:)
-  INTEGER, DIMENSION(1), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:)
+  INTEGER, DIMENSION(1), INTENT(IN)        :: lbounds, ubounds
 
   INTEGER(KIND=C_LONG), POINTER :: padd(:)
   LOGICAL                       :: bullshit
@@ -741,10 +753,8 @@ SUBROUTINE ftg_write_long_1d(fieldname, field, lbounds, ubounds)
   padd=>field
   bullshit = .FALSE.
   if (ignore_bullshit) THEN
-    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
-               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. SIZE(field, 1) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = lbounds(1) < 0 .OR. ubounds(1) < 0
     END IF
   END IF
@@ -758,9 +768,9 @@ SUBROUTINE ftg_write_long_1d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_long_1d
 
 SUBROUTINE ftg_write_long_2d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  INTEGER(KIND=C_LONG), INTENT(IN), TARGET    :: field(:,:)
-  INTEGER, DIMENSION(2), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:)
+  INTEGER, DIMENSION(2), INTENT(IN)        :: lbounds, ubounds
 
   INTEGER(KIND=C_LONG), POINTER :: padd(:,:)
   LOGICAL                       :: bullshit
@@ -771,9 +781,8 @@ SUBROUTINE ftg_write_long_2d(fieldname, field, lbounds, ubounds)
   if (ignore_bullshit) THEN
     bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 2) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -787,9 +796,9 @@ SUBROUTINE ftg_write_long_2d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_long_2d
 
 SUBROUTINE ftg_write_long_3d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  INTEGER(KIND=C_LONG), INTENT(IN), TARGET    :: field(:,:,:)
-  INTEGER, DIMENSION(3), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:,:)
+  INTEGER, DIMENSION(3), INTENT(IN)        :: lbounds, ubounds
 
   INTEGER(KIND=C_LONG), POINTER :: padd(:,:,:)
   LOGICAL                       :: bullshit
@@ -801,9 +810,8 @@ SUBROUTINE ftg_write_long_3d(fieldname, field, lbounds, ubounds)
     bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 3) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -817,9 +825,9 @@ SUBROUTINE ftg_write_long_3d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_long_3d
 
 SUBROUTINE ftg_write_long_4d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  INTEGER(KIND=C_LONG), INTENT(IN), TARGET    :: field(:,:,:,:)
-  INTEGER, DIMENSION(4), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:,:,:)
+  INTEGER, DIMENSION(4), INTENT(IN)        :: lbounds, ubounds
 
   INTEGER(KIND=C_LONG), POINTER :: padd(:,:,:,:)
   LOGICAL                       :: bullshit
@@ -832,9 +840,8 @@ SUBROUTINE ftg_write_long_4d(fieldname, field, lbounds, ubounds)
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 4) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 4) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -873,9 +880,9 @@ SUBROUTINE ftg_write_float_0d(fieldname, field)
 END SUBROUTINE ftg_write_float_0d
 
 SUBROUTINE ftg_write_float_1d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  REAL(KIND=C_FLOAT), INTENT(IN), TARGET      :: field(:)
-  INTEGER, DIMENSION(1), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:)
+  INTEGER, DIMENSION(1), INTENT(IN)      :: lbounds, ubounds
 
   REAL(KIND=C_FLOAT), POINTER :: padd(:)
   LOGICAL                     :: bullshit
@@ -884,10 +891,8 @@ SUBROUTINE ftg_write_float_1d(fieldname, field, lbounds, ubounds)
   padd=>field
   bullshit = .FALSE.
   if (ignore_bullshit) THEN
-    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
-               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. SIZE(field, 1) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = lbounds(1) < 0 .OR. ubounds(1) < 0
     END IF
   END IF
@@ -901,9 +906,9 @@ SUBROUTINE ftg_write_float_1d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_float_1d
 
 SUBROUTINE ftg_write_float_2d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  REAL(KIND=C_FLOAT), INTENT(IN), TARGET      :: field(:,:)
-  INTEGER, DIMENSION(2), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:,:)
+  INTEGER, DIMENSION(2), INTENT(IN)      :: lbounds, ubounds
 
   REAL(KIND=C_FLOAT), POINTER :: padd(:,:)
   LOGICAL                     :: bullshit
@@ -914,9 +919,8 @@ SUBROUTINE ftg_write_float_2d(fieldname, field, lbounds, ubounds)
   if (ignore_bullshit) THEN
     bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 2) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -930,9 +934,9 @@ SUBROUTINE ftg_write_float_2d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_float_2d
 
 SUBROUTINE ftg_write_float_3d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  REAL(KIND=C_FLOAT), INTENT(IN), TARGET      :: field(:,:,:)
-  INTEGER, DIMENSION(3), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:,:,:)
+  INTEGER, DIMENSION(3), INTENT(IN)      :: lbounds, ubounds
 
   REAL(KIND=C_FLOAT), POINTER :: padd(:,:,:)
   LOGICAL                     :: bullshit
@@ -944,9 +948,8 @@ SUBROUTINE ftg_write_float_3d(fieldname, field, lbounds, ubounds)
     bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 3) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -960,9 +963,9 @@ SUBROUTINE ftg_write_float_3d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_float_3d
 
 SUBROUTINE ftg_write_float_4d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  REAL(KIND=C_FLOAT), INTENT(IN), TARGET      :: field(:,:,:,:)
-  INTEGER, DIMENSION(4), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:,:,:,:)
+  INTEGER, DIMENSION(4), INTENT(IN)      :: lbounds, ubounds
 
   REAL(KIND=C_FLOAT), POINTER :: padd(:,:,:,:)
   LOGICAL                     :: bullshit
@@ -975,9 +978,8 @@ SUBROUTINE ftg_write_float_4d(fieldname, field, lbounds, ubounds)
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 4) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 4) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -994,8 +996,8 @@ END SUBROUTINE ftg_write_float_4d
 !=============================================================================
 
 SUBROUTINE ftg_write_double_0d(fieldname, field)
-  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET  :: field
+  CHARACTER(LEN=*), INTENT(IN)            :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field
 
   REAL(KIND=C_DOUBLE), POINTER :: padd
   LOGICAL                      :: bullshit
@@ -1016,9 +1018,9 @@ SUBROUTINE ftg_write_double_0d(fieldname, field)
 END SUBROUTINE ftg_write_double_0d
 
 SUBROUTINE ftg_write_double_1d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET     :: field(:)
-  INTEGER, DIMENSION(1), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)            :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:)
+  INTEGER, DIMENSION(1), INTENT(IN)       :: lbounds, ubounds
 
   REAL(KIND=C_DOUBLE), POINTER :: padd(:)
   LOGICAL                      :: bullshit
@@ -1027,10 +1029,8 @@ SUBROUTINE ftg_write_double_1d(fieldname, field, lbounds, ubounds)
   padd=>field
   bullshit = .FALSE.
   if (ignore_bullshit) THEN
-    bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
-               SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+    bullshit = .NOT. ASSOCIATED(padd, field) .OR. SIZE(field, 1) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = lbounds(1) < 0 .OR. ubounds(1) < 0
     END IF
   END IF
@@ -1044,9 +1044,9 @@ SUBROUTINE ftg_write_double_1d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_double_1d
 
 SUBROUTINE ftg_write_double_2d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET     :: field(:,:)
-  INTEGER, DIMENSION(2), INTENT(IN), OPTIONAL :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)            :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:,:)
+  INTEGER, DIMENSION(2), INTENT(IN)       :: lbounds, ubounds
 
   REAL(KIND=C_DOUBLE), POINTER :: padd(:,:)
   LOGICAL                      :: bullshit
@@ -1057,9 +1057,8 @@ SUBROUTINE ftg_write_double_2d(fieldname, field, lbounds, ubounds)
   if (ignore_bullshit) THEN
     bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 2) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -1073,9 +1072,9 @@ SUBROUTINE ftg_write_double_2d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_double_2d
 
 SUBROUTINE ftg_write_double_3d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET      :: field(:,:,:)
-  INTEGER, DIMENSION(3), INTENT(IN), OPTIONAL  :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)            :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:,:,:)
+  INTEGER, DIMENSION(3), INTENT(IN)       :: lbounds, ubounds
 
   REAL(KIND=C_DOUBLE), POINTER :: padd(:,:,:)
   LOGICAL                      :: bullshit
@@ -1087,9 +1086,8 @@ SUBROUTINE ftg_write_double_3d(fieldname, field, lbounds, ubounds)
     bullshit = .NOT. ASSOCIATED(padd, field) .OR. &
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 3) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF
@@ -1103,9 +1101,9 @@ SUBROUTINE ftg_write_double_3d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_double_3d
 
 SUBROUTINE ftg_write_double_4d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET      :: field(:,:,:,:)
-  INTEGER, DIMENSION(4), INTENT(IN), OPTIONAL  :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN)            :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:,:,:,:)
+  INTEGER, DIMENSION(4), INTENT(IN)       :: lbounds, ubounds
 
   REAL(KIND=C_DOUBLE), POINTER :: padd(:,:,:,:)
   LOGICAL                      :: bullshit
@@ -1118,9 +1116,8 @@ SUBROUTINE ftg_write_double_4d(fieldname, field, lbounds, ubounds)
                SIZE(field, 1) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 2) > ignore_bullshit_max_dim_size .OR. &
                SIZE(field, 3) > ignore_bullshit_max_dim_size .OR. &
-               SIZE(field, 4) > ignore_bullshit_max_dim_size .OR. &
-               (PRESENT(lbounds) .NEQV. PRESENT(ubounds))
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices .AND. PRESENT(lbounds)) THEN
+               SIZE(field, 4) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
       bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
     END IF
   END IF

@@ -90,10 +90,10 @@ CONTAINS
       w_testfield_i4 = RESHAPE((/ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 /), SHAPE(w_testfield_i4))
             
       CALL ftg_set_serializer(dir, base_name, 'w')
-      CALL ftg_write("testfield_i1", w_testfield_i1)
-      CALL ftg_write("testfield_i2", w_testfield_i2)
-      CALL ftg_write("testfield_i3", w_testfield_i3)
-      CALL ftg_write("testfield_i4", w_testfield_i4)
+      CALL ftg_write("testfield_i1", w_testfield_i1, LBOUND(w_testfield_i1), UBOUND(w_testfield_i1))
+      CALL ftg_write("testfield_i2", w_testfield_i2, LBOUND(w_testfield_i2), UBOUND(w_testfield_i2))
+      CALL ftg_write("testfield_i3", w_testfield_i3, LBOUND(w_testfield_i3), UBOUND(w_testfield_i3))
+      CALL ftg_write("testfield_i4", w_testfield_i4, LBOUND(w_testfield_i4), UBOUND(w_testfield_i4))
       CALL ftg_destroy_serializer()
       
       CALL ftg_set_serializer(dir, base_name, 'r')
@@ -133,10 +133,10 @@ CONTAINS
       w_testfield_long4 = RESHAPE((/ 0_8, 1_8, 2_8, 3_8, 4_8, 5_8, 6_8, 7_8, 2147483647_8, 2147483648_8, -2147483648_8, -2147483649_8, 12_8, 13_8, 14_8, 15_8 /), SHAPE(w_testfield_long4))
             
       CALL ftg_set_serializer(dir, base_name, 'w')
-      CALL ftg_write("testfield_long1", w_testfield_long1)
-      CALL ftg_write("testfield_long2", w_testfield_long2)
-      CALL ftg_write("testfield_long3", w_testfield_long3)
-      CALL ftg_write("testfield_long4", w_testfield_long4)
+      CALL ftg_write("testfield_long1", w_testfield_long1, LBOUND(w_testfield_long1), UBOUND(w_testfield_long1))
+      CALL ftg_write("testfield_long2", w_testfield_long2, LBOUND(w_testfield_long2), UBOUND(w_testfield_long2))
+      CALL ftg_write("testfield_long3", w_testfield_long3, LBOUND(w_testfield_long3), UBOUND(w_testfield_long3))
+      CALL ftg_write("testfield_long4", w_testfield_long4, LBOUND(w_testfield_long4), UBOUND(w_testfield_long4))
       CALL ftg_destroy_serializer()
       
       CALL ftg_set_serializer(dir, base_name, 'r')
@@ -177,10 +177,10 @@ CONTAINS
       w_testfield_l4 = RESHAPE((/ .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE., .TRUE., .FALSE., .TRUE. /), SHAPE(w_testfield_l4))
             
       CALL ftg_set_serializer(dir, base_name, 'w')
-      CALL ftg_write("testfield_l1", w_testfield_l1)
-      CALL ftg_write("testfield_l2", w_testfield_l2)
-      CALL ftg_write("testfield_l3", w_testfield_l3)
-      CALL ftg_write("testfield_l4", w_testfield_l4)
+      CALL ftg_write("testfield_l1", w_testfield_l1, LBOUND(w_testfield_l1), UBOUND(w_testfield_l1))
+      CALL ftg_write("testfield_l2", w_testfield_l2, LBOUND(w_testfield_l2), UBOUND(w_testfield_l2))
+      CALL ftg_write("testfield_l3", w_testfield_l3, LBOUND(w_testfield_l3), UBOUND(w_testfield_l3))
+      CALL ftg_write("testfield_l4", w_testfield_l4, LBOUND(w_testfield_l4), UBOUND(w_testfield_l4))
       CALL ftg_destroy_serializer()
       
       CALL ftg_set_serializer(dir, base_name, 'r')
@@ -238,11 +238,11 @@ CONTAINS
             
       CALL ftg_set_serializer(dir, base_name, 'w')
       CALL ftg_write("testfield_i0", w_testfield_i0)
-      CALL ftg_write("testfield_i1", w_testfield_i1)
+      CALL ftg_write("testfield_i1", w_testfield_i1, LBOUND(w_testfield_i1), UBOUND(w_testfield_i1))
       CALL ftg_write("testfield_l0", w_testfield_l0)
-      CALL ftg_write("testfield_l1", w_testfield_l1)
+      CALL ftg_write("testfield_l1", w_testfield_l1, LBOUND(w_testfield_l1), UBOUND(w_testfield_l1))
       CALL ftg_write("testfield_long0", w_testfield_long0)
-      CALL ftg_write("testfield_long1", w_testfield_long1)
+      CALL ftg_write("testfield_long1", w_testfield_long1, LBOUND(w_testfield_long1), UBOUND(w_testfield_long1))
       CALL ftg_write("testfield_f0", w_testfield_f0)
       CALL ftg_write("testfield_d0", w_testfield_d0)
       CALL ftg_destroy_serializer()
@@ -353,7 +353,7 @@ CONTAINS
       CALL ftg_write("double2", double2, LBOUND(double2), UBOUND(double2))
       CALL ftg_write("double3", double3, LBOUND(double3), UBOUND(double3))
       CALL ftg_write("double4", double4, LBOUND(double4), UBOUND(double4))
-      CALL ftg_write("double4zeros", double4zeros)
+      CALL ftg_write("double4zeros", double4zeros, (/ 0, 0, 0, 0 /), (/ 0, 0, 0, 0 /))
       CALL ftg_destroy_serializer()      
       
       CALL ftg_set_serializer(dir, base_name, 'r')
@@ -466,7 +466,7 @@ CONTAINS
       CALL ftg_write("double2", double2, LBOUND(double2), UBOUND(double2))
       CALL ftg_write("double3", double3, LBOUND(double3), UBOUND(double3))
       CALL ftg_write("double4", double4, LBOUND(double4), UBOUND(double4))
-      CALL ftg_write("double4zeros", double4zeros)
+      CALL ftg_write("double4zeros", double4zeros, (/ 0, 0, 0, 0 /), (/ 0, 0, 0, 0 /))
       CALL ftg_destroy_serializer()      
       
       CALL ftg_set_serializer(dir, base_name, 'r')
