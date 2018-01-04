@@ -80,7 +80,12 @@ CONTAINS
       TYPE(t_savepoint) :: savepoint
       
       CALL ftg_set_savepoint(name)
-      ! TODO @assertEqual: Name => Getter functions needed
+      CALL ftg_add_savepoint_metainfo('testb', .TRUE.)
+      CALL ftg_add_savepoint_metainfo('testi', 42)
+      CALL ftg_add_savepoint_metainfo('testf', 42.0_4)
+      CALL ftg_add_savepoint_metainfo('testd', 42.0_8)
+      CALL ftg_add_savepoint_metainfo('tests', 'Test')
+      ! TODO @assertEqual: Name, Metainfo => Getter functions needed
       CALL ftg_destroy_savepoint()
       
       CALL fs_create_savepoint(name, savepoint)
