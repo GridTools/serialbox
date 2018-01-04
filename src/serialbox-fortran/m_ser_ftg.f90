@@ -7,7 +7,8 @@ IMPLICIT NONE
 
 PUBLIC :: ignore_bullshit, ignore_bullshit_max_dim_size, ignore_bullshit_allow_negative_indices, ignore_not_existing, &
           ftg_set_serializer, ftg_get_serializer, ftg_destroy_serializer, &
-          ftg_set_savepoint, ftg_get_savepoint, ftg_destroy_savepoint, ftg_add_serializer_metainfo, &
+          ftg_set_savepoint, ftg_get_savepoint, ftg_destroy_savepoint, &
+          ftg_add_serializer_metainfo, ftg_add_savepoint_metainfo, &
           ftg_field_exists, ftg_get_bounds, ftg_register_only, ftg_write, ftg_read, ftg_allocate
 
 PRIVATE
@@ -33,6 +34,15 @@ INTERFACE ftg_add_serializer_metainfo
       ftg_add_serializer_metainfo_f, &
       ftg_add_serializer_metainfo_d, &
       ftg_add_serializer_metainfo_s
+END INTERFACE
+
+INTERFACE ftg_add_savepoint_metainfo
+    MODULE PROCEDURE &
+      ftg_add_savepoint_metainfo_b, &
+      ftg_add_savepoint_metainfo_i, &
+      ftg_add_savepoint_metainfo_f, &
+      ftg_add_savepoint_metainfo_d, &
+      ftg_add_savepoint_metainfo_s
 END INTERFACE
 
 INTERFACE ftg_register_only
@@ -338,6 +348,42 @@ SUBROUTINE ftg_add_serializer_metainfo_s(key, val)
   CHARACTER(LEN=*)               :: key, val
   CALL fs_add_serializer_metainfo(serializer, key, val)
 END SUBROUTINE ftg_add_serializer_metainfo_s
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE ftg_add_savepoint_metainfo_b(key, val)
+  CHARACTER(LEN=*) :: key
+  LOGICAL, VALUE   :: val
+  CALL fs_add_savepoint_metainfo(savepoint, key, val)
+END SUBROUTINE ftg_add_savepoint_metainfo_b
+
+
+SUBROUTINE ftg_add_savepoint_metainfo_i(key, val)
+  CHARACTER(LEN=*)               :: key
+  INTEGER(C_INT)                 :: val
+  CALL fs_add_savepoint_metainfo(savepoint, key, val)
+END SUBROUTINE ftg_add_savepoint_metainfo_i
+
+
+SUBROUTINE ftg_add_savepoint_metainfo_f(key, val)
+  CHARACTER(LEN=*)               :: key
+  REAL(KIND=C_FLOAT)             :: val
+  CALL fs_add_savepoint_metainfo(savepoint, key, val)
+END SUBROUTINE ftg_add_savepoint_metainfo_f
+
+
+SUBROUTINE ftg_add_savepoint_metainfo_d(key, val)
+  CHARACTER(LEN=*)               :: key
+  REAL(KIND=C_DOUBLE)            :: val
+  CALL fs_add_savepoint_metainfo(savepoint, key, val)
+END SUBROUTINE ftg_add_savepoint_metainfo_d
+
+
+SUBROUTINE ftg_add_savepoint_metainfo_s(key, val)
+  CHARACTER(LEN=*)               :: key, val
+  CALL fs_add_savepoint_metainfo(savepoint, key, val)
+END SUBROUTINE ftg_add_savepoint_metainfo_s
 
 !=============================================================================
 !=============================================================================
