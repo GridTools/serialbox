@@ -57,8 +57,13 @@ CONTAINS
       TYPE(t_serializer) :: serializer
       
       CALL ftg_set_serializer(dir, prefix, 'a')
+      CALL ftg_add_serializer_metainfo('testb', .TRUE.)
+      CALL ftg_add_serializer_metainfo('testi', 42)
+      CALL ftg_add_serializer_metainfo('testf', 42.0_4)
+      CALL ftg_add_serializer_metainfo('testd', 42.0_8)
+      CALL ftg_add_serializer_metainfo('tests', 'Test')
       @assertEqual('a', fs_serializer_openmode(ftg_get_serializer()))
-      ! TODO @assertEqual: Directory, Prefix => Getter functions needed
+      ! TODO @assertEqual: Directory, Prefix, Metainfo => Getter functions needed
       CALL ftg_destroy_serializer()
       
       CALL fs_create_serializer(dir, prefix, 'w', serializer)
