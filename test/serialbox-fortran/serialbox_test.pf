@@ -501,33 +501,39 @@ CONTAINS
     
       TYPE(t_serializer) :: serializer
     
-      LOGICAL              :: logical1(2), logical2(2,2), logical3(2,2,2), logical4(2,2,2,2) 
-      LOGICAL(KIND=C_BOOL) :: boolean1(4), boolean2(4,4), boolean3(4,4,4), boolean4(4,4,4,4)
-      INTEGER              :: integer1(8), integer2(8,8), integer3(8,8,8), integer4(8,8,8,8) 
-      INTEGER(KIND=C_LONG) :: longint1(5), longint2(5,5), longint3(5,5,5), longint4(5,5,5,5) 
-      REAL(KIND=C_FLOAT)   :: float1(6),   float2(6,6),   float3(6,6,6),   float4(6,6,6,6) 
-      REAL(KIND=C_DOUBLE)  :: double1(7),  double2(7,7),  double3(7,7,7),  double4(7,7,7,7), double4zeros(7,7,7,7)
+      LOGICAL              :: logical0, logical1(2), logical2(2,2), logical3(2,2,2), logical4(2,2,2,2) 
+      LOGICAL(KIND=C_BOOL) :: boolean0, boolean1(4), boolean2(4,4), boolean3(4,4,4), boolean4(4,4,4,4)
+      INTEGER              :: integer0, integer1(8), integer2(8,8), integer3(8,8,8), integer4(8,8,8,8) 
+      INTEGER(KIND=C_LONG) :: longint0, longint1(5), longint2(5,5), longint3(5,5,5), longint4(5,5,5,5) 
+      REAL(KIND=C_FLOAT)   :: float0, float1(6),   float2(6,6),   float3(6,6,6),   float4(6,6,6,6) 
+      REAL(KIND=C_DOUBLE)  :: double0, double1(7),  double2(7,7),  double3(7,7,7),  double4(7,7,7,7), double4zeros(7,7,7,7)
     
+      logical0          = .TRUE.
       logical1(:)       = .TRUE.
       logical2(:,:)     = .TRUE.
       logical3(:,:,:)   = .TRUE.
       logical4(:,:,:,:) = .TRUE.
+      boolean0          = .TRUE.
       boolean1(:)       = .TRUE.
       boolean2(:,:)     = .TRUE.
       boolean3(:,:,:)   = .TRUE.
       boolean4(:,:,:,:) = .TRUE.
+      integer0          = 42
       integer1(:)       = 42
       integer2(:,:)     = 42
       integer3(:,:,:)   = 42
       integer4(:,:,:,:) = 42
+      longint0          = 42
       longint1(:)       = 42
       longint2(:,:)     = 42
       longint3(:,:,:)   = 42
       longint4(:,:,:,:) = 42
+      float0            = 109.23
       float1(:)         = 109.23
       float2(:,:)       = 109.23
       float3(:,:,:)     = 109.23
       float4(:,:,:,:)   = 109.23
+      double0           = 109.23
       double1(:)        = 109.23
       double2(:,:)      = 109.23
       double3(:,:,:)    = 109.23
@@ -535,26 +541,32 @@ CONTAINS
       double4zeros(:,:,:,:) = 109.23
       
       CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL fs_write_field(serializer, savepoint, "logical0", logical0)
       CALL fs_write_field(serializer, savepoint, "logical1", logical1, (/ -1 /), (/ 1 /))
       CALL fs_write_field(serializer, savepoint, "logical2", logical2, (/ -2, -3 /), (/ 2, 3 /))
       CALL fs_write_field(serializer, savepoint, "logical3", logical3, (/ -4, -5, -6 /), (/ 4, 5, 6 /))
       CALL fs_write_field(serializer, savepoint, "logical4", logical4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 16 /))
+      CALL fs_write_field(serializer, savepoint, "boolean0", boolean0)
       CALL fs_write_field(serializer, savepoint, "boolean1", boolean1, (/ -1 /), (/ 2 /))
       CALL fs_write_field(serializer, savepoint, "boolean2", boolean2, (/ -2, -3 /), (/ 2, 4 /))
       CALL fs_write_field(serializer, savepoint, "boolean3", boolean3, (/ -4, -5, -6 /), (/ 4, 5, 7 /))
       CALL fs_write_field(serializer, savepoint, "boolean4", boolean4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 17 /))
+      CALL fs_write_field(serializer, savepoint, "integer0", integer0)
       CALL fs_write_field(serializer, savepoint, "integer1", integer1, (/ -1 /), (/ 3 /))
       CALL fs_write_field(serializer, savepoint, "integer2", integer2, (/ -2, -3 /), (/ 2, 5 /))
       CALL fs_write_field(serializer, savepoint, "integer3", integer3, (/ -4, -5, -6 /), (/ 4, 5, 8 /))
       CALL fs_write_field(serializer, savepoint, "integer4", integer4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 18 /))
+      CALL fs_write_field(serializer, savepoint, "longint0", longint0)
       CALL fs_write_field(serializer, savepoint, "longint1", longint1, (/ -1 /), (/ 4 /))
       CALL fs_write_field(serializer, savepoint, "longint2", longint2, (/ -2, -3 /), (/ 2, 6 /))
       CALL fs_write_field(serializer, savepoint, "longint3", longint3, (/ -4, -5, -6 /), (/ 4, 5, 9 /))
       CALL fs_write_field(serializer, savepoint, "longint4", longint4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 19 /))
+      CALL fs_write_field(serializer, savepoint, "float0", float0)
       CALL fs_write_field(serializer, savepoint, "float1", float1, (/ -1 /), (/ 5 /))
       CALL fs_write_field(serializer, savepoint, "float2", float2, (/ -2, -3 /), (/ 2, 7 /))
       CALL fs_write_field(serializer, savepoint, "float3", float3, (/ -4, -5, -6 /), (/ 4, 5, 10 /))
       CALL fs_write_field(serializer, savepoint, "float4", float4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 20 /))
+      CALL fs_write_field(serializer, savepoint, "double0", double0)
       CALL fs_write_field(serializer, savepoint, "double1", double1, (/ -1 /), (/ 6 /))
       CALL fs_write_field(serializer, savepoint, "double2", double2, (/ -2, -3 /), (/ 2, 8 /))
       CALL fs_write_field(serializer, savepoint, "double3", double3, (/ -4, -5, -6 /), (/ 4, 5, 11 /))
@@ -563,26 +575,32 @@ CONTAINS
       CALL fs_destroy_serializer(serializer)      
       
       CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      @assertEqual((/ 0, 0, 0, 0, 0, 0, 0, 0 /),      fs_get_halos(serializer, "logical0"))
       @assertEqual((/ -1, 1, 0, 0, 0, 0, 0, 0 /),     fs_get_halos(serializer, "logical1"))
       @assertEqual((/ -2, 2, -3, 3, 0, 0, 0, 0 /),    fs_get_halos(serializer, "logical2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 6, 0, 0 /),   fs_get_halos(serializer, "logical3"))
       @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 16 /), fs_get_halos(serializer, "logical4"))
+      @assertEqual((/ 0, 0, 0, 0, 0, 0, 0, 0 /),      fs_get_halos(serializer, "boolean0"))
       @assertEqual((/ -1, 2, 0, 0, 0, 0, 0, 0 /),     fs_get_halos(serializer, "boolean1"))
       @assertEqual((/ -2, 2, -3, 4, 0, 0, 0, 0 /),    fs_get_halos(serializer, "boolean2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 7, 0, 0 /),   fs_get_halos(serializer, "boolean3"))
       @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 17 /), fs_get_halos(serializer, "boolean4"))
+      @assertEqual((/ 0, 0, 0, 0, 0, 0, 0, 0 /),      fs_get_halos(serializer, "integer0"))
       @assertEqual((/ -1, 3, 0, 0, 0, 0, 0, 0 /),     fs_get_halos(serializer, "integer1"))
       @assertEqual((/ -2, 2, -3, 5, 0, 0, 0, 0 /),    fs_get_halos(serializer, "integer2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 8, 0, 0 /),   fs_get_halos(serializer, "integer3"))
       @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 18 /), fs_get_halos(serializer, "integer4"))
+      @assertEqual((/ 0, 0, 0, 0, 0, 0, 0, 0 /),      fs_get_halos(serializer, "longint0"))
       @assertEqual((/ -1, 4, 0, 0, 0, 0, 0, 0 /),     fs_get_halos(serializer, "longint1"))
       @assertEqual((/ -2, 2, -3, 6, 0, 0, 0, 0 /),    fs_get_halos(serializer, "longint2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 9, 0, 0 /),   fs_get_halos(serializer, "longint3"))
       @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 19 /), fs_get_halos(serializer, "longint4"))
+      @assertEqual((/ 0, 0, 0, 0, 0, 0, 0, 0 /),      fs_get_halos(serializer, "float0"))
       @assertEqual((/ -1, 5, 0, 0, 0, 0, 0, 0 /),     fs_get_halos(serializer, "float1"))
       @assertEqual((/ -2, 2, -3, 7, 0, 0, 0, 0 /),    fs_get_halos(serializer, "float2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 10, 0, 0 /),   fs_get_halos(serializer, "float3"))
       @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 20 /), fs_get_halos(serializer, "float4"))
+      @assertEqual((/ 0, 0, 0, 0, 0, 0, 0, 0 /),      fs_get_halos(serializer, "double0"))
       @assertEqual((/ -1, 6, 0, 0, 0, 0, 0, 0 /),     fs_get_halos(serializer, "double1"))
       @assertEqual((/ -2, 2, -3, 8, 0, 0, 0, 0 /),    fs_get_halos(serializer, "double2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 11, 0, 0 /),   fs_get_halos(serializer, "double3"))
