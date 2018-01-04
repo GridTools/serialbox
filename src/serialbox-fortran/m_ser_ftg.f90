@@ -163,6 +163,8 @@ LOGICAL :: ignore_not_existing = .TRUE.
 TYPE(t_serializer), POINTER :: serializer => NULL()
 TYPE(t_savepoint),  POINTER :: savepoint  => NULL()
 
+LOGICAL :: serializer_has_written = .FALSE., serializer_has_registered = .FALSE.
+
 CONTAINS
 
 !=============================================================================
@@ -179,6 +181,8 @@ SUBROUTINE ftg_set_serializer_create(directory, prefix, mode, opt_archive)
   ALLOCATE(new_serializer)
   CALL fs_create_serializer(directory, prefix, mode, new_serializer, opt_archive)
   serializer => new_serializer
+  serializer_has_written = .FALSE.
+  serializer_has_registered = .FALSE.
 
 END SUBROUTINE ftg_set_serializer_create
 
@@ -188,6 +192,8 @@ SUBROUTINE ftg_set_serializer_existing(new_serializer)
   TYPE(t_serializer), INTENT(IN), TARGET :: new_serializer
 
   serializer => new_serializer
+  serializer_has_written = .FALSE.
+  serializer_has_registered = .FALSE.
 
 END SUBROUTINE ftg_set_serializer_existing
 
@@ -195,6 +201,10 @@ END SUBROUTINE ftg_set_serializer_existing
 SUBROUTINE ftg_destroy_serializer()
 
   IF (ASSOCIATED(serializer)) THEN
+    IF (serializer_has_registered .AND. .NOT. serializer_has_written) THEN
+      CALL ftg_write('ftg_dummy_var', .TRUE.)
+    END IF
+
     CALL fs_destroy_serializer(serializer)
     serializer => NULL()
   END IF
@@ -294,10 +304,12 @@ SUBROUTINE ftg_register_only_0d(fieldname, field, typename)
 
   CHARACTER(16) :: loc
 
-  CALL fs_register_field(serializer, fieldname, typename, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+  CALL fs_register_field(serializer, fieldname, 'int', 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
   WRITE (loc,'(Z16)') C_LOC(field)
   CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'registered_only', .TRUE.)
   CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
+  serializer_has_registered = .TRUE.
 
 END SUBROUTINE ftg_register_only_0d
 
@@ -319,11 +331,14 @@ SUBROUTINE ftg_register_only_1d(fieldname, field, typename, lbounds, ubounds)
   END IF
 
   IF (.NOT. bullshit) THEN
-    CALL fs_register_field(serializer, fieldname, typename, 0, SIZE(field, 1), 0, 0, 0, lbounds(1), ubounds(1), 0, 0, 0, 0, 0, 0)
+    CALL fs_register_field(serializer, fieldname, 'int', 4, SIZE(field, 1), 0, 0, 0, lbounds(1), ubounds(1), 0, 0, 0, 0, 0, 0)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'registered_only', .TRUE.)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
+    serializer_has_registered = .TRUE.
   END IF
+
 
 END SUBROUTINE ftg_register_only_1d
 
@@ -348,11 +363,13 @@ SUBROUTINE ftg_register_only_2d(fieldname, field, typename, lbounds, ubounds)
   END IF
 
   IF (.NOT. bullshit) THEN
-    CALL fs_register_field(serializer, fieldname, typename, 0, sizes(1), sizes(2), 0, 0, &
+    CALL fs_register_field(serializer, fieldname, 'int', 4, sizes(1), sizes(2), 0, 0, &
                            lbounds(1), ubounds(1), lbounds(2), ubounds(2), 0, 0, 0, 0)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'registered_only', .TRUE.)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
+    serializer_has_registered = .TRUE.
   END IF
 
 END SUBROUTINE ftg_register_only_2d
@@ -378,11 +395,13 @@ SUBROUTINE ftg_register_only_3d(fieldname, field, typename, lbounds, ubounds)
   END IF
 
   IF (.NOT. bullshit) THEN
-    CALL fs_register_field(serializer, fieldname, typename, 0, sizes(1), sizes(2), sizes(3), 0, &
+    CALL fs_register_field(serializer, fieldname, 'int', 4, sizes(1), sizes(2), sizes(3), 0, &
                            lbounds(1), ubounds(1), lbounds(2), ubounds(2), lbounds(3), ubounds(3), 0, 0)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'registered_only', .TRUE.)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
+    serializer_has_registered = .TRUE.
   END IF
 
 END SUBROUTINE ftg_register_only_3d
@@ -408,11 +427,13 @@ SUBROUTINE ftg_register_only_4d(fieldname, field, typename, lbounds, ubounds)
   END IF
 
   IF (.NOT. bullshit) THEN
-    CALL fs_register_field(serializer, fieldname, typename, 0, sizes(1), sizes(2), sizes(3), sizes(4), &
+    CALL fs_register_field(serializer, fieldname, 'int', 4, sizes(1), sizes(2), sizes(3), sizes(4), &
                            lbounds(1), ubounds(1), lbounds(2), ubounds(2), lbounds(3), ubounds(3), lbounds(4), ubounds(4))
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'registered_only', .TRUE.)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
+    serializer_has_registered = .TRUE.
   END IF
 
 END SUBROUTINE ftg_register_only_4d
@@ -438,6 +459,7 @@ SUBROUTINE ftg_write_logical_0d(fieldname, field)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_logical_0d
@@ -464,6 +486,7 @@ SUBROUTINE ftg_write_logical_1d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_logical_1d
@@ -492,6 +515,7 @@ SUBROUTINE ftg_write_logical_2d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_logical_2d
@@ -521,6 +545,7 @@ SUBROUTINE ftg_write_logical_3d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_logical_3d
@@ -551,6 +576,7 @@ SUBROUTINE ftg_write_logical_4d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_logical_4d
@@ -576,6 +602,7 @@ SUBROUTINE ftg_write_bool_0d(fieldname, field)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_bool_0d
@@ -602,6 +629,7 @@ SUBROUTINE ftg_write_bool_1d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_bool_1d
@@ -630,6 +658,7 @@ SUBROUTINE ftg_write_bool_2d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_bool_2d
@@ -659,6 +688,7 @@ SUBROUTINE ftg_write_bool_3d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_bool_3d
@@ -689,6 +719,7 @@ SUBROUTINE ftg_write_bool_4d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_bool_4d
@@ -714,6 +745,7 @@ SUBROUTINE ftg_write_int_0d(fieldname, field)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_int_0d
@@ -740,6 +772,7 @@ SUBROUTINE ftg_write_int_1d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_int_1d
@@ -768,6 +801,7 @@ SUBROUTINE ftg_write_int_2d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_int_2d
@@ -797,6 +831,7 @@ SUBROUTINE ftg_write_int_3d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_int_3d
@@ -827,6 +862,7 @@ SUBROUTINE ftg_write_int_4d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_int_4d
@@ -852,6 +888,7 @@ SUBROUTINE ftg_write_long_0d(fieldname, field)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_long_0d
@@ -878,6 +915,7 @@ SUBROUTINE ftg_write_long_1d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_long_1d
@@ -906,6 +944,7 @@ SUBROUTINE ftg_write_long_2d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_long_2d
@@ -935,6 +974,7 @@ SUBROUTINE ftg_write_long_3d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_long_3d
@@ -965,6 +1005,7 @@ SUBROUTINE ftg_write_long_4d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_long_4d
@@ -990,6 +1031,7 @@ SUBROUTINE ftg_write_float_0d(fieldname, field)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_float_0d
@@ -1016,6 +1058,7 @@ SUBROUTINE ftg_write_float_1d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_float_1d
@@ -1044,6 +1087,7 @@ SUBROUTINE ftg_write_float_2d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_float_2d
@@ -1073,6 +1117,7 @@ SUBROUTINE ftg_write_float_3d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_float_3d
@@ -1103,6 +1148,7 @@ SUBROUTINE ftg_write_float_4d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_float_4d
@@ -1128,6 +1174,7 @@ SUBROUTINE ftg_write_double_0d(fieldname, field)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_double_0d
@@ -1154,6 +1201,7 @@ SUBROUTINE ftg_write_double_1d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_double_1d
@@ -1182,6 +1230,7 @@ SUBROUTINE ftg_write_double_2d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_double_2d
@@ -1211,6 +1260,7 @@ SUBROUTINE ftg_write_double_3d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_double_3d
@@ -1241,6 +1291,7 @@ SUBROUTINE ftg_write_double_4d(fieldname, field, lbounds, ubounds)
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
     WRITE (loc,'(Z16)') C_LOC(field)
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    serializer_has_written = .TRUE.
   END IF
 
 END SUBROUTINE ftg_write_double_4d
