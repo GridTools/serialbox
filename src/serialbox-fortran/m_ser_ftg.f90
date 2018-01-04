@@ -6,7 +6,7 @@ USE m_serialize
 IMPLICIT NONE
 
 PUBLIC :: ignore_bullshit, ignore_bullshit_max_dim_size, ignore_bullshit_allow_negative_indices, ignore_not_existing, &
-          ftg_set_serializer, ftg_get_serializer, ftg_destroy_serializer, &
+          ftg_set_serializer, ftg_get_serializer, ftg_destroy_serializer, ftg_print_serializer_debuginfo, &
           ftg_set_savepoint, ftg_get_savepoint, ftg_destroy_savepoint, &
           ftg_add_serializer_metainfo, ftg_add_savepoint_metainfo, &
           ftg_field_exists, ftg_get_bounds, ftg_register_only, ftg_write, ftg_read, ftg_allocate
@@ -243,6 +243,10 @@ FUNCTION ftg_get_serializer()
   END IF
 
 END FUNCTION ftg_get_serializer
+
+SUBROUTINE ftg_print_serializer_debuginfo()
+  CALL fs_print_debuginfo(serializer)
+END SUBROUTINE ftg_print_serializer_debuginfo
 
 !=============================================================================
 !=============================================================================
