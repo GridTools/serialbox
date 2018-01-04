@@ -443,9 +443,9 @@ SUBROUTINE ftg_write_logical_0d(fieldname, field)
 END SUBROUTINE ftg_write_logical_0d
 
 SUBROUTINE ftg_write_logical_1d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  LOGICAL, INTENT(IN), TARGET       :: field(:)
-  INTEGER, DIMENSION(1), INTENT(IN) :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  LOGICAL, INTENT(IN), TARGET  :: field(:)
+  INTEGER, INTENT(IN)          :: lbounds(1), ubounds(1)
 
   LOGICAL, POINTER :: padd(:)
   LOGICAL          :: bullshit
@@ -469,9 +469,9 @@ SUBROUTINE ftg_write_logical_1d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_logical_1d
 
 SUBROUTINE ftg_write_logical_2d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  LOGICAL, INTENT(IN), TARGET       :: field(:,:)
-  INTEGER, DIMENSION(2), INTENT(IN) :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  LOGICAL, INTENT(IN), TARGET  :: field(:,:)
+  INTEGER, INTENT(IN)          :: lbounds(2), ubounds(2)
 
   LOGICAL, POINTER :: padd(:,:)
   LOGICAL          :: bullshit
@@ -497,9 +497,9 @@ SUBROUTINE ftg_write_logical_2d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_logical_2d
 
 SUBROUTINE ftg_write_logical_3d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  LOGICAL, INTENT(IN), TARGET       :: field(:,:,:)
-  INTEGER, DIMENSION(3), INTENT(IN) :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  LOGICAL, INTENT(IN), TARGET  :: field(:,:,:)
+  INTEGER, INTENT(IN)          :: lbounds(3), ubounds(3)
 
   LOGICAL, POINTER :: padd(:,:,:)
   LOGICAL          :: bullshit
@@ -526,9 +526,9 @@ SUBROUTINE ftg_write_logical_3d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_logical_3d
 
 SUBROUTINE ftg_write_logical_4d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  LOGICAL, INTENT(IN), TARGET       :: field(:,:,:,:)
-  INTEGER, DIMENSION(4), INTENT(IN) :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  LOGICAL, INTENT(IN), TARGET  :: field(:,:,:,:)
+  INTEGER, INTENT(IN)          :: lbounds(4), ubounds(4)
 
   LOGICAL, POINTER :: padd(:,:,:,:)
   LOGICAL          :: bullshit
@@ -583,7 +583,7 @@ END SUBROUTINE ftg_write_bool_0d
 SUBROUTINE ftg_write_bool_1d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:)
-  INTEGER, DIMENSION(1), INTENT(IN)        :: lbounds, ubounds
+  INTEGER, INTENT(IN)                      :: lbounds(1), ubounds(1)
 
   LOGICAL(KIND=C_BOOL), POINTER :: padd(:)
   LOGICAL                       :: bullshit
@@ -609,7 +609,7 @@ END SUBROUTINE ftg_write_bool_1d
 SUBROUTINE ftg_write_bool_2d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:)
-  INTEGER, DIMENSION(2), INTENT(IN)        :: lbounds, ubounds
+  INTEGER, INTENT(IN)                      :: lbounds(2), ubounds(2)
 
   LOGICAL(KIND=C_BOOL), POINTER :: padd(:,:)
   LOGICAL                       :: bullshit
@@ -637,7 +637,7 @@ END SUBROUTINE ftg_write_bool_2d
 SUBROUTINE ftg_write_bool_3d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:,:)
-  INTEGER, DIMENSION(3), INTENT(IN)        :: lbounds, ubounds
+  INTEGER, INTENT(IN)                      :: lbounds(3), ubounds(3)
 
   LOGICAL(KIND=C_BOOL), POINTER :: padd(:,:,:)
   LOGICAL                       :: bullshit
@@ -666,7 +666,7 @@ END SUBROUTINE ftg_write_bool_3d
 SUBROUTINE ftg_write_bool_4d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN), TARGET :: field(:,:,:,:)
-  INTEGER, DIMENSION(4), INTENT(IN)        :: lbounds, ubounds
+  INTEGER, INTENT(IN)                      :: lbounds(4), ubounds(4)
 
   LOGICAL(KIND=C_BOOL), POINTER :: padd(:,:,:,:)
   LOGICAL                       :: bullshit
@@ -719,9 +719,9 @@ SUBROUTINE ftg_write_int_0d(fieldname, field)
 END SUBROUTINE ftg_write_int_0d
 
 SUBROUTINE ftg_write_int_1d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  INTEGER, INTENT(IN), TARGET       :: field(:)
-  INTEGER, DIMENSION(1), INTENT(IN) :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  INTEGER, INTENT(IN), TARGET  :: field(:)
+  INTEGER, INTENT(IN)          :: lbounds(1), ubounds(1)
 
   INTEGER, POINTER :: padd(:)
   LOGICAL          :: bullshit
@@ -745,9 +745,9 @@ SUBROUTINE ftg_write_int_1d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_int_1d
 
 SUBROUTINE ftg_write_int_2d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  INTEGER, INTENT(IN), TARGET       :: field(:,:)
-  INTEGER, DIMENSION(2), INTENT(IN) :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  INTEGER, INTENT(IN), TARGET  :: field(:,:)
+  INTEGER, INTENT(IN)          :: lbounds(2), ubounds(2)
 
   INTEGER, POINTER :: padd(:,:)
   LOGICAL          :: bullshit
@@ -773,9 +773,9 @@ SUBROUTINE ftg_write_int_2d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_int_2d
 
 SUBROUTINE ftg_write_int_3d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  INTEGER, INTENT(IN), TARGET       :: field(:,:,:)
-  INTEGER, DIMENSION(3), INTENT(IN) :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  INTEGER, INTENT(IN), TARGET  :: field(:,:,:)
+  INTEGER, INTENT(IN)          :: lbounds(3), ubounds(3)
 
   INTEGER, POINTER :: padd(:,:,:)
   LOGICAL          :: bullshit
@@ -802,9 +802,9 @@ SUBROUTINE ftg_write_int_3d(fieldname, field, lbounds, ubounds)
 END SUBROUTINE ftg_write_int_3d
 
 SUBROUTINE ftg_write_int_4d(fieldname, field, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  INTEGER, INTENT(IN), TARGET       :: field(:,:,:,:)
-  INTEGER, DIMENSION(4), INTENT(IN) :: lbounds, ubounds
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  INTEGER, INTENT(IN), TARGET  :: field(:,:,:,:)
+  INTEGER, INTENT(IN)          :: lbounds(4), ubounds(4)
 
   INTEGER, POINTER :: padd(:,:,:,:)
   LOGICAL          :: bullshit
@@ -859,7 +859,7 @@ END SUBROUTINE ftg_write_long_0d
 SUBROUTINE ftg_write_long_1d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:)
-  INTEGER, DIMENSION(1), INTENT(IN)        :: lbounds, ubounds
+  INTEGER, INTENT(IN)                      :: lbounds(1), ubounds(1)
 
   INTEGER(KIND=C_LONG), POINTER :: padd(:)
   LOGICAL                       :: bullshit
@@ -885,7 +885,7 @@ END SUBROUTINE ftg_write_long_1d
 SUBROUTINE ftg_write_long_2d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:)
-  INTEGER, DIMENSION(2), INTENT(IN)        :: lbounds, ubounds
+  INTEGER, INTENT(IN)                      :: lbounds(2), ubounds(2)
 
   INTEGER(KIND=C_LONG), POINTER :: padd(:,:)
   LOGICAL                       :: bullshit
@@ -913,7 +913,7 @@ END SUBROUTINE ftg_write_long_2d
 SUBROUTINE ftg_write_long_3d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:,:)
-  INTEGER, DIMENSION(3), INTENT(IN)        :: lbounds, ubounds
+  INTEGER, INTENT(IN)                      :: lbounds(3), ubounds(3)
 
   INTEGER(KIND=C_LONG), POINTER :: padd(:,:,:)
   LOGICAL                       :: bullshit
@@ -942,7 +942,7 @@ END SUBROUTINE ftg_write_long_3d
 SUBROUTINE ftg_write_long_4d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN), TARGET :: field(:,:,:,:)
-  INTEGER, DIMENSION(4), INTENT(IN)        :: lbounds, ubounds
+  INTEGER, INTENT(IN)                      :: lbounds(4), ubounds(4)
 
   INTEGER(KIND=C_LONG), POINTER :: padd(:,:,:,:)
   LOGICAL                       :: bullshit
@@ -997,7 +997,7 @@ END SUBROUTINE ftg_write_float_0d
 SUBROUTINE ftg_write_float_1d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:)
-  INTEGER, DIMENSION(1), INTENT(IN)      :: lbounds, ubounds
+  INTEGER, INTENT(IN)                    :: lbounds(1), ubounds(1)
 
   REAL(KIND=C_FLOAT), POINTER :: padd(:)
   LOGICAL                     :: bullshit
@@ -1023,7 +1023,7 @@ END SUBROUTINE ftg_write_float_1d
 SUBROUTINE ftg_write_float_2d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:,:)
-  INTEGER, DIMENSION(2), INTENT(IN)      :: lbounds, ubounds
+  INTEGER, INTENT(IN)                    :: lbounds(2), ubounds(2)
 
   REAL(KIND=C_FLOAT), POINTER :: padd(:,:)
   LOGICAL                     :: bullshit
@@ -1051,7 +1051,7 @@ END SUBROUTINE ftg_write_float_2d
 SUBROUTINE ftg_write_float_3d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:,:,:)
-  INTEGER, DIMENSION(3), INTENT(IN)      :: lbounds, ubounds
+  INTEGER, INTENT(IN)                    :: lbounds(3), ubounds(3)
 
   REAL(KIND=C_FLOAT), POINTER :: padd(:,:,:)
   LOGICAL                     :: bullshit
@@ -1080,7 +1080,7 @@ END SUBROUTINE ftg_write_float_3d
 SUBROUTINE ftg_write_float_4d(fieldname, field, lbounds, ubounds)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET :: field(:,:,:,:)
-  INTEGER, DIMENSION(4), INTENT(IN)      :: lbounds, ubounds
+  INTEGER, INTENT(IN)                    :: lbounds(4), ubounds(4)
 
   REAL(KIND=C_FLOAT), POINTER :: padd(:,:,:,:)
   LOGICAL                     :: bullshit
