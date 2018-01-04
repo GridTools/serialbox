@@ -1,3 +1,6 @@
+! TODO Test bullshit
+! TODO Test register only
+
 MODULE ser_ftg_test
 
   USE iso_c_binding

@@ -8,7 +8,7 @@ IMPLICIT NONE
 PUBLIC :: ignore_bullshit, ignore_bullshit_max_dim_size, ignore_bullshit_allow_negative_indices, ignore_not_existing, &
           ftg_set_serializer, ftg_get_serializer, ftg_destroy_serializer, &
           ftg_set_savepoint, ftg_get_savepoint, ftg_destroy_savepoint, &
-          ftg_field_exists, ftg_get_bounds, ftg_write, ftg_read, ftg_allocate
+          ftg_field_exists, ftg_get_bounds, ftg_register_only, ftg_write, ftg_read, ftg_allocate
 
 PRIVATE
 
@@ -24,6 +24,15 @@ INTERFACE ftg_set_savepoint
     MODULE PROCEDURE &
       ftg_set_savepoint_create, &
       ftg_set_savepoint_existing
+END INTERFACE
+
+INTERFACE ftg_register_only
+    MODULE PROCEDURE &
+      ftg_register_only_0d, &
+      ftg_register_only_1d, &
+      ftg_register_only_2d, &
+      ftg_register_only_3d, &
+      ftg_register_only_4d
 END INTERFACE
 
 INTERFACE ftg_write
@@ -278,29 +287,135 @@ END FUNCTION ftg_get_bounds
 !=============================================================================
 !=============================================================================
 
-SUBROUTINE ftg_register_only(fieldname, field, typename)
-  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
-  CLASS(*), INTENT(IN), TARGET           :: field
-  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: typename
+SUBROUTINE ftg_register_only_0d(fieldname, field, typename)
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  TYPE(*), INTENT(IN), TARGET  :: field
+  CHARACTER(LEN=*), INTENT(IN) :: typename
 
-  CLASS(*), POINTER :: padd
-  LOGICAL           :: bullshit
-  CHARACTER(16)     :: loc
+  CHARACTER(16) :: loc
 
-  padd => field
+  CALL fs_register_field(serializer, fieldname, typename, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+  WRITE (loc,'(Z16)') C_LOC(field)
+  CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+  CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
+
+END SUBROUTINE ftg_register_only_0d
+
+SUBROUTINE ftg_register_only_1d(fieldname, field, typename, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  TYPE(*), INTENT(IN), TARGET  :: field(:)
+  CHARACTER(LEN=*), INTENT(IN) :: typename
+  INTEGER, INTENT(IN)          :: lbounds(1), ubounds(1)
+
+  LOGICAL       :: bullshit
+  CHARACTER(16) :: loc
+
   bullshit = .FALSE.
-  IF (ignore_bullshit) THEN
-    bullshit = .NOT. ASSOCIATED(padd, field)
+  if (ignore_bullshit) THEN
+    bullshit = SIZE(field, 1) > ignore_bullshit_max_dim_size
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
+      bullshit = lbounds(1) < 0 .OR. ubounds(1) < 0
+    END IF
   END IF
 
   IF (.NOT. bullshit) THEN
-    !CALL fs_check_size(serializer, fieldname, typename, 0, 1, 0, 0, 0)
-    !WRITE (loc,'(Z16)') C_LOC(field)
-    !CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    CALL fs_register_field(serializer, fieldname, typename, 0, SIZE(field, 1), 0, 0, 0, lbounds(1), ubounds(1), 0, 0, 0, 0, 0, 0)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
   END IF
 
-END SUBROUTINE ftg_register_only
+END SUBROUTINE ftg_register_only_1d
+
+SUBROUTINE ftg_register_only_2d(fieldname, field, typename, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  TYPE(*), INTENT(IN), TARGET  :: field(:,:)
+  CHARACTER(LEN=*), INTENT(IN) :: typename
+  INTEGER, INTENT(IN)          :: lbounds(2), ubounds(2)
+
+  LOGICAL               :: bullshit
+  CHARACTER(16)         :: loc
+  INTEGER, DIMENSION(2) :: sizes
+
+  sizes = SHAPE(field)
+
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = ANY(sizes > ignore_bullshit_max_dim_size)
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
+      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_register_field(serializer, fieldname, typename, 0, sizes(1), sizes(2), 0, 0, &
+                           lbounds(1), ubounds(1), lbounds(2), ubounds(2), 0, 0, 0, 0)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
+  END IF
+
+END SUBROUTINE ftg_register_only_2d
+
+SUBROUTINE ftg_register_only_3d(fieldname, field, typename, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  TYPE(*), INTENT(IN), TARGET  :: field(:,:,:)
+  CHARACTER(LEN=*), INTENT(IN) :: typename
+  INTEGER, INTENT(IN)          :: lbounds(3), ubounds(3)
+
+  LOGICAL               :: bullshit
+  CHARACTER(16)         :: loc
+  INTEGER, DIMENSION(3) :: sizes
+
+  sizes = SHAPE(field)
+
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = ANY(sizes > ignore_bullshit_max_dim_size)
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
+      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_register_field(serializer, fieldname, typename, 0, sizes(1), sizes(2), sizes(3), 0, &
+                           lbounds(1), ubounds(1), lbounds(2), ubounds(2), lbounds(3), ubounds(3), 0, 0)
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
+  END IF
+
+END SUBROUTINE ftg_register_only_3d
+
+SUBROUTINE ftg_register_only_4d(fieldname, field, typename, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  TYPE(*), INTENT(IN), TARGET  :: field(:,:,:,:)
+  CHARACTER(LEN=*), INTENT(IN) :: typename
+  INTEGER, INTENT(IN)          :: lbounds(4), ubounds(4)
+
+  LOGICAL               :: bullshit
+  CHARACTER(16)         :: loc
+  INTEGER, DIMENSION(4) :: sizes
+
+  sizes = SHAPE(field)
+
+  bullshit = .FALSE.
+  if (ignore_bullshit) THEN
+    bullshit = ANY(sizes > ignore_bullshit_max_dim_size)
+    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
+      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
+    END IF
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_register_field(serializer, fieldname, typename, 0, sizes(1), sizes(2), sizes(3), sizes(4), &
+                           lbounds(1), ubounds(1), lbounds(2), ubounds(2), lbounds(3), ubounds(3), lbounds(4), ubounds(4))
+    WRITE (loc,'(Z16)') C_LOC(field)
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
+  END IF
+
+END SUBROUTINE ftg_register_only_4d
 
 !=============================================================================
 !=============================================================================
