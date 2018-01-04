@@ -45,15 +45,6 @@ INTERFACE ftg_add_savepoint_metainfo
       ftg_add_savepoint_metainfo_s
 END INTERFACE
 
-INTERFACE ftg_register_only
-    MODULE PROCEDURE &
-      ftg_register_only_0d, &
-      ftg_register_only_1d, &
-      ftg_register_only_2d, &
-      ftg_register_only_3d, &
-      ftg_register_only_4d
-END INTERFACE
-
 INTERFACE ftg_write
     MODULE PROCEDURE &
       ftg_write_logical_0d, &
@@ -176,7 +167,7 @@ END INTERFACE ftg_allocate
 
 LOGICAL :: ignore_bullshit = .TRUE.
 INTEGER :: ignore_bullshit_max_dim_size = 999999999
-LOGICAL :: ignore_bullshit_allow_negative_indices = .FALSE.
+LOGICAL :: ignore_bullshit_allow_negative_indices = .TRUE.
 LOGICAL :: ignore_not_existing = .TRUE.
 
 TYPE(t_serializer), POINTER :: serializer => NULL()
@@ -392,146 +383,53 @@ END SUBROUTINE ftg_add_savepoint_metainfo_s
 !=============================================================================
 !=============================================================================
 
-SUBROUTINE ftg_register_only_0d(fieldname, field, typename)
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname
-  TYPE(*), INTENT(IN), TARGET  :: field
-  CHARACTER(LEN=*), INTENT(IN) :: typename
-
-  CHARACTER(16) :: loc
-
-  CALL fs_register_field(serializer, fieldname, 'int', 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-  WRITE (loc,'(Z16)') C_LOC(field)
-  CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
-  CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'registered_only', .TRUE.)
-  CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
-  serializer_has_registered = .TRUE.
-
-END SUBROUTINE ftg_register_only_0d
-
-SUBROUTINE ftg_register_only_1d(fieldname, field, typename, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname
-  TYPE(*), INTENT(IN), TARGET  :: field(:)
-  CHARACTER(LEN=*), INTENT(IN) :: typename
-  INTEGER, INTENT(IN)          :: lbounds(1), ubounds(1)
+SUBROUTINE ftg_register_only(fieldname, typename, cptr, lbounds, ubounds)
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: typename
+  TYPE(C_PTR), INTENT(IN), OPTIONAL      :: cptr
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(:), ubounds(:)
 
   LOGICAL       :: bullshit
   CHARACTER(16) :: loc
+  INTEGER       :: sizes(4), bounds(8), i
+
+  sizes  = (/ 1, 0, 0, 0 /)
+  bounds = (/ 0, 0, 0, 0, 0, 0, 0, 0 /)
 
   bullshit = .FALSE.
   if (ignore_bullshit) THEN
-    bullshit = SIZE(field, 1) > ignore_bullshit_max_dim_size
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
-      bullshit = lbounds(1) < 0 .OR. ubounds(1) < 0
-    END IF
-  END IF
-
-  IF (.NOT. bullshit) THEN
-    CALL fs_register_field(serializer, fieldname, 'int', 4, SIZE(field, 1), 0, 0, 0, lbounds(1), ubounds(1), 0, 0, 0, 0, 0, 0)
-    WRITE (loc,'(Z16)') C_LOC(field)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'registered_only', .TRUE.)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
-    serializer_has_registered = .TRUE.
-  END IF
-
-
-END SUBROUTINE ftg_register_only_1d
-
-SUBROUTINE ftg_register_only_2d(fieldname, field, typename, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname
-  TYPE(*), INTENT(IN), TARGET  :: field(:,:)
-  CHARACTER(LEN=*), INTENT(IN) :: typename
-  INTEGER, INTENT(IN)          :: lbounds(2), ubounds(2)
-
-  LOGICAL               :: bullshit
-  CHARACTER(16)         :: loc
-  INTEGER, DIMENSION(2) :: sizes
-
-  sizes = SHAPE(field)
-
-  bullshit = .FALSE.
-  if (ignore_bullshit) THEN
-    bullshit = ANY(sizes > ignore_bullshit_max_dim_size)
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
-      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
-    END IF
-  END IF
-
-  IF (.NOT. bullshit) THEN
-    CALL fs_register_field(serializer, fieldname, 'int', 4, sizes(1), sizes(2), 0, 0, &
-                           lbounds(1), ubounds(1), lbounds(2), ubounds(2), 0, 0, 0, 0)
-    WRITE (loc,'(Z16)') C_LOC(field)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'registered_only', .TRUE.)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
-    serializer_has_registered = .TRUE.
-  END IF
-
-END SUBROUTINE ftg_register_only_2d
-
-SUBROUTINE ftg_register_only_3d(fieldname, field, typename, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname
-  TYPE(*), INTENT(IN), TARGET  :: field(:,:,:)
-  CHARACTER(LEN=*), INTENT(IN) :: typename
-  INTEGER, INTENT(IN)          :: lbounds(3), ubounds(3)
-
-  LOGICAL               :: bullshit
-  CHARACTER(16)         :: loc
-  INTEGER, DIMENSION(3) :: sizes
-
-  sizes = SHAPE(field)
-
-  bullshit = .FALSE.
-  if (ignore_bullshit) THEN
-    bullshit = ANY(sizes > ignore_bullshit_max_dim_size)
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
-      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
-    END IF
-  END IF
-
-  IF (.NOT. bullshit) THEN
-    CALL fs_register_field(serializer, fieldname, 'int', 4, sizes(1), sizes(2), sizes(3), 0, &
-                           lbounds(1), ubounds(1), lbounds(2), ubounds(2), lbounds(3), ubounds(3), 0, 0)
-    WRITE (loc,'(Z16)') C_LOC(field)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'registered_only', .TRUE.)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
-    serializer_has_registered = .TRUE.
-  END IF
-
-END SUBROUTINE ftg_register_only_3d
-
-SUBROUTINE ftg_register_only_4d(fieldname, field, typename, lbounds, ubounds)
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname
-  TYPE(*), INTENT(IN), TARGET  :: field(:,:,:,:)
-  CHARACTER(LEN=*), INTENT(IN) :: typename
-  INTEGER, INTENT(IN)          :: lbounds(4), ubounds(4)
-
-  LOGICAL               :: bullshit
-  CHARACTER(16)         :: loc
-  INTEGER, DIMENSION(4) :: sizes
-
-  sizes = SHAPE(field)
-
-  bullshit = .FALSE.
-  if (ignore_bullshit) THEN
-    bullshit = ANY(sizes > ignore_bullshit_max_dim_size)
-    IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
-      bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
+    bullshit = PRESENT(lbounds) .NEQV. PRESENT(ubounds)
+    IF (.NOT. bullshit .AND. PRESENT(lbounds)) THEN
+      bullshit = SIZE(lbounds) /= SIZE(ubounds)
+      IF (.NOT. bullshit .AND. .NOT. ignore_bullshit_allow_negative_indices) THEN
+        bullshit = ANY(lbounds < 0) .OR. ANY(ubounds < 0)
+      END IF
+      IF (.NOT. bullshit) THEN
+        DO i = 1, SIZE(lbounds)
+          sizes(i) = ubounds(i) - lbounds(i) + 1
+          bounds(i * 2 - 1) = lbounds(i)
+          bounds(i * 2) = ubounds(i)
+        END DO
+        bullshit = ANY(sizes > ignore_bullshit_max_dim_size)
+      END IF
     END IF
   END IF
 
   IF (.NOT. bullshit) THEN
     CALL fs_register_field(serializer, fieldname, 'int', 4, sizes(1), sizes(2), sizes(3), sizes(4), &
-                           lbounds(1), ubounds(1), lbounds(2), ubounds(2), lbounds(3), ubounds(3), lbounds(4), ubounds(4))
-    WRITE (loc,'(Z16)') C_LOC(field)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+                           bounds(1), bounds(2), bounds(3), bounds(4), bounds(5), bounds(6), bounds(7), bounds(8))
     CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'registered_only', .TRUE.)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
+    IF (PRESENT(typename)) THEN
+      CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
+    END IF
+    IF (PRESENT(cptr)) THEN
+      WRITE (loc,'(Z16)') cptr
+      CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(loc))
+    END IF
     serializer_has_registered = .TRUE.
   END IF
 
-END SUBROUTINE ftg_register_only_4d
+END SUBROUTINE ftg_register_only
 
 !=============================================================================
 !=============================================================================
