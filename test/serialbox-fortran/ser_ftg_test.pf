@@ -11,13 +11,19 @@ MODULE ser_ftg_test
   
   IMPLICIT NONE
   
-  PUBLIC 
-
+  PUBLIC
+  
+  TYPE testt
+    INTEGER :: i0 
+    REAL(KIND=C_DOUBLE), ALLOCATABLE :: d3(:,:,:) 
+  END TYPE testt 
+  
   TYPE(t_savepoint)  :: savepoint
   
   CHARACTER(len=*), PARAMETER :: dir = 'ftgdata'
   CHARACTER(len=*), PARAMETER :: savepoint_name = 'test'
   INTEGER, PARAMETER :: exp_size_scalar(4) = (/ 1, 0, 0, 0 /) 
+  INTEGER, PARAMETER :: exp_bounds_scalar(8) = (/ 0, 0, 0, 0, 0, 0, 0, 0 /) 
 
 CONTAINS
 
@@ -297,34 +303,46 @@ CONTAINS
     
       CHARACTER(len=*), PARAMETER :: base_name = 'testBounds'
     
-      LOGICAL              :: logical1(-1:1), logical2(-2:2,-3:3), logical3(-4:4,-5:5,-6:6), logical4(7:8,23:42,-4:-2,0:16) 
-      LOGICAL(KIND=C_BOOL) :: boolean1(-1:2), boolean2(-2:2,-3:4), boolean3(-4:4,-5:5,-6:7), boolean4(7:8,23:42,-4:-2,0:17)
-      INTEGER              :: integer1(-1:3), integer2(-2:2,-3:5), integer3(-4:4,-5:5,-6:8), integer4(7:8,23:42,-4:-2,0:18) 
-      INTEGER(KIND=C_LONG) :: longint1(-1:4), longint2(-2:2,-3:6), longint3(-4:4,-5:5,-6:9), longint4(7:8,23:42,-4:-2,0:19) 
-      REAL(KIND=C_FLOAT)   :: float1(-1:5),   float2(-2:2,-3:7),   float3(-4:4,-5:5,-6:10),   float4(7:8,23:42,-4:-2,0:20) 
-      REAL(KIND=C_DOUBLE)  :: double1(-1:6),  double2(-2:2,-3:8),  double3(-4:4,-5:5,-6:11),  double4(7:8,23:42,-4:-2,0:21), & 
+      LOGICAL              :: logical0, logical1(-1:1), logical2(-2:2,-3:3), &
+                              logical3(-4:4,-5:5,-6:6), logical4(7:8,23:42,-4:-2,0:16) 
+      LOGICAL(KIND=C_BOOL) :: boolean0, boolean1(-1:2), boolean2(-2:2,-3:4), &
+                              boolean3(-4:4,-5:5,-6:7), boolean4(7:8,23:42,-4:-2,0:17)
+      INTEGER              :: integer0, integer1(-1:3), integer2(-2:2,-3:5), &
+                              integer3(-4:4,-5:5,-6:8), integer4(7:8,23:42,-4:-2,0:18) 
+      INTEGER(KIND=C_LONG) :: longint0, longint1(-1:4), longint2(-2:2,-3:6), &
+                              longint3(-4:4,-5:5,-6:9), longint4(7:8,23:42,-4:-2,0:19) 
+      REAL(KIND=C_FLOAT)   :: float0, float1(-1:5),     float2(-2:2,-3:7),   &
+                              float3(-4:4,-5:5,-6:10),  float4(7:8,23:42,-4:-2,0:20) 
+      REAL(KIND=C_DOUBLE)  :: double0, double1(-1:6),  double2(-2:2,-3:8),  &
+                              double3(-4:4,-5:5,-6:11),  double4(7:8,23:42,-4:-2,0:21), & 
                               double4zeros(7,7,7,7)
     
+      logical0          = .TRUE.
       logical1(:)       = .TRUE.
       logical2(:,:)     = .TRUE.
       logical3(:,:,:)   = .TRUE.
       logical4(:,:,:,:) = .TRUE.
+      boolean0          = .TRUE.
       boolean1(:)       = .TRUE.
       boolean2(:,:)     = .TRUE.
       boolean3(:,:,:)   = .TRUE.
       boolean4(:,:,:,:) = .TRUE.
+      integer0          = 42
       integer1(:)       = 42
       integer2(:,:)     = 42
       integer3(:,:,:)   = 42
       integer4(:,:,:,:) = 42
+      longint0          = 42
       longint1(:)       = 42
       longint2(:,:)     = 42
       longint3(:,:,:)   = 42
       longint4(:,:,:,:) = 42
+      float0            = 109.23
       float1(:)         = 109.23
       float2(:,:)       = 109.23
       float3(:,:,:)     = 109.23
       float4(:,:,:,:)   = 109.23
+      double0           = 109.23
       double1(:)        = 109.23
       double2(:,:)      = 109.23
       double3(:,:,:)    = 109.23
@@ -332,26 +350,32 @@ CONTAINS
       double4zeros(:,:,:,:) = 109.23
       
       CALL ftg_set_serializer(dir, base_name, 'w')
+      CALL ftg_write("logical0", logical0)
       CALL ftg_write("logical1", logical1, LBOUND(logical1), UBOUND(logical1))
       CALL ftg_write("logical2", logical2, LBOUND(logical2), UBOUND(logical2))
       CALL ftg_write("logical3", logical3, LBOUND(logical3), UBOUND(logical3))
       CALL ftg_write("logical4", logical4, LBOUND(logical4), UBOUND(logical4))
+      CALL ftg_write("boolean0", boolean0)
       CALL ftg_write("boolean1", boolean1, LBOUND(boolean1), UBOUND(boolean1))
       CALL ftg_write("boolean2", boolean2, LBOUND(boolean2), UBOUND(boolean2))
       CALL ftg_write("boolean3", boolean3, LBOUND(boolean3), UBOUND(boolean3))
       CALL ftg_write("boolean4", boolean4, LBOUND(boolean4), UBOUND(boolean4))
+      CALL ftg_write("integer0", integer0)
       CALL ftg_write("integer1", integer1, LBOUND(integer1), UBOUND(integer1))
       CALL ftg_write("integer2", integer2, LBOUND(integer2), UBOUND(integer2))
       CALL ftg_write("integer3", integer3, LBOUND(integer3), UBOUND(integer3))
       CALL ftg_write("integer4", integer4, LBOUND(integer4), UBOUND(integer4))
+      CALL ftg_write("longint0", longint0)
       CALL ftg_write("longint1", longint1, LBOUND(longint1), UBOUND(longint1))
       CALL ftg_write("longint2", longint2, LBOUND(longint2), UBOUND(longint2))
       CALL ftg_write("longint3", longint3, LBOUND(longint3), UBOUND(longint3))
       CALL ftg_write("longint4", longint4, LBOUND(longint4), UBOUND(longint4))
+      CALL ftg_write("float0", float0)
       CALL ftg_write("float1", float1, LBOUND(float1), UBOUND(float1))
       CALL ftg_write("float2", float2, LBOUND(float2), UBOUND(float2))
       CALL ftg_write("float3", float3, LBOUND(float3), UBOUND(float3))
       CALL ftg_write("float4", float4, LBOUND(float4), UBOUND(float4))
+      CALL ftg_write("double0", double0)
       CALL ftg_write("double1", double1, LBOUND(double1), UBOUND(double1))
       CALL ftg_write("double2", double2, LBOUND(double2), UBOUND(double2))
       CALL ftg_write("double3", double3, LBOUND(double3), UBOUND(double3))
@@ -360,31 +384,37 @@ CONTAINS
       CALL ftg_destroy_serializer()      
       
       CALL ftg_set_serializer(dir, base_name, 'r')
+      @assertEqual(exp_bounds_scalar,                 ftg_get_bounds("logical0"))
       @assertEqual((/ -1, 1, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("logical1"))
       @assertEqual((/ -2, 2, -3, 3, 0, 0, 0, 0 /),    ftg_get_bounds("logical2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 6, 0, 0 /),   ftg_get_bounds("logical3"))
       @assertEqual((/ 7, 8, 23, 42, -4, -2, 0, 16 /), ftg_get_bounds("logical4"))
+      @assertEqual(exp_bounds_scalar,                 ftg_get_bounds("boolean0"))
       @assertEqual((/ -1, 2, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("boolean1"))
       @assertEqual((/ -2, 2, -3, 4, 0, 0, 0, 0 /),    ftg_get_bounds("boolean2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 7, 0, 0 /),   ftg_get_bounds("boolean3"))
       @assertEqual((/ 7, 8, 23, 42, -4, -2, 0, 17 /), ftg_get_bounds("boolean4"))
+      @assertEqual(exp_bounds_scalar,                 ftg_get_bounds("integer0"))
       @assertEqual((/ -1, 3, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("integer1"))
       @assertEqual((/ -2, 2, -3, 5, 0, 0, 0, 0 /),    ftg_get_bounds("integer2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 8, 0, 0 /),   ftg_get_bounds("integer3"))
       @assertEqual((/ 7, 8, 23, 42, -4, -2, 0, 18 /), ftg_get_bounds("integer4"))
+      @assertEqual(exp_bounds_scalar,                 ftg_get_bounds("longint0"))
       @assertEqual((/ -1, 4, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("longint1"))
       @assertEqual((/ -2, 2, -3, 6, 0, 0, 0, 0 /),    ftg_get_bounds("longint2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 9, 0, 0 /),   ftg_get_bounds("longint3"))
       @assertEqual((/ 7, 8, 23, 42, -4, -2, 0, 19 /), ftg_get_bounds("longint4"))
+      @assertEqual(exp_bounds_scalar,                 ftg_get_bounds("float0"))
       @assertEqual((/ -1, 5, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("float1"))
       @assertEqual((/ -2, 2, -3, 7, 0, 0, 0, 0 /),    ftg_get_bounds("float2"))
-      @assertEqual((/ -4, 4, -5, 5, -6, 10, 0, 0 /),   ftg_get_bounds("float3"))
+      @assertEqual((/ -4, 4, -5, 5, -6, 10, 0, 0 /),  ftg_get_bounds("float3"))
       @assertEqual((/ 7, 8, 23, 42, -4, -2, 0, 20 /), ftg_get_bounds("float4"))
+      @assertEqual(exp_bounds_scalar,                 ftg_get_bounds("double0"))
       @assertEqual((/ -1, 6, 0, 0, 0, 0, 0, 0 /),     ftg_get_bounds("double1"))
       @assertEqual((/ -2, 2, -3, 8, 0, 0, 0, 0 /),    ftg_get_bounds("double2"))
-      @assertEqual((/ -4, 4, -5, 5, -6, 11, 0, 0 /),   ftg_get_bounds("double3"))
+      @assertEqual((/ -4, 4, -5, 5, -6, 11, 0, 0 /),  ftg_get_bounds("double3"))
       @assertEqual((/ 7, 8, 23, 42, -4, -2, 0, 21 /), ftg_get_bounds("double4"))
-      @assertEqual((/ 0, 0, 0, 0, 0, 0, 0, 0 /), ftg_get_bounds("double4zeros"))
+      @assertEqual((/ 0, 0, 0, 0, 0, 0, 0, 0 /),      ftg_get_bounds("double4zeros"))
       CALL ftg_destroy_serializer()      
     
     END SUBROUTINE testBounds
@@ -645,5 +675,40 @@ CONTAINS
       CALL ftg_destroy_serializer()      
     
     END SUBROUTINE testAllocate
+    
+@Test
+    SUBROUTINE testRegisterOnly()  
+    
+    CHARACTER(len=*), PARAMETER :: base_name = 'testRegisterOnly'
+    
+    TYPE(testt) :: testfield_t0, testfield_t1(10), testfield_t2(10,10:20), testfield_t3(10,10:20,0:3), testfield_t4(10,10:20,0:3,-4:4)
+    
+    CALL ftg_set_serializer(dir, base_name, 'w')
+    CALL ftg_register_only("testfield_t0", testfield_t0, 'testt')
+    CALL ftg_register_only("testfield_t1", testfield_t1, 'testt', LBOUND(testfield_t1), UBOUND(testfield_t1))
+    CALL ftg_register_only("testfield_t2", testfield_t2, 'testt', LBOUND(testfield_t2), UBOUND(testfield_t2))
+    CALL ftg_register_only("testfield_t3", testfield_t3, 'testt', LBOUND(testfield_t3), UBOUND(testfield_t3))
+    CALL ftg_register_only("testfield_t4", testfield_t4, 'testt', LBOUND(testfield_t4), UBOUND(testfield_t4))
+    CALL ftg_destroy_serializer()
+    
+    CALL ftg_set_serializer(dir, base_name, 'r')
+    @assertTrue(ftg_field_exists("testfield_t0"))
+    @assertTrue(ftg_field_exists("testfield_t1"))
+    @assertTrue(ftg_field_exists("testfield_t2"))
+    @assertTrue(ftg_field_exists("testfield_t3"))
+    @assertTrue(ftg_field_exists("testfield_t4"))
+    @assertEqual(exp_size_scalar, fs_get_size(ftg_get_serializer(), "testfield_t0"))
+    @assertEqual(exp_size(SHAPE(testfield_t1)), fs_get_size(ftg_get_serializer(), "testfield_t1"))
+    @assertEqual(exp_size(SHAPE(testfield_t2)), fs_get_size(ftg_get_serializer(), "testfield_t2"))
+    @assertEqual(exp_size(SHAPE(testfield_t3)), fs_get_size(ftg_get_serializer(), "testfield_t3"))
+    @assertEqual(exp_size(SHAPE(testfield_t4)), fs_get_size(ftg_get_serializer(), "testfield_t4"))
+    @assertEqual(exp_bounds_scalar,                ftg_get_bounds("testfield_t0"))
+    @assertEqual((/ 1, 10, 0,   0, 0, 0,  0, 0 /), ftg_get_bounds("testfield_t1"))
+    @assertEqual((/ 1, 10, 10, 20, 0, 0,  0, 0 /), ftg_get_bounds("testfield_t2"))
+    @assertEqual((/ 1, 10, 10, 20, 0, 3,  0, 0 /), ftg_get_bounds("testfield_t3"))
+    @assertEqual((/ 1, 10, 10, 20, 0, 3, -4, 4 /), ftg_get_bounds("testfield_t4"))
+    CALL ftg_destroy_serializer()
+    
+    END SUBROUTINE testRegisterOnly    
     
 END MODULE ser_ftg_test
