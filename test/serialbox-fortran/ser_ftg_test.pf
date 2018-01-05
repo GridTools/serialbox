@@ -694,11 +694,11 @@ CONTAINS
     TYPE(testt), TARGET :: testfield_t0, testfield_t1(10), testfield_t2(10,10:20), testfield_t3(10,10:20,0:3), testfield_t4(10,10:20,0:3,-4:4)
     
     CALL ftg_set_serializer(dir, base_name, 'w')
-    CALL ftg_register_only("testfield_t0", 'testt', C_LOC(testfield_t0))
-    CALL ftg_register_only("testfield_t1", 'testt', C_LOC(testfield_t1), LBOUND(testfield_t1), UBOUND(testfield_t1))
-    CALL ftg_register_only("testfield_t2", 'testt', C_LOC(testfield_t2), LBOUND(testfield_t2), UBOUND(testfield_t2))
-    CALL ftg_register_only("testfield_t3", 'testt', C_LOC(testfield_t3), LBOUND(testfield_t3), UBOUND(testfield_t3))
-    CALL ftg_register_only("testfield_t4", 'testt', C_LOC(testfield_t4), LBOUND(testfield_t4), UBOUND(testfield_t4))
+    CALL ftg_register_only("testfield_t0", 'testt')
+    CALL ftg_register_only("testfield_t1", 'testt', LBOUND(testfield_t1), UBOUND(testfield_t1), C_LOC(testfield_t1))
+    CALL ftg_register_only("testfield_t2", 'testt', LBOUND(testfield_t2), UBOUND(testfield_t2), C_LOC(testfield_t2))
+    CALL ftg_register_only("testfield_t3", 'testt', LBOUND(testfield_t3), UBOUND(testfield_t3), C_LOC(testfield_t3))
+    CALL ftg_register_only("testfield_t4", 'testt', LBOUND(testfield_t4), UBOUND(testfield_t4), C_LOC(testfield_t4))
     CALL ftg_destroy_serializer()
     
     CALL ftg_set_serializer(dir, base_name, 'r')

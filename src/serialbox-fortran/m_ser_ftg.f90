@@ -383,11 +383,11 @@ END SUBROUTINE ftg_add_savepoint_metainfo_s
 !=============================================================================
 !=============================================================================
 
-SUBROUTINE ftg_register_only(fieldname, typename, cptr, lbounds, ubounds)
+SUBROUTINE ftg_register_only(fieldname, typename, lbounds, ubounds, cptr)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: typename
-  TYPE(C_PTR), INTENT(IN), OPTIONAL      :: cptr
   INTEGER, INTENT(IN), OPTIONAL          :: lbounds(:), ubounds(:)
+  TYPE(C_PTR), INTENT(IN), OPTIONAL      :: cptr
 
   LOGICAL       :: bullshit
   CHARACTER(16) :: loc
