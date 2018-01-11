@@ -40,7 +40,7 @@ inline std::uintmax_t remove_all(const filesystem::path& p) {
   std::error_code ec;
   bool result = serialbox::remove_all(p, ec);
   if(ec.value())
-    _GLIBCXX_THROW_OR_ABORT(filesystem::filesystem_error("cannot remove all", p, ec));
+    throw filesystem::filesystem_error("cannot remove all", p, ec);
   return result;
 }
 }
