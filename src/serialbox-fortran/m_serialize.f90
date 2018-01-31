@@ -887,8 +887,7 @@ FUNCTION fs_get_size(serializer, fieldname)
   INTEGER(KIND=C_INT) :: isize, jsize, ksize, lsize
 
   IF (fs_field_exists(serializer, fieldname)) THEN
-    CALL fs_get_field_dimensions_(serializer%serializer_ptr, TRIM(fieldname), &
-                                  isize, jsize, ksize, lsize)
+    CALL fs_get_field_dimensions_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, isize, jsize, ksize, lsize)
     fs_get_size = (/ isize, jsize, ksize, lsize /)
   ELSE
     WRITE(*,*) "Serialbox: ERROR: field ", fieldname, " does not exist in the serializer"
@@ -924,7 +923,7 @@ FUNCTION fs_get_halos(serializer, fieldname)
   INTEGER(KIND=C_INT) :: iminushalo, iplushalo, jminushalo, jplushalo, kminushalo, kplushalo, lminushalo, lplushalo
 
   IF (fs_field_exists(serializer, fieldname)) THEN
-    CALL fs_get_halos_(serializer%serializer_ptr, TRIM(fieldname), &
+    CALL fs_get_halos_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, &
                        iminushalo, iplushalo, jminushalo, jplushalo, kminushalo, kplushalo, lminushalo, lplushalo)
     fs_get_halos = (/ iminushalo, iplushalo, jminushalo, jplushalo, kminushalo, kplushalo, lminushalo, lplushalo /)
   ELSE
