@@ -644,6 +644,13 @@ CONTAINS
       @assertEqual(exp_size_scalar, fs_get_size(serializer, "012"))
       @assertEqual(exp_size_scalar, fs_get_size(serializer, "01"))
       @assertEqual(exp_size_scalar, fs_get_size(serializer, "0"))
+      
+      @assertEqual(exp_halos_scalar, fs_get_halos(serializer, "012345"))
+      @assertEqual(exp_halos_scalar, fs_get_halos(serializer, "01234"))
+      @assertEqual(exp_halos_scalar, fs_get_halos(serializer, "0123"))
+      @assertEqual(exp_halos_scalar, fs_get_halos(serializer, "012"))
+      @assertEqual(exp_halos_scalar, fs_get_halos(serializer, "01"))
+      @assertEqual(exp_halos_scalar, fs_get_halos(serializer, "0"))
     
     END SUBROUTINE testShortname    
 
