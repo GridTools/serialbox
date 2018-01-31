@@ -235,3 +235,26 @@ TEST_F(CFortranWrapperTest, Savepoint) {
   serialboxMetainfoDestroy(metaInfo);
   serialboxSavepointDestroy(savepoint);
 }
+
+TEST_F(CFortranWrapperTest, ShortFieldName) {
+  serialboxSerializer_t* serializer =
+      serialboxSerializerCreate(Write, directory->path().c_str(), "Shortname", "Binary");
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  //
+  // Register field
+  //
+  serialboxFortranSerializerRegisterField(serializer, "i0", Float64, 8, 30, 40, 50, 60, 1, 1, 23,
+                                          42, 0, 0, -2, 2);
+
+  // Dimensions
+  int iSize, jSize, kSize, lSize;
+  serialboxFortranSerializerGetFieldDimensions(serializer, "i0", &iSize, &jSize, &kSize, &lSize);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(iSize, 30);
+  EXPECT_EQ(jSize, 40);
+  EXPECT_EQ(kSize, 50);
+  EXPECT_EQ(lSize, 60);
+
+  serialboxSerializerDestroy(serializer);
+}
