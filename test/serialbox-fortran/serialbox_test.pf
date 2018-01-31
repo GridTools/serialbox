@@ -610,5 +610,41 @@ CONTAINS
       CALL fs_destroy_serializer(serializer)      
     
     END SUBROUTINE testHalos
+    
+@Test
+    SUBROUTINE testShortname()
+    
+      TYPE(t_serializer) :: serializer
+      INTEGER :: w_testfield_i0, r_testfield_i0
+      
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_shortname'
+      
+      w_testfield_i0 = 42
+            
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL fs_write_field(serializer, savepoint, "012345", w_testfield_i0)
+      CALL fs_write_field(serializer, savepoint, "01234", w_testfield_i0)
+      CALL fs_write_field(serializer, savepoint, "0123", w_testfield_i0)
+      CALL fs_write_field(serializer, savepoint, "012", w_testfield_i0)
+      CALL fs_write_field(serializer, savepoint, "01", w_testfield_i0)
+      CALL fs_write_field(serializer, savepoint, "0", w_testfield_i0)
+      CALL fs_destroy_serializer(serializer)
+      
+      CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      @assertTrue(fs_field_exists(serializer, "012345"))
+      @assertTrue(fs_field_exists(serializer, "01234"))
+      @assertTrue(fs_field_exists(serializer, "0123"))
+      @assertTrue(fs_field_exists(serializer, "012"))
+      @assertTrue(fs_field_exists(serializer, "01"))
+      @assertTrue(fs_field_exists(serializer, "0"))
+      
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "012345"))
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "01234"))
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "0123"))
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "012"))
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "01"))
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "0"))
+    
+    END SUBROUTINE testShortname    
 
 END MODULE serialbox_test
