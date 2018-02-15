@@ -455,7 +455,7 @@ SUBROUTINE ftg_register_only(fieldname, typename, lbounds, ubounds, cptr)
       CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'type', TRIM(typename))
     END IF
     IF (PRESENT(cptr)) THEN
-      CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(cptr)))
+      CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_loc_hex(cptr)))
     END IF
     serializer_has_registered = .TRUE.
   END IF
@@ -465,14 +465,32 @@ END SUBROUTINE ftg_register_only
 !=============================================================================
 !=============================================================================
 
-FUNCTION ftg_cptr2char(cptr)
+FUNCTION ftg_loc(field)
 
-  TYPE(C_PTR), INTENT(in) :: cptr
-  CHARACTER(16) :: ftg_cptr2char
+  TYPE(C_PTR), INTENT(in) :: field
+  INTEGER(KIND=C_INTPTR_T) :: ftg_loc
 
-  WRITE (ftg_cptr2char,'(Z16)') cptr
+  INTERFACE
+     SUBROUTINE ftg_loc_(field, loc) &
+          BIND(c, name='serialboxFortranLoc')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE :: field
+       INTEGER(C_INTPTR_T), INTENT(OUT)   :: loc
+     END SUBROUTINE ftg_loc_
+  END INTERFACE
 
-END FUNCTION ftg_cptr2char
+  CALL ftg_loc_(field, ftg_loc)
+
+END FUNCTION ftg_loc
+
+FUNCTION ftg_loc_hex(field)
+
+  TYPE(C_PTR), INTENT(in) :: field
+  CHARACTER(16) :: ftg_loc_hex
+
+  WRITE (ftg_loc_hex,'(Z16)') ftg_loc(field)
+
+END FUNCTION ftg_loc_hex
 
 !=============================================================================
 !=============================================================================
@@ -493,7 +511,7 @@ SUBROUTINE ftg_write_logical_0d(fieldname, field)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -518,7 +536,7 @@ SUBROUTINE ftg_write_logical_1d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -545,7 +563,7 @@ SUBROUTINE ftg_write_logical_2d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -574,7 +592,7 @@ SUBROUTINE ftg_write_logical_3d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -603,7 +621,7 @@ SUBROUTINE ftg_write_logical_4d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -627,7 +645,7 @@ SUBROUTINE ftg_write_bool_0d(fieldname, field)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -652,7 +670,7 @@ SUBROUTINE ftg_write_bool_1d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -679,7 +697,7 @@ SUBROUTINE ftg_write_bool_2d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -707,7 +725,7 @@ SUBROUTINE ftg_write_bool_3d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -736,7 +754,7 @@ SUBROUTINE ftg_write_bool_4d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -760,7 +778,7 @@ SUBROUTINE ftg_write_int_0d(fieldname, field)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -785,7 +803,7 @@ SUBROUTINE ftg_write_int_1d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -812,7 +830,7 @@ SUBROUTINE ftg_write_int_2d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -840,7 +858,7 @@ SUBROUTINE ftg_write_int_3d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -869,7 +887,7 @@ SUBROUTINE ftg_write_int_4d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -893,7 +911,7 @@ SUBROUTINE ftg_write_long_0d(fieldname, field)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -918,7 +936,7 @@ SUBROUTINE ftg_write_long_1d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -945,7 +963,7 @@ SUBROUTINE ftg_write_long_2d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -973,7 +991,7 @@ SUBROUTINE ftg_write_long_3d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -1002,7 +1020,7 @@ SUBROUTINE ftg_write_long_4d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -1026,7 +1044,7 @@ SUBROUTINE ftg_write_float_0d(fieldname, field)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -1051,7 +1069,7 @@ SUBROUTINE ftg_write_float_1d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -1078,7 +1096,7 @@ SUBROUTINE ftg_write_float_2d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -1106,7 +1124,7 @@ SUBROUTINE ftg_write_float_3d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -1135,7 +1153,7 @@ SUBROUTINE ftg_write_float_4d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -1159,7 +1177,7 @@ SUBROUTINE ftg_write_double_0d(fieldname, field)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -1184,7 +1202,7 @@ SUBROUTINE ftg_write_double_1d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -1211,7 +1229,7 @@ SUBROUTINE ftg_write_double_2d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -1239,7 +1257,7 @@ SUBROUTINE ftg_write_double_3d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 
@@ -1268,7 +1286,7 @@ SUBROUTINE ftg_write_double_4d(fieldname, field, lbounds, ubounds)
 
   IF (.NOT. bullshit) THEN
     CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field, lbounds, ubounds)
-    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ftg_cptr2char(C_LOC(field))))
+    CALL fs_add_field_metainfo(serializer, TRIM(fieldname), 'loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
     serializer_has_written = .TRUE.
   END IF
 

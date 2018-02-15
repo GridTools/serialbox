@@ -167,6 +167,11 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
   }
 }
 
+void serialboxFortranLoc(const void* basePtr, intptr_t* loc)
+{
+	*loc = (long) basePtr;
+}
+
 void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const char* name,
                                                   int* isize, int* jsize, int* ksize, int* lsize) {
 

@@ -258,3 +258,27 @@ TEST_F(CFortranWrapperTest, ShortFieldName) {
 
   serialboxSerializerDestroy(serializer);
 }
+
+TEST_F(CFortranWrapperTest, Loc) {
+
+  int test1 = 42, test2 = 109;
+  int *ptr1a = &test1, *ptr1b = &test1, *ptr2 = &test2;
+  intptr_t loct1, locp1a, locp1b, loct2, locp2;
+
+  serialboxFortranLoc(&test1, &loct1);
+  serialboxFortranLoc(ptr1a, &locp1a);
+  serialboxFortranLoc(ptr1b, &locp1b);
+  serialboxFortranLoc(&test2, &loct2);
+  serialboxFortranLoc(ptr2, &locp2);
+
+  ASSERT_GT(loct1, 0);
+  ASSERT_GT(locp1a, 0);
+  ASSERT_GT(locp1b, 0);
+  ASSERT_GT(loct2, 0);
+  ASSERT_GT(locp2, 0);
+
+  ASSERT_EQ(loct1, locp1a);
+  ASSERT_EQ(loct1, locp1b);
+  ASSERT_EQ(loct2, locp2);
+  ASSERT_NE(loct1, loct2);
+}
