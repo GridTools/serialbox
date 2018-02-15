@@ -1,4 +1,36 @@
+!------------------------------------------------------------*- Fortran -*-----
+!
+!                              S E R I A L B O X
+!
+! This file is distributed under terms of BSD license.
+! See LICENSE.txt for more information.
+!
+!------------------------------------------------------------------------------
+!
+!+ This module contains the FortranTestGenerator (FTG) frontend of Serialbox2.
+!+ For FTG see https://github.com/fortesg/fortrantestgenerator
+!
+!------------------------------------------------------------------------------
+
 MODULE m_ser_ftg
+
+!------------------------------------------------------------------------------
+!
+! Description:
+!
+!   This module contains simplified wrapper subroutines for the Fortran interface
+!   of Serialbox2 (m_serialize.f90) to be used by the FortranTestGenerator
+!   (https://github.com/fortesg/fortrantestgenerator), plus additional subroutines
+!   for allocating array variables based on the stored sizes and bounds.
+!
+! Current Code Owner: Christian Hovy, Universitaet Hamburg
+!  email:  hovy@informatik.uni-hamburg.de
+!
+! Code Description:
+! Language: Fortran 90.
+! Software Standards: "European Standards for Writing and
+! Documenting Exchangeable Fortran 90 Code".
+!============================================================================
 
 USE iso_c_binding
 USE m_serialize
