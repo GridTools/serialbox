@@ -51,6 +51,7 @@ option(SERIALBOX_BUILD_SHARED "Build shared libraries" ON)
 option(SERIALBOX_ENABLE_C "Build C Interface" ON)
 option(SERIALBOX_ENABLE_PYTHON "Build Python Interface" ${SERIALBOX_ENABLE_C})
 option(SERIALBOX_ENABLE_FORTRAN "Build Fortran Interface" OFF)
+option(SERIALBOX_ENABLE_FTG "Build FortranTestGenerator frontend" OFF)
 option(SERIALBOX_ENABLE_SDB "Install the stencil-debugger (sdb)" ON)
 
 option(SERIALBOX_LOGGING "Enable logging" ON)

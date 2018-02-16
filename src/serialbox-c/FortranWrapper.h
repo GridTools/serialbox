@@ -15,6 +15,8 @@
 #ifndef SERIALBOX_C_FORTRANWRAPPER_H
 #define SERIALBOX_C_FORTRANWRAPPER_H
 
+#include <stdint.h>
+
 /**
  * \ingroup serialboxC
  * @{
@@ -63,6 +65,11 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
                                     const void* iplus1, const void* jplus1, const void* kplus1,
                                     const void* lplus1, int* istride, int* jstride, int* kstride,
                                     int* lstride);
+
+/**
+ * \brief Returns a numerical representation of a field's current address in memory
+ */
+void serialboxFortranLoc(const void* basePtr, intptr_t* loc);
 
 /**
  * \brief Returns the dimensions of the field `name`

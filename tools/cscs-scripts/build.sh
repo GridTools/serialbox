@@ -225,6 +225,7 @@ cmake                                                                          \
  -DSERIALBOX_TESTING_FORTRAN:BOOL=${SERIALBOX_TESTING_FORTRAN}                 \
  -DSERIALBOX_USE_NETCDF:BOOL=${SERIALBOX_USE_NETCDF}                           \
  -DSERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM:BOOL=ON                            \
+ -DSERIALBOX_ENABLE_FTG:BOOL=ON                                                \
  ../
 
 # Run make
