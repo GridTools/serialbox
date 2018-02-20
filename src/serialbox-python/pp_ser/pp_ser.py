@@ -286,7 +286,7 @@ class PpSer:
         else:
             if_pos = len(args)
 
-        l += tab + 'call ' + self.methods['init'] + '( &\n' + ' '*11 + (', &\n' + ' '*11).join(args[1:if_pos]) + ')\n'
+        l += self.__function_wrap([tab + 'call ' + self.methods['init']] + args[1:if_pos])
         if if_statement:
             l += 'ENDIF\n'
         self.__calls.add(self.methods['init'])
@@ -327,9 +327,9 @@ class PpSer:
             l += 'IF (' + if_statement + ') THEN\n'
             tab = '  '
         for k, v in zip(keys, values):
-            l += tab + 'CALL ' + self.methods['serinfo'] + '(ppser_serializer, "' + k + '", ' + v + ')\n'
+            l += self.__function_wrap([tab + 'CALL ' + self.methods['serinfo'], 'ppser_serializer', '"' + k + '"', v])
         for d in dirs:
-            l += tab + 'CALL ' + self.methods['serinfo'] + '(ppser_serializer, "' + d + '", ' + d + ')\n'
+            l += self.__function_wrap([tab + 'CALL ' + self.methods['serinfo'], 'ppser_serializer', '"' + d + '"', d])
         if if_statement:
             l += 'ENDIF\n'
         self.__line = l
@@ -378,7 +378,7 @@ class PpSer:
 
         # registration
         self.__calls.add(self.methods['register'])
-        l += tab + 'call ' + self.methods['register'] + '(ppser_serializer, ' + ', '.join(dirs) + ')\n'
+        l += self.__function_wrap([tab + 'call ' + self.methods['register'], + 'ppser_serializer', dirs])
 
         # metainfo
         if len(keys) > 0:
@@ -432,9 +432,9 @@ class PpSer:
             tab = '  '
         self.__calls.add(self.methods['savepoint'])
         self.__calls.add(self.methods['spinfo'])
-        l += tab + 'call ' + self.methods['savepoint'] + '(\'' + name + '\', ppser_savepoint)\n'
+        l += self.__function_wrap([tab + 'call ' + self.methods['savepoint'], '\'' + name + '\'', 'ppser_savepoint'])
         for k, v in zip(keys, values):
-            l += tab + 'call ' + self.methods['spinfo'] + '(ppser_savepoint, \'' + k + '\', ' + v + ')\n'
+            l += self.__function_wrap([tab + 'call ' + self.methods['spinfo'], 'ppser_savepoint', '\'' + k + '\'', v])
         if if_statement:
             l += 'ENDIF\n'
         self.__line = l
@@ -487,15 +487,15 @@ class PpSer:
                     l += ', IF (' + self.acc_if + ') \n'
                 else:
                     l += '\n'
-            l += tab + '    ' + 'call ' + self.methods['datawrite'] + \
-                '(ppser_serializer, ppser_savepoint, \'' + k + '\', ' + v + ')\n'
+            l += self.__function_wrap([tab + '    ' + 'call ' + self.methods['datawrite'], \
+                'ppser_serializer', 'ppser_savepoint', '\'' + k + '\'', v])
         l += tab + '  ' + 'CASE(' + str(self.modes['read']) + ')\n'
         for k, v in zip(keys, values):
             # If the field does not contains any compute sign, the read call is
             # generated
             if not any(ext in v for ext in self.__computed_fields_sign):
-                l += tab + '    ' + 'call ' + self.methods['dataread'] + '(ppser_serializer_ref, ppser_savepoint, \'' \
-                     + k + '\', ' + v + ')\n'
+                l += self.__function_wrap([tab + '    ' + 'call ' + self.methods['dataread'] ,'ppser_serializer_ref', 'ppser_savepoint', \
+                    '\'' + k + '\'', v])
                 if isacc:  # Generate acc upadte directives only for accdata clause
                     l += tab + '    ' + 'ACC_PREFIX UPDATE DEVICE ( ' + v + ' )'
                     # Generate IF clause if needed
@@ -508,8 +508,8 @@ class PpSer:
             # If the field does not contains any compute sign, the read call is
             # generated
             if not any(ext in v for ext in self.__computed_fields_sign):
-                l += tab + '    ' + 'call ' + self.methods['datareadperturb'] + \
-                     '(ppser_serializer_ref, ppser_savepoint, \'' + k + '\', ' + v + ', ppser_zrperturb)\n'
+                l += self.__function_wrap([tab + '    ' + 'call ' + self.methods['datareadperturb'], \
+                     'ppser_serializer_ref', 'ppser_savepoint', '\'' + k + '\'', v , 'ppser_zrperturb'])
                 if isacc:  # Generate acc upadte directives only for accdata clause
                     l += tab + '    ' + 'ACC_PREFIX UPDATE DEVICE ( ' + v + ' )'
                     # Generate IF clause if needed
@@ -768,6 +768,23 @@ class PpSer:
                 self.__line += '#endif\n'
             self.__line += '\n'
 
+    def __function_wrap(self, l):
+        """
+        Line wrap fortran function code after comma
+        """
+
+        def just(s, indent, length):
+            return (' '*indent + s).ljust(length, ' ')
+
+        max_length = 80
+        indent = len(l[0]) + 1
+        wrapped = just(l[0] + '(', 0, max_length) + '&' + '\n'
+        for p in l[1:-1]:
+            wrapped += just(p + ',', indent, max_length) + '&' + '\n'
+        wrapped += just(l[-1] + ')', indent, 0) + '\n'
+
+        return wrapped
+
     # evaluate one line
     def lexer(self, final=False):
 
@@ -899,27 +916,27 @@ implicit none
 !$SER VERBATIM   CASE (ireals8) ; fs_realtype = 'double'
 !$SER VERBATIM END SELECT
 
-!$SER REG u fs_realtype IJK
-!$SER REGISTER u          fs_realtype ie je ke  1 nboundlines nboundlines nboundlines nboundlines 0 0 0 0
-!$SER REG w fs_realtype IJK1
-!$SER REGISTER w          fs_realtype ie je ke1 1 nboundlines nboundlines nboundlines nboundlines 0 1 0 0
-!$SER REG cpollen2_s fs_realtype IJ
-!$SER REGISTER cpollen2_s fs_realtype ie je 1   1 nboundlines nboundlines nboundlines nboundlines 0 0 0 0
-!$SER REGISTER dts fs_realtype
-!$SER REGISTER nlastbound 'integer' 1
-!$SER REG wgtfacq fs_realtype IJ3
-!$SER REGISTER wgtfacq fs_realtype ie je 3 1 nboundlines nboundlines nboundlines nboundlines 0 0 0 0
-!$SER REG vcoord fs_realtype K1
-!$SER REGISTER vcoord fs_realtype KSize=ke1 KPlusHalo=1
-!$SER REG crlat fs_realtype J2
-!$SER REGISTER crlat fs_realtype JSize=je JMinusHalo=nboundlines JPlusHalo=nboundlines KSize=2
-!$SER REG tgrlat J
-!$SER REGISTER tgrlat fs_realtype JSize=je JMinusHalo=nboundlines JPlusHalo=nboundlines
-!$SER REG a1t fs_realtype K1
-!$SER REGISTER a1t fs_realtype KSize=ke1 KPlusHalo=1
-!$SER REG lwest_lbdz 'integer' IJ
-!$SER REGISTER lwest_lbdz 'integer' ie je 1 1 nboundlines nboundlines nboundlines nboundlines 0 0 0 0
-!$SER DATA lwest_lbdz=merge(1,0,lwest_lbdz)
+!SER REG u fs_realtype IJK
+!SER REGISTER u          fs_realtype ie je ke  1 nboundlines nboundlines nboundlines nboundlines 0 0 0 0
+!SER REG w fs_realtype IJK1
+!SER REGISTER w          fs_realtype ie je ke1 1 nboundlines nboundlines nboundlines nboundlines 0 1 0 0
+!SER REG cpollen2_s fs_realtype IJ
+!SER REGISTER cpollen2_s fs_realtype ie je 1   1 nboundlines nboundlines nboundlines nboundlines 0 0 0 0
+!SER REGISTER dts fs_realtype
+!SER REGISTER nlastbound 'integer' 1
+!SER REG wgtfacq fs_realtype IJ3
+!SER REGISTER wgtfacq fs_realtype ie je 3 1 nboundlines nboundlines nboundlines nboundlines 0 0 0 0
+!SER REG vcoord fs_realtype K1
+!SER REGISTER vcoord fs_realtype KSize=ke1 KPlusHalo=1
+!SER REG crlat fs_realtype J2
+!SER REGISTER crlat fs_realtype JSize=je JMinusHalo=nboundlines JPlusHalo=nboundlines KSize=2
+!SER REG tgrlat J
+!SER REGISTER tgrlat fs_realtype JSize=je JMinusHalo=nboundlines JPlusHalo=nboundlines
+!SER REG a1t fs_realtype K1
+!SER REGISTER a1t fs_realtype KSize=ke1 KPlusHalo=1
+!SER REG lwest_lbdz 'integer' IJ
+!SER REGISTER lwest_lbdz 'integer' ie je 1 1 nboundlines nboundlines nboundlines nboundlines 0 0 0 0
+!SER DATA lwest_lbdz=merge(1,0,lwest_lbdz)
 
 !$SER VERBATIM ! recalculate bottom boundary condition for serialization
 !$SER VERBATIM CALL w_bbc_var(zuhl(:,:,ke1), zvhl(:,:,ke1), zphl(:,:,:), zfx, zfyd)
