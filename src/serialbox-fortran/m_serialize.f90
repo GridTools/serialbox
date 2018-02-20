@@ -254,6 +254,16 @@ PRIVATE
   !------------------------------------------------------------------------------
   INTERFACE fs_read_and_perturb_field
     MODULE PROCEDURE &
+      fs_read_and_perturb_logical_0d, &
+      fs_read_and_perturb_logical_1d, &
+      fs_read_and_perturb_logical_2d, &
+      fs_read_and_perturb_logical_3d, &
+      fs_read_and_perturb_logical_4d, &
+      fs_read_and_perturb_bool_0d,   &
+      fs_read_and_perturb_bool_1d,   &
+      fs_read_and_perturb_bool_2d,   &
+      fs_read_and_perturb_bool_3d,   &
+      fs_read_and_perturb_bool_4d,   &
       fs_read_and_perturb_int_0d,    &
       fs_read_and_perturb_int_1d,    &
       fs_read_and_perturb_int_2d,    &
@@ -2628,6 +2638,125 @@ SUBROUTINE fs_read_double_4d(serializer, savepoint, fieldname, field)
                        TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
 END SUBROUTINE fs_read_double_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE fs_read_and_perturb_logical_0d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing logical doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET             :: field
+  REAL, INTENT(IN)                         :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_logical_0d
+
+SUBROUTINE fs_read_and_perturb_logical_1d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing logical doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET             :: field(:)
+  REAL, INTENT(IN)                         :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_logical_1d
+
+SUBROUTINE fs_read_and_perturb_logical_2d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing logical doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET             :: field(:,:)
+  REAL, INTENT(IN)                         :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_logical_2d
+
+SUBROUTINE fs_read_and_perturb_logical_3d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing logical doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET             :: field(:,:,:)
+  REAL, INTENT(IN)                         :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_logical_3d
+
+SUBROUTINE fs_read_and_perturb_logical_4d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing logical doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET             :: field(:,:,:,:)
+  REAL, INTENT(IN)                         :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_logical_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE fs_read_and_perturb_bool_0d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing bool doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)            :: serializer
+  TYPE(t_savepoint) , INTENT(IN)            :: savepoint
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN)                          :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_bool_0d
+
+SUBROUTINE fs_read_and_perturb_bool_1d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing bool doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)            :: serializer
+  TYPE(t_savepoint) , INTENT(IN)            :: savepoint
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:)
+  REAL, INTENT(IN)                          :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_bool_1d
+
+SUBROUTINE fs_read_and_perturb_bool_2d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing bool doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)            :: serializer
+  TYPE(t_savepoint) , INTENT(IN)            :: savepoint
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:)
+  REAL, INTENT(IN)                          :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_bool_2d
+
+SUBROUTINE fs_read_and_perturb_bool_3d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing bool doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)            :: serializer
+  TYPE(t_savepoint) , INTENT(IN)            :: savepoint
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:,:)
+  REAL, INTENT(IN)                          :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_bool_3d
+
+SUBROUTINE fs_read_and_perturb_bool_4d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing bool doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)            :: serializer
+  TYPE(t_savepoint) , INTENT(IN)            :: savepoint
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN)                          :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_bool_4d
+
+!=============================================================================
+!=============================================================================
 
 SUBROUTINE fs_read_and_perturb_int_0d(serializer, savepoint, fieldname, field, rperturb)
   ! Dummy call as perturbing int doesn't make sense (at least right now)
