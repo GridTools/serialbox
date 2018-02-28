@@ -687,5 +687,38 @@ CONTAINS
     
     END SUBROUTINE testRank
     
+@Test
+    SUBROUTINE testTotalSize()
+    
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_rank'
+    
+      TYPE(t_serializer) :: serializer
+    
+      INTEGER              :: integer0, integer1(42), integer2(6,7), integer3(6,1,7), integer4(1,2,3,4) 
+    
+      integer0          = 42
+      integer1(:)       = 42
+      integer2(:,:)     = 42
+      integer3(:,:,:)   = 42
+      integer4(:,:,:,:) = 42
+
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL fs_write_field(serializer, savepoint, "integer0", integer0)
+      CALL fs_write_field(serializer, savepoint, "integer1", integer1)
+      CALL fs_write_field(serializer, savepoint, "integer2", integer2)
+      CALL fs_write_field(serializer, savepoint, "integer3", integer3)
+      CALL fs_write_field(serializer, savepoint, "integer4", integer4)
+      CALL fs_destroy_serializer(serializer)      
+      
+      CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      @assertEqual(1, fs_get_total_size(serializer, "integer0"))
+      @assertEqual(42, fs_get_total_size(serializer, "integer1"))
+      @assertEqual(42, fs_get_total_size(serializer, "integer2"))
+      @assertEqual(42, fs_get_total_size(serializer, "integer3"))
+      @assertEqual(24, fs_get_total_size(serializer, "integer4"))
+      CALL fs_destroy_serializer(serializer)      
+    
+    END SUBROUTINE testTotalSize
+    
 
 END MODULE serialbox_test

@@ -44,7 +44,7 @@ PUBLIC :: &
   fs_create_savepoint, fs_destroy_savepoint, fs_add_savepoint_metainfo, &
   fs_field_exists, fs_register_field, fs_add_field_metainfo, fs_write_field, fs_read_field, &
   fs_enable_serialization, fs_disable_serialization, fs_print_debuginfo, fs_read_and_perturb_field, &
-  fs_get_size, fs_get_halos, fs_get_rank
+  fs_get_size, fs_get_halos, fs_get_rank, fs_get_total_size
 
   INTEGER, PARAMETER :: MODE_READ = 0
   INTEGER, PARAMETER :: MODE_WRITE = 1
@@ -875,7 +875,7 @@ END SUBROUTINE fs_check_size
 
 !==============================================================================
 !+ Module function that returns the rank of the requested field
-!  For scalars the result is 0.
+!  For both, scalars and 1-dimensional arrays, the result is 1.
 !------------------------------------------------------------------------------
 FUNCTION fs_get_rank(serializer, fieldname)
   TYPE(t_serializer) :: serializer
@@ -933,6 +933,26 @@ FUNCTION fs_get_size(serializer, fieldname)
   END IF
 
 END FUNCTION fs_get_size
+
+!==============================================================================
+!+ Module function that returns the total size of the requested field,
+!  that is the product of the sizes of the individual dimensions
+!  For scalars the result is 1.
+!------------------------------------------------------------------------------
+FUNCTION fs_get_total_size(serializer, fieldname)
+  TYPE(t_serializer)    :: serializer
+  CHARACTER(LEN=*)      :: fieldname
+  INTEGER :: fs_get_total_size
+
+  INTEGER :: d, sizes(4)
+
+  sizes = fs_get_size(serializer, fieldname)
+  fs_get_total_size = 1
+  DO d =  1, fs_get_rank(serializer, fieldname)
+      fs_get_total_size = fs_get_total_size * sizes(d)
+  END DO
+
+END FUNCTION fs_get_total_size
 
 
 !==============================================================================
