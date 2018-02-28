@@ -72,6 +72,12 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
 void serialboxFortranLoc(const void* basePtr, intptr_t* loc);
 
 /**
+ * \brief Returns the rank of the field `name`
+ * The result is 1 for both, scalars and 1-dimensional arrays
+ */
+void serialboxFortranSerializerGetFieldRank(const void* serializer, const char* name, int* rank);
+
+/**
  * \brief Returns the dimensions of the field `name`
  */
 void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const char* name,

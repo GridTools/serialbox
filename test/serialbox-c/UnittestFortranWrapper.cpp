@@ -132,6 +132,12 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_EQ(numDimension, 4);
 
+  // Rank
+  int rank;
+  serialboxFortranSerializerGetFieldRank(serializer, "field", &rank);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(rank, 4);
+
   // Dimensions
   int iSize, jSize, kSize, lSize;
   serialboxFortranSerializerGetFieldDimensions(serializer, "field", &iSize, &jSize, &kSize, &lSize);
@@ -246,6 +252,7 @@ TEST_F(CFortranWrapperTest, ShortFieldName) {
   //
   serialboxFortranSerializerRegisterField(serializer, "i0", Float64, 8, 30, 40, 50, 60, 1, 1, 23,
                                           42, 0, 0, -2, 2);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   // Dimensions
   int iSize, jSize, kSize, lSize;
@@ -281,4 +288,39 @@ TEST_F(CFortranWrapperTest, Loc) {
   ASSERT_EQ(loct1, locp1b);
   ASSERT_EQ(loct2, locp2);
   ASSERT_NE(loct1, loct2);
+}
+
+TEST_F(CFortranWrapperTest, Rank) {
+
+	serialboxSerializer_t* serializer =
+	      serialboxSerializerCreate(Write, directory->path().c_str(), "Rank", "Binary");
+	  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+	serialboxFortranSerializerRegisterField(serializer, "int0", Int32, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	serialboxFortranSerializerRegisterField(serializer, "int1", Int32, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	serialboxFortranSerializerRegisterField(serializer, "int2", Int32, 4, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	serialboxFortranSerializerRegisterField(serializer, "int3", Int32, 4, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	serialboxFortranSerializerRegisterField(serializer, "int4", Int32, 4, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+	int rank;
+	serialboxFortranSerializerGetFieldRank(serializer, "int0", &rank);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	EXPECT_EQ(rank, 1);
+	serialboxFortranSerializerGetFieldRank(serializer, "int1", &rank);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	EXPECT_EQ(rank, 1);
+	serialboxFortranSerializerGetFieldRank(serializer, "int2", &rank);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	EXPECT_EQ(rank, 2);
+	serialboxFortranSerializerGetFieldRank(serializer, "int3", &rank);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	EXPECT_EQ(rank, 3);
+	serialboxFortranSerializerGetFieldRank(serializer, "int4", &rank);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	EXPECT_EQ(rank, 4);
 }
