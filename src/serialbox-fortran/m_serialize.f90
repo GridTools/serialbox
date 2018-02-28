@@ -44,7 +44,7 @@ PUBLIC :: &
   fs_create_savepoint, fs_destroy_savepoint, fs_add_savepoint_metainfo, &
   fs_field_exists, fs_register_field, fs_add_field_metainfo, fs_write_field, fs_read_field, &
   fs_enable_serialization, fs_disable_serialization, fs_print_debuginfo, fs_read_and_perturb_field, &
-  fs_get_size, fs_get_halos
+  fs_get_size, fs_get_halos, fs_get_rank
 
   INTEGER, PARAMETER :: MODE_READ = 0
   INTEGER, PARAMETER :: MODE_WRITE = 1
@@ -872,6 +872,34 @@ SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, is
   END IF
 
 END SUBROUTINE fs_check_size
+
+!==============================================================================
+!+ Module function that returns the rank of the requested field
+!  For scalars the result is 0.
+!------------------------------------------------------------------------------
+FUNCTION fs_get_rank(serializer, fieldname)
+  TYPE(t_serializer) :: serializer
+  CHARACTER(LEN=*)   :: fieldname
+  INTEGER            :: fs_get_rank
+
+  INTERFACE
+    SUBROUTINE fs_get_rank_(serializer, name, rank) &
+        BIND(c, name='serialboxFortranSerializerGetFieldRank')
+     USE, INTRINSIC :: iso_c_binding
+     TYPE(C_PTR), VALUE                    :: serializer
+     CHARACTER(KIND=C_CHAR), DIMENSION(*)  :: name
+     INTEGER(C_INT), INTENT(OUT)           :: rank
+    END SUBROUTINE fs_get_rank_
+  END INTERFACE
+
+  IF (fs_field_exists(serializer, fieldname)) THEN
+    CALL fs_get_rank_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, fs_get_rank)
+  ELSE
+    WRITE(*,*) "Serialbox: ERROR: field ", fieldname, " does not exist in the serializer"
+    STOP
+  END IF
+
+END FUNCTION fs_get_rank
 
 !==============================================================================
 !+ Module function that returns the size of the requested field
