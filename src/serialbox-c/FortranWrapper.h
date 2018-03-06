@@ -119,11 +119,11 @@ void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* k
  * \param value       Destination object for the value of the existing element
  * @{
  */
-void serialboxFortranSerializerGetMetainfoBoolean(void* serializer, const char* key, int* value);
-void serialboxFortranSerializerGetMetainfoInt32(void* serializer, const char* key, int* value);
-void serialboxFortranSerializerGetMetainfoFloat32(void* serializer, const char* key, float* value);
-void serialboxFortranSerializerGetMetainfoFloat64(void* serializer, const char* key, double* value);
-//void serialboxFortranSerializerGetMetainfoString(void* serializer, const char* key,
+void serialboxFortranSerializerGetMetainfoBoolean(const void* serializer, const char* key, int* value);
+void serialboxFortranSerializerGetMetainfoInt32(const void* serializer, const char* key, int* value);
+void serialboxFortranSerializerGetMetainfoFloat32(const void* serializer, const char* key, float* value);
+void serialboxFortranSerializerGetMetainfoFloat64(const void* serializer, const char* key, double* value);
+//void serialboxFortranSerializerGetMetainfoString(const void* serializer, const char* key,
 //                                                 const char** value);
 /** @} */
 
@@ -182,6 +182,29 @@ void serialboxFortranSerializerAddFieldMetainfoString(void* serializer, const ch
                                                       const char* key, const char* value);
 /** @} */
 
+/**
+ * \brief Get a meta-information `key=value` pair from `field` of the serializer
+ *
+ * This function corresponds to `fs_get_field_metainfo_X`
+ *
+ * \param serializer  Serializer to use
+ * \param field       Name of the field
+ * \param key         Key of the new element
+ * \param value       Destination object for the value of the existing element
+ * @{
+ */
+void serialboxFortranSerializerGetFieldMetainfoBoolean(const void* serializer, const char* field,
+													   const char* key, int* value);
+void serialboxFortranSerializerGetFieldMetainfoInt32(const void* serializer, const char* field,
+													 const char* key, int* value);
+void serialboxFortranSerializerGetFieldMetainfoFloat32(const void* serializer, const char* field,
+													   const char* key, float* value);
+void serialboxFortranSerializerGetFieldMetainfoFloat64(const void* serializer, const char* field,
+													   const char* key, double* value);
+void serialboxFortranSerializerGetFieldMetainfoString(const void* serializer, const char* field,
+														const char* key, const char** value);
+/** @} */
+
 /*===------------------------------------------------------------------------------------------===*\
  *     Savepoint
 \*===------------------------------------------------------------------------------------------===*/
@@ -214,11 +237,11 @@ void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key
  * \param value       Destination object for the value of the existing element
  * @{
  */
-void serialboxFortranSavepointGetMetainfoBoolean(void* savepoint, const char* key, int* value);
-void serialboxFortranSavepointGetMetainfoInt32(void* savepoint, const char* key, int* value);
-void serialboxFortranSavepointGetMetainfoFloat32(void* savepoint, const char* key, float* value);
-void serialboxFortranSavepointGetMetainfoFloat64(void* savepoint, const char* key, double* value);
-//void serialboxFortranSavepointGetMetainfoString(void* savepoint, const char* key,
+void serialboxFortranSavepointGetMetainfoBoolean(const void* savepoint, const char* key, int* value);
+void serialboxFortranSavepointGetMetainfoInt32(const void* savepoint, const char* key, int* value);
+void serialboxFortranSavepointGetMetainfoFloat32(const void* savepoint, const char* key, float* value);
+void serialboxFortranSavepointGetMetainfoFloat64(const void* savepoint, const char* key, double* value);
+//void serialboxFortranSavepointGetMetainfoString(const void* savepoint, const char* key,
 //                                                 const char** value);
 /** @} */
 
