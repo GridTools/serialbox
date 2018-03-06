@@ -256,6 +256,42 @@ void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* k
   }
 }
 
+void serialboxFortranSerializerGetMetainfoBoolean(void* serializer, const char* key, int* value) {
+  Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
+  try {
+      *value = (int) ser->template getGlobalMetainfoAs<bool, const char*&>(key);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
+void serialboxFortranSerializerGetMetainfoInt32(void* serializer, const char* key, int* value) {
+  Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
+  try {
+    *value = ser->template getGlobalMetainfoAs<int, const char*&>(key);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
+void serialboxFortranSerializerGetMetainfoFloat32(void* serializer, const char* key, float* value) {
+  Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
+  try {
+    *value = ser->template getGlobalMetainfoAs<float, const char*&>(key);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
+void serialboxFortranSerializerGetMetainfoFloat64(void* serializer, const char* key, double* value) {
+  Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
+  try {
+	*value = ser->template getGlobalMetainfoAs<double, const char*&>(key);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
 void serialboxFortranSerializerRegisterField(void* serializer, const char* name, int type,
                                              int bytesPerElement, int iSize, int jSize, int kSize,
                                              int lSize, int iMinusHalo, int iPlusHalo,

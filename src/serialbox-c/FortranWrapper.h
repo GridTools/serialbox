@@ -110,6 +110,24 @@ void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* k
 /** @} */
 
 /**
+ * \brief Get a global meta-information `key=value` pair from the Serializer
+ *
+ * This function corresponds to `fs_get_serializer_metainfo_X`
+ *
+ * \param serializer  Serializer to use
+ * \param key         Key of the new element
+ * \param value       Destination object for the value of the existing element
+ * @{
+ */
+void serialboxFortranSerializerGetMetainfoBoolean(void* serializer, const char* key, int* value);
+void serialboxFortranSerializerGetMetainfoInt32(void* serializer, const char* key, int* value);
+void serialboxFortranSerializerGetMetainfoFloat32(void* serializer, const char* key, float* value);
+void serialboxFortranSerializerGetMetainfoFloat64(void* serializer, const char* key, double* value);
+//void serialboxFortranSerializerGetMetainfoString(void* serializer, const char* key,
+//                                                 const char** value);
+/** @} */
+
+/**
  * \brief Register `field` within the serializer
  *
  * This function corresponds to `fs_register_field`
