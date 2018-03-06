@@ -420,3 +420,39 @@ void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key
     serialboxFatalError(e.what());
   }
 }
+
+void serialboxFortranSavepointGetMetainfoBoolean(void* savepoint, const char* key, int* value) {
+  Savepoint* sp = toSavepoint(static_cast<serialboxSavepoint_t*>(savepoint));
+  try {
+      *value = (int) sp->template getMetainfoAs<bool, const char*&>(key);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
+void serialboxFortranSavepointGetMetainfoInt32(void* savepoint, const char* key, int* value) {
+  Savepoint* sp = toSavepoint(static_cast<serialboxSavepoint_t*>(savepoint));
+  try {
+    *value = sp->template getMetainfoAs<int, const char*&>(key);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
+void serialboxFortranSavepointGetMetainfoFloat32(void* savepoint, const char* key, float* value) {
+  Savepoint* sp = toSavepoint(static_cast<serialboxSavepoint_t*>(savepoint));
+  try {
+    *value = sp->template getMetainfoAs<float, const char*&>(key);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}
+
+void serialboxFortranSavepointGetMetainfoFloat64(void* savepoint, const char* key, double* value) {
+  Savepoint* sp = toSavepoint(static_cast<serialboxSavepoint_t*>(savepoint));
+  try {
+	*value = sp->template getMetainfoAs<double, const char*&>(key);
+  } catch(std::exception& e) {
+    serialboxFatalError(e.what());
+  }
+}

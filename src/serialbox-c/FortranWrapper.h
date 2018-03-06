@@ -204,6 +204,24 @@ void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key
                                                 const char* value);
 /** @} */
 
+/**
+ * \brief Get a meta-information `key=value` pair from the `savepoint`
+ *
+ * This function corresponds to `fs_get_savepoint_metainfo_X`
+ *
+ * \param savepoint   Savepoint to use
+ * \param key         Key of the new element
+ * \param value       Destination object for the value of the existing element
+ * @{
+ */
+void serialboxFortranSavepointGetMetainfoBoolean(void* savepoint, const char* key, int* value);
+void serialboxFortranSavepointGetMetainfoInt32(void* savepoint, const char* key, int* value);
+void serialboxFortranSavepointGetMetainfoFloat32(void* savepoint, const char* key, float* value);
+void serialboxFortranSavepointGetMetainfoFloat64(void* savepoint, const char* key, double* value);
+//void serialboxFortranSavepointGetMetainfoString(void* savepoint, const char* key,
+//                                                 const char** value);
+/** @} */
+
 /** @} @} */
 
 #ifdef __cplusplus
