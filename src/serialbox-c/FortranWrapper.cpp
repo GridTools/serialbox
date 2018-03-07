@@ -376,28 +376,32 @@ void serialboxFortranSerializerAddFieldMetainfoString(void* serializer, const ch
 
 void serialboxFortranSerializerGetFieldMetainfoBoolean(const void* serializer, const char* field,
 													   const char* key, int* value) {
-	serialboxFieldMetainfo_t* fieldMetainfo = serialboxSerializerGetFieldMetainfo(static_cast<const serialboxSerializer_t*>(serializer), field);
+	const serialboxSerializer_t* ser = static_cast<const serialboxSerializer_t*>(serializer);
+	serialboxFieldMetainfo_t* fieldMetainfo = serialboxSerializerGetFieldMetainfo(ser, field);
 	serialboxMetainfo_t* metainfo = serialboxFieldMetainfoGetMetainfo(fieldMetainfo);
     *value = serialboxMetainfoGetBoolean(metainfo, key);
 }
 
 void serialboxFortranSerializerGetFieldMetainfoInt32(const void* serializer, const char* field,
 		                                             const char* key, int* value) {
-	serialboxFieldMetainfo_t* fieldMetainfo = serialboxSerializerGetFieldMetainfo(static_cast<const serialboxSerializer_t*>(serializer), field);
+	const serialboxSerializer_t* ser = static_cast<const serialboxSerializer_t*>(serializer);
+	serialboxFieldMetainfo_t* fieldMetainfo = serialboxSerializerGetFieldMetainfo(ser, field);
 	serialboxMetainfo_t* metainfo = serialboxFieldMetainfoGetMetainfo(fieldMetainfo);
 	*value = serialboxMetainfoGetInt32(metainfo, key);
 }
 
 void serialboxFortranSerializerGetFieldMetainfoFloat32(const void* serializer, const char* field,
 		                                               const char* key, float* value) {
-	serialboxFieldMetainfo_t* fieldMetainfo = serialboxSerializerGetFieldMetainfo(static_cast<const serialboxSerializer_t*>(serializer), field);
+	const serialboxSerializer_t* ser = static_cast<const serialboxSerializer_t*>(serializer);
+	serialboxFieldMetainfo_t* fieldMetainfo = serialboxSerializerGetFieldMetainfo(ser, field);
 	serialboxMetainfo_t* metainfo = serialboxFieldMetainfoGetMetainfo(fieldMetainfo);
 	*value = serialboxMetainfoGetFloat32(metainfo, key);
 }
 
 void serialboxFortranSerializerGetFieldMetainfoFloat64(const void* serializer, const char* field,
 		                                               const char* key, double* value) {
-	serialboxFieldMetainfo_t* fieldMetainfo = serialboxSerializerGetFieldMetainfo(static_cast<const serialboxSerializer_t*>(serializer), field);
+	const serialboxSerializer_t* ser = static_cast<const serialboxSerializer_t*>(serializer);
+	serialboxFieldMetainfo_t* fieldMetainfo = serialboxSerializerGetFieldMetainfo(ser, field);
 	serialboxMetainfo_t* metainfo = serialboxFieldMetainfoGetMetainfo(fieldMetainfo);
 	*value = serialboxMetainfoGetFloat64(metainfo, key);
 }
