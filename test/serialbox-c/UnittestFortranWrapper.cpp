@@ -203,16 +203,16 @@ TEST_F(CFortranWrapperTest, Savepoint) {
   serialboxFortranSavepointAddMetainfoBoolean(savepoint, "bool", true);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  serialboxFortranSavepointAddMetainfoInt32(savepoint, "int", 2);
+  serialboxFortranSavepointAddMetainfoInt32(savepoint, "int", 6);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  serialboxFortranSavepointAddMetainfoFloat32(savepoint, "float", 1.1f);
+  serialboxFortranSavepointAddMetainfoFloat32(savepoint, "float", 7.1f);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  serialboxFortranSavepointAddMetainfoFloat64(savepoint, "double", 1.1);
+  serialboxFortranSavepointAddMetainfoFloat64(savepoint, "double", 8.1);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  serialboxFortranSavepointAddMetainfoString(savepoint, "string", "str");
+  serialboxFortranSavepointAddMetainfoString(savepoint, "string", "strsp");
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   //
@@ -224,25 +224,31 @@ TEST_F(CFortranWrapperTest, Savepoint) {
   //
   // Get meta-info
   //
-  serialboxMetainfo_t* metaInfo = serialboxSavepointGetMetainfo(savepoint);
+  int metaInfoValueBool;
+  serialboxFortranSavepointGetMetainfoBoolean(savepoint, "bool", &metaInfoValueBool);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(true, (bool) metaInfoValueBool);
 
-  EXPECT_EQ(serialboxMetainfoGetBoolean(metaInfo, "bool"), true);
+  int metaInfoValueInt;
+  serialboxFortranSavepointGetMetainfoInt32(savepoint, "int", &metaInfoValueInt);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(6, metaInfoValueInt);
 
-  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "int"), 2);
+  float metaInfoValueFloat;
+  serialboxFortranSavepointGetMetainfoFloat32(savepoint, "float", &metaInfoValueFloat);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(7.1f, metaInfoValueFloat);
 
-  EXPECT_EQ(serialboxMetainfoGetFloat32(metaInfo, "float"), 1.1f);
+  double metaInfoValueDouble;
+  serialboxFortranSavepointGetMetainfoFloat64(savepoint, "double", &metaInfoValueDouble);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(8.1, metaInfoValueDouble);
 
-  EXPECT_EQ(serialboxMetainfoGetFloat64(metaInfo, "double"), 1.1);
+  const char* metaInfoValueString;
+  serialboxFortranSavepointGetMetainfoString(savepoint, "string", &metaInfoValueString);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ("strsp", std::string(metaInfoValueString, strnlen(metaInfoValueString, 6)));
 
-  EXPECT_STREQ(serialboxMetainfoGetString(metaInfo, "string"), "str");
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  serialboxMetainfoDestroy(metaInfo);
   serialboxSavepointDestroy(savepoint);
 }
 
