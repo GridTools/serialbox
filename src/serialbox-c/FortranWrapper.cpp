@@ -356,7 +356,7 @@ void serialboxFortranSerializerAddFieldMetainfoString(void* serializer, const ch
 }
 
 #define SERIALBOX_FORTRAN_SERIALIZER_GET_FIELD_METAINFO(name, CXXType)                         \
-  void serialboxFortranSerializerGetMetainfo##name(const void* serializer, const char* field,  \
+  void serialboxFortranSerializerGetFieldMetainfo##name(const void* serializer, const char* field,  \
 	                                               const char* key, CXXType* value) {          \
     const serialboxSerializer_t* ser = static_cast<const serialboxSerializer_t*>(serializer);  \
     serialboxFieldMetainfo_t* fieldMetainfo = serialboxSerializerGetFieldMetainfo(ser, field); \
