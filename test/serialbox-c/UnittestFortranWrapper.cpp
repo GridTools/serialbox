@@ -58,25 +58,31 @@ TEST_F(CFortranWrapperTest, Serializer) {
   //
   // Get meta-info
   //
-  serialboxMetainfo_t* metaInfo = serialboxSerializerGetGlobalMetainfo(serializer);
+  int metaInfoValueBool;
+  serialboxFortranSerializerGetMetainfoBoolean(serializer, "bool", &metaInfoValueBool);
+  EXPECT_EQ(true, (bool) metaInfoValueBool);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  EXPECT_EQ(serialboxMetainfoGetBoolean(metaInfo, "bool"), true);
+  int metaInfoValueInt;
+  serialboxFortranSerializerGetMetainfoInt32(serializer, "int", &metaInfoValueInt);
+  EXPECT_EQ(2, metaInfoValueInt);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "int"), 2);
+  float metaInfoValueFloat;
+  serialboxFortranSerializerGetMetainfoFloat32(serializer, "float", &metaInfoValueFloat);
+  EXPECT_EQ(1.1f, metaInfoValueFloat);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  EXPECT_EQ(serialboxMetainfoGetFloat32(metaInfo, "float"), 1.1f);
+  double metaInfoValueDouble;
+  serialboxFortranSerializerGetMetainfoFloat64(serializer, "double", &metaInfoValueDouble);
+  EXPECT_EQ(1.1, metaInfoValueDouble);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  EXPECT_EQ(serialboxMetainfoGetFloat64(metaInfo, "double"), 1.1);
+  const char* metaInfoValueString;
+  serialboxFortranSerializerGetMetainfoString(serializer, "string", &metaInfoValueString);
+  EXPECT_EQ("str", std::string(metaInfoValueString, strnlen(metaInfoValueString, 4)));
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  EXPECT_STREQ(serialboxMetainfoGetString(metaInfo, "string"), "str");
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  serialboxMetainfoDestroy(metaInfo);
   serialboxSerializerDestroy(serializer);
 }
 
