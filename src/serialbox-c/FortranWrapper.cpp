@@ -260,41 +260,21 @@ void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* k
   }
 }
 
-void serialboxFortranSerializerGetMetainfoBoolean(const void* serializer, const char* key, int* value) {
-  const Serializer* ser = toConstSerializer(static_cast<const serialboxSerializer_t*>(serializer));
-  try {
-      *value = (int) ser->template getGlobalMetainfoAs<bool, const char*&>(key);
-  } catch(std::exception& e) {
-    serialboxFatalError(e.what());
+#define SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(name, CXXType)                                            \
+  void serialboxFortranSerializerGetMetainfo##name(const void* serializer, const char* key, CXXType* value) { \
+	const serialboxSerializer_t* ser = static_cast<const serialboxSerializer_t*>(serializer);               \
+	serialboxMetainfo_t* metainfo = serialboxSerializerGetGlobalMetainfo(ser);                              \
+    *value = serialboxMetainfoGet##name(metainfo, key);                                                     \
   }
-}
 
-void serialboxFortranSerializerGetMetainfoInt32(const void* serializer, const char* key, int* value) {
-  const Serializer* ser = toConstSerializer(static_cast<const serialboxSerializer_t*>(serializer));
-  try {
-    *value = ser->template getGlobalMetainfoAs<int, const char*&>(key);
-  } catch(std::exception& e) {
-    serialboxFatalError(e.what());
-  }
-}
+SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Boolean, bool);
+SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Int32, int);
+SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Float32, float);
+SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Float64, double);
+SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(String, const char*);
 
-void serialboxFortranSerializerGetMetainfoFloat32(const void* serializer, const char* key, float* value) {
-  const Serializer* ser = toConstSerializer(static_cast<const serialboxSerializer_t*>(serializer));
-  try {
-    *value = ser->template getGlobalMetainfoAs<float, const char*&>(key);
-  } catch(std::exception& e) {
-    serialboxFatalError(e.what());
-  }
-}
+#undef SERIALBOX_FORTRAN_SAVEPOINT_GET_METAINFO
 
-void serialboxFortranSerializerGetMetainfoFloat64(const void* serializer, const char* key, double* value) {
-  const Serializer* ser = toConstSerializer(static_cast<const serialboxSerializer_t*>(serializer));
-  try {
-	*value = ser->template getGlobalMetainfoAs<double, const char*&>(key);
-  } catch(std::exception& e) {
-    serialboxFatalError(e.what());
-  }
-}
 
 void serialboxFortranSerializerRegisterField(void* serializer, const char* name, int type,
                                              int bytesPerElement, int iSize, int jSize, int kSize,
