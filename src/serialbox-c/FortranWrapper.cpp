@@ -267,7 +267,7 @@ void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* k
     *value = serialboxMetainfoGet##name(metainfo, key);                                                     \
   }
 
-SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Boolean, bool);
+SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Boolean, int);
 SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Int32, int);
 SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Float32, float);
 SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Float64, double);
@@ -364,7 +364,7 @@ void serialboxFortranSerializerAddFieldMetainfoString(void* serializer, const ch
     *value = serialboxMetainfoGet##name(metainfo, key);                                        \
   }
 
-SERIALBOX_FORTRAN_SERIALIZER_GET_FIELD_METAINFO(Boolean, bool);
+SERIALBOX_FORTRAN_SERIALIZER_GET_FIELD_METAINFO(Boolean, int);
 SERIALBOX_FORTRAN_SERIALIZER_GET_FIELD_METAINFO(Int32, int);
 SERIALBOX_FORTRAN_SERIALIZER_GET_FIELD_METAINFO(Float32, float);
 SERIALBOX_FORTRAN_SERIALIZER_GET_FIELD_METAINFO(Float64, double);
@@ -429,7 +429,7 @@ void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key
     *value = serialboxMetainfoGet##name(metainfo, key);                                                     \
   }
 
-SERIALBOX_FORTRAN_SAVEPOINT_GET_METAINFO(Boolean, bool);
+SERIALBOX_FORTRAN_SAVEPOINT_GET_METAINFO(Boolean, int);
 SERIALBOX_FORTRAN_SAVEPOINT_GET_METAINFO(Int32, int);
 SERIALBOX_FORTRAN_SAVEPOINT_GET_METAINFO(Float32, float);
 SERIALBOX_FORTRAN_SAVEPOINT_GET_METAINFO(Float64, double);
