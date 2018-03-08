@@ -97,23 +97,6 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   serialboxFortranSerializerRegisterField(serializer, "field", Float64, 8, 30, 40, 50, 60, 1, 1, 23,
                                           42, 0, 0, -2, 2);
 
-  //
-  // Add field meta-info
-  //
-  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "bool", true);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  serialboxFortranSerializerAddFieldMetainfoInt32(serializer, "field", "int", 3);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  serialboxFortranSerializerAddFieldMetainfoFloat32(serializer, "field", "float", 4.1f);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  serialboxFortranSerializerAddFieldMetainfoFloat64(serializer, "field", "double", 5.1);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  serialboxFortranSerializerAddFieldMetainfoString(serializer, "field", "string", "strf");
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   //
   // Field does not exists -> Error
@@ -126,7 +109,6 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   //
   serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "bool", true);
   ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
 
   // Rank
   int rank;
@@ -156,7 +138,27 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   EXPECT_EQ(lMinusHalo, -2);
   EXPECT_EQ(lPlusHalo, 2);
 
-  // Meta information
+  //
+  // Add field meta-info
+  //
+  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "bool", true);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSerializerAddFieldMetainfoInt32(serializer, "field", "int", 3);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSerializerAddFieldMetainfoFloat32(serializer, "field", "float", 4.1f);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSerializerAddFieldMetainfoFloat64(serializer, "field", "double", 5.1);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSerializerAddFieldMetainfoString(serializer, "field", "string", "strf");
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  //
+  // Get field meta-info
+  //
   int metaInfoValueBool;
   serialboxFortranSerializerGetFieldMetainfoBoolean(serializer, "field", "bool", &metaInfoValueBool);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
