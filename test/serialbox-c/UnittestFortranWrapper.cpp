@@ -97,19 +97,6 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   serialboxFortranSerializerRegisterField(serializer, "field", Float64, 8, 30, 40, 50, 60, 1, 1, 23,
                                           42, 0, 0, -2, 2);
 
-
-  //
-  // Field does not exists -> Error
-  //
-  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "fieldX", "bool", true);
-  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  //
-  // Add existing field meta-info -> Error
-  //
-  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "bool", true);
-  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
   // Rank
   int rank;
   serialboxFortranSerializerGetFieldRank(serializer, "field", &rank);
@@ -155,6 +142,18 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
 
   serialboxFortranSerializerAddFieldMetainfoString(serializer, "field", "string", "strf");
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  //
+  // Field does not exists -> Error
+  //
+  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "fieldX", "bool", true);
+  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  //
+  // Add existing field meta-info -> Error
+  //
+  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "bool", true);
+  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   //
   // Get field meta-info
