@@ -123,8 +123,8 @@ void serialboxFortranSerializerGetMetainfoBoolean(const void* serializer, const 
 void serialboxFortranSerializerGetMetainfoInt32(const void* serializer, const char* key, int* value);
 void serialboxFortranSerializerGetMetainfoFloat32(const void* serializer, const char* key, float* value);
 void serialboxFortranSerializerGetMetainfoFloat64(const void* serializer, const char* key, double* value);
-//void serialboxFortranSerializerGetMetainfoString(const void* serializer, const char* key,
-//                                                 const char** value);
+void serialboxFortranSerializerGetMetainfoString(const void* serializer, const char* key,
+                                                 const char** value);
 /** @} */
 
 /**
@@ -241,8 +241,8 @@ void serialboxFortranSavepointGetMetainfoBoolean(const void* savepoint, const ch
 void serialboxFortranSavepointGetMetainfoInt32(const void* savepoint, const char* key, int* value);
 void serialboxFortranSavepointGetMetainfoFloat32(const void* savepoint, const char* key, float* value);
 void serialboxFortranSavepointGetMetainfoFloat64(const void* savepoint, const char* key, double* value);
-//void serialboxFortranSavepointGetMetainfoString(const void* savepoint, const char* key,
-//                                                 const char** value);
+void serialboxFortranSavepointGetMetainfoString(const void* savepoint, const char* key,
+                                                const char** value);
 /** @} */
 
 /** @} @} */
