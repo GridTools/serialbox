@@ -149,6 +149,19 @@ PRIVATE
 
 
   !==============================================================================
+  !+ Module interface to get metainformation from the given serializer
+  !------------------------------------------------------------------------------
+  INTERFACE fs_get_serializer_metainfo
+    MODULE PROCEDURE &
+      fs_get_serializer_metainfo_b, &
+      fs_get_serializer_metainfo_i , &
+      fs_get_serializer_metainfo_f, &
+      fs_get_serializer_metainfo_d, &
+      fs_get_serializer_metainfo_s
+  END INTERFACE
+
+
+  !==============================================================================
   !+ Module interface to attach metainformation to the given field
   !------------------------------------------------------------------------------
   INTERFACE fs_add_field_metainfo
@@ -554,6 +567,100 @@ SUBROUTINE fs_add_serializer_metainfo_s(serializer, key, val)
                                      TRIM(key)//C_NULL_CHAR,    &
                                      TRIM(val)//C_NULL_CHAR)
 END SUBROUTINE fs_add_serializer_metainfo_s
+
+
+! Getter have to be subroutines instead of functions,
+! otherwise they would have the same argument lists and so can't be part of one interface
+
+SUBROUTINE fs_get_serializer_metainfo_b(serializer, key, val)
+  TYPE(t_serializer), INTENT(IN) :: serializer
+  CHARACTER(LEN=*), INTENT(IN)   :: key
+  LOGICAL, INTENT(OUT)           :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_serializer_metainfo_b_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetMetainfoBoolean')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       LOGICAL, INTENT(OUT)                             :: val
+     END SUBROUTINE fs_get_serializer_metainfo_b_
+  END INTERFACE
+
+  CALL fs_get_serializer_metainfo_b_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_serializer_metainfo_b
+
+SUBROUTINE fs_get_serializer_metainfo_i(serializer, key, val)
+  TYPE(t_serializer), INTENT(IN) :: serializer
+  CHARACTER(LEN=*), INTENT(IN)   :: key
+  INTEGER, INTENT(OUT)           :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_serializer_metainfo_i_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetMetainfoInt32')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       INTEGER, INTENT(OUT)                             :: val
+     END SUBROUTINE fs_get_serializer_metainfo_i_
+  END INTERFACE
+
+  CALL fs_get_serializer_metainfo_i_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_serializer_metainfo_i
+
+SUBROUTINE fs_get_serializer_metainfo_f(serializer, key, val)
+  TYPE(t_serializer), INTENT(IN)  :: serializer
+  CHARACTER(LEN=*), INTENT(IN)    :: key
+  REAL(KIND=C_FLOAT), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_serializer_metainfo_f_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetMetainfoFloat32')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       REAL(KIND=C_FLOAT), INTENT(OUT)                  :: val
+     END SUBROUTINE fs_get_serializer_metainfo_f_
+  END INTERFACE
+
+  CALL fs_get_serializer_metainfo_f_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_serializer_metainfo_f
+
+SUBROUTINE fs_get_serializer_metainfo_d(serializer, key, val)
+  TYPE(t_serializer), INTENT(IN)   :: serializer
+  CHARACTER(LEN=*), INTENT(IN)     :: key
+  REAL(KIND=C_DOUBLE), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_serializer_metainfo_d_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetMetainfoInt64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       REAL(KIND=C_DOUBLE), INTENT(OUT)                 :: val
+     END SUBROUTINE fs_get_serializer_metainfo_d_
+  END INTERFACE
+
+  CALL fs_get_serializer_metainfo_d_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_serializer_metainfo_d
+
+SUBROUTINE fs_get_serializer_metainfo_s(serializer, key, val)
+  TYPE(t_serializer), INTENT(IN) :: serializer
+  CHARACTER(LEN=*), INTENT(IN)   :: key
+  CHARACTER(LEN=*), INTENT(OUT)  :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_serializer_metainfo_s_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetMetainfoInt32')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                    :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN)  :: key
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(OUT) :: val
+     END SUBROUTINE fs_get_serializer_metainfo_s_
+  END INTERFACE
+
+  CALL fs_get_serializer_metainfo_s_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_serializer_metainfo_s
 
 !=============================================================================
 !=============================================================================
