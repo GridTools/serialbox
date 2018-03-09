@@ -142,6 +142,7 @@ PRIVATE
     MODULE PROCEDURE &
       fs_add_serializer_metainfo_b, &
       fs_add_serializer_metainfo_i, &
+      fs_add_serializer_metainfo_l, &
       fs_add_serializer_metainfo_f, &
       fs_add_serializer_metainfo_d, &
       fs_add_serializer_metainfo_s
@@ -154,7 +155,8 @@ PRIVATE
   INTERFACE fs_get_serializer_metainfo
     MODULE PROCEDURE &
       fs_get_serializer_metainfo_b, &
-      fs_get_serializer_metainfo_i , &
+      fs_get_serializer_metainfo_i, &
+      fs_get_serializer_metainfo_l, &
       fs_get_serializer_metainfo_f, &
       fs_get_serializer_metainfo_d
   END INTERFACE
@@ -167,6 +169,7 @@ PRIVATE
     MODULE PROCEDURE &
       fs_add_field_metainfo_b, &
       fs_add_field_metainfo_i, &
+      fs_add_field_metainfo_l, &
       fs_add_field_metainfo_f, &
       fs_add_field_metainfo_d, &
       fs_add_field_metainfo_s
@@ -180,6 +183,7 @@ PRIVATE
     MODULE PROCEDURE &
       fs_get_field_metainfo_b, &
       fs_get_field_metainfo_i, &
+      fs_get_field_metainfo_l, &
       fs_get_field_metainfo_f, &
       fs_get_field_metainfo_d
   END INTERFACE
@@ -192,6 +196,7 @@ PRIVATE
     MODULE PROCEDURE &
       fs_add_savepoint_metainfo_b, &
       fs_add_savepoint_metainfo_i, &
+      fs_add_savepoint_metainfo_l, &
       fs_add_savepoint_metainfo_f, &
       fs_add_savepoint_metainfo_d, &
       fs_add_savepoint_metainfo_s
@@ -205,6 +210,7 @@ PRIVATE
     MODULE PROCEDURE &
       fs_get_savepoint_metainfo_b, &
       fs_get_savepoint_metainfo_i, &
+      fs_get_savepoint_metainfo_l, &
       fs_get_savepoint_metainfo_f, &
       fs_get_savepoint_metainfo_d
   END INTERFACE
@@ -532,6 +538,26 @@ SUBROUTINE fs_add_serializer_metainfo_i(serializer, key, val)
 END SUBROUTINE fs_add_serializer_metainfo_i
 
 
+SUBROUTINE fs_add_serializer_metainfo_l(serializer, key, val)
+  TYPE(t_serializer), INTENT(IN) :: serializer
+  CHARACTER(LEN=*)               :: key
+  INTEGER(C_LONG)                :: val
+
+  ! External function
+  INTERFACE
+     SUBROUTINE fs_add_serializer_metainfo_l_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerAddMetainfoInt64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
+       INTEGER(KIND=C_LONG), VALUE          :: val
+     END SUBROUTINE fs_add_serializer_metainfo_l_
+  END INTERFACE
+
+  CALL fs_add_serializer_metainfo_l_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_add_serializer_metainfo_l
+
+
 SUBROUTINE fs_add_serializer_metainfo_f(serializer, key, val)
   TYPE(t_serializer), INTENT(IN) :: serializer
   CHARACTER(LEN=*)               :: key
@@ -613,9 +639,9 @@ SUBROUTINE fs_get_serializer_metainfo_b(serializer, key, val)
 END SUBROUTINE fs_get_serializer_metainfo_b
 
 SUBROUTINE fs_get_serializer_metainfo_i(serializer, key, val)
-  TYPE(t_serializer), INTENT(IN) :: serializer
-  CHARACTER(LEN=*), INTENT(IN)   :: key
-  INTEGER, INTENT(OUT)           :: val
+  TYPE(t_serializer), INTENT(IN)   :: serializer
+  CHARACTER(LEN=*), INTENT(IN)     :: key
+  INTEGER(KIND=C_INT), INTENT(OUT) :: val
 
   INTERFACE
      SUBROUTINE fs_get_serializer_metainfo_i_(serializer, key, val) &
@@ -623,12 +649,30 @@ SUBROUTINE fs_get_serializer_metainfo_i(serializer, key, val)
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
-       INTEGER, INTENT(OUT)                             :: val
+       INTEGER(KIND=C_INT), INTENT(OUT)                 :: val
      END SUBROUTINE fs_get_serializer_metainfo_i_
   END INTERFACE
 
   CALL fs_get_serializer_metainfo_i_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
 END SUBROUTINE fs_get_serializer_metainfo_i
+
+SUBROUTINE fs_get_serializer_metainfo_l(serializer, key, val)
+  TYPE(t_serializer), INTENT(IN)    :: serializer
+  CHARACTER(LEN=*), INTENT(IN)      :: key
+  INTEGER(KIND=C_LONG), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_serializer_metainfo_l_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetMetainfoInt64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       INTEGER(KIND=C_LONG), INTENT(OUT)                :: val
+     END SUBROUTINE fs_get_serializer_metainfo_l_
+  END INTERFACE
+
+  CALL fs_get_serializer_metainfo_l_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_serializer_metainfo_l
 
 SUBROUTINE fs_get_serializer_metainfo_f(serializer, key, val)
   TYPE(t_serializer), INTENT(IN)  :: serializer
@@ -798,6 +842,29 @@ SUBROUTINE fs_add_field_metainfo_i(serializer, fieldname, key, val)
 END SUBROUTINE fs_add_field_metainfo_i
 
 
+SUBROUTINE fs_add_field_metainfo_l(serializer, fieldname, key, val)
+  TYPE(t_serializer), INTENT(IN) :: serializer
+  CHARACTER(LEN=*)               :: fieldname, key
+  INTEGER(C_LONG), VALUE          :: val
+
+  ! External function
+  INTERFACE
+     SUBROUTINE fs_add_field_metainfo_l_(serializer, fieldname, key, val) &
+          BIND(c, name='serialboxFortranSerializerAddFieldMetainfoInt64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*) :: fieldname
+       CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
+       INTEGER(KIND=C_LONG), VALUE           :: val
+     END SUBROUTINE fs_add_field_metainfo_l_
+  END INTERFACE
+
+  CALL fs_add_field_metainfo_l_(serializer%serializer_ptr,    &
+                                TRIM(fieldname)//C_NULL_CHAR, &
+                                TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_add_field_metainfo_l
+
+
 SUBROUTINE fs_add_field_metainfo_f(serializer, fieldname, key, val)
   TYPE(t_serializer), INTENT(IN) :: serializer
   CHARACTER(LEN=*)               :: fieldname, key
@@ -888,9 +955,9 @@ SUBROUTINE fs_get_field_metainfo_b(serializer, fieldname, key, val)
 END SUBROUTINE fs_get_field_metainfo_b
 
 SUBROUTINE fs_get_field_metainfo_i(serializer, fieldname, key, val)
-  TYPE(t_serializer), INTENT(IN) :: serializer
-  CHARACTER(LEN=*), INTENT(IN)   :: fieldname, key
-  INTEGER, INTENT(OUT)           :: val
+  TYPE(t_serializer), INTENT(IN)   :: serializer
+  CHARACTER(LEN=*), INTENT(IN)     :: fieldname, key
+  INTEGER(KIND=C_INT), INTENT(OUT) :: val
 
   INTERFACE
      SUBROUTINE fs_get_field_metainfo_i_(serializer, fieldname, key, val) &
@@ -898,12 +965,30 @@ SUBROUTINE fs_get_field_metainfo_i(serializer, fieldname, key, val)
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: fieldname, key
-       INTEGER, INTENT(OUT)                             :: val
+       INTEGER(KIND=C_INT), INTENT(OUT)                 :: val
      END SUBROUTINE fs_get_field_metainfo_i_
   END INTERFACE
 
   CALL fs_get_field_metainfo_i_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, TRIM(key)//C_NULL_CHAR, val)
 END SUBROUTINE fs_get_field_metainfo_i
+
+SUBROUTINE fs_get_field_metainfo_l(serializer, fieldname, key, val)
+  TYPE(t_serializer), INTENT(IN)    :: serializer
+  CHARACTER(LEN=*), INTENT(IN)      :: fieldname, key
+  INTEGER(KIND=C_LONG), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_field_metainfo_l_(serializer, fieldname, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetFieldMetainfoInt64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: fieldname, key
+       INTEGER(KIND=C_LONG), INTENT(OUT)                :: val
+     END SUBROUTINE fs_get_field_metainfo_l_
+  END INTERFACE
+
+  CALL fs_get_field_metainfo_l_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_field_metainfo_l
 
 SUBROUTINE fs_get_field_metainfo_f(serializer, fieldname, key, val)
   TYPE(t_serializer), INTENT(IN)  :: serializer
@@ -1264,8 +1349,8 @@ END SUBROUTINE fs_add_savepoint_metainfo_b
 
 SUBROUTINE fs_add_savepoint_metainfo_i(savepoint, key, val)
   TYPE(t_savepoint), INTENT(IN) :: savepoint
-  CHARACTER(LEN=*)               :: key
-  INTEGER(C_INT)                 :: val
+  CHARACTER(LEN=*)              :: key
+  INTEGER(KIND=C_INT)           :: val
 
   ! External function
   INTERFACE
@@ -1281,6 +1366,27 @@ SUBROUTINE fs_add_savepoint_metainfo_i(savepoint, key, val)
   CALL fs_add_savepoint_metainfo_i_(savepoint%savepoint_ptr,      &
                                     TRIM(key)//C_NULL_CHAR, val)
 END SUBROUTINE fs_add_savepoint_metainfo_i
+
+
+SUBROUTINE fs_add_savepoint_metainfo_l(savepoint, key, val)
+  TYPE(t_savepoint), INTENT(IN) :: savepoint
+  CHARACTER(LEN=*)              :: key
+  INTEGER(KIND=C_LONG)           :: val
+
+  ! External function
+  INTERFACE
+     SUBROUTINE fs_add_savepoint_metainfo_l_(savepoint, key, val) &
+          BIND(c, name='serialboxFortranSavepointAddMetainfoInt64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE       :: savepoint
+       CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
+       INTEGER(KIND=C_LONG), VALUE           :: val
+     END SUBROUTINE fs_add_savepoint_metainfo_l_
+  END INTERFACE
+
+  CALL fs_add_savepoint_metainfo_l_(savepoint%savepoint_ptr,      &
+                                    TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_add_savepoint_metainfo_l
 
 
 SUBROUTINE fs_add_savepoint_metainfo_f(savepoint, key, val)
@@ -1365,9 +1471,9 @@ SUBROUTINE fs_get_savepoint_metainfo_b(savepoint, key, val)
 END SUBROUTINE fs_get_savepoint_metainfo_b
 
 SUBROUTINE fs_get_savepoint_metainfo_i(savepoint, key, val)
-  TYPE(t_savepoint), INTENT(IN) :: savepoint
-  CHARACTER(LEN=*), INTENT(IN)   :: key
-  INTEGER, INTENT(OUT)           :: val
+  TYPE(t_savepoint), INTENT(IN)    :: savepoint
+  CHARACTER(LEN=*), INTENT(IN)     :: key
+  INTEGER(KIND=C_INT), INTENT(OUT) :: val
 
   INTERFACE
      SUBROUTINE fs_get_savepoint_metainfo_i_(savepoint, key, val) &
@@ -1375,12 +1481,30 @@ SUBROUTINE fs_get_savepoint_metainfo_i(savepoint, key, val)
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE                   :: savepoint
        CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
-       INTEGER, INTENT(OUT)                             :: val
+       INTEGER(KIND=C_INT), INTENT(OUT)                 :: val
      END SUBROUTINE fs_get_savepoint_metainfo_i_
   END INTERFACE
 
   CALL fs_get_savepoint_metainfo_i_(savepoint%savepoint_ptr, TRIM(key)//C_NULL_CHAR, val)
 END SUBROUTINE fs_get_savepoint_metainfo_i
+
+SUBROUTINE fs_get_savepoint_metainfo_l(savepoint, key, val)
+  TYPE(t_savepoint), INTENT(IN)    :: savepoint
+  CHARACTER(LEN=*), INTENT(IN)     :: key
+  INTEGER(KIND=C_LONG), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_savepoint_metainfo_l_(savepoint, key, val) &
+          BIND(c, name='serialboxFortranSavepointGetMetainfoInt64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: savepoint
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       INTEGER(KIND=C_LONG), INTENT(OUT)                 :: val
+     END SUBROUTINE fs_get_savepoint_metainfo_l_
+  END INTERFACE
+
+  CALL fs_get_savepoint_metainfo_l_(savepoint%savepoint_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_savepoint_metainfo_l
 
 SUBROUTINE fs_get_savepoint_metainfo_f(savepoint, key, val)
   TYPE(t_savepoint), INTENT(IN)  :: savepoint
