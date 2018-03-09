@@ -758,14 +758,14 @@ CONTAINS
     SUBROUTINE testFieldMetainfo()
     
       TYPE(t_serializer) :: serializer
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_field_metainfo'
       INTEGER :: field = 42      
+      CHARACTER(len=*), PARAMETER :: field_name = 'field'
+      
       LOGICAL :: metalog
       INTEGER :: metaint
       REAL(KIND=C_FLOAT)  :: metafloat
       REAL(KIND=C_DOUBLE) :: metadouble
-      
-      CHARACTER(len=*), PARAMETER :: base_name = 'test_global_metainfo'
-      CHARACTER(len=*), PARAMETER :: field_name = 'field'
       
       CALL fs_create_serializer(dir, base_name, 'w', serializer)
       CALL fs_write_field(serializer, savepoint, field_name, field)
@@ -790,5 +790,39 @@ CONTAINS
       CALL fs_destroy_serializer(serializer)
     
     END SUBROUTINE testFieldMetainfo    
+
+@Test
+    SUBROUTINE testSavepointMetainfo()
+    
+      TYPE(t_savepoint) :: savepoint
+      CHARACTER(len=*), PARAMETER :: savepoint_name = 'test_savepoint_metainfo'
+      
+      LOGICAL :: metalog
+      INTEGER :: metaint
+      REAL(KIND=C_FLOAT)  :: metafloat
+      REAL(KIND=C_DOUBLE) :: metadouble
+      
+      CALL fs_create_savepoint(savepoint_name, savepoint)
+      
+      CALL fs_add_savepoint_metainfo(savepoint, 'metalog-t', .TRUE.)
+      CALL fs_add_savepoint_metainfo(savepoint, 'metalog-f', .FALSE.)
+      CALL fs_add_savepoint_metainfo(savepoint, 'metaint', 42)
+      CALL fs_add_savepoint_metainfo(savepoint, 'metafloat', 23.0_4)
+      CALL fs_add_savepoint_metainfo(savepoint, 'metadouble', 109.47_8)
+
+      CALL fs_get_savepoint_metainfo(savepoint, 'metalog-t', metalog)
+      @assertEqual(.TRUE., metalog)
+      CALL fs_get_savepoint_metainfo(savepoint, 'metalog-f', metalog)
+      @assertEqual(.FALSE., metalog)
+      CALL fs_get_savepoint_metainfo(savepoint, 'metaint', metaint)
+      @assertEqual(42, metaint)
+      CALL fs_get_savepoint_metainfo(savepoint, 'metafloat', metafloat)
+      @assertEqual(23.0_4, metafloat)
+      CALL fs_get_savepoint_metainfo(savepoint, 'metadouble', metadouble)
+      @assertEqual(109.47_8, metadouble)
+
+      CALL fs_destroy_savepoint(savepoint)
+    
+    END SUBROUTINE testSavepointMetainfo    
 
 END MODULE serialbox_test
