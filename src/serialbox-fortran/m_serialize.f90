@@ -156,8 +156,7 @@ PRIVATE
       fs_get_serializer_metainfo_b, &
       fs_get_serializer_metainfo_i , &
       fs_get_serializer_metainfo_f, &
-      fs_get_serializer_metainfo_d, &
-      fs_get_serializer_metainfo_s
+      fs_get_serializer_metainfo_d
   END INTERFACE
 
 
@@ -182,8 +181,7 @@ PRIVATE
       fs_get_field_metainfo_b, &
       fs_get_field_metainfo_i, &
       fs_get_field_metainfo_f, &
-      fs_get_field_metainfo_d, &
-      fs_get_field_metainfo_s
+      fs_get_field_metainfo_d
   END INTERFACE
 
 
@@ -208,8 +206,7 @@ PRIVATE
       fs_get_savepoint_metainfo_b, &
       fs_get_savepoint_metainfo_i, &
       fs_get_savepoint_metainfo_f, &
-      fs_get_savepoint_metainfo_d, &
-      fs_get_savepoint_metainfo_s
+      fs_get_savepoint_metainfo_d
   END INTERFACE
 
 
@@ -669,24 +666,6 @@ SUBROUTINE fs_get_serializer_metainfo_d(serializer, key, val)
   CALL fs_get_serializer_metainfo_d_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
 END SUBROUTINE fs_get_serializer_metainfo_d
 
-SUBROUTINE fs_get_serializer_metainfo_s(serializer, key, val)
-  TYPE(t_serializer), INTENT(IN) :: serializer
-  CHARACTER(LEN=*), INTENT(IN)   :: key
-  CHARACTER(LEN=*), INTENT(OUT)  :: val
-
-  INTERFACE
-     SUBROUTINE fs_get_serializer_metainfo_s_(serializer, key, val) &
-          BIND(c, name='serialboxFortranSerializerGetMetainfoString')
-       USE, INTRINSIC :: iso_c_binding
-       TYPE(C_PTR), INTENT(IN), VALUE                    :: serializer
-       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN)  :: key
-       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(OUT) :: val
-     END SUBROUTINE fs_get_serializer_metainfo_s_
-  END INTERFACE
-
-  CALL fs_get_serializer_metainfo_s_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
-END SUBROUTINE fs_get_serializer_metainfo_s
-
 !=============================================================================
 !=============================================================================
 
@@ -961,24 +940,6 @@ SUBROUTINE fs_get_field_metainfo_d(serializer, fieldname, key, val)
 
   CALL fs_get_field_metainfo_d_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, TRIM(key)//C_NULL_CHAR, val)
 END SUBROUTINE fs_get_field_metainfo_d
-
-SUBROUTINE fs_get_field_metainfo_s(serializer, fieldname, key, val)
-  TYPE(t_serializer), INTENT(IN) :: serializer
-  CHARACTER(LEN=*), INTENT(IN)   :: fieldname, key
-  CHARACTER(LEN=*), INTENT(OUT)  :: val
-
-  INTERFACE
-     SUBROUTINE fs_get_field_metainfo_s_(serializer, fieldname, key, val) &
-          BIND(c, name='serialboxFortranSerializerGetFieldMetainfoString')
-       USE, INTRINSIC :: iso_c_binding
-       TYPE(C_PTR), INTENT(IN), VALUE                    :: serializer
-       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN)  :: fieldname, key
-       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(OUT) :: val
-     END SUBROUTINE fs_get_field_metainfo_s_
-  END INTERFACE
-
-  CALL fs_get_field_metainfo_s_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, TRIM(key)//C_NULL_CHAR, val)
-END SUBROUTINE fs_get_field_metainfo_s
 
 !=============================================================================
 !=============================================================================
@@ -1456,24 +1417,6 @@ SUBROUTINE fs_get_savepoint_metainfo_d(savepoint, key, val)
 
   CALL fs_get_savepoint_metainfo_d_(savepoint%savepoint_ptr, TRIM(key)//C_NULL_CHAR, val)
 END SUBROUTINE fs_get_savepoint_metainfo_d
-
-SUBROUTINE fs_get_savepoint_metainfo_s(savepoint, key, val)
-  TYPE(t_savepoint), INTENT(IN) :: savepoint
-  CHARACTER(LEN=*), INTENT(IN)   :: key
-  CHARACTER(LEN=*), INTENT(OUT)  :: val
-
-  INTERFACE
-     SUBROUTINE fs_get_savepoint_metainfo_s_(savepoint, key, val) &
-          BIND(c, name='serialboxFortranSavepointGetMetainfoString')
-       USE, INTRINSIC :: iso_c_binding
-       TYPE(C_PTR), INTENT(IN), VALUE                    :: savepoint
-       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN)  :: key
-       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(OUT) :: val
-     END SUBROUTINE fs_get_savepoint_metainfo_s_
-  END INTERFACE
-
-  CALL fs_get_savepoint_metainfo_s_(savepoint%savepoint_ptr, TRIM(key)//C_NULL_CHAR, val)
-END SUBROUTINE fs_get_savepoint_metainfo_s
 
 !=============================================================================
 !=============================================================================
