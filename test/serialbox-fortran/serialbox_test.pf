@@ -719,6 +719,39 @@ CONTAINS
       CALL fs_destroy_serializer(serializer)      
     
     END SUBROUTINE testTotalSize
+
+@Test
+    SUBROUTINE testGlobalMetainfo()
     
+      TYPE(t_serializer) :: serializer
+      LOGICAL :: metalog
+      INTEGER :: metaint
+      REAL(KIND=C_FLOAT)  :: metafloat
+      REAL(KIND=C_DOUBLE) :: metadouble
+      
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_global_metainfo'
+      
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      
+      CALL fs_add_serializer_metainfo(serializer, 'metalog-t', .TRUE.)
+      CALL fs_add_serializer_metainfo(serializer, 'metalog-f', .FALSE.)
+      CALL fs_add_serializer_metainfo(serializer, 'metaint', 42)
+      CALL fs_add_serializer_metainfo(serializer, 'metafloat', 23.0_4)
+      CALL fs_add_serializer_metainfo(serializer, 'metadouble', 109.47_8)
+
+      CALL fs_get_serializer_metainfo(serializer, 'metalog-t', metalog)
+      @assertEqual(.TRUE., metalog)
+      CALL fs_get_serializer_metainfo(serializer, 'metalog-f', metalog)
+      @assertEqual(.FALSE., metalog)
+      CALL fs_get_serializer_metainfo(serializer, 'metaint', metaint)
+      @assertEqual(42, metaint)
+      CALL fs_get_serializer_metainfo(serializer, 'metafloat', metafloat)
+      @assertEqual(23.0_4, metafloat)
+      CALL fs_get_serializer_metainfo(serializer, 'metadouble', metadouble)
+      @assertEqual(109.47_8, metadouble)
+
+      CALL fs_destroy_serializer(serializer)
+    
+    END SUBROUTINE testGlobalMetainfo    
 
 END MODULE serialbox_test
