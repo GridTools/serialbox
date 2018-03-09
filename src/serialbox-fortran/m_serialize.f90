@@ -40,9 +40,9 @@ IMPLICIT NONE
 
 PUBLIC :: &
   t_serializer, t_savepoint, &
-  fs_create_serializer, fs_destroy_serializer, fs_serializer_openmode, fs_add_serializer_metainfo, &
-  fs_create_savepoint, fs_destroy_savepoint, fs_add_savepoint_metainfo, &
-  fs_field_exists, fs_register_field, fs_add_field_metainfo, fs_write_field, fs_read_field, &
+  fs_create_serializer, fs_destroy_serializer, fs_serializer_openmode, fs_add_serializer_metainfo, fs_get_serializer_metainfo, &
+  fs_create_savepoint, fs_destroy_savepoint, fs_add_savepoint_metainfo, fs_get_savepoint_metainfo, &
+  fs_field_exists, fs_register_field, fs_add_field_metainfo, fs_get_field_metainfo, fs_write_field, fs_read_field, &
   fs_enable_serialization, fs_disable_serialization, fs_print_debuginfo, fs_read_and_perturb_field, &
   fs_get_size, fs_get_halos, fs_get_rank, fs_get_total_size
 
