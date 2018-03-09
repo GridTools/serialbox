@@ -43,6 +43,9 @@ TEST_F(CFortranWrapperTest, Serializer) {
   serialboxFortranSerializerAddMetainfoInt32(serializer, "int", 2);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
+  serialboxFortranSerializerAddMetainfoInt64(serializer, "long", 52000000023L);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
   serialboxFortranSerializerAddMetainfoFloat32(serializer, "float", 1.1f);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
@@ -73,6 +76,11 @@ TEST_F(CFortranWrapperTest, Serializer) {
   serialboxFortranSerializerGetMetainfoInt32(serializer, "int", &metaInfoValueInt);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_EQ(2, metaInfoValueInt);
+
+  long metaInfoValueLong;
+  serialboxFortranSerializerGetMetainfoInt64(serializer, "long", &metaInfoValueLong);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(52000000023L, metaInfoValueLong);
 
   float metaInfoValueFloat;
   serialboxFortranSerializerGetMetainfoFloat32(serializer, "float", &metaInfoValueFloat);
@@ -147,6 +155,9 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   serialboxFortranSerializerAddFieldMetainfoInt32(serializer, "field", "int", 3);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
+  serialboxFortranSerializerAddFieldMetainfoInt64(serializer, "field", "long", 63000000024L);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
   serialboxFortranSerializerAddFieldMetainfoFloat32(serializer, "field", "float", 4.1f);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
@@ -183,6 +194,11 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   serialboxFortranSerializerGetFieldMetainfoInt32(serializer, "field", "int", &metaInfoValueInt);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_EQ(3, metaInfoValueInt);
+
+  long metaInfoValueLong;
+  serialboxFortranSerializerGetFieldMetainfoInt64(serializer, "field", "long", &metaInfoValueLong);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(63000000024L, metaInfoValueLong);
 
   float metaInfoValueFloat;
   serialboxFortranSerializerGetFieldMetainfoFloat32(serializer, "field", "float", &metaInfoValueFloat);
@@ -230,6 +246,9 @@ TEST_F(CFortranWrapperTest, Savepoint) {
   serialboxFortranSavepointAddMetainfoInt32(savepoint, "int", 6);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
+  serialboxFortranSavepointAddMetainfoInt64(savepoint, "long", 73000000023L);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
   serialboxFortranSavepointAddMetainfoFloat32(savepoint, "float", 7.1f);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
@@ -260,6 +279,11 @@ TEST_F(CFortranWrapperTest, Savepoint) {
   serialboxFortranSavepointGetMetainfoInt32(savepoint, "int", &metaInfoValueInt);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_EQ(6, metaInfoValueInt);
+
+  long metaInfoValueLong;
+  serialboxFortranSavepointGetMetainfoInt64(savepoint, "long", &metaInfoValueLong);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(73000000023L, metaInfoValueLong);
 
   float metaInfoValueFloat;
   serialboxFortranSavepointGetMetainfoFloat32(savepoint, "float", &metaInfoValueFloat);
