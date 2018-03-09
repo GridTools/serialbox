@@ -89,6 +89,10 @@ TEST_F(CFortranWrapperTest, Serializer) {
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_EQ("str", std::string(metaInfoValueString, strnlen(metaInfoValueString, 4)));
 
+  //Not-existing key
+  serialboxFortranSerializerGetMetainfoString(serializer, "nope", &metaInfoValueString);
+  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
   serialboxSerializerDestroy(serializer);
 }
 
@@ -195,6 +199,10 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_EQ("strf", std::string(metaInfoValueString, strnlen(metaInfoValueString, 5)));
 
+  //Not-existing key
+  serialboxFortranSerializerGetFieldMetainfoString(serializer, "field", "nope", &metaInfoValueString);
+  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
   // Type
   serialboxFieldMetainfo_t* info = serialboxSerializerGetFieldMetainfo(serializer, "field");
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
@@ -267,6 +275,10 @@ TEST_F(CFortranWrapperTest, Savepoint) {
   serialboxFortranSavepointGetMetainfoString(savepoint, "string", &metaInfoValueString);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_EQ("strsp", std::string(metaInfoValueString, strnlen(metaInfoValueString, 6)));
+
+  //Not-existing key
+  serialboxFortranSavepointGetMetainfoString(savepoint, "nope", &metaInfoValueString);
+  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   serialboxSavepointDestroy(savepoint);
 }
