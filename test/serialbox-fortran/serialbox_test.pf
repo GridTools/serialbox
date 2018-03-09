@@ -754,4 +754,41 @@ CONTAINS
     
     END SUBROUTINE testGlobalMetainfo    
 
+@Test
+    SUBROUTINE testFieldMetainfo()
+    
+      TYPE(t_serializer) :: serializer
+      INTEGER :: field = 42      
+      LOGICAL :: metalog
+      INTEGER :: metaint
+      REAL(KIND=C_FLOAT)  :: metafloat
+      REAL(KIND=C_DOUBLE) :: metadouble
+      
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_global_metainfo'
+      CHARACTER(len=*), PARAMETER :: field_name = 'field'
+      
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL fs_write_field(serializer, savepoint, field_name, field)
+      
+      CALL fs_add_field_metainfo(serializer, field_name, 'metalog-t', .TRUE.)
+      CALL fs_add_field_metainfo(serializer, field_name, 'metalog-f', .FALSE.)
+      CALL fs_add_field_metainfo(serializer, field_name, 'metaint', 42)
+      CALL fs_add_field_metainfo(serializer, field_name, 'metafloat', 23.0_4)
+      CALL fs_add_field_metainfo(serializer, field_name, 'metadouble', 109.47_8)
+
+      CALL fs_get_field_metainfo(serializer, field_name, 'metalog-t', metalog)
+      @assertEqual(.TRUE., metalog)
+      CALL fs_get_field_metainfo(serializer, field_name, 'metalog-f', metalog)
+      @assertEqual(.FALSE., metalog)
+      CALL fs_get_field_metainfo(serializer, field_name, 'metaint', metaint)
+      @assertEqual(42, metaint)
+      CALL fs_get_field_metainfo(serializer, field_name, 'metafloat', metafloat)
+      @assertEqual(23.0_4, metafloat)
+      CALL fs_get_field_metainfo(serializer, field_name, 'metadouble', metadouble)
+      @assertEqual(109.47_8, metadouble)
+
+      CALL fs_destroy_serializer(serializer)
+    
+    END SUBROUTINE testFieldMetainfo    
+
 END MODULE serialbox_test
