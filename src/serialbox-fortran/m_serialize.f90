@@ -149,7 +149,7 @@ PRIVATE
 
 
   !==============================================================================
-  !+ Module interface to get metainformation from the given serializer
+  !+ Module interface to get metainformation for the given serializer
   !------------------------------------------------------------------------------
   INTERFACE fs_get_serializer_metainfo
     MODULE PROCEDURE &
@@ -175,6 +175,19 @@ PRIVATE
 
 
   !==============================================================================
+  !+ Module interface to get metainformation for the given field
+  !------------------------------------------------------------------------------
+  INTERFACE fs_get_field_metainfo
+    MODULE PROCEDURE &
+      fs_get_field_metainfo_b, &
+      fs_get_field_metainfo_i, &
+      fs_get_field_metainfo_f, &
+      fs_get_field_metainfo_d, &
+      fs_get_field_metainfo_s
+  END INTERFACE
+
+
+  !==============================================================================
   !+ Module interface to attach metainformation to the given savepoint
   !------------------------------------------------------------------------------
   INTERFACE fs_add_savepoint_metainfo
@@ -184,6 +197,19 @@ PRIVATE
       fs_add_savepoint_metainfo_f, &
       fs_add_savepoint_metainfo_d, &
       fs_add_savepoint_metainfo_s
+  END INTERFACE
+
+
+  !==============================================================================
+  !+ Module interface to get metainformation for the given savepoint
+  !------------------------------------------------------------------------------
+  INTERFACE fs_get_savepoint_metainfo
+    MODULE PROCEDURE &
+      fs_get_savepoint_metainfo_b, &
+      fs_get_savepoint_metainfo_i, &
+      fs_get_savepoint_metainfo_f, &
+      fs_get_savepoint_metainfo_d, &
+      fs_get_savepoint_metainfo_s
   END INTERFACE
 
 
@@ -1356,6 +1382,98 @@ SUBROUTINE fs_add_savepoint_metainfo_s(savepoint, key, val)
                                     TRIM(key)//C_NULL_CHAR,       &
                                     TRIM(val)//C_NULL_CHAR)
 END SUBROUTINE fs_add_savepoint_metainfo_s
+
+! Getter have to be subroutines instead of functions for having unique argument lists
+
+SUBROUTINE fs_get_savepoint_metainfo_b(savepoint, key, val)
+  TYPE(t_savepoint), INTENT(IN) :: savepoint
+  CHARACTER(LEN=*), INTENT(IN)   :: key
+  LOGICAL, INTENT(OUT)           :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_savepoint_metainfo_b_(savepoint, key, val) &
+          BIND(c, name='serialboxFortranSavepointGetMetainfoBoolean')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: savepoint
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       LOGICAL, INTENT(OUT)                             :: val
+     END SUBROUTINE fs_get_savepoint_metainfo_b_
+  END INTERFACE
+
+  CALL fs_get_savepoint_metainfo_b_(savepoint%savepoint_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_savepoint_metainfo_b
+
+SUBROUTINE fs_get_savepoint_metainfo_i(savepoint, key, val)
+  TYPE(t_savepoint), INTENT(IN) :: savepoint
+  CHARACTER(LEN=*), INTENT(IN)   :: key
+  INTEGER, INTENT(OUT)           :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_savepoint_metainfo_i_(savepoint, key, val) &
+          BIND(c, name='serialboxFortranSavepointGetMetainfoInt32')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: savepoint
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       INTEGER, INTENT(OUT)                             :: val
+     END SUBROUTINE fs_get_savepoint_metainfo_i_
+  END INTERFACE
+
+  CALL fs_get_savepoint_metainfo_i_(savepoint%savepoint_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_savepoint_metainfo_i
+
+SUBROUTINE fs_get_savepoint_metainfo_f(savepoint, key, val)
+  TYPE(t_savepoint), INTENT(IN)  :: savepoint
+  CHARACTER(LEN=*), INTENT(IN)    :: key
+  REAL(KIND=C_FLOAT), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_savepoint_metainfo_f_(savepoint, key, val) &
+          BIND(c, name='serialboxFortranSavepointGetMetainfoFloat32')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: savepoint
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       REAL(KIND=C_FLOAT), INTENT(OUT)                  :: val
+     END SUBROUTINE fs_get_savepoint_metainfo_f_
+  END INTERFACE
+
+  CALL fs_get_savepoint_metainfo_f_(savepoint%savepoint_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_savepoint_metainfo_f
+
+SUBROUTINE fs_get_savepoint_metainfo_d(savepoint, key, val)
+  TYPE(t_savepoint), INTENT(IN)   :: savepoint
+  CHARACTER(LEN=*), INTENT(IN)     :: key
+  REAL(KIND=C_DOUBLE), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_savepoint_metainfo_d_(savepoint, key, val) &
+          BIND(c, name='serialboxFortranSavepointGetMetainfoFloat64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: savepoint
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       REAL(KIND=C_DOUBLE), INTENT(OUT)                 :: val
+     END SUBROUTINE fs_get_savepoint_metainfo_d_
+  END INTERFACE
+
+  CALL fs_get_savepoint_metainfo_d_(savepoint%savepoint_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_savepoint_metainfo_d
+
+SUBROUTINE fs_get_savepoint_metainfo_s(savepoint, key, val)
+  TYPE(t_savepoint), INTENT(IN) :: savepoint
+  CHARACTER(LEN=*), INTENT(IN)   :: key
+  CHARACTER(LEN=*), INTENT(OUT)  :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_savepoint_metainfo_s_(savepoint, key, val) &
+          BIND(c, name='serialboxFortranSavepointGetMetainfoString')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                    :: savepoint
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN)  :: key
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(OUT) :: val
+     END SUBROUTINE fs_get_savepoint_metainfo_s_
+  END INTERFACE
+
+  CALL fs_get_savepoint_metainfo_s_(savepoint%savepoint_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_savepoint_metainfo_s
 
 !=============================================================================
 !=============================================================================
