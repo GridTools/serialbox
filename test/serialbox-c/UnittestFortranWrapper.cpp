@@ -34,7 +34,10 @@ TEST_F(CFortranWrapperTest, Serializer) {
   //
   // Add global meta-info
   //
-  serialboxFortranSerializerAddMetainfoBoolean(serializer, "bool", true);
+  serialboxFortranSerializerAddMetainfoBoolean(serializer, "boolt", true);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSerializerAddMetainfoBoolean(serializer, "boolf", false);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   serialboxFortranSerializerAddMetainfoInt32(serializer, "int", 2);
@@ -52,16 +55,19 @@ TEST_F(CFortranWrapperTest, Serializer) {
   //
   // Add existing meta-info -> Error
   //
-  serialboxFortranSerializerAddMetainfoBoolean(serializer, "bool", true);
+  serialboxFortranSerializerAddMetainfoBoolean(serializer, "boolt", true);
   ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   //
   // Get meta-info
   //
   int metaInfoValueBool;
-  serialboxFortranSerializerGetMetainfoBoolean(serializer, "bool", &metaInfoValueBool);
+  serialboxFortranSerializerGetMetainfoBoolean(serializer, "boolt", &metaInfoValueBool);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_EQ(true, (bool) metaInfoValueBool);
+  serialboxFortranSerializerGetMetainfoBoolean(serializer, "boolf", &metaInfoValueBool);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(false, (bool) metaInfoValueBool);
 
   int metaInfoValueInt;
   serialboxFortranSerializerGetMetainfoInt32(serializer, "int", &metaInfoValueInt);
@@ -128,7 +134,10 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   //
   // Add field meta-info
   //
-  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "bool", true);
+  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "boolt", true);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "boolf", false);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   serialboxFortranSerializerAddFieldMetainfoInt32(serializer, "field", "int", 3);
@@ -146,22 +155,25 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   //
   // Field does not exists -> Error
   //
-  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "fieldX", "bool", true);
+  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "fieldX", "boolt", true);
   ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   //
   // Add existing field meta-info -> Error
   //
-  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "bool", true);
+  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "boolt", true);
   ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   //
   // Get field meta-info
   //
   int metaInfoValueBool;
-  serialboxFortranSerializerGetFieldMetainfoBoolean(serializer, "field", "bool", &metaInfoValueBool);
+  serialboxFortranSerializerGetFieldMetainfoBoolean(serializer, "field", "boolt", &metaInfoValueBool);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_EQ(true, (bool) metaInfoValueBool);
+  serialboxFortranSerializerGetFieldMetainfoBoolean(serializer, "field", "boolf", &metaInfoValueBool);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(false, (bool) metaInfoValueBool);
 
   int metaInfoValueInt;
   serialboxFortranSerializerGetFieldMetainfoInt32(serializer, "field", "int", &metaInfoValueInt);
@@ -201,7 +213,10 @@ TEST_F(CFortranWrapperTest, Savepoint) {
   //
   // Add meta-info
   //
-  serialboxFortranSavepointAddMetainfoBoolean(savepoint, "bool", true);
+  serialboxFortranSavepointAddMetainfoBoolean(savepoint, "boolt", true);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSavepointAddMetainfoBoolean(savepoint, "boolf", false);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   serialboxFortranSavepointAddMetainfoInt32(savepoint, "int", 6);
@@ -219,16 +234,19 @@ TEST_F(CFortranWrapperTest, Savepoint) {
   //
   // Add existing meta-info -> Error
   //
-  serialboxFortranSavepointAddMetainfoBoolean(savepoint, "bool", true);
+  serialboxFortranSavepointAddMetainfoBoolean(savepoint, "boolt", true);
   ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   //
   // Get meta-info
   //
   int metaInfoValueBool;
-  serialboxFortranSavepointGetMetainfoBoolean(savepoint, "bool", &metaInfoValueBool);
+  serialboxFortranSavepointGetMetainfoBoolean(savepoint, "boolt", &metaInfoValueBool);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_EQ(true, (bool) metaInfoValueBool);
+  serialboxFortranSavepointGetMetainfoBoolean(savepoint, "boolf", &metaInfoValueBool);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(false, (bool) metaInfoValueBool);
 
   int metaInfoValueInt;
   serialboxFortranSavepointGetMetainfoInt32(savepoint, "int", &metaInfoValueInt);
