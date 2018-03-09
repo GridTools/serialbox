@@ -569,8 +569,7 @@ SUBROUTINE fs_add_serializer_metainfo_s(serializer, key, val)
 END SUBROUTINE fs_add_serializer_metainfo_s
 
 
-! Getter have to be subroutines instead of functions,
-! otherwise they would have the same argument lists and so can't be part of one interface
+! Getter have to be subroutines instead of functions for having unique argument lists
 
 SUBROUTINE fs_get_serializer_metainfo_b(serializer, key, val)
   TYPE(t_serializer), INTENT(IN) :: serializer
@@ -633,7 +632,7 @@ SUBROUTINE fs_get_serializer_metainfo_d(serializer, key, val)
 
   INTERFACE
      SUBROUTINE fs_get_serializer_metainfo_d_(serializer, key, val) &
-          BIND(c, name='serialboxFortranSerializerGetMetainfoInt64')
+          BIND(c, name='serialboxFortranSerializerGetMetainfoFloat64')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
@@ -651,7 +650,7 @@ SUBROUTINE fs_get_serializer_metainfo_s(serializer, key, val)
 
   INTERFACE
      SUBROUTINE fs_get_serializer_metainfo_s_(serializer, key, val) &
-          BIND(c, name='serialboxFortranSerializerGetMetainfoInt32')
+          BIND(c, name='serialboxFortranSerializerGetMetainfoString')
        USE, INTRINSIC :: iso_c_binding
        TYPE(C_PTR), INTENT(IN), VALUE                    :: serializer
        CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN)  :: key
@@ -862,6 +861,98 @@ SUBROUTINE fs_add_field_metainfo_s(serializer, fieldname, key, val)
                                 TRIM(val)//C_NULL_CHAR)
 END SUBROUTINE fs_add_field_metainfo_s
 
+
+! Getter have to be subroutines instead of functions for having unique argument lists
+
+SUBROUTINE fs_get_field_metainfo_b(serializer, fieldname, key, val)
+  TYPE(t_serializer), INTENT(IN) :: serializer
+  CHARACTER(LEN=*), INTENT(IN)   :: fieldname, key
+  LOGICAL, INTENT(OUT)           :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_field_metainfo_b_(serializer, fieldname, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetFieldMetainfoBoolean')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: fieldname, key
+       LOGICAL, INTENT(OUT)                             :: val
+     END SUBROUTINE fs_get_field_metainfo_b_
+  END INTERFACE
+
+  CALL fs_get_field_metainfo_b_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_field_metainfo_b
+
+SUBROUTINE fs_get_field_metainfo_i(serializer, fieldname, key, val)
+  TYPE(t_serializer), INTENT(IN) :: serializer
+  CHARACTER(LEN=*), INTENT(IN)   :: fieldname, key
+  INTEGER, INTENT(OUT)           :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_field_metainfo_i_(serializer, fieldname, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetFieldMetainfoInt32')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: fieldname, key
+       INTEGER, INTENT(OUT)                             :: val
+     END SUBROUTINE fs_get_field_metainfo_i_
+  END INTERFACE
+
+  CALL fs_get_field_metainfo_i_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_field_metainfo_i
+
+SUBROUTINE fs_get_field_metainfo_f(serializer, fieldname, key, val)
+  TYPE(t_serializer), INTENT(IN)  :: serializer
+  CHARACTER(LEN=*), INTENT(IN)    :: fieldname, key
+  REAL(KIND=C_FLOAT), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_field_metainfo_f_(serializer, fieldname, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetFieldMetainfoFloat32')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: fieldname, key
+       REAL(KIND=C_FLOAT), INTENT(OUT)                  :: val
+     END SUBROUTINE fs_get_field_metainfo_f_
+  END INTERFACE
+
+  CALL fs_get_field_metainfo_f_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_field_metainfo_f
+
+SUBROUTINE fs_get_field_metainfo_d(serializer, fieldname, key, val)
+  TYPE(t_serializer), INTENT(IN)   :: serializer
+  CHARACTER(LEN=*), INTENT(IN)     :: fieldname, key
+  REAL(KIND=C_DOUBLE), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_field_metainfo_d_(serializer, fieldname, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetFieldMetainfoFloat64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: fieldname, key
+       REAL(KIND=C_DOUBLE), INTENT(OUT)                 :: val
+     END SUBROUTINE fs_get_field_metainfo_d_
+  END INTERFACE
+
+  CALL fs_get_field_metainfo_d_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_field_metainfo_d
+
+SUBROUTINE fs_get_field_metainfo_s(serializer, fieldname, key, val)
+  TYPE(t_serializer), INTENT(IN) :: serializer
+  CHARACTER(LEN=*), INTENT(IN)   :: fieldname, key
+  CHARACTER(LEN=*), INTENT(OUT)  :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_field_metainfo_s_(serializer, fieldname, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetFieldMetainfoString')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                    :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN)  :: fieldname, key
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(OUT) :: val
+     END SUBROUTINE fs_get_field_metainfo_s_
+  END INTERFACE
+
+  CALL fs_get_field_metainfo_s_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_field_metainfo_s
 
 !=============================================================================
 !=============================================================================
