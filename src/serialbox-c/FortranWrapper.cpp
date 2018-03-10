@@ -176,7 +176,6 @@ void serialboxFortranLoc(const void* basePtr, intptr_t* loc) {
 }
 
 void serialboxFortranSerializerGetFieldRank(const void* serializer, const char* name, int* rank) {
-
   const Serializer* ser = toConstSerializer(static_cast<const serialboxSerializer_t*>(serializer));
   *rank = ser->getFieldMetainfoImplOf(name).dims().size();
 }
@@ -197,7 +196,6 @@ void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const 
 void serialboxFortranSerializerGetFieldHalos(const void* serializer, const char* name,
                                              int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
                                              int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo) {
-
   char *notUsedHere_storedName, *notUsedHere_elementType;
   int notUsedHere_bytesPerElement, notUsedHere_rank;
   int notUsedHere_iSize, notUsedHere_jSize, notUsedHere_kSize, notUsedHere_lSize;
