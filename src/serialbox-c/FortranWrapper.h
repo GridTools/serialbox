@@ -195,17 +195,17 @@ void serialboxFortranSerializerAddFieldMetainfoString(void* serializer, const ch
  * @{
  */
 void serialboxFortranSerializerGetFieldMetainfoBoolean(const void* serializer, const char* field,
-													   const char* key, int* value);
+                                                       const char* key, int* value);
 void serialboxFortranSerializerGetFieldMetainfoInt32(const void* serializer, const char* field,
-													 const char* key, int* value);
+                                                     const char* key, int* value);
 void serialboxFortranSerializerGetFieldMetainfoInt64(const void* serializer, const char* field,
-													 const char* key, long* value);
+                                                     const char* key, long* value);
 void serialboxFortranSerializerGetFieldMetainfoFloat32(const void* serializer, const char* field,
-													   const char* key, float* value);
+                                                       const char* key, float* value);
 void serialboxFortranSerializerGetFieldMetainfoFloat64(const void* serializer, const char* field,
-													   const char* key, double* value);
+                                                       const char* key, double* value);
 void serialboxFortranSerializerGetFieldMetainfoString(const void* serializer, const char* field,
-													  const char* key, const char** value);
+                                                      const char* key, const char** value);
 /** @} */
 
 /*===------------------------------------------------------------------------------------------===*\
