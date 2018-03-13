@@ -159,6 +159,7 @@ PRIVATE
       fs_get_serializer_metainfo_l, &
       fs_get_serializer_metainfo_f, &
       fs_get_serializer_metainfo_d
+      ! TODO fs_get_serializer_metainfo_s
   END INTERFACE
 
 
@@ -186,6 +187,7 @@ PRIVATE
       fs_get_field_metainfo_l, &
       fs_get_field_metainfo_f, &
       fs_get_field_metainfo_d
+      ! TODO fs_get_field_metainfo_s
   END INTERFACE
 
 
@@ -213,6 +215,7 @@ PRIVATE
       fs_get_savepoint_metainfo_l, &
       fs_get_savepoint_metainfo_f, &
       fs_get_savepoint_metainfo_d
+      ! TODO fs_get_savepoint_metainfo_s
   END INTERFACE
 
 
