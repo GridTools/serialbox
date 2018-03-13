@@ -167,18 +167,20 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
   }
 }
 
-void serialboxFortranLoc(const void* basePtr, intptr_t* loc)
-{
-	*loc = (long) basePtr;
+void serialboxFortranLoc(const void* basePtr, intptr_t* loc) {
+  *loc = (long) basePtr;
+}
+
+void serialboxFortranSerializerGetFieldRank(const void* serializer, const char* name, int* rank) {
+  const Serializer* ser = toConstSerializer(static_cast<const serialboxSerializer_t*>(serializer));
+  *rank = ser->getFieldMetainfoImplOf(name).dims().size();
 }
 
 void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const char* name,
                                                   int* isize, int* jsize, int* ksize, int* lsize) {
-
   const Serializer* ser = toConstSerializer(static_cast<const serialboxSerializer_t*>(serializer));
 
   auto dims = ser->getFieldMetainfoImplOf(name).dims();
-
   ::make_4D(dims);
 
   *isize = dims[0];
@@ -188,10 +190,8 @@ void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const 
 }
 
 void serialboxFortranSerializerGetFieldHalos(const void* serializer, const char* name,
-                                             int* iMinusHalo, int* iPlusHalo, int* jMinusHalo,
-                                             int* jPlusHalo, int* kMinusHalo, int* kPlusHalo,
-                                             int* lMinusHalo, int* lPlusHalo) {
-
+                                             int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
+                                             int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo) {
   char *notUsedHere_storedName, *notUsedHere_elementType;
   int notUsedHere_bytesPerElement, notUsedHere_rank;
   int notUsedHere_iSize, notUsedHere_jSize, notUsedHere_kSize, notUsedHere_lSize;
@@ -239,8 +239,7 @@ void serialboxFortranSerializerAddMetainfoFloat64(void* serializer, const char* 
   }
 }
 
-void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* key,
-                                                 const char* value) {
+void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* key, const char* value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {
     ser->addGlobalMetainfo(key, value);
@@ -249,14 +248,13 @@ void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* k
   }
 }
 
-void serialboxFortranSerializerRegisterField(void* serializer, const char* name, int type,
-                                             int bytesPerElement, int iSize, int jSize, int kSize,
-                                             int lSize, int iMinusHalo, int iPlusHalo,
-                                             int jMinusHalo, int jPlusHalo, int kMinusHalo,
-                                             int kPlusHalo, int lMinusHalo, int lPlusHalo) {
-  serialboxSerializerAddField2(static_cast<serialboxSerializer_t*>(serializer), name, type,
-                               bytesPerElement, iSize, jSize, kSize, lSize, iMinusHalo, iPlusHalo,
-                               jMinusHalo, jPlusHalo, kMinusHalo, kPlusHalo, lMinusHalo, lPlusHalo);
+void serialboxFortranSerializerRegisterField(void* serializer, const char* name, int type, int bytesPerElement,
+                                             int iSize, int jSize, int kSize, int lSize,
+                                             int iMinusHalo, int iPlusHalo, int jMinusHalo, int jPlusHalo,
+                                             int kMinusHalo, int kPlusHalo, int lMinusHalo, int lPlusHalo) {
+  serialboxSerializerAddField2(static_cast<serialboxSerializer_t*>(serializer), name, type, bytesPerElement,
+                               iSize, jSize, kSize, lSize,
+                               iMinusHalo, iPlusHalo, jMinusHalo, jPlusHalo, kMinusHalo, kPlusHalo, lMinusHalo, lPlusHalo);
 }
 
 /*===------------------------------------------------------------------------------------------===*\
@@ -368,8 +366,7 @@ void serialboxFortranSavepointAddMetainfoFloat64(void* savepoint, const char* ke
   }
 }
 
-void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key,
-                                                const char* value) {
+void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key, const char* value) {
   Savepoint* sp = toSavepoint(static_cast<serialboxSavepoint_t*>(savepoint));
   try {
     sp->addMetainfo(key, value);

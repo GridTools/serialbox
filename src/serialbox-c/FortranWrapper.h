@@ -72,6 +72,12 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
 void serialboxFortranLoc(const void* basePtr, intptr_t* loc);
 
 /**
+ * \brief Returns the rank of the field `name`
+ * The result is 1 for both, scalars and 1-dimensional arrays
+ */
+void serialboxFortranSerializerGetFieldRank(const void* serializer, const char* name, int* rank);
+
+/**
  * \brief Returns the dimensions of the field `name`
  */
 void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const char* name,
@@ -81,9 +87,8 @@ void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const 
  * \brief Returns the halos of the field `name`
  */
 void serialboxFortranSerializerGetFieldHalos(const void* serializer, const char* name,
-                                             int* iMinusHalo, int* iPlusHalo, int* jMinusHalo,
-                                             int* jPlusHalo, int* kMinusHalo, int* kPlusHalo,
-                                             int* lMinusHalo, int* lPlusHalo);
+                                             int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
+                                             int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo);
 
 /**
  * \brief Add a global meta-information `key=value` pair to the Serializer
@@ -99,8 +104,7 @@ void serialboxFortranSerializerAddMetainfoBoolean(void* serializer, const char* 
 void serialboxFortranSerializerAddMetainfoInt32(void* serializer, const char* key, int value);
 void serialboxFortranSerializerAddMetainfoFloat32(void* serializer, const char* key, float value);
 void serialboxFortranSerializerAddMetainfoFloat64(void* serializer, const char* key, double value);
-void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* key,
-                                                 const char* value);
+void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* key, const char* value);
 /** @} */
 
 /**
@@ -176,8 +180,7 @@ void serialboxFortranSavepointAddMetainfoBoolean(void* savepoint, const char* ke
 void serialboxFortranSavepointAddMetainfoInt32(void* savepoint, const char* key, int value);
 void serialboxFortranSavepointAddMetainfoFloat32(void* savepoint, const char* key, float value);
 void serialboxFortranSavepointAddMetainfoFloat64(void* savepoint, const char* key, double value);
-void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key,
-                                                const char* value);
+void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key, const char* value);
 /** @} */
 
 /** @} @} */
