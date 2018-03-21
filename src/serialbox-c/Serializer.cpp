@@ -89,6 +89,7 @@ serialboxSerializer_t* serialboxSerializerCreate(int mode, const char* directory
 
 void serialboxSerializerDestroy(serialboxSerializer_t* serializer) {
   if(serializer) {
+    serialboxSerializerUpdateMetaData(serializer);
     Serializer* ser = toSerializer(serializer);
     if(serializer->ownsData)
       delete ser;
