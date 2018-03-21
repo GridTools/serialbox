@@ -389,3 +389,25 @@ TEST_F(CFortranWrapperTest, Rank) {
 	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 	EXPECT_EQ(rank, 4);
 }
+
+TEST_F(CFortranWrapperTest, PermanentMetaInfo) {
+
+    serialboxSerializer_t* serializer = serialboxSerializerCreate(Write, directory->path().c_str(), "PermanentMetaInfo", "Binary");
+    ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+	serialboxFortranSerializerRegisterField(serializer, "field", Int32, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+	serialboxFortranSerializerAddFieldMetainfoInt32(serializer, "field", "metatest", 42);
+    ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+    serialboxSerializerDestroy(serializer);
+    ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+    serializer = serialboxSerializerCreate(Read, directory->path().c_str(), "PermanentMetaInfo", "Binary");
+    ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+    serialboxSerializerDestroy(serializer);
+    ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+}
