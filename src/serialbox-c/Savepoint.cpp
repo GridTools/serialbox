@@ -84,8 +84,8 @@ size_t serialboxSavepointHash(const serialboxSavepoint_t* savepoint) {
  *     Meta-information
 \*===------------------------------------------------------------------------------------------===*/
 
-serialboxMetainfo_t* serialboxSavepointGetMetainfo(serialboxSavepoint_t* savepoint) {
-  Savepoint* sp = toSavepoint(savepoint);
+serialboxMetainfo_t* serialboxSavepointGetMetainfo(const serialboxSavepoint_t* savepoint) {
+  const Savepoint* sp = toConstSavepoint(savepoint);
   serialboxMetainfo_t* metaInfo = allocate<serialboxMetainfo_t>();
   metaInfo->impl = sp->metaInfoPtr().get();
   metaInfo->ownsData = 0;

@@ -89,6 +89,7 @@ serialboxSerializer_t* serialboxSerializerCreate(int mode, const char* directory
 
 void serialboxSerializerDestroy(serialboxSerializer_t* serializer) {
   if(serializer) {
+    serialboxSerializerUpdateMetaData(serializer);
     Serializer* ser = toSerializer(serializer);
     if(serializer->ownsData)
       delete ser;
@@ -141,8 +142,8 @@ char* serialboxSerializerToString(const serialboxSerializer_t* serializer) {
  *     Global Meta-information
 \*===------------------------------------------------------------------------------------------===*/
 
-serialboxMetainfo_t* serialboxSerializerGetGlobalMetainfo(serialboxSerializer_t* serializer) {
-  Serializer* ser = toSerializer(serializer);
+serialboxMetainfo_t* serialboxSerializerGetGlobalMetainfo(const serialboxSerializer_t* serializer) {
+  const Serializer* ser = toConstSerializer(serializer);
   serialboxMetainfo_t* metaInfo = allocate<serialboxMetainfo_t>();
   metaInfo->impl = ser->globalMetainfoPtr().get();
   metaInfo->ownsData = 0;
