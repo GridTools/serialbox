@@ -70,6 +70,8 @@ elif [ "$(hostname | grep kesch)" != "" ] ; then
     MYHOST="kesch"
 elif [ "$(hostname | grep daint)" != "" ] ; then
     MYHOST="daint"
+elif [ "$(hostname | grep tave)" != "" ] ; then
+    MYHOST="tave"
 else
     echo "build: host '$(hostname)' not known. Assuming environment is already setup."
 fi
