@@ -80,6 +80,9 @@ elif [ "$FC_COMPILER" = "ftn" ]; then
   
     module load gcc
     
+elif [ "$FC_COMPILER" = "ifort" ]; then
+    module swap PrgEnv-cray PrgEnv-intel
+    module load gcc
 else
     module swap PrgEnv-cray PrgEnv-gnu
 #    module load cray-netcdf
