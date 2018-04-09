@@ -9,4 +9,7 @@
 
 cmake_minimum_required(VERSION 3.1)
 
+# Workaround for -rdynamic 
+set(CMAKE_SHARED_LIBRARY_LINK_Fortran_FLAGS "")
+
 add_subdirectory(simple)
