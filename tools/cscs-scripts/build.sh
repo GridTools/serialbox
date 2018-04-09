@@ -32,7 +32,7 @@ print_help()
            
     # --fc-compiler
     printf "  %-35s %s\n" \
-           "-f, --fc-compiler [gnu|cray|pgi]" \
+           "-f, --fc-compiler [gnu|cray|pgi|intel]" \
            "Select Fortran compiler [default: gnu]." 
 
     # --run-tests
@@ -127,6 +127,9 @@ if [ "${ARG_FC_COMPILER}" = "cray" ]; then
 elif [ "${ARG_FC_COMPILER}" = "pgi" ]; then
     printf "%-20s: %s\n" "Fortran compiler" "pgi"
     FC_COMPILER="pgfortran"
+elif [ "${ARG_FC_COMPILER}" = "intel" ]; then
+    printf "%-20s: %s\n" "Fortran compiler" "intel"
+    FC_COMPILER="ifort"
 else
     printf "%-20s: %s\n" "Fortran compiler" "gnu"
     FC_COMPILER="gfortran"
