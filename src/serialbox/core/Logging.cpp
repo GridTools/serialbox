@@ -38,7 +38,7 @@ static std::string getCurrentTime() {
 NullLogger* NullLogger::instance_ = nullptr;
 
 NullLogger& NullLogger::getInstance() noexcept {
-  if(instance_)
+  if(!instance_)
     instance_ = new NullLogger();
   return (*instance_);
 }
@@ -46,8 +46,9 @@ NullLogger& NullLogger::getInstance() noexcept {
 Logger* Logger::instance_ = nullptr;
 
 Logger& Logger::getInstance() noexcept {
-  if(instance_)
+  if(!instance_)
     instance_ = new Logger();
+  Logging::enable();
   return (*instance_);
 }
 

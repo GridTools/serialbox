@@ -12,14 +12,13 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#ifdef SERIALBOX_HAS_GRIDTOOLS
-
 #include "utility/GridTools.h"
+#ifdef SERIALBOX_HAS_GRIDTOOLS
 #include "utility/SerializerTestBase.h"
 #include "utility/Storage.h"
-#include "serialbox/core/frontend/gridtools/Serializer.h"
 #include <gtest/gtest.h>
 #include <memory>
+#include "serialbox/core/frontend/gridtools/Serializer.h"
 
 using namespace serialbox::gridtools;
 using namespace serialbox::unittest;

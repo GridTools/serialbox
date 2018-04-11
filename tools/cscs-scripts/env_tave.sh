@@ -66,27 +66,30 @@ fi
 
 #------------------------------ Set environment --------------------------------
 
-module purge
-module load cmake/3.9.1
+module load CMake
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
-
-    module load craype-haswell
-    module load craype-accel-nvidia35
-    module switch mvapich2_cce/2.2rc1.0.3_cuda80 mvapich2gdr_gnu/2.2_cuda_8.0
-    module load PrgEnv-pgi
-    module load gcc/5.4.0-2.26
+    
+    module swap PrgEnv-cray PrgEnv-pgi
+    module load gcc
+#    module load cray-netcdf
+#    module load cray-hdf5
+#    export NETCDF_ROOT=${NETCDF_DIR}
     
 elif [ "$FC_COMPILER" = "ftn" ]; then
-    module load craype-haswell
-    module load PrgEnv-cray
-    module load craype-accel-nvidia35
-    module load craype-network-infiniband
-    module switch mvapich2_cce/2.2rc1.0.3_cuda80 mvapich2gdr_gnu/2.2_cuda_8.0
-    module load gcc/5.4.0-2.26
-    export GCC_X86_64=$EBROOTGCCCORE
+  
+    module load gcc
+    
+elif [ "$FC_COMPILER" = "ifort" ]; then
+
+    module swap PrgEnv-cray PrgEnv-intel
+    module load gcc
+
 else
-    module load PrgEnv-gnu
+    module swap PrgEnv-cray PrgEnv-gnu
+#    module load cray-netcdf
+#    module load cray-hdf5
+#    export NETCDF_ROOT=${NETCDF_DIR}
 fi
 
 export CXX=$(which g++)
@@ -96,6 +99,7 @@ export FC=$(which $FC_COMPILER)
 export Boost_NO_SYSTEM_PATHS=true
 export Boost_NO_BOOST_CMAKE=true
 
-export BOOST_ROOT=/project/c14/install/kesch/boost/boost_1_64_0/
-export BOOST_INCLUDE=/project/c14/install/kesch/boost/boost_1_65_1/include/
+export BOOST_ROOT=/project/c14/install/daint/boost/boost_1_64_0
+export BOOST_INCLUDE={BOOST_ROOT}/include/
+export LD_LIBRARY_PATH=${BOOST_ROOT}/lib:$LD_LIBRARY_PATH
 

@@ -4,7 +4,7 @@
 ##
 ##                                   S E R I A L B O X
 ##
-## This file is distributed under terms of BSD license. 
+## This file is distributed under terms of BSD license.
 ## See LICENSE.txt for more information.
 ##
 ##===------------------------------------------------------------------------------------------===##
@@ -53,6 +53,24 @@ def to_ascii(text):
         return bytes(text, 'ascii')
     else:
         return str(text)
+
+
+def filter_fortran(f):
+    return (f.split('.')[-1].lower() in ['f90', 'inc', 'incf', 'f', 'f03'])
+
+
+def build_tree(src, dest, filtered_list, file_filter):
+    if os.path.isdir(src):
+        if not os.path.isdir(dest):
+            os.makedirs(dest)
+        files = os.listdir(src)
+        filtered_list.extend([os.path.join(src, f) for f in files if os.path.isfile(os.path.join(src, f)) and file_filter(f)])
+        dirs = [f for f in files if os.path.isdir(os.path.join(src, f))]
+        for d in dirs:
+            build_tree(os.path.join(src, d), os.path.join(dest, d), filtered_list, file_filter)
+    else:
+        if os.path.isfile(src) and file_filter(src):
+            filtered_list.append(src)
 
 
 class PpSer:
@@ -125,17 +143,17 @@ class PpSer:
         self.intentin_removed = []
 
         # private variables
-        self.__ser = False           # currently processing !$SER directives
-        self.__line = ''             # current line
-        self.__linenum = 0           # current line number
-        self.__module = ''           # current module
-        self.__calls = set()         # calls to serialization module
-        self.__outputBuffer = ''     # preprocessed file
+        self.__ser = False            # currently processing !$SER directives
+        self.__line = ''              # current line
+        self.__linenum = 0            # current line number
+        self.__module = ''            # current module
+        self.__calls = set()          # calls to serialization module
+        self.__outputBuffer = ''      # preprocessed file
         self.__use_stmt_in_module = False  # USE statement was inserted in module
-        self.__extra_module = []     # extra module to add to use statement
-        self.__skip_next_n_lines = 0 # Number of line to skip (use for lookahead)
+        self.__extra_module = []      # extra module to add to use statement
+        self.__skip_next_n_lines = 0  # Number of line to skip (use for lookahead)
 
-        if modules: 
+        if modules:
             self.__extra_module = modules.split(',')
 
         # define compute sign used in field definition. If one is matched,
@@ -268,7 +286,7 @@ class PpSer:
         else:
             if_pos = len(args)
 
-        l += tab + 'call ' + self.methods['init'] + '(' + ','.join(args[1:if_pos]) + ')\n'
+        l += tab + 'call ' + self.methods['init'] + '( &\n' + ' '*11 + (', &\n' + ' '*11).join(args[1:if_pos]) + ')\n'
         if if_statement:
             l += 'ENDIF\n'
         self.__calls.add(self.methods['init'])
@@ -599,25 +617,19 @@ class PpSer:
         m_cont = r_cont.search(self.__line)
         if m and not m_cont:
             self.__produce_use_stmt()
-        elif m and m_cont: 
+        elif m and m_cont:
             # look ahead to find the correct line to insert the use statement
-            lookahead_index = self.__linenum
-            # set to line after the subroutine/function declaration
-            lookahead_index += 1
+            lookahead_index = self.__linenum + 1
+
             # look ahead
             nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
             r_continued_line = re.compile('^([^!]*)&', re.IGNORECASE)
-            false_skip = 0
-            if nextline == self.__line:
-                lookahead_index += 1
-                nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
-                false_skip = 1
             while r_continued_line.search(nextline):
-                self.__line += nextline 
+                self.__line += nextline
                 lookahead_index += 1
                 nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
             self.__line += nextline
-            self.__skip_next_n_lines = lookahead_index - self.__linenum - false_skip
+            self.__skip_next_n_lines = lookahead_index - self.__linenum
             self.__produce_use_stmt()
         return m
 
@@ -666,12 +678,12 @@ class PpSer:
 
     # LINE: end module/end program
     def __re_endmodule(self):
-        r = re.compile('^ *end *(module|program) +([a-z][a-z0-9_]*)', re.IGNORECASE)
+        r = re.compile('^ *end *(module|program) *([a-z][a-z0-9_]*|)', re.IGNORECASE)
         m = r.search(self.__line)
         if m:
             if not self.__module:
                 self.__exit_error(msg='Unexpected "end '+m.group(1)+'" statement')
-            if self.__module != m.group(2):
+            if m.group(2) and self.__module.lower() != m.group(2).lower():
                 self.__exit_error(msg='Was expecting "end '+m.group(1)+' '+self.__module+'"')
             self.__module = ''
             self.__use_stmt_in_module = False
@@ -804,9 +816,13 @@ class PpSer:
         try:
             self.line = ''
             for line in input_file:
+                # Skip line already handled
                 if(self.__skip_next_n_lines > 0):
                     self.__skip_next_n_lines -= 1
+                    self.__linenum += 1
                     continue
+                self.__linenum += 1
+
                 # handle line continuation (next line coming in)
                 if self.__line:
                     if re.match('^ *!\$ser& ', line, re.IGNORECASE):
@@ -814,7 +830,6 @@ class PpSer:
                     else:
                         self.__exit_error(msg='Incorrect line continuation encountered')
                 self.__line += line
-                self.__linenum += 1
                 # handle line continuation (continued line going out)
                 if re.match('^ *!\$ser *(.*) & *$', self.__line, re.IGNORECASE):
                     # chop trailing &
@@ -840,6 +855,8 @@ class PpSer:
         # write output
         if self.outfile != '':
             output_file = tempfile.NamedTemporaryFile(delete=False)
+            # same permissions as infile
+            os.chmod(output_file.name, os.stat(self.infile).st_mode)
             output_file.write(to_ascii(self.__outputBuffer))
             output_file.close()
             useit = True
@@ -944,6 +961,8 @@ def parse_args():
                       default='', type=str, dest='output_dir')
     parser.add_option('-o', '--output', help='Output file name to preprocess single file',
                       default='', type=str, dest='output_file')
+    parser.add_option('-r', '--recursive', help='Recursively process target directory and mirror tree',
+                      default=False, action='store_true', dest='recursive')
     parser.add_option('-v', '--verbose', help='Enable verbose execution',
                       default=False, action='store_true', dest='verbose')
     parser.add_option('-p', '--no-prefix', help='Don\'t generate preprocessing macro definition for ACC_PREFIX',
@@ -957,13 +976,30 @@ def parse_args():
         parser.error('Need at least one source file to process')
     if options.output_file and len(args) > 1:
         parser.error('Single source file required if output file is given')
+    if options.recursive:
+        if not options.output_dir:
+            parser.error('Output directory is required with recursive option')
+        for indir in args:
+            if not os.path.isdir(indir):
+                parser.error('Arguments need to be directories with recursive option')
     return options, args
 
 if __name__ == "__main__":
     (options, args) = parse_args()
+    if options.recursive:
+        file_list = []
+        for indir in args:
+            build_tree(indir, options.output_dir, file_list, filter_fortran)
+        args = file_list
+
     for infile in args:
         if options.output_dir:
-            outfile = os.path.join(options.output_dir, os.path.basename(infile))
+            if options.recursive:
+                outfile = os.path.join(options.output_dir,
+                                       os.path.sep.join([p for p in os.path.dirname(infile).rsplit(os.path.sep) if p][1:]),
+                                       os.path.basename(infile))
+            else:
+                outfile = os.path.join(options.output_dir, os.path.basename(infile))
         elif options.output_file:
             outfile = options.output_file
         else:

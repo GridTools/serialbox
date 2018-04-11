@@ -40,11 +40,11 @@ IMPLICIT NONE
 
 PUBLIC :: &
   t_serializer, t_savepoint, &
-  fs_create_serializer, fs_destroy_serializer, fs_serializer_openmode, fs_add_serializer_metainfo, &
-  fs_create_savepoint, fs_destroy_savepoint, fs_add_savepoint_metainfo, &
-  fs_field_exists, fs_register_field, fs_add_field_metainfo, fs_write_field, fs_read_field, &
+  fs_create_serializer, fs_destroy_serializer, fs_serializer_openmode, fs_add_serializer_metainfo, fs_get_serializer_metainfo, &
+  fs_create_savepoint, fs_destroy_savepoint, fs_add_savepoint_metainfo, fs_get_savepoint_metainfo, &
+  fs_field_exists, fs_register_field, fs_add_field_metainfo, fs_get_field_metainfo, fs_write_field, fs_read_field, &
   fs_enable_serialization, fs_disable_serialization, fs_print_debuginfo, fs_read_and_perturb_field, &
-  fs_get_size, fs_get_halos
+  fs_get_size, fs_get_halos, fs_get_rank, fs_get_total_size
 
   INTEGER, PARAMETER :: MODE_READ = 0
   INTEGER, PARAMETER :: MODE_WRITE = 1
@@ -142,9 +142,24 @@ PRIVATE
     MODULE PROCEDURE &
       fs_add_serializer_metainfo_b, &
       fs_add_serializer_metainfo_i, &
+      fs_add_serializer_metainfo_l, &
       fs_add_serializer_metainfo_f, &
       fs_add_serializer_metainfo_d, &
       fs_add_serializer_metainfo_s
+  END INTERFACE
+
+
+  !==============================================================================
+  !+ Module interface to get metainformation for the given serializer
+  !------------------------------------------------------------------------------
+  INTERFACE fs_get_serializer_metainfo
+    MODULE PROCEDURE &
+      fs_get_serializer_metainfo_b, &
+      fs_get_serializer_metainfo_i, &
+      fs_get_serializer_metainfo_l, &
+      fs_get_serializer_metainfo_f, &
+      fs_get_serializer_metainfo_d
+      ! TODO fs_get_serializer_metainfo_s
   END INTERFACE
 
 
@@ -155,9 +170,24 @@ PRIVATE
     MODULE PROCEDURE &
       fs_add_field_metainfo_b, &
       fs_add_field_metainfo_i, &
+      fs_add_field_metainfo_l, &
       fs_add_field_metainfo_f, &
       fs_add_field_metainfo_d, &
       fs_add_field_metainfo_s
+  END INTERFACE
+
+
+  !==============================================================================
+  !+ Module interface to get metainformation for the given field
+  !------------------------------------------------------------------------------
+  INTERFACE fs_get_field_metainfo
+    MODULE PROCEDURE &
+      fs_get_field_metainfo_b, &
+      fs_get_field_metainfo_i, &
+      fs_get_field_metainfo_l, &
+      fs_get_field_metainfo_f, &
+      fs_get_field_metainfo_d
+      ! TODO fs_get_field_metainfo_s
   END INTERFACE
 
 
@@ -168,9 +198,24 @@ PRIVATE
     MODULE PROCEDURE &
       fs_add_savepoint_metainfo_b, &
       fs_add_savepoint_metainfo_i, &
+      fs_add_savepoint_metainfo_l, &
       fs_add_savepoint_metainfo_f, &
       fs_add_savepoint_metainfo_d, &
       fs_add_savepoint_metainfo_s
+  END INTERFACE
+
+
+  !==============================================================================
+  !+ Module interface to get metainformation for the given savepoint
+  !------------------------------------------------------------------------------
+  INTERFACE fs_get_savepoint_metainfo
+    MODULE PROCEDURE &
+      fs_get_savepoint_metainfo_b, &
+      fs_get_savepoint_metainfo_i, &
+      fs_get_savepoint_metainfo_l, &
+      fs_get_savepoint_metainfo_f, &
+      fs_get_savepoint_metainfo_d
+      ! TODO fs_get_savepoint_metainfo_s
   END INTERFACE
 
 
@@ -254,6 +299,16 @@ PRIVATE
   !------------------------------------------------------------------------------
   INTERFACE fs_read_and_perturb_field
     MODULE PROCEDURE &
+      fs_read_and_perturb_logical_0d, &
+      fs_read_and_perturb_logical_1d, &
+      fs_read_and_perturb_logical_2d, &
+      fs_read_and_perturb_logical_3d, &
+      fs_read_and_perturb_logical_4d, &
+      fs_read_and_perturb_bool_0d,   &
+      fs_read_and_perturb_bool_1d,   &
+      fs_read_and_perturb_bool_2d,   &
+      fs_read_and_perturb_bool_3d,   &
+      fs_read_and_perturb_bool_4d,   &
       fs_read_and_perturb_int_0d,    &
       fs_read_and_perturb_int_1d,    &
       fs_read_and_perturb_int_2d,    &
@@ -486,6 +541,26 @@ SUBROUTINE fs_add_serializer_metainfo_i(serializer, key, val)
 END SUBROUTINE fs_add_serializer_metainfo_i
 
 
+SUBROUTINE fs_add_serializer_metainfo_l(serializer, key, val)
+  TYPE(t_serializer), INTENT(IN) :: serializer
+  CHARACTER(LEN=*)               :: key
+  INTEGER(C_LONG)                :: val
+
+  ! External function
+  INTERFACE
+     SUBROUTINE fs_add_serializer_metainfo_l_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerAddMetainfoInt64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
+       INTEGER(KIND=C_LONG), VALUE          :: val
+     END SUBROUTINE fs_add_serializer_metainfo_l_
+  END INTERFACE
+
+  CALL fs_add_serializer_metainfo_l_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_add_serializer_metainfo_l
+
+
 SUBROUTINE fs_add_serializer_metainfo_f(serializer, key, val)
   TYPE(t_serializer), INTENT(IN) :: serializer
   CHARACTER(LEN=*)               :: key
@@ -544,6 +619,99 @@ SUBROUTINE fs_add_serializer_metainfo_s(serializer, key, val)
                                      TRIM(key)//C_NULL_CHAR,    &
                                      TRIM(val)//C_NULL_CHAR)
 END SUBROUTINE fs_add_serializer_metainfo_s
+
+
+! Getter have to be subroutines instead of functions for having unique argument lists
+
+SUBROUTINE fs_get_serializer_metainfo_b(serializer, key, val)
+  TYPE(t_serializer), INTENT(IN) :: serializer
+  CHARACTER(LEN=*), INTENT(IN)   :: key
+  LOGICAL, INTENT(OUT)           :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_serializer_metainfo_b_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetMetainfoBoolean')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       LOGICAL, INTENT(OUT)                             :: val
+     END SUBROUTINE fs_get_serializer_metainfo_b_
+  END INTERFACE
+
+  CALL fs_get_serializer_metainfo_b_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_serializer_metainfo_b
+
+SUBROUTINE fs_get_serializer_metainfo_i(serializer, key, val)
+  TYPE(t_serializer), INTENT(IN)   :: serializer
+  CHARACTER(LEN=*), INTENT(IN)     :: key
+  INTEGER(KIND=C_INT), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_serializer_metainfo_i_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetMetainfoInt32')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       INTEGER(KIND=C_INT), INTENT(OUT)                 :: val
+     END SUBROUTINE fs_get_serializer_metainfo_i_
+  END INTERFACE
+
+  CALL fs_get_serializer_metainfo_i_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_serializer_metainfo_i
+
+SUBROUTINE fs_get_serializer_metainfo_l(serializer, key, val)
+  TYPE(t_serializer), INTENT(IN)    :: serializer
+  CHARACTER(LEN=*), INTENT(IN)      :: key
+  INTEGER(KIND=C_LONG), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_serializer_metainfo_l_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetMetainfoInt64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       INTEGER(KIND=C_LONG), INTENT(OUT)                :: val
+     END SUBROUTINE fs_get_serializer_metainfo_l_
+  END INTERFACE
+
+  CALL fs_get_serializer_metainfo_l_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_serializer_metainfo_l
+
+SUBROUTINE fs_get_serializer_metainfo_f(serializer, key, val)
+  TYPE(t_serializer), INTENT(IN)  :: serializer
+  CHARACTER(LEN=*), INTENT(IN)    :: key
+  REAL(KIND=C_FLOAT), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_serializer_metainfo_f_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetMetainfoFloat32')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       REAL(KIND=C_FLOAT), INTENT(OUT)                  :: val
+     END SUBROUTINE fs_get_serializer_metainfo_f_
+  END INTERFACE
+
+  CALL fs_get_serializer_metainfo_f_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_serializer_metainfo_f
+
+SUBROUTINE fs_get_serializer_metainfo_d(serializer, key, val)
+  TYPE(t_serializer), INTENT(IN)   :: serializer
+  CHARACTER(LEN=*), INTENT(IN)     :: key
+  REAL(KIND=C_DOUBLE), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_serializer_metainfo_d_(serializer, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetMetainfoFloat64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       REAL(KIND=C_DOUBLE), INTENT(OUT)                 :: val
+     END SUBROUTINE fs_get_serializer_metainfo_d_
+  END INTERFACE
+
+  CALL fs_get_serializer_metainfo_d_(serializer%serializer_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_serializer_metainfo_d
 
 !=============================================================================
 !=============================================================================
@@ -677,6 +845,29 @@ SUBROUTINE fs_add_field_metainfo_i(serializer, fieldname, key, val)
 END SUBROUTINE fs_add_field_metainfo_i
 
 
+SUBROUTINE fs_add_field_metainfo_l(serializer, fieldname, key, val)
+  TYPE(t_serializer), INTENT(IN) :: serializer
+  CHARACTER(LEN=*)               :: fieldname, key
+  INTEGER(C_LONG), VALUE          :: val
+
+  ! External function
+  INTERFACE
+     SUBROUTINE fs_add_field_metainfo_l_(serializer, fieldname, key, val) &
+          BIND(c, name='serialboxFortranSerializerAddFieldMetainfoInt64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE       :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*) :: fieldname
+       CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
+       INTEGER(KIND=C_LONG), VALUE           :: val
+     END SUBROUTINE fs_add_field_metainfo_l_
+  END INTERFACE
+
+  CALL fs_add_field_metainfo_l_(serializer%serializer_ptr,    &
+                                TRIM(fieldname)//C_NULL_CHAR, &
+                                TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_add_field_metainfo_l
+
+
 SUBROUTINE fs_add_field_metainfo_f(serializer, fieldname, key, val)
   TYPE(t_serializer), INTENT(IN) :: serializer
   CHARACTER(LEN=*)               :: fieldname, key
@@ -745,6 +936,98 @@ SUBROUTINE fs_add_field_metainfo_s(serializer, fieldname, key, val)
                                 TRIM(val)//C_NULL_CHAR)
 END SUBROUTINE fs_add_field_metainfo_s
 
+
+! Getter have to be subroutines instead of functions for having unique argument lists
+
+SUBROUTINE fs_get_field_metainfo_b(serializer, fieldname, key, val)
+  TYPE(t_serializer), INTENT(IN) :: serializer
+  CHARACTER(LEN=*), INTENT(IN)   :: fieldname, key
+  LOGICAL, INTENT(OUT)           :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_field_metainfo_b_(serializer, fieldname, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetFieldMetainfoBoolean')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: fieldname, key
+       LOGICAL, INTENT(OUT)                             :: val
+     END SUBROUTINE fs_get_field_metainfo_b_
+  END INTERFACE
+
+  CALL fs_get_field_metainfo_b_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_field_metainfo_b
+
+SUBROUTINE fs_get_field_metainfo_i(serializer, fieldname, key, val)
+  TYPE(t_serializer), INTENT(IN)   :: serializer
+  CHARACTER(LEN=*), INTENT(IN)     :: fieldname, key
+  INTEGER(KIND=C_INT), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_field_metainfo_i_(serializer, fieldname, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetFieldMetainfoInt32')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: fieldname, key
+       INTEGER(KIND=C_INT), INTENT(OUT)                 :: val
+     END SUBROUTINE fs_get_field_metainfo_i_
+  END INTERFACE
+
+  CALL fs_get_field_metainfo_i_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_field_metainfo_i
+
+SUBROUTINE fs_get_field_metainfo_l(serializer, fieldname, key, val)
+  TYPE(t_serializer), INTENT(IN)    :: serializer
+  CHARACTER(LEN=*), INTENT(IN)      :: fieldname, key
+  INTEGER(KIND=C_LONG), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_field_metainfo_l_(serializer, fieldname, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetFieldMetainfoInt64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: fieldname, key
+       INTEGER(KIND=C_LONG), INTENT(OUT)                :: val
+     END SUBROUTINE fs_get_field_metainfo_l_
+  END INTERFACE
+
+  CALL fs_get_field_metainfo_l_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_field_metainfo_l
+
+SUBROUTINE fs_get_field_metainfo_f(serializer, fieldname, key, val)
+  TYPE(t_serializer), INTENT(IN)  :: serializer
+  CHARACTER(LEN=*), INTENT(IN)    :: fieldname, key
+  REAL(KIND=C_FLOAT), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_field_metainfo_f_(serializer, fieldname, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetFieldMetainfoFloat32')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: fieldname, key
+       REAL(KIND=C_FLOAT), INTENT(OUT)                  :: val
+     END SUBROUTINE fs_get_field_metainfo_f_
+  END INTERFACE
+
+  CALL fs_get_field_metainfo_f_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_field_metainfo_f
+
+SUBROUTINE fs_get_field_metainfo_d(serializer, fieldname, key, val)
+  TYPE(t_serializer), INTENT(IN)   :: serializer
+  CHARACTER(LEN=*), INTENT(IN)     :: fieldname, key
+  REAL(KIND=C_DOUBLE), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_field_metainfo_d_(serializer, fieldname, key, val) &
+          BIND(c, name='serialboxFortranSerializerGetFieldMetainfoFloat64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: serializer
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: fieldname, key
+       REAL(KIND=C_DOUBLE), INTENT(OUT)                 :: val
+     END SUBROUTINE fs_get_field_metainfo_d_
+  END INTERFACE
+
+  CALL fs_get_field_metainfo_d_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_field_metainfo_d
 
 !=============================================================================
 !=============================================================================
@@ -864,6 +1147,34 @@ SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, is
 END SUBROUTINE fs_check_size
 
 !==============================================================================
+!+ Module function that returns the rank of the requested field
+!  For both, scalars and 1-dimensional arrays, the result is 1.
+!------------------------------------------------------------------------------
+FUNCTION fs_get_rank(serializer, fieldname)
+  TYPE(t_serializer) :: serializer
+  CHARACTER(LEN=*)   :: fieldname
+  INTEGER            :: fs_get_rank
+
+  INTERFACE
+    SUBROUTINE fs_get_rank_(serializer, name, rank) &
+        BIND(c, name='serialboxFortranSerializerGetFieldRank')
+     USE, INTRINSIC :: iso_c_binding
+     TYPE(C_PTR), VALUE                    :: serializer
+     CHARACTER(KIND=C_CHAR), DIMENSION(*)  :: name
+     INTEGER(C_INT), INTENT(OUT)           :: rank
+    END SUBROUTINE fs_get_rank_
+  END INTERFACE
+
+  IF (fs_field_exists(serializer, fieldname)) THEN
+    CALL fs_get_rank_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, fs_get_rank)
+  ELSE
+    WRITE(*,*) "Serialbox: ERROR: field ", fieldname, " does not exist in the serializer"
+    STOP
+  END IF
+
+END FUNCTION fs_get_rank
+
+!==============================================================================
 !+ Module function that returns the size of the requested field
 !  Always returns an array with 4 elements.
 !  For fields with a rank less than 4, the upper dimensions are given with size 0.
@@ -887,8 +1198,7 @@ FUNCTION fs_get_size(serializer, fieldname)
   INTEGER(KIND=C_INT) :: isize, jsize, ksize, lsize
 
   IF (fs_field_exists(serializer, fieldname)) THEN
-    CALL fs_get_field_dimensions_(serializer%serializer_ptr, TRIM(fieldname), &
-                                  isize, jsize, ksize, lsize)
+    CALL fs_get_field_dimensions_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, isize, jsize, ksize, lsize)
     fs_get_size = (/ isize, jsize, ksize, lsize /)
   ELSE
     WRITE(*,*) "Serialbox: ERROR: field ", fieldname, " does not exist in the serializer"
@@ -896,6 +1206,26 @@ FUNCTION fs_get_size(serializer, fieldname)
   END IF
 
 END FUNCTION fs_get_size
+
+!==============================================================================
+!+ Module function that returns the total size of the requested field,
+!  that is the product of the sizes of the individual dimensions
+!  For scalars the result is 1.
+!------------------------------------------------------------------------------
+FUNCTION fs_get_total_size(serializer, fieldname)
+  TYPE(t_serializer)    :: serializer
+  CHARACTER(LEN=*)      :: fieldname
+  INTEGER :: fs_get_total_size
+
+  INTEGER :: d, sizes(4)
+
+  sizes = fs_get_size(serializer, fieldname)
+  fs_get_total_size = 1
+  DO d =  1, fs_get_rank(serializer, fieldname)
+      fs_get_total_size = fs_get_total_size * sizes(d)
+  END DO
+
+END FUNCTION fs_get_total_size
 
 
 !==============================================================================
@@ -924,7 +1254,7 @@ FUNCTION fs_get_halos(serializer, fieldname)
   INTEGER(KIND=C_INT) :: iminushalo, iplushalo, jminushalo, jplushalo, kminushalo, kplushalo, lminushalo, lplushalo
 
   IF (fs_field_exists(serializer, fieldname)) THEN
-    CALL fs_get_halos_(serializer%serializer_ptr, TRIM(fieldname), &
+    CALL fs_get_halos_(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, &
                        iminushalo, iplushalo, jminushalo, jplushalo, kminushalo, kplushalo, lminushalo, lplushalo)
     fs_get_halos = (/ iminushalo, iplushalo, jminushalo, jplushalo, kminushalo, kplushalo, lminushalo, lplushalo /)
   ELSE
@@ -1022,8 +1352,8 @@ END SUBROUTINE fs_add_savepoint_metainfo_b
 
 SUBROUTINE fs_add_savepoint_metainfo_i(savepoint, key, val)
   TYPE(t_savepoint), INTENT(IN) :: savepoint
-  CHARACTER(LEN=*)               :: key
-  INTEGER(C_INT)                 :: val
+  CHARACTER(LEN=*)              :: key
+  INTEGER(KIND=C_INT)           :: val
 
   ! External function
   INTERFACE
@@ -1039,6 +1369,27 @@ SUBROUTINE fs_add_savepoint_metainfo_i(savepoint, key, val)
   CALL fs_add_savepoint_metainfo_i_(savepoint%savepoint_ptr,      &
                                     TRIM(key)//C_NULL_CHAR, val)
 END SUBROUTINE fs_add_savepoint_metainfo_i
+
+
+SUBROUTINE fs_add_savepoint_metainfo_l(savepoint, key, val)
+  TYPE(t_savepoint), INTENT(IN) :: savepoint
+  CHARACTER(LEN=*)              :: key
+  INTEGER(KIND=C_LONG)           :: val
+
+  ! External function
+  INTERFACE
+     SUBROUTINE fs_add_savepoint_metainfo_l_(savepoint, key, val) &
+          BIND(c, name='serialboxFortranSavepointAddMetainfoInt64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE       :: savepoint
+       CHARACTER(KIND=C_CHAR), DIMENSION(*) :: key
+       INTEGER(KIND=C_LONG), VALUE           :: val
+     END SUBROUTINE fs_add_savepoint_metainfo_l_
+  END INTERFACE
+
+  CALL fs_add_savepoint_metainfo_l_(savepoint%savepoint_ptr,      &
+                                    TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_add_savepoint_metainfo_l
 
 
 SUBROUTINE fs_add_savepoint_metainfo_f(savepoint, key, val)
@@ -1101,6 +1452,98 @@ SUBROUTINE fs_add_savepoint_metainfo_s(savepoint, key, val)
                                     TRIM(key)//C_NULL_CHAR,       &
                                     TRIM(val)//C_NULL_CHAR)
 END SUBROUTINE fs_add_savepoint_metainfo_s
+
+! Getter have to be subroutines instead of functions for having unique argument lists
+
+SUBROUTINE fs_get_savepoint_metainfo_b(savepoint, key, val)
+  TYPE(t_savepoint), INTENT(IN) :: savepoint
+  CHARACTER(LEN=*), INTENT(IN)   :: key
+  LOGICAL, INTENT(OUT)           :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_savepoint_metainfo_b_(savepoint, key, val) &
+          BIND(c, name='serialboxFortranSavepointGetMetainfoBoolean')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: savepoint
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       LOGICAL, INTENT(OUT)                             :: val
+     END SUBROUTINE fs_get_savepoint_metainfo_b_
+  END INTERFACE
+
+  CALL fs_get_savepoint_metainfo_b_(savepoint%savepoint_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_savepoint_metainfo_b
+
+SUBROUTINE fs_get_savepoint_metainfo_i(savepoint, key, val)
+  TYPE(t_savepoint), INTENT(IN)    :: savepoint
+  CHARACTER(LEN=*), INTENT(IN)     :: key
+  INTEGER(KIND=C_INT), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_savepoint_metainfo_i_(savepoint, key, val) &
+          BIND(c, name='serialboxFortranSavepointGetMetainfoInt32')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: savepoint
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       INTEGER(KIND=C_INT), INTENT(OUT)                 :: val
+     END SUBROUTINE fs_get_savepoint_metainfo_i_
+  END INTERFACE
+
+  CALL fs_get_savepoint_metainfo_i_(savepoint%savepoint_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_savepoint_metainfo_i
+
+SUBROUTINE fs_get_savepoint_metainfo_l(savepoint, key, val)
+  TYPE(t_savepoint), INTENT(IN)    :: savepoint
+  CHARACTER(LEN=*), INTENT(IN)     :: key
+  INTEGER(KIND=C_LONG), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_savepoint_metainfo_l_(savepoint, key, val) &
+          BIND(c, name='serialboxFortranSavepointGetMetainfoInt64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: savepoint
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       INTEGER(KIND=C_LONG), INTENT(OUT)                 :: val
+     END SUBROUTINE fs_get_savepoint_metainfo_l_
+  END INTERFACE
+
+  CALL fs_get_savepoint_metainfo_l_(savepoint%savepoint_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_savepoint_metainfo_l
+
+SUBROUTINE fs_get_savepoint_metainfo_f(savepoint, key, val)
+  TYPE(t_savepoint), INTENT(IN)  :: savepoint
+  CHARACTER(LEN=*), INTENT(IN)    :: key
+  REAL(KIND=C_FLOAT), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_savepoint_metainfo_f_(savepoint, key, val) &
+          BIND(c, name='serialboxFortranSavepointGetMetainfoFloat32')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: savepoint
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       REAL(KIND=C_FLOAT), INTENT(OUT)                  :: val
+     END SUBROUTINE fs_get_savepoint_metainfo_f_
+  END INTERFACE
+
+  CALL fs_get_savepoint_metainfo_f_(savepoint%savepoint_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_savepoint_metainfo_f
+
+SUBROUTINE fs_get_savepoint_metainfo_d(savepoint, key, val)
+  TYPE(t_savepoint), INTENT(IN)   :: savepoint
+  CHARACTER(LEN=*), INTENT(IN)     :: key
+  REAL(KIND=C_DOUBLE), INTENT(OUT) :: val
+
+  INTERFACE
+     SUBROUTINE fs_get_savepoint_metainfo_d_(savepoint, key, val) &
+          BIND(c, name='serialboxFortranSavepointGetMetainfoFloat64')
+       USE, INTRINSIC :: iso_c_binding
+       TYPE(C_PTR), INTENT(IN), VALUE                   :: savepoint
+       CHARACTER(KIND=C_CHAR), DIMENSION(*), INTENT(IN) :: key
+       REAL(KIND=C_DOUBLE), INTENT(OUT)                 :: val
+     END SUBROUTINE fs_get_savepoint_metainfo_d_
+  END INTERFACE
+
+  CALL fs_get_savepoint_metainfo_d_(savepoint%savepoint_ptr, TRIM(key)//C_NULL_CHAR, val)
+END SUBROUTINE fs_get_savepoint_metainfo_d
 
 !=============================================================================
 !=============================================================================
@@ -2382,7 +2825,7 @@ SUBROUTINE fs_read_float_0d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "float", fs_floatsize(), 1, 1, 1, 1)
+  CALL fs_check_size(serializer, fieldname, "float", fs_floatsize(), 1, 0, 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), &
                        istride, jstride, kstride, lstride)
@@ -2514,7 +2957,7 @@ SUBROUTINE fs_read_double_0d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "double", fs_doublesize(), 1, 1, 1, 1)
+  CALL fs_check_size(serializer, fieldname, "double", fs_doublesize(), 1, 0, 0, 0)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), &
                        istride, jstride, kstride, lstride)
@@ -2629,6 +3072,125 @@ SUBROUTINE fs_read_double_4d(serializer, savepoint, fieldname, field)
                        TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
 END SUBROUTINE fs_read_double_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE fs_read_and_perturb_logical_0d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing logical doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET             :: field
+  REAL, INTENT(IN)                         :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_logical_0d
+
+SUBROUTINE fs_read_and_perturb_logical_1d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing logical doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET             :: field(:)
+  REAL, INTENT(IN)                         :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_logical_1d
+
+SUBROUTINE fs_read_and_perturb_logical_2d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing logical doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET             :: field(:,:)
+  REAL, INTENT(IN)                         :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_logical_2d
+
+SUBROUTINE fs_read_and_perturb_logical_3d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing logical doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET             :: field(:,:,:)
+  REAL, INTENT(IN)                         :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_logical_3d
+
+SUBROUTINE fs_read_and_perturb_logical_4d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing logical doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)           :: serializer
+  TYPE(t_savepoint) , INTENT(IN)           :: savepoint
+  CHARACTER(LEN=*)                         :: fieldname
+  LOGICAL, INTENT(OUT), TARGET             :: field(:,:,:,:)
+  REAL, INTENT(IN)                         :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_logical_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE fs_read_and_perturb_bool_0d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing bool doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)            :: serializer
+  TYPE(t_savepoint) , INTENT(IN)            :: savepoint
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN)                          :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_bool_0d
+
+SUBROUTINE fs_read_and_perturb_bool_1d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing bool doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)            :: serializer
+  TYPE(t_savepoint) , INTENT(IN)            :: savepoint
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:)
+  REAL, INTENT(IN)                          :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_bool_1d
+
+SUBROUTINE fs_read_and_perturb_bool_2d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing bool doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)            :: serializer
+  TYPE(t_savepoint) , INTENT(IN)            :: savepoint
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:)
+  REAL, INTENT(IN)                          :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_bool_2d
+
+SUBROUTINE fs_read_and_perturb_bool_3d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing bool doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)            :: serializer
+  TYPE(t_savepoint) , INTENT(IN)            :: savepoint
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:,:)
+  REAL, INTENT(IN)                          :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_bool_3d
+
+SUBROUTINE fs_read_and_perturb_bool_4d(serializer, savepoint, fieldname, field, rperturb)
+  ! Dummy call as perturbing bool doesn't make sense (at least right now)
+  TYPE(t_serializer), INTENT(IN)            :: serializer
+  TYPE(t_savepoint) , INTENT(IN)            :: savepoint
+  CHARACTER(LEN=*)                          :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN)                          :: rperturb
+
+  CALL fs_read_field(serializer, savepoint, fieldname, field)
+END SUBROUTINE fs_read_and_perturb_bool_4d
+
+!=============================================================================
+!=============================================================================
 
 SUBROUTINE fs_read_and_perturb_int_0d(serializer, savepoint, fieldname, field, rperturb)
   ! Dummy call as perturbing int doesn't make sense (at least right now)

@@ -14,6 +14,7 @@ MODULE serialbox_test
   CHARACTER(len=*), PARAMETER :: dir = 'sbdata'
   CHARACTER(len=*), PARAMETER :: savepoint_name = 'test'
   INTEGER, PARAMETER :: exp_size_scalar(4) = (/ 1, 0, 0, 0 /) 
+  INTEGER, PARAMETER :: exp_halos_scalar(8) = (/ 0, 0, 0, 0, 0, 0, 0, 0 /) 
 
 CONTAINS
    
@@ -185,6 +186,8 @@ CONTAINS
       LOGICAL :: w_testfield_l1(1), r_testfield_l1(1)
       INTEGER(8) :: w_testfield_long0, r_testfield_long0
       INTEGER(8) :: w_testfield_long1(1), r_testfield_long1(1)
+      REAL(KIND=C_FLOAT)  :: w_testfield_f0, r_testfield_f0
+      REAL(KIND=C_DOUBLE) :: w_testfield_d0, r_testfield_d0
       
       CHARACTER(len=*), PARAMETER :: base_name = 'test_scalars'
       
@@ -194,6 +197,8 @@ CONTAINS
       w_testfield_l1 = (/ .FALSE. /)
       w_testfield_long0 = 999888777666555_8
       w_testfield_long1 = (/ -1234567890123_8 /)
+      w_testfield_f0 = 3.14159274
+      w_testfield_d0 = 3.1415926535897931
             
       CALL fs_create_serializer(dir, base_name, 'w', serializer)
       CALL fs_write_field(serializer, savepoint, "testfield_i0", w_testfield_i0)
@@ -202,6 +207,8 @@ CONTAINS
       CALL fs_write_field(serializer, savepoint, "testfield_l1", w_testfield_l1)
       CALL fs_write_field(serializer, savepoint, "testfield_long0", w_testfield_long0)
       CALL fs_write_field(serializer, savepoint, "testfield_long1", w_testfield_long1)
+      CALL fs_write_field(serializer, savepoint, "testfield_f0", w_testfield_f0)
+      CALL fs_write_field(serializer, savepoint, "testfield_d0", w_testfield_d0)
       CALL fs_destroy_serializer(serializer)
       
       CALL fs_create_serializer(dir, base_name, 'r', serializer)
@@ -212,6 +219,8 @@ CONTAINS
       @assertTrue(fs_field_exists(serializer, "testfield_l1"))
       @assertTrue(fs_field_exists(serializer, "testfield_long0"))
       @assertTrue(fs_field_exists(serializer, "testfield_long1"))
+      @assertTrue(fs_field_exists(serializer, "testfield_f0"))
+      @assertTrue(fs_field_exists(serializer, "testfield_d0"))
       
       @assertEqual(exp_size_scalar, fs_get_size(serializer, "testfield_i0"))
       @assertEqual(exp_size(SHAPE(w_testfield_i1)), fs_get_size(serializer, "testfield_i1"))
@@ -219,6 +228,8 @@ CONTAINS
       @assertEqual(exp_size(SHAPE(w_testfield_l1)), fs_get_size(serializer, "testfield_l1"))
       @assertEqual(exp_size_scalar, fs_get_size(serializer, "testfield_long0"))
       @assertEqual(exp_size(SHAPE(w_testfield_long1)), fs_get_size(serializer, "testfield_long1"))
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "testfield_f0"))
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "testfield_d0"))
       
       CALL fs_read_field(serializer, savepoint, "testfield_i0", r_testfield_i0)
       CALL fs_read_field(serializer, savepoint, "testfield_i1", r_testfield_i1)
@@ -226,6 +237,8 @@ CONTAINS
       CALL fs_read_field(serializer, savepoint, "testfield_l1", r_testfield_l1)
       CALL fs_read_field(serializer, savepoint, "testfield_long0", r_testfield_long0)
       CALL fs_read_field(serializer, savepoint, "testfield_long1", r_testfield_long1)
+      CALL fs_read_field(serializer, savepoint, "testfield_f0", r_testfield_f0)
+      CALL fs_read_field(serializer, savepoint, "testfield_d0", r_testfield_d0)
       
       CALL fs_destroy_serializer(serializer)
       
@@ -235,6 +248,8 @@ CONTAINS
       @assertEquivalent(w_testfield_l1, r_testfield_l1)
       @assertEqual(w_testfield_long0, r_testfield_long0)
       @assertEqual(w_testfield_long1, r_testfield_long1)
+      @assertEqual(w_testfield_f0, r_testfield_f0)
+      @assertEqual(w_testfield_d0, r_testfield_d0)
     
     END SUBROUTINE testScalars
    
@@ -487,33 +502,39 @@ CONTAINS
     
       TYPE(t_serializer) :: serializer
     
-      LOGICAL              :: logical1(2), logical2(2,2), logical3(2,2,2), logical4(2,2,2,2) 
-      LOGICAL(KIND=C_BOOL) :: boolean1(4), boolean2(4,4), boolean3(4,4,4), boolean4(4,4,4,4)
-      INTEGER              :: integer1(8), integer2(8,8), integer3(8,8,8), integer4(8,8,8,8) 
-      INTEGER(KIND=C_LONG) :: longint1(5), longint2(5,5), longint3(5,5,5), longint4(5,5,5,5) 
-      REAL(KIND=C_FLOAT)   :: float1(6),   float2(6,6),   float3(6,6,6),   float4(6,6,6,6) 
-      REAL(KIND=C_DOUBLE)  :: double1(7),  double2(7,7),  double3(7,7,7),  double4(7,7,7,7), double4zeros(7,7,7,7)
+      LOGICAL              :: logical0, logical1(2), logical2(2,2), logical3(2,2,2), logical4(2,2,2,2) 
+      LOGICAL(KIND=C_BOOL) :: boolean0, boolean1(4), boolean2(4,4), boolean3(4,4,4), boolean4(4,4,4,4)
+      INTEGER              :: integer0, integer1(8), integer2(8,8), integer3(8,8,8), integer4(8,8,8,8) 
+      INTEGER(KIND=C_LONG) :: longint0, longint1(5), longint2(5,5), longint3(5,5,5), longint4(5,5,5,5) 
+      REAL(KIND=C_FLOAT)   :: float0, float1(6),   float2(6,6),   float3(6,6,6),   float4(6,6,6,6) 
+      REAL(KIND=C_DOUBLE)  :: double0, double1(7),  double2(7,7),  double3(7,7,7),  double4(7,7,7,7), double4zeros(7,7,7,7)
     
+      logical0          = .TRUE.
       logical1(:)       = .TRUE.
       logical2(:,:)     = .TRUE.
       logical3(:,:,:)   = .TRUE.
       logical4(:,:,:,:) = .TRUE.
+      boolean0          = .TRUE.
       boolean1(:)       = .TRUE.
       boolean2(:,:)     = .TRUE.
       boolean3(:,:,:)   = .TRUE.
       boolean4(:,:,:,:) = .TRUE.
+      integer0          = 42
       integer1(:)       = 42
       integer2(:,:)     = 42
       integer3(:,:,:)   = 42
       integer4(:,:,:,:) = 42
+      longint0          = 42
       longint1(:)       = 42
       longint2(:,:)     = 42
       longint3(:,:,:)   = 42
       longint4(:,:,:,:) = 42
+      float0            = 109.23
       float1(:)         = 109.23
       float2(:,:)       = 109.23
       float3(:,:,:)     = 109.23
       float4(:,:,:,:)   = 109.23
+      double0           = 109.23
       double1(:)        = 109.23
       double2(:,:)      = 109.23
       double3(:,:,:)    = 109.23
@@ -521,26 +542,32 @@ CONTAINS
       double4zeros(:,:,:,:) = 109.23
       
       CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL fs_write_field(serializer, savepoint, "logical0", logical0)
       CALL fs_write_field(serializer, savepoint, "logical1", logical1, (/ -1 /), (/ 1 /))
       CALL fs_write_field(serializer, savepoint, "logical2", logical2, (/ -2, -3 /), (/ 2, 3 /))
       CALL fs_write_field(serializer, savepoint, "logical3", logical3, (/ -4, -5, -6 /), (/ 4, 5, 6 /))
       CALL fs_write_field(serializer, savepoint, "logical4", logical4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 16 /))
+      CALL fs_write_field(serializer, savepoint, "boolean0", boolean0)
       CALL fs_write_field(serializer, savepoint, "boolean1", boolean1, (/ -1 /), (/ 2 /))
       CALL fs_write_field(serializer, savepoint, "boolean2", boolean2, (/ -2, -3 /), (/ 2, 4 /))
       CALL fs_write_field(serializer, savepoint, "boolean3", boolean3, (/ -4, -5, -6 /), (/ 4, 5, 7 /))
       CALL fs_write_field(serializer, savepoint, "boolean4", boolean4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 17 /))
+      CALL fs_write_field(serializer, savepoint, "integer0", integer0)
       CALL fs_write_field(serializer, savepoint, "integer1", integer1, (/ -1 /), (/ 3 /))
       CALL fs_write_field(serializer, savepoint, "integer2", integer2, (/ -2, -3 /), (/ 2, 5 /))
       CALL fs_write_field(serializer, savepoint, "integer3", integer3, (/ -4, -5, -6 /), (/ 4, 5, 8 /))
       CALL fs_write_field(serializer, savepoint, "integer4", integer4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 18 /))
+      CALL fs_write_field(serializer, savepoint, "longint0", longint0)
       CALL fs_write_field(serializer, savepoint, "longint1", longint1, (/ -1 /), (/ 4 /))
       CALL fs_write_field(serializer, savepoint, "longint2", longint2, (/ -2, -3 /), (/ 2, 6 /))
       CALL fs_write_field(serializer, savepoint, "longint3", longint3, (/ -4, -5, -6 /), (/ 4, 5, 9 /))
       CALL fs_write_field(serializer, savepoint, "longint4", longint4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 19 /))
+      CALL fs_write_field(serializer, savepoint, "float0", float0)
       CALL fs_write_field(serializer, savepoint, "float1", float1, (/ -1 /), (/ 5 /))
       CALL fs_write_field(serializer, savepoint, "float2", float2, (/ -2, -3 /), (/ 2, 7 /))
       CALL fs_write_field(serializer, savepoint, "float3", float3, (/ -4, -5, -6 /), (/ 4, 5, 10 /))
       CALL fs_write_field(serializer, savepoint, "float4", float4, (/ 7, 23, 12, 0 /), (/ 8, 42, -4, 20 /))
+      CALL fs_write_field(serializer, savepoint, "double0", double0)
       CALL fs_write_field(serializer, savepoint, "double1", double1, (/ -1 /), (/ 6 /))
       CALL fs_write_field(serializer, savepoint, "double2", double2, (/ -2, -3 /), (/ 2, 8 /))
       CALL fs_write_field(serializer, savepoint, "double3", double3, (/ -4, -5, -6 /), (/ 4, 5, 11 /))
@@ -549,33 +576,269 @@ CONTAINS
       CALL fs_destroy_serializer(serializer)      
       
       CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      @assertEqual(exp_halos_scalar,                  fs_get_halos(serializer, "logical0"))
       @assertEqual((/ -1, 1, 0, 0, 0, 0, 0, 0 /),     fs_get_halos(serializer, "logical1"))
       @assertEqual((/ -2, 2, -3, 3, 0, 0, 0, 0 /),    fs_get_halos(serializer, "logical2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 6, 0, 0 /),   fs_get_halos(serializer, "logical3"))
       @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 16 /), fs_get_halos(serializer, "logical4"))
+      @assertEqual(exp_halos_scalar,                  fs_get_halos(serializer, "boolean0"))
       @assertEqual((/ -1, 2, 0, 0, 0, 0, 0, 0 /),     fs_get_halos(serializer, "boolean1"))
       @assertEqual((/ -2, 2, -3, 4, 0, 0, 0, 0 /),    fs_get_halos(serializer, "boolean2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 7, 0, 0 /),   fs_get_halos(serializer, "boolean3"))
       @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 17 /), fs_get_halos(serializer, "boolean4"))
+      @assertEqual(exp_halos_scalar,                  fs_get_halos(serializer, "integer0"))
       @assertEqual((/ -1, 3, 0, 0, 0, 0, 0, 0 /),     fs_get_halos(serializer, "integer1"))
       @assertEqual((/ -2, 2, -3, 5, 0, 0, 0, 0 /),    fs_get_halos(serializer, "integer2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 8, 0, 0 /),   fs_get_halos(serializer, "integer3"))
       @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 18 /), fs_get_halos(serializer, "integer4"))
+      @assertEqual(exp_halos_scalar,                  fs_get_halos(serializer, "longint0"))
       @assertEqual((/ -1, 4, 0, 0, 0, 0, 0, 0 /),     fs_get_halos(serializer, "longint1"))
       @assertEqual((/ -2, 2, -3, 6, 0, 0, 0, 0 /),    fs_get_halos(serializer, "longint2"))
       @assertEqual((/ -4, 4, -5, 5, -6, 9, 0, 0 /),   fs_get_halos(serializer, "longint3"))
       @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 19 /), fs_get_halos(serializer, "longint4"))
+      @assertEqual(exp_halos_scalar,                  fs_get_halos(serializer, "float0"))
       @assertEqual((/ -1, 5, 0, 0, 0, 0, 0, 0 /),     fs_get_halos(serializer, "float1"))
       @assertEqual((/ -2, 2, -3, 7, 0, 0, 0, 0 /),    fs_get_halos(serializer, "float2"))
-      @assertEqual((/ -4, 4, -5, 5, -6, 10, 0, 0 /),   fs_get_halos(serializer, "float3"))
+      @assertEqual((/ -4, 4, -5, 5, -6, 10, 0, 0 /),  fs_get_halos(serializer, "float3"))
       @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 20 /), fs_get_halos(serializer, "float4"))
+      @assertEqual(exp_halos_scalar,                  fs_get_halos(serializer, "double0"))
       @assertEqual((/ -1, 6, 0, 0, 0, 0, 0, 0 /),     fs_get_halos(serializer, "double1"))
       @assertEqual((/ -2, 2, -3, 8, 0, 0, 0, 0 /),    fs_get_halos(serializer, "double2"))
-      @assertEqual((/ -4, 4, -5, 5, -6, 11, 0, 0 /),   fs_get_halos(serializer, "double3"))
+      @assertEqual((/ -4, 4, -5, 5, -6, 11, 0, 0 /),  fs_get_halos(serializer, "double3"))
       @assertEqual((/ 7, 8, 23, 42, 12, -4, 0, 21 /), fs_get_halos(serializer, "double4"))
-      @assertEqual((/ 0, 0, 0, 0, 0, 0, 0, 0 /), fs_get_halos(serializer, "double4zeros"))
+      @assertEqual((/ 0, 0, 0, 0, 0, 0, 0, 0 /),      fs_get_halos(serializer, "double4zeros"))
       CALL fs_destroy_serializer(serializer)      
     
     END SUBROUTINE testHalos
+    
+@Test
+    SUBROUTINE testShortname()
+    
+      TYPE(t_serializer) :: serializer
+      INTEGER :: w_testfield_i0, r_testfield_i0
+      
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_shortname'
+      
+      w_testfield_i0 = 42
+            
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL fs_write_field(serializer, savepoint, "012345", w_testfield_i0)
+      CALL fs_write_field(serializer, savepoint, "01234", w_testfield_i0)
+      CALL fs_write_field(serializer, savepoint, "0123", w_testfield_i0)
+      CALL fs_write_field(serializer, savepoint, "012", w_testfield_i0)
+      CALL fs_write_field(serializer, savepoint, "01", w_testfield_i0)
+      CALL fs_write_field(serializer, savepoint, "0", w_testfield_i0)
+      CALL fs_destroy_serializer(serializer)
+      
+      CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      @assertTrue(fs_field_exists(serializer, "012345"))
+      @assertTrue(fs_field_exists(serializer, "01234"))
+      @assertTrue(fs_field_exists(serializer, "0123"))
+      @assertTrue(fs_field_exists(serializer, "012"))
+      @assertTrue(fs_field_exists(serializer, "01"))
+      @assertTrue(fs_field_exists(serializer, "0"))
+      
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "012345"))
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "01234"))
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "0123"))
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "012"))
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "01"))
+      @assertEqual(exp_size_scalar, fs_get_size(serializer, "0"))
+      
+      @assertEqual(exp_halos_scalar, fs_get_halos(serializer, "012345"))
+      @assertEqual(exp_halos_scalar, fs_get_halos(serializer, "01234"))
+      @assertEqual(exp_halos_scalar, fs_get_halos(serializer, "0123"))
+      @assertEqual(exp_halos_scalar, fs_get_halos(serializer, "012"))
+      @assertEqual(exp_halos_scalar, fs_get_halos(serializer, "01"))
+      @assertEqual(exp_halos_scalar, fs_get_halos(serializer, "0"))
+    
+    END SUBROUTINE testShortname    
+    
+@Test
+    SUBROUTINE testRank()
+    
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_rank'
+    
+      TYPE(t_serializer) :: serializer
+    
+      INTEGER              :: integer0, integer1(1), integer2(1,1), integer3(1,1,1), integer4(1,1,1,1) 
+    
+      integer0          = 42
+      integer1(:)       = 42
+      integer2(:,:)     = 42
+      integer3(:,:,:)   = 42
+      integer4(:,:,:,:) = 42
+
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL fs_write_field(serializer, savepoint, "integer0", integer0)
+      CALL fs_write_field(serializer, savepoint, "integer1", integer1)
+      CALL fs_write_field(serializer, savepoint, "integer2", integer2)
+      CALL fs_write_field(serializer, savepoint, "integer3", integer3)
+      CALL fs_write_field(serializer, savepoint, "integer4", integer4)
+      CALL fs_destroy_serializer(serializer)      
+      
+      CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      @assertEqual(1, fs_get_rank(serializer, "integer0"))
+      @assertEqual(1, fs_get_rank(serializer, "integer1"))
+      @assertEqual(2, fs_get_rank(serializer, "integer2"))
+      @assertEqual(3, fs_get_rank(serializer, "integer3"))
+      @assertEqual(4, fs_get_rank(serializer, "integer4"))
+      CALL fs_destroy_serializer(serializer)      
+    
+    END SUBROUTINE testRank
+    
+@Test
+    SUBROUTINE testTotalSize()
+    
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_rank'
+    
+      TYPE(t_serializer) :: serializer
+    
+      INTEGER              :: integer0, integer1(42), integer2(6,7), integer3(6,1,7), integer4(1,2,3,4) 
+    
+      integer0          = 42
+      integer1(:)       = 42
+      integer2(:,:)     = 42
+      integer3(:,:,:)   = 42
+      integer4(:,:,:,:) = 42
+
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL fs_write_field(serializer, savepoint, "integer0", integer0)
+      CALL fs_write_field(serializer, savepoint, "integer1", integer1)
+      CALL fs_write_field(serializer, savepoint, "integer2", integer2)
+      CALL fs_write_field(serializer, savepoint, "integer3", integer3)
+      CALL fs_write_field(serializer, savepoint, "integer4", integer4)
+      CALL fs_destroy_serializer(serializer)      
+      
+      CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      @assertEqual(1, fs_get_total_size(serializer, "integer0"))
+      @assertEqual(42, fs_get_total_size(serializer, "integer1"))
+      @assertEqual(42, fs_get_total_size(serializer, "integer2"))
+      @assertEqual(42, fs_get_total_size(serializer, "integer3"))
+      @assertEqual(24, fs_get_total_size(serializer, "integer4"))
+      CALL fs_destroy_serializer(serializer)      
+    
+    END SUBROUTINE testTotalSize
+
+@Test
+    SUBROUTINE testGlobalMetainfo()
+    
+      TYPE(t_serializer) :: serializer
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_global_metainfo'
+
+      LOGICAL              :: metalog
+      INTEGER(KIND=C_INT)  :: metaint
+      INTEGER(KIND=C_LONG) :: metalong
+      REAL(KIND=C_FLOAT)   :: metafloat
+      REAL(KIND=C_DOUBLE)  :: metadouble
+      
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL fs_add_serializer_metainfo(serializer, 'ser-metalog-t', .TRUE.)
+      CALL fs_add_serializer_metainfo(serializer, 'ser-metalog-f', .FALSE.)
+      CALL fs_add_serializer_metainfo(serializer, 'ser-metaint', 42)
+      CALL fs_add_serializer_metainfo(serializer, 'ser-metalong', -109470000042_8)
+      CALL fs_add_serializer_metainfo(serializer, 'ser-metafloat', 23.0_4)
+      CALL fs_add_serializer_metainfo(serializer, 'ser-metadouble', 109.47_8)
+      CALL fs_destroy_serializer(serializer)
+
+      CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      CALL fs_get_serializer_metainfo(serializer, 'ser-metalog-t', metalog)
+      @assertEqual(.TRUE., metalog)
+      CALL fs_get_serializer_metainfo(serializer, 'ser-metalog-f', metalog)
+      @assertEqual(.FALSE., metalog)
+      CALL fs_get_serializer_metainfo(serializer, 'ser-metaint', metaint)
+      @assertEqual(42, metaint)
+      CALL fs_get_serializer_metainfo(serializer, 'ser-metalong', metalong)
+      @assertEqual(-109470000042_8, metalong)
+      CALL fs_get_serializer_metainfo(serializer, 'ser-metafloat', metafloat)
+      @assertEqual(23.0_4, metafloat)
+      CALL fs_get_serializer_metainfo(serializer, 'ser-metadouble', metadouble)
+      @assertEqual(109.47_8, metadouble)
+      CALL fs_destroy_serializer(serializer)
+    
+    END SUBROUTINE testGlobalMetainfo    
+
+@Test
+    SUBROUTINE testFieldMetainfo()
+    
+      TYPE(t_serializer) :: serializer
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_field_metainfo'
+      INTEGER :: field(2,1,4)      
+      CHARACTER(len=*), PARAMETER :: field_name = 'field'
+      
+      LOGICAL              :: metalog
+      INTEGER(KIND=C_INT)  :: metaint
+      INTEGER(KIND=C_LONG) :: metalong
+      REAL(KIND=C_FLOAT)   :: metafloat
+      REAL(KIND=C_DOUBLE)  :: metadouble
+      
+      field = RESHAPE((/ 0, 1, 2, 3, 4, 5, 6, 7 /), SHAPE(field))
+      
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL fs_write_field(serializer, savepoint, field_name, field)
+      CALL fs_add_field_metainfo(serializer, field_name, 'field-metalog-t', .TRUE.)
+      CALL fs_add_field_metainfo(serializer, field_name, 'field-metalog-f', .FALSE.)
+      CALL fs_add_field_metainfo(serializer, field_name, 'field-metaint', 42)
+      CALL fs_add_field_metainfo(serializer, field_name, 'field-metalong', -109470000042_8)
+      CALL fs_add_field_metainfo(serializer, field_name, 'field-metafloat', 23.0_4)
+      CALL fs_add_field_metainfo(serializer, field_name, 'field-metadouble', 109.47_8)
+      CALL fs_destroy_serializer(serializer)
+
+      CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      CALL fs_get_field_metainfo(serializer, field_name, 'field-metalog-t', metalog)
+      @assertEqual(.TRUE., metalog)
+      CALL fs_get_field_metainfo(serializer, field_name, 'field-metalog-f', metalog)
+      @assertEqual(.FALSE., metalog)
+      CALL fs_get_field_metainfo(serializer, field_name, 'field-metaint', metaint)
+      @assertEqual(42, metaint)
+      CALL fs_get_field_metainfo(serializer, field_name, 'field-metalong', metalong)
+      @assertEqual(-109470000042_8, metalong)
+      CALL fs_get_field_metainfo(serializer, field_name, 'field-metafloat', metafloat)
+      @assertEqual(23.0_4, metafloat)
+      CALL fs_get_field_metainfo(serializer, field_name, 'field-metadouble', metadouble)
+      @assertEqual(109.47_8, metadouble)
+      CALL fs_destroy_serializer(serializer)
+
+      CALL fs_destroy_serializer(serializer)
+    
+    END SUBROUTINE testFieldMetainfo    
+
+@Test
+    SUBROUTINE testSavepointMetainfo()
+    
+      TYPE(t_savepoint) :: savepoint
+      CHARACTER(len=*), PARAMETER :: savepoint_name = 'test_savepoint_metainfo'
+      
+      LOGICAL              :: metalog
+      INTEGER(KIND=C_INT)  :: metaint
+      INTEGER(KIND=C_LONG) :: metalong
+      REAL(KIND=C_FLOAT)   :: metafloat
+      REAL(KIND=C_DOUBLE)  :: metadouble
+      
+      CALL fs_create_savepoint(savepoint_name, savepoint)
+      
+      CALL fs_add_savepoint_metainfo(savepoint, 'metalog-t', .TRUE.)
+      CALL fs_add_savepoint_metainfo(savepoint, 'metalog-f', .FALSE.)
+      CALL fs_add_savepoint_metainfo(savepoint, 'metaint', 42)
+      CALL fs_add_savepoint_metainfo(savepoint, 'metalong', -109470000042_8)
+      CALL fs_add_savepoint_metainfo(savepoint, 'metafloat', 23.0_4)
+      CALL fs_add_savepoint_metainfo(savepoint, 'metadouble', 109.47_8)
+
+      CALL fs_get_savepoint_metainfo(savepoint, 'metalog-t', metalog)
+      @assertEqual(.TRUE., metalog)
+      CALL fs_get_savepoint_metainfo(savepoint, 'metalog-f', metalog)
+      @assertEqual(.FALSE., metalog)
+      CALL fs_get_savepoint_metainfo(savepoint, 'metaint', metaint)
+      @assertEqual(42, metaint)
+      CALL fs_get_savepoint_metainfo(savepoint, 'metalong', metalong)
+      @assertEqual(-109470000042_8, metalong)
+      CALL fs_get_savepoint_metainfo(savepoint, 'metafloat', metafloat)
+      @assertEqual(23.0_4, metafloat)
+      CALL fs_get_savepoint_metainfo(savepoint, 'metadouble', metadouble)
+      @assertEqual(109.47_8, metadouble)
+
+      CALL fs_destroy_savepoint(savepoint)
+    
+    END SUBROUTINE testSavepointMetainfo    
 
 END MODULE serialbox_test

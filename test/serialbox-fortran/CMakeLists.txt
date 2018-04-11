@@ -11,9 +11,10 @@ cmake_minimum_required(VERSION 3.1)
 
 enable_language(Fortran)
 
-file(GLOB SOURCES 
-     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.pf)
-string(REPLACE ".pf" "" SOURCES "${SOURCES}")
+set(SOURCES serialbox_test)
+if (SERIALBOX_ENABLE_FTG)
+  set(SOURCES ${SOURCES} ser_ftg_test)
+endif()
 
 # Setup external libraries
 set(EXTERNAL_LIBRARIES SerialboxFortranLibraryStatic

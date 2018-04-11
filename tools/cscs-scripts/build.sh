@@ -32,7 +32,7 @@ print_help()
            
     # --fc-compiler
     printf "  %-35s %s\n" \
-           "-f, --fc-compiler [gnu|cray|pgi]" \
+           "-f, --fc-compiler [gnu|cray|pgi|intel]" \
            "Select Fortran compiler [default: gnu]." 
 
     # --run-tests
@@ -70,6 +70,8 @@ elif [ "$(hostname | grep kesch)" != "" ] ; then
     MYHOST="kesch"
 elif [ "$(hostname | grep daint)" != "" ] ; then
     MYHOST="daint"
+elif [ "$(hostname | grep tave)" != "" ] ; then
+    MYHOST="tave"
 else
     echo "build: host '$(hostname)' not known. Assuming environment is already setup."
 fi
@@ -125,6 +127,9 @@ if [ "${ARG_FC_COMPILER}" = "cray" ]; then
 elif [ "${ARG_FC_COMPILER}" = "pgi" ]; then
     printf "%-20s: %s\n" "Fortran compiler" "pgi"
     FC_COMPILER="pgfortran"
+elif [ "${ARG_FC_COMPILER}" = "intel" ]; then
+    printf "%-20s: %s\n" "Fortran compiler" "intel"
+    FC_COMPILER="ifort"
 else
     printf "%-20s: %s\n" "Fortran compiler" "gnu"
     FC_COMPILER="gfortran"
@@ -225,6 +230,7 @@ cmake                                                                          \
  -DSERIALBOX_TESTING_FORTRAN:BOOL=${SERIALBOX_TESTING_FORTRAN}                 \
  -DSERIALBOX_USE_NETCDF:BOOL=${SERIALBOX_USE_NETCDF}                           \
  -DSERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM:BOOL=ON                            \
+ -DSERIALBOX_ENABLE_FTG:BOOL=ON                                                \
  ../
 
 # Run make

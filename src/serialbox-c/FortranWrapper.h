@@ -15,6 +15,8 @@
 #ifndef SERIALBOX_C_FORTRANWRAPPER_H
 #define SERIALBOX_C_FORTRANWRAPPER_H
 
+#include <stdint.h>
+
 /**
  * \ingroup serialboxC
  * @{
@@ -65,6 +67,17 @@ void serialboxFortranComputeStrides(void* serializer, const char* fieldname, con
                                     int* lstride);
 
 /**
+ * \brief Returns a numerical representation of a field's current address in memory
+ */
+void serialboxFortranLoc(const void* basePtr, intptr_t* loc);
+
+/**
+ * \brief Returns the rank of the field `name`
+ * The result is 1 for both, scalars and 1-dimensional arrays
+ */
+void serialboxFortranSerializerGetFieldRank(const void* serializer, const char* name, int* rank);
+
+/**
  * \brief Returns the dimensions of the field `name`
  */
 void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const char* name,
@@ -74,9 +87,8 @@ void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const 
  * \brief Returns the halos of the field `name`
  */
 void serialboxFortranSerializerGetFieldHalos(const void* serializer, const char* name,
-                                             int* iMinusHalo, int* iPlusHalo, int* jMinusHalo,
-                                             int* jPlusHalo, int* kMinusHalo, int* kPlusHalo,
-                                             int* lMinusHalo, int* lPlusHalo);
+                                             int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
+                                             int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo);
 
 /**
  * \brief Add a global meta-information `key=value` pair to the Serializer
@@ -90,10 +102,28 @@ void serialboxFortranSerializerGetFieldHalos(const void* serializer, const char*
  */
 void serialboxFortranSerializerAddMetainfoBoolean(void* serializer, const char* key, int value);
 void serialboxFortranSerializerAddMetainfoInt32(void* serializer, const char* key, int value);
+void serialboxFortranSerializerAddMetainfoInt64(void* serializer, const char* key, long value);
 void serialboxFortranSerializerAddMetainfoFloat32(void* serializer, const char* key, float value);
 void serialboxFortranSerializerAddMetainfoFloat64(void* serializer, const char* key, double value);
-void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* key,
-                                                 const char* value);
+void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* key, const char* value);
+/** @} */
+
+/**
+ * \brief Get a global meta-information `key=value` pair from the Serializer
+ *
+ * This function corresponds to `fs_get_serializer_metainfo_X`
+ *
+ * \param serializer  Serializer to use
+ * \param key         Key of the new element
+ * \param value       Destination object for the value of the existing element
+ * @{
+ */
+void serialboxFortranSerializerGetMetainfoBoolean(const void* serializer, const char* key, int* value);
+void serialboxFortranSerializerGetMetainfoInt32(const void* serializer, const char* key, int* value);
+void serialboxFortranSerializerGetMetainfoInt64(const void* serializer, const char* key, long* value);
+void serialboxFortranSerializerGetMetainfoFloat32(const void* serializer, const char* key, float* value);
+void serialboxFortranSerializerGetMetainfoFloat64(const void* serializer, const char* key, double* value);
+void serialboxFortranSerializerGetMetainfoString(const void* serializer, const char* key, const char** value);
 /** @} */
 
 /**
@@ -143,12 +173,39 @@ void serialboxFortranSerializerAddFieldMetainfoBoolean(void* serializer, const c
                                                        const char* key, int value);
 void serialboxFortranSerializerAddFieldMetainfoInt32(void* serializer, const char* field,
                                                      const char* key, int value);
+void serialboxFortranSerializerAddFieldMetainfoInt64(void* serializer, const char* field,
+                                                     const char* key, long value);
 void serialboxFortranSerializerAddFieldMetainfoFloat32(void* serializer, const char* field,
                                                        const char* key, float value);
 void serialboxFortranSerializerAddFieldMetainfoFloat64(void* serializer, const char* field,
                                                        const char* key, double value);
 void serialboxFortranSerializerAddFieldMetainfoString(void* serializer, const char* field,
                                                       const char* key, const char* value);
+/** @} */
+
+/**
+ * \brief Get a meta-information `key=value` pair from `field` of the serializer
+ *
+ * This function corresponds to `fs_get_field_metainfo_X`
+ *
+ * \param serializer  Serializer to use
+ * \param field       Name of the field
+ * \param key         Key of the new element
+ * \param value       Destination object for the value of the existing element
+ * @{
+ */
+void serialboxFortranSerializerGetFieldMetainfoBoolean(const void* serializer, const char* field,
+                                                       const char* key, int* value);
+void serialboxFortranSerializerGetFieldMetainfoInt32(const void* serializer, const char* field,
+                                                     const char* key, int* value);
+void serialboxFortranSerializerGetFieldMetainfoInt64(const void* serializer, const char* field,
+                                                     const char* key, long* value);
+void serialboxFortranSerializerGetFieldMetainfoFloat32(const void* serializer, const char* field,
+                                                       const char* key, float* value);
+void serialboxFortranSerializerGetFieldMetainfoFloat64(const void* serializer, const char* field,
+                                                       const char* key, double* value);
+void serialboxFortranSerializerGetFieldMetainfoString(const void* serializer, const char* field,
+                                                      const char* key, const char** value);
 /** @} */
 
 /*===------------------------------------------------------------------------------------------===*\
@@ -167,10 +224,28 @@ void serialboxFortranSerializerAddFieldMetainfoString(void* serializer, const ch
  */
 void serialboxFortranSavepointAddMetainfoBoolean(void* savepoint, const char* key, int value);
 void serialboxFortranSavepointAddMetainfoInt32(void* savepoint, const char* key, int value);
+void serialboxFortranSavepointAddMetainfoInt64(void* savepoint, const char* key, long value);
 void serialboxFortranSavepointAddMetainfoFloat32(void* savepoint, const char* key, float value);
 void serialboxFortranSavepointAddMetainfoFloat64(void* savepoint, const char* key, double value);
-void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key,
-                                                const char* value);
+void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key, const char* value);
+/** @} */
+
+/**
+ * \brief Get a meta-information `key=value` pair from the `savepoint`
+ *
+ * This function corresponds to `fs_get_savepoint_metainfo_X`
+ *
+ * \param savepoint   Savepoint to use
+ * \param key         Key of the new element
+ * \param value       Destination object for the value of the existing element
+ * @{
+ */
+void serialboxFortranSavepointGetMetainfoBoolean(const void* savepoint, const char* key, int* value);
+void serialboxFortranSavepointGetMetainfoInt32(const void* savepoint, const char* key, int* value);
+void serialboxFortranSavepointGetMetainfoInt64(const void* savepoint, const char* key, long* value);
+void serialboxFortranSavepointGetMetainfoFloat32(const void* savepoint, const char* key, float* value);
+void serialboxFortranSavepointGetMetainfoFloat64(const void* savepoint, const char* key, double* value);
+void serialboxFortranSavepointGetMetainfoString(const void* savepoint, const char* key, const char** value);
 /** @} */
 
 /** @} @} */
