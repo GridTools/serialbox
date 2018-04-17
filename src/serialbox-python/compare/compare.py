@@ -239,7 +239,7 @@ def compare_fields(serializers, field, savepoint, dim_bounds):
 
         # Check for NaN values
         num_nans += value_1_isnan + value_2_isnan
-        if value_1_isnan or value_2_isnan:
+        if value_1_isnan != value_2_isnan:
             errors += [
                 {"index": it_1.multi_index, "value_1": value_1, "value_2": value_2,
                  "error": float('nan')}]
