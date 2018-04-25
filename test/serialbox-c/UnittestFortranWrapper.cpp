@@ -34,10 +34,16 @@ TEST_F(CFortranWrapperTest, Serializer) {
   //
   // Add global meta-info
   //
-  serialboxFortranSerializerAddMetainfoBoolean(serializer, "bool", true);
+  serialboxFortranSerializerAddMetainfoBoolean(serializer, "boolt", true);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSerializerAddMetainfoBoolean(serializer, "boolf", false);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   serialboxFortranSerializerAddMetainfoInt32(serializer, "int", 2);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSerializerAddMetainfoInt64(serializer, "long", 52000000023L);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   serialboxFortranSerializerAddMetainfoFloat32(serializer, "float", 1.1f);
@@ -52,31 +58,49 @@ TEST_F(CFortranWrapperTest, Serializer) {
   //
   // Add existing meta-info -> Error
   //
-  serialboxFortranSerializerAddMetainfoBoolean(serializer, "bool", true);
+  serialboxFortranSerializerAddMetainfoBoolean(serializer, "boolt", true);
   ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   //
   // Get meta-info
   //
-  serialboxMetainfo_t* metaInfo = serialboxSerializerGetGlobalMetainfo(serializer);
+  int metaInfoValueBool;
+  serialboxFortranSerializerGetMetainfoBoolean(serializer, "boolt", &metaInfoValueBool);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  EXPECT_EQ(serialboxMetainfoGetBoolean(metaInfo, "bool"), true);
+  EXPECT_EQ(true, (bool) metaInfoValueBool);
+  serialboxFortranSerializerGetMetainfoBoolean(serializer, "boolf", &metaInfoValueBool);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(false, (bool) metaInfoValueBool);
 
-  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "int"), 2);
+  int metaInfoValueInt;
+  serialboxFortranSerializerGetMetainfoInt32(serializer, "int", &metaInfoValueInt);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(2, metaInfoValueInt);
 
-  EXPECT_EQ(serialboxMetainfoGetFloat32(metaInfo, "float"), 1.1f);
+  long metaInfoValueLong;
+  serialboxFortranSerializerGetMetainfoInt64(serializer, "long", &metaInfoValueLong);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(52000000023L, metaInfoValueLong);
 
-  EXPECT_EQ(serialboxMetainfoGetFloat64(metaInfo, "double"), 1.1);
+  float metaInfoValueFloat;
+  serialboxFortranSerializerGetMetainfoFloat32(serializer, "float", &metaInfoValueFloat);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(1.1f, metaInfoValueFloat);
 
-  EXPECT_STREQ(serialboxMetainfoGetString(metaInfo, "string"), "str");
+  double metaInfoValueDouble;
+  serialboxFortranSerializerGetMetainfoFloat64(serializer, "double", &metaInfoValueDouble);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(1.1, metaInfoValueDouble);
 
-  serialboxMetainfoDestroy(metaInfo);
+  const char* metaInfoValueString;
+  serialboxFortranSerializerGetMetainfoString(serializer, "string", &metaInfoValueString);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ("str", std::string(metaInfoValueString, strnlen(metaInfoValueString, 4)));
+
+  //Not-existing key
+  serialboxFortranSerializerGetMetainfoString(serializer, "nope", &metaInfoValueString);
+  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
   serialboxSerializerDestroy(serializer);
 }
 
@@ -91,46 +115,11 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   serialboxFortranSerializerRegisterField(serializer, "field", Float64, 8, 30, 40, 50, 60, 1, 1, 23,
                                           42, 0, 0, -2, 2);
 
-  //
-  // Add field meta-info
-  //
-  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "bool", true);
+  // Rank
+  int rank;
+  serialboxFortranSerializerGetFieldRank(serializer, "field", &rank);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  serialboxFortranSerializerAddFieldMetainfoInt32(serializer, "field", "int", 2);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  serialboxFortranSerializerAddFieldMetainfoFloat32(serializer, "field", "float", 1.1f);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  serialboxFortranSerializerAddFieldMetainfoFloat64(serializer, "field", "double", 1.1);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  serialboxFortranSerializerAddFieldMetainfoString(serializer, "field", "string", "str");
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  //
-  // Field does not exists -> Error
-  //
-  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "fieldX", "bool", true);
-  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  //
-  // Add existing field meta-info -> Error
-  //
-  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "bool", true);
-  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  //
-  // Get field meta-info
-  //
-  serialboxFieldMetainfo_t* info = serialboxSerializerGetFieldMetainfo(serializer, "field");
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  // Number of dimension
-  int numDimension = serialboxFieldMetainfoGetNumDimensions(info);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-  EXPECT_EQ(numDimension, 4);
+  EXPECT_EQ(rank, 4);
 
   // Dimensions
   int iSize, jSize, kSize, lSize;
@@ -154,31 +143,89 @@ TEST_F(CFortranWrapperTest, FieldMetainfoImpl) {
   EXPECT_EQ(lMinusHalo, -2);
   EXPECT_EQ(lPlusHalo, 2);
 
+  //
+  // Add field meta-info
+  //
+  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "boolt", true);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "boolf", false);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSerializerAddFieldMetainfoInt32(serializer, "field", "int", 3);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSerializerAddFieldMetainfoInt64(serializer, "field", "long", 63000000024L);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSerializerAddFieldMetainfoFloat32(serializer, "field", "float", 4.1f);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSerializerAddFieldMetainfoFloat64(serializer, "field", "double", 5.1);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSerializerAddFieldMetainfoString(serializer, "field", "string", "strf");
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  //
+  // Field does not exists -> Error
+  //
+  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "fieldX", "boolt", true);
+  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  //
+  // Add existing field meta-info -> Error
+  //
+  serialboxFortranSerializerAddFieldMetainfoBoolean(serializer, "field", "boolt", true);
+  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  //
+  // Get field meta-info
+  //
+  int metaInfoValueBool;
+  serialboxFortranSerializerGetFieldMetainfoBoolean(serializer, "field", "boolt", &metaInfoValueBool);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(true, (bool) metaInfoValueBool);
+  serialboxFortranSerializerGetFieldMetainfoBoolean(serializer, "field", "boolf", &metaInfoValueBool);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(false, (bool) metaInfoValueBool);
+
+  int metaInfoValueInt;
+  serialboxFortranSerializerGetFieldMetainfoInt32(serializer, "field", "int", &metaInfoValueInt);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(3, metaInfoValueInt);
+
+  long metaInfoValueLong;
+  serialboxFortranSerializerGetFieldMetainfoInt64(serializer, "field", "long", &metaInfoValueLong);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(63000000024L, metaInfoValueLong);
+
+  float metaInfoValueFloat;
+  serialboxFortranSerializerGetFieldMetainfoFloat32(serializer, "field", "float", &metaInfoValueFloat);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(4.1f, metaInfoValueFloat);
+
+  double metaInfoValueDouble;
+  serialboxFortranSerializerGetFieldMetainfoFloat64(serializer, "field", "double", &metaInfoValueDouble);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(5.1, metaInfoValueDouble);
+
+  const char* metaInfoValueString;
+  serialboxFortranSerializerGetFieldMetainfoString(serializer, "field", "string", &metaInfoValueString);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ("strf", std::string(metaInfoValueString, strnlen(metaInfoValueString, 5)));
+
+  //Not-existing key
+  serialboxFortranSerializerGetFieldMetainfoString(serializer, "field", "nope", &metaInfoValueString);
+  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
   // Type
+  serialboxFieldMetainfo_t* info = serialboxSerializerGetFieldMetainfo(serializer, "field");
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   serialboxTypeID type = serialboxFieldMetainfoGetTypeID(info);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
   EXPECT_EQ(type, Float64);
 
-  // Meta information
-  serialboxMetainfo_t* metaInfo = serialboxFieldMetainfoGetMetainfo(info);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  EXPECT_EQ(serialboxMetainfoGetBoolean(metaInfo, "bool"), true);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "int"), 2);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  EXPECT_EQ(serialboxMetainfoGetFloat32(metaInfo, "float"), 1.1f);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  EXPECT_EQ(serialboxMetainfoGetFloat64(metaInfo, "double"), 1.1);
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  EXPECT_STREQ(serialboxMetainfoGetString(metaInfo, "string"), "str");
-  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  serialboxMetainfoDestroy(metaInfo);
   serialboxFieldMetainfoDestroy(info);
   serialboxSerializerDestroy(serializer);
 }
@@ -190,49 +237,73 @@ TEST_F(CFortranWrapperTest, Savepoint) {
   //
   // Add meta-info
   //
-  serialboxFortranSavepointAddMetainfoBoolean(savepoint, "bool", true);
+  serialboxFortranSavepointAddMetainfoBoolean(savepoint, "boolt", true);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  serialboxFortranSavepointAddMetainfoInt32(savepoint, "int", 2);
+  serialboxFortranSavepointAddMetainfoBoolean(savepoint, "boolf", false);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  serialboxFortranSavepointAddMetainfoFloat32(savepoint, "float", 1.1f);
+  serialboxFortranSavepointAddMetainfoInt32(savepoint, "int", 6);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  serialboxFortranSavepointAddMetainfoFloat64(savepoint, "double", 1.1);
+  serialboxFortranSavepointAddMetainfoInt64(savepoint, "long", 73000000023L);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-  serialboxFortranSavepointAddMetainfoString(savepoint, "string", "str");
+  serialboxFortranSavepointAddMetainfoFloat32(savepoint, "float", 7.1f);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSavepointAddMetainfoFloat64(savepoint, "double", 8.1);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+  serialboxFortranSavepointAddMetainfoString(savepoint, "string", "strsp");
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   //
   // Add existing meta-info -> Error
   //
-  serialboxFortranSavepointAddMetainfoBoolean(savepoint, "bool", true);
+  serialboxFortranSavepointAddMetainfoBoolean(savepoint, "boolt", true);
   ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   //
   // Get meta-info
   //
-  serialboxMetainfo_t* metaInfo = serialboxSavepointGetMetainfo(savepoint);
+  int metaInfoValueBool;
+  serialboxFortranSavepointGetMetainfoBoolean(savepoint, "boolt", &metaInfoValueBool);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-
-  EXPECT_EQ(serialboxMetainfoGetBoolean(metaInfo, "bool"), true);
+  EXPECT_EQ(true, (bool) metaInfoValueBool);
+  serialboxFortranSavepointGetMetainfoBoolean(savepoint, "boolf", &metaInfoValueBool);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(false, (bool) metaInfoValueBool);
 
-  EXPECT_EQ(serialboxMetainfoGetInt32(metaInfo, "int"), 2);
+  int metaInfoValueInt;
+  serialboxFortranSavepointGetMetainfoInt32(savepoint, "int", &metaInfoValueInt);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(6, metaInfoValueInt);
 
-  EXPECT_EQ(serialboxMetainfoGetFloat32(metaInfo, "float"), 1.1f);
+  long metaInfoValueLong;
+  serialboxFortranSavepointGetMetainfoInt64(savepoint, "long", &metaInfoValueLong);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(73000000023L, metaInfoValueLong);
 
-  EXPECT_EQ(serialboxMetainfoGetFloat64(metaInfo, "double"), 1.1);
+  float metaInfoValueFloat;
+  serialboxFortranSavepointGetMetainfoFloat32(savepoint, "float", &metaInfoValueFloat);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(7.1f, metaInfoValueFloat);
 
-  EXPECT_STREQ(serialboxMetainfoGetString(metaInfo, "string"), "str");
+  double metaInfoValueDouble;
+  serialboxFortranSavepointGetMetainfoFloat64(savepoint, "double", &metaInfoValueDouble);
   ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ(8.1, metaInfoValueDouble);
 
-  serialboxMetainfoDestroy(metaInfo);
+  const char* metaInfoValueString;
+  serialboxFortranSavepointGetMetainfoString(savepoint, "string", &metaInfoValueString);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+  EXPECT_EQ("strsp", std::string(metaInfoValueString, strnlen(metaInfoValueString, 6)));
+
+  //Not-existing key
+  serialboxFortranSavepointGetMetainfoString(savepoint, "nope", &metaInfoValueString);
+  ASSERT_TRUE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
   serialboxSavepointDestroy(savepoint);
 }
 
@@ -246,6 +317,7 @@ TEST_F(CFortranWrapperTest, ShortFieldName) {
   //
   serialboxFortranSerializerRegisterField(serializer, "i0", Float64, 8, 30, 40, 50, 60, 1, 1, 23,
                                           42, 0, 0, -2, 2);
+  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
   // Dimensions
   int iSize, jSize, kSize, lSize;
@@ -281,4 +353,61 @@ TEST_F(CFortranWrapperTest, Loc) {
   ASSERT_EQ(loct1, locp1b);
   ASSERT_EQ(loct2, locp2);
   ASSERT_NE(loct1, loct2);
+}
+
+TEST_F(CFortranWrapperTest, Rank) {
+
+	serialboxSerializer_t* serializer =
+	      serialboxSerializerCreate(Write, directory->path().c_str(), "Rank", "Binary");
+	  ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+	serialboxFortranSerializerRegisterField(serializer, "int0", Int32, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	serialboxFortranSerializerRegisterField(serializer, "int1", Int32, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	serialboxFortranSerializerRegisterField(serializer, "int2", Int32, 4, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	serialboxFortranSerializerRegisterField(serializer, "int3", Int32, 4, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	serialboxFortranSerializerRegisterField(serializer, "int4", Int32, 4, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+	int rank;
+	serialboxFortranSerializerGetFieldRank(serializer, "int0", &rank);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	EXPECT_EQ(rank, 1);
+	serialboxFortranSerializerGetFieldRank(serializer, "int1", &rank);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	EXPECT_EQ(rank, 1);
+	serialboxFortranSerializerGetFieldRank(serializer, "int2", &rank);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	EXPECT_EQ(rank, 2);
+	serialboxFortranSerializerGetFieldRank(serializer, "int3", &rank);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	EXPECT_EQ(rank, 3);
+	serialboxFortranSerializerGetFieldRank(serializer, "int4", &rank);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+	EXPECT_EQ(rank, 4);
+}
+
+TEST_F(CFortranWrapperTest, PermanentMetaInfo) {
+
+    serialboxSerializer_t* serializer = serialboxSerializerCreate(Write, directory->path().c_str(), "PermanentMetaInfo", "Binary");
+    ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+	serialboxFortranSerializerRegisterField(serializer, "field", Int32, 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+	serialboxFortranSerializerAddFieldMetainfoInt32(serializer, "field", "metatest", 42);
+    ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+    serialboxSerializerDestroy(serializer);
+    ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+    serializer = serialboxSerializerCreate(Read, directory->path().c_str(), "PermanentMetaInfo", "Binary");
+    ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
+    serialboxSerializerDestroy(serializer);
+    ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
+
 }

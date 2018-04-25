@@ -133,7 +133,7 @@ SERIALBOX_API char* serialboxSerializerToString(const serialboxSerializer_t* ser
  * \return global meta-information of the serializer
  */
 SERIALBOX_API serialboxMetainfo_t*
-serialboxSerializerGetGlobalMetainfo(serialboxSerializer_t* serializer);
+serialboxSerializerGetGlobalMetainfo(const serialboxSerializer_t* serializer);
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Register and Query Savepoints

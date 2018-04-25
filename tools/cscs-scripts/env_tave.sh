@@ -67,7 +67,6 @@ fi
 #------------------------------ Set environment --------------------------------
 
 module load CMake
-module load daint-gpu
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
     
@@ -82,9 +81,9 @@ elif [ "$FC_COMPILER" = "ftn" ]; then
     module load gcc
     
 elif [ "$FC_COMPILER" = "ifort" ]; then
-  
+
     module swap PrgEnv-cray PrgEnv-intel
-    module load gcc/7.2.0
+    module load gcc
 
 else
     module swap PrgEnv-cray PrgEnv-gnu
