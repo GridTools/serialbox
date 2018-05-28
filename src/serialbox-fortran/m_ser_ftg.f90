@@ -42,7 +42,7 @@ PUBLIC :: ignore_bullshit, ignore_bullshit_max_dim_size, ignore_bullshit_allow_n
           ftg_set_savepoint, ftg_get_savepoint, ftg_destroy_savepoint, &
           ftg_add_serializer_metainfo, ftg_get_serializer_metainfo,  ftg_add_field_metainfo, ftg_get_field_metainfo, &
           ftg_add_savepoint_metainfo, ftg_get_savepoint_metainfo, &
-          ftg_field_exists, ftg_get_bounds, ftg_register_only, ftg_write, ftg_read, &
+          ftg_field_exists, ftg_get_size, ftg_get_bounds, ftg_register_only, ftg_write, ftg_read, &
           ftg_allocate_pointer, ftg_allocate_allocatable, ftg_allocate_and_read_pointer, ftg_allocate_and_read_allocatable
 
 PRIVATE
@@ -446,6 +446,15 @@ END FUNCTION ftg_field_exists
 !=============================================================================
 !=============================================================================
 
+FUNCTION ftg_get_size(fieldname)
+
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  INTEGER, DIMENSION(4)        :: ftg_get_size
+
+  ftg_get_size = fs_get_size(serializer,  fieldname)
+
+END FUNCTION ftg_get_size
+
 FUNCTION ftg_get_bounds(fieldname)
 
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
@@ -454,6 +463,23 @@ FUNCTION ftg_get_bounds(fieldname)
   ftg_get_bounds = fs_get_halos(serializer,  fieldname)
 
 END FUNCTION ftg_get_bounds
+
+!=============================================================================
+!=============================================================================
+
+FUNCTION ftg_match_size(fieldname, expected_rank, actual_shape)
+
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname
+  INTEGER, INTENT(IN)          :: expected_rank, actual_shape(:)
+  INTEGER                      :: expected_size(4)
+  LOGICAL                      :: ftg_match_size
+  
+  expected_size = ftg_get_size(fieldname)
+  
+  WRITE(*,*) fieldname, expected_size(:expected_rank), ' : ', actual_shape
+  ftg_match_size = SIZE(actual_shape) == expected_rank .AND. ALL(actual_shape == expected_size(:expected_rank))
+
+END FUNCTION ftg_match_size
 
 !=============================================================================
 !=============================================================================
@@ -2921,6 +2947,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_logical_1d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
+      NULLIFY(field)
+      CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -2933,6 +2962,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_logical_2d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
+      CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
+      NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -2947,6 +2979,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_logical_3d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
+      NULLIFY(field)
+      CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -2959,6 +2994,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_logical_4d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
+      CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
+      NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -2986,6 +3024,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_bool_1d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
+      NULLIFY(field)
+      CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -2998,6 +3039,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_bool_2d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
+      CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
+      NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3012,6 +3056,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_bool_3d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
+      NULLIFY(field)
+      CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3024,6 +3071,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_bool_4d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
+      CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
+      NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3051,6 +3101,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_int_1d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
+      NULLIFY(field)
+      CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3063,6 +3116,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_int_2d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
+      CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
+      NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3077,6 +3133,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_int_3d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
+      NULLIFY(field)
+      CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3089,6 +3148,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_int_4d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
+      CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
+      NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3116,6 +3178,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_long_1d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
+      NULLIFY(field)
+      CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3128,6 +3193,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_long_2d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
+      CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
+      NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3142,6 +3210,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_long_3d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
+      NULLIFY(field)
+      CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3154,6 +3225,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_long_4d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
+      CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
+      NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3181,6 +3255,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_float_1d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
+      NULLIFY(field)
+      CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3193,6 +3270,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_float_2d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
+      CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
+      NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3207,6 +3287,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_float_3d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
+      NULLIFY(field)
+      CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3219,6 +3302,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_float_4d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
+      CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
+      NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3246,6 +3332,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_double_1d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
+      NULLIFY(field)
+      CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3258,6 +3347,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_double_2d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
+      CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
+      NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3272,6 +3364,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_double_3d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
+      NULLIFY(field)
+      CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3284,6 +3379,9 @@ SUBROUTINE ftg_allocate_and_read_pointer_double_4d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
+      CALL ftg_allocate_pointer(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
+      NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3314,6 +3412,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_logical_1d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
+      DEALLOCATE(field)
+      CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3326,6 +3427,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_logical_2d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
+      CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
+      DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3340,6 +3444,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_logical_3d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
+      DEALLOCATE(field)
+      CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3352,6 +3459,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_logical_4d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
+      CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
+      DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3379,6 +3489,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_bool_1d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
+      DEALLOCATE(field)
+      CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3391,6 +3504,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_bool_2d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
+      CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
+      DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3405,6 +3521,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_bool_3d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
+      DEALLOCATE(field)
+      CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3417,6 +3536,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_bool_4d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
+      CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
+      DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3444,6 +3566,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_int_1d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
+      DEALLOCATE(field)
+      CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3456,6 +3581,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_int_2d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
+      CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
+      DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3470,6 +3598,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_int_3d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
+      DEALLOCATE(field)
+      CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3482,6 +3613,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_int_4d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
+      CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
+      DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3509,6 +3643,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_long_1d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
+      DEALLOCATE(field)
+      CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3521,6 +3658,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_long_2d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
+      CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
+      DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3535,6 +3675,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_long_3d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
+      DEALLOCATE(field)
+      CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3547,6 +3690,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_long_4d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
+      CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
+      DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3574,6 +3720,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_float_1d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
+      DEALLOCATE(field)
+      CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3586,6 +3735,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_float_2d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
+      CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
+      DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3600,6 +3752,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_float_3d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
+      DEALLOCATE(field)
+      CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3612,6 +3767,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_float_4d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
+      CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
+      DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3639,6 +3797,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_double_1d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
+      DEALLOCATE(field)
+      CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3651,6 +3812,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_double_2d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
+      CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
+      DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
@@ -3665,6 +3829,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_double_3d(fieldname, field)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
+      DEALLOCATE(field)
+      CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
   END IF
@@ -3677,6 +3844,9 @@ SUBROUTINE ftg_allocate_and_read_allocatable_double_4d(fieldname, field)
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
+      CALL ftg_allocate_allocatable(fieldname, field)
+    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
+      DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
     CALL ftg_read(fieldname, field)
