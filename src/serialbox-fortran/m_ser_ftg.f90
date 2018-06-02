@@ -475,8 +475,6 @@ FUNCTION ftg_match_size(fieldname, expected_rank, actual_shape)
   LOGICAL                      :: ftg_match_size
   
   expected_size = ftg_get_size(fieldname)
-  
-  WRITE(*,*) fieldname, expected_size(:expected_rank), ' : ', actual_shape
   ftg_match_size = SIZE(actual_shape) == expected_rank .AND. ALL(actual_shape == expected_size(:expected_rank))
 
 END FUNCTION ftg_match_size
