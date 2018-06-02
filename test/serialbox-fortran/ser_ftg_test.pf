@@ -1010,7 +1010,7 @@ CONTAINS
     SUBROUTINE testFieldMetainfo()
     
       TYPE(t_serializer) :: serializer
-      CHARACTER(len=*), PARAMETER :: base_name = 'test_field_metainfo'
+      CHARACTER(len=*), PARAMETER :: base_name = 'testFieldMetainfo'
       INTEGER :: field(2,1,4)      
       CHARACTER(len=*), PARAMETER :: field_name = 'field'
       
@@ -1053,7 +1053,7 @@ CONTAINS
     SUBROUTINE testSavepointMetainfo()
     
       TYPE(t_savepoint) :: savepoint
-      CHARACTER(len=*), PARAMETER :: savepoint_name = 'test_savepoint_metainfo'
+      CHARACTER(len=*), PARAMETER :: savepoint_name = 'testSavepointMetainfo'
       
       LOGICAL              :: metalog
       INTEGER(KIND=C_INT)  :: metaint
@@ -1086,4 +1086,36 @@ CONTAINS
       CALL ftg_destroy_savepoint()
     
     END SUBROUTINE testSavepointMetainfo    
+    
+@Test
+    SUBROUTINE testTypeComponents()
+    
+      TYPE :: test
+        INTEGER :: c1
+        INTEGER :: c2
+      END TYPE test
+    
+      TYPE(t_savepoint) :: savepoint
+      CHARACTER(len=*), PARAMETER :: base_name = 'testTypeComponents'
+      
+      TYPE(test), POINTER :: testw(:), testr(:)
+      
+      ALLOCATE(testw(42))
+      testw(:)%c1 = 23
+      testw(:)%c2 = 42
+            
+      CALL ftg_set_serializer(dir, base_name, 'w')
+      CALL ftg_register_only("test", "test", LBOUND(testw), UBOUND(testw), C_LOC(testw))
+      CALL ftg_write("testc1", testw(:)%c1, LBOUND(testw(:)%c1), UBOUND(testw(:)%c1))
+      CALL ftg_write("testc2", testw(:)%c2, LBOUND(testw(:)%c2), UBOUND(testw(:)%c2))
+      CALL ftg_destroy_serializer()
+      
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      @assertTrue(ftg_field_exists("test"))
+      @assertTrue(ftg_field_exists("testc1"))
+      @assertTrue(ftg_field_exists("testc2"))
+      CALL ftg_destroy_serializer()
+      
+    END SUBROUTINE testTypeComponents  
+      
 END MODULE ser_ftg_test
