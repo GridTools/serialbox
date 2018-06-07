@@ -1862,7 +1862,7 @@ SUBROUTINE ftg_read_int_2d(fieldname, field, rperturb)
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field), rperturb
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_int_2d
@@ -3364,7 +3364,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_float_4d(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_float_4d
 
-SUBROUTINE ftg_allocate_and_read_pointer_double_0d(fieldname, field), rperturb
+SUBROUTINE ftg_allocate_and_read_pointer_double_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(INOUT), POINTER :: field
   REAL, INTENT(IN), OPTIONAL                  :: rperturb
