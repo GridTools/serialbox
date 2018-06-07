@@ -1685,392 +1685,422 @@ END SUBROUTINE ftg_write_double_4d
 !=============================================================================
 !=============================================================================
 
-SUBROUTINE ftg_read_logical_0d(fieldname, field)
+SUBROUTINE ftg_read_logical_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_logical_0d
 
-SUBROUTINE ftg_read_logical_1d(fieldname, field)
+SUBROUTINE ftg_read_logical_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_logical_1d
 
-SUBROUTINE ftg_read_logical_2d(fieldname, field)
+SUBROUTINE ftg_read_logical_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_logical_2d
 
-SUBROUTINE ftg_read_logical_3d(fieldname, field)
+SUBROUTINE ftg_read_logical_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_logical_3d
 
-SUBROUTINE ftg_read_logical_4d(fieldname, field)
+SUBROUTINE ftg_read_logical_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_logical_4d
 
-SUBROUTINE ftg_read_bool_0d(fieldname, field)
+SUBROUTINE ftg_read_bool_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_bool_0d
 
-SUBROUTINE ftg_read_bool_1d(fieldname, field)
+SUBROUTINE ftg_read_bool_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_bool_1d
 
-SUBROUTINE ftg_read_bool_2d(fieldname, field)
+SUBROUTINE ftg_read_bool_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_bool_2d
 
-SUBROUTINE ftg_read_bool_3d(fieldname, field)
+SUBROUTINE ftg_read_bool_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_bool_3d
 
-SUBROUTINE ftg_read_bool_4d(fieldname, field)
+SUBROUTINE ftg_read_bool_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_bool_4d
 
-SUBROUTINE ftg_read_int_0d(fieldname, field)
+SUBROUTINE ftg_read_int_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_int_0d
 
-SUBROUTINE ftg_read_int_1d(fieldname, field)
+SUBROUTINE ftg_read_int_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_int_1d
 
-SUBROUTINE ftg_read_int_2d(fieldname, field)
+SUBROUTINE ftg_read_int_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field), rperturb
     END IF
   END IF
 END SUBROUTINE ftg_read_int_2d
 
-SUBROUTINE ftg_read_int_3d(fieldname, field)
+SUBROUTINE ftg_read_int_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_int_3d
 
-SUBROUTINE ftg_read_int_4d(fieldname, field)
+SUBROUTINE ftg_read_int_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_int_4d
 
-SUBROUTINE ftg_read_long_0d(fieldname, field)
+SUBROUTINE ftg_read_long_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_long_0d
 
-SUBROUTINE ftg_read_long_1d(fieldname, field)
+SUBROUTINE ftg_read_long_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_long_1d
 
-SUBROUTINE ftg_read_long_2d(fieldname, field)
+SUBROUTINE ftg_read_long_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_long_2d
 
-SUBROUTINE ftg_read_long_3d(fieldname, field)
+SUBROUTINE ftg_read_long_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_long_3d
 
-SUBROUTINE ftg_read_long_4d(fieldname, field)
+SUBROUTINE ftg_read_long_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_long_4d
 
-SUBROUTINE ftg_read_float_0d(fieldname, field)
+SUBROUTINE ftg_read_float_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN), OPTIONAL              :: rperturb
   LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_float_0d
 
-SUBROUTINE ftg_read_float_1d(fieldname, field)
+SUBROUTINE ftg_read_float_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL              :: rperturb
   LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_float_1d
 
-SUBROUTINE ftg_read_float_2d(fieldname, field)
+SUBROUTINE ftg_read_float_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL              :: rperturb
   LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_float_2d
 
-SUBROUTINE ftg_read_float_3d(fieldname, field)
+SUBROUTINE ftg_read_float_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL              :: rperturb
   LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_float_3d
 
-SUBROUTINE ftg_read_float_4d(fieldname, field)
+SUBROUTINE ftg_read_float_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL              :: rperturb
   LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_float_4d
 
-SUBROUTINE ftg_read_double_0d(fieldname, field)
+SUBROUTINE ftg_read_double_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN), OPTIONAL               :: rperturb
   LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_double_0d
 
-SUBROUTINE ftg_read_double_1d(fieldname, field)
+SUBROUTINE ftg_read_double_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL               :: rperturb
   LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_double_1d
 
-SUBROUTINE ftg_read_double_2d(fieldname, field)
+SUBROUTINE ftg_read_double_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL               :: rperturb
   LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_double_2d
 
-SUBROUTINE ftg_read_double_3d(fieldname, field)
+SUBROUTINE ftg_read_double_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL               :: rperturb
   LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_double_3d
 
-SUBROUTINE ftg_read_double_4d(fieldname, field)
+SUBROUTINE ftg_read_double_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL               :: rperturb
   LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_double_4d
