@@ -2801,6 +2801,7 @@ END SUBROUTINE fs_read_long_4d
 !=============================================================================
 
 SUBROUTINE fs_read_float_0d(serializer, savepoint, fieldname, field, rperturb)
+  use m_ser_perturb, ONLY: ser_fld_perturb
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
@@ -2829,6 +2830,7 @@ SUBROUTINE fs_read_float_0d(serializer, savepoint, fieldname, field, rperturb)
 END SUBROUTINE fs_read_float_0d
 
 SUBROUTINE fs_read_float_1d(serializer, savepoint, fieldname, field, rperturb)
+  use m_ser_perturb, ONLY: ser_fld_perturb
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
@@ -2862,6 +2864,7 @@ END SUBROUTINE fs_read_float_1d
 
 
 SUBROUTINE fs_read_float_2d(serializer, savepoint, fieldname, field, rperturb)
+  use m_ser_perturb, ONLY: ser_fld_perturb
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
@@ -2895,6 +2898,7 @@ END SUBROUTINE fs_read_float_2d
 
 
 SUBROUTINE fs_read_float_3d(serializer, savepoint, fieldname, field, rperturb)
+  use m_ser_perturb, ONLY: ser_fld_perturb
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
@@ -2927,6 +2931,7 @@ SUBROUTINE fs_read_float_3d(serializer, savepoint, fieldname, field, rperturb)
 END SUBROUTINE fs_read_float_3d
 
 SUBROUTINE fs_read_float_4d(serializer, savepoint, fieldname, field, rperturb)
+  use m_ser_perturb, ONLY: ser_fld_perturb
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
@@ -2963,6 +2968,7 @@ END SUBROUTINE fs_read_float_4d
 !=============================================================================
 
 SUBROUTINE fs_read_double_0d(serializer, savepoint, fieldname, field, rperturb)
+  use m_ser_perturb, ONLY: ser_fld_perturb
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
@@ -2991,6 +2997,7 @@ SUBROUTINE fs_read_double_0d(serializer, savepoint, fieldname, field, rperturb)
 END SUBROUTINE fs_read_double_0d
 
 SUBROUTINE fs_read_double_1d(serializer, savepoint, fieldname, field, rperturb)
+  use m_ser_perturb, ONLY: ser_fld_perturb
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
@@ -3024,6 +3031,7 @@ END SUBROUTINE fs_read_double_1d
 
 
 SUBROUTINE fs_read_double_2d(serializer, savepoint, fieldname, field, rperturb)
+  use m_ser_perturb, ONLY: ser_fld_perturb
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
@@ -3057,6 +3065,7 @@ END SUBROUTINE fs_read_double_2d
 
 
 SUBROUTINE fs_read_double_3d(serializer, savepoint, fieldname, field, rperturb)
+  use m_ser_perturb, ONLY: ser_fld_perturb
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
@@ -3089,6 +3098,7 @@ SUBROUTINE fs_read_double_3d(serializer, savepoint, fieldname, field, rperturb)
 END SUBROUTINE fs_read_double_3d
 
 SUBROUTINE fs_read_double_4d(serializer, savepoint, fieldname, field, rperturb)
+  use m_ser_perturb, ONLY: ser_fld_perturb
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint
   CHARACTER(LEN=*)                         :: fieldname
