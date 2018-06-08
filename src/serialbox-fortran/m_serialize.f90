@@ -3126,7 +3126,7 @@ SUBROUTINE fs_read_double_4d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
 
   ! Perturb field
-  IF (rperturb .NE. 0.0) THEN
+  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
     CALL ser_fld_perturb(field, rperturb)
   END IF
 END SUBROUTINE fs_read_double_4d
