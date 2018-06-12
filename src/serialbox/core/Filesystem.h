@@ -44,7 +44,7 @@ inline std::uintmax_t remove_all(const filesystem::path& p) {
   return result;
 }
 }
-#elif SERIALBOX_USE_BOOST_FILESYSTEM
+#elif defined(SERIALBOX_USE_BOOST_FILESYSTEM)
 #include <boost/filesystem.hpp>
 namespace filesystem = boost::filesystem;
 
