@@ -290,15 +290,15 @@ def compare_fields(serializers, field, savepoint, dim_bounds):
     if num_errors_displayed > 0:
         print("  Failed values (displayed {} of {}):".format(num_errors_displayed, num_errors))
         for idx in range(0, num_errors_displayed):
-            print("    {}: value_1 = {:.10f}, value_2 = {:.10f}, error = {:.10f}".format(
+            print("    {}: value_1 = {:.10f}, value_2 = {:.10f}, error = {:.10e}".format(
                 errors[idx]["index"], float(errors[idx]["value_1"]), float(errors[idx]["value_2"]),
                 float(errors[idx]["error"])))
 
     print("  Number of errors: {}".format(num_errors))
     print("  Number of NaN: {}".format(num_nans))
     print("  Percentage of errors: {:.2f} %".format(100 * num_errors / field_view_1.size))
-    print("  Maximum absolute error: {:.10f}".format(max_abs_error))
-    print("  Maximum relative error: {:.10f}".format(max_rel_error))
+    print("  Maximum absolute error: {:.10e}".format(max_abs_error))
+    print("  Maximum relative error: {:.10e}".format(max_rel_error))
     return False
 
 
