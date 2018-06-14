@@ -459,7 +459,8 @@ def main(arguments=None):
     get_config().MAX_ERRORS = args.max_errors
     get_config().SAVEPOINT_REGEX = args.savepoint_regex
     get_config().TOL = float(args.tolerance)
-    get_config().TOLS = read_tolerances(args.tolerance_file)
+    if path.exists(args.tolerance_file):
+        get_config().TOLS = read_tolerances(args.tolerance_file)
 
     path_1, path_2 = (args.FILE_1[0], args.FILE_2[0])
 
