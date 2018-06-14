@@ -439,7 +439,7 @@ def main(arguments=None):
                         help="set the tolerance used for comparison to 'TOL' (default : {})".format(
                             get_config().TOL))
     parser.add_argument("-T", "--tolerance-json", dest="tolerance_file", metavar="TOLERANCE_FILE",
-                        default=get_config().TOLS,
+                        default=None,
                         help="set the JSON file for per field tolerance used for comparison")
     parser.add_argument("-q", "--info-only", dest="field_info_only", action="store_true",
                         help="only compare field meta-info (no data comparison) "
@@ -459,7 +459,8 @@ def main(arguments=None):
     get_config().MAX_ERRORS = args.max_errors
     get_config().SAVEPOINT_REGEX = args.savepoint_regex
     get_config().TOL = float(args.tolerance)
-    get_config().TOLS = read_tolerances(args.tolerance_file)
+    if args.tolerance_file is not None:
+        get_config().TOLS = read_tolerances(args.tolerance_file)
 
     path_1, path_2 = (args.FILE_1[0], args.FILE_2[0])
 
