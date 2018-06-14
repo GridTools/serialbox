@@ -2,7 +2,7 @@
 !
 !                              S E R I A L B O X
 !
-! This file is distributed under terms of BSD license. 
+! This file is distributed under terms of BSD license.
 ! See LICENSE.txt for more information.
 !
 !------------------------------------------------------------------------------
@@ -19,10 +19,10 @@ MODULE m_serialize
 !
 !   This module contains subroutines which allow to store data on external
 !   files on disk and reading those files into fields.
-!   The data is written to binary files (e.g NetCDF), while the metadata 
+!   The data is written to binary files (e.g NetCDF), while the metadata
 !   (name, dimensions, size of halo, ...) are stored in JSON files.
 !
-!   These routines are implemented in a C++ and exposed in a C API, this is 
+!   These routines are implemented in a C++ and exposed in a C API, this is
 !   a wrapper module.
 !
 ! Current Code Owner: ETH, Andrea Arteaga
@@ -386,7 +386,7 @@ SUBROUTINE fs_create_serializer(directory, prefix, mode, serializer, opt_archive
   CASE('a')
     c_mode = MODE_APPEND
   END SELECT
-  
+
   IF (PRESENT(opt_archive)) THEN
     archive = opt_archive
   ELSE
@@ -1040,7 +1040,7 @@ SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, is
     END SUBROUTINE fs_check_field
 
   END INTERFACE
-  
+
   ! Local variables
   INTEGER(KIND=C_INT) :: c_type
 
@@ -1057,7 +1057,7 @@ SUBROUTINE fs_check_size(serializer, fieldname, data_type, bytes_per_element, is
   CASE('double')
     c_type = SERIALBOX_FIELD_TYPE_FLOAT64
   END SELECT
-  
+
   ! If it does, do checks
   IF (fs_field_exists(serializer, fieldname)) THEN
     CALL fs_check_field(serializer%serializer_ptr, TRIM(fieldname)//C_NULL_CHAR, c_type, &
@@ -2262,7 +2262,7 @@ SUBROUTINE fs_write_double_3d(serializer, savepoint, fieldname, field, minushalo
                        C_LOC(padd(1, 1, MIN(2, SIZE(field, 3)))), &
                        C_LOC(padd(1, 1, 1)), &
                        istride, jstride, kstride, lstride)
-  
+
   CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
                         TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1,1,1)), istride, jstride, kstride, -1)
@@ -2824,7 +2824,7 @@ SUBROUTINE fs_read_float_0d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd), istride, -1, -1, -1)
 
   ! Perturb field
-  IF (rperturb .NE. 0.0) THEN
+  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
     CALL ser_fld_perturb(field, rperturb)
   END IF
 END SUBROUTINE fs_read_float_0d
@@ -2857,7 +2857,7 @@ SUBROUTINE fs_read_float_1d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1)), istride, -1, -1, -1)
 
   ! Perturb field
-  IF (rperturb .NE. 0.0) THEN
+  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
     CALL ser_fld_perturb(field, rperturb)
   END IF
 END SUBROUTINE fs_read_float_1d
@@ -2891,7 +2891,7 @@ SUBROUTINE fs_read_float_2d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1,1)), istride, jstride, -1, -1)
 
   ! Perturb field
-  IF (rperturb .NE. 0.0) THEN
+  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
     CALL ser_fld_perturb(field, rperturb)
   END IF
 END SUBROUTINE fs_read_float_2d
@@ -2925,7 +2925,7 @@ SUBROUTINE fs_read_float_3d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1,1,1)), istride, jstride, kstride, -1)
 
   ! Perturb field
-  IF (rperturb .NE. 0.0) THEN
+  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
     CALL ser_fld_perturb(field, rperturb)
   END IF
 END SUBROUTINE fs_read_float_3d
@@ -2959,7 +2959,7 @@ SUBROUTINE fs_read_float_4d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
 
   ! Perturb field
-  IF (rperturb .NE. 0.0) THEN
+  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
     CALL ser_fld_perturb(field, rperturb)
   END IF
 END SUBROUTINE fs_read_float_4d
@@ -2991,7 +2991,7 @@ SUBROUTINE fs_read_double_0d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd), istride, -1, -1, -1)
 
   ! Perturb field
-  IF (rperturb .NE. 0.0) THEN
+  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
     CALL ser_fld_perturb(field, rperturb)
   END IF
 END SUBROUTINE fs_read_double_0d
@@ -3024,7 +3024,7 @@ SUBROUTINE fs_read_double_1d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1)), istride, -1, -1, -1)
 
   ! Perturb field
-  IF (rperturb .NE. 0.0) THEN
+  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
     CALL ser_fld_perturb(field, rperturb)
   END IF
 END SUBROUTINE fs_read_double_1d
@@ -3058,7 +3058,7 @@ SUBROUTINE fs_read_double_2d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1,1)), istride, jstride, -1, -1)
 
   ! Perturb field
-  IF (rperturb .NE. 0.0) THEN
+  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
     CALL ser_fld_perturb(field, rperturb)
   END IF
 END SUBROUTINE fs_read_double_2d
@@ -3092,7 +3092,7 @@ SUBROUTINE fs_read_double_3d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1,1,1)), istride, jstride, kstride, -1)
 
   ! Perturb field
-  IF (rperturb .NE. 0.0) THEN
+  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
     CALL ser_fld_perturb(field, rperturb)
   END IF
 END SUBROUTINE fs_read_double_3d
@@ -3132,4 +3132,3 @@ SUBROUTINE fs_read_double_4d(serializer, savepoint, fieldname, field, rperturb)
 END SUBROUTINE fs_read_double_4d
 
 END MODULE m_serialize
-
