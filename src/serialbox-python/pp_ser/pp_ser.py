@@ -99,7 +99,7 @@ class PpSer:
             'data':             'fs_write_field',
             'datawrite':        'fs_write_field',
             'dataread':         'fs_read_field',
-            'datareadperturb':  'fs_read_and_perturb_field',
+            'datareadperturb':  'fs_read_field',
             'option':           'fs_Option',
             'serinfo':          'fs_add_serializer_metainfo',
             'register':         'fs_register_field',

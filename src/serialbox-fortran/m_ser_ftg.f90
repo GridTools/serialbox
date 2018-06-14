@@ -1685,392 +1685,422 @@ END SUBROUTINE ftg_write_double_4d
 !=============================================================================
 !=============================================================================
 
-SUBROUTINE ftg_read_logical_0d(fieldname, field)
+SUBROUTINE ftg_read_logical_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_logical_0d
 
-SUBROUTINE ftg_read_logical_1d(fieldname, field)
+SUBROUTINE ftg_read_logical_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_logical_1d
 
-SUBROUTINE ftg_read_logical_2d(fieldname, field)
+SUBROUTINE ftg_read_logical_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_logical_2d
 
-SUBROUTINE ftg_read_logical_3d(fieldname, field)
+SUBROUTINE ftg_read_logical_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_logical_3d
 
-SUBROUTINE ftg_read_logical_4d(fieldname, field)
+SUBROUTINE ftg_read_logical_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   LOGICAL, INTENT(OUT), TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_logical_4d
 
-SUBROUTINE ftg_read_bool_0d(fieldname, field)
+SUBROUTINE ftg_read_bool_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_bool_0d
 
-SUBROUTINE ftg_read_bool_1d(fieldname, field)
+SUBROUTINE ftg_read_bool_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_bool_1d
 
-SUBROUTINE ftg_read_bool_2d(fieldname, field)
+SUBROUTINE ftg_read_bool_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_bool_2d
 
-SUBROUTINE ftg_read_bool_3d(fieldname, field)
+SUBROUTINE ftg_read_bool_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_bool_3d
 
-SUBROUTINE ftg_read_bool_4d(fieldname, field)
+SUBROUTINE ftg_read_bool_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_bool_4d
 
-SUBROUTINE ftg_read_int_0d(fieldname, field)
+SUBROUTINE ftg_read_int_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_int_0d
 
-SUBROUTINE ftg_read_int_1d(fieldname, field)
+SUBROUTINE ftg_read_int_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_int_1d
 
-SUBROUTINE ftg_read_int_2d(fieldname, field)
+SUBROUTINE ftg_read_int_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_int_2d
 
-SUBROUTINE ftg_read_int_3d(fieldname, field)
+SUBROUTINE ftg_read_int_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_int_3d
 
-SUBROUTINE ftg_read_int_4d(fieldname, field)
+SUBROUTINE ftg_read_int_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
   INTEGER, INTENT(OUT), TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL   :: rperturb
   LOGICAL                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_int_4d
 
-SUBROUTINE ftg_read_long_0d(fieldname, field)
+SUBROUTINE ftg_read_long_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_long_0d
 
-SUBROUTINE ftg_read_long_1d(fieldname, field)
+SUBROUTINE ftg_read_long_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_long_1d
 
-SUBROUTINE ftg_read_long_2d(fieldname, field)
+SUBROUTINE ftg_read_long_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_long_2d
 
-SUBROUTINE ftg_read_long_3d(fieldname, field)
+SUBROUTINE ftg_read_long_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_long_3d
 
-SUBROUTINE ftg_read_long_4d(fieldname, field)
+SUBROUTINE ftg_read_long_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL                :: rperturb
   LOGICAL                                   :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_long_4d
 
-SUBROUTINE ftg_read_float_0d(fieldname, field)
+SUBROUTINE ftg_read_float_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN), OPTIONAL              :: rperturb
   LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_float_0d
 
-SUBROUTINE ftg_read_float_1d(fieldname, field)
+SUBROUTINE ftg_read_float_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL              :: rperturb
   LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_float_1d
 
-SUBROUTINE ftg_read_float_2d(fieldname, field)
+SUBROUTINE ftg_read_float_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL              :: rperturb
   LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_float_2d
 
-SUBROUTINE ftg_read_float_3d(fieldname, field)
+SUBROUTINE ftg_read_float_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL              :: rperturb
   LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_float_3d
 
-SUBROUTINE ftg_read_float_4d(fieldname, field)
+SUBROUTINE ftg_read_float_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL              :: rperturb
   LOGICAL                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_float_4d
 
-SUBROUTINE ftg_read_double_0d(fieldname, field)
+SUBROUTINE ftg_read_double_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN), OPTIONAL               :: rperturb
   LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_double_0d
 
-SUBROUTINE ftg_read_double_1d(fieldname, field)
+SUBROUTINE ftg_read_double_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL               :: rperturb
   LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_double_1d
 
-SUBROUTINE ftg_read_double_2d(fieldname, field)
+SUBROUTINE ftg_read_double_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL               :: rperturb
   LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_double_2d
 
-SUBROUTINE ftg_read_double_3d(fieldname, field)
+SUBROUTINE ftg_read_double_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL               :: rperturb
   LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_double_3d
 
-SUBROUTINE ftg_read_double_4d(fieldname, field)
+SUBROUTINE ftg_read_double_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL               :: rperturb
   LOGICAL                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
     IF (.NOT. registered_only) THEN
-      CALL fs_read_field(serializer, savepoint, fieldname, field)
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
     END IF
   END IF
 END SUBROUTINE ftg_read_double_4d
@@ -2924,22 +2954,24 @@ END SUBROUTINE ftg_allocate_allocatable_double_4d
 !=============================================================================
 !=============================================================================
 
-SUBROUTINE ftg_allocate_and_read_pointer_logical_0d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_logical_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname
   LOGICAL, INTENT(INOUT), POINTER :: field
+  REAL, INTENT(IN), OPTIONAL      :: rperturb
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_logical_0d
 
-SUBROUTINE ftg_allocate_and_read_pointer_logical_1d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_logical_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname
   LOGICAL, INTENT(INOUT), POINTER :: field(:)
+  REAL, INTENT(IN), OPTIONAL      :: rperturb
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -2949,13 +2981,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_logical_1d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_logical_1d
 
-SUBROUTINE ftg_allocate_and_read_pointer_logical_2d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_logical_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname
   LOGICAL, INTENT(INOUT), POINTER :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL      :: rperturb
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -2965,13 +2998,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_logical_2d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_logical_2d
 
-SUBROUTINE ftg_allocate_and_read_pointer_logical_3d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_logical_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname
   LOGICAL, INTENT(INOUT), POINTER :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL      :: rperturb
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -2981,13 +3015,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_logical_3d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_logical_3d
 
-SUBROUTINE ftg_allocate_and_read_pointer_logical_4d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_logical_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname
   LOGICAL, INTENT(INOUT), POINTER :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL      :: rperturb
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -2997,26 +3032,28 @@ SUBROUTINE ftg_allocate_and_read_pointer_logical_4d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_logical_4d
 
-SUBROUTINE ftg_allocate_and_read_pointer_bool_0d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_bool_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(INOUT), POINTER :: field
+  REAL, INTENT(IN), OPTIONAL                   :: rperturb
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_bool_0d
 
-SUBROUTINE ftg_allocate_and_read_pointer_bool_1d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_bool_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(INOUT), POINTER :: field(:)
+  REAL, INTENT(IN), OPTIONAL                   :: rperturb
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3026,13 +3063,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_bool_1d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_bool_1d
 
-SUBROUTINE ftg_allocate_and_read_pointer_bool_2d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_bool_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(INOUT), POINTER :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL                   :: rperturb
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3042,13 +3080,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_bool_2d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_bool_2d
 
-SUBROUTINE ftg_allocate_and_read_pointer_bool_3d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_bool_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(INOUT), POINTER :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL                   :: rperturb
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3058,13 +3097,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_bool_3d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_bool_3d
 
-SUBROUTINE ftg_allocate_and_read_pointer_bool_4d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_bool_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(INOUT), POINTER :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL                   :: rperturb
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3074,26 +3114,28 @@ SUBROUTINE ftg_allocate_and_read_pointer_bool_4d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_bool_4d
 
-SUBROUTINE ftg_allocate_and_read_pointer_int_0d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_int_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname
   INTEGER, INTENT(INOUT), POINTER :: field
+  REAL, INTENT(IN), OPTIONAL      :: rperturb
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_int_0d
 
-SUBROUTINE ftg_allocate_and_read_pointer_int_1d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_int_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname
   INTEGER, INTENT(INOUT), POINTER :: field(:)
+  REAL, INTENT(IN), OPTIONAL      :: rperturb
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3103,13 +3145,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_int_1d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_int_1d
 
-SUBROUTINE ftg_allocate_and_read_pointer_int_2d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_int_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname
   INTEGER, INTENT(INOUT), POINTER :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL      :: rperturb
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3119,13 +3162,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_int_2d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_int_2d
 
-SUBROUTINE ftg_allocate_and_read_pointer_int_3d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_int_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname
   INTEGER, INTENT(INOUT), POINTER :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL      :: rperturb
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3135,13 +3179,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_int_3d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_int_3d
 
-SUBROUTINE ftg_allocate_and_read_pointer_int_4d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_int_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname
   INTEGER, INTENT(INOUT), POINTER :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL      :: rperturb
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3151,26 +3196,28 @@ SUBROUTINE ftg_allocate_and_read_pointer_int_4d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_int_4d
 
-SUBROUTINE ftg_allocate_and_read_pointer_long_0d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_long_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   INTEGER(KIND=C_LONG), INTENT(INOUT), POINTER :: field
+  REAL, INTENT(IN), OPTIONAL                   :: rperturb
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_long_0d
 
-SUBROUTINE ftg_allocate_and_read_pointer_long_1d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_long_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   INTEGER(KIND=C_LONG), INTENT(INOUT), POINTER :: field(:)
+  REAL, INTENT(IN), OPTIONAL                   :: rperturb
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3180,13 +3227,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_long_1d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_long_1d
 
-SUBROUTINE ftg_allocate_and_read_pointer_long_2d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_long_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   INTEGER(KIND=C_LONG), INTENT(INOUT), POINTER :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL                   :: rperturb
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3196,13 +3244,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_long_2d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_long_2d
 
-SUBROUTINE ftg_allocate_and_read_pointer_long_3d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_long_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   INTEGER(KIND=C_LONG), INTENT(INOUT), POINTER :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL                   :: rperturb
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3212,13 +3261,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_long_3d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_long_3d
 
-SUBROUTINE ftg_allocate_and_read_pointer_long_4d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_long_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   INTEGER(KIND=C_LONG), INTENT(INOUT), POINTER :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL                   :: rperturb
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3228,26 +3278,28 @@ SUBROUTINE ftg_allocate_and_read_pointer_long_4d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_long_4d
 
-SUBROUTINE ftg_allocate_and_read_pointer_float_0d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_float_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   REAL(KIND=C_FLOAT), INTENT(INOUT), POINTER :: field
+  REAL, INTENT(IN), OPTIONAL                 :: rperturb
   LOGICAL                                    :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_float_0d
 
-SUBROUTINE ftg_allocate_and_read_pointer_float_1d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_float_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   REAL(KIND=C_FLOAT), INTENT(INOUT), POINTER :: field(:)
+  REAL, INTENT(IN), OPTIONAL                 :: rperturb
   LOGICAL                                    :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3257,13 +3309,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_float_1d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_float_1d
 
-SUBROUTINE ftg_allocate_and_read_pointer_float_2d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_float_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   REAL(KIND=C_FLOAT), INTENT(INOUT), POINTER :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL                 :: rperturb
   LOGICAL                                    :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3273,13 +3326,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_float_2d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_float_2d
 
-SUBROUTINE ftg_allocate_and_read_pointer_float_3d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_float_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   REAL(KIND=C_FLOAT), INTENT(INOUT), POINTER :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL                 :: rperturb
   LOGICAL                                    :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3289,13 +3343,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_float_3d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_float_3d
 
-SUBROUTINE ftg_allocate_and_read_pointer_float_4d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_float_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   REAL(KIND=C_FLOAT), INTENT(INOUT), POINTER :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL                 :: rperturb
   LOGICAL                                    :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3305,26 +3360,28 @@ SUBROUTINE ftg_allocate_and_read_pointer_float_4d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_float_4d
 
-SUBROUTINE ftg_allocate_and_read_pointer_double_0d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_double_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(INOUT), POINTER :: field
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ASSOCIATED(field)) THEN
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_double_0d
 
-SUBROUTINE ftg_allocate_and_read_pointer_double_1d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_double_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(INOUT), POINTER :: field(:)
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3334,13 +3391,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_double_1d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_double_1d
 
-SUBROUTINE ftg_allocate_and_read_pointer_double_2d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_double_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(INOUT), POINTER :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3350,13 +3408,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_double_2d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_double_2d
 
-SUBROUTINE ftg_allocate_and_read_pointer_double_3d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_double_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(INOUT), POINTER :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3366,13 +3425,14 @@ SUBROUTINE ftg_allocate_and_read_pointer_double_3d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_double_3d
 
-SUBROUTINE ftg_allocate_and_read_pointer_double_4d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_pointer_double_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(INOUT), POINTER :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3382,29 +3442,31 @@ SUBROUTINE ftg_allocate_and_read_pointer_double_4d(fieldname, field)
       NULLIFY(field)
       CALL ftg_allocate_pointer(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_double_4d
 
 !=============================================================================
 !=============================================================================
 
-SUBROUTINE ftg_allocate_and_read_allocatable_logical_0d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_logical_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL, INTENT(INOUT), ALLOCATABLE, TARGET :: field
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_logical_0d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_logical_1d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_logical_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL, INTENT(INOUT), ALLOCATABLE, TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3414,13 +3476,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_logical_1d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_logical_1d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_logical_2d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_logical_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL, INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3430,13 +3493,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_logical_2d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_logical_2d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_logical_3d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_logical_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL, INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3446,13 +3510,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_logical_3d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_logical_3d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_logical_4d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_logical_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   LOGICAL, INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3462,26 +3527,28 @@ SUBROUTINE ftg_allocate_and_read_allocatable_logical_4d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_logical_4d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_bool_0d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_bool_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                             :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(INOUT), ALLOCATABLE, TARGET :: field
+  REAL, INTENT(IN), OPTIONAL                               :: rperturb
   LOGICAL                                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_bool_0d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_bool_1d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_bool_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                             :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL                               :: rperturb
   LOGICAL                                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3491,13 +3558,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_bool_1d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_bool_1d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_bool_2d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_bool_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                             :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL                               :: rperturb
   LOGICAL                                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3507,13 +3575,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_bool_2d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_bool_2d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_bool_3d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_bool_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                             :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL                               :: rperturb
   LOGICAL                                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3523,13 +3592,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_bool_3d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_bool_3d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_bool_4d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_bool_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                             :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL                               :: rperturb
   LOGICAL                                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3539,26 +3609,28 @@ SUBROUTINE ftg_allocate_and_read_allocatable_bool_4d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_bool_4d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_int_0d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_int_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   INTEGER, INTENT(INOUT), ALLOCATABLE, TARGET :: field
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_int_0d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_int_1d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_int_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   INTEGER, INTENT(INOUT), ALLOCATABLE, TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3568,13 +3640,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_int_1d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_int_1d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_int_2d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_int_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   INTEGER, INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3584,13 +3657,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_int_2d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_int_2d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_int_3d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_int_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   INTEGER, INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3600,13 +3674,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_int_3d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_int_3d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_int_4d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_int_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                :: fieldname
   INTEGER, INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL                  :: rperturb
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3616,26 +3691,28 @@ SUBROUTINE ftg_allocate_and_read_allocatable_int_4d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_int_4d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_long_0d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_long_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                             :: fieldname
   INTEGER(KIND=C_LONG), INTENT(INOUT), ALLOCATABLE, TARGET :: field
+  REAL, INTENT(IN), OPTIONAL                               :: rperturb
   LOGICAL                                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_long_0d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_long_1d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_long_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                             :: fieldname
   INTEGER(KIND=C_LONG), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL                               :: rperturb
   LOGICAL                                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3645,13 +3722,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_long_1d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_long_1d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_long_2d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_long_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                             :: fieldname
   INTEGER(KIND=C_LONG), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL                               :: rperturb
   LOGICAL                                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3661,13 +3739,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_long_2d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_long_2d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_long_3d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_long_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                             :: fieldname
   INTEGER(KIND=C_LONG), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL                               :: rperturb
   LOGICAL                                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3677,13 +3756,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_long_3d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_long_3d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_long_4d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_long_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                             :: fieldname
   INTEGER(KIND=C_LONG), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL                               :: rperturb
   LOGICAL                                                  :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3693,26 +3773,28 @@ SUBROUTINE ftg_allocate_and_read_allocatable_long_4d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_long_4d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_float_0d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_float_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                           :: fieldname
   REAL(KIND=C_FLOAT), INTENT(INOUT), ALLOCATABLE, TARGET :: field
+  REAL, INTENT(IN), OPTIONAL                             :: rperturb
   LOGICAL                                                :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_float_0d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_float_1d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_float_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                           :: fieldname
   REAL(KIND=C_FLOAT), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL                             :: rperturb
   LOGICAL                                                :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3722,13 +3804,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_float_1d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_float_1d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_float_2d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_float_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                           :: fieldname
   REAL(KIND=C_FLOAT), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL                             :: rperturb
   LOGICAL                                                :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3738,13 +3821,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_float_2d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_float_2d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_float_3d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_float_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                           :: fieldname
   REAL(KIND=C_FLOAT), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL                             :: rperturb
   LOGICAL                                                :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3754,13 +3838,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_float_3d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_float_3d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_float_4d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_float_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                           :: fieldname
   REAL(KIND=C_FLOAT), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL                             :: rperturb
   LOGICAL                                                :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3770,26 +3855,28 @@ SUBROUTINE ftg_allocate_and_read_allocatable_float_4d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_float_4d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_double_0d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_double_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                            :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(INOUT), ALLOCATABLE, TARGET :: field
+  REAL, INTENT(IN), OPTIONAL                              :: rperturb
   LOGICAL                                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
     IF (.NOT. ALLOCATED(field)) THEN
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_double_0d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_double_1d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_double_1d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                            :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:)
+  REAL, INTENT(IN), OPTIONAL                              :: rperturb
   LOGICAL                                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3799,13 +3886,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_double_1d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_double_1d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_double_2d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_double_2d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                            :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:)
+  REAL, INTENT(IN), OPTIONAL                              :: rperturb
   LOGICAL                                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3815,13 +3903,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_double_2d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_double_2d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_double_3d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_double_3d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                            :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:,:)
+  REAL, INTENT(IN), OPTIONAL                              :: rperturb
   LOGICAL                                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3831,13 +3920,14 @@ SUBROUTINE ftg_allocate_and_read_allocatable_double_3d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_double_3d
 
-SUBROUTINE ftg_allocate_and_read_allocatable_double_4d(fieldname, field)
+SUBROUTINE ftg_allocate_and_read_allocatable_double_4d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN)                            :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(INOUT), ALLOCATABLE, TARGET :: field(:,:,:,:)
+  REAL, INTENT(IN), OPTIONAL                              :: rperturb
   LOGICAL                                                 :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
@@ -3847,7 +3937,7 @@ SUBROUTINE ftg_allocate_and_read_allocatable_double_4d(fieldname, field)
       DEALLOCATE(field)
       CALL ftg_allocate_allocatable(fieldname, field)
     END IF
-    CALL ftg_read(fieldname, field)
+    CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_double_4d
 
