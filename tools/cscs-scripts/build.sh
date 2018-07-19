@@ -129,6 +129,12 @@ else
     REBUILD=false
 fi
 
+# Fortran compiler
+if [ -z "${ARG_FC_COMPILER}" ]; then
+    ARG_FC_COMPILER=gnu
+fi
+printf "%-20s: %s\n" "Fortran compiler" "${ARG_FC_COMPILER}"
+
 SERIALBOX_TESTING=ON
 SERIALBOX_ENABLE_C=ON
 SERIALBOX_ENABLE_FORTRAN=ON
