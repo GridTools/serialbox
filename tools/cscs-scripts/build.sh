@@ -76,9 +76,9 @@ else
     echo "build: host '$(hostname)' not known. Assuming environment is already setup."
 fi
 
+#------------------------------ Parse options ----------------------------------
 ARGS=$(getopt                                                                  \
        -o b:i:f:r::h::t::                                                      \
-#------------------------------ Parse options ----------------------------------
        -l build-type:,fc-compiler:,install:,rerun-cmake::,run-tests::,help::   \
        -n 'build' -- "$@");
 
