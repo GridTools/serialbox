@@ -120,21 +120,6 @@ if [ ! -z "${ARG_INSTALL}" ]; then
     printf "%-20s: %s\n" "Install directory" "${INSTALL_PREFIX}"
 fi
 
-# Fortran Compiler
-#if [ "${ARG_FC_COMPILER}" = "cray" ]; then
-#    printf "%-20s: %s\n" "Fortran compiler" "cray"
-#    FC_COMPILER="ftn"
-#elif [ "${ARG_FC_COMPILER}" = "pgi" ]; then
-#    printf "%-20s: %s\n" "Fortran compiler" "pgi"
-#    FC_COMPILER="pgfortran"
-#elif [ "${ARG_FC_COMPILER}" = "intel" ]; then
-#    printf "%-20s: %s\n" "Fortran compiler" "intel"
-#    FC_COMPILER="ifort"
-#else
-#    printf "%-20s: %s\n" "Fortran compiler" "gnu"
-#    FC_COMPILER="gfortran"
-#fi
-
 # Rebuild
 if [ "${ARG_RERUN}" = "true" ]; then
     printf "%-20s: %s\n" "Rebuilding" "ON"
@@ -153,7 +138,7 @@ CURRENT_PATH=$(pwd)
 #------------------------------ Load environment -------------------------------
 if [ -n ${MYHOST} ]; then
 	git clone https://github.com/C2SM-RCM/c2sm-rcm-env.git
-	module load ${pwd}/c2sm-rcm-env/env
+	module load $(pwd)/c2sm-rcm-env/env
 	module load c2sm/${ARG_FC_COMPILER}/cpu
 fi
 
