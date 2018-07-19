@@ -148,8 +148,9 @@ if [ -n ${MYHOST} ]; then
 	module load c2sm/${ARG_FC_COMPILER}/cpu
 	# we have to overwrite the boost from env which is 1.49
 	# I don't care to load the one for daint as we don't rely on compiled libraries
-	export BOOST_ROOT="/project/c14/install/daint/boost/boost_1_67_0"
 fi
+export BOOST_ROOT="/project/c14/install/daint/boost/boost_1_67_0"
+echo $BOOST_ROOT
 
 #------------------------------ Check for external libraries -------------------
 
