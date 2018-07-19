@@ -121,19 +121,19 @@ if [ ! -z "${ARG_INSTALL}" ]; then
 fi
 
 # Fortran Compiler
-if [ "${ARG_FC_COMPILER}" = "cray" ]; then
-    printf "%-20s: %s\n" "Fortran compiler" "cray"
-    FC_COMPILER="ftn"
-elif [ "${ARG_FC_COMPILER}" = "pgi" ]; then
-    printf "%-20s: %s\n" "Fortran compiler" "pgi"
-    FC_COMPILER="pgfortran"
-elif [ "${ARG_FC_COMPILER}" = "intel" ]; then
-    printf "%-20s: %s\n" "Fortran compiler" "intel"
-    FC_COMPILER="ifort"
-else
-    printf "%-20s: %s\n" "Fortran compiler" "gnu"
-    FC_COMPILER="gfortran"
-fi
+#if [ "${ARG_FC_COMPILER}" = "cray" ]; then
+#    printf "%-20s: %s\n" "Fortran compiler" "cray"
+#    FC_COMPILER="ftn"
+#elif [ "${ARG_FC_COMPILER}" = "pgi" ]; then
+#    printf "%-20s: %s\n" "Fortran compiler" "pgi"
+#    FC_COMPILER="pgfortran"
+#elif [ "${ARG_FC_COMPILER}" = "intel" ]; then
+#    printf "%-20s: %s\n" "Fortran compiler" "intel"
+#    FC_COMPILER="ifort"
+#else
+#    printf "%-20s: %s\n" "Fortran compiler" "gnu"
+#    FC_COMPILER="gfortran"
+#fi
 
 # Rebuild
 if [ "${ARG_RERUN}" = "true" ]; then
@@ -152,7 +152,9 @@ CURRENT_PATH=$(pwd)
 
 #------------------------------ Load environment -------------------------------
 if [ -n ${MYHOST} ]; then
-    source ${CURRENT_PATH}/env_${MYHOST}.sh -f ${FC_COMPILER}
+	git clone https://github.com/C2SM-RCM/c2sm-rcm-env.git
+	module load ${pwd}/c2sm-rcm-env/env
+	module load c2sm/${ARG_FC_COMPILER}/cpu
 fi
 
 #------------------------------ Check for external libraries -------------------
