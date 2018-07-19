@@ -138,7 +138,7 @@ CURRENT_PATH=$(pwd)
 #------------------------------ Load environment -------------------------------
 if [ -n ${MYHOST} ]; then
 	git clone https://github.com/C2SM-RCM/c2sm-rcm-env.git
-	module load $(pwd)/c2sm-rcm-env/env
+	module load "$(pwd)/c2sm-rcm-env/env"
 	module load c2sm/${ARG_FC_COMPILER}/cpu
 fi
 
