@@ -217,6 +217,7 @@ fi
 # Run Cmake
 cmake                                                                          \
  -DBoost_NO_BOOST_CMAKE="true"                                                 \
+ -DBOOST_ROOT:STRING=${BOOST_ROOT}                                             \
  -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_INSTALL_PREFIX}                         \
  -DCMAKE_BUILD_TYPE:STRING="$BUILD_TYPE"                                       \
  -DSERIALBOX_TESTING:BOOL=${SERIALBOX_TESTING}                                 \
