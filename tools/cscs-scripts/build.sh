@@ -145,7 +145,7 @@ CURRENT_PATH=$(pwd)
 if [ -n ${MYHOST} ]; then
 	git clone https://github.com/C2SM-RCM/c2sm-rcm-env.git
 	module load "$(pwd)/c2sm-rcm-env/env"
-	module load c2sm/${ARG_FC_COMPILER}/cpu
+	module load c2sm/${ARG_FC_COMPILER}-env
 	# we have to overwrite the boost from env which is 1.49
 	# I don't care to load the one for daint as we don't rely on compiled libraries
     export BOOST_ROOT="/project/c14/install/daint/boost/boost_1_67_0"
