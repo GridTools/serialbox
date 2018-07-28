@@ -24,10 +24,10 @@ set(SOURCES
   UnittestEnvironment.cpp
 )
 
-add_library(SerialboxUnittestUtility STATIC ${SOURCES})
-target_link_libraries(SerialboxUnittestUtility ${Boost_LIBRARIES} ${GTEST_LIBRARIES})
-
-if(DEFINED BUILD_GTEST)
-  add_dependencies(SerialboxUnittestUtility gtest)
-endif()
+yoda_create_library(
+   TARGET SerialboxUnittestUtility
+   SOURCES ${SOURCES}
+   PRIVATE_BUILD_INCLUDES  ${CMAKE_SOURCE_DIR}/test
+   LIBRARIES ${Boost_LIBRARIES} ${GTEST_LIBRARIES}
+)
 

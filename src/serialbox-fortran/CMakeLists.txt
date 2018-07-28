@@ -16,15 +16,14 @@ if(SERIALBOX_ENABLE_FORTRAN)
     set(SOURCES ${SOURCES} m_ser_ftg.f90)
   endif()
   
-  set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})
+  yoda_create_library(TARGET SerialboxFortran
+                      DEPENDS SerialboxCoreStatic SerialboxCStatic
+                      SOURCES ${SOURCES}
+                      PUBLIC_BUILD_INCLUDES ${CMAKE_SOURCE_DIR}/src
+                      PUBLIC_INSTALL_INCLUDES include/
+                      VERSION ${SERIALBOX_VERSION_STRING}
+  )
 
-  serialbox_add_library(NAME SerialboxFortran 
-                        TARGET SerialboxFortranLibrary 
-                        OBJECTS SerialboxCLibraryObjects SerialboxCoreLibraryObjects
-                        BUILD_STATIC 
-                        BUILD_SHARED
-                        LIBRARIES ${EXTERNAL_LIBRARIES}                      
-                        SOURCES ${SOURCES})
 
   # Install mod files
   foreach(source ${SOURCES})

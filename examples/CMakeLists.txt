@@ -18,12 +18,14 @@ cmake_minimum_required(VERSION 3.1)
 ## ARGN:STRINGS=<>    - List of source files
 ##
 function(serialbox_add_c_example NAME)
-  add_executable(${NAME} ${ARGN} ${SERIALBOX_C_HEADERS})
+  add_executable(${NAME} ${ARGN})
   target_link_libraries(${NAME} 
-                        SerialboxCLibraryStatic 
-                        ${Boost_LIBRARIES} 
-                        ${SERIALBOX_EXTERNAL_LIBRARIES}
+${CMAKE_THREAD_LIBS_INIT}
+                        SerialboxCStatic 
+#                        ${Boost_LIBRARIES} 
+#                        ${SERIALBOX_EXTERNAL_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT})
+  target_include_directories(${NAME} PRIVATE $<TARGET_PROPERTY:SerialboxCStatic,INTERFACE_INCLUDE_DIRECTORIES>)
   install(TARGETS ${NAME} DESTINATION bin)
   
   if(SERIALBOX_TESTING)
@@ -40,9 +42,9 @@ endfunction(serialbox_add_c_example)
 ## ARGN:STRINGS=<>    - List of source files
 ##
 function(serialbox_add_gridtools_example NAME)
-  add_executable(${NAME} ${ARGN} ${SERIALBOX_HEADERS})
+  add_executable(${NAME} ${ARGN})
   target_link_libraries(${NAME} 
-                        SerialboxCoreLibraryStatic 
+                        SerialboxCoreStatic 
                         ${Boost_LIBRARIES} 
                         ${SERIALBOX_EXTERNAL_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT})
@@ -63,10 +65,10 @@ endfunction(serialbox_add_gridtools_example)
 ## ARGN:STRINGS=<>    - List of source files
 ##
 function(serialbox_add_fortran_example NAME)
-  add_executable(${NAME} ${ARGN} ${SERIALBOX_HEADERS})
+  add_executable(${NAME} ${ARGN})
   target_link_libraries(${NAME} 
-                        SerialboxFortranLibraryStatic 
-                        SerialboxCLibraryStatic
+                        SerialboxFortranStatic 
+                        SerialboxCStatic
                         ${Boost_LIBRARIES} 
                         ${SERIALBOX_EXTERNAL_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT})

@@ -127,24 +127,7 @@ T* allocate(std::size_t n) noexcept {
   return data;
 }
 
-#ifdef SERIALBOX_COMPILER_MSVC
-
-/// \brief Convert wchar_t* to char*
-///
-/// This is generally unsafe but atleast it might work on Windows. To properly support this, one
-/// would need to switch all char* to wchar_t* whenever we deal with paths.
-inline const char* toCharP(const wchar_t* wc) {
-  const std::size_t wcSize = std::wcslen(wc) + 1;
-  char* c = new char[wcSize];
-  wcstombs(c, wc, wcSize);
-  return c;
-}
-
-#else
-
 inline const char* toCharP(const char* c) { return c; }
-
-#endif
 
 } // namespace serialboxC
 

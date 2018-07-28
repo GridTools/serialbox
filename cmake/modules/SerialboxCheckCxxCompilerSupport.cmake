@@ -67,14 +67,6 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     ###     cmake .. -DCMAKE_CXX_COMPILER=/path/to/g++
         ")
     endif()
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    if (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS "19.0")
-        message(WARNING "
-    ### You appear to be using Visual Studio ${CMAKE_CXX_COMPILER_VERSION}, 
-    ### which is known to be unable to compile Serialbox. 
-    ### Only Visual Studio 14 2015 is currently supported.
-        ")
-    endif()
 else()
     message(WARNING "
     ### You appear to be using a compiler that is not yet tested with Serialbox 2.

@@ -32,29 +32,37 @@ if(SERIALBOX_ENABLE_C)
   # Compile serialboxC
   set(SOURCES
     Archive.cpp
+    Archive.h
     Array.cpp
+    Array.h
     ConfigOptions.cpp
+    ConfigOptions.h
     ErrorHandling.cpp
+    ErrorHandling.h
     FieldMetainfo.cpp
+    FieldMetainfo.h
     Logging.cpp
+    Logging.h
     Metainfo.cpp
+    Metainfo.h
     Savepoint.cpp
+    Savepoint.h
     Serializer.cpp
+    Serializer.h
     FortranWrapper.cpp
+    FortranWrapper.h
   )
 
   set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})
 
-  set(SYMLINKS ${CMAKE_BINARY_DIR}/src/serialbox-python/serialbox
-               ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox)
+  yoda_create_library(
+                        TARGET SerialboxC
+                        DEPENDS SerialboxCoreStatic 
+                        SOURCES ${SOURCES}
+                        PUBLIC_BUILD_INCLUDES ${CMAKE_SOURCE_DIR}/src/  
+                        PUBLIC_INSTALL_INCLUDES include/
+                        VERSION ${SERIALBOX_VERSION_STRING}
+  )
 
-  serialbox_add_library(NAME SerialboxC 
-                        TARGET SerialboxCLibrary 
-                        OBJECTS SerialboxCoreLibraryObjects
-                        BUILD_SHARED
-                        BUILD_STATIC
-                        SYMLINKS ${SYMLINKS}
-                        LIBRARIES ${EXTERNAL_LIBRARIES}
-                        SOURCES ${SOURCES})
 endif()
 
