@@ -9,30 +9,6 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-## serialbox_add_c_example
-## -----------------------
-##
-## Create an install a C example
-##
-## NAME:STRING=<>     - Name of target and executable
-## ARGN:STRINGS=<>    - List of source files
-##
-function(serialbox_add_c_example NAME)
-  add_executable(${NAME} ${ARGN})
-  target_link_libraries(${NAME} 
-${CMAKE_THREAD_LIBS_INIT}
-                        SerialboxCStatic 
-#                        ${Boost_LIBRARIES} 
-#                        ${SERIALBOX_EXTERNAL_LIBRARIES}
-                        ${CMAKE_THREAD_LIBS_INIT})
-  target_include_directories(${NAME} PRIVATE $<TARGET_PROPERTY:SerialboxCStatic,INTERFACE_INCLUDE_DIRECTORIES>)
-  install(TARGETS ${NAME} DESTINATION bin)
-  
-  if(SERIALBOX_TESTING)
-    serialbox_add_test(TARGET ${NAME} EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/${NAME})
-  endif(SERIALBOX_TESTING)
-endfunction(serialbox_add_c_example)
-
 ## serialbox_add_gridtools_example
 ## -------------------------------
 ##
