@@ -15,14 +15,14 @@ set(SOURCES
 )
 
 # Setup external libraries
-set(EXTERNAL_LIBRARIES SerialboxCLibraryStatic 
-                       SerialboxCoreLibraryStatic 
-                       ${Boost_LIBRARIES} 
+set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} 
                        ${GTEST_LIBRARIES}
                        ${SERIALBOX_OLD_LIBRARIES}
                        ${STELLA_LIBRARIES})
 
 serialbox_add_unittest_executable(NAME SerialboxBenchmarkUnittest 
                                   LIBRARIES ${EXTERNAL_LIBRARIES}
-                                  SOURCES ${SOURCES} BenchmarkMain.cpp)
+                                  SOURCES ${SOURCES} BenchmarkMain.cpp 
+                                  DEPENDS SerialboxCStatic SerialboxCoreStatic
+)
 

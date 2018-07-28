@@ -17,8 +17,8 @@ if (SERIALBOX_ENABLE_FTG)
 endif()
 
 # Setup external libraries
-set(EXTERNAL_LIBRARIES SerialboxFortranLibraryStatic
-                       SerialboxCLibraryStatic 
+set(EXTERNAL_LIBRARIES SerialboxFortranStatic
+                       SerialboxCStatic 
                        ${Boost_LIBRARIES} 
                        ${SERIALBOX_EXTERNAL_LIBRARIES}
                        ${GTEST_LIBRARIES})

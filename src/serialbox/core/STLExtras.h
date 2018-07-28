@@ -24,7 +24,7 @@
 //     Extra additions to <memory>
 //===------------------------------------------------------------------------------------------===//
 
-#if !defined(SERIALBOX_COMPILER_MSVC) && __cplusplus <= 201103L
+#if __cplusplus <= 201103L
 
 namespace std {
 

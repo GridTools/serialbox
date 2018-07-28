@@ -22,6 +22,16 @@ include(ExternalProject)
 include(CMakeParseArguments)
 include(CheckCXXCompilerFlag)
 
+#---------------------------------------- Yoda setup -----------------------------------------------
+set(YODA_ROOT CACHE PATH "path to yoda package")
+
+if("${YODA_ROOT}" STREQUAL "")
+  message(FATAL_ERROR "YODA_ROOT not found! Try specifying it in the environment via -DYODA_ROOT=<>")
+endif()
+list(APPEND CMAKE_MODULE_PATH "${YODA_ROOT}/cmake")
+include(yodaInit)
+yoda_init()
+
 #---------------------------------------- Configure ------------------------------------------------
 
 if(UNIX)
@@ -31,10 +41,6 @@ endif(UNIX)
 if(WIN32)
   set(SERIALBOX_ON_WIN32 1)
 endif(WIN32)
-
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
-  set(SERIALBOX_COMPILER_MSVC 1)
-endif()
 
 # Serialbox version
 set(SERIALBOX_VERSION_MAJOR 2)
@@ -85,22 +91,16 @@ include(SerialboxCheckCxxCompilerSupport)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(NOT(SERIALBOX_COMPILER_MSVC))
-  
-  # Shared architecture flags
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+# Shared architecture flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 
-  # Compiler specific
-  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")            
-  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -wd488")
-  endif()
-
-else()
-  
+# Compiler specific
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")            
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -wd488")
 endif()
   
 # Set build type to Release if nothing was specified (instead of Debug)
@@ -132,10 +132,8 @@ endif()
 if(SERIALBOX_BUILD_SHARED)
   set(BUILD_SHARED_LIBS ON)
   
-  if(NOT(SERIALBOX_COMPILER_MSVC))
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-  endif()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
   
   # Use, i.e. don't skip the full RPATH for the build tree
   set(CMAKE_SKIP_BUILD_RPATH FALSE)
@@ -189,23 +187,11 @@ if(SERIALBOX_TESTING_GRIDTOOLS OR
  set(SERIALBOX_TESTING ON)
 endif()
 
-## Sanity check that we are not building in the source tree
-if( CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR AND NOT MSVC_IDE )
-  message(FATAL_ERROR "In-source builds are not allowed.
-Please create a build directory and run cmake from there, passing the path
-to this source directory as the last argument.
-This process created the file `CMakeCache.txt' and the directory `CMakeFiles'.
-Please delete them.")
-endif()
-
 ## IDE Support
 include(IDESupport)
 
 #---------------------------------------- GTest ----------------------------------------------------
 if(SERIALBOX_TESTING)
-  if(APPLE AND NOT(CMAKE_CXX_COMPILER_ID MATCHES "GNU"))
-    add_definitions(-DGTEST_USE_OWN_TR1_TUPLE)
-  endif()
   
   # If GTEST_ROOT is provided we will use it
   set(GTEST_ROOT_ENV "$ENV{GTEST_ROOT}")
@@ -377,7 +363,6 @@ if(NOT(${Boost_FOUND}))
   message(FATAL_ERROR "Boost not found or insufficient version.")
 endif(NOT(${Boost_FOUND}))
 
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
 
@@ -481,53 +466,30 @@ if(SERIALBOX_TESTING_OLD_SERIALBOX)
 endif(SERIALBOX_TESTING_OLD_SERIALBOX)
 
 #---------------------------------------- ClangTools -----------------------------------------------
-find_package(ClangTools)
-if("$ENV{CMAKE_EXPORT_COMPILE_COMMANDS}" STREQUAL "1" OR CLANG_TIDY_FOUND)
-  # Generate a Clang compile_commands.json "compilation database" file for use
-  # with various development tools, such as Vim's YouCompleteMe plugin.
-  # See http://clang.llvm.org/docs/JSONCompilationDatabase.html
-  set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
-endif()
 
-if(${CLANG_FORMAT_FOUND})
-  # Runs clang format and updates files in place.
-  add_custom_target(format 
-                    COMMAND ${SCRIPT_DIR}/run-clang-format.sh 
-                    ${CMAKE_CURRENT_SOURCE_DIR} 
-                    ${CLANG_FORMAT_BIN} 
-                    1
-                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
-                          -name \*.h -print -o -name \*.cpp -print`)
+find_package(clang-format EXACT 3.8)
 
-  # Runs clang format and exits with a non-zero exit code if any files need to be reformatted
-  add_custom_target(check-format 
-                    COMMAND ${SCRIPT_DIR}/run-clang-format.sh 
-                    ${CMAKE_CURRENT_SOURCE_DIR} 
-                    ${CLANG_FORMAT_BIN} 
-                    0
-                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
-                          -name \*.h -print -o -name \*.cpp -print`)
-endif()
+yoda_add_target_clang_format(DIRECTORIES ${CMAKE_SOURCE_DIR}/src EXTENSION ".h;.cpp")
 
-if(${CLANG_TIDY_FOUND})
-  # Runs clang-tidy and attempts to fix any warning automatically
-  add_custom_target(clang-tidy 
-                    COMMAND ${SCRIPT_DIR}/run-clang-tidy.sh 
-                    ${CLANG_TIDY_BIN} 
-                    ${CMAKE_BINARY_DIR}/compile_commands.json 
-                    1
-                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
-                          -name \*.h -print -o -name \*.cpp -print`)
-
-  # Runs clang-tidy and exits with a non-zero exit code if any errors are found.
-  add_custom_target(check-clang-tidy 
-                    COMMAND ${SCRIPT_DIR}/run-clang-tidy.sh 
-                    ${CLANG_TIDY_BIN} 
-                    ${CMAKE_BINARY_DIR}/compile_commands.json
-                    0
-                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
-                          -name \*.h -print -o -name \*.cpp -print`)
-endif()
+#if(${CLANG_TIDY_FOUND})
+#  # Runs clang-tidy and attempts to fix any warning automatically
+#  add_custom_target(clang-tidy 
+#                    COMMAND ${SCRIPT_DIR}/run-clang-tidy.sh 
+#                    ${CLANG_TIDY_BIN} 
+#                    ${CMAKE_BINARY_DIR}/compile_commands.json 
+#                    1
+#                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
+#                          -name \*.h -print -o -name \*.cpp -print`)
+#
+#  # Runs clang-tidy and exits with a non-zero exit code if any errors are found.
+#  add_custom_target(check-clang-tidy 
+#                    COMMAND ${SCRIPT_DIR}/run-clang-tidy.sh 
+#                    ${CLANG_TIDY_BIN} 
+#                    ${CMAKE_BINARY_DIR}/compile_commands.json
+#                    0
+#                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
+#                          -name \*.h -print -o -name \*.cpp -print`)
+#endif()
 
 # --------------------------------------- Code Coverage --------------------------------------------
 if(SERIALBOX_CODE_COVERAGE)
@@ -548,23 +510,11 @@ install(FILES ${SERIALBOX_CXX_CONFIG_FILE}
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox/core)
 include_directories(${CMAKE_BINARY_DIR}/src)
 
-# Setup include directories and glob the headers (for IDEs)
-set(SERIALBOX_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src)
-include_directories(${SERIALBOX_INCLUDE_DIRS})
-
-file(GLOB_RECURSE SERIALBOX_HEADERS 
-     ${CMAKE_CURRENT_SOURCE_DIR}/src
-     ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox/*.h*)
-   
 # Install serialbox headers
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox DESTINATION include 
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
       
 if(SERIALBOX_ENABLE_C)
-  file(GLOB_RECURSE SERIALBOX_C_HEADERS 
-       ${CMAKE_CURRENT_SOURCE_DIR}/src
-       ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox-c/*.h)
-     
   install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox-c DESTINATION include 
           FILES_MATCHING PATTERN "*.h")
 endif()
@@ -588,9 +538,6 @@ if(SERIALBOX_TESTING)
   if(SERIALBOX_TESTING_LARGE_FILE_TESTS)
     add_definitions(-DSERIALBOX_RUN_LARGE_FILE_TESTS)
   endif()
-  
-  # Unittest Utility library
-  include_directories(${PROJECT_SOURCE_DIR}/test)
   
   # Generate utility/Config.h
   set(SERIALBOX_CPP_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/test/utility/Config.h.cmake)

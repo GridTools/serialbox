@@ -9,5 +9,10 @@
 
 cmake_minimum_required(VERSION 3.1)
 
-serialbox_add_c_example(example-01-laplacian-c example-01-laplacian.c)
+yoda_add_unittest(
+      NAME example-01-laplacian-c 
+      SOURCES example-01-laplacian.c
+      LIBRARIES ${CMAKE_THREAD_LIBS_INIT}
+      DEPENDS SerialboxCStatic
+      INSTALL_DESTINATION bin)
 
