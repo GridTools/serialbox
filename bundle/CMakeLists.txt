@@ -21,9 +21,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake")
 
 include(serialbox2CloneRepository)
 
-set(YODA_GIT_URL "https:///github.com/Meteoswiss-APN/yoda.git" 
+set(YODA_GIT_URL "https:///github.com/cosunae/yoda.git" 
     CACHE PATH "URL of the yoda git repository to clone")
-set(YODA_GIT_BRANCH "master" CACHE STRING "Branch of the yoda git repository to clone")
+set(YODA_GIT_BRANCH "create_library" CACHE STRING "Branch of the yoda git repository to clone")
 
 serialbox2_clone_repository(NAME yoda URL ${YODA_GIT_URL} BRANCH ${YODA_GIT_BRANCH} SOURCE_DIR YODA_SOURCE_DIR )
 
