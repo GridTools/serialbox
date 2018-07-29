@@ -25,6 +25,7 @@ include(CheckCXXCompilerFlag)
 #---------------------------------------- Yoda setup -----------------------------------------------
 set(YODA_ROOT CACHE PATH "path to yoda package")
 
+
 if("${YODA_ROOT}" STREQUAL "")
   message(FATAL_ERROR "YODA_ROOT not found! Try specifying it in the environment via -DYODA_ROOT=<>")
 endif()

@@ -62,6 +62,8 @@ if(SERIALBOX_ENABLE_C)
                         PUBLIC_BUILD_INCLUDES ${CMAKE_SOURCE_DIR}/src/  
                         PUBLIC_INSTALL_INCLUDES include/
                         VERSION ${SERIALBOX_VERSION_STRING}
+                        TARGET_GROUP SerialboxTargets
+                        TARGET_NAMESPACE sbox::
   )
 
 endif()
