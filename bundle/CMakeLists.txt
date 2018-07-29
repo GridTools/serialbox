@@ -32,8 +32,6 @@ include(yodaInit)
 
 yoda_init()
 
-include(yodaAddTargetCleanAll)
-
 # Add custom targets
 yoda_add_target_clean_all(
   "${CMAKE_BINARY_DIR}/prefix"
@@ -42,9 +40,6 @@ yoda_add_target_clean_all(
   "${CMAKE_BINARY_DIR}/boost"
   "${CMAKE_BINARY_DIR}/boost-prefix"
 )
-
-include(yodaFindPackage)
-include(yodaSetDownloadDir)
 
 # Set the default download directory (define YODA_DOWNLOAD_DIR)
 yoda_set_download_dir()
