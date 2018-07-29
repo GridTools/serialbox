@@ -45,7 +45,7 @@ yoda_add_target_clean_all(
 yoda_set_download_dir()
 include("thirdparty/Serialbox2AddBoost")
 
-set(serialbox2_cmake_args -DBOOST_ROOT=${BOOST_ROOT} -DSERIALBOX_ENABLE_FORTRAN=ON -DSERIALBOX_BUILD_SHARED=ON)
+set(serialbox2_cmake_args -DBOOST_ROOT=${BOOST_ROOT})
 set(serialbox2_dependencies "boost")
 
 yoda_find_package(
