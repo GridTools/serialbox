@@ -66,6 +66,17 @@ yoda_find_package(
         ${serialbox2_cmake_args}
 )
 
+ExternalProject_Add(serialbox-test
+   PREFIX serialbox-test
+   SOURCE_DIR ${CMAKE_SOURCE_DIR}
+   SOURCE_SUBDIR "cmake-test"
+   INSTALL_DIR "${CMAKE_INSTALL_PREVIX}"
+   BUILD_ALWAYS 1
+   CMAKE_ARGS -DSerialbox_DIR=${CMAKE_INSTALL_PREFIX}/cmake -DYODA_ROOT=${YODA_SOURCE_DIR} -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+#   CMAKE_ARGS ${} 
+)
+
+
 if(NOT(serialbox2_binary_dir))
 	message(FATAL_ERROR "serialbox2 binary dir was not defined by External_Serialbox2")
 endif()

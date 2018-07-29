@@ -70,5 +70,7 @@ yoda_create_library(TARGET SerialboxCore
                       PUBLIC_BUILD_INCLUDES ${CMAKE_SOURCE_DIR}/src SYSTEM ${Boost_INCLUDE_DIRS}
                       PUBLIC_INSTALL_INCLUDES include/
                       VERSION ${SERIALBOX_VERSION_STRING}
+                      TARGET_GROUP SerialboxTargets
+                      TARGET_NAMESPACE sbox::
 )
 
