@@ -32,7 +32,13 @@ write_basic_package_version_file(
 )
 install(FILES "${PROJECT_BINARY_DIR}/cmake/SerialboxConfigVersion.cmake" DESTINATION cmake)
 
-## This is a hack (use some variables which are set in SerialboxConfig.cmake.in):
-#include( ${PROJECT_BINARY_DIR}/cmake/SerialboxConfig.cmake )
-#configure_file(${CMAKE_SOURCE_DIR}/cmake/SerialboxConfig.sh.in "${PROJECT_BINARY_DIR}/cmake/SerialboxConfig.sh" @ONLY)
-#install(FILES "${PROJECT_BINARY_DIR}/cmake/SerialboxConfig.sh" DESTINATION cmake)
+
+ExternalProject_Add(script-gen
+   PREFIX script-gen
+   SOURCE_DIR ${CMAKE_SOURCE_DIR}/cmake
+   SOURCE_SUBDIR "script-gen"
+   INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
+   BUILD_ALWAYS 1
+   CMAKE_ARGS -DSerialbox_DIR=${CMAKE_INSTALL_PREFIX}/cmake -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+)
+

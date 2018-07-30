@@ -175,28 +175,6 @@ if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
 endif()
 
 #===---------------------------------------------------------------------------------------------===
-#   Prepare variables to be used in shell script, i.e. in SerialboxConfig.sh.in
-#====--------------------------------------------------------------------------------------------===
-macro( prepare_export_library_for_sh _return )
-    foreach( _lib ${ARGN})
-      get_filename_component( _filename ${_lib} NAME )
-      string( REGEX MATCH "lib(.+)${CMAKE_SHARED_LIBRARY_SUFFIX}" _sharedlibname ${_filename} )
-      if( _sharedlibname )
-        # full path to shared libary was specified, replace by -LLIBDIR -lLIBNAME
-        get_filename_component( _path_to_lib ${_lib} DIRECTORY )
-        set(_result "${_result} -L${_path_to_lib} -l${CMAKE_MATCH_1}")
-      else()
-        set(_result "${_result} ${_lib}")
-      endif()
-    endforeach()
-    set( ${_return} "${_result}" )
-endmacro()
-
-prepare_export_library_for_sh(SERIALBOX_FORTRAN_LIBRARIES_AS_STRING "${SERIALBOX_FORTRAN_LIBRARIES}")
-prepare_export_library_for_sh(SERIALBOX_CXX_LIBRARIES_AS_STRING "${SERIALBOX_CXX_LIBRARIES}")
-prepare_export_library_for_sh(SERIALBOX_C_LIBRARIES_AS_STRING "${SERIALBOX_C_LIBRARIES}")
-
-#===---------------------------------------------------------------------------------------------===
 #   Find pp_ser.py
 #====--------------------------------------------------------------------------------------------===
 if(SERIALBOX_ROOT)
