@@ -322,6 +322,40 @@ INTERFACE ftg_allocate_and_read_allocatable
     ftg_allocate_and_read_allocatable_double_4d
 END INTERFACE ftg_allocate_and_read_allocatable
 
+INTERFACE ftg_compare
+  MODULE PROCEDURE &
+    ftg_compare_logical_0d, &
+    ftg_compare_logical_1d, &
+    ftg_compare_logical_2d, &
+    ftg_compare_logical_3d, &
+    ftg_compare_logical_4d, &
+    ftg_compare_bool_0d, &
+    ftg_compare_bool_1d, &
+    ftg_compare_bool_2d, &
+    ftg_compare_bool_3d, &
+    ftg_compare_bool_4d, &
+    ftg_compare_int_0d, &
+    ftg_compare_int_1d, &
+    ftg_compare_int_2d, &
+    ftg_compare_int_3d, &
+    ftg_compare_int_4d, &
+    ftg_compare_long_0d, &
+    ftg_compare_long_1d, &
+    ftg_compare_long_2d, &
+    ftg_compare_long_3d, &
+    ftg_compare_long_4d, &
+    ftg_compare_float_0d, &
+    ftg_compare_float_1d, &
+    ftg_compare_float_2d, &
+    ftg_compare_float_3d, &
+    ftg_compare_float_4d, &
+    ftg_compare_double_0d, &
+    ftg_compare_double_1d, &
+    ftg_compare_double_2d, &
+    ftg_compare_double_3d, &
+    ftg_compare_double_4d
+END INTERFACE ftg_compare
+
 LOGICAL :: ignore_bullshit = .TRUE.
 INTEGER :: ignore_bullshit_max_dim_size = 999999999
 LOGICAL :: ignore_bullshit_allow_negative_indices = .TRUE.
@@ -3736,5 +3770,188 @@ SUBROUTINE ftg_allocate_and_read_allocatable_double_4d(fieldname, field, rpertur
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_double_4d
+
+!=============================================================================
+!=============================================================================
+
+SUBROUTINE ftg_compare_logical_0d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
+  LOGICAL, INTENT(IN), ALLOCATABLE :: field
+
+END SUBROUTINE ftg_compare_logical_0d
+
+SUBROUTINE ftg_compare_logical_1d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
+  LOGICAL, INTENT(IN), ALLOCATABLE :: field(:)
+
+END SUBROUTINE ftg_compare_logical_1d
+
+SUBROUTINE ftg_compare_logical_2d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
+  LOGICAL, INTENT(IN), ALLOCATABLE :: field(:,:)
+
+END SUBROUTINE ftg_compare_logical_2d
+
+SUBROUTINE ftg_compare_logical_3d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
+  LOGICAL, INTENT(IN), ALLOCATABLE :: field(:,:,:)
+
+END SUBROUTINE ftg_compare_logical_3d
+
+SUBROUTINE ftg_compare_logical_4d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
+  LOGICAL, INTENT(IN), ALLOCATABLE :: field(:,:,:,:)
+
+END SUBROUTINE ftg_compare_logical_4d
+
+SUBROUTINE ftg_compare_bool_0d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(IN), ALLOCATABLE :: field
+
+END SUBROUTINE ftg_compare_bool_0d
+
+SUBROUTINE ftg_compare_bool_1d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(IN), ALLOCATABLE :: field(:)
+
+END SUBROUTINE ftg_compare_bool_1d
+
+SUBROUTINE ftg_compare_bool_2d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(IN), ALLOCATABLE :: field(:,:)
+
+END SUBROUTINE ftg_compare_bool_2d
+
+SUBROUTINE ftg_compare_bool_3d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(IN), ALLOCATABLE :: field(:,:,:)
+
+END SUBROUTINE ftg_compare_bool_3d
+
+SUBROUTINE ftg_compare_bool_4d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
+  LOGICAL(KIND=C_BOOL), INTENT(IN), ALLOCATABLE :: field(:,:,:,:)
+
+END SUBROUTINE ftg_compare_bool_4d
+
+SUBROUTINE ftg_compare_int_0d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
+  INTEGER, INTENT(IN), ALLOCATABLE :: field
+
+END SUBROUTINE ftg_compare_int_0d
+
+SUBROUTINE ftg_compare_int_1d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
+  INTEGER, INTENT(IN), ALLOCATABLE :: field(:)
+
+END SUBROUTINE ftg_compare_int_1d
+
+SUBROUTINE ftg_compare_int_2d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
+  INTEGER, INTENT(IN), ALLOCATABLE :: field(:,:)
+
+END SUBROUTINE ftg_compare_int_2d
+
+SUBROUTINE ftg_compare_int_3d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
+  INTEGER, INTENT(IN), ALLOCATABLE :: field(:,:,:)
+
+END SUBROUTINE ftg_compare_int_3d
+
+SUBROUTINE ftg_compare_int_4d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
+  INTEGER, INTENT(IN), ALLOCATABLE :: field(:,:,:,:)
+
+END SUBROUTINE ftg_compare_int_4d
+
+SUBROUTINE ftg_compare_long_0d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), ALLOCATABLE :: field
+
+END SUBROUTINE ftg_compare_long_0d
+
+SUBROUTINE ftg_compare_long_1d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), ALLOCATABLE :: field(:)
+
+END SUBROUTINE ftg_compare_long_1d
+
+SUBROUTINE ftg_compare_long_2d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), ALLOCATABLE :: field(:,:)
+
+END SUBROUTINE ftg_compare_long_2d
+
+SUBROUTINE ftg_compare_long_3d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), ALLOCATABLE :: field(:,:,:)
+
+END SUBROUTINE ftg_compare_long_3d
+
+SUBROUTINE ftg_compare_long_4d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
+  INTEGER(KIND=C_LONG), INTENT(IN), ALLOCATABLE :: field(:,:,:,:)
+
+END SUBROUTINE ftg_compare_long_4d
+
+SUBROUTINE ftg_compare_float_0d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN), ALLOCATABLE :: field
+
+END SUBROUTINE ftg_compare_float_0d
+
+SUBROUTINE ftg_compare_float_1d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN), ALLOCATABLE :: field(:)
+
+END SUBROUTINE ftg_compare_float_1d
+
+SUBROUTINE ftg_compare_float_2d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN), ALLOCATABLE :: field(:,:)
+
+END SUBROUTINE ftg_compare_float_2d
+
+SUBROUTINE ftg_compare_float_3d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN), ALLOCATABLE :: field(:,:,:)
+
+END SUBROUTINE ftg_compare_float_3d
+
+SUBROUTINE ftg_compare_float_4d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN), ALLOCATABLE :: field(:,:,:,:)
+
+END SUBROUTINE ftg_compare_float_4d
+
+SUBROUTINE ftg_compare_double_0d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), ALLOCATABLE :: field
+
+END SUBROUTINE ftg_compare_double_0d
+
+SUBROUTINE ftg_compare_double_1d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), ALLOCATABLE :: field(:)
+
+END SUBROUTINE ftg_compare_double_1d
+
+SUBROUTINE ftg_compare_double_2d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), ALLOCATABLE :: field(:,:)
+
+END SUBROUTINE ftg_compare_double_2d
+
+SUBROUTINE ftg_compare_double_3d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), ALLOCATABLE :: field(:,:,:)
+
+END SUBROUTINE ftg_compare_double_3d
+
+SUBROUTINE ftg_compare_double_4d(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN), ALLOCATABLE :: field(:,:,:,:)
+
+END SUBROUTINE ftg_compare_double_4d
 
 END MODULE m_ser_ftg
