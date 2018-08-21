@@ -65,6 +65,10 @@ if(SERIALBOX_ENABLE_C)
                         TARGET_GROUP SerialboxTargets
                         TARGET_NAMESPACE sbox::
   )
-
+  #TODO: propagate this fix to yoda
+  #(note that this is compiling with -fPic even for static libs which can have performance implication)
+  if(BUILD_SHARED_LIBS)
+    set_property(TARGET SerialboxCObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
+  endif()
 endif()
 

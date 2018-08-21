@@ -62,7 +62,6 @@ set(SOURCES
   frontend/stella/DataFieldInfo.h
 )
 
-
 set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${STD_FILESYSTEM_LIB} ${CMAKE_THREAD_LIBS_INIT})
 yoda_create_library(TARGET SerialboxCore
                       LIBRARIES ${EXTERNAL_LIBRARIES}
@@ -73,4 +72,8 @@ yoda_create_library(TARGET SerialboxCore
                       TARGET_GROUP SerialboxTargets
                       TARGET_NAMESPACE sbox::
 )
-
+#TODO: propagate this fix to yoda
+#(note that this is compiling with -fPic even for static libs which can have performance implication)
+if(BUILD_SHARED_LIBS)
+  set_property(TARGET SerialboxCoreObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
+endif()

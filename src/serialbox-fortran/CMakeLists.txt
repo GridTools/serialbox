@@ -11,7 +11,9 @@ cmake_minimum_required(VERSION 3.1)
 
 if(SERIALBOX_ENABLE_FORTRAN)
 
-  set(SOURCES m_serialize.f90 m_ser_perturb.f90 utils_ppser.f90)
+  # TODO this is (and was) broekn: m_serialize.f90 needs to be build before utils_ppser.f90 because of dependency
+  # however yoda doesn't seem to properly support this scenario
+  set(SOURCES m_serialize.f90 m_ser_perturb.f90 utils_ppser.f90 )
   if (SERIALBOX_ENABLE_FTG)
     set(SOURCES ${SOURCES} m_ser_ftg.f90)
   endif()
@@ -25,7 +27,9 @@ if(SERIALBOX_ENABLE_FORTRAN)
                       TARGET_GROUP SerialboxTargets
                       TARGET_NAMESPACE sbox::
   )
-
+  #TODO: propagate this fix to yoda
+  #(note that this is compiling with -fPic even for static libs which can have performance implication)
+  set_property(TARGET SerialboxFortranObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
 
   # Install mod files
   foreach(source ${SOURCES})

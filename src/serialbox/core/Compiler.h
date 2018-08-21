@@ -47,11 +47,6 @@
 #define SERIALBOX_COMPILER_GNU 1
 #endif
 
-// Make sure the same Boost is used for linking the library
-#if defined(SERIALBOX_BOOST_VERSION) && SERIALBOX_BOOST_VERSION != BOOST_VERSION
-#warning "Boost version used for compilation does not match current Boost version!"
-#endif
-
 /// \macro SERIALBOX_GNUC_PREREQ
 /// \brief Extend the default __GNUC_PREREQ even if glibc's features.h isn't available
 #ifndef SERIALBOX_GNUC_PREREQ

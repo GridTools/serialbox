@@ -13,25 +13,16 @@
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "CMake install prefix")
 
-project(serialbox2 C CXX)
+project(serialbox C CXX)
 cmake_minimum_required(VERSION 3.1)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
-
 include(ExternalProject)
 include(CMakeParseArguments)
 include(CheckCXXCompilerFlag)
 
 #---------------------------------------- Yoda setup -----------------------------------------------
-set(YODA_ROOT CACHE PATH "path to yoda package")
-
-
-if("${YODA_ROOT}" STREQUAL "")
-  message(FATAL_ERROR "YODA_ROOT not found! Try specifying it in the environment via -DYODA_ROOT=<>")
-endif()
-list(APPEND CMAKE_MODULE_PATH "${YODA_ROOT}/cmake")
-include(yodaInit)
-yoda_init()
+include(InitializeYoda)
 
 #---------------------------------------- Configure ------------------------------------------------
 
@@ -133,9 +124,6 @@ endif()
 if(SERIALBOX_BUILD_SHARED)
   set(BUILD_SHARED_LIBS ON)
   
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-  
   # Use, i.e. don't skip the full RPATH for the build tree
   set(CMAKE_SKIP_BUILD_RPATH FALSE)
 
@@ -160,10 +148,6 @@ endif()
 if(SERIALBOX_ENABLE_FORTRAN)
   enable_language(Fortran)
   include(SerialboxFortranCompilerFlags)
-  
-  if(SERIALBOX_BUILD_SHARED)
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fPIC")
-  endif(SERIALBOX_BUILD_SHARED)
 endif()
 
 if(NOT(SERIALBOX_LOGGING))
@@ -356,16 +340,16 @@ endif()
 
 if( NOT STD_FILESYSTEM_LIB )
   set(REQUIRED_BOOST_COMPONENTS filesystem system)
+
+  find_package(Boost 1.54 REQUIRED ${REQUIRED_BOOST_COMPONENTS})
+
+  if(NOT(${Boost_FOUND}))
+    message(FATAL_ERROR "Boost not found or insufficient version.")
+  endif(NOT(${Boost_FOUND}))
+
+  link_directories(${Boost_LIBRARY_DIRS})
+  set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
 endif()
-
-find_package(Boost 1.54 REQUIRED ${REQUIRED_BOOST_COMPONENTS})
-
-if(NOT(${Boost_FOUND}))
-  message(FATAL_ERROR "Boost not found or insufficient version.")
-endif(NOT(${Boost_FOUND}))
-
-link_directories(${Boost_LIBRARY_DIRS})
-set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
 
 #---------------------------------------- STELLA ---------------------------------------------------
 if(SERIALBOX_TESTING_STELLA)
@@ -415,62 +399,11 @@ if(SERIALBOX_TESTING_STELLA)
 
 endif(SERIALBOX_TESTING_STELLA)
 
-#---------------------------------------- Serialbox (old) ------------------------------------------
-if(SERIALBOX_TESTING_OLD_SERIALBOX)
-
-  # If SERIALBOX_OLD_ROOT is not provided, we try to find it in external/
-  set(SERIALBOX_OLD_ROOT_ENV "$ENV{SERIALBOX_OLD_ROOT}")
-  if(NOT(SERIALBOX_OLD_ROOT) AND NOT(SERIALBOX_OLD_ROOT_ENV) AND 
-     EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/serialbox/CMakeLists.txt")
-   
-    set(SERIALBOX_OLD_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/external/serialbox")
-    
-    set(BUILD_SERIALBOX_OLD "ON" BOOL)
-    set(SERIALBOX_OLD_INSTALL_DIR "${CMAKE_BINARY_DIR}/external/serialbox/install")
-    
-    # Forward toolchain
-    set(CMAKE_EXTERNAL_ARGS -Wno-dev
-      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
-      -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-      -DCMAKE_INSTALL_PREFIX=${SERIALBOX_OLD_INSTALL_DIR}
-    )
-    
-    # Propagate Boost if it was set via BOOST_ROOT
-    if(BOOST_ROOT)
-        list(APPEND CMAKE_EXTERNAL_ARGUMENTS "-DBOOST_ROOT=${BOOST_ROOT}")
-    endif(BOOST_ROOT)
-
-    # Build old serialbox
-    ExternalProject_Add(
-        serialbox-old
-        URL        "${CMAKE_CURRENT_SOURCE_DIR}/external/serialbox"
-        PREFIX     "external/serialbox"
-        CMAKE_ARGS ${CMAKE_EXTERNAL_ARGS}
-    )
-    message(STATUS 
-            "Building old SERIALBOX (0.1.1) from: ${CMAKE_CURRENT_SOURCE_DIR}/external/serialbox")
-
-    set(SERIALBOX_OLD_INCLUDE_DIRS "${SERIALBOX_OLD_INSTALL_DIR}/include")
-    set(SERIALBOX_OLD_LIBRARIES "${SERIALBOX_OLD_INSTALL_DIR}/lib/libSerialbox.a"
-                                "${SERIALBOX_OLD_INSTALL_DIR}/lib/libUtils.a"
-                                "${SERIALBOX_OLD_INSTALL_DIR}/lib/libjson.a"
-                                "${SERIALBOX_OLD_INSTALL_DIR}/lib/libsha256.a")
-  else()
-    find_package(SerialboxOld QUIET REQUIRED)
-  endif()
-  
-  include_directories(SYSTEM ${SERIALBOX_OLD_INCLUDE_DIRS})
-  set(SERIALBOX_HAS_SERIALBOX_OLD 1)
-  
-endif(SERIALBOX_TESTING_OLD_SERIALBOX)
-
 #---------------------------------------- ClangTools -----------------------------------------------
 
-find_package(clang-format EXACT 3.8)
+#find_package(clang-format EXACT 6.0)
 
-yoda_add_target_clang_format(DIRECTORIES ${CMAKE_SOURCE_DIR}/src EXTENSION ".h;.cpp")
+#yoda_add_target_clang_format(DIRECTORIES ${CMAKE_SOURCE_DIR}/src EXTENSION ".h;.cpp")
 
 #if(${CLANG_TIDY_FOUND})
 #  # Runs clang-tidy and attempts to fix any warning automatically
