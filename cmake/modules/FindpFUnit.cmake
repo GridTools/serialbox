@@ -23,19 +23,23 @@ if(NOT(DEFINED PFUNIT_ROOT))
     find_path(PFUNIT_ROOT NAMES lib/libpfunit.a)
 endif()
 
+
 # Look for pFUnit headers
 find_path(PFUNIT_INCLUDE_DIRS_INC
     NAMES TestUtil.F90
     HINTS ${PFUNIT_ROOT}/include
           $ENV{PFUNIT_ROOT}/include
 )
+
 set(PFUNIT_DRIVER "${PFUNIT_INCLUDE_DIRS_INC}/driver.F90")
 find_path(PFUNIT_INCLUDE_DIRS_MOD
     NAMES test_mod.mod
-    HINTS ${PFUNIT_ROOT}/mod
-          $ENV{PFUNIT_ROOT}/mod
+    HINTS
+            ${PFUNIT_ROOT}/mod
+            ${PFUNIT_ROOT}/include
+            $ENV{PFUNIT_ROOT}/mod
+            $ENV{PFUNIT_ROOT}/include
 )
-message( STATUS "ROOT: ${PFUNIT_ROOT}" )
 set( PFUNIT_INCLUDE_DIRS "${PFUNIT_INCLUDE_DIRS_INC}" "${PFUNIT_INCLUDE_DIRS_MOD}" )
 
 # Look for lib
@@ -59,8 +63,8 @@ if(PFUNIT_FOUND)
     message(STATUS "pFUnit found at ${PFUNIT_ROOT}")
 else()
     # If the package was required we abort the process
-    if(${PFUNIT_FIND_REQUIRED})
+    if(${pFUnit_FIND_REQUIRED})
         message(FATAL_ERROR "Could NOT find pFUnit. (Try setting PFUNIT_ROOT in the env)")
-    endif(${PFUNIT_FIND_REQUIRED})
+    endif(${pFUnit_FIND_REQUIRED})
 endif()
 

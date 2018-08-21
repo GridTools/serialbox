@@ -72,6 +72,10 @@ yoda_create_library(TARGET SerialboxCore
                       TARGET_GROUP SerialboxTargets
                       TARGET_NAMESPACE sbox::
 )
+if(SERIALBOX_USE_NETCDF)
+  target_link_libraries(SerialboxCoreStatic PRIVATE NETCDF_TARGET)
+endif()
+
 #TODO: propagate this fix to yoda
 #(note that this is compiling with -fPic even for static libs which can have performance implication)
 if(BUILD_SHARED_LIBS)

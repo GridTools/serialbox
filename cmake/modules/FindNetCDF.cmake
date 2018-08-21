@@ -30,13 +30,24 @@ else()
 endif()
 
 find_path(NETCDF_INCLUDES netcdf.h HINTS ${NETCDF_ROOT}/include)
-find_library(NETCDF_LIBRARIES NAMES netcdf HINTS ${NETCDF_ROOT}/lib)
+find_library(NETCDF_LIBRARIES NAMES netcdf
+        HINTS
+            ${NETCDF_ROOT}/lib
+            ${NETCDF_ROOT}/lib64
+        )
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (NetCDF DEFAULT_MSG NETCDF_LIBRARIES NETCDF_INCLUDES)
 
 if(NetCDF_FOUND)
   mark_as_advanced(NETCDF_LIBRARIES NETCDF_INCLUDES)
+  add_library(NETCDF_TARGET INTERFACE)
+  target_include_directories(NETCDF_TARGET INTERFACE ${NETCDF_INCLUDES})
+  target_compile_definitions(NETCDF_TARGET INTERFACE "SERIALBOX_HAS_NETCDF")
+  target_link_libraries(NETCDF_TARGET INTERFACE "netcdf")
+  install(TARGETS NETCDF_TARGET 
+#            DESTINATION ${ARG_INSTALL_DESTINATION} 
+            EXPORT SerialboxTargets)
 else()
   # If the package was required we abort the process
   if(${NetCDF_FIND_REQUIRED})

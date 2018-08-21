@@ -219,37 +219,7 @@ endif(SERIALBOX_TESTING)
 if(SERIALBOX_TESTING_FORTRAN)
   if(SERIALBOX_ENABLE_FORTRAN)
     set(PFUNIT_ROOT_ENV "$ENV{PFUNIT_ROOT}")
-    if(NOT(PFUNIT_ROOT) AND NOT(PFUNIT_ROOT_ENV))
-      set(BUILD_PFUNIT "ON" BOOL)
-      set(PFUNIT_INSTALL_DIR "${CMAKE_BINARY_DIR}/external/pfunit/install")
-    
-      # Forward toolchain
-      set(CMAKE_EXTERNAL_ARGS -Wno-dev
-        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
-        -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-        -DCMAKE_Fortran_COMPILER=${CMAKE_Fortran_COMPILER}
-        -DCMAKE_INSTALL_PREFIX=${PFUNIT_INSTALL_DIR}
-      )
-
-      # Build pFUnit
-      ExternalProject_Add(
-          pfunit
-          URL        "${CMAKE_CURRENT_SOURCE_DIR}/external/pfunit"
-          PREFIX     "external/pfunit"
-          CMAKE_ARGS ${CMAKE_EXTERNAL_ARGS}
-      )
-      message(STATUS "Building pFUnit from: ${CMAKE_CURRENT_SOURCE_DIR}/external/pfunit")  
-
-      # make the driver available in the binary dir
-      set(PFUNIT_DRIVER "${CMAKE_BINARY_DIR}/external/pfunit/include/driver.F90")
-      configure_file("${CMAKE_CURRENT_SOURCE_DIR}/external/pfunit/include/driver.F90" "${PFUNIT_DRIVER}" COPYONLY)
-      
-      set(PFUNIT_INCLUDE_DIRS "${PFUNIT_INSTALL_DIR}/include" "${PFUNIT_INSTALL_DIR}/mod")
-      set(PFUNIT_LIBRARIES "${PFUNIT_INSTALL_DIR}/lib/libpfunit.a")
-      set(PFUNIT_BIN_DIR "${PFUNIT_INSTALL_DIR}/bin")
-    else()
-      find_package(pFUnit REQUIRED)
-    endif()
+    find_package(pFUnit REQUIRED)
   else()
     message(WARNING "You need to enable Fortran (-DSERIALBOX_ENABLE_FORTRAN=ON) to build the Fortran tests.")
   endif()
@@ -273,8 +243,8 @@ if(${SERIALBOX_USE_NETCDF})
   if(NOT(${NetCDF_FOUND}))
     message(FATAL_ERROR "NetCDF library not found!")
   endif()
-  include_directories(SYSTEM ${NETCDF_INCLUDES})
-  set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${NETCDF_LIBRARIES})  
+#  include_directories(SYSTEM ${NETCDF_INCLUDES})
+#  set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${NETCDF_LIBRARIES})  
   set(SERIALBOX_HAS_NETCDF 1)
 endif()
 
