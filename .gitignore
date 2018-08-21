@@ -14,7 +14,7 @@
 
 # Build directories
 build*/
-install/*
+install*/
 buildenv*
 
 # External projects
@@ -33,3 +33,4 @@ gh-pages*
 /.settings/
 /.cproject
 /.pydevproject
+
