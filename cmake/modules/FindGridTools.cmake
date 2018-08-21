@@ -16,13 +16,11 @@
 #   GRIDTOOLS_FOUND         System has GridTools libraries and headers
 #   GRIDTOOLS_INCLUDE_DIRS  The location of GridTools headers
 
-find_path(GRIDTOOLS_ROOT NAMES include/gridtools.hpp)
-
 # Look for GridTools headers
 find_path(GRIDTOOLS_INCLUDE_DIRS
     NAMES gridtools.hpp
-    HINTS ${GRIDTOOLS_ROOT}/include
-          $ENV{GRIDTOOLS_ROOT}/include
+    HINTS ${GRIDTOOLS_ROOT}/include/gridtools
+          $ENV{GRIDTOOLS_ROOT}/include/gridtools
 )
 
 include(FindPackageHandleStandardArgs)

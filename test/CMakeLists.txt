@@ -22,17 +22,17 @@ cmake_minimum_required(VERSION 3.1)
 ##    INCLUDE_DIRECTORIES:STRING=<> - include directories
 function(serialbox_add_unittest_executable)                 
   set(one_value_args NAME)
-  set(multi_value_args LIBRARIES SOURCES DEPENDS LIBRARIES INCLUDE_DIRECTORIES)
+  set(multi_value_args LIBRARIES SOURCES DEPENDS INCLUDE_DIRECTORIES)
   cmake_parse_arguments(ARG "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
-  set(libraries ${serialbox_add_unittest_executable_LIBRARIES} SerialboxUnittestUtility)
-  set(sources ${serialbox_add_unittest_executable_SOURCES})
-  set(depends ${serialbox_add_unittest_executable_DEPENDS})
-  set(include_dirs ${serialbox_add_unittest_executable_INCLUDE_DIRECTORIES})
+  set(libraries ${ARG_LIBRARIES} SerialboxUnittestUtility)
+  set(sources ${ARG_SOURCES})
+  set(depends ${ARG_DEPENDS})
+  set(include_dirs ${ARG_INCLUDE_DIRECTORIES})
 
-  if(serialbox_add_unittest_executable_UNPARSED_ARGUMENTS)
+  if(ARG_UNPARSED_ARGUMENTS)
     message(FATAL_ERROR 
-            "unparsed arguments: ${serialbox_add_unittest_executable_UNPARSED_ARGUMENTS}")
+            "unparsed arguments: ${ARG_UNPARSED_ARGUMENTS}")
   endif()
 
   set(opt_arg)
@@ -42,7 +42,7 @@ function(serialbox_add_unittest_executable)
   if(ARG_INCLUDE_DIRECTORIES)
     set(opt_arg ${opt_arg} INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
   endif()
-  yoda_add_executable(NAME ${ARG_NAME} SOURCES ${sources} DEPENDS SerialboxUnittestUtility ${depends} ${opt_arg})
+  yoda_add_executable(NAME ${ARG_NAME} SOURCES ${sources} DEPENDS SerialboxUnittestUtilityStatic ${depends} ${opt_arg})
   
   if(DEFINED SERIALBOX_VERBOSE_WARNINGS)
     set_target_properties(${ARG_NAME} PROPERTIES COMPILE_FLAGS -Wall)

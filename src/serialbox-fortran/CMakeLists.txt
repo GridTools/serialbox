@@ -29,7 +29,9 @@ if(SERIALBOX_ENABLE_FORTRAN)
   )
   #TODO: propagate this fix to yoda
   #(note that this is compiling with -fPic even for static libs which can have performance implication)
-  set_property(TARGET SerialboxFortranObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
+  if(BUILD_SHARED_LIBS)
+    set_property(TARGET SerialboxFortranObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
+  endif()
 
   # Install mod files
   foreach(source ${SOURCES})

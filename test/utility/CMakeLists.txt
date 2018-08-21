@@ -24,10 +24,17 @@ set(SOURCES
   UnittestEnvironment.cpp
 )
 
+# TODO doesn't make sense to build this as shared library, however yoda_create_library doesn't allow me to disable it
+set(BUILD_SHARED_LIBS_TMP ${BUILD_SHARED_LIBS}) # TODO fix in yoda
+set(BUILD_SHARED_LIBS OFF) # TODO fix in yoda
+
 yoda_create_library(
    TARGET SerialboxUnittestUtility
    SOURCES ${SOURCES}
-   PRIVATE_BUILD_INCLUDES  ${CMAKE_SOURCE_DIR}/test
+   #TODO the second one should come from DEPENDS SerialboxCore??? but it is exported from a different target...
+   PRIVATE_BUILD_INCLUDES  ${CMAKE_SOURCE_DIR}/test ${CMAKE_SOURCE_DIR}/src
    LIBRARIES ${Boost_LIBRARIES} ${GTEST_LIBRARIES}
+   VERSION ${SERIALBOX_VERSION_STRING}
 )
+set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_TMP}) # TODO fix in yoda
 
