@@ -21,8 +21,8 @@
 //
 #define CXX11_ENABLED
 #define STRUCTURED_GRIDS
-#include <gridtools.hpp>
-#include <stencil-composition/stencil-composition.hpp>
+#include <gridtools/gridtools.hpp>
+#include <gridtools/stencil-composition/stencil-composition.hpp>
 
 //
 // Include Serialbox headers
@@ -36,7 +36,7 @@
 //
 // Typedefs of the gridtools library
 //
-using storage_traits_t = gridtools::storage_traits<gridtools::enumtype::Host>;
+using storage_traits_t = gridtools::storage_traits<gridtools::platform::x86>;
 using storage_info_t = storage_traits_t::storage_info_t<0, 3>;
 using storage_t = storage_traits_t::data_store_t<double, storage_info_t>;
 

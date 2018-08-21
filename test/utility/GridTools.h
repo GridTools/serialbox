@@ -22,8 +22,8 @@
 #define STRUCTURED_GRIDS
 #define SUPPRESS_MESSAGES
 
-#include "gridtools.hpp"
-#include "storage/storage-facility.hpp"
+#include "gridtools/gridtools.hpp"
+#include "gridtools/storage/storage-facility.hpp"
 
 namespace serialbox {
 
@@ -34,7 +34,7 @@ template <class T>
 struct gridtools_storage_types {
   using value_type = T;
 
-  using storage_traits_type = gridtools::storage_traits<gridtools::enumtype::Host>;
+  using storage_traits_type = gridtools::storage_traits<gridtools::platform::x86>;
 
   static constexpr int gpu_alignment = 32;
 

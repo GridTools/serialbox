@@ -25,9 +25,9 @@
 //
 #define CXX11_ENABLED
 #define STRUCTURED_GRIDS
-#include <gridtools.hpp>
-#include <stencil-composition/stencil-composition.hpp>
-#include <storage/storage-facility.hpp>
+#include <gridtools/gridtools.hpp>
+#include <gridtools/stencil-composition/stencil-composition.hpp>
+#include <gridtools/storage/storage-facility.hpp>
 
 //
 // Include Serialbox headers
@@ -45,16 +45,13 @@ static constexpr int halo_size = 1;
 //
 // Typedefs of the gridtools library
 //
-using storage_traits_t = gridtools::storage_traits<gridtools::enumtype::Host>;
-using backend_t = gridtools::backend<gridtools::enumtype::Host, gridtools::enumtype::structured,
-                                     gridtools::enumtype::Naive>;
+using storage_traits_t = gridtools::storage_traits<gridtools::platform::x86>;
+using backend_t = gridtools::backend<gridtools::platform::x86, gridtools::grid_type::structured,
+                                     gridtools::strategy::naive>;
 using halo_t = gridtools::halo<halo_size, halo_size, 0>;
 using storage_info_t =
     storage_traits_t::special_storage_info_t<0, gridtools::selector<1, 1, 0>, halo_t>;
 using storage_t = storage_traits_t::data_store_t<double, storage_info_t>;
-
-using full_domain = gridtools::interval<gridtools::level<0, -1>, gridtools::level<1, -1>>;
-using axis = gridtools::interval<gridtools::level<0, -1>, gridtools::level<1, 1>>;
 
 //
 // Laplacian stage
@@ -66,7 +63,7 @@ struct laplacian_stage {
   using arg_list = boost::mpl::vector<lap, phi>;
 
   template <typename Evaluation>
-  GT_FUNCTION static void Do(Evaluation& eval, full_domain) {
+  GT_FUNCTION static void Do(Evaluation& eval) {
     eval(lap()) =
         eval(phi(1, 0)) + eval(phi(-1, 0)) + eval(phi(0, -1)) + eval(phi(0, 1)) - 4 * eval(phi());
   }
@@ -136,22 +133,15 @@ void write() {
   using p_phi = gridtools::arg<1, storage_t>;
   using arg_list = boost::mpl::vector<p_lap, p_phi>;
 
-  // Setup domain
-  gridtools::aggregator_type<arg_list> domain((p_lap() = lap), (p_phi() = phi));
-
   // Setup grid
   gridtools::halo_descriptor di{halo_size, halo_size, halo_size, N - halo_size - 1, N};
   gridtools::halo_descriptor dj{halo_size, halo_size, halo_size, M - halo_size - 1, M};
-  gridtools::grid<axis> grid(di, dj);
-  grid.value_list[0] = 0;
-  grid.value_list[1] = 1;
 
   // Make computation
   auto laplacian_stencil = gridtools::make_computation<backend_t>(
-      domain, grid,
+      gridtools::make_grid(di, dj, 1), (p_lap() = lap), (p_phi() = phi),
       gridtools::make_multistage(gridtools::enumtype::execute<gridtools::enumtype::forward>(),
                                  gridtools::make_stage<laplacian_stage>(p_lap(), p_phi())));
-  laplacian_stencil->ready();
 
   //
   // Now, we apply the `laplacian_stencil` three times to phi. In each iteration we will create
@@ -181,8 +171,7 @@ void write() {
     //
     // Apply the laplacian_stencil to phi
     //
-    laplacian_stencil->steady();
-    laplacian_stencil->run();
+    laplacian_stencil.run();
 
     //
     // Create the output savepoint. This time we directly initialize the meta-information of the
@@ -206,8 +195,6 @@ void write() {
       for(int j = 0; j < M; ++j)
         std::swap(phi_view(i, j, 0), lap_view(i, j, 0));
   }
-
-  laplacian_stencil->finalize();
 }
 
 template <class VectorType>
@@ -278,23 +265,15 @@ void read() {
   using p_phi = gridtools::arg<1, storage_t>;
   using arg_list = boost::mpl::vector<p_lap, p_phi>;
 
-  // Setup domain
-  gridtools::aggregator_type<arg_list> domain((p_lap() = lap), (p_phi() = phi));
-
   // Setup grid
-  gridtools::uint_t di[5] = {halo_size, halo_size, halo_size, N - halo_size - 1, N};
-  gridtools::uint_t dj[5] = {halo_size, halo_size, halo_size, M - halo_size - 1, M};
-  gridtools::grid<axis> grid(di, dj);
-  grid.value_list[0] = 0;
-  grid.value_list[1] = 1;
+  gridtools::halo_descriptor di = {halo_size, halo_size, halo_size, N - halo_size - 1, N};
+  gridtools::halo_descriptor dj = {halo_size, halo_size, halo_size, M - halo_size - 1, M};
 
   // Make computation
   auto laplacian_stencil = gridtools::make_computation<backend_t>(
-      domain, grid,
+      gridtools::make_grid(di, dj, 1), (p_lap() = lap), (p_phi() = phi),
       gridtools::make_multistage(gridtools::enumtype::execute<gridtools::enumtype::forward>(),
                                  gridtools::make_stage<laplacian_stage>(p_lap(), p_phi())));
-  laplacian_stencil->ready();
-
   //
   // We will now perform the same iterations as in the write method but this time we will read
   // phi as an input from disk, compute the laplacian and compare the result to the stored output
@@ -315,8 +294,7 @@ void read() {
     //
     // Apply the laplacian_stencil to phi
     //
-    laplacian_stencil->steady();
-    laplacian_stencil->run();
+    laplacian_stencil.run();
 
     //
     // Load the refrence output of lap ...
@@ -335,8 +313,6 @@ void read() {
           throw ser::exception("mismatch at (%i,%i) of lap and lap_reference: %f vs. %f\n", i, j,
                                lap_view(i, j, 0), lap_reference_view(i, j, 0));
   }
-
-  laplacian_stencil->finalize();
 }
 
 //===------------------------------------------------------------------------------------------===//

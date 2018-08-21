@@ -310,7 +310,7 @@ if(SERIALBOX_TESTING_GRIDTOOLS)
   endif()
 
   find_package(GridTools QUIET REQUIRED)
-  include_directories(SYSTEM ${GRIDTOOLS_INCLUDE_DIRS})
+  include_directories(SYSTEM ${GRIDTOOLS_INCLUDE_DIRS}) #TODO on target!!!
   set(SERIALBOX_HAS_GRIDTOOLS 1)
   
 endif(SERIALBOX_TESTING_GRIDTOOLS)

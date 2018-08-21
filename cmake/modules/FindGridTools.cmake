@@ -18,9 +18,9 @@
 
 # Look for GridTools headers
 find_path(GRIDTOOLS_INCLUDE_DIRS
-    NAMES gridtools.hpp
-    HINTS ${GRIDTOOLS_ROOT}/include/gridtools
-          $ENV{GRIDTOOLS_ROOT}/include/gridtools
+    NAMES gridtools/gridtools.hpp
+    HINTS ${GRIDTOOLS_ROOT}/include
+          $ENV{GRIDTOOLS_ROOT}/include
 )
 
 include(FindPackageHandleStandardArgs)
