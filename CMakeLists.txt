@@ -243,8 +243,6 @@ if(${SERIALBOX_USE_NETCDF})
   if(NOT(${NetCDF_FOUND}))
     message(FATAL_ERROR "NetCDF library not found!")
   endif()
-#  include_directories(SYSTEM ${NETCDF_INCLUDES})
-#  set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${NETCDF_LIBRARIES})  
   set(SERIALBOX_HAS_NETCDF 1)
 endif()
 

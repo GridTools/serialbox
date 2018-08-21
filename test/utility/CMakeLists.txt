@@ -36,5 +36,6 @@ yoda_create_library(
    LIBRARIES ${Boost_LIBRARIES} ${GTEST_LIBRARIES}
    VERSION ${SERIALBOX_VERSION_STRING}
 )
+add_dependencies(SerialboxUnittestUtilityStatic gtest)
 set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_TMP}) # TODO fix in yoda
 
