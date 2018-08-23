@@ -34,7 +34,7 @@ env:
   global:
     - SCRIPT_DIR=${TRAVIS_BUILD_DIR}/tools/travis
     - CACHE_DIR=${TRAVIS_BUILD_DIR}/deps/install
-    - CMAKE_VERSION=3.8.1
+    - CMAKE_VERSION=3.12.1
     - BOOST_VERSION=1.60.0
     - PFUNIT_VERSION=3.2.7
 
