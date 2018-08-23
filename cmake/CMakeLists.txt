@@ -7,7 +7,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
 
 include(CMakePackageConfigHelpers)
 
@@ -32,7 +32,3 @@ write_basic_package_version_file(
 )
 install(FILES "${PROJECT_BINARY_DIR}/cmake/SerialboxConfigVersion.cmake" DESTINATION cmake)
 
-## This is a hack (use some variables which are set in SerialboxConfig.cmake.in):
-#include( ${PROJECT_BINARY_DIR}/cmake/SerialboxConfig.cmake )
-#configure_file(${CMAKE_SOURCE_DIR}/cmake/SerialboxConfig.sh.in "${PROJECT_BINARY_DIR}/cmake/SerialboxConfig.sh" @ONLY)
-#install(FILES "${PROJECT_BINARY_DIR}/cmake/SerialboxConfig.sh" DESTINATION cmake)
