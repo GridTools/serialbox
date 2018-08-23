@@ -67,7 +67,7 @@ fi
 #------------------------------ Set environment --------------------------------
 
 module use /users/jenkins/easybuild/tave/modules/all
-module load cmake/3.12.0
+module load CMake/3.12.0
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
     
