@@ -52,6 +52,7 @@ endforeach(_test)
 add_executable(SerialboxFortranUnittest ${_test_sources} ${PFUNIT_DRIVER})
 target_link_libraries(SerialboxFortranUnittest ${PFUNIT_LIBRARIES})
 target_link_libraries(SerialboxFortranUnittest ${EXTERNAL_LIBRARIES})
+set_property(TARGET SerialboxFortranUnittest PROPERTY LINKER_LANGUAGE CXX)
 
 serialbox_add_test(TARGET SerialboxFortranUnittest 
                    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/SerialboxFortranUnittest)
