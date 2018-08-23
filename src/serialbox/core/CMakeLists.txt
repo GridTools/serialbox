@@ -74,8 +74,11 @@ yoda_create_library(TARGET SerialboxCore
 )
 if(SERIALBOX_USE_NETCDF)
   target_link_libraries(SerialboxCoreStatic PRIVATE NETCDF_TARGET)
+  if(BUILD_SHARED_LIBS)
+    target_link_libraries(SerialboxCoreStatic PUBLIC NETCDF_TARGET)
+  endif()
   #TODO try to make private once we protect our headers
-  target_include_directories(PUBLIC SYSTEM ${NETCDF_INCLUDES})
+  target_include_directories(SerialboxCoreObjects PUBLIC SYSTEM ${NETCDF_INCLUDES})
 endif()
 
 #TODO: propagate this fix to yoda

@@ -44,7 +44,7 @@ if(NetCDF_FOUND)
   add_library(NETCDF_TARGET INTERFACE)
   target_include_directories(NETCDF_TARGET INTERFACE ${NETCDF_INCLUDES})
   target_compile_definitions(NETCDF_TARGET INTERFACE "SERIALBOX_HAS_NETCDF")
-  target_link_libraries(NETCDF_TARGET INTERFACE "netcdf")
+  target_link_libraries(NETCDF_TARGET INTERFACE ${NETCDF_LIBRARIES})
   install(TARGETS NETCDF_TARGET 
 #            DESTINATION ${ARG_INSTALL_DESTINATION} 
             EXPORT SerialboxTargets)
