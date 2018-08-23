@@ -27,8 +27,8 @@ addons:
       - g++-8
       - gcc-8
       - gfortran-8
-      - clang-5.0
-      - clang++-5.0
+      - clang
+      - clang++
 
 env:
   global:
@@ -85,15 +85,15 @@ jobs:
       compiler: gcc
       env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-8 C_COMPILER=gcc-8 FC_COMPILER=gfortran-8
 
-    # Clang 5.0 (Release) [Linux]
+    # Clang [Linux]
     - <<: *test_stage      
       compiler: clang
-      env: CONFIG=Release CXX_COMPILER=clang++-5.0 C_COMPILER=clang-5.0 CLANG_VERSION=5.0.0
+      env: CONFIG=Release CXX_COMPILER=clang++ C_COMPILER=clang
 
-    # Clang 5.0 (RelWithDebInfo) [Linux]
+    # Clang (RelWithDebInfo) [Linux]
     - <<: *test_stage      
       compiler: clang
-      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-5.0 C_COMPILER=clang-5.0 CLANG_VERSION=5.0.0
+      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++ C_COMPILER=clang
 
     # # XCode 7.3 (Release) [OSX]
     # - <<: *test_stage  
