@@ -42,7 +42,7 @@ foreach(_test ${SOURCES})
   
   add_custom_command(
     OUTPUT ${generated_src_dir}/${_test}.F90
-    COMMAND ${PYTHON_EXECUTABLE} ${PFUNIT_BIN_DIR}/pFUnitParser.py ${CMAKE_CURRENT_SOURCE_DIR}/${_test}.pf ${generated_src_dir}/${_test}.F90
+    COMMAND ${PFUNIT_PARSER} ${CMAKE_CURRENT_SOURCE_DIR}/${_test}.pf ${generated_src_dir}/${_test}.F90
     DEPENDS ${test_dependency} SerialboxFortranStatic
     )
   set(_test_sources ${_test_sources} ${generated_src_dir}/${_test}.F90)
