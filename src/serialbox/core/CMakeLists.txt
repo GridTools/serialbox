@@ -62,7 +62,6 @@ set(SOURCES
   frontend/stella/DataFieldInfo.h
 )
 
-message( STATUS "BOOOOOOOOOST ${Boost_INCLUDE_DIRS}")
 set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${STD_FILESYSTEM_LIB} ${CMAKE_THREAD_LIBS_INIT})
 yoda_create_library(TARGET SerialboxCore
                       LIBRARIES ${EXTERNAL_LIBRARIES}
