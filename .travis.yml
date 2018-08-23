@@ -17,6 +17,7 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise
     packages:
       - g++-5
       - gcc-5
@@ -27,8 +28,7 @@ addons:
       - g++-8
       - gcc-8
       - gfortran-8
-      - clang-3.9
-      - clang++-3.9
+      - clang-5.0
 
 env:
   global:
@@ -50,7 +50,7 @@ jobs:
     - <<: *prepare_cache_stage
       compiler: clang
       os: linux
-      env: CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8
+      env: CXX_COMPILER=clang++-5.0 C_COMPILER=clang-5.0
 
     # Linux GCC 5.4 (Release) [Linux]
     - &test_stage
@@ -93,7 +93,7 @@ jobs:
     # Clang (RelWithDebInfo) [Linux]
     - <<: *test_stage      
       compiler: clang
-      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-3.9 C_COMPILER=clang-3.9
+      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-5.0 C_COMPILER=clang-5.0
 
     # # XCode 7.3 (Release) [OSX]
     # - <<: *test_stage  
