@@ -67,8 +67,8 @@ fi
 #------------------------------ Set environment --------------------------------
 
 module load daint-gpu
-module load EasyBuild-custom/cscs
-module load CMake/3.12.0
+module use /users/jenkins/easybuild/daint/haswell/modules/all
+module load cmake/3.12.0
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
     
