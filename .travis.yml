@@ -27,8 +27,8 @@ addons:
       - g++-8
       - gcc-8
       - gfortran-8
-      - clang-3.8
-      - clang++-3.8
+      - clang-5.0
+      - clang++-5.0
 
 env:
   global:
@@ -85,35 +85,15 @@ jobs:
       compiler: gcc
       env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-8 C_COMPILER=gcc-8 FC_COMPILER=gfortran-8
 
-    # Clang 3.8 (Release) [Linux]
-    - <<: *test_stage      
-      compiler: clang
-      env: CONFIG=Release CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8
-
-    # Clang 3.8 (RelWithDebInfo) [Linux]
-    - <<: *test_stage      
-      compiler: clang
-      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8
-
-    # Clang 4.0 (Release) [Linux]
-    - <<: *test_stage      
-      compiler: clang
-      env: CONFIG=Release CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8 CLANG_VERSION=4.0.0
-
-    # Clang 4.0 (RelWithDebInfo) [Linux]
-    - <<: *test_stage      
-      compiler: clang
-      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8 CLANG_VERSION=4.0.0
-
     # Clang 5.0 (Release) [Linux]
     - <<: *test_stage      
       compiler: clang
-      env: CONFIG=Release CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8 CLANG_VERSION=5.0.0
+      env: CONFIG=Release CXX_COMPILER=clang++-5.0 C_COMPILER=clang-5.0 CLANG_VERSION=5.0.0
 
     # Clang 5.0 (RelWithDebInfo) [Linux]
     - <<: *test_stage      
       compiler: clang
-      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8 CLANG_VERSION=5.0.0
+      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-5.0 C_COMPILER=clang-5.0 CLANG_VERSION=5.0.0
 
     # # XCode 7.3 (Release) [OSX]
     # - <<: *test_stage  
