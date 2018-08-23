@@ -11,22 +11,34 @@ cmake_minimum_required(VERSION 3.12)
 
 if(SERIALBOX_ENABLE_FORTRAN)
 
-  # TODO this is (and was) broekn: m_serialize.f90 needs to be build before utils_ppser.f90 because of dependency
-  # however yoda doesn't seem to properly support this scenario
-  set(SOURCES m_serialize.f90 m_ser_perturb.f90 utils_ppser.f90 )
+  yoda_add_library( NAME SerialboxFortranSerialize
+                    SOURCES m_serialize.f90 m_ser_perturb.f90
+                    DEPENDS SerialboxCoreStatic SerialboxCStatic 
+                    OBJECT
+  )
+  if(BUILD_SHARED_LIBS)
+    set_property(TARGET SerialboxFortranSerializeObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
+  endif()
+  
+  install(TARGETS SerialboxFortranSerializeObjects
+    EXPORT SerialboxTargets
+  )
+
+  set(SOURCES utils_ppser.f90 )
   if (SERIALBOX_ENABLE_FTG)
     set(SOURCES ${SOURCES} m_ser_ftg.f90)
   endif()
-  
+
   yoda_create_library(TARGET SerialboxFortran
-                      DEPENDS SerialboxCoreStatic SerialboxCStatic
                       SOURCES ${SOURCES}
+                      DEPENDS SerialboxFortranSerializeObjects
                       PUBLIC_BUILD_INCLUDES ${CMAKE_SOURCE_DIR}/src
                       PUBLIC_INSTALL_INCLUDES include/
                       VERSION ${SERIALBOX_VERSION_STRING}
                       TARGET_GROUP SerialboxTargets
                       TARGET_NAMESPACE sbox::
   )
+  target_link_libraries(SerialboxFortranObjects SerialboxFortranSerializeObjects)
   #TODO: propagate this fix to yoda
   #(note that this is compiling with -fPic even for static libs which can have performance implication)
   if(BUILD_SHARED_LIBS)
