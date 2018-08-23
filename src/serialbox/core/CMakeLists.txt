@@ -62,20 +62,23 @@ set(SOURCES
   frontend/stella/DataFieldInfo.h
 )
 
+message( STATUS "BOOOOOOOOOST ${Boost_INCLUDE_DIRS}")
 set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${STD_FILESYSTEM_LIB} ${CMAKE_THREAD_LIBS_INIT})
 yoda_create_library(TARGET SerialboxCore
                       LIBRARIES ${EXTERNAL_LIBRARIES}
                       SOURCES ${SOURCES}
-                      PUBLIC_BUILD_INCLUDES ${CMAKE_SOURCE_DIR}/src SYSTEM ${Boost_INCLUDE_DIRS}
+                      PUBLIC_BUILD_INCLUDES ${CMAKE_SOURCE_DIR}/src
                       PUBLIC_INSTALL_INCLUDES include/
                       VERSION ${SERIALBOX_VERSION_STRING}
                       TARGET_GROUP SerialboxTargets
                       TARGET_NAMESPACE sbox::
 )
+target_link_libraries(SerialboxCoreObjects PUBLIC Boost::boost)
+
 if(SERIALBOX_USE_NETCDF)
   target_link_libraries(SerialboxCoreStatic PRIVATE NETCDF_TARGET)
   if(BUILD_SHARED_LIBS)
-    target_link_libraries(SerialboxCoreStatic PUBLIC NETCDF_TARGET)
+    target_link_libraries(SerialboxCoreShared PUBLIC NETCDF_TARGET)
   endif()
   #TODO try to make private once we protect our headers
   target_include_directories(SerialboxCoreObjects PUBLIC SYSTEM ${NETCDF_INCLUDES})

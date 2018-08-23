@@ -67,7 +67,8 @@ fi
 #------------------------------ Set environment --------------------------------
 
 module purge
-module load cmake/3.9.1
+module load EasyBuild-custom/cscs
+module load CMake/3.12.0
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
 

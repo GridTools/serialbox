@@ -65,6 +65,7 @@ if(SERIALBOX_ENABLE_C)
                         TARGET_GROUP SerialboxTargets
                         TARGET_NAMESPACE sbox::
   )
+  target_link_libraries(SerialboxCObjects SerialboxCoreObjects)
   #TODO: propagate this fix to yoda
   #(note that this is compiling with -fPic even for static libs which can have performance implication)
   if(BUILD_SHARED_LIBS)
