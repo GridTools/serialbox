@@ -309,8 +309,6 @@ endif()
 if( NOT STD_FILESYSTEM_LIB )
   set(REQUIRED_BOOST_COMPONENTS filesystem system)
 
-  find_package(Boost 1.54 REQUIRED ${REQUIRED_BOOST_COMPONENTS})
-
   if(NOT(${Boost_FOUND}))
     message(FATAL_ERROR "Boost not found or insufficient version.")
   endif(NOT(${Boost_FOUND}))
@@ -318,6 +316,9 @@ if( NOT STD_FILESYSTEM_LIB )
   link_directories(${Boost_LIBRARY_DIRS})
   set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
 endif()
+
+# If ${REQUIRED_BOOST_COMPONENTS} is empty we still need the headers
+find_package(Boost 1.54 REQUIRED ${REQUIRED_BOOST_COMPONENTS})
 
 #---------------------------------------- STELLA ---------------------------------------------------
 if(SERIALBOX_TESTING_STELLA)

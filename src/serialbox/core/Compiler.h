@@ -17,7 +17,6 @@
 #define SERIALBOX_CORE_COMPILER_H
 
 #include "serialbox/core/Config.h"
-#include <boost/version.hpp>
 
 #ifndef __has_feature
 #define __has_feature(x) 0

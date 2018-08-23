@@ -15,7 +15,6 @@
 #ifndef SERIALBOX_CORE_FRONTEND_GRIDTOOLS_STORAGE_VIEW_HELPER_H
 #define SERIALBOX_CORE_FRONTEND_GRIDTOOLS_STORAGE_VIEW_HELPER_H
 
-#include <boost/mpl/max_element.hpp>
 #include <gridtools/storage/common/storage_info_rt.hpp>
 #include <utility>
 #include <vector>
@@ -48,7 +47,6 @@ std::vector<int> get_dims(const StorageType& storage) noexcept {
 
 template <typename StorageType>
 void* get_origin_ptr(const StorageType& storage, unsigned int field_idx) noexcept {
-  // TODO test data_fields
   auto* data_ptr = storage.get_storage_ptr()->get_cpu_ptr();
   auto index = storage.get_storage_info_ptr()->index(
       {}); // http://en.cppreference.com/w/cpp/language/zero_initialization
