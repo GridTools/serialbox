@@ -44,6 +44,9 @@ find_package(Serialbox REQUIRED COMPONENTS Fortran HINTS
     "${SERIALBOX_DIR}/cmake"
     "$ENV{SERIALBOX_ROOT}/cmake")
 
+if(NOT SERIALBOX_HAS_NETCDF)
+    message(FATAL_ERROR "Serialbox was not compiled with netCDF support, cannot compile this example.")
+endif()
 
 #
 # Set some Fortran specific compiler flags (e.g enable preprocessing) and set the corresponding 
@@ -78,19 +81,22 @@ include_directories(${SERIALBOX_INCLUDE_DIRS})
 # which adds the correct STL library (libstdc++ or libc++) to the LD flags.
 #
 
+add_library(m_ser OBJECT ${PP_OUTPUT}/m_ser.f90)
+target_link_libraries(m_ser sbox::SerialboxFortranStatic)
+
 ## Producer
-add_executable(fortran_producer_netcdf ${PP_OUTPUT}/main_producer.f90 ${PP_OUTPUT}/m_ser.f90)
-target_link_libraries(fortran_producer_netcdf ${SERIALBOX_FORTRAN_LIBRARIES})
+add_executable(fortran_producer_netcdf ${PP_OUTPUT}/main_producer.f90)
+target_link_libraries(fortran_producer_netcdf m_ser)
 set_target_properties(fortran_producer_netcdf PROPERTIES LINKER_LANGUAGE CXX)
 
 ## Consumer
-add_executable(fortran_consumer_netcdf ${PP_OUTPUT}/main_consumer.f90 ${PP_OUTPUT}/m_ser.f90)
-target_link_libraries(fortran_consumer_netcdf ${SERIALBOX_FORTRAN_LIBRARIES})
+add_executable(fortran_consumer_netcdf ${PP_OUTPUT}/main_consumer.f90)
+target_link_libraries(fortran_consumer_netcdf m_ser)
 set_target_properties(fortran_consumer_netcdf PROPERTIES LINKER_LANGUAGE CXX)
 
 ## Perturbed Consumer
-add_executable(fortran_consumer_perturb_netcdf ${PP_OUTPUT}/main_consumer_perturb.f90 ${PP_OUTPUT}/m_ser.f90)
-target_link_libraries(fortran_consumer_perturb_netcdf ${SERIALBOX_FORTRAN_LIBRARIES})
+add_executable(fortran_consumer_perturb_netcdf ${PP_OUTPUT}/main_consumer_perturb.f90)
+target_link_libraries(fortran_consumer_perturb_netcdf m_ser)
 set_target_properties(fortran_consumer_perturb_netcdf PROPERTIES LINKER_LANGUAGE CXX)
 
 #
