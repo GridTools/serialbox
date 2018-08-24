@@ -218,6 +218,7 @@ if(SERIALBOX_TESTING)
 
     # make a target which can be used to provide the dependency on gtest
     add_library(GTEST_TARGET INTERFACE IMPORTED)
+    add_dependencies(GTEST_TARGET gtest_build)
     target_include_directories(GTEST_TARGET INTERFACE ${GTEST_INCLUDE_DIRS})
     target_link_libraries(GTEST_TARGET INTERFACE ${GTEST_LIBRARIES})
 
