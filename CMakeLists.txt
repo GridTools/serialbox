@@ -211,7 +211,10 @@ if(SERIALBOX_TESTING)
     )
     message(STATUS "Building Gtest from: ${CMAKE_CURRENT_SOURCE_DIR}/external/gtest")
 
-    set(GTEST_INCLUDE_DIRS "${GTEST_INSTALL_DIR}/include")
+    set(GTEST_INCLUDE_DIR "${GTEST_INSTALL_DIR}/include")\
+    # Probably the way to make a target from a ExternalProject_Add as seens below is not supported,
+    # therefore we need to make a directory here in order to be able to provide it to the target
+    file(MAKE_DIRECTORY ${GTEST_INCLUDE_DIR})
     set(GTEST_LIBRARIES "${GTEST_INSTALL_DIR}/lib/libgtest.a"
                         "${GTEST_INSTALL_DIR}/lib/libgmock.a"
                         "${CMAKE_THREAD_LIBS_INIT}")
@@ -219,7 +222,7 @@ if(SERIALBOX_TESTING)
     # make a target which can be used to provide the dependency on gtest
     add_library(GTEST_TARGET INTERFACE IMPORTED)
     add_dependencies(GTEST_TARGET gtest_build)
-    target_include_directories(GTEST_TARGET INTERFACE ${GTEST_INCLUDE_DIRS})
+    target_include_directories(GTEST_TARGET INTERFACE ${GTEST_INCLUDE_DIR})
     target_link_libraries(GTEST_TARGET INTERFACE ${GTEST_LIBRARIES})
 
   if(SERIALBOX_ENABLE_C)
