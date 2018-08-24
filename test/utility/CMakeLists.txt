@@ -36,8 +36,9 @@ yoda_create_library(
    LIBRARIES ${Boost_LIBRARIES}
    VERSION ${SERIALBOX_VERSION_STRING}
 )
-target_link_libraries(SerialboxUnittestUtilityObjects PRIVATE Boost::boost)
+target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC Boost::boost)
 target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC GTEST_TARGET)
 target_link_libraries(SerialboxUnittestUtilityStatic PUBLIC GTEST_TARGET)
+target_link_libraries(SerialboxUnittestUtilityStatic PUBLIC Boost::boost)
 set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_TMP}) # TODO fix in yoda
 
