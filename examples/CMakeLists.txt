@@ -32,30 +32,6 @@ function(serialbox_add_gridtools_example NAME)
   endif(SERIALBOX_TESTING)
 endfunction(serialbox_add_gridtools_example)
 
-## serialbox_add_fortran_example
-## -----------------------------
-##
-## Create and install a Fortran example
-##
-## NAME:STRING=<>     - Name of target and executable
-## ARGN:STRINGS=<>    - List of source files
-##
-function(serialbox_add_fortran_example NAME)
-  add_executable(${NAME} ${ARGN})
-  target_link_libraries(${NAME} 
-                        SerialboxFortranStatic 
-                        SerialboxCStatic
-                        ${Boost_LIBRARIES} 
-                        ${SERIALBOX_EXTERNAL_LIBRARIES}
-                        ${CMAKE_THREAD_LIBS_INIT})
-  target_include_directories(${NAME} PUBLIC ${CMAKE_BINARY_DIR}/src/serialbox-fortran)
-  if(${CMAKE_Fortran_COMPILER_ID} STREQUAL "PGI" OR ${CMAKE_Fortran_COMPILER_ID} STREQUAL "Intel")
-    set_target_properties( ${NAME} PROPERTIES LINKER_LANGUAGE Fortran)
-  endif()
-  link_directories(${CMAKE_BINARY_DIR}/src/serialbox-fortran)
-  install(TARGETS ${NAME} DESTINATION bin)
-endfunction(serialbox_add_fortran_example)
-
 ## serialbox_add_python_example
 ## ----------------------------
 ##
