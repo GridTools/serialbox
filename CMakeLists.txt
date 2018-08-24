@@ -211,7 +211,7 @@ if(SERIALBOX_TESTING)
     )
     message(STATUS "Building Gtest from: ${CMAKE_CURRENT_SOURCE_DIR}/external/gtest")
 
-    set(GTEST_INCLUDE_DIR "${GTEST_INSTALL_DIR}/include")\
+    set(GTEST_INCLUDE_DIR "${GTEST_INSTALL_DIR}/include")
     # Probably the way to make a target from a ExternalProject_Add as seens below is not supported,
     # therefore we need to make a directory here in order to be able to provide it to the target
     file(MAKE_DIRECTORY ${GTEST_INCLUDE_DIR})
