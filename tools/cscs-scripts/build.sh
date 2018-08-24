@@ -237,10 +237,10 @@ cmake                                                                          \
 # Run make
 if [ -z "${INSTALL_PREFIX}" ]; then
     # don't install if no install path was specified
-    make -j1
+    make -j8
 else
     # make and install if a path was specified
-    make install -j1
+    make install -j8
 fi
 
 ret=$?

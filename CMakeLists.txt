@@ -119,6 +119,11 @@ if(SERIALBOX_ENABLE_C AND NOT(SERIALBOX_BUILD_SHARED))
   set(SERIALBOX_BUILD_SHARED ON)
 endif()
 
+# CRAY does not want to build shared libraries
+if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray")
+  set(SERIALBOX_BUILD_SHARED OFF)
+endif()
+
 # Set shared library flags
 if(SERIALBOX_BUILD_SHARED)
   set(BUILD_SHARED_LIBS ON)
