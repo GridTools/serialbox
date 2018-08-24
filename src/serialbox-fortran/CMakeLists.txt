@@ -11,8 +11,9 @@ cmake_minimum_required(VERSION 3.12)
 
 if(SERIALBOX_ENABLE_FORTRAN)
 
+  set(SOURCES_FORTRAN_SERIALIZE m_serialize.f90 m_ser_perturb.f90)
   yoda_add_library( NAME SerialboxFortranSerialize
-                    SOURCES m_serialize.f90 m_ser_perturb.f90
+                    SOURCES ${SOURCES_FORTRAN_SERIALIZE}
                     DEPENDS SerialboxCoreStatic SerialboxCStatic 
                     OBJECT
   )
@@ -24,14 +25,14 @@ if(SERIALBOX_ENABLE_FORTRAN)
     EXPORT SerialboxTargets
   )
 
-  set(SOURCES utils_ppser.f90 )
+  set(SOURCES_FORTRAN utils_ppser.f90 )
   if (SERIALBOX_ENABLE_FTG)
-    set(SOURCES ${SOURCES} m_ser_ftg.f90)
+    set(SOURCES_FORTRAN ${SOURCES_FORTRAN} m_ser_ftg.f90)
   endif()
 
   yoda_create_library(TARGET SerialboxFortran
-                      SOURCES ${SOURCES}
-                      DEPENDS SerialboxFortranSerializeObjects
+                      SOURCES ${SOURCES_FORTRAN}
+                      DEPENDS SerialboxFortranSerializeObjects SerialboxCoreStatic SerialboxCStatic 
                       PUBLIC_BUILD_INCLUDES ${CMAKE_SOURCE_DIR}/src
                       PUBLIC_INSTALL_INCLUDES include/
                       VERSION ${SERIALBOX_VERSION_STRING}
@@ -46,7 +47,7 @@ if(SERIALBOX_ENABLE_FORTRAN)
   endif()
 
   # Install mod files
-  foreach(source ${SOURCES})
+  foreach(source ${SOURCES_FORTRAN} ${SOURCES_FORTRAN_SERIALIZE})
     get_filename_component(module_name ${source} NAME_WE)
 
     if("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Cray")
