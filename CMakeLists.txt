@@ -16,6 +16,9 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "CMake
 project(serialbox C CXX)
 cmake_minimum_required(VERSION 3.12)
 
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_C_EXTENSIONS OFF)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 include(ExternalProject)
 include(CMakeParseArguments)
@@ -119,20 +122,31 @@ if(SERIALBOX_ENABLE_C AND NOT(SERIALBOX_BUILD_SHARED))
   set(SERIALBOX_BUILD_SHARED ON)
 endif()
 
+# If we build the Fortran Interface, we need a Fortran compiler
+if(SERIALBOX_ENABLE_FORTRAN)
+  enable_language(Fortran)
+  include(SerialboxFortranCompilerFlags)
+endif()
+
 # CRAY does not want to build shared libraries
 if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray")
+  message(STATUS "Disabling shared libraries for Cray compiler")
   set(SERIALBOX_BUILD_SHARED OFF)
+  set(BUILD_SHARED_LIBS OFF)
+  message(STATUS "Disabling python")
+  set(SERIALBOX_ENABLE_PYTHON OFF)
+  set(SERIALBOX_ENABLE_SDB OFF)
 endif()
 
 # Set shared library flags
 if(SERIALBOX_BUILD_SHARED)
   set(BUILD_SHARED_LIBS ON)
-  
+
   # Use, i.e. don't skip the full RPATH for the build tree
   set(CMAKE_SKIP_BUILD_RPATH FALSE)
 
   # When building, don't use the install RPATH already (but later on when installing)
-  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
   set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
   set(CMAKE_MACOSX_RPATH "${CMAKE_INSTALL_RPATH}")
@@ -146,12 +160,6 @@ if(SERIALBOX_BUILD_SHARED)
   if("${isSystemDir}" STREQUAL "-1")
      SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
   endif("${isSystemDir}" STREQUAL "-1")
-endif()
-
-# If we build the Fortran Interface, we need a Fortran compiler
-if(SERIALBOX_ENABLE_FORTRAN)
-  enable_language(Fortran)
-  include(SerialboxFortranCompilerFlags)
 endif()
 
 if(NOT(SERIALBOX_LOGGING))
