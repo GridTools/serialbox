@@ -74,6 +74,14 @@ yoda_create_library(TARGET SerialboxCore
 )
 target_link_libraries(SerialboxCoreObjects PUBLIC Boost::boost)
 
+if(GRIDTOOLS_FOUND)
+    target_link_libraries(SerialboxCoreObjects PUBLIC GridTools_TARGET)
+    target_link_libraries(SerialboxCoreStatic PUBLIC GridTools_TARGET)
+    if(BUILD_SHARED_LIBS)
+        target_link_libraries(SerialboxCoreShared PUBLIC GridTools_TARGET)
+    endif()
+endif()
+
 if(SERIALBOX_USE_NETCDF)
   target_link_libraries(SerialboxCoreStatic PRIVATE NETCDF_TARGET)
   if(BUILD_SHARED_LIBS)

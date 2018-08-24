@@ -32,12 +32,12 @@ yoda_create_library(
    TARGET SerialboxUnittestUtility
    SOURCES ${SOURCES}
    #TODO the second one should come from DEPENDS SerialboxCore??? but it is exported from a different target...
-   PUBLIC_BUILD_INCLUDES SYSTEM ${Boost_INCLUDE_DIRS}
    PRIVATE_BUILD_INCLUDES  ${CMAKE_SOURCE_DIR}/test ${CMAKE_SOURCE_DIR}/src
-   LIBRARIES ${Boost_LIBRARIES} ${GTEST_LIBRARIES}
+   LIBRARIES ${Boost_LIBRARIES}
    VERSION ${SERIALBOX_VERSION_STRING}
 )
-add_dependencies(SerialboxUnittestUtilityObjects gtest)
-add_dependencies(SerialboxUnittestUtilityStatic gtest)
+target_link_libraries(SerialboxUnittestUtilityObjects PRIVATE Boost::boost)
+target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC GTEST_TARGET)
+target_link_libraries(SerialboxUnittestUtilityStatic PUBLIC GTEST_TARGET)
 set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_TMP}) # TODO fix in yoda
 

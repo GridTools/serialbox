@@ -59,7 +59,7 @@ if(SERIALBOX_ENABLE_C)
                         TARGET SerialboxC
                         DEPENDS SerialboxCoreStatic 
                         SOURCES ${SOURCES}
-                        PUBLIC_BUILD_INCLUDES ${CMAKE_SOURCE_DIR}/src/  
+                        PUBLIC_BUILD_INCLUDES ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR}/src
                         PUBLIC_INSTALL_INCLUDES include/
                         VERSION ${SERIALBOX_VERSION_STRING}
                         TARGET_GROUP SerialboxTargets

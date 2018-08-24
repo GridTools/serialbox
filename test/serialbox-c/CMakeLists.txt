@@ -24,12 +24,12 @@ set(SOURCES
 # Setup external libraries
 set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} 
                        ${SERIALBOX_EXTERNAL_LIBRARIES}
-                       ${GTEST_LIBRARIES})
+                       )
   
 serialbox_add_unittest_executable(NAME SerialboxCUnittest 
                                   LIBRARIES ${EXTERNAL_LIBRARIES}
                                   SOURCES ${SOURCES} UnittestMain.cpp
-                                  DEPENDS SerialboxCStatic
+                                  DEPENDS SerialboxCStatic GTEST_TARGET
                                   INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/test
 )
 

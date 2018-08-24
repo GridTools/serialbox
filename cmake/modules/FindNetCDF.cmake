@@ -46,7 +46,6 @@ if(NetCDF_FOUND)
   target_compile_definitions(NETCDF_TARGET INTERFACE "SERIALBOX_HAS_NETCDF")
   target_link_libraries(NETCDF_TARGET INTERFACE ${NETCDF_LIBRARIES})
   install(TARGETS NETCDF_TARGET 
-#            DESTINATION ${ARG_INSTALL_DESTINATION} 
             EXPORT SerialboxTargets)
 else()
   # If the package was required we abort the process

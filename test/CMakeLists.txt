@@ -42,16 +42,12 @@ function(serialbox_add_unittest_executable)
   if(ARG_INCLUDE_DIRECTORIES)
     set(opt_arg ${opt_arg} INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
   endif()
-  yoda_add_executable(NAME ${ARG_NAME} SOURCES ${sources} DEPENDS SerialboxUnittestUtilityStatic ${depends} ${opt_arg})
-  
+  yoda_add_executable(NAME ${ARG_NAME} SOURCES ${sources} DEPENDS SerialboxUnittestUtilityStatic SerialboxCoreStatic ${depends} ${opt_arg})
+                                    
   if(DEFINED SERIALBOX_VERBOSE_WARNINGS)
     set_target_properties(${ARG_NAME} PROPERTIES COMPILE_FLAGS -Wall)
   endif()
 
-  if(DEFINED BUILD_GTEST)
-    add_dependencies(${ARG_NAME} gtest)
-  endif()
-  
   if(DEFINED BUILD_SERIALBOX_OLD)
     add_dependencies(${ARG_NAME} serialbox-old)
   endif()

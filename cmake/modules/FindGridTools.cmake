@@ -17,7 +17,7 @@
 #   GRIDTOOLS_INCLUDE_DIRS  The location of GridTools headers
 
 # Look for GridTools headers
-find_path(GRIDTOOLS_INCLUDE_DIRS
+find_path(
     NAMES gridtools/gridtools.hpp
     HINTS ${GRIDTOOLS_ROOT}/include
           $ENV{GRIDTOOLS_ROOT}/include
@@ -28,7 +28,10 @@ find_package_handle_standard_args(GRIDTOOLS DEFAULT_MSG GRIDTOOLS_INCLUDE_DIRS)
 
 if(GRIDTOOLS_FOUND)
     mark_as_advanced(GRIDTOOLS_INCLUDE_DIRS)
-    message(STATUS "GridTools found at ${GRIDTOOLS_ROOT}")
+    message(STATUS "GridTools found at ${GRIDTOOLS_INCLUDE_DIRS}")
+    add_library(GridTools_TARGET INTERFACE IMPORTED)
+    target_include_directories(GridTools_TARGET INTERFACE ${GRIDTOOLS_INCLUDE_DIRS})
+#    target_compile_definitions(GridTools_TARGET INTERFACE "")
 else()
     # If the package was required we abort the process
     if(${GridTools_FIND_REQUIRED})

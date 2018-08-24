@@ -53,13 +53,11 @@ set(SOURCES
 
 set(EXTERNAL_LIBRARIES 
                        ${Boost_LIBRARIES}
-                       ${GTEST_LIBRARIES} 
                        ${STELLA_LIBRARIES})
   
 serialbox_add_unittest_executable(NAME SerialboxCppUnittest 
                                   LIBRARIES ${EXTERNAL_LIBRARIES}
                                   SOURCES ${SOURCES} UnittestMain.cpp
-                                  DEPENDS SerialboxCoreStatic
                                   INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/test
 )
 

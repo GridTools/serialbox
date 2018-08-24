@@ -21,7 +21,7 @@ set(EXTERNAL_LIBRARIES SerialboxFortranStatic
                        SerialboxCStatic 
                        ${Boost_LIBRARIES} 
                        ${SERIALBOX_EXTERNAL_LIBRARIES}
-                       ${GTEST_LIBRARIES})
+                       )
 
 set(generated_src_dir ${PROJECT_BINARY_DIR}/generated)
 file(MAKE_DIRECTORY ${generated_src_dir})
@@ -50,9 +50,9 @@ foreach(_test ${SOURCES})
 endforeach(_test)
 
 add_executable(SerialboxFortranUnittest ${_test_sources} ${PFUNIT_DRIVER})
-target_link_libraries(SerialboxFortranUnittest ${PFUNIT_LIBRARIES})
-target_link_libraries(SerialboxFortranUnittest ${EXTERNAL_LIBRARIES})
-add_dependencies(SerialboxFortranUnittest gtest)
+target_link_libraries(SerialboxFortranUnittest PRIVATE ${PFUNIT_LIBRARIES})
+target_link_libraries(SerialboxFortranUnittest PRIVATE ${EXTERNAL_LIBRARIES})
+target_link_libraries(SerialboxFortranUnittest PRIVATE GTEST_TARGET)
 
 serialbox_add_test(TARGET SerialboxFortranUnittest 
                    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/SerialboxFortranUnittest)

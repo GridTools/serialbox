@@ -189,10 +189,7 @@ include(IDESupport)
 
 #---------------------------------------- GTest ----------------------------------------------------
 if(SERIALBOX_TESTING)
-  
-  # If GTEST_ROOT is provided we will use it
-  set(GTEST_ROOT_ENV "$ENV{GTEST_ROOT}")
-  if(NOT(GTEST_ROOT) AND NOT(GTEST_ROOT_ENV))
+    # we will build our own gtest
     set(BUILD_GTEST "ON" BOOL)
     set(GTEST_INSTALL_DIR "${CMAKE_BINARY_DIR}/external/gtest/install")
     
@@ -207,7 +204,7 @@ if(SERIALBOX_TESTING)
 
     # Build Gtest
     ExternalProject_Add(
-        gtest
+        gtest_build
         URL        "${CMAKE_CURRENT_SOURCE_DIR}/external/gtest"
         PREFIX     "external/gtest"
         CMAKE_ARGS ${CMAKE_EXTERNAL_ARGS}
@@ -218,11 +215,12 @@ if(SERIALBOX_TESTING)
     set(GTEST_LIBRARIES "${GTEST_INSTALL_DIR}/lib/libgtest.a"
                         "${GTEST_INSTALL_DIR}/lib/libgmock.a"
                         "${CMAKE_THREAD_LIBS_INIT}")
-  else()
-    find_package(GTest REQUIRED)
-  endif()
-  include_directories(SYSTEM ${GTEST_INCLUDE_DIRS})
-  
+
+    # make a target which can be used to provide the dependency on gtest
+    add_library(GTEST_TARGET INTERFACE IMPORTED)
+    target_include_directories(GTEST_TARGET INTERFACE ${GTEST_INCLUDE_DIRS})
+    target_link_libraries(GTEST_TARGET INTERFACE ${GTEST_LIBRARIES})
+
   if(SERIALBOX_ENABLE_C)
     set(SERIALBOX_HAS_C 1)
   endif(SERIALBOX_ENABLE_C)
@@ -291,7 +289,6 @@ if(SERIALBOX_TESTING_GRIDTOOLS)
   endif()
 
   find_package(GridTools QUIET REQUIRED)
-  include_directories(SYSTEM ${GRIDTOOLS_INCLUDE_DIRS}) #TODO on target!!!
   set(SERIALBOX_HAS_GRIDTOOLS 1)
   
 endif(SERIALBOX_TESTING_GRIDTOOLS)
@@ -424,7 +421,6 @@ set(SERIALBOX_CXX_CONFIG_FILE ${PROJECT_SOURCE_DIR}/src/serialbox/core/Config.h)
 configure_file(${SERIALBOX_CXX_CONFIG_FILE_IN} ${SERIALBOX_CXX_CONFIG_FILE})
 install(FILES ${SERIALBOX_CXX_CONFIG_FILE} 
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox/core)
-include_directories(${CMAKE_BINARY_DIR}/src)
 
 # Install serialbox headers
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox DESTINATION include 
