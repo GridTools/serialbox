@@ -43,7 +43,8 @@ PUBLIC :: ignore_bullshit, ignore_bullshit_max_dim_size, ignore_bullshit_allow_n
           ftg_add_serializer_metainfo, ftg_get_serializer_metainfo,  ftg_add_field_metainfo, ftg_get_field_metainfo, &
           ftg_add_savepoint_metainfo, ftg_get_savepoint_metainfo, &
           ftg_field_exists, ftg_get_size, ftg_get_bounds, ftg_register_only, ftg_write, ftg_read, &
-          ftg_allocate_pointer, ftg_allocate_allocatable, ftg_allocate_and_read_pointer, ftg_allocate_and_read_allocatable
+          ftg_allocate_pointer, ftg_allocate_allocatable, ftg_allocate_and_read_pointer, ftg_allocate_and_read_allocatable, &
+          ftg_compare
 
 PRIVATE
 
