@@ -19,7 +19,7 @@ buildenv*
 
 # External projects
 external/*
-!external/gtest
+!external/googletest
 
 # Shared library in source dir
 *.so
