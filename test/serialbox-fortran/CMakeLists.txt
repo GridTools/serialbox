@@ -52,7 +52,7 @@ endforeach(_test)
 add_executable(SerialboxFortranUnittest ${_test_sources} ${PFUNIT_DRIVER})
 target_link_libraries(SerialboxFortranUnittest PRIVATE ${PFUNIT_LIBRARIES})
 target_link_libraries(SerialboxFortranUnittest PRIVATE ${EXTERNAL_LIBRARIES})
-target_link_libraries(SerialboxFortranUnittest PRIVATE GTEST_TARGET)
+target_link_libraries(SerialboxFortranUnittest PRIVATE gtest_main)
 
 serialbox_add_test(TARGET SerialboxFortranUnittest 
                    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/SerialboxFortranUnittest)

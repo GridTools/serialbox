@@ -63,36 +63,36 @@ set(SOURCES
 )
 
 set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${STD_FILESYSTEM_LIB} ${CMAKE_THREAD_LIBS_INIT})
-yoda_create_library(TARGET SerialboxCore
+yoda_create_library(TARGET Serialbox
                       LIBRARIES ${EXTERNAL_LIBRARIES}
                       SOURCES ${SOURCES}
                       PUBLIC_BUILD_INCLUDES ${CMAKE_SOURCE_DIR}/src
                       PUBLIC_INSTALL_INCLUDES include/
-                      VERSION ${SERIALBOX_VERSION_STRING}
+                      VERSION ${Serialbox_VERSION_STRING}
                       TARGET_GROUP SerialboxTargets
-                      TARGET_NAMESPACE sbox::
+                      TARGET_NAMESPACE Serialbox::
 )
-target_link_libraries(SerialboxCoreObjects PUBLIC Boost::boost)
+target_link_libraries(SerialboxObjects PUBLIC Boost::boost)
 
 if(GRIDTOOLS_FOUND)
-    target_link_libraries(SerialboxCoreObjects PUBLIC GridTools_TARGET)
-    target_link_libraries(SerialboxCoreStatic PUBLIC GridTools_TARGET)
+    target_link_libraries(SerialboxObjects PUBLIC GridTools_TARGET)
+    target_link_libraries(SerialboxStatic PUBLIC GridTools_TARGET)
     if(BUILD_SHARED_LIBS)
-        target_link_libraries(SerialboxCoreShared PUBLIC GridTools_TARGET)
+        target_link_libraries(SerialboxShared PUBLIC GridTools_TARGET)
     endif()
 endif()
 
 if(SERIALBOX_USE_NETCDF)
-  target_link_libraries(SerialboxCoreStatic PRIVATE NETCDF_TARGET)
+  target_link_libraries(SerialboxStatic PRIVATE NETCDF_TARGET)
   if(BUILD_SHARED_LIBS)
-    target_link_libraries(SerialboxCoreShared PUBLIC NETCDF_TARGET)
+    target_link_libraries(SerialboxShared PUBLIC NETCDF_TARGET)
   endif()
   #TODO try to make private once we protect our headers
-  target_include_directories(SerialboxCoreObjects PUBLIC SYSTEM ${NETCDF_INCLUDES})
+  target_include_directories(SerialboxObjects PUBLIC SYSTEM ${NETCDF_INCLUDES})
 endif()
 
 #TODO: propagate this fix to yoda
 #(note that this is compiling with -fPic even for static libs which can have performance implication)
 if(BUILD_SHARED_LIBS)
-  set_property(TARGET SerialboxCoreObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
+  set_property(TARGET SerialboxObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
 endif()

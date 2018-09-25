@@ -31,14 +31,14 @@ template <typename Container>
 std::vector<int> to_vector(Container const& a) {
   std::vector<int> v(a.size());
   for(int i = 0; i < a.size(); ++i) {
-    v.at(i) = a[i];
+    v[i] = a[i];
   }
   return v;
 }
 
 template <typename StorageType>
 std::vector<int> get_strides(const StorageType& storage) {
-  return to_vector(storage.strides());
+  return serialbox::gridtools::internal::to_vector(storage.strides());
 }
 
 /*
@@ -46,7 +46,7 @@ std::vector<int> get_strides(const StorageType& storage) {
  */
 template <typename StorageType>
 std::vector<int> get_dims(const StorageType& storage) noexcept {
-  return to_vector(storage.dims());
+  return serialbox::gridtools::internal::to_vector(storage.dims());
 }
 
 template <typename StorageType>

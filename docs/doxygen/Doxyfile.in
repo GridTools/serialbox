@@ -38,7 +38,7 @@ PROJECT_NAME           = "Serialbox"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = @SERIALBOX_VERSION_MAJOR@.@SERIALBOX_VERSION_MINOR@.@SERIALBOX_VERSION_PATCH@
+PROJECT_NUMBER         = @Serialbox_VERSION_MAJOR@.@Serialbox_VERSION_MINOR@.@Serialbox_VERSION_PATCH@
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a

@@ -13,8 +13,9 @@
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "CMake install prefix")
 
-project(serialbox C CXX)
-cmake_minimum_required(VERSION 3.12)
+cmake_policy(SET CMP0048 NEW)
+project(Serialbox LANGUAGES C CXX VERSION 2.5.0)
+cmake_minimum_required(VERSION 3.9.0)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_EXTENSIONS OFF)
@@ -38,13 +39,10 @@ if(WIN32)
 endif(WIN32)
 
 # Serialbox version
-set(SERIALBOX_VERSION_MAJOR 2)
-set(SERIALBOX_VERSION_MINOR 4)
-set(SERIALBOX_VERSION_PATCH 1)
-set(SERIALBOX_VERSION_STRING 
-    "${SERIALBOX_VERSION_MAJOR}.${SERIALBOX_VERSION_MINOR}.${SERIALBOX_VERSION_PATCH}")
+set(Serialbox_VERSION_STRING 
+    "${Serialbox_VERSION_MAJOR}.${Serialbox_VERSION_MINOR}.${Serialbox_VERSION_PATCH}")
     
-message(STATUS "Serialbox version: ${SERIALBOX_VERSION_STRING}")
+message(STATUS "Serialbox version: ${Serialbox_VERSION_STRING}")
 
 #---------------------------------------- User options ---------------------------------------------
 
@@ -188,41 +186,7 @@ include(IDESupport)
 
 #---------------------------------------- GTest ----------------------------------------------------
 if(SERIALBOX_TESTING)
-    # we will build our own gtest
-    set(BUILD_GTEST "ON" BOOL)
-    set(GTEST_INSTALL_DIR "${CMAKE_BINARY_DIR}/external/gtest/install")
-    
-    # Forward toolchain
-    set(CMAKE_EXTERNAL_ARGS -Wno-dev
-      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
-      -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-      -DCMAKE_INSTALL_PREFIX=${GTEST_INSTALL_DIR}
-    )
-
-    # Build Gtest
-    ExternalProject_Add(
-        gtest_build
-        URL        "${CMAKE_CURRENT_SOURCE_DIR}/external/gtest"
-        PREFIX     "external/gtest"
-        CMAKE_ARGS ${CMAKE_EXTERNAL_ARGS}
-    )
-    message(STATUS "Building Gtest from: ${CMAKE_CURRENT_SOURCE_DIR}/external/gtest")
-
-    set(GTEST_INCLUDE_DIR "${GTEST_INSTALL_DIR}/include")
-    # Probably the way to make a target from a ExternalProject_Add as seens below is not supported,
-    # therefore we need to make a directory here in order to be able to provide it to the target
-    file(MAKE_DIRECTORY ${GTEST_INCLUDE_DIR})
-    set(GTEST_LIBRARIES "${GTEST_INSTALL_DIR}/lib/libgtest.a"
-                        "${GTEST_INSTALL_DIR}/lib/libgmock.a"
-                        "${CMAKE_THREAD_LIBS_INIT}")
-
-    # make a target which can be used to provide the dependency on gtest
-    add_library(GTEST_TARGET INTERFACE IMPORTED)
-    add_dependencies(GTEST_TARGET gtest_build)
-    target_include_directories(GTEST_TARGET INTERFACE ${GTEST_INCLUDE_DIR})
-    target_link_libraries(GTEST_TARGET INTERFACE ${GTEST_LIBRARIES})
+  add_subdirectory(external/googletest)
 
   if(SERIALBOX_ENABLE_C)
     set(SERIALBOX_HAS_C 1)

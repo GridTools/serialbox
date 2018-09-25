@@ -14,7 +14,7 @@ if(SERIALBOX_ENABLE_FORTRAN)
   set(SOURCES_FORTRAN_SERIALIZE m_serialize.f90 m_ser_perturb.f90)
   yoda_add_library( NAME SerialboxFortranSerialize
                     SOURCES ${SOURCES_FORTRAN_SERIALIZE}
-                    DEPENDS SerialboxCoreStatic SerialboxCStatic 
+                    DEPENDS SerialboxStatic SerialboxCStatic 
                     OBJECT
   )
   if(BUILD_SHARED_LIBS)
@@ -32,12 +32,12 @@ if(SERIALBOX_ENABLE_FORTRAN)
 
   yoda_create_library(TARGET SerialboxFortran
                       SOURCES ${SOURCES_FORTRAN}
-                      DEPENDS SerialboxFortranSerializeObjects SerialboxCoreStatic SerialboxCStatic 
+                      DEPENDS SerialboxFortranSerializeObjects SerialboxStatic SerialboxCStatic 
                       PUBLIC_BUILD_INCLUDES ${CMAKE_SOURCE_DIR}/src
                       PUBLIC_INSTALL_INCLUDES include/
-                      VERSION ${SERIALBOX_VERSION_STRING}
+                      VERSION ${Serialbox_VERSION_STRING}
                       TARGET_GROUP SerialboxTargets
-                      TARGET_NAMESPACE sbox::
+                      TARGET_NAMESPACE Serialbox::
   )
   target_link_libraries(SerialboxFortranObjects SerialboxFortranSerializeObjects)
   #TODO: propagate this fix to yoda

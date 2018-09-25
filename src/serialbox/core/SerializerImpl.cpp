@@ -207,19 +207,15 @@ void SerializerImpl::read(const std::string& name, const SavepointImpl& savepoin
     throw Exception("savepoint '%s' does not exist", savepoint.toString());
 
   FieldID fieldID;
-  while (savepointIdx >= 0)
-  {
-      if (savepointVector_->hasField(savepointIdx, name) || !alsoPrevious)
-      {
-          fieldID = savepointVector_->getFieldID(savepointIdx, name);
-          break;
-      }
-      else
-      {
-          // If alsoPrevious is speicifed AND the field was not found,
-          // keep searching backwards
-          --savepointIdx;
-      }
+  while(savepointIdx >= 0) {
+    if(savepointVector_->hasField(savepointIdx, name) || !alsoPrevious) {
+      fieldID = savepointVector_->getFieldID(savepointIdx, name);
+      break;
+    } else {
+      // If alsoPrevious is speicifed AND the field was not found,
+      // keep searching backwards
+      --savepointIdx;
+    }
   }
 
   if(savepointIdx == -1)

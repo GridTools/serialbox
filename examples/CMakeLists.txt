@@ -20,7 +20,7 @@ cmake_minimum_required(VERSION 3.12)
 function(serialbox_add_gridtools_example NAME)
   add_executable(${NAME} ${ARGN})
   target_link_libraries(${NAME} 
-                        SerialboxCoreStatic 
+                        SerialboxStatic 
                         ${Boost_LIBRARIES} 
                         ${SERIALBOX_EXTERNAL_LIBRARIES}
                         ${CMAKE_THREAD_LIBS_INIT})

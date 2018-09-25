@@ -31,14 +31,14 @@ set(BUILD_SHARED_LIBS OFF) # TODO fix in yoda
 yoda_create_library(
    TARGET SerialboxUnittestUtility
    SOURCES ${SOURCES}
-   #TODO the second one should come from DEPENDS SerialboxCore??? but it is exported from a different target...
+   #TODO the second one should come from DEPENDS Serialbox??? but it is exported from a different target...
    PRIVATE_BUILD_INCLUDES  ${CMAKE_SOURCE_DIR}/test ${CMAKE_SOURCE_DIR}/src
    LIBRARIES ${Boost_LIBRARIES}
-   VERSION ${SERIALBOX_VERSION_STRING}
+   VERSION ${Serialbox_VERSION_STRING}
 )
 target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC Boost::boost)
-target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC GTEST_TARGET)
-target_link_libraries(SerialboxUnittestUtilityStatic PUBLIC GTEST_TARGET)
+target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC gtest_main)
+target_link_libraries(SerialboxUnittestUtilityStatic PUBLIC gtest_main)
 target_link_libraries(SerialboxUnittestUtilityStatic PUBLIC Boost::boost)
 set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_TMP}) # TODO fix in yoda
 

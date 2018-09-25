@@ -27,7 +27,7 @@ install(FILES ${CMAKE_SOURCE_DIR}/cmake/SerialboxTooling.cmake DESTINATION cmake
 # Generate and install SerialboxConfigVersion.cmake
 write_basic_package_version_file(
   "${PROJECT_BINARY_DIR}/cmake/SerialboxConfigVersion.cmake"
-  VERSION ${SERIALBOX_VERSION_STRING}
+  VERSION ${Serialbox_VERSION_STRING}
   COMPATIBILITY AnyNewerVersion
 )
 install(FILES "${PROJECT_BINARY_DIR}/cmake/SerialboxConfigVersion.cmake" DESTINATION cmake)

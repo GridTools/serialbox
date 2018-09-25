@@ -82,7 +82,7 @@ include_directories(${SERIALBOX_INCLUDE_DIRS})
 #
 
 add_library(m_ser OBJECT ${PP_OUTPUT}/m_ser.f90)
-target_link_libraries(m_ser sbox::SerialboxFortranStatic)
+target_link_libraries(m_ser Serialbox::SerialboxFortranStatic)
 
 ## Producer
 add_executable(fortran_producer_netcdf ${PP_OUTPUT}/main_producer.f90)

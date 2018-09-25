@@ -23,6 +23,6 @@ set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES}
 serialbox_add_unittest_executable(NAME SerialboxBenchmarkUnittest 
                                   LIBRARIES ${EXTERNAL_LIBRARIES}
                                   SOURCES ${SOURCES} BenchmarkMain.cpp 
-                                  DEPENDS SerialboxCStatic SerialboxCoreStatic
+                                  DEPENDS SerialboxCStatic SerialboxStatic
 )
 
