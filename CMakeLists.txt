@@ -285,17 +285,12 @@ endif()
 
 if( NOT STD_FILESYSTEM_LIB )
   set(REQUIRED_BOOST_COMPONENTS filesystem system)
-
-  if(NOT(${Boost_FOUND}))
-    message(FATAL_ERROR "Boost not found or insufficient version.")
-  endif(NOT(${Boost_FOUND}))
-
-  link_directories(${Boost_LIBRARY_DIRS})
-  set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
 endif()
 
 # If ${REQUIRED_BOOST_COMPONENTS} is empty we still need the headers
 find_package(Boost 1.54 REQUIRED ${REQUIRED_BOOST_COMPONENTS})
+link_directories(${Boost_LIBRARY_DIRS})
+set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
 
 #---------------------------------------- STELLA ---------------------------------------------------
 if(SERIALBOX_TESTING_STELLA)
@@ -389,13 +384,26 @@ configure_file(${SERIALBOX_CXX_CONFIG_FILE_IN} ${SERIALBOX_CXX_CONFIG_FILE})
 install(FILES ${SERIALBOX_CXX_CONFIG_FILE} 
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox/core)
 
+# building for development
+option(SERIALBOX_DEVELOPMENT "If enabled, headers will be installed as symlinks to the src directory, to allow IDEs to jump between files" OFF)
+
 # Install serialbox headers
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox DESTINATION include 
+if(NOT SERIALBOX_DEVELOPMENT)
+  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox DESTINATION include 
         FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
-      
-if(SERIALBOX_ENABLE_C)
-  install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox-c DESTINATION include 
-          FILES_MATCHING PATTERN "*.h")
+
+  if(SERIALBOX_ENABLE_C)
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox-c DESTINATION include 
+            FILES_MATCHING PATTERN "*.h")
+  endif()
+else()
+  # install symlinks for each header from the install location to the src location 
+  file(GLOB_RECURSE header_files RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/src" "src/*.h"  "src/*.hpp")
+  foreach(file ${header_files})
+    get_filename_component(directory ${file} DIRECTORY)
+    install(DIRECTORY DESTINATION include/${directory}) # create folder
+    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/src/${file} ${CMAKE_INSTALL_PREFIX}/include/${file})")
+  endforeach()
 endif()
 
 ## Build Serialbox
