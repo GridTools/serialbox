@@ -119,14 +119,6 @@ public:
   /// meta-information attached)
   bool empty() const noexcept { return metaInfo_->empty(); }
 
-  /// \brief Convert to JSON
-  json::json toJSON() const;
-
-  /// \brief Construct from JSON node
-  ///
-  /// \throw Exception  JSON node is ill-formed
-  void fromJSON(const json::json& jsonNode);
-
   /// \brief Convert savepoint to string
   std::string toString() const;
 
