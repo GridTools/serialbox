@@ -1,4 +1,5 @@
-//===-- serialbox/core/UnittestMetainfoMapImpl.cpp --------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestMetainfoMapImpl.cpp --------------------------------------*- C++
+//-*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -13,6 +14,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/core/MetainfoMapImpl.h"
+#include "serialbox/core/MetainfoMapImplSerializer.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 
@@ -39,12 +41,12 @@ TEST(MetainfoMapImplTest, Construction) {
   EXPECT_EQ(map["key1"].as<std::string>(), "value2");
   EXPECT_EQ(map.at("key1").as<std::string>(), "value2");
   EXPECT_THROW(map.at("key2").as<std::string>(), Exception);
-  
+
   // Get vector of keys
   EXPECT_EQ(map.keys(), std::vector<std::string>{"key1"});
-  
+
   // Get vector of types
-  EXPECT_EQ(map.types(), std::vector<TypeID>{TypeID::String});  
+  EXPECT_EQ(map.types(), std::vector<TypeID>{TypeID::String});
 
   const MetainfoMapImpl constMap;
   EXPECT_THROW(constMap.at("key2").as<std::string>(), Exception);
@@ -143,7 +145,11 @@ TEST(MetainfoMapImplTest, Conversion) {
 
 TEST(MetainfoMapImplTest, toJSON) {
   MetainfoMapImpl map;
-  EXPECT_TRUE(map.toJSON().empty());
+
+  {
+    json::json j = map;
+    EXPECT_TRUE(j.empty());
+  }
 
   ASSERT_TRUE(map.insert("bool", bool(true)));
   ASSERT_TRUE(map.insert("int32", int(32)));
@@ -159,7 +165,7 @@ TEST(MetainfoMapImplTest, toJSON) {
   ASSERT_TRUE(map.insert("ArrayOfFloat64", (Array<double>{1.0, 2.0, 3.0})));
   ASSERT_TRUE(map.insert("ArrayOfString", (Array<std::string>{"one", "two", "three"})));
 
-  json::json j(map.toJSON());
+  json::json j = map;
 
   // bool
   ASSERT_TRUE(j.count("bool"));
@@ -238,20 +244,20 @@ TEST(MetainfoMapImplTest, fromJSON) {
   {
     MetainfoMapImpl map;
     json::json j;
-    EXPECT_NO_THROW(map.fromJSON(j));
+    EXPECT_NO_THROW(map = j);
     EXPECT_TRUE(map.empty());
   }
 
 #define CHECK_FROM_JSON(type, type_id, value1, value2)                                             \
   {                                                                                                \
-    MetainfoMapImpl map;                                                                               \
+    MetainfoMapImpl map;                                                                           \
     json::json j;                                                                                  \
     j["key1"] = {{"type_id", (int)type_id}, {"value", type(value1)}};                              \
     j["key2"] = {{"type_id", (int)type_id}, {"value", type(value2)}};                              \
     j["array"] = {{"type_id", (int)type_id | (int)TypeID::Array},                                  \
                   {"value", Array<type>{value1, value2}}};                                         \
     std::string typeStr(TypeUtil::toString(type_id));                                              \
-    ASSERT_NO_THROW(map.fromJSON(j)) << typeStr;                                                   \
+    ASSERT_NO_THROW(map = j) << typeStr;                                                           \
     EXPECT_EQ(map.size(), 3) << typeStr;                                                           \
     ASSERT_TRUE(map.hasKey("key1")) << typeStr;                                                    \
     ASSERT_TRUE(map.hasKey("key2")) << typeStr;                                                    \
@@ -276,7 +282,7 @@ TEST(MetainfoMapImplTest, fromJSON) {
     MetainfoMapImpl map;
     json::json ill_formed;
     ill_formed["key"] = {{"type_id", (int)TypeID::Boolean}};
-    EXPECT_THROW(map.fromJSON(ill_formed), Exception);
+    EXPECT_THROW(map = ill_formed, Exception);
   }
 
   // Missing type id
@@ -284,7 +290,7 @@ TEST(MetainfoMapImplTest, fromJSON) {
     MetainfoMapImpl map;
     json::json ill_formed;
     ill_formed["key"] = {{"value", (int)5}};
-    EXPECT_THROW(map.fromJSON(ill_formed), Exception);
+    EXPECT_THROW(map = ill_formed, Exception);
   }
 
   // TypeId / value mismatch I
@@ -292,7 +298,7 @@ TEST(MetainfoMapImplTest, fromJSON) {
     MetainfoMapImpl map;
     json::json ill_formed;
     ill_formed["key"] = {{"type_id", (int)TypeID::Boolean}, {"value", double(5)}};
-    EXPECT_THROW(map.fromJSON(ill_formed), Exception);
+    EXPECT_THROW(map = ill_formed, Exception);
   }
 
   // TypeId / value mismatch II
@@ -302,7 +308,7 @@ TEST(MetainfoMapImplTest, fromJSON) {
     ill_formed["key1"] = {{"type_id", (int)TypeID::Boolean}, {"value", true}};
     ill_formed["key2"] = {{"type_id", (int)TypeID::Int32}, {"value", int(3)}};
     ill_formed["key3"] = {{"type_id", (int)TypeID::Boolean}, {"value", double(5)}}; // Failure
-    EXPECT_THROW(map.fromJSON(ill_formed), Exception);
+    EXPECT_THROW(map = ill_formed, Exception);
   }
 }
 
@@ -312,10 +318,10 @@ TEST(MetainfoMapImplTest, toString) {
   MetainfoMapImpl map;
   map.insert("key1", std::string("value2"));
   map.insert("key2", double(5.1));
-  map.insert("array", std::vector<int>{1,2,3});
-  
+  map.insert("array", std::vector<int>{1, 2, 3});
+
   ss << map;
   EXPECT_NE(ss.str().find("key1"), std::string::npos);
   EXPECT_NE(ss.str().find("key2"), std::string::npos);
-  EXPECT_NE(ss.str().find("array"), std::string::npos);  
+  EXPECT_NE(ss.str().find("array"), std::string::npos);
 }

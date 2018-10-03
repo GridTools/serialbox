@@ -14,7 +14,9 @@
 
 #include "serialbox/core/SerializerImpl.h"
 #include "serialbox/core/Compiler.h"
+#include "serialbox/core/FieldMapSerializer.h" // TODO must not appear in public interface
 #include "serialbox/core/Filesystem.h"
+#include "serialbox/core/MetainfoMapImplSerializer.h" // TODO must not appear in public interface
 #include "serialbox/core/STLExtras.h"
 #include "serialbox/core/Type.h"
 #include "serialbox/core/Unreachable.h"
@@ -327,7 +329,7 @@ void SerializerImpl::constructMetaDataFromJson() {
 
     // Construct globalMetainfo
     if(jsonNode.count("global_meta_info"))
-      globalMetainfo_->fromJSON(jsonNode["global_meta_info"]);
+      *globalMetainfo_ = jsonNode.at("global_meta_info");
 
     // Construct Savepoints
     if(jsonNode.count("savepoint_vector"))
@@ -335,7 +337,7 @@ void SerializerImpl::constructMetaDataFromJson() {
 
     // Construct FieldMap
     if(jsonNode.count("field_map"))
-      fieldMap_->fromJSON(jsonNode["field_map"]);
+      *fieldMap_ = jsonNode["field_map"]; // TODO probably fieldMap_ shouldn't be a shared_ptr
 
   } catch(Exception& e) {
     throw Exception("error while parsing %s: %s", metaDataFile_, e.what());
@@ -377,13 +379,13 @@ json::json SerializerImpl::toJSON() const {
   jsonNode["prefix"] = prefix_;
 
   // Serialize globalMetainfo
-  jsonNode["global_meta_info"] = globalMetainfo_->toJSON();
+  jsonNode["global_meta_info"] = *globalMetainfo_;
 
   // Serialize SavepointVector
   jsonNode["savepoint_vector"] = savepointVector_->toJSON();
 
   // Serialize FieldMap
-  jsonNode["field_map"] = fieldMap_->toJSON();
+  jsonNode["field_map"] = *fieldMap_;
 
   return jsonNode;
 }

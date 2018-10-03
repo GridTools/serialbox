@@ -16,7 +16,6 @@
 #define SERIALBOX_CORE_FIELDMAP_H
 
 #include "serialbox/core/FieldMetainfoImpl.h"
-#include "serialbox/core/Json.h"
 #include <unordered_map>
 
 namespace serialbox {
@@ -52,10 +51,7 @@ public:
   /// \brief Default constructor (empty table)
   FieldMap() : map_(){};
 
-  /// \brief Construct from json
-  explicit FieldMap(const json::json jsonNode) { fromJSON(jsonNode); }
-
-  /// \brief Copy constructor [deleted]
+  /// \brief Copy constructor
   FieldMap(const FieldMap&) = default;
 
   /// \brief Move constructor
@@ -214,14 +210,6 @@ public:
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const FieldMap& s);
-
-  /// \brief Convert to JSON
-  json::json toJSON() const;
-
-  /// \brief Construct from JSON node
-  ///
-  /// \throw Exception  JSON node is ill-formed
-  void fromJSON(const json::json& jsonNode);
 
 private:
   map_type map_;

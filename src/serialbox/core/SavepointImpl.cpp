@@ -13,6 +13,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/core/SavepointImpl.h"
+#include "MetainfoMapImplSerializer.h" // TODO remove after refactoring
 #include "serialbox/core/Logging.h"
 #include <sstream>
 
@@ -27,7 +28,7 @@ SavepointImpl& SavepointImpl::operator=(const SavepointImpl& other) {
 json::json SavepointImpl::toJSON() const {
   json::json jsonNode;
   jsonNode["name"] = name_;
-  jsonNode["meta_info"] = metaInfo_->toJSON();
+  jsonNode["meta_info"] = *metaInfo_;
   return jsonNode;
 }
 
@@ -41,12 +42,10 @@ void SavepointImpl::fromJSON(const json::json& jsonNode) {
   if(jsonNode.is_null() || jsonNode.empty())
     throw Exception("node is empty");
 
-  if(!jsonNode.count("name"))
-    throw Exception("no node 'name'");
-  name_ = jsonNode["name"];
+  name_ = jsonNode.at("name");
 
   if(jsonNode.count("meta_info"))
-    metaInfo_->fromJSON(jsonNode["meta_info"]);
+    *metaInfo_ = jsonNode["meta_info"];
 }
 
 std::string SavepointImpl::toString() const {

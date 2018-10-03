@@ -13,14 +13,20 @@ cmake_minimum_required(VERSION 3.12)
 set(SOURCES 
   FieldMap.cpp
   FieldMap.h
+  FieldMapSerializer.h
+  FieldMapSerializer.cpp
   FieldMetainfoImpl.cpp
   FieldMetainfoImpl.h
+  FieldMetainfoImplSerializer.cpp
+  FieldMetainfoImplSerializer.h
   FieldID.cpp
   FieldID.h
   Logging.cpp
   Logging.h
   MetainfoMapImpl.cpp
   MetainfoMapImpl.h
+  MetainfoMapImplSerializer.cpp
+  MetainfoMapImplSerializer.h
   MetainfoValueImpl.cpp
   MetainfoValueImpl.h
   SavepointImpl.cpp

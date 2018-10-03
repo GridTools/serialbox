@@ -1,4 +1,5 @@
-//===-- serialbox/core/UnittestFieldMetainfoImpl.cpp ------------------------------------*- C++ -*-===//
+//===-- serialbox/core/UnittestFieldMetainfoImpl.cpp ------------------------------------*- C++
+//-*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -13,12 +14,15 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/core/FieldMetainfoImpl.h"
+#include "serialbox/core/FieldMetainfoImplSerializer.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 
+using nlohmann::basic_json;
+
 using namespace serialbox;
 
-template<class MetainfoMapImplType1, class MetainfoMapImplType2>
+template <class MetainfoMapImplType1, class MetainfoMapImplType2>
 static bool mapEqual(const MetainfoMapImplType1& map1, const MetainfoMapImplType2& map2) {
   if(map1.size() != map2.size())
     return false;
@@ -83,11 +87,11 @@ TEST(FieldMetainfoImplTest, Construction) {
     EXPECT_EQ(f.type(), f_copy.type());
     EXPECT_TRUE(std::equal(f.dims().begin(), f.dims().end(), f_copy.dims().begin()));
     EXPECT_TRUE(mapEqual(f.metaInfo(), f_copy.metaInfo()));
-    
+
     // Check that we actually performed a deep copy
     f.metaInfo().insert("newKey", "str");
     EXPECT_FALSE(mapEqual(f.metaInfo(), f_copy.metaInfo()));
-    
+
     FieldMetainfoImpl f_move(std::move(f));
     EXPECT_EQ(f_move.type(), f_copy.type());
     EXPECT_TRUE(std::equal(f_move.dims().begin(), f_move.dims().end(), f_copy.dims().begin()));
@@ -159,7 +163,7 @@ TEST(FieldMetainfoImplTest, toJSON) {
       {"key1", MetainfoValueImpl(std::string("str"))}, {"key2", MetainfoValueImpl(double(5))}});
 
   FieldMetainfoImpl f(type, dims, metaInfo);
-  json::json j = f.toJSON();
+  json::json j = f;
 
   // Dims
   ASSERT_TRUE(j.count("dims"));
@@ -233,7 +237,7 @@ TEST(FieldMetainfoImplTest, fromJSON) {
   {
     json::json j;
     FieldMetainfoImpl f;
-    ASSERT_THROW(f.fromJSON(j);, Exception);
+    ASSERT_THROW(f = j;, Exception);
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -257,7 +261,7 @@ TEST(FieldMetainfoImplTest, fromJSON) {
     )"_json;
 
     FieldMetainfoImpl f;
-    ASSERT_THROW(f.fromJSON(j);, Exception);
+    ASSERT_THROW(f = j;, Exception);
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -284,7 +288,7 @@ TEST(FieldMetainfoImplTest, fromJSON) {
     )"_json;
 
     FieldMetainfoImpl f;
-    ASSERT_THROW(f.fromJSON(j);, Exception);
+    ASSERT_THROW(f = j;, Exception);
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -302,7 +306,8 @@ TEST(FieldMetainfoImplTest, fromJSON) {
     )"_json;
 
     FieldMetainfoImpl f;
-    ASSERT_THROW(f.fromJSON(j);, Exception);
+
+    ASSERT_ANY_THROW(f = j);
   }
 }
 

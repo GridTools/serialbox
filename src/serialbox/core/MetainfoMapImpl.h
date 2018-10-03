@@ -61,9 +61,6 @@ public:
   /// \brief Default constructor (empty map)
   MetainfoMapImpl() : map_(){};
 
-  /// \brief Construct from json
-  explicit MetainfoMapImpl(const json::json& jsonNode) { fromJSON(jsonNode); }
-
   /// \brief Construct from initalizer-list
   explicit MetainfoMapImpl(std::initializer_list<value_type> list) : map_(list){};
 
