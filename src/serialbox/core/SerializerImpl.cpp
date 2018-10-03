@@ -14,10 +14,11 @@
 
 #include "serialbox/core/SerializerImpl.h"
 #include "serialbox/core/Compiler.h"
-#include "serialbox/core/FieldMapSerializer.h" // TODO must not appear in public interface
+#include "serialbox/core/FieldMapSerializer.h" // TODO remove after refactoring
 #include "serialbox/core/Filesystem.h"
-#include "serialbox/core/MetainfoMapImplSerializer.h" // TODO must not appear in public interface
+#include "serialbox/core/MetainfoMapImplSerializer.h" // TODO remove after refactoring
 #include "serialbox/core/STLExtras.h"
+#include "serialbox/core/SavepointVectorSerializer.h" // TODO remove after refactoring
 #include "serialbox/core/Type.h"
 #include "serialbox/core/Unreachable.h"
 #include "serialbox/core/Version.h"
@@ -333,7 +334,7 @@ void SerializerImpl::constructMetaDataFromJson() {
 
     // Construct Savepoints
     if(jsonNode.count("savepoint_vector"))
-      savepointVector_->fromJSON(jsonNode["savepoint_vector"]);
+      *savepointVector_ = jsonNode["savepoint_vector"];
 
     // Construct FieldMap
     if(jsonNode.count("field_map"))
@@ -382,7 +383,7 @@ json::json SerializerImpl::toJSON() const {
   jsonNode["global_meta_info"] = *globalMetainfo_;
 
   // Serialize SavepointVector
-  jsonNode["savepoint_vector"] = savepointVector_->toJSON();
+  jsonNode["savepoint_vector"] = *savepointVector_;
 
   // Serialize FieldMap
   jsonNode["field_map"] = *fieldMap_;

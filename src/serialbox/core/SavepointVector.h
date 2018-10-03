@@ -60,9 +60,6 @@ public:
   /// \brief Move constructor
   SavepointVector(SavepointVector&&) = default;
 
-  /// \brief Construct from JSON
-  explicit SavepointVector(const json::json& jsonNode) { fromJSON(jsonNode); }
-
   /// \brief Copy assignment
   SavepointVector& operator=(const SavepointVector&) = default;
 
@@ -155,13 +152,11 @@ public:
   const savepoint_vector_type& savepoints() const noexcept { return savepoints_; }
   savepoint_vector_type& savepoints() noexcept { return savepoints_; }
 
-  /// \brief Convert to JSON
-  json::json toJSON() const;
-
-  /// \brief Construct from JSON node
-  ///
-  /// \throw Exception  JSON node is ill-formed
-  void fromJSON(const json::json& jsonNode);
+  /// \brief Access the fields
+  const fields_per_savepoint_vector_type& fields() const noexcept { return fields_; }
+  fields_per_savepoint_vector_type& fields() noexcept {
+    return fields_;
+  } // TODO try to remove the non-const
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const SavepointVector& s);

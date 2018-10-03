@@ -35,6 +35,8 @@ set(SOURCES
   SavepointImplSerializer.h
   SavepointVector.cpp
   SavepointVector.h
+  SavepointVectorSerializer.cpp
+  SavepointVectorSerializer.h
   SerializerImpl.cpp
   SerializerImpl.h
   StorageView.cpp

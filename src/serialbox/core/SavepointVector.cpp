@@ -15,7 +15,7 @@
 
 #include "serialbox/core/SavepointVector.h"
 #include "serialbox/core/Logging.h"
-#include "serialbox/core/SavepointImplSerializer.h" // TODO remove after refactoring
+#include "serialbox/core/SavepointVectorSerializer.h"
 
 namespace serialbox {
 
@@ -100,66 +100,8 @@ void SavepointVector::clear() noexcept {
   fields_.clear();
 }
 
-json::json SavepointVector::toJSON() const {
-  json::json jsonNode;
-  assert(savepoints_.size() == fields_.size());
-
-  for(std::size_t i = 0; i < savepoints_.size(); ++i)
-    jsonNode["savepoints"].push_back(*savepoints_[i]);
-
-  for(std::size_t i = 0; i < fields_.size(); ++i) {
-    const std::string& savepoint = savepoints_[i]->name();
-    json::json fieldNode;
-
-    if(fields_[i].empty())
-      fieldNode[savepoint] = nullptr;
-
-    for(auto it = fields_[i].begin(), end = fields_[i].end(); it != end; ++it)
-      fieldNode[savepoint][it->first] = it->second;
-
-    jsonNode["fields_per_savepoint"].push_back(fieldNode);
-  }
-
-  return jsonNode;
-}
-
-void SavepointVector::fromJSON(const json::json& jsonNode) {
-  index_.clear();
-  savepoints_.clear();
-  fields_.clear();
-
-  if(jsonNode.is_null() || jsonNode.empty())
-    return;
-
-  // Add savepoints
-  if(jsonNode.count("savepoints")) {
-    for(auto it = jsonNode["savepoints"].begin(), end = jsonNode["savepoints"].end(); it != end;
-        ++it) {
-      SavepointImpl sp(*it);
-      insert(sp);
-    }
-  }
-
-  // Eeach savepoint needs an entry in the fields array (it can be null though)
-  if(jsonNode.count("fields_per_savepoint") &&
-     jsonNode["fields_per_savepoint"].size() != fields_.size())
-    throw Exception("inconsistent number of 'fields_per_savepoint' and 'savepoints'");
-
-  for(std::size_t i = 0; i < fields_.size(); ++i) {
-    const json::json& fieldNode = jsonNode["fields_per_savepoint"][i][savepoints_[i]->name()];
-
-    // Savepoint has no fields
-    if(fieldNode.is_null() || fieldNode.empty())
-      break;
-
-    // Add fields
-    for(auto it = fieldNode.begin(), end = fieldNode.end(); it != end; ++it)
-      fields_[i].insert({it.key(), static_cast<unsigned int>(it.value())});
-  }
-}
-
 std::ostream& operator<<(std::ostream& stream, const SavepointVector& s) {
-  stream << "SavepointVector = " << s.toJSON().dump(4);
+  stream << "SavepointVector = " << json::json{s}.dump(4);
   return stream;
 }
 

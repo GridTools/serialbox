@@ -193,14 +193,6 @@ public:
   /// \brief Test for inequality
   bool operator!=(const MetainfoMapImpl& right) const noexcept { return (!(*this == right)); }
 
-  /// \brief Convert to JSON
-  json::json toJSON() const;
-
-  /// \brief Construct from JSON node
-  ///
-  /// \throw Exception  JSON node is ill-formed
-  void fromJSON(const json::json& jsonNode);
-
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const MetainfoMapImpl& s);
 
