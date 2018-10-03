@@ -25,29 +25,6 @@ SavepointImpl& SavepointImpl::operator=(const SavepointImpl& other) {
   return (*this);
 }
 
-json::json SavepointImpl::toJSON() const {
-  json::json jsonNode;
-  jsonNode["name"] = name_;
-  jsonNode["meta_info"] = *metaInfo_;
-  return jsonNode;
-}
-
-void SavepointImpl::fromJSON(const json::json& jsonNode) {
-  if(!metaInfo_)
-    metaInfo_ = std::make_shared<MetainfoMapImpl>();
-
-  name_.clear();
-  metaInfo_->clear();
-
-  if(jsonNode.is_null() || jsonNode.empty())
-    throw Exception("node is empty");
-
-  name_ = jsonNode.at("name");
-
-  if(jsonNode.count("meta_info"))
-    *metaInfo_ = jsonNode["meta_info"];
-}
-
 std::string SavepointImpl::toString() const {
   std::stringstream ss;
   ss << *this;

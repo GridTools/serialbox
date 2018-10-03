@@ -15,6 +15,7 @@
 
 #include "serialbox/core/SavepointVector.h"
 #include "serialbox/core/Logging.h"
+#include "serialbox/core/SavepointImplSerializer.h" // TODO remove after refactoring
 
 namespace serialbox {
 
@@ -104,7 +105,7 @@ json::json SavepointVector::toJSON() const {
   assert(savepoints_.size() == fields_.size());
 
   for(std::size_t i = 0; i < savepoints_.size(); ++i)
-    jsonNode["savepoints"].push_back(savepoints_[i]->toJSON());
+    jsonNode["savepoints"].push_back(*savepoints_[i]);
 
   for(std::size_t i = 0; i < fields_.size(); ++i) {
     const std::string& savepoint = savepoints_[i]->name();

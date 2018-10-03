@@ -55,8 +55,8 @@ public:
   /// \brief Move constructor
   SavepointImpl(SavepointImpl&&) = default;
 
-  /// \brief Construct from JSON
-  explicit SavepointImpl(const json::json& jsonNode) { fromJSON(jsonNode); }
+  /// \brief Default constructor
+  SavepointImpl() = default;
 
   /// \brief Copy assignment
   SavepointImpl& operator=(const SavepointImpl& other);
@@ -107,6 +107,9 @@ public:
 
   /// \brief Access name
   const std::string& name() const noexcept { return name_; }
+
+  /// \brief Set name
+  void setName(std::string const& name) noexcept { name_ = name; };
 
   /// \brief Access meta-info
   MetainfoMapImpl& metaInfo() noexcept { return *metaInfo_; }

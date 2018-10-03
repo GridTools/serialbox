@@ -13,6 +13,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/core/SavepointImpl.h"
+#include "serialbox/core/SavepointImplSerializer.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 #include <unordered_map>
@@ -248,7 +249,7 @@ TEST(SavepointImplTest, toJSON) {
       {"key1", MetainfoValueImpl(std::string("str"))}, {"key2", MetainfoValueImpl(double(5))}});
 
   SavepointImpl s(name, metaInfo);
-  json::json j = s.toJSON();
+  json::json j = s;
 
   // Type
   ASSERT_TRUE(j.count("name"));

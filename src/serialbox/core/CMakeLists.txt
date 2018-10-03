@@ -31,6 +31,8 @@ set(SOURCES
   MetainfoValueImpl.h
   SavepointImpl.cpp
   SavepointImpl.h
+  SavepointImplSerializer.cpp
+  SavepointImplSerializer.h
   SavepointVector.cpp
   SavepointVector.h
   SerializerImpl.cpp
