@@ -16,7 +16,6 @@
 #define SERIALBOX_CORE_SAVEPOINTIMPL_H
 
 #include "serialbox/core/Exception.h"
-#include "serialbox/core/Json.h"
 #include "serialbox/core/MetainfoMapImpl.h"
 #include <functional>
 #include <iosfwd>
@@ -37,15 +36,13 @@ namespace serialbox {
 /// instead.
 class SavepointImpl {
 public:
-  /// \brief Construct an empty savepoint (wihtout `metaInfo` i.e this->empty() == true)
-  template <class StringType,
-            class = typename std::enable_if<!std::is_same<StringType, json::json>::value>::type>
-  explicit SavepointImpl(const StringType& name)
+  /// \brief Construct an empty savepoint (without `metaInfo` i.e this->empty() == true)
+  explicit SavepointImpl(const std::string& name)
       : name_(name), metaInfo_(std::make_shared<MetainfoMapImpl>()) {}
 
   /// \brief Construct savepoint with `name` and `metaInfo`
-  template <class StringType, class MetainfoType>
-  SavepointImpl(StringType&& name, MetainfoType&& metaInfo)
+  template <class MetainfoType>
+  SavepointImpl(const std::string& name, MetainfoType&& metaInfo)
       : name_(name),
         metaInfo_(std::make_shared<MetainfoMapImpl>(std::forward<MetainfoType>(metaInfo))) {}
 

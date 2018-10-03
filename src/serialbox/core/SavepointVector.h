@@ -17,7 +17,6 @@
 #define SERIALBOX_CORE_SAVEPOINTVECTOR_H
 
 #include "serialbox/core/FieldID.h"
-#include "serialbox/core/Json.h"
 #include "serialbox/core/SavepointImpl.h"
 #include <iosfwd>
 #include <unordered_map>

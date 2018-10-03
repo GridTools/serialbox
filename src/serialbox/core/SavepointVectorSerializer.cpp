@@ -42,7 +42,7 @@ void from_json(json::json const& jsonNode, SavepointVector& v) {
   if(jsonNode.count("savepoints")) {
     for(auto it = jsonNode["savepoints"].begin(), end = jsonNode["savepoints"].end(); it != end;
         ++it) {
-      SavepointImpl sp(*it);
+      SavepointImpl sp = *it;
       v.insert(sp);
     }
   }

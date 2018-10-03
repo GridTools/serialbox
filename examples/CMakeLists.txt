@@ -23,10 +23,10 @@ function(serialbox_add_gridtools_example NAME)
                         SerialboxStatic 
                         ${Boost_LIBRARIES} 
                         ${SERIALBOX_EXTERNAL_LIBRARIES}
-                        ${CMAKE_THREAD_LIBS_INIT})
+                        ${CMAKE_THREAD_LIBS_INIT}
+                        GridTools_TARGET)
   target_compile_definitions(${NAME} PUBLIC BOOST_NO_CXX11_DECLTYPE)
   install(TARGETS ${NAME} DESTINATION bin)
-  
   if(SERIALBOX_TESTING)
     serialbox_add_test(TARGET ${NAME} EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/${NAME})
   endif(SERIALBOX_TESTING)

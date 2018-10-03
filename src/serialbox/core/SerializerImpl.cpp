@@ -14,11 +14,11 @@
 
 #include "serialbox/core/SerializerImpl.h"
 #include "serialbox/core/Compiler.h"
-#include "serialbox/core/FieldMapSerializer.h" // TODO remove after refactoring
+#include "serialbox/core/FieldMapSerializer.h"
 #include "serialbox/core/Filesystem.h"
-#include "serialbox/core/MetainfoMapImplSerializer.h" // TODO remove after refactoring
+#include "serialbox/core/MetainfoMapImplSerializer.h"
 #include "serialbox/core/STLExtras.h"
-#include "serialbox/core/SavepointVectorSerializer.h" // TODO remove after refactoring
+#include "serialbox/core/SavepointVectorSerializer.h"
 #include "serialbox/core/Type.h"
 #include "serialbox/core/Unreachable.h"
 #include "serialbox/core/Version.h"
@@ -36,6 +36,26 @@
 #endif
 
 namespace serialbox {
+
+void to_json(json::json& jsonNode, SerializerImpl const& ser) {
+  LOG(info) << "Converting Serializer MetaData to JSON";
+
+  // Tag version
+  jsonNode["serialbox_version"] =
+      100 * SERIALBOX_VERSION_MAJOR + 10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
+
+  // Serialize prefix
+  jsonNode["prefix"] = ser.prefix();
+
+  // Serialize globalMetainfo
+  jsonNode["global_meta_info"] = ser.globalMetainfo();
+
+  // Serialize SavepointVector
+  jsonNode["savepoint_vector"] = ser.savepointVector();
+
+  // Serialize FieldMap
+  jsonNode["field_map"] = ser.fieldMap();
+}
 
 int SerializerImpl::enabled_ = 0;
 
@@ -367,34 +387,10 @@ std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s) {
   return (stream << s.toString());
 }
 
-json::json SerializerImpl::toJSON() const {
-  LOG(info) << "Converting Serializer MetaData to JSON";
-
-  json::json jsonNode;
-
-  // Tag version
-  jsonNode["serialbox_version"] =
-      100 * SERIALBOX_VERSION_MAJOR + 10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
-
-  // Serialize prefix
-  jsonNode["prefix"] = prefix_;
-
-  // Serialize globalMetainfo
-  jsonNode["global_meta_info"] = *globalMetainfo_;
-
-  // Serialize SavepointVector
-  jsonNode["savepoint_vector"] = *savepointVector_;
-
-  // Serialize FieldMap
-  jsonNode["field_map"] = *fieldMap_;
-
-  return jsonNode;
-}
-
 void SerializerImpl::updateMetaData() {
   LOG(info) << "Update MetaData of Serializer";
 
-  json::json jsonNode = toJSON();
+  json::json jsonNode = *this;
 
   // Write metaData to disk (just overwrite the file, we assume that there is never more than one
   // Serializer per data set and thus our in-memory copy is always the up-to-date one)

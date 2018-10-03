@@ -12,9 +12,10 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/core/Json.h"
+#include "serialbox/core/SerializerImpl.h"
 #include "utility/SerializerTestBase.h"
 #include "utility/Storage.h"
-#include "serialbox/core/SerializerImpl.h"
 #include <gtest/gtest.h>
 
 using namespace serialbox;
@@ -65,8 +66,7 @@ TEST_F(SerializerImplUtilityTest, Construction) {
 
   {
     // MetaData-prefix.json does not exist -> Exception
-    filesystem::remove((directory->path() / "dir-is-created-from-write") /
-                          "MetaData-Field.json");
+    filesystem::remove((directory->path() / "dir-is-created-from-write") / "MetaData-Field.json");
     ASSERT_THROW(SerializerImpl(OpenModeKind::Read,
                                 (directory->path() / "dir-is-created-from-write").string(), "Field",
                                 "Binary"),

@@ -17,6 +17,7 @@
 #define SERIALBOX_CORE_FIELDMAPMETAINFOIMPLSERIALIZER_H
 
 #include "serialbox/core/FieldMetainfoImpl.h"
+#include "serialbox/core/Json.h"
 #include <memory>
 
 namespace serialbox {

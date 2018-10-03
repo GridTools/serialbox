@@ -36,6 +36,12 @@ yoda_create_library(
    LIBRARIES ${Boost_LIBRARIES}
    VERSION ${Serialbox_VERSION_STRING}
 )
+
+if(GRIDTOOLS_FOUND)
+    target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC GridTools_TARGET)
+    target_link_libraries(SerialboxUnittestUtilityStatic PUBLIC GridTools_TARGET)
+endif()
+
 target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC Boost::boost)
 target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC gtest_main)
 target_link_libraries(SerialboxUnittestUtilityStatic PUBLIC gtest_main)

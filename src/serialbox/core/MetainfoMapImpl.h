@@ -16,7 +16,6 @@
 #define SERIALBOX_CORE_METAINFOMAPIMPL_H
 
 #include "serialbox/core/Exception.h"
-#include "serialbox/core/Json.h"
 #include "serialbox/core/MetainfoValueImpl.h"
 #include "serialbox/core/Type.h"
 #include <iosfwd>

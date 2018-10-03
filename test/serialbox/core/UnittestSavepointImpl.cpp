@@ -293,7 +293,7 @@ TEST(SavepointImplTest, fromJSON) {
      }
     )"_json;
 
-    SavepointImpl s(j);
+    SavepointImpl s = j;
     EXPECT_EQ(s.name(), name);
 
     ASSERT_TRUE(s.metaInfo().hasKey("key1"));
@@ -313,7 +313,7 @@ TEST(SavepointImplTest, fromJSON) {
      }
     )"_json;
 
-    SavepointImpl s(j);
+    SavepointImpl s = j;
     EXPECT_EQ(s.name(), name);
     EXPECT_TRUE(s.metaInfo().empty());
   }
@@ -323,7 +323,8 @@ TEST(SavepointImplTest, fromJSON) {
   // -----------------------------------------------------------------------------------------------
   {
     auto j = R"({})"_json;
-    ASSERT_THROW((SavepointImpl(j)), Exception);
+    SavepointImpl s;
+    ASSERT_THROW((s = j), Exception);
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -344,7 +345,7 @@ TEST(SavepointImplTest, fromJSON) {
          }
      }
     )"_json;
-    ASSERT_ANY_THROW(SavepointImpl{j});
+    ASSERT_ANY_THROW(SavepointImpl s = j);
   }
 }
 

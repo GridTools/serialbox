@@ -16,7 +16,7 @@
 #ifndef SERIALBOX_CORE_JSON_H
 #define SERIALBOX_CORE_JSON_H
 
-#include "serialbox/core/external/json/json.hpp"
+#include "../../external/json/json.hpp"
 
 /// \namespace json
 /// \brief Namespace of the JSON library
