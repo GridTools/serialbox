@@ -1,4 +1,4 @@
-//===-- serialbox/core/SavepointVector.cpp ------------------------------------------*- C++ -*-===//
+//===-- serialbox/core/SavepointVectorSerializer.cpp --------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //

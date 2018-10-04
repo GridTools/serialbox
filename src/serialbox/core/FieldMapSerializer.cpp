@@ -1,4 +1,4 @@
-//===-- serialbox/core/FieldMap.cpp -------------------------------------------------*- C++ -*-===//
+//===-- serialbox/core/FieldMapSerializer.cpp ----------------------------------------*- C+ -*-===//
 //
 //                                    S E R I A L B O X
 //
