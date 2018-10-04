@@ -153,9 +153,8 @@ public:
 
   /// \brief Access the fields
   const fields_per_savepoint_vector_type& fields() const noexcept { return fields_; }
-  fields_per_savepoint_vector_type& fields() noexcept {
-    return fields_;
-  } // TODO try to remove the non-const
+
+  void insertField(std::size_t index, fields_per_savepoint_type const& f) { fields_[index] = f; };
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const SavepointVector& s);

@@ -59,9 +59,11 @@ void from_json(json::json const& jsonNode, SavepointVector& v) {
     if(fieldNode.is_null() || fieldNode.empty())
       break;
 
+    SavepointVector::fields_per_savepoint_type fields;
     // Add fields
     for(auto it = fieldNode.begin(), end = fieldNode.end(); it != end; ++it)
-      v.fields()[i].insert({it.key(), static_cast<unsigned int>(it.value())});
+      fields.insert({it.key(), static_cast<unsigned int>(it.value())});
+    v.insertField(i, fields);
   }
 }
 

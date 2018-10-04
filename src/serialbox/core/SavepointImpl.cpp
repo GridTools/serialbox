@@ -13,7 +13,6 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/core/SavepointImpl.h"
-#include "MetainfoMapImplSerializer.h" // TODO remove after refactoring
 #include "serialbox/core/Logging.h"
 #include <sstream>
 

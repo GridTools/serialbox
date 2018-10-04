@@ -43,6 +43,7 @@ function(serialbox_add_unittest_executable)
     set(opt_arg ${opt_arg} INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
   endif()
   yoda_add_executable(NAME ${ARG_NAME} SOURCES ${sources} DEPENDS SerialboxUnittestUtilityStatic SerialboxStatic ${depends} ${opt_arg})
+  target_link_libraries(${ARG_NAME} ${CMAKE_THREAD_LIBS_INIT})
                                     
   if(DEFINED SERIALBOX_VERBOSE_WARNINGS)
     set_target_properties(${ARG_NAME} PROPERTIES COMPILE_FLAGS -Wall)
