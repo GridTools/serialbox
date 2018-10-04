@@ -186,6 +186,9 @@ include(IDESupport)
 
 #---------------------------------------- GTest ----------------------------------------------------
 if(SERIALBOX_TESTING)
+  # Since CMake has a problem with pthread when passed to nvcc.
+  # (https://gitlab.kitware.com/cmake/cmake/issues/18008)
+  set(gtest_disable_pthreads ON CACHE BOOL "" FORCE)
   add_subdirectory(external/googletest)
 
   if(SERIALBOX_ENABLE_C)

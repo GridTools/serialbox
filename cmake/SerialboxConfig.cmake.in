@@ -96,10 +96,12 @@ endif(SERIALBOX_HAS_FORTRAN)
 #====--------------------------------------------------------------------------------------------===
 if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
 
+  include(CMakeFindDependencyMacro)
+  
   #
   # Pthreads
   #
-  find_package(Threads REQUIRED QUIET)
+  find_dependency(Threads)
 
   #
   # Boost (Serialbox always uses the shared Boost libraries)

@@ -72,7 +72,9 @@ set(SOURCES
   frontend/stella/DataFieldInfo.h
 )
 
-set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${STD_FILESYSTEM_LIB} ${CMAKE_THREAD_LIBS_INIT})
+# we use "-lpthread" instead of ${CMAKE_THREAD_LIBS_INIT} on purpose, because ${CMAKE_THREAD_LIBS_INIT}
+# contains "-pthread" instead of "-lpthread" which is a problem if it propagates to nvcc via the target
+set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${STD_FILESYSTEM_LIB} -lpthread)
 yoda_create_library(TARGET Serialbox
                       LIBRARIES ${EXTERNAL_LIBRARIES}
                       SOURCES ${SOURCES}
