@@ -56,6 +56,9 @@ class Config(object):
         # Tolerance used for field comparison
         self.TOL = 1e-12
 
+        # Tolerance used per field for field comparison
+        self.TOLS = dict()
+
         # Tolerance used for field comparison
         self.SAVEPOINT_REGEX = ""
 
@@ -67,7 +70,23 @@ class Config(object):
         self.FIELD_INFO_ONLY = False
 
 
+    def tol(self, field = None):
+        """ Get tolerance """
+
+        return self.TOLS.get(field, self.TOL)
+
+
 g_config = Config()
+
+
+def read_tolerances(filename):
+    """ Read tolerance dictionary from JSON """
+    import json
+
+    with open(filename, 'r') as f:
+        tols = json.load(f)
+
+    return tols
 
 
 def get_config():
@@ -227,7 +246,7 @@ def compare_fields(serializers, field, savepoint, dim_bounds):
     num_nans = 0
     max_abs_error = 0
     max_rel_error = 0
-    tol = get_config().TOL
+    tol = get_config().tol(field)
 
     it_1 = np.nditer(field_view_1, flags=['multi_index'])
     it_2 = np.nditer(field_view_2, flags=['multi_index'])
@@ -239,7 +258,7 @@ def compare_fields(serializers, field, savepoint, dim_bounds):
 
         # Check for NaN values
         num_nans += value_1_isnan + value_2_isnan
-        if value_1_isnan or value_2_isnan:
+        if value_1_isnan != value_2_isnan:
             errors += [
                 {"index": it_1.multi_index, "value_1": value_1, "value_2": value_2,
                  "error": float('nan')}]
@@ -271,15 +290,15 @@ def compare_fields(serializers, field, savepoint, dim_bounds):
     if num_errors_displayed > 0:
         print("  Failed values (displayed {} of {}):".format(num_errors_displayed, num_errors))
         for idx in range(0, num_errors_displayed):
-            print("    {}: value_1 = {:.10f}, value_2 = {:.10f}, error = {:.10f}".format(
+            print("    {}: value_1 = {:.10f}, value_2 = {:.10f}, error = {:.10e}".format(
                 errors[idx]["index"], float(errors[idx]["value_1"]), float(errors[idx]["value_2"]),
                 float(errors[idx]["error"])))
 
     print("  Number of errors: {}".format(num_errors))
     print("  Number of NaN: {}".format(num_nans))
     print("  Percentage of errors: {:.2f} %".format(100 * num_errors / field_view_1.size))
-    print("  Maximum absolute error: {:.10f}".format(max_abs_error))
-    print("  Maximum relative error: {:.10f}".format(max_rel_error))
+    print("  Maximum absolute error: {:.10e}".format(max_abs_error))
+    print("  Maximum relative error: {:.10e}".format(max_rel_error))
     return False
 
 
@@ -419,6 +438,9 @@ def main(arguments=None):
                         default=get_config().TOL,
                         help="set the tolerance used for comparison to 'TOL' (default : {})".format(
                             get_config().TOL))
+    parser.add_argument("-T", "--tolerance-json", dest="tolerance_file", metavar="TOLERANCE_FILE",
+                        default=None,
+                        help="set the JSON file for per field tolerance used for comparison")
     parser.add_argument("-q", "--info-only", dest="field_info_only", action="store_true",
                         help="only compare field meta-info (no data comparison) "
                              "(default: {})".format(get_config().FIELD_INFO_ONLY))
@@ -437,6 +459,8 @@ def main(arguments=None):
     get_config().MAX_ERRORS = args.max_errors
     get_config().SAVEPOINT_REGEX = args.savepoint_regex
     get_config().TOL = float(args.tolerance)
+    if args.tolerance_file is not None:
+        get_config().TOLS = read_tolerances(args.tolerance_file)
 
     path_1, path_2 = (args.FILE_1[0], args.FILE_2[0])
 

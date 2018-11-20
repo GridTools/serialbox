@@ -799,8 +799,6 @@ CONTAINS
       @assertEqual(109.47_8, metadouble)
       CALL fs_destroy_serializer(serializer)
 
-      CALL fs_destroy_serializer(serializer)
-    
     END SUBROUTINE testFieldMetainfo    
 
 @Test

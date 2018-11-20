@@ -21,9 +21,12 @@ addons:
       - g++-5
       - gcc-5
       - gfortran-5
-      - g++-6
-      - gcc-6
-      - gfortran-6
+      - g++-7
+      - gcc-7
+      - gfortran-7
+      - g++-8
+      - gcc-8
+      - gfortran-8
       - clang-3.8
       - clang++-3.8
 
@@ -62,15 +65,25 @@ jobs:
       compiler: gcc
       env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-5 C_COMPILER=gcc-5 FC_COMPILER=gfortran-5
 
-    # Linux GCC 6.3 (Release) [Linux]
+    # Linux GCC 7 (Release) [Linux]
     - <<: *test_stage      
       compiler: gcc
-      env: CONFIG=Release CXX_COMPILER=g++-6 C_COMPILER=gcc-6 FC_COMPILER=gfortran-6
+      env: CONFIG=Release CXX_COMPILER=g++-7 C_COMPILER=gcc-7 FC_COMPILER=gfortran-7
     
-    # Linux GCC 6.3 (RelWithDebInfo) [Linux]
+    # Linux GCC 7 (RelWithDebInfo) [Linux]
     - <<: *test_stage      
       compiler: gcc
-      env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-6 C_COMPILER=gcc-6 FC_COMPILER=gfortran-6
+      env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-7 C_COMPILER=gcc-7 FC_COMPILER=gfortran-7
+
+    # Linux GCC 8 (Release) [Linux]
+    - <<: *test_stage      
+      compiler: gcc
+      env: CONFIG=Release CXX_COMPILER=g++-8 C_COMPILER=gcc-8 FC_COMPILER=gfortran-8
+    
+    # Linux GCC 8 (RelWithDebInfo) [Linux]
+    - <<: *test_stage      
+      compiler: gcc
+      env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-8 C_COMPILER=gcc-8 FC_COMPILER=gfortran-8
 
     # Clang 3.8 (Release) [Linux]
     - <<: *test_stage      

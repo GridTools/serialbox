@@ -336,12 +336,13 @@ public:
   /// \see
   ///   SerializerImpl::read
   template <class StorageType>
-  void read(const std::string& name, const savepoint& sp, StorageType& storage) {
+  void read(const std::string& name, const savepoint& sp, StorageType& storage,
+            const bool also_previous = false) {
     StorageView storageView(
         internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::data_t>::value,
         std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
 
-    serializerImpl_->read(name, *sp.impl(), storageView);
+    serializerImpl_->read(name, *sp.impl(), storageView, also_previous);
   }
 
   /// \brief Deserialize sliced field `name` (given as `storageView` and `slice`) at `savepoint`
@@ -358,12 +359,13 @@ public:
   ///   serializer::read
   ///
   template <class StorageType>
-  void read_slice(const std::string& name, const savepoint& sp, StorageType& storage, Slice slice) {
+  void read_slice(const std::string& name, const savepoint& sp, StorageType& storage, Slice slice,
+                  const bool also_previous = false) {
     StorageView storageView(
         internal::get_origin_ptr(storage, 0), ToTypeID<typename StorageType::data_t>::value,
         std::move(internal::get_dims(storage)), std::move(internal::get_strides(storage)));
     storageView.setSlice(slice);
-    serializerImpl_->read(name, *sp.impl(), storageView);
+    serializerImpl_->read(name, *sp.impl(), storageView, also_previous);
   }
 
   /// \brief Deserialize field `name` given as `origin_ptr` and `strides` at `savepoint` to disk
@@ -379,10 +381,10 @@ public:
   ///   SerializerImpl::write
   template <class T>
   void read(const std::string& name, const savepoint& sp, T* origin_ptr,
-            const std::vector<int>& strides) {
+            const std::vector<int>& strides, const bool also_previous = false) {
     const auto& dims = get_field_meta_info(name).dims();
     StorageView storageView(origin_ptr, ToTypeID<T>::value, dims, strides);
-    serializerImpl_->read(name, *sp.impl(), storageView);
+    serializerImpl_->read(name, *sp.impl(), storageView, also_previous);
   }
 
   /// \brief Directly read a gridools field, given by `storage`, from `file`

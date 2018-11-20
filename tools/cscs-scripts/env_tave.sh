@@ -99,7 +99,7 @@ export FC=$(which $FC_COMPILER)
 export Boost_NO_SYSTEM_PATHS=true
 export Boost_NO_BOOST_CMAKE=true
 
-export BOOST_ROOT=/project/c14/install/daint/boost/boost_1_64_0
+export BOOST_ROOT=/project/c14/install/daint/boost/boost_1_67_0
 export BOOST_INCLUDE={BOOST_ROOT}/include/
 export LD_LIBRARY_PATH=${BOOST_ROOT}/lib:$LD_LIBRARY_PATH
 

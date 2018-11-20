@@ -15,8 +15,7 @@ USE m_serialize, ONLY: &
   fs_add_savepoint_metainfo, &
   fs_read_field, &
   fs_create_savepoint, &
-  fs_write_field, &
-  fs_read_and_perturb_field
+  fs_write_field
 USE utils_ppser, ONLY:  &
   ppser_set_mode, &
   ppser_initialize, &
@@ -48,8 +47,8 @@ USE utils_ppser, ONLY:  &
       CASE(1)
         call fs_read_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a)
       CASE(2)
-        call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint, &
-                                       'ser_a', a, ppser_zrperturb)
+        call fs_read_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a, &
+                                                               ppser_zrperturb)
     END SELECT
 
   END SUBROUTINE serialize
@@ -69,8 +68,8 @@ USE utils_ppser, ONLY:  &
       CASE(1)
         call fs_read_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a)
       CASE(2)
-        call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint, &
-                                       'ser_a', a, ppser_zrperturb)
+        call fs_read_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a, &
+                                                               ppser_zrperturb)
     END SELECT
     call ppser_set_mode(0)
 
@@ -80,8 +79,8 @@ USE utils_ppser, ONLY:  &
       CASE(1)
         call fs_read_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a)
       CASE(2)
-        call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint, &
-                                       'ser_a', a, ppser_zrperturb)
+        call fs_read_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a, &
+                                                               ppser_zrperturb)
     END SELECT
 
   END SUBROUTINE deserialize
@@ -104,8 +103,8 @@ USE utils_ppser, ONLY:  &
       CASE(1)
         call fs_read_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a)
       CASE(2)
-        call fs_read_and_perturb_field(ppser_serializer_ref, ppser_savepoint, &
-                                       'ser_a', a, ppser_zrperturb)
+        call fs_read_field(ppser_serializer_ref, ppser_savepoint, 'ser_a', a, &
+                                                               ppser_zrperturb)
     END SELECT
 
   END SUBROUTINE deserialize_with_perturb
