@@ -64,8 +64,8 @@ to_lower_and_trim()
 #------------------------------ Identify CSCS host -----------------------------
 if [ "$(hostname | grep greina)" != "" ] ; then
     MYHOST="greina"
-elif [ "$(hostname | grep keschcn-0002)" != "" ]; then
-    MYHOST="kesch-tds"
+elif [ "$(hostname | grep keschcn-0012)" != "" ]; then
+    MYHOST="kesch-test"
 elif [ "$(hostname | grep kesch)" != "" ] ; then
     MYHOST="kesch"
 elif [ "$(hostname | grep daint)" != "" ] ; then
