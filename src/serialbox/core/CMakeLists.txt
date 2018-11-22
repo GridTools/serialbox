@@ -78,11 +78,11 @@ endif()
 
 add_library(SerialboxStatic $<TARGET_OBJECTS:SerialboxObjects>)
 set_target_properties(SerialboxStatic PROPERTIES VERSION ${Serialbox_VERSION_STRING})
-target_link_libraries(SerialboxStatic SerialboxObjects)
+target_link_libraries(SerialboxStatic PUBLIC SerialboxObjects)
 if(BUILD_SHARED_LIBS)
     add_library(SerialboxShared $<TARGET_OBJECTS:SerialboxObjects>)
     set_target_properties(SerialboxShared PROPERTIES VERSION ${Serialbox_VERSION_STRING})
-    target_link_libraries(SerialboxShared SerialboxObjects)
+    target_link_libraries(SerialboxShared PUBLIC SerialboxObjects)
 endif()
 
 if(SERIALBOX_USE_NETCDF)
