@@ -127,6 +127,9 @@ if [ "${ARG_FC_COMPILER}" = "cray" ]; then
 elif [ "${ARG_FC_COMPILER}" = "pgi" ]; then
     printf "%-20s: %s\n" "Fortran compiler" "pgi"
     FC_COMPILER="pgfortran"
+elif [ "${ARG_FC_COMPILER}" = "pgi18.10" ]; then
+    printf "%-20s: %s\n" "Fortran compiler" "pgi"
+    FC_COMPILER="pgfortran18.10"
 elif [ "${ARG_FC_COMPILER}" = "intel" ]; then
     printf "%-20s: %s\n" "Fortran compiler" "intel"
     FC_COMPILER="ifort"
