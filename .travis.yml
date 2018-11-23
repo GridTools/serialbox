@@ -47,10 +47,10 @@ jobs:
       env: CXX_COMPILER=g++-5 C_COMPILER=gcc-5 FC_COMPILER=gfortran-5
       script: bash ${SCRIPT_DIR}/driver-install.sh -i ${CACHE_DIR} -b cmake,boost,pfunit -c boost:filesystem,chrono,system,log
 
-    - <<: *prepare_cache_stage
-      compiler: clang
-      os: linux
-      env: CXX_COMPILER=clang++-5.0 C_COMPILER=clang-5.0
+      #    - <<: *prepare_cache_stage
+      #compiler: clang
+      #os: linux
+      #env: CXX_COMPILER=clang++-5.0 C_COMPILER=clang-5.0
 
     # Linux GCC 5.4 (Release) [Linux]
     - &test_stage
@@ -86,14 +86,14 @@ jobs:
       env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-8 C_COMPILER=gcc-8 FC_COMPILER=gfortran-8
 
     # Clang [Linux]
-    - <<: *test_stage      
-      compiler: clang
-      env: CONFIG=Release CXX_COMPILER=clang++ C_COMPILER=clang
+    #- <<: *test_stage      
+    #  compiler: clang
+    #  env: CONFIG=Release CXX_COMPILER=clang++ C_COMPILER=clang
 
     # Clang (RelWithDebInfo) [Linux]
-    - <<: *test_stage      
-      compiler: clang
-      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-5.0 C_COMPILER=clang-5.0
+    #- <<: *test_stage      
+    #  compiler: clang
+    #  env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-5.0 C_COMPILER=clang-5.0
 
     # # XCode 7.3 (Release) [OSX]
     # - <<: *test_stage  
