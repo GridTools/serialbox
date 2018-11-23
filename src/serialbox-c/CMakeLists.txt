@@ -62,7 +62,7 @@ if(SERIALBOX_ENABLE_C)
         $<INSTALL_INTERFACE:include>
     )
     
-  add_library(SerialboxCStatic $<TARGET_OBJECTS:SerialboxCObjects>)
+  add_library(SerialboxCStatic STATIC $<TARGET_OBJECTS:SerialboxCObjects>)
   set_target_properties(SerialboxCStatic PROPERTIES VERSION ${Serialbox_VERSION_STRING})
   target_link_libraries(SerialboxCStatic PUBLIC SerialboxCObjects)
   target_link_libraries(SerialboxCStatic PUBLIC SerialboxStatic)

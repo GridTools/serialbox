@@ -24,22 +24,13 @@ set(SOURCES
   UnittestEnvironment.cpp
 )
 
-# TODO doesn't make sense to build this as shared library, however yoda_create_library doesn't allow me to disable it
-set(BUILD_SHARED_LIBS_TMP ${BUILD_SHARED_LIBS}) # TODO fix in yoda
-set(BUILD_SHARED_LIBS OFF) # TODO fix in yoda
-
-yoda_create_library(
-   TARGET SerialboxUnittestUtility
-   SOURCES ${SOURCES}
-   #TODO the second one should come from DEPENDS Serialbox??? but it is exported from a different target...
-   PRIVATE_BUILD_INCLUDES  ${CMAKE_SOURCE_DIR}/test ${CMAKE_SOURCE_DIR}/src
-   LIBRARIES ${Boost_LIBRARIES}
-   VERSION ${Serialbox_VERSION_STRING}
-)
+add_library(SerialboxUnittestUtilityObjects OBJECT ${SOURCES})
+target_include_directories(SerialboxUnittestUtilityObjects PUBLIC ${CMAKE_SOURCE_DIR}/test)
 target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC Boost::boost)
 target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC gtest_main)
 target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC SerialboxFilesytemTarget)
-target_link_libraries(SerialboxUnittestUtilityStatic PUBLIC gtest_main)
-target_link_libraries(SerialboxUnittestUtilityStatic PUBLIC Boost::boost)
-set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_TMP}) # TODO fix in yoda
+target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC SerialboxStatic)
 
+add_library(SerialboxUnittestUtilityStatic STATIC $<TARGET_OBJECTS:SerialboxUnittestUtilityObjects>)
+set_target_properties(SerialboxUnittestUtilityStatic PROPERTIES VERSION ${Serialbox_VERSION_STRING})
+target_link_libraries(SerialboxUnittestUtilityStatic PUBLIC SerialboxUnittestUtilityObjects)

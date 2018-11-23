@@ -25,7 +25,6 @@
 //
 #define CXX11_ENABLED
 #define STRUCTURED_GRIDS
-#include <gridtools/gridtools.hpp>
 #include <gridtools/stencil-composition/stencil-composition.hpp>
 #include <gridtools/storage/storage-facility.hpp>
 
@@ -45,8 +44,8 @@ static constexpr int halo_size = 1;
 //
 // Typedefs of the gridtools library
 //
-using storage_traits_t = gridtools::storage_traits<gridtools::platform::x86>;
-using backend_t = gridtools::backend<gridtools::platform::x86, gridtools::grid_type::structured,
+using storage_traits_t = gridtools::storage_traits<gridtools::target::x86>;
+using backend_t = gridtools::backend<gridtools::target::x86, gridtools::grid_type::structured,
                                      gridtools::strategy::naive>;
 using halo_t = gridtools::halo<halo_size, halo_size, 0>;
 using storage_info_t =

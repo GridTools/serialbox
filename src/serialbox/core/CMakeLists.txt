@@ -75,7 +75,7 @@ if(GRIDTOOLS_FOUND)
     target_link_libraries(SerialboxObjects PUBLIC GridTools_TARGET)
 endif()
 
-add_library(SerialboxStatic $<TARGET_OBJECTS:SerialboxObjects>)
+add_library(SerialboxStatic STATIC $<TARGET_OBJECTS:SerialboxObjects>)
 set_target_properties(SerialboxStatic PROPERTIES VERSION ${Serialbox_VERSION_STRING})
 target_link_libraries(SerialboxStatic PUBLIC SerialboxObjects)
 if(BUILD_SHARED_LIBS)

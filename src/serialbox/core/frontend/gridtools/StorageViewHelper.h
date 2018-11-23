@@ -46,7 +46,7 @@ std::vector<int> get_strides(const StorageType& storage) {
  */
 template <typename StorageType>
 std::vector<int> get_dims(const StorageType& storage) noexcept {
-  return serialbox::gridtools::internal::to_vector(storage.dims());
+  return serialbox::gridtools::internal::to_vector(storage.total_lengths());
 }
 
 template <typename StorageType>

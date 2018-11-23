@@ -18,7 +18,7 @@
 
 # Look for GridTools headers
 find_path(GRIDTOOLS_INCLUDE_DIRS
-    NAMES gridtools/gridtools.hpp
+    NAMES gridtools/storage/storage-facility.hpp
     HINTS ${GRIDTOOLS_ROOT}/include
           $ENV{GRIDTOOLS_ROOT}/include
 )

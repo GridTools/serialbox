@@ -25,9 +25,6 @@ include(ExternalProject)
 include(CMakeParseArguments)
 include(CheckCXXCompilerFlag)
 
-#---------------------------------------- Yoda setup -----------------------------------------------
-include(InitializeYoda)
-
 #---------------------------------------- Configure ------------------------------------------------
 
 if(UNIX)
@@ -353,8 +350,6 @@ endif(SERIALBOX_TESTING_STELLA)
 #---------------------------------------- ClangTools -----------------------------------------------
 
 #find_package(clang-format EXACT 6.0)
-
-#yoda_add_target_clang_format(DIRECTORIES ${CMAKE_SOURCE_DIR}/src EXTENSION ".h;.cpp")
 
 #if(${CLANG_TIDY_FOUND})
 #  # Runs clang-tidy and attempts to fix any warning automatically

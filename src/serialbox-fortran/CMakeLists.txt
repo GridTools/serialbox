@@ -38,7 +38,7 @@ if(SERIALBOX_ENABLE_FORTRAN)
     set_property(TARGET SerialboxFortranObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
   endif()
 
-  add_library(SerialboxFortranStatic $<TARGET_OBJECTS:SerialboxFortranSerializeObjects> $<TARGET_OBJECTS:SerialboxFortranObjects>)
+  add_library(SerialboxFortranStatic STATIC $<TARGET_OBJECTS:SerialboxFortranSerializeObjects> $<TARGET_OBJECTS:SerialboxFortranObjects>)
   target_link_libraries(SerialboxFortranStatic PUBLIC SerialboxFortranObjects)
   target_link_libraries(SerialboxFortranStatic PUBLIC SerialboxFortranSerializeObjects)
   target_link_libraries(SerialboxFortranStatic PUBLIC SerialboxCStatic)

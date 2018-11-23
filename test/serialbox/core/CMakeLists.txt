@@ -50,14 +50,9 @@ set(SOURCES
   frontend/stella/UnittestDataFieldInfo.cpp
   frontend/stella/UnittestUtility.cpp  
 )
-
-set(EXTERNAL_LIBRARIES 
-                       ${Boost_LIBRARIES}
-                       ${STELLA_LIBRARIES})
   
 serialbox_add_unittest_executable(NAME SerialboxCppUnittest 
-                                  LIBRARIES ${EXTERNAL_LIBRARIES}
                                   SOURCES ${SOURCES} UnittestMain.cpp
-                                  INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/test
+                                  LIBRARIES SerialboxStatic
 )
 
