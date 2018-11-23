@@ -61,6 +61,7 @@ if(SERIALBOX_ENABLE_C)
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
         $<INSTALL_INTERFACE:include>
     )
+  target_link_libraries(SerialboxCObjects PUBLIC Boost::boost)
     
   add_library(SerialboxCStatic STATIC $<TARGET_OBJECTS:SerialboxCObjects>)
   set_target_properties(SerialboxCStatic PROPERTIES VERSION ${Serialbox_VERSION_STRING})

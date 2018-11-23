@@ -9,8 +9,6 @@
 
 cmake_minimum_required(VERSION 3.12)
 
-serialbox_add_unittest_executable(
-      NAME example-01-laplacian-c 
-      SOURCES example-01-laplacian.c
-      LIBRARIES SerialboxCStatic)
+add_executable(example-01-laplacian-c example-01-laplacian.c)
+target_link_libraries(example-01-laplacian-c SerialboxCStatic)
 install(TARGETS example-01-laplacian-c DESTINATION bin)
