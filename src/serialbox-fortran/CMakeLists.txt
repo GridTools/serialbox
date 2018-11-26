@@ -18,9 +18,6 @@ if(SERIALBOX_ENABLE_FORTRAN)
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
         $<INSTALL_INTERFACE:include>
     )
-  if(BUILD_SHARED_LIBS)
-    set_property(TARGET SerialboxFortranSerializeObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
-  endif()
   
   set(SOURCES_FORTRAN utils_ppser.f90 )
   if (SERIALBOX_ENABLE_FTG)
@@ -34,9 +31,6 @@ if(SERIALBOX_ENABLE_FORTRAN)
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # for .mod files
         $<INSTALL_INTERFACE:include>
     )
-  if(BUILD_SHARED_LIBS)
-    set_property(TARGET SerialboxFortranObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
-  endif()
 
   add_library(SerialboxFortranStatic STATIC $<TARGET_OBJECTS:SerialboxFortranSerializeObjects> $<TARGET_OBJECTS:SerialboxFortranObjects>)
   target_link_libraries(SerialboxFortranStatic PUBLIC SerialboxFortranObjects)
@@ -49,20 +43,6 @@ if(SERIALBOX_ENABLE_FORTRAN)
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     )
-
-  if(BUILD_SHARED_LIBS)
-    add_library(SerialboxFortranShared $<TARGET_OBJECTS:SerialboxFortranSerializeObjects> $<TARGET_OBJECTS:SerialboxFortranObjects>)
-    target_link_libraries(SerialboxFortranShared PUBLIC SerialboxFortranObjects)
-    target_link_libraries(SerialboxFortranShared PUBLIC SerialboxFortranSerializeObjects)
-    target_link_libraries(SerialboxFortranShared PUBLIC SerialboxCShared)
-    set_target_properties(SerialboxFortranShared PROPERTIES VERSION ${Serialbox_VERSION_STRING})
-    
-    install(TARGETS SerialboxFortranShared
-      EXPORT SerialboxTargets
-      LIBRARY DESTINATION lib
-      ARCHIVE DESTINATION lib
-      )
-  endif()
 
   # Install mod files
   foreach(source ${SOURCES_FORTRAN} ${SOURCES_FORTRAN_SERIALIZE})
