@@ -7,7 +7,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-add_library(simple_m_ser m_ser.F90)
+add_library(simple_m_ser STATIC m_ser.F90)
 target_link_libraries( simple_m_ser
                         PUBLIC 
                         SerialboxFortranStatic 
