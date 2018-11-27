@@ -24,7 +24,7 @@ if(SERIALBOX_ENABLE_C)
   endif()
     
   set(SERIALBOX_C_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/src/serialbox-c/Config.h.cmake)
-  set(SERIALBOX_C_CONFIG_FILE ${CMAKE_BINARY_DIR}/src/serialbox-c/Config.h)
+  set(SERIALBOX_C_CONFIG_FILE ${PROJECT_SOURCE_DIR}/src/serialbox-c/Config.h)
   set(SERIALBOX_C_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
   configure_file(${SERIALBOX_C_CONFIG_FILE_IN} ${SERIALBOX_C_CONFIG_FILE})
   install(FILES ${SERIALBOX_C_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox-c)
@@ -55,21 +55,41 @@ if(SERIALBOX_ENABLE_C)
 
   set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})
 
-  yoda_create_library(
-                        TARGET SerialboxC
-                        DEPENDS SerialboxStatic 
-                        SOURCES ${SOURCES}
-                        PUBLIC_BUILD_INCLUDES ${CMAKE_SOURCE_DIR}/src/ ${CMAKE_BINARY_DIR}/src
-                        PUBLIC_INSTALL_INCLUDES include/
-                        VERSION ${Serialbox_VERSION_STRING}
-                        TARGET_GROUP SerialboxTargets
-                        TARGET_NAMESPACE Serialbox::
-  )
-  target_link_libraries(SerialboxCObjects SerialboxObjects)
-  #TODO: propagate this fix to yoda
-  #(note that this is compiling with -fPic even for static libs which can have performance implication)
+  add_library(SerialboxCObjects OBJECT ${SOURCES})
+  target_include_directories(SerialboxCObjects
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+        $<INSTALL_INTERFACE:include>
+    )
+  target_link_libraries(SerialboxCObjects PUBLIC Boost::boost)
+    
+  add_library(SerialboxCStatic STATIC $<TARGET_OBJECTS:SerialboxCObjects>)
+  set_target_properties(SerialboxCStatic PROPERTIES VERSION ${Serialbox_VERSION_STRING})
+  target_link_libraries(SerialboxCStatic PUBLIC SerialboxCObjects)
+  target_link_libraries(SerialboxCStatic PUBLIC SerialboxStatic)
+  if(BUILD_SHARED_LIBS)
+    add_library(SerialboxCShared $<TARGET_OBJECTS:SerialboxCObjects>)
+    set_target_properties(SerialboxCShared PROPERTIES VERSION ${Serialbox_VERSION_STRING})
+    target_link_libraries(SerialboxCShared PUBLIC SerialboxCObjects)
+    target_link_libraries(SerialboxCShared PUBLIC SerialboxShared)
+  endif()
+  
   if(BUILD_SHARED_LIBS)
     set_property(TARGET SerialboxCObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
+  endif()
+  
+  install(TARGETS SerialboxCStatic SerialboxCObjects
+    EXPORT SerialboxTargets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    )
+  
+  if(BUILD_SHARED_LIBS)
+    install(TARGETS SerialboxCShared
+        EXPORT SerialboxTargets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        )
   endif()
 endif()
 

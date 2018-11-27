@@ -19,16 +19,14 @@ cmake_minimum_required(VERSION 3.12)
 ##                                    target (SerialboxUnittestUtility will be added).
 ##    SOURCES:STRING=<>             - List of source files
 ##    DEPENDS:STRING=<>             - Dependency on other targets
-##    INCLUDE_DIRECTORIES:STRING=<> - include directories
 function(serialbox_add_unittest_executable)                 
   set(one_value_args NAME)
-  set(multi_value_args LIBRARIES SOURCES DEPENDS INCLUDE_DIRECTORIES)
+  set(multi_value_args LIBRARIES SOURCES DEPENDS)
   cmake_parse_arguments(ARG "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
   set(libraries ${ARG_LIBRARIES} SerialboxUnittestUtility)
   set(sources ${ARG_SOURCES})
   set(depends ${ARG_DEPENDS})
-  set(include_dirs ${ARG_INCLUDE_DIRECTORIES})
 
   if(ARG_UNPARSED_ARGUMENTS)
     message(FATAL_ERROR 
@@ -39,11 +37,8 @@ function(serialbox_add_unittest_executable)
   if(ARG_LIBRARIES)
     set(opt_arg ${opt_arg} LIBRARIES ${ARG_LIBRARIES})
   endif()
-  if(ARG_INCLUDE_DIRECTORIES)
-    set(opt_arg ${opt_arg} INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
-  endif()
-  yoda_add_executable(NAME ${ARG_NAME} SOURCES ${sources} DEPENDS SerialboxUnittestUtilityStatic SerialboxStatic ${depends} ${opt_arg})
-  target_link_libraries(${ARG_NAME} ${CMAKE_THREAD_LIBS_INIT})
+  add_executable(${ARG_NAME} ${sources})
+  target_link_libraries(${ARG_NAME} SerialboxUnittestUtilityStatic ${depends} ${ARG_LIBRARIES})
                                     
   if(DEFINED SERIALBOX_VERBOSE_WARNINGS)
     set_target_properties(${ARG_NAME} PROPERTIES COMPILE_FLAGS -Wall)

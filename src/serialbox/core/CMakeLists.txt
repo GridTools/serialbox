@@ -7,7 +7,6 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-include(yodaCreateLibrary)
 cmake_minimum_required(VERSION 3.12)
 
 set(SOURCES 
@@ -72,31 +71,50 @@ set(SOURCES
   frontend/stella/DataFieldInfo.h
 )
 
+add_library(SerialboxObjects OBJECT ${SOURCES})
+target_include_directories(SerialboxObjects
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+        $<INSTALL_INTERFACE:include>
+    )
+target_link_libraries(SerialboxObjects PUBLIC Boost::boost)
+target_link_libraries(SerialboxObjects PUBLIC SerialboxFilesytemTarget)
 # we use "-lpthread" instead of ${CMAKE_THREAD_LIBS_INIT} on purpose, because ${CMAKE_THREAD_LIBS_INIT}
 # contains "-pthread" instead of "-lpthread" which is a problem if it propagates to nvcc via the target
-set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${STD_FILESYSTEM_LIB} -lpthread)
-yoda_create_library(TARGET Serialbox
-                      LIBRARIES ${EXTERNAL_LIBRARIES}
-                      SOURCES ${SOURCES}
-                      PUBLIC_BUILD_INCLUDES ${CMAKE_SOURCE_DIR}/src
-                      PUBLIC_INSTALL_INCLUDES include/
-                      VERSION ${Serialbox_VERSION_STRING}
-                      TARGET_GROUP SerialboxTargets
-                      TARGET_NAMESPACE Serialbox::
-)
-target_link_libraries(SerialboxObjects PUBLIC Boost::boost)
+target_link_libraries(SerialboxObjects PUBLIC pthread)
 
-if(SERIALBOX_USE_NETCDF)
-  target_link_libraries(SerialboxStatic PRIVATE NETCDF_TARGET)
-  if(BUILD_SHARED_LIBS)
-    target_link_libraries(SerialboxShared PUBLIC NETCDF_TARGET)
-  endif()
-  #TODO try to make private once we protect our headers
-  target_include_directories(SerialboxObjects PUBLIC SYSTEM ${NETCDF_INCLUDES})
+add_library(SerialboxStatic STATIC $<TARGET_OBJECTS:SerialboxObjects>)
+set_target_properties(SerialboxStatic PROPERTIES VERSION ${Serialbox_VERSION_STRING})
+target_link_libraries(SerialboxStatic PUBLIC SerialboxObjects)
+if(BUILD_SHARED_LIBS)
+    add_library(SerialboxShared $<TARGET_OBJECTS:SerialboxObjects>)
+    set_target_properties(SerialboxShared PROPERTIES VERSION ${Serialbox_VERSION_STRING})
+    target_link_libraries(SerialboxShared PUBLIC SerialboxObjects)
 endif()
 
-#TODO: propagate this fix to yoda
-#(note that this is compiling with -fPic even for static libs which can have performance implication)
+if(SERIALBOX_USE_NETCDF)
+    target_link_libraries(SerialboxStatic PRIVATE NETCDF_TARGET)
+    if(BUILD_SHARED_LIBS)
+        target_link_libraries(SerialboxShared PUBLIC NETCDF_TARGET)
+    endif()
+    #TODO try to make private once we protect our headers
+    target_include_directories(SerialboxObjects PUBLIC SYSTEM ${NETCDF_INCLUDES})
+endif()
+
 if(BUILD_SHARED_LIBS)
-  set_property(TARGET SerialboxObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
+    set_property(TARGET SerialboxObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
+endif()
+
+install(TARGETS SerialboxStatic SerialboxObjects
+    EXPORT SerialboxTargets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    )
+
+if(BUILD_SHARED_LIBS)
+    install(TARGETS SerialboxShared
+        EXPORT SerialboxTargets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        )
 endif()

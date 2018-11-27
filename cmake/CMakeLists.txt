@@ -13,6 +13,12 @@ include(CMakePackageConfigHelpers)
 
 set(CMAKE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/cmake)
 
+install(EXPORT SerialboxTargets
+    FILE SerialboxTargets.cmake
+    NAMESPACE Serialbox::
+    DESTINATION ${CMAKE_INSTALL_DIR}
+)
+
 ## Generate and install SerialboxConfig.cmake
 configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/SerialboxConfig.cmake.in
     "${PROJECT_BINARY_DIR}/cmake/SerialboxConfig.cmake"

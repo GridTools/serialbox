@@ -9,10 +9,6 @@
 
 cmake_minimum_required(VERSION 3.12)
 
-yoda_add_unittest(
-      NAME example-01-laplacian-c 
-      SOURCES example-01-laplacian.c
-      LIBRARIES ${CMAKE_THREAD_LIBS_INIT}
-      DEPENDS SerialboxCStatic
-      INSTALL_DESTINATION bin)
-
+add_executable(example-01-laplacian-c example-01-laplacian.c)
+target_link_libraries(example-01-laplacian-c SerialboxCStatic)
+install(TARGETS example-01-laplacian-c DESTINATION bin)

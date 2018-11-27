@@ -25,9 +25,6 @@ include(ExternalProject)
 include(CMakeParseArguments)
 include(CheckCXXCompilerFlag)
 
-#---------------------------------------- Yoda setup -----------------------------------------------
-include(InitializeYoda)
-
 #---------------------------------------- Configure ------------------------------------------------
 
 if(UNIX)
@@ -262,35 +259,45 @@ endif(SERIALBOX_TESTING_GRIDTOOLS)
 
 #---------------------------------------- std::experimental::filesystem ----------------------------
 if(SERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM)
+    unset(STD_FILESYSTEM_LIB_CHECK) #
     find_library( STD_FILESYSTEM_LIB_CHECK NAMES stdc++fs PATHS
         ${CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES}
         )
     mark_as_advanced(STD_FILESYSTEM_LIB_CHECK)
     if( STD_FILESYSTEM_LIB_CHECK )
       message(STATUS "Using std::experimental::filesystem (no dependency on compiled boost libs)")
-      set(STD_FILESYSTEM_LIB "-lstdc++fs")
-      set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} 
-                                       ${STD_FILESYSTEM_LIB})
-      add_definitions(-DSERIALBOX_USE_EXPERIMENTAL_FILESYSTEM)
+      add_library(SerialboxFilesytemTarget INTERFACE)
+      target_link_libraries(SerialboxFilesytemTarget INTERFACE stdc++fs)
       set(SERIALBOX_FILESYSTEM_LIBRARY_STRING "SERIALBOX_USE_STD_EXPERIMENTAL_FILESYSTEM")
+      set(_use_boost_filesystem OFF)
     else()
-      message(STATUS "std::experimental::filesystem not found, using boost::filesystem")
-      set(SERIALBOX_FILESYSTEM_LIBRARY_STRING "SERIALBOX_USE_BOOST_FILESYSTEM")
+      message(STATUS "std::experimental::filesystem not found, falling back to boost::filesystem")
+      set(_use_boost_filesystem ON)
     endif()
 else()
-  unset(STD_FILESYSTEM_LIB CACHE) #in case it was set by a previous run
+    set(_use_boost_filesystem ON)
 endif()
 
 #---------------------------------------- Boost ----------------------------------------------------
-
-if( NOT STD_FILESYSTEM_LIB )
-  set(REQUIRED_BOOST_COMPONENTS filesystem system)
+if(_use_boost_filesystem)
+    set(REQUIRED_BOOST_COMPONENTS filesystem system)
 endif()
 
 # If ${REQUIRED_BOOST_COMPONENTS} is empty we still need the headers
 find_package(Boost 1.54 REQUIRED ${REQUIRED_BOOST_COMPONENTS})
 link_directories(${Boost_LIBRARY_DIRS})
 set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
+
+if(_use_boost_filesystem)
+    add_library(SerialboxFilesytemTarget INTERFACE)
+    target_link_libraries(SerialboxFilesytemTarget INTERFACE Boost::filesystem)
+    set(SERIALBOX_FILESYSTEM_LIBRARY_STRING "SERIALBOX_USE_BOOST_FILESYSTEM")
+endif()
+
+install(TARGETS SerialboxFilesytemTarget
+    EXPORT SerialboxTargets
+    )
+
 
 #---------------------------------------- STELLA ---------------------------------------------------
 if(SERIALBOX_TESTING_STELLA)
@@ -343,8 +350,6 @@ endif(SERIALBOX_TESTING_STELLA)
 #---------------------------------------- ClangTools -----------------------------------------------
 
 #find_package(clang-format EXACT 6.0)
-
-#yoda_add_target_clang_format(DIRECTORIES ${CMAKE_SOURCE_DIR}/src EXTENSION ".h;.cpp")
 
 #if(${CLANG_TIDY_FOUND})
 #  # Runs clang-tidy and attempts to fix any warning automatically

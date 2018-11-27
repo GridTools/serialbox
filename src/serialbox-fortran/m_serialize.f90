@@ -2824,8 +2824,10 @@ SUBROUTINE fs_read_float_0d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd), istride, -1, -1, -1)
 
   ! Perturb field
-  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
-    CALL ser_fld_perturb(field, rperturb)
+  IF (PRESENT(rperturb)) THEN
+    IF (rperturb .NE. 0.0) THEN
+      CALL ser_fld_perturb(field, rperturb)
+    END IF
   END IF
 END SUBROUTINE fs_read_float_0d
 
@@ -2857,8 +2859,10 @@ SUBROUTINE fs_read_float_1d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1)), istride, -1, -1, -1)
 
   ! Perturb field
-  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
-    CALL ser_fld_perturb(field, rperturb)
+  IF (PRESENT(rperturb)) THEN
+    IF (rperturb .NE. 0.0) THEN
+      CALL ser_fld_perturb(field, rperturb)
+    END IF
   END IF
 END SUBROUTINE fs_read_float_1d
 
@@ -2891,8 +2895,10 @@ SUBROUTINE fs_read_float_2d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1,1)), istride, jstride, -1, -1)
 
   ! Perturb field
-  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
-    CALL ser_fld_perturb(field, rperturb)
+  IF (PRESENT(rperturb)) THEN
+    IF (rperturb .NE. 0.0) THEN
+      CALL ser_fld_perturb(field, rperturb)
+    END IF
   END IF
 END SUBROUTINE fs_read_float_2d
 
@@ -2925,8 +2931,10 @@ SUBROUTINE fs_read_float_3d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1,1,1)), istride, jstride, kstride, -1)
 
   ! Perturb field
-  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
-    CALL ser_fld_perturb(field, rperturb)
+  IF (PRESENT(rperturb)) THEN
+    IF (rperturb .NE. 0.0) THEN
+      CALL ser_fld_perturb(field, rperturb)
+    END IF
   END IF
 END SUBROUTINE fs_read_float_3d
 
@@ -2959,8 +2967,10 @@ SUBROUTINE fs_read_float_4d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
 
   ! Perturb field
-  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
-    CALL ser_fld_perturb(field, rperturb)
+  IF (PRESENT(rperturb)) THEN
+    IF (rperturb .NE. 0.0) THEN
+      CALL ser_fld_perturb(field, rperturb)
+    END IF
   END IF
 END SUBROUTINE fs_read_float_4d
 
@@ -2991,8 +3001,10 @@ SUBROUTINE fs_read_double_0d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd), istride, -1, -1, -1)
 
   ! Perturb field
-  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
-    CALL ser_fld_perturb(field, rperturb)
+  IF (PRESENT(rperturb)) THEN
+    IF (rperturb .NE. 0.0) THEN
+      CALL ser_fld_perturb(field, rperturb)
+    END IF
   END IF
 END SUBROUTINE fs_read_double_0d
 
@@ -3024,8 +3036,10 @@ SUBROUTINE fs_read_double_1d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1)), istride, -1, -1, -1)
 
   ! Perturb field
-  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
-    CALL ser_fld_perturb(field, rperturb)
+  IF (PRESENT(rperturb)) THEN
+    IF (rperturb .NE. 0.0) THEN
+      CALL ser_fld_perturb(field, rperturb)
+    END IF
   END IF
 END SUBROUTINE fs_read_double_1d
 
@@ -3058,8 +3072,10 @@ SUBROUTINE fs_read_double_2d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1,1)), istride, jstride, -1, -1)
 
   ! Perturb field
-  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
-    CALL ser_fld_perturb(field, rperturb)
+  IF (PRESENT(rperturb)) THEN
+    IF (rperturb .NE. 0.0) THEN
+      CALL ser_fld_perturb(field, rperturb)
+    END IF
   END IF
 END SUBROUTINE fs_read_double_2d
 
@@ -3092,8 +3108,10 @@ SUBROUTINE fs_read_double_3d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1,1,1)), istride, jstride, kstride, -1)
 
   ! Perturb field
-  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
-    CALL ser_fld_perturb(field, rperturb)
+  IF (PRESENT(rperturb)) THEN
+    IF (rperturb .NE. 0.0) THEN
+      CALL ser_fld_perturb(field, rperturb)
+    END IF
   END IF
 END SUBROUTINE fs_read_double_3d
 
@@ -3126,8 +3144,10 @@ SUBROUTINE fs_read_double_4d(serializer, savepoint, fieldname, field, rperturb)
                       C_LOC(padd(1,1,1,1)), istride, jstride, kstride, lstride)
 
   ! Perturb field
-  IF (PRESENT(rperturb) .AND. rperturb .NE. 0.0) THEN
-    CALL ser_fld_perturb(field, rperturb)
+  IF (PRESENT(rperturb)) THEN
+    IF (rperturb .NE. 0.0) THEN
+      CALL ser_fld_perturb(field, rperturb)
+    END IF
   END IF
 END SUBROUTINE fs_read_double_4d
 

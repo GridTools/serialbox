@@ -84,11 +84,6 @@ endif(SERIALBOX_HAS_C)
 if(SERIALBOX_HAS_FORTRAN)
   get_property(_static_lib TARGET Serialbox::SerialboxFortranStatic PROPERTY LOCATION)
   message(STATUS "  Static serialbox FORTRAN: ${_static_lib}")
-
-  if(SERIALBOX_HAS_SHARED_LIBRARY)
-    get_property(_shared_lib TARGET Serialbox::SerialboxFortranShared PROPERTY LOCATION)
-    message(STATUS "  Shared serialbox FORTRAN: ${_shared_lib}")
-  endif()
 endif(SERIALBOX_HAS_FORTRAN)
 
 #===---------------------------------------------------------------------------------------------===
