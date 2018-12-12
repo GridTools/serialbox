@@ -2114,11 +2114,10 @@ SUBROUTINE ftg_allocate_pointer_logical_0d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_logical_0d
@@ -2129,11 +2128,10 @@ SUBROUTINE ftg_allocate_pointer_logical_1d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_logical_1d
@@ -2144,11 +2142,10 @@ SUBROUTINE ftg_allocate_pointer_logical_2d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_logical_2d
@@ -2159,11 +2156,10 @@ SUBROUTINE ftg_allocate_pointer_logical_3d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4),bounds(5):bounds(6)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_logical_3d
@@ -2174,11 +2170,10 @@ SUBROUTINE ftg_allocate_pointer_logical_4d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4),bounds(5):bounds(6),bounds(7):bounds(8)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_logical_4d
@@ -2189,11 +2184,10 @@ SUBROUTINE ftg_allocate_pointer_bool_0d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_bool_0d
@@ -2204,11 +2198,10 @@ SUBROUTINE ftg_allocate_pointer_bool_1d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_bool_1d
@@ -2219,11 +2212,10 @@ SUBROUTINE ftg_allocate_pointer_bool_2d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_bool_2d
@@ -2234,11 +2226,10 @@ SUBROUTINE ftg_allocate_pointer_bool_3d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4),bounds(5):bounds(6)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_bool_3d
@@ -2249,11 +2240,10 @@ SUBROUTINE ftg_allocate_pointer_bool_4d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4),bounds(5):bounds(6),bounds(7):bounds(8)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_bool_4d
@@ -2264,11 +2254,10 @@ SUBROUTINE ftg_allocate_pointer_int_0d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_int_0d
@@ -2279,11 +2268,10 @@ SUBROUTINE ftg_allocate_pointer_int_1d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_int_1d
@@ -2294,11 +2282,10 @@ SUBROUTINE ftg_allocate_pointer_int_2d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_int_2d
@@ -2309,11 +2296,10 @@ SUBROUTINE ftg_allocate_pointer_int_3d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4),bounds(5):bounds(6)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_int_3d
@@ -2324,11 +2310,10 @@ SUBROUTINE ftg_allocate_pointer_int_4d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4),bounds(5):bounds(6),bounds(7):bounds(8)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_int_4d
@@ -2339,11 +2324,10 @@ SUBROUTINE ftg_allocate_pointer_long_0d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_long_0d
@@ -2354,11 +2338,10 @@ SUBROUTINE ftg_allocate_pointer_long_1d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_long_1d
@@ -2369,11 +2352,10 @@ SUBROUTINE ftg_allocate_pointer_long_2d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_long_2d
@@ -2384,11 +2366,10 @@ SUBROUTINE ftg_allocate_pointer_long_3d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4),bounds(5):bounds(6)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_long_3d
@@ -2399,11 +2380,10 @@ SUBROUTINE ftg_allocate_pointer_long_4d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4),bounds(5):bounds(6),bounds(7):bounds(8)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_long_4d
@@ -2414,11 +2394,10 @@ SUBROUTINE ftg_allocate_pointer_float_0d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_float_0d
@@ -2429,11 +2408,10 @@ SUBROUTINE ftg_allocate_pointer_float_1d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_float_1d
@@ -2444,11 +2422,10 @@ SUBROUTINE ftg_allocate_pointer_float_2d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_float_2d
@@ -2459,11 +2436,10 @@ SUBROUTINE ftg_allocate_pointer_float_3d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4),bounds(5):bounds(6)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_float_3d
@@ -2474,11 +2450,10 @@ SUBROUTINE ftg_allocate_pointer_float_4d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4),bounds(5):bounds(6),bounds(7):bounds(8)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_float_4d
@@ -2489,11 +2464,10 @@ SUBROUTINE ftg_allocate_pointer_double_0d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_double_0d
@@ -2504,11 +2478,10 @@ SUBROUTINE ftg_allocate_pointer_double_1d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_double_1d
@@ -2519,11 +2492,10 @@ SUBROUTINE ftg_allocate_pointer_double_2d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_double_2d
@@ -2534,11 +2506,10 @@ SUBROUTINE ftg_allocate_pointer_double_3d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4),bounds(5):bounds(6)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_double_3d
@@ -2549,11 +2520,10 @@ SUBROUTINE ftg_allocate_pointer_double_4d(fieldname, field)
 
   INTEGER, DIMENSION(8) :: bounds
 
+  NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field(bounds(1):bounds(2),bounds(3):bounds(4),bounds(5):bounds(6),bounds(7):bounds(8)))
-  ELSE
-    NULLIFY(field)
   END IF
 
 END SUBROUTINE ftg_allocate_pointer_double_4d
@@ -2961,9 +2931,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_logical_0d(fieldname, field, rperturb)
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_logical_0d
@@ -2975,12 +2943,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_logical_1d(fieldname, field, rperturb)
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_logical_1d
@@ -2992,12 +2955,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_logical_2d(fieldname, field, rperturb)
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_logical_2d
@@ -3009,12 +2967,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_logical_3d(fieldname, field, rperturb)
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_logical_3d
@@ -3026,12 +2979,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_logical_4d(fieldname, field, rperturb)
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_logical_4d
@@ -3043,9 +2991,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_bool_0d(fieldname, field, rperturb)
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_bool_0d
@@ -3057,12 +3003,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_bool_1d(fieldname, field, rperturb)
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_bool_1d
@@ -3074,12 +3015,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_bool_2d(fieldname, field, rperturb)
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_bool_2d
@@ -3091,12 +3027,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_bool_3d(fieldname, field, rperturb)
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_bool_3d
@@ -3108,12 +3039,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_bool_4d(fieldname, field, rperturb)
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_bool_4d
@@ -3125,9 +3051,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_int_0d(fieldname, field, rperturb)
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_int_0d
@@ -3139,12 +3063,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_int_1d(fieldname, field, rperturb)
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_int_1d
@@ -3156,12 +3075,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_int_2d(fieldname, field, rperturb)
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_int_2d
@@ -3173,12 +3087,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_int_3d(fieldname, field, rperturb)
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_int_3d
@@ -3190,12 +3099,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_int_4d(fieldname, field, rperturb)
   LOGICAL                         :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_int_4d
@@ -3207,9 +3111,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_long_0d(fieldname, field, rperturb)
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_long_0d
@@ -3221,12 +3123,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_long_1d(fieldname, field, rperturb)
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_long_1d
@@ -3238,12 +3135,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_long_2d(fieldname, field, rperturb)
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_long_2d
@@ -3255,12 +3147,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_long_3d(fieldname, field, rperturb)
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_long_3d
@@ -3272,12 +3159,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_long_4d(fieldname, field, rperturb)
   LOGICAL                                      :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_long_4d
@@ -3289,9 +3171,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_float_0d(fieldname, field, rperturb)
   LOGICAL                                    :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_float_0d
@@ -3303,12 +3183,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_float_1d(fieldname, field, rperturb)
   LOGICAL                                    :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_float_1d
@@ -3320,12 +3195,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_float_2d(fieldname, field, rperturb)
   LOGICAL                                    :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_float_2d
@@ -3337,12 +3207,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_float_3d(fieldname, field, rperturb)
   LOGICAL                                    :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_float_3d
@@ -3354,12 +3219,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_float_4d(fieldname, field, rperturb)
   LOGICAL                                    :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_float_4d
@@ -3371,9 +3231,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_double_0d(fieldname, field, rperturb)
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_double_0d
@@ -3385,12 +3243,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_double_1d(fieldname, field, rperturb)
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_double_1d
@@ -3402,12 +3255,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_double_2d(fieldname, field, rperturb)
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_double_2d
@@ -3419,12 +3267,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_double_3d(fieldname, field, rperturb)
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_double_3d
@@ -3436,12 +3279,7 @@ SUBROUTINE ftg_allocate_and_read_pointer_double_4d(fieldname, field, rperturb)
   LOGICAL                                     :: registered_only
 
   IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
-    IF (.NOT. ASSOCIATED(field)) THEN
-      CALL ftg_allocate_pointer(fieldname, field)
-    ELSE IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
-      NULLIFY(field)
-      CALL ftg_allocate_pointer(fieldname, field)
-    END IF
+    CALL ftg_allocate_pointer(fieldname, field)
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_pointer_double_4d
