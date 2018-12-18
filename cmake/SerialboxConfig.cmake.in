@@ -92,7 +92,6 @@ endif(SERIALBOX_HAS_FORTRAN)
 if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
 
   include(CMakeFindDependencyMacro)
-  
   #
   # Pthreads
   #

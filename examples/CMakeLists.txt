@@ -57,4 +57,3 @@ endif()
 if(SERIALBOX_TESTING_GRIDTOOLS)
   add_subdirectory(gridtools)
 endif()
-

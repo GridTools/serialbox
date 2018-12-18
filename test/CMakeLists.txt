@@ -82,4 +82,3 @@ endif()
 if(SERIALBOX_BENCHMARKING)
   add_subdirectory(benchmark)
 endif(SERIALBOX_BENCHMARKING)
-
