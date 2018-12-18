@@ -180,10 +180,10 @@ else
 fi
 
 # pFUnit
-if [ ! -z ${PFUNIT_ROOT+x} ]; then
+if [ ! -z ${PFUNIT_INSTALL_DIR+x} ]; then
     SERIALBOX_TESTING_FORTRAN=ON
-elif [ -d "${EXTERNAL_DIR}/pfunit" ]; then
-    SERIALBOX_TESTING_FORTRAN=ON
+    SET_PFUNIT_PATH="-DpFUnit_DIR=${PFUNIT_INSTALL_DIR}"
+    PFUNIT=${PFUNIT_INSTALL_DIR}
 else
     SERIALBOX_TESTING_FORTRAN=OFF
 fi
@@ -231,15 +231,16 @@ cmake                                                                          \
  -DSERIALBOX_USE_NETCDF:BOOL=${SERIALBOX_USE_NETCDF}                           \
  -DSERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM:BOOL=ON                            \
  -DSERIALBOX_ENABLE_FTG:BOOL=ON                                                \
+ ${SET_PFUNIT_PATH}                                                            \
  ../
 
 # Run make
 if [ -z "${INSTALL_PREFIX}" ]; then
     # don't install if no install path was specified
-    make -j1
+    make -j8
 else
     # make and install if a path was specified
-    make install -j1
+    make install -j8
 fi
 
 ret=$?

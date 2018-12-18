@@ -18,7 +18,7 @@
 
 #include "serialbox/core/Config.h"
 
-#ifdef SERIALBOX_USE_STD_EXPERIMENTAL_FILESYSTEM
+#if defined(SERIALBOX_USE_STD_EXPERIMENTAL_FILESYSTEM)
 #include <experimental/filesystem>
 namespace filesystem = std::experimental::filesystem;
 
@@ -43,7 +43,7 @@ inline std::uintmax_t remove_all(const filesystem::path& p) {
     throw filesystem::filesystem_error("cannot remove all", p, ec);
   return result;
 }
-}
+} // namespace serialbox
 #elif defined(SERIALBOX_USE_BOOST_FILESYSTEM)
 #include <boost/filesystem.hpp>
 namespace filesystem = boost::filesystem;
@@ -55,7 +55,7 @@ inline boost::uintmax_t remove_all(const filesystem::path& p,
                                    boost::system::error_code& ec) BOOST_NOEXCEPT {
   return filesystem::remove_all(p, ec);
 }
-}
+} // namespace serialbox
 #else
 #error "Filesystem selection is not properly configured."
 #endif

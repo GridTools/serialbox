@@ -66,8 +66,9 @@ fi
 
 #------------------------------ Set environment --------------------------------
 
-module load CMake
 module load daint-gpu
+module use /users/jenkins/easybuild/daint/haswell/modules/all
+module load CMake/3.12.0
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
     
@@ -84,7 +85,7 @@ elif [ "$FC_COMPILER" = "ftn" ]; then
 elif [ "$FC_COMPILER" = "ifort" ]; then
   
     module swap PrgEnv-cray PrgEnv-intel
-    module load gcc/7.2.0
+    module load gcc/7.3.0
 
 else
     module swap PrgEnv-cray PrgEnv-gnu

@@ -20,9 +20,6 @@
 char* serialboxConfigOptions(void) {
   std::string options;
 
-  // BOOST_LIB_VERSION
-  options += "BOOST_VERSION=" BOOST_LIB_VERSION ";";
-
 #ifdef SERIALBOX_HAS_OPENSSL
   // SERIALBOX_HAS_OPENSSL
   options += "SERIALBOX_HAS_OPENSSL=" + std::to_string(SERIALBOX_HAS_OPENSSL) + ";";

@@ -7,7 +7,8 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
 
-serialbox_add_c_example(example-01-laplacian-c example-01-laplacian.c)
-
+add_executable(example-01-laplacian-c example-01-laplacian.c)
+target_link_libraries(example-01-laplacian-c SerialboxCStatic)
+install(TARGETS example-01-laplacian-c DESTINATION bin)

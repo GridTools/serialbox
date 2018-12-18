@@ -7,7 +7,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
 
 set(SOURCES
   UnittestArray.cpp
@@ -50,15 +50,9 @@ set(SOURCES
   frontend/stella/UnittestDataFieldInfo.cpp
   frontend/stella/UnittestUtility.cpp  
 )
-
-set(EXTERNAL_LIBRARIES SerialboxCoreLibraryStatic
-                       ${Boost_LIBRARIES}
-                       ${SERIALBOX_EXTERNAL_LIBRARIES} 
-                       ${GTEST_LIBRARIES} 
-                       ${SERIALBOX_OLD_LIBRARIES}
-                       ${STELLA_LIBRARIES})
   
 serialbox_add_unittest_executable(NAME SerialboxCppUnittest 
-                                  LIBRARIES ${EXTERNAL_LIBRARIES}
-                                  SOURCES ${SOURCES} UnittestMain.cpp)
+                                  SOURCES ${SOURCES} UnittestMain.cpp
+                                  LIBRARIES SerialboxStatic
+)
 

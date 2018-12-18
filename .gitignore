@@ -14,12 +14,12 @@
 
 # Build directories
 build*/
-install/*
+install*/
 buildenv*
 
 # External projects
 external/*
-!external/gtest
+!external/googletest
 
 # Shared library in source dir
 *.so
@@ -33,3 +33,4 @@ gh-pages*
 /.settings/
 /.cproject
 /.pydevproject
+

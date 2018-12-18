@@ -40,7 +40,9 @@ TEST_P(ArchiveFactoryTest, Extension) {
   ASSERT_EQ(ArchiveFactory::archiveFromExtension("test.dat"), "Binary");
 
   if(GetParam() == "NetCDF")
+  {
     ASSERT_EQ(ArchiveFactory::archiveFromExtension("test.nc"), "NetCDF");
+  }
   
   ASSERT_THROW(ArchiveFactory::archiveFromExtension("test.X").c_str(), Exception);
 }

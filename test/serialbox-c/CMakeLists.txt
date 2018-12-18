@@ -7,7 +7,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
 
 set(SOURCES 
   UnittestArchive.cpp
@@ -21,13 +21,8 @@ set(SOURCES
   UnittestFortranWrapper.cpp
 )
 
-# Setup external libraries
-set(EXTERNAL_LIBRARIES SerialboxCLibraryStatic 
-                       ${Boost_LIBRARIES} 
-                       ${SERIALBOX_EXTERNAL_LIBRARIES}
-                       ${GTEST_LIBRARIES})
-  
 serialbox_add_unittest_executable(NAME SerialboxCUnittest 
-                                  LIBRARIES ${EXTERNAL_LIBRARIES}
-                                  SOURCES ${SOURCES} UnittestMain.cpp)
+                                  SOURCES ${SOURCES} UnittestMain.cpp
+                                  LIBRARIES SerialboxCStatic
+                                  )
 

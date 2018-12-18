@@ -17,7 +17,6 @@
 #define SERIALBOX_CORE_COMPILER_H
 
 #include "serialbox/core/Config.h"
-#include <boost/version.hpp>
 
 #ifndef __has_feature
 #define __has_feature(x) 0
@@ -45,15 +44,6 @@
 
 #if defined(__GNUC__) || defined(__GNUG__)
 #define SERIALBOX_COMPILER_GNU 1
-#endif
-
-#if defined(_MSC_VER)
-#define SERIALBOX_COMPILER_MSVC 1
-#endif
-
-// Make sure the same Boost is used for linking the library
-#if defined(SERIALBOX_BOOST_VERSION) && SERIALBOX_BOOST_VERSION != BOOST_VERSION
-#warning "Boost version used for compilation does not match current Boost version!"
 #endif
 
 /// \macro SERIALBOX_GNUC_PREREQ

@@ -7,7 +7,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
 
 if(SERIALBOX_ENABLE_C)
   # Generate serialbox-c/Config.h
@@ -24,7 +24,7 @@ if(SERIALBOX_ENABLE_C)
   endif()
     
   set(SERIALBOX_C_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/src/serialbox-c/Config.h.cmake)
-  set(SERIALBOX_C_CONFIG_FILE ${CMAKE_BINARY_DIR}/src/serialbox-c/Config.h)
+  set(SERIALBOX_C_CONFIG_FILE ${PROJECT_SOURCE_DIR}/src/serialbox-c/Config.h)
   set(SERIALBOX_C_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
   configure_file(${SERIALBOX_C_CONFIG_FILE_IN} ${SERIALBOX_C_CONFIG_FILE})
   install(FILES ${SERIALBOX_C_CONFIG_FILE} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox-c)
@@ -32,29 +32,64 @@ if(SERIALBOX_ENABLE_C)
   # Compile serialboxC
   set(SOURCES
     Archive.cpp
+    Archive.h
     Array.cpp
+    Array.h
     ConfigOptions.cpp
+    ConfigOptions.h
     ErrorHandling.cpp
+    ErrorHandling.h
     FieldMetainfo.cpp
+    FieldMetainfo.h
     Logging.cpp
+    Logging.h
     Metainfo.cpp
+    Metainfo.h
     Savepoint.cpp
+    Savepoint.h
     Serializer.cpp
+    Serializer.h
     FortranWrapper.cpp
+    FortranWrapper.h
   )
 
   set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})
 
-  set(SYMLINKS ${CMAKE_BINARY_DIR}/src/serialbox-python/serialbox
-               ${CMAKE_SOURCE_DIR}/src/serialbox-python/serialbox)
-
-  serialbox_add_library(NAME SerialboxC 
-                        TARGET SerialboxCLibrary 
-                        OBJECTS SerialboxCoreLibraryObjects
-                        BUILD_SHARED
-                        BUILD_STATIC
-                        SYMLINKS ${SYMLINKS}
-                        LIBRARIES ${EXTERNAL_LIBRARIES}
-                        SOURCES ${SOURCES})
+  add_library(SerialboxCObjects OBJECT ${SOURCES})
+  target_include_directories(SerialboxCObjects
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+        $<INSTALL_INTERFACE:include>
+    )
+  target_link_libraries(SerialboxCObjects PUBLIC Boost::boost)
+    
+  add_library(SerialboxCStatic STATIC $<TARGET_OBJECTS:SerialboxCObjects>)
+  set_target_properties(SerialboxCStatic PROPERTIES VERSION ${Serialbox_VERSION_STRING})
+  target_link_libraries(SerialboxCStatic PUBLIC SerialboxCObjects)
+  target_link_libraries(SerialboxCStatic PUBLIC SerialboxStatic)
+  if(BUILD_SHARED_LIBS)
+    add_library(SerialboxCShared $<TARGET_OBJECTS:SerialboxCObjects>)
+    set_target_properties(SerialboxCShared PROPERTIES VERSION ${Serialbox_VERSION_STRING})
+    target_link_libraries(SerialboxCShared PUBLIC SerialboxCObjects)
+    target_link_libraries(SerialboxCShared PUBLIC SerialboxShared)
+  endif()
+  
+  if(BUILD_SHARED_LIBS)
+    set_property(TARGET SerialboxCObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
+  endif()
+  
+  install(TARGETS SerialboxCStatic SerialboxCObjects
+    EXPORT SerialboxTargets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    )
+  
+  if(BUILD_SHARED_LIBS)
+    install(TARGETS SerialboxCShared
+        EXPORT SerialboxTargets
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        )
+  endif()
 endif()
 

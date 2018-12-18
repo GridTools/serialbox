@@ -11,7 +11,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
 
 #
 # First, we setup the project and look for Serialbox. This is a pure Fortran project, however we 
@@ -78,19 +78,22 @@ include_directories(${SERIALBOX_INCLUDE_DIRS})
 # which adds the correct STL library (libstdc++ or libc++) to the LD flags.
 #
 
+add_library(m_ser OBJECT ${PP_OUTPUT}/m_ser.f90)
+target_link_libraries(m_ser Serialbox::SerialboxFortranStatic)
+
 ## Producer
-add_executable(fortran_producer ${PP_OUTPUT}/main_producer.f90 ${PP_OUTPUT}/m_ser.f90)
-target_link_libraries(fortran_producer ${SERIALBOX_FORTRAN_LIBRARIES})
+add_executable(fortran_producer ${PP_OUTPUT}/main_producer.f90 )
+target_link_libraries(fortran_producer m_ser)
 set_target_properties(fortran_producer PROPERTIES LINKER_LANGUAGE CXX)
 
 ## Consumer
-add_executable(fortran_consumer ${PP_OUTPUT}/main_consumer.f90 ${PP_OUTPUT}/m_ser.f90)
-target_link_libraries(fortran_consumer ${SERIALBOX_FORTRAN_LIBRARIES})
+add_executable(fortran_consumer ${PP_OUTPUT}/main_consumer.f90)
+target_link_libraries(fortran_consumer m_ser)
 set_target_properties(fortran_consumer PROPERTIES LINKER_LANGUAGE CXX)
 
 ## Perturbed Consumer
-add_executable(fortran_consumer_perturb ${PP_OUTPUT}/main_consumer_perturb.f90 ${PP_OUTPUT}/m_ser.f90)
-target_link_libraries(fortran_consumer_perturb ${SERIALBOX_FORTRAN_LIBRARIES})
+add_executable(fortran_consumer_perturb ${PP_OUTPUT}/main_consumer_perturb.f90)
+target_link_libraries(fortran_consumer_perturb m_ser)
 set_target_properties(fortran_consumer_perturb PROPERTIES LINKER_LANGUAGE CXX)
 
 #

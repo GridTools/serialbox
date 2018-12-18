@@ -78,7 +78,7 @@ struct Storage {
   Storage& operator=(const Storage&) = default;
   Storage& operator=(Storage&&) = default;
 
-  template<class Dimensions>
+  template <class Dimensions>
   Storage(StorageOrderKind ordering, Dimensions&& dims,
           std::function<T(int)> init = Storage<T>::sequential)
       : ordering_(ordering), dims_(dims) {
@@ -95,8 +95,8 @@ struct Storage {
     computeStrides();
     forEach(init);
   }
-  
-  template<class Dimensions>  
+
+  template <class Dimensions>
   Storage(StorageOrderKind ordering, Dimensions&& dims,
           std::initializer_list<std::pair<int, int>> padding,
           std::function<T(int)> init = Storage<T>::sequential)
@@ -196,7 +196,7 @@ struct Storage {
   /// \brief Convert to StorageView
   StorageView toStorageView() const {
     auto type = ToTypeID<T>::value;
-    return StorageView((void*) originPtr(), type, dims_, strides_);
+    return StorageView((void*)originPtr(), type, dims_, strides_);
   }
 
   /// \brief Verify that the two Storages are equal

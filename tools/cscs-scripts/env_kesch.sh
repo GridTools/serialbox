@@ -67,7 +67,8 @@ fi
 #------------------------------ Set environment --------------------------------
 
 module purge
-module load cmake/3.9.1
+module use /users/jenkins/easybuild/kesch/modules/all
+module load cmake/3.12.0
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
 

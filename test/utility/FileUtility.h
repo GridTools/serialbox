@@ -15,9 +15,11 @@
 #ifndef SERIALBOX_UTILITY_FILEUTILITY_H
 #define SERIALBOX_UTILITY_FILEUTILITY_H
 
-#include <boost/core/noncopyable.hpp>
-#include "utility/UnittestEnvironment.h"
+#include "serialbox/core/Config.h"
+
 #include "serialbox/core/Filesystem.h"
+#include "utility/UnittestEnvironment.h"
+#include <boost/core/noncopyable.hpp>
 #include <fstream>
 #include <system_error>
 
@@ -59,13 +61,12 @@ public:
 
   // Constructors
   template <class T>
-  File(T&& path)
-      : Base(path) {}
+  File(T&& path) : Base(path) {}
 
   // Destruction
   ~File() {
     if(UnittestEnvironment::getInstance().cleanup()) {
-#ifdef SERIALBOX_USE_EXPERIMENTAL_FILESYSTEM
+#ifdef SERIALBOX_USE_STD_EXPERIMENTAL_FILESYSTEM
       std::error_code ec;
 #else
       boost::system::error_code ec;
@@ -87,13 +88,12 @@ public:
 
   // Constructors
   template <class T>
-  Directory(T&& path)
-      : Base(path) {}
+  Directory(T&& path) : Base(path) {}
 
   // Destruction
   ~Directory() {
     if(UnittestEnvironment::getInstance().cleanup()) {
-#ifdef SERIALBOX_USE_EXPERIMENTAL_FILESYSTEM
+#ifdef SERIALBOX_USE_STD_EXPERIMENTAL_FILESYSTEM
       std::error_code ec;
 #else
       boost::system::error_code ec;

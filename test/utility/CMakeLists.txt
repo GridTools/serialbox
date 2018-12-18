@@ -7,7 +7,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.12)
 
 set(SOURCES
   BenchmarkEnvironment.h
@@ -24,10 +24,16 @@ set(SOURCES
   UnittestEnvironment.cpp
 )
 
-add_library(SerialboxUnittestUtility STATIC ${SOURCES})
-target_link_libraries(SerialboxUnittestUtility ${Boost_LIBRARIES} ${GTEST_LIBRARIES})
-
-if(DEFINED BUILD_GTEST)
-  add_dependencies(SerialboxUnittestUtility gtest)
+add_library(SerialboxUnittestUtilityObjects OBJECT ${SOURCES})
+target_include_directories(SerialboxUnittestUtilityObjects PUBLIC ${CMAKE_SOURCE_DIR}/test)
+target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC Boost::boost)
+target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC gtest_main)
+target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC SerialboxFilesytemTarget)
+target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC SerialboxStatic)
+if(GRIDTOOLS_FOUND)
+    target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC GridTools_TARGET)
 endif()
 
+add_library(SerialboxUnittestUtilityStatic STATIC $<TARGET_OBJECTS:SerialboxUnittestUtilityObjects>)
+set_target_properties(SerialboxUnittestUtilityStatic PROPERTIES VERSION ${Serialbox_VERSION_STRING})
+target_link_libraries(SerialboxUnittestUtilityStatic PUBLIC SerialboxUnittestUtilityObjects)

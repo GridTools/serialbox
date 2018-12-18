@@ -17,6 +17,7 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - llvm-toolchain-trusty-5.0
     packages:
       - g++-5
       - gcc-5
@@ -27,14 +28,13 @@ addons:
       - g++-8
       - gcc-8
       - gfortran-8
-      - clang-3.8
-      - clang++-3.8
+      - clang-5.0
 
 env:
   global:
     - SCRIPT_DIR=${TRAVIS_BUILD_DIR}/tools/travis
     - CACHE_DIR=${TRAVIS_BUILD_DIR}/deps/install
-    - CMAKE_VERSION=3.8.1
+    - CMAKE_VERSION=3.12.1
     - BOOST_VERSION=1.60.0
     - PFUNIT_VERSION=3.2.7
 
@@ -50,7 +50,7 @@ jobs:
     - <<: *prepare_cache_stage
       compiler: clang
       os: linux
-      env: CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8
+      env: CXX_COMPILER=clang++-5.0 C_COMPILER=clang-5.0
 
     # Linux GCC 5.4 (Release) [Linux]
     - &test_stage
@@ -85,35 +85,15 @@ jobs:
       compiler: gcc
       env: CONFIG=RelWithDebInfo CXX_COMPILER=g++-8 C_COMPILER=gcc-8 FC_COMPILER=gfortran-8
 
-    # Clang 3.8 (Release) [Linux]
+    # Clang [Linux]
     - <<: *test_stage      
       compiler: clang
-      env: CONFIG=Release CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8
+      env: CONFIG=Release CXX_COMPILER=clang++ C_COMPILER=clang
 
-    # Clang 3.8 (RelWithDebInfo) [Linux]
+    # Clang (RelWithDebInfo) [Linux]
     - <<: *test_stage      
       compiler: clang
-      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8
-
-    # Clang 4.0 (Release) [Linux]
-    - <<: *test_stage      
-      compiler: clang
-      env: CONFIG=Release CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8 CLANG_VERSION=4.0.0
-
-    # Clang 4.0 (RelWithDebInfo) [Linux]
-    - <<: *test_stage      
-      compiler: clang
-      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8 CLANG_VERSION=4.0.0
-
-    # Clang 5.0 (Release) [Linux]
-    - <<: *test_stage      
-      compiler: clang
-      env: CONFIG=Release CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8 CLANG_VERSION=5.0.0
-
-    # Clang 5.0 (RelWithDebInfo) [Linux]
-    - <<: *test_stage      
-      compiler: clang
-      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-3.8 C_COMPILER=clang-3.8 CLANG_VERSION=5.0.0
+      env: CONFIG=RelWithDebInfo CXX_COMPILER=clang++-5.0 C_COMPILER=clang-5.0
 
     # # XCode 7.3 (Release) [OSX]
     # - <<: *test_stage  
