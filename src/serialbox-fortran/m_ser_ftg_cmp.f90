@@ -111,6 +111,7 @@ END INTERFACE ftg_compare
 
 REAL              :: ftg_cmp_default_tolerance = 0.0
 INTEGER           :: ftg_cmp_max_print_deviations = 10
+LOGICAL           :: ftg_cmp_print_when_equal = .FALSE.
 CHARACTER(len=64) :: ftg_cmp_message_prefix = 'FTG Compare ***'
 
 CONTAINS
@@ -951,7 +952,6 @@ SUBROUTINE ftg_cmp_print_deviations_double_4d(expected, actual, fieldname_print)
 END SUBROUTINE ftg_cmp_print_deviations_double_4d
 
 !=============================================================================
-!TODO Ausgabe fuer Skalare
 !TODO NaN beruecksichtigen
 !=============================================================================
 
@@ -981,8 +981,12 @@ SUBROUTINE ftg_compare_logical_0d(fieldname, field, result, failure_count, field
     END IF 
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1019,8 +1023,12 @@ SUBROUTINE ftg_compare_logical_1d(fieldname, field, result, failure_count, field
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1057,8 +1065,12 @@ SUBROUTINE ftg_compare_logical_2d(fieldname, field, result, failure_count, field
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1095,8 +1107,12 @@ SUBROUTINE ftg_compare_logical_3d(fieldname, field, result, failure_count, field
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1133,8 +1149,12 @@ SUBROUTINE ftg_compare_logical_4d(fieldname, field, result, failure_count, field
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1167,8 +1187,12 @@ SUBROUTINE ftg_compare_bool_0d(fieldname, field, result, failure_count, fieldnam
     END IF 
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1205,8 +1229,12 @@ SUBROUTINE ftg_compare_bool_1d(fieldname, field, result, failure_count, fieldnam
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1243,8 +1271,12 @@ SUBROUTINE ftg_compare_bool_2d(fieldname, field, result, failure_count, fieldnam
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1281,8 +1313,12 @@ SUBROUTINE ftg_compare_bool_3d(fieldname, field, result, failure_count, fieldnam
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1319,8 +1355,12 @@ SUBROUTINE ftg_compare_bool_4d(fieldname, field, result, failure_count, fieldnam
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1353,8 +1393,12 @@ SUBROUTINE ftg_compare_int_0d(fieldname, field, result, failure_count, fieldname
     END IF 
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1391,8 +1435,12 @@ SUBROUTINE ftg_compare_int_1d(fieldname, field, result, failure_count, fieldname
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1429,8 +1477,12 @@ SUBROUTINE ftg_compare_int_2d(fieldname, field, result, failure_count, fieldname
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1467,8 +1519,12 @@ SUBROUTINE ftg_compare_int_3d(fieldname, field, result, failure_count, fieldname
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1505,8 +1561,12 @@ SUBROUTINE ftg_compare_int_4d(fieldname, field, result, failure_count, fieldname
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1539,8 +1599,12 @@ SUBROUTINE ftg_compare_long_0d(fieldname, field, result, failure_count, fieldnam
     END IF 
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1577,8 +1641,12 @@ SUBROUTINE ftg_compare_long_1d(fieldname, field, result, failure_count, fieldnam
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1615,8 +1683,12 @@ SUBROUTINE ftg_compare_long_2d(fieldname, field, result, failure_count, fieldnam
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1653,8 +1725,12 @@ SUBROUTINE ftg_compare_long_3d(fieldname, field, result, failure_count, fieldnam
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1691,8 +1767,12 @@ SUBROUTINE ftg_compare_long_4d(fieldname, field, result, failure_count, fieldnam
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1733,8 +1813,12 @@ SUBROUTINE ftg_compare_float_0d(fieldname, field, result, failure_count, toleran
     END IF 
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1779,8 +1863,12 @@ SUBROUTINE ftg_compare_float_1d(fieldname, field, result, failure_count, toleran
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1825,8 +1913,12 @@ SUBROUTINE ftg_compare_float_2d(fieldname, field, result, failure_count, toleran
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1871,8 +1963,12 @@ SUBROUTINE ftg_compare_float_3d(fieldname, field, result, failure_count, toleran
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1917,8 +2013,12 @@ SUBROUTINE ftg_compare_float_4d(fieldname, field, result, failure_count, toleran
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -1959,8 +2059,12 @@ SUBROUTINE ftg_compare_double_0d(fieldname, field, result, failure_count, tolera
     END IF 
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -2005,8 +2109,12 @@ SUBROUTINE ftg_compare_double_1d(fieldname, field, result, failure_count, tolera
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -2051,8 +2159,12 @@ SUBROUTINE ftg_compare_double_2d(fieldname, field, result, failure_count, tolera
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -2097,8 +2209,12 @@ SUBROUTINE ftg_compare_double_3d(fieldname, field, result, failure_count, tolera
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
@@ -2143,8 +2259,12 @@ SUBROUTINE ftg_compare_double_4d(fieldname, field, result, failure_count, tolera
     END IF
   END IF
   
-  IF (PRESENT(failure_count)) THEN
-    IF (.NOT. result) THEN
+  IF (result) THEN
+    IF (ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
       failure_count = failure_count + 1
     END IF
   END IF
