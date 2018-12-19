@@ -16,7 +16,6 @@
 #define SERIALBOX_CORE_METAINFOMAPIMPL_H
 
 #include "serialbox/core/Exception.h"
-#include "serialbox/core/Json.h"
 #include "serialbox/core/MetainfoValueImpl.h"
 #include "serialbox/core/Type.h"
 #include <iosfwd>
@@ -60,9 +59,6 @@ public:
 
   /// \brief Default constructor (empty map)
   MetainfoMapImpl() : map_(){};
-
-  /// \brief Construct from json
-  explicit MetainfoMapImpl(const json::json& jsonNode) { fromJSON(jsonNode); }
 
   /// \brief Construct from initalizer-list
   explicit MetainfoMapImpl(std::initializer_list<value_type> list) : map_(list){};
@@ -195,14 +191,6 @@ public:
 
   /// \brief Test for inequality
   bool operator!=(const MetainfoMapImpl& right) const noexcept { return (!(*this == right)); }
-
-  /// \brief Convert to JSON
-  json::json toJSON() const;
-
-  /// \brief Construct from JSON node
-  ///
-  /// \throw Exception  JSON node is ill-formed
-  void fromJSON(const json::json& jsonNode);
 
   /// \brief Convert to stream
   friend std::ostream& operator<<(std::ostream& stream, const MetainfoMapImpl& s);

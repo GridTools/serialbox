@@ -25,7 +25,6 @@ function(serialbox_add_gridtools_example NAME)
                         ${CMAKE_THREAD_LIBS_INIT})
   target_compile_definitions(${NAME} PUBLIC BOOST_NO_CXX11_DECLTYPE)
   install(TARGETS ${NAME} DESTINATION bin)
-  
   if(SERIALBOX_TESTING)
     serialbox_add_test(TARGET ${NAME} EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/${NAME})
   endif(SERIALBOX_TESTING)
@@ -58,4 +57,3 @@ endif()
 if(SERIALBOX_TESTING_GRIDTOOLS)
   add_subdirectory(gridtools)
 endif()
-

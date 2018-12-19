@@ -16,7 +16,6 @@
 #define SERIALBOX_CORE_SAVEPOINTIMPL_H
 
 #include "serialbox/core/Exception.h"
-#include "serialbox/core/Json.h"
 #include "serialbox/core/MetainfoMapImpl.h"
 #include <functional>
 #include <iosfwd>
@@ -37,15 +36,13 @@ namespace serialbox {
 /// instead.
 class SavepointImpl {
 public:
-  /// \brief Construct an empty savepoint (wihtout `metaInfo` i.e this->empty() == true)
-  template <class StringType,
-            class = typename std::enable_if<!std::is_same<StringType, json::json>::value>::type>
-  explicit SavepointImpl(const StringType& name)
+  /// \brief Construct an empty savepoint (without `metaInfo` i.e this->empty() == true)
+  explicit SavepointImpl(const std::string& name)
       : name_(name), metaInfo_(std::make_shared<MetainfoMapImpl>()) {}
 
   /// \brief Construct savepoint with `name` and `metaInfo`
-  template <class StringType, class MetainfoType>
-  SavepointImpl(StringType&& name, MetainfoType&& metaInfo)
+  template <class MetainfoType>
+  SavepointImpl(const std::string& name, MetainfoType&& metaInfo)
       : name_(name),
         metaInfo_(std::make_shared<MetainfoMapImpl>(std::forward<MetainfoType>(metaInfo))) {}
 
@@ -55,8 +52,8 @@ public:
   /// \brief Move constructor
   SavepointImpl(SavepointImpl&&) = default;
 
-  /// \brief Construct from JSON
-  explicit SavepointImpl(const json::json& jsonNode) { fromJSON(jsonNode); }
+  /// \brief Default constructor
+  SavepointImpl() = default;
 
   /// \brief Copy assignment
   SavepointImpl& operator=(const SavepointImpl& other);
@@ -108,6 +105,9 @@ public:
   /// \brief Access name
   const std::string& name() const noexcept { return name_; }
 
+  /// \brief Set name
+  void setName(std::string const& name) noexcept { name_ = name; };
+
   /// \brief Access meta-info
   MetainfoMapImpl& metaInfo() noexcept { return *metaInfo_; }
   const MetainfoMapImpl& metaInfo() const noexcept { return *metaInfo_; }
@@ -115,14 +115,6 @@ public:
   /// \brief Returns a bool value indicating whether the savepoint is empty (i.e has no
   /// meta-information attached)
   bool empty() const noexcept { return metaInfo_->empty(); }
-
-  /// \brief Convert to JSON
-  json::json toJSON() const;
-
-  /// \brief Construct from JSON node
-  ///
-  /// \throw Exception  JSON node is ill-formed
-  void fromJSON(const json::json& jsonNode);
 
   /// \brief Convert savepoint to string
   std::string toString() const;

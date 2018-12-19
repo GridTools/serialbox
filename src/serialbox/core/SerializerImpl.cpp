@@ -14,8 +14,11 @@
 
 #include "serialbox/core/SerializerImpl.h"
 #include "serialbox/core/Compiler.h"
+#include "serialbox/core/FieldMapSerializer.h"
 #include "serialbox/core/Filesystem.h"
+#include "serialbox/core/MetainfoMapImplSerializer.h"
 #include "serialbox/core/STLExtras.h"
+#include "serialbox/core/SavepointVectorSerializer.h"
 #include "serialbox/core/Type.h"
 #include "serialbox/core/Unreachable.h"
 #include "serialbox/core/Version.h"
@@ -33,6 +36,26 @@
 #endif
 
 namespace serialbox {
+
+void to_json(json::json& jsonNode, SerializerImpl const& ser) {
+  LOG(info) << "Converting Serializer MetaData to JSON";
+
+  // Tag version
+  jsonNode["serialbox_version"] =
+      100 * SERIALBOX_VERSION_MAJOR + 10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
+
+  // Serialize prefix
+  jsonNode["prefix"] = ser.prefix();
+
+  // Serialize globalMetainfo
+  jsonNode["global_meta_info"] = ser.globalMetainfo();
+
+  // Serialize SavepointVector
+  jsonNode["savepoint_vector"] = ser.savepointVector();
+
+  // Serialize FieldMap
+  jsonNode["field_map"] = ser.fieldMap();
+}
 
 int SerializerImpl::enabled_ = 0;
 
@@ -327,15 +350,15 @@ void SerializerImpl::constructMetaDataFromJson() {
 
     // Construct globalMetainfo
     if(jsonNode.count("global_meta_info"))
-      globalMetainfo_->fromJSON(jsonNode["global_meta_info"]);
+      *globalMetainfo_ = jsonNode.at("global_meta_info");
 
     // Construct Savepoints
     if(jsonNode.count("savepoint_vector"))
-      savepointVector_->fromJSON(jsonNode["savepoint_vector"]);
+      *savepointVector_ = jsonNode["savepoint_vector"];
 
     // Construct FieldMap
     if(jsonNode.count("field_map"))
-      fieldMap_->fromJSON(jsonNode["field_map"]);
+      *fieldMap_ = jsonNode["field_map"]; // TODO probably fieldMap_ shouldn't be a shared_ptr
 
   } catch(Exception& e) {
     throw Exception("error while parsing %s: %s", metaDataFile_, e.what());
@@ -364,34 +387,10 @@ std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s) {
   return (stream << s.toString());
 }
 
-json::json SerializerImpl::toJSON() const {
-  LOG(info) << "Converting Serializer MetaData to JSON";
-
-  json::json jsonNode;
-
-  // Tag version
-  jsonNode["serialbox_version"] =
-      100 * SERIALBOX_VERSION_MAJOR + 10 * SERIALBOX_VERSION_MINOR + SERIALBOX_VERSION_PATCH;
-
-  // Serialize prefix
-  jsonNode["prefix"] = prefix_;
-
-  // Serialize globalMetainfo
-  jsonNode["global_meta_info"] = globalMetainfo_->toJSON();
-
-  // Serialize SavepointVector
-  jsonNode["savepoint_vector"] = savepointVector_->toJSON();
-
-  // Serialize FieldMap
-  jsonNode["field_map"] = fieldMap_->toJSON();
-
-  return jsonNode;
-}
-
 void SerializerImpl::updateMetaData() {
   LOG(info) << "Update MetaData of Serializer";
 
-  json::json jsonNode = toJSON();
+  json::json jsonNode = *this;
 
   // Write metaData to disk (just overwrite the file, we assume that there is never more than one
   // Serializer per data set and thus our in-memory copy is always the up-to-date one)

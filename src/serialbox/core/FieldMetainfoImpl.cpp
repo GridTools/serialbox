@@ -1,5 +1,4 @@
-//===-- serialbox/core/FieldMetainfoImplImpl.h ------------------------------------------*- C++
-//-*-===//
+//===-- serialbox/core/FieldMetainfoImpl.h ------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -41,39 +40,6 @@ bool FieldMetainfoImpl::operator==(const FieldMetainfoImpl& right) const noexcep
     return false;
 
   return (*metaInfo_ == *right.metaInfo_);
-}
-
-json::json FieldMetainfoImpl::toJSON() const {
-  json::json jsonNode;
-  jsonNode["type_id"] = static_cast<int>(type_);
-  jsonNode["dims"] = dims_;
-  jsonNode["meta_info"] = metaInfo_->toJSON();
-  return jsonNode;
-}
-
-void FieldMetainfoImpl::fromJSON(const json::json& jsonNode) {
-  dims_.clear();
-  metaInfo_->clear();
-
-  if(jsonNode.is_null() || jsonNode.empty())
-    throw Exception("node is empty");
-
-  if(!jsonNode.count("type_id"))
-    throw Exception("no node 'type_id'");
-  type_ = static_cast<TypeID>(int(jsonNode["type_id"]));
-
-  if(!jsonNode.count("dims"))
-    throw Exception("no node 'value'");
-  for(auto it = jsonNode["dims"].begin(), end = jsonNode["dims"].end(); it != end; ++it)
-    dims_.push_back(int(*it));
-
-  if(!jsonNode.count("meta_info"))
-    throw Exception("no node 'meta_info'");
-  try {
-    metaInfo_->fromJSON(jsonNode["meta_info"]);
-  } catch(Exception& e) {
-    throw Exception("in node 'meta_info': %s", e.what());
-  }
 }
 
 std::string FieldMetainfoImpl::toString() const {

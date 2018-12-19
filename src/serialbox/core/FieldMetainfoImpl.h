@@ -1,5 +1,4 @@
-//===-- serialbox/core/FieldMetainfoImplImpl.h ------------------------------------------*- C++
-//-*-===//
+//===-- serialbox/core/FieldMetainfoImpl.h ------------------------------------------*- C++ -*-===//
 //
 //                                    S E R I A L B O X
 //
@@ -16,7 +15,6 @@
 #ifndef SERIALBOX_CORE_FIELDMAPMETAINFOIMPL_H
 #define SERIALBOX_CORE_FIELDMAPMETAINFOIMPL_H
 
-#include "serialbox/core/Json.h"
 #include "serialbox/core/MetainfoMapImpl.h"
 #include <memory>
 
@@ -39,11 +37,6 @@ public:
   /// \brief Construct members externally
   FieldMetainfoImpl(TypeID type, const std::vector<int>& dims)
       : type_(type), dims_(dims), metaInfo_(std::make_shared<MetainfoMapImpl>()) {}
-
-  /// \brief Construct from JSON
-  explicit FieldMetainfoImpl(const json::json& jsonNode) : FieldMetainfoImpl() {
-    fromJSON(jsonNode);
-  }
 
   /// \brief Copy constructor
   FieldMetainfoImpl(const FieldMetainfoImpl& other) { *this = other; }
@@ -77,14 +70,6 @@ public:
   /// \brief Access meta-info map
   MetainfoMapImpl& metaInfo() noexcept { return *metaInfo_; }
   const MetainfoMapImpl& metaInfo() const noexcept { return *metaInfo_; }
-
-  /// \brief Convert to JSON
-  json::json toJSON() const;
-
-  /// \brief Construct from JSON node
-  ///
-  /// \throw Exception  JSON node is ill-formed
-  void fromJSON(const json::json& jsonNode);
 
   /// \brief Convert to string
   std::string toString() const;

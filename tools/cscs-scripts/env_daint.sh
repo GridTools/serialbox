@@ -86,7 +86,6 @@ elif [ "$FC_COMPILER" = "ifort" ]; then
   
     module swap PrgEnv-cray PrgEnv-intel
     module load gcc/7.3.0
-
 elif [ "$FC_COMPILER" = "pgfortran18.10" ]; then
 
     module use /project/c14/data-eniac/modulefiles
@@ -94,7 +93,6 @@ elif [ "$FC_COMPILER" = "pgfortran18.10" ]; then
     module load eniac/pgi-18.10
     module load gcc
     FC_COMPILER="pgfortran"
-
 else
     module swap PrgEnv-cray PrgEnv-gnu
 #    module load cray-netcdf

@@ -17,7 +17,6 @@
 
 #include "serialbox/core/FieldMap.h"
 #include "serialbox/core/Filesystem.h"
-#include "serialbox/core/Json.h"
 #include "serialbox/core/MetainfoMapImpl.h"
 #include "serialbox/core/SavepointVector.h"
 #include "serialbox/core/StorageView.h"
@@ -323,7 +322,8 @@ public:
   ///
   /// \see
   ///   Archive::read
-  void read(const std::string& name, const SavepointImpl& savepoint, StorageView& storageView, bool alsoPrevious = false);
+  void read(const std::string& name, const SavepointImpl& savepoint, StorageView& storageView,
+            bool alsoPrevious = false);
 
   /// \brief Deserialize sliced field `name` (given as `storageView` and `slice`) at `savepoint`
   /// from disk.
@@ -375,9 +375,6 @@ public:
   /// This will ensure MetaData-prefix.json is up-to-date with the in-memory versions of the
   /// savepointVector, fieldMap and globalMetainfo as well as the meta-data of the Archive.
   void updateMetaData();
-
-  /// \brief Convert all members of the Serializer to JSON
-  json::json toJSON() const;
 
   /// \brief Convert to string
   std::string toString() const;

@@ -13,6 +13,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/core/SavepointImpl.h"
+#include "serialbox/core/SavepointImplSerializer.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 #include <unordered_map>
@@ -82,7 +83,7 @@ TEST(SavepointImplTest, Construction) {
     // Check for deep copy
     s.metaInfo().insert("newKey", "str");
     ASSERT_FALSE(s.metaInfo() == s_to_copy.metaInfo());
-    
+
     ASSERT_TRUE(s.metaInfo().hasKey("key2"));
     EXPECT_EQ(s.metaInfo().at("key2").as<double>(), double(5));
     EXPECT_EQ(s.metaInfo().at("key2").as<double>(), s_to_copy.metaInfo().at("key2").as<double>());
@@ -248,7 +249,7 @@ TEST(SavepointImplTest, toJSON) {
       {"key1", MetainfoValueImpl(std::string("str"))}, {"key2", MetainfoValueImpl(double(5))}});
 
   SavepointImpl s(name, metaInfo);
-  json::json j = s.toJSON();
+  json::json j = s;
 
   // Type
   ASSERT_TRUE(j.count("name"));
@@ -292,7 +293,7 @@ TEST(SavepointImplTest, fromJSON) {
      }
     )"_json;
 
-    SavepointImpl s(j);
+    SavepointImpl s = j;
     EXPECT_EQ(s.name(), name);
 
     ASSERT_TRUE(s.metaInfo().hasKey("key1"));
@@ -312,7 +313,7 @@ TEST(SavepointImplTest, fromJSON) {
      }
     )"_json;
 
-    SavepointImpl s(j);
+    SavepointImpl s = j;
     EXPECT_EQ(s.name(), name);
     EXPECT_TRUE(s.metaInfo().empty());
   }
@@ -322,7 +323,8 @@ TEST(SavepointImplTest, fromJSON) {
   // -----------------------------------------------------------------------------------------------
   {
     auto j = R"({})"_json;
-    ASSERT_THROW((SavepointImpl(j)), Exception);
+    SavepointImpl s;
+    ASSERT_THROW((s = j), Exception);
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -343,7 +345,7 @@ TEST(SavepointImplTest, fromJSON) {
          }
      }
     )"_json;
-    ASSERT_THROW((SavepointImpl(j)), Exception);
+    ASSERT_ANY_THROW(SavepointImpl s = j);
   }
 }
 
