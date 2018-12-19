@@ -43,8 +43,7 @@ PUBLIC :: ignore_bullshit, ignore_bullshit_max_dim_size, ignore_bullshit_allow_n
           ftg_add_serializer_metainfo, ftg_get_serializer_metainfo,  ftg_add_field_metainfo, ftg_get_field_metainfo, &
           ftg_add_savepoint_metainfo, ftg_get_savepoint_metainfo, &
           ftg_field_exists, ftg_get_size, ftg_get_bounds, ftg_register_only, ftg_write, ftg_read, &
-          ftg_allocate_pointer, ftg_allocate_allocatable, ftg_allocate_and_read_pointer, ftg_allocate_and_read_allocatable, &
-          ftg_compare
+          ftg_allocate_pointer, ftg_allocate_allocatable, ftg_allocate_and_read_pointer, ftg_allocate_and_read_allocatable
 
 PRIVATE
 
@@ -323,44 +322,14 @@ INTERFACE ftg_allocate_and_read_allocatable
     ftg_allocate_and_read_allocatable_double_4d
 END INTERFACE ftg_allocate_and_read_allocatable
 
-INTERFACE ftg_compare
-  MODULE PROCEDURE &
-    ftg_compare_logical_0d, &
-    ftg_compare_logical_1d, &
-    ftg_compare_logical_2d, &
-    ftg_compare_logical_3d, &
-    ftg_compare_logical_4d, &
-    ftg_compare_bool_0d, &
-    ftg_compare_bool_1d, &
-    ftg_compare_bool_2d, &
-    ftg_compare_bool_3d, &
-    ftg_compare_bool_4d, &
-    ftg_compare_int_0d, &
-    ftg_compare_int_1d, &
-    ftg_compare_int_2d, &
-    ftg_compare_int_3d, &
-    ftg_compare_int_4d, &
-    ftg_compare_long_0d, &
-    ftg_compare_long_1d, &
-    ftg_compare_long_2d, &
-    ftg_compare_long_3d, &
-    ftg_compare_long_4d, &
-    ftg_compare_float_0d, &
-    ftg_compare_float_1d, &
-    ftg_compare_float_2d, &
-    ftg_compare_float_3d, &
-    ftg_compare_float_4d, &
-    ftg_compare_double_0d, &
-    ftg_compare_double_1d, &
-    ftg_compare_double_2d, &
-    ftg_compare_double_3d, &
-    ftg_compare_double_4d
-END INTERFACE ftg_compare
-
 LOGICAL :: ignore_bullshit = .TRUE.
 INTEGER :: ignore_bullshit_max_dim_size = 999999999
 LOGICAL :: ignore_bullshit_allow_negative_indices = .TRUE.
 LOGICAL :: ignore_not_existing = .TRUE.
+
+REAL              :: ftg_cmp_default_tolerance = 0.0
+INTEGER           :: ftg_cmp_max_print_deviations = 10
+CHARACTER(len=64) :: ftg_cmp_message_prefix = 'FTG Compare ***'
 
 TYPE(t_serializer), POINTER :: serializer => NULL()
 TYPE(t_savepoint),  POINTER :: savepoint  => NULL()
@@ -498,21 +467,6 @@ FUNCTION ftg_get_bounds(fieldname)
   ftg_get_bounds = fs_get_halos(serializer,  fieldname)
 
 END FUNCTION ftg_get_bounds
-
-!=============================================================================
-!=============================================================================
-
-FUNCTION ftg_match_size(fieldname, expected_rank, actual_shape)
-
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname
-  INTEGER, INTENT(IN)          :: expected_rank, actual_shape(:)
-  INTEGER                      :: expected_size(4)
-  LOGICAL                      :: ftg_match_size
-  
-  expected_size = ftg_get_size(fieldname)
-  ftg_match_size = SIZE(actual_shape) == expected_rank .AND. ALL(actual_shape == expected_size(:expected_rank))
-
-END FUNCTION ftg_match_size
 
 !=============================================================================
 !=============================================================================
@@ -2146,12 +2100,9 @@ END SUBROUTINE ftg_read_double_4d
 SUBROUTINE ftg_allocate_pointer_logical_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)  :: fieldname
   LOGICAL, INTENT(OUT), POINTER :: field
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
-    bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
   END IF
 
@@ -2160,9 +2111,8 @@ END SUBROUTINE ftg_allocate_pointer_logical_0d
 SUBROUTINE ftg_allocate_pointer_logical_1d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)  :: fieldname
   LOGICAL, INTENT(OUT), POINTER :: field(:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)         :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2174,9 +2124,8 @@ END SUBROUTINE ftg_allocate_pointer_logical_1d
 SUBROUTINE ftg_allocate_pointer_logical_2d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)  :: fieldname
   LOGICAL, INTENT(OUT), POINTER :: field(:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)         :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2188,9 +2137,8 @@ END SUBROUTINE ftg_allocate_pointer_logical_2d
 SUBROUTINE ftg_allocate_pointer_logical_3d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)  :: fieldname
   LOGICAL, INTENT(OUT), POINTER :: field(:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)         :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2202,9 +2150,8 @@ END SUBROUTINE ftg_allocate_pointer_logical_3d
 SUBROUTINE ftg_allocate_pointer_logical_4d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)  :: fieldname
   LOGICAL, INTENT(OUT), POINTER :: field(:,:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)         :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2216,12 +2163,9 @@ END SUBROUTINE ftg_allocate_pointer_logical_4d
 SUBROUTINE ftg_allocate_pointer_bool_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), POINTER :: field
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
-    bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
   END IF
 
@@ -2230,9 +2174,8 @@ END SUBROUTINE ftg_allocate_pointer_bool_0d
 SUBROUTINE ftg_allocate_pointer_bool_1d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), POINTER :: field(:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                      :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2244,9 +2187,8 @@ END SUBROUTINE ftg_allocate_pointer_bool_1d
 SUBROUTINE ftg_allocate_pointer_bool_2d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), POINTER :: field(:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                      :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2258,9 +2200,8 @@ END SUBROUTINE ftg_allocate_pointer_bool_2d
 SUBROUTINE ftg_allocate_pointer_bool_3d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), POINTER :: field(:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                      :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2272,9 +2213,8 @@ END SUBROUTINE ftg_allocate_pointer_bool_3d
 SUBROUTINE ftg_allocate_pointer_bool_4d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), POINTER :: field(:,:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                      :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2286,12 +2226,9 @@ END SUBROUTINE ftg_allocate_pointer_bool_4d
 SUBROUTINE ftg_allocate_pointer_int_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)  :: fieldname
   INTEGER, INTENT(OUT), POINTER :: field
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
-    bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
   END IF
 
@@ -2300,9 +2237,8 @@ END SUBROUTINE ftg_allocate_pointer_int_0d
 SUBROUTINE ftg_allocate_pointer_int_1d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)  :: fieldname
   INTEGER, INTENT(OUT), POINTER :: field(:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)         :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2314,9 +2250,8 @@ END SUBROUTINE ftg_allocate_pointer_int_1d
 SUBROUTINE ftg_allocate_pointer_int_2d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)  :: fieldname
   INTEGER, INTENT(OUT), POINTER :: field(:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)         :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2328,9 +2263,8 @@ END SUBROUTINE ftg_allocate_pointer_int_2d
 SUBROUTINE ftg_allocate_pointer_int_3d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)  :: fieldname
   INTEGER, INTENT(OUT), POINTER :: field(:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)         :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2342,9 +2276,8 @@ END SUBROUTINE ftg_allocate_pointer_int_3d
 SUBROUTINE ftg_allocate_pointer_int_4d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)  :: fieldname
   INTEGER, INTENT(OUT), POINTER :: field(:,:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)         :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2356,12 +2289,9 @@ END SUBROUTINE ftg_allocate_pointer_int_4d
 SUBROUTINE ftg_allocate_pointer_long_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), POINTER :: field
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
-    bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
   END IF
 
@@ -2370,9 +2300,8 @@ END SUBROUTINE ftg_allocate_pointer_long_0d
 SUBROUTINE ftg_allocate_pointer_long_1d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), POINTER :: field(:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                      :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2384,9 +2313,8 @@ END SUBROUTINE ftg_allocate_pointer_long_1d
 SUBROUTINE ftg_allocate_pointer_long_2d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), POINTER :: field(:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                      :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2398,9 +2326,8 @@ END SUBROUTINE ftg_allocate_pointer_long_2d
 SUBROUTINE ftg_allocate_pointer_long_3d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), POINTER :: field(:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                      :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2412,9 +2339,8 @@ END SUBROUTINE ftg_allocate_pointer_long_3d
 SUBROUTINE ftg_allocate_pointer_long_4d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)               :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), POINTER :: field(:,:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                      :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2426,12 +2352,9 @@ END SUBROUTINE ftg_allocate_pointer_long_4d
 SUBROUTINE ftg_allocate_pointer_float_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), POINTER :: field
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
-    bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
   END IF
 
@@ -2440,9 +2363,8 @@ END SUBROUTINE ftg_allocate_pointer_float_0d
 SUBROUTINE ftg_allocate_pointer_float_1d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), POINTER :: field(:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                    :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2454,9 +2376,8 @@ END SUBROUTINE ftg_allocate_pointer_float_1d
 SUBROUTINE ftg_allocate_pointer_float_2d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), POINTER :: field(:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                    :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2468,9 +2389,8 @@ END SUBROUTINE ftg_allocate_pointer_float_2d
 SUBROUTINE ftg_allocate_pointer_float_3d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), POINTER :: field(:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                    :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2482,9 +2402,8 @@ END SUBROUTINE ftg_allocate_pointer_float_3d
 SUBROUTINE ftg_allocate_pointer_float_4d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), POINTER :: field(:,:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                    :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2496,12 +2415,9 @@ END SUBROUTINE ftg_allocate_pointer_float_4d
 SUBROUTINE ftg_allocate_pointer_double_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), POINTER :: field
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
-    bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
   END IF
 
@@ -2510,9 +2426,8 @@ END SUBROUTINE ftg_allocate_pointer_double_0d
 SUBROUTINE ftg_allocate_pointer_double_1d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), POINTER :: field(:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                     :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2524,9 +2439,8 @@ END SUBROUTINE ftg_allocate_pointer_double_1d
 SUBROUTINE ftg_allocate_pointer_double_2d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), POINTER :: field(:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                     :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2538,9 +2452,8 @@ END SUBROUTINE ftg_allocate_pointer_double_2d
 SUBROUTINE ftg_allocate_pointer_double_3d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), POINTER :: field(:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                     :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2552,9 +2465,8 @@ END SUBROUTINE ftg_allocate_pointer_double_3d
 SUBROUTINE ftg_allocate_pointer_double_4d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), POINTER :: field(:,:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
-
+  INTEGER, DIMENSION(8)                     :: bounds
+  
   NULLIFY(field)
   IF (ftg_field_exists(fieldname)) THEN
     bounds = ftg_get_bounds(fieldname)
@@ -2570,13 +2482,10 @@ SUBROUTINE ftg_allocate_allocatable_logical_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)      :: fieldname
   LOGICAL, INTENT(OUT), ALLOCATABLE :: field
 
-  INTEGER, DIMENSION(8) :: bounds
-
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
   END IF
   IF (ftg_field_exists(fieldname)) THEN
-    bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
   END IF
 
@@ -2585,8 +2494,7 @@ END SUBROUTINE ftg_allocate_allocatable_logical_0d
 SUBROUTINE ftg_allocate_allocatable_logical_1d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)      :: fieldname
   LOGICAL, INTENT(OUT), ALLOCATABLE :: field(:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)             :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2601,8 +2509,7 @@ END SUBROUTINE ftg_allocate_allocatable_logical_1d
 SUBROUTINE ftg_allocate_allocatable_logical_2d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)      :: fieldname
   LOGICAL, INTENT(OUT), ALLOCATABLE :: field(:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)             :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2617,8 +2524,7 @@ END SUBROUTINE ftg_allocate_allocatable_logical_2d
 SUBROUTINE ftg_allocate_allocatable_logical_3d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)      :: fieldname
   LOGICAL, INTENT(OUT), ALLOCATABLE :: field(:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)             :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2633,8 +2539,7 @@ END SUBROUTINE ftg_allocate_allocatable_logical_3d
 SUBROUTINE ftg_allocate_allocatable_logical_4d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)      :: fieldname
   LOGICAL, INTENT(OUT), ALLOCATABLE :: field(:,:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)             :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2650,13 +2555,10 @@ SUBROUTINE ftg_allocate_allocatable_bool_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                   :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), ALLOCATABLE :: field
 
-  INTEGER, DIMENSION(8) :: bounds
-
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
   END IF
   IF (ftg_field_exists(fieldname)) THEN
-    bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
   END IF
 
@@ -2665,8 +2567,7 @@ END SUBROUTINE ftg_allocate_allocatable_bool_0d
 SUBROUTINE ftg_allocate_allocatable_bool_1d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                   :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), ALLOCATABLE :: field(:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                          :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2681,8 +2582,7 @@ END SUBROUTINE ftg_allocate_allocatable_bool_1d
 SUBROUTINE ftg_allocate_allocatable_bool_2d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                   :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), ALLOCATABLE :: field(:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                          :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2697,8 +2597,7 @@ END SUBROUTINE ftg_allocate_allocatable_bool_2d
 SUBROUTINE ftg_allocate_allocatable_bool_3d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                   :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), ALLOCATABLE :: field(:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                          :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2713,8 +2612,7 @@ END SUBROUTINE ftg_allocate_allocatable_bool_3d
 SUBROUTINE ftg_allocate_allocatable_bool_4d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                   :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(OUT), ALLOCATABLE :: field(:,:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                          :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2730,13 +2628,10 @@ SUBROUTINE ftg_allocate_allocatable_int_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)      :: fieldname
   INTEGER, INTENT(OUT), ALLOCATABLE :: field
 
-  INTEGER, DIMENSION(8) :: bounds
-
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
   END IF
   IF (ftg_field_exists(fieldname)) THEN
-    bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
   END IF
 
@@ -2745,8 +2640,7 @@ END SUBROUTINE ftg_allocate_allocatable_int_0d
 SUBROUTINE ftg_allocate_allocatable_int_1d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)      :: fieldname
   INTEGER, INTENT(OUT), ALLOCATABLE :: field(:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)             :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2761,8 +2655,7 @@ END SUBROUTINE ftg_allocate_allocatable_int_1d
 SUBROUTINE ftg_allocate_allocatable_int_2d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)      :: fieldname
   INTEGER, INTENT(OUT), ALLOCATABLE :: field(:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)             :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2777,8 +2670,7 @@ END SUBROUTINE ftg_allocate_allocatable_int_2d
 SUBROUTINE ftg_allocate_allocatable_int_3d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)      :: fieldname
   INTEGER, INTENT(OUT), ALLOCATABLE :: field(:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)             :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2793,8 +2685,7 @@ END SUBROUTINE ftg_allocate_allocatable_int_3d
 SUBROUTINE ftg_allocate_allocatable_int_4d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)      :: fieldname
   INTEGER, INTENT(OUT), ALLOCATABLE :: field(:,:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)             :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2810,13 +2701,10 @@ SUBROUTINE ftg_allocate_allocatable_long_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                   :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), ALLOCATABLE :: field
 
-  INTEGER, DIMENSION(8) :: bounds
-
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
   END IF
   IF (ftg_field_exists(fieldname)) THEN
-    bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
   END IF
 
@@ -2825,8 +2713,7 @@ END SUBROUTINE ftg_allocate_allocatable_long_0d
 SUBROUTINE ftg_allocate_allocatable_long_1d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                   :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), ALLOCATABLE :: field(:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                          :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2841,8 +2728,7 @@ END SUBROUTINE ftg_allocate_allocatable_long_1d
 SUBROUTINE ftg_allocate_allocatable_long_2d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                   :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), ALLOCATABLE :: field(:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                          :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2857,8 +2743,7 @@ END SUBROUTINE ftg_allocate_allocatable_long_2d
 SUBROUTINE ftg_allocate_allocatable_long_3d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                   :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), ALLOCATABLE :: field(:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                          :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2873,8 +2758,7 @@ END SUBROUTINE ftg_allocate_allocatable_long_3d
 SUBROUTINE ftg_allocate_allocatable_long_4d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                   :: fieldname
   INTEGER(KIND=C_LONG), INTENT(OUT), ALLOCATABLE :: field(:,:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                          :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2890,13 +2774,10 @@ SUBROUTINE ftg_allocate_allocatable_float_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), ALLOCATABLE :: field
 
-  INTEGER, DIMENSION(8) :: bounds
-
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
   END IF
   IF (ftg_field_exists(fieldname)) THEN
-    bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
   END IF
 
@@ -2905,8 +2786,7 @@ END SUBROUTINE ftg_allocate_allocatable_float_0d
 SUBROUTINE ftg_allocate_allocatable_float_1d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), ALLOCATABLE :: field(:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                        :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2921,8 +2801,7 @@ END SUBROUTINE ftg_allocate_allocatable_float_1d
 SUBROUTINE ftg_allocate_allocatable_float_2d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), ALLOCATABLE :: field(:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                        :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2937,8 +2816,7 @@ END SUBROUTINE ftg_allocate_allocatable_float_2d
 SUBROUTINE ftg_allocate_allocatable_float_3d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), ALLOCATABLE :: field(:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                        :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2953,8 +2831,7 @@ END SUBROUTINE ftg_allocate_allocatable_float_3d
 SUBROUTINE ftg_allocate_allocatable_float_4d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                 :: fieldname
   REAL(KIND=C_FLOAT), INTENT(OUT), ALLOCATABLE :: field(:,:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                        :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -2970,13 +2847,10 @@ SUBROUTINE ftg_allocate_allocatable_double_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), ALLOCATABLE :: field
 
-  INTEGER, DIMENSION(8) :: bounds
-
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
   END IF
   IF (ftg_field_exists(fieldname)) THEN
-    bounds = ftg_get_bounds(fieldname)
     ALLOCATE(field)
   END IF
 
@@ -2985,8 +2859,7 @@ END SUBROUTINE ftg_allocate_allocatable_double_0d
 SUBROUTINE ftg_allocate_allocatable_double_1d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), ALLOCATABLE :: field(:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                         :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -3001,8 +2874,7 @@ END SUBROUTINE ftg_allocate_allocatable_double_1d
 SUBROUTINE ftg_allocate_allocatable_double_2d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), ALLOCATABLE :: field(:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                         :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -3017,8 +2889,7 @@ END SUBROUTINE ftg_allocate_allocatable_double_2d
 SUBROUTINE ftg_allocate_allocatable_double_3d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), ALLOCATABLE :: field(:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                         :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -3033,8 +2904,7 @@ END SUBROUTINE ftg_allocate_allocatable_double_3d
 SUBROUTINE ftg_allocate_allocatable_double_4d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN)                  :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(OUT), ALLOCATABLE :: field(:,:,:,:)
-
-  INTEGER, DIMENSION(8) :: bounds
+  INTEGER, DIMENSION(8)                         :: bounds
 
   IF (ALLOCATED(field)) THEN
     DEALLOCATE(field)
@@ -3771,704 +3641,5 @@ SUBROUTINE ftg_allocate_and_read_allocatable_double_4d(fieldname, field, rpertur
     CALL ftg_read(fieldname, field, rperturb)
   END IF
 END SUBROUTINE ftg_allocate_and_read_allocatable_double_4d
-
-!=============================================================================
-!=============================================================================
-
-SUBROUTINE ftg_compare_logical_0d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  LOGICAL, INTENT(IN)              :: field
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  LOGICAL, ALLOCATABLE             :: stored_field
-  
-  result = .TRUE.
-
-  CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-  IF (field .NEQV. stored_field) THEN
-    result = .FALSE.
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_logical_0d
-
-SUBROUTINE ftg_compare_logical_1d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  LOGICAL, INTENT(IN)              :: field(:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  LOGICAL, ALLOCATABLE             :: stored_field(:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field .NEQV. stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_logical_1d
-
-SUBROUTINE ftg_compare_logical_2d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  LOGICAL, INTENT(IN)              :: field(:,:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  LOGICAL, ALLOCATABLE             :: stored_field(:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field .NEQV. stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_logical_2d
-
-SUBROUTINE ftg_compare_logical_3d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  LOGICAL, INTENT(IN)              :: field(:,:,:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  LOGICAL, ALLOCATABLE             :: stored_field(:,:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field .NEQV. stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_logical_3d
-
-SUBROUTINE ftg_compare_logical_4d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  LOGICAL, INTENT(IN)              :: field(:,:,:,:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  LOGICAL, ALLOCATABLE             :: stored_field(:,:,:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field .NEQV. stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_logical_4d
-
-SUBROUTINE ftg_compare_bool_0d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  LOGICAL(KIND=C_BOOL), INTENT(IN)  :: field
-  LOGICAL, INTENT(OUT)              :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL  :: result_acc
-  LOGICAL(KIND=C_BOOL), ALLOCATABLE :: stored_field
-  
-  result = .TRUE.
-
-  CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-  IF (field .NEQV. stored_field) THEN
-    result = .FALSE.
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_bool_0d
-
-SUBROUTINE ftg_compare_bool_1d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  LOGICAL(KIND=C_BOOL), INTENT(IN)  :: field(:)
-  LOGICAL, INTENT(OUT)              :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL  :: result_acc
-  LOGICAL(KIND=C_BOOL), ALLOCATABLE :: stored_field(:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field .NEQV. stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_bool_1d
-
-SUBROUTINE ftg_compare_bool_2d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  LOGICAL(KIND=C_BOOL), INTENT(IN)  :: field(:,:)
-  LOGICAL, INTENT(OUT)              :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL  :: result_acc
-  LOGICAL(KIND=C_BOOL), ALLOCATABLE :: stored_field(:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field .NEQV. stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_bool_2d
-
-SUBROUTINE ftg_compare_bool_3d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  LOGICAL(KIND=C_BOOL), INTENT(IN)  :: field(:,:,:)
-  LOGICAL, INTENT(OUT)              :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL  :: result_acc
-  LOGICAL(KIND=C_BOOL), ALLOCATABLE :: stored_field(:,:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field .NEQV. stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_bool_3d
-
-SUBROUTINE ftg_compare_bool_4d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  LOGICAL(KIND=C_BOOL), INTENT(IN)  :: field(:,:,:,:)
-  LOGICAL, INTENT(OUT)              :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL  :: result_acc
-  LOGICAL(KIND=C_BOOL), ALLOCATABLE :: stored_field(:,:,:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field .NEQV. stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_bool_4d
-
-SUBROUTINE ftg_compare_int_0d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  INTEGER, INTENT(IN)              :: field
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  INTEGER, ALLOCATABLE             :: stored_field
-  
-  result = .TRUE.
-
-  CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-  IF (field /= stored_field) THEN
-    result = .FALSE.
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_int_0d
-
-SUBROUTINE ftg_compare_int_1d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  INTEGER, INTENT(IN)              :: field(:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  INTEGER, ALLOCATABLE             :: stored_field(:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_int_1d
-
-SUBROUTINE ftg_compare_int_2d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  INTEGER, INTENT(IN)              :: field(:,:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  INTEGER, ALLOCATABLE             :: stored_field(:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_int_2d
-
-SUBROUTINE ftg_compare_int_3d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  INTEGER, INTENT(IN)              :: field(:,:,:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  INTEGER, ALLOCATABLE             :: stored_field(:,:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_int_3d
-
-SUBROUTINE ftg_compare_int_4d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  INTEGER, INTENT(IN)              :: field(:,:,:,:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  INTEGER, ALLOCATABLE             :: stored_field(:,:,:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_int_4d
-
-SUBROUTINE ftg_compare_long_0d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  INTEGER(KIND=C_LONG), INTENT(IN)  :: field
-  LOGICAL, INTENT(OUT)              :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL  :: result_acc
-  INTEGER(KIND=C_LONG), ALLOCATABLE :: stored_field
-  
-  result = .TRUE.
-
-  CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-  IF (field /= stored_field) THEN
-    result = .FALSE.
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_long_0d
-
-SUBROUTINE ftg_compare_long_1d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  INTEGER(KIND=C_LONG), INTENT(IN)  :: field(:)
-  LOGICAL, INTENT(OUT)              :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL  :: result_acc
-  INTEGER(KIND=C_LONG), ALLOCATABLE :: stored_field(:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_long_1d
-
-SUBROUTINE ftg_compare_long_2d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  INTEGER(KIND=C_LONG), INTENT(IN)  :: field(:,:)
-  LOGICAL, INTENT(OUT)              :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL  :: result_acc
-  INTEGER(KIND=C_LONG), ALLOCATABLE :: stored_field(:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_long_2d
-
-SUBROUTINE ftg_compare_long_3d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  INTEGER(KIND=C_LONG), INTENT(IN)  :: field(:,:,:)
-  LOGICAL, INTENT(OUT)              :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL  :: result_acc
-  INTEGER(KIND=C_LONG), ALLOCATABLE :: stored_field(:,:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_long_3d
-
-SUBROUTINE ftg_compare_long_4d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)      :: fieldname
-  INTEGER(KIND=C_LONG), INTENT(IN)  :: field(:,:,:,:)
-  LOGICAL, INTENT(OUT)              :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL  :: result_acc
-  INTEGER(KIND=C_LONG), ALLOCATABLE :: stored_field(:,:,:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_long_4d
-
-SUBROUTINE ftg_compare_float_0d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  REAL(KIND=C_FLOAT), INTENT(IN)   :: field
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  REAL(KIND=C_FLOAT), ALLOCATABLE  :: stored_field
-  
-  result = .TRUE.
-
-  CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-  IF (field /= stored_field) THEN
-    result = .FALSE.
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_float_0d
-
-SUBROUTINE ftg_compare_float_1d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  REAL(KIND=C_FLOAT), INTENT(IN)   :: field(:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  REAL(KIND=C_FLOAT), ALLOCATABLE  :: stored_field(:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_float_1d
-
-SUBROUTINE ftg_compare_float_2d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  REAL(KIND=C_FLOAT), INTENT(IN)   :: field(:,:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  REAL(KIND=C_FLOAT), ALLOCATABLE  :: stored_field(:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_float_2d
-
-SUBROUTINE ftg_compare_float_3d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  REAL(KIND=C_FLOAT), INTENT(IN)   :: field(:,:,:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  REAL(KIND=C_FLOAT), ALLOCATABLE  :: stored_field(:,:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_float_3d
-
-SUBROUTINE ftg_compare_float_4d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  REAL(KIND=C_FLOAT), INTENT(IN)   :: field(:,:,:,:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  REAL(KIND=C_FLOAT), ALLOCATABLE  :: stored_field(:,:,:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_float_4d
-
-SUBROUTINE ftg_compare_double_0d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN)  :: field
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  REAL(KIND=C_DOUBLE), ALLOCATABLE :: stored_field
-  
-  result = .TRUE.
-
-  CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-  IF (field /= stored_field) THEN
-    result = .FALSE.
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_double_0d
-
-SUBROUTINE ftg_compare_double_1d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN)  :: field(:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  REAL(KIND=C_DOUBLE), ALLOCATABLE :: stored_field(:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 1, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_double_1d
-
-SUBROUTINE ftg_compare_double_2d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN)  :: field(:,:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  REAL(KIND=C_DOUBLE), ALLOCATABLE :: stored_field(:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 2, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_double_2d
-
-SUBROUTINE ftg_compare_double_3d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN)  :: field(:,:,:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  REAL(KIND=C_DOUBLE), ALLOCATABLE :: stored_field(:,:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 3, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_double_3d
-
-SUBROUTINE ftg_compare_double_4d(fieldname, field, result, result_acc)
-  CHARACTER(LEN=*), INTENT(IN)     :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN)  :: field(:,:,:,:)
-  LOGICAL, INTENT(OUT)             :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL :: result_acc
-  REAL(KIND=C_DOUBLE), ALLOCATABLE :: stored_field(:,:,:,:)
-  
-  result = .TRUE.
-
-  IF (.NOT. ftg_match_size(fieldname, 4, SHAPE(field))) THEN
-    result = .FALSE.
-  ELSE
-    CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(field /= stored_field)) THEN
-      result = .FALSE.
-    END IF
-  END IF
-  
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
-  END IF
-    
-END SUBROUTINE ftg_compare_double_4d
 
 END MODULE m_ser_ftg
