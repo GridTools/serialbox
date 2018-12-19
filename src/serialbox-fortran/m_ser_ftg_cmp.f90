@@ -955,11 +955,11 @@ END SUBROUTINE ftg_cmp_print_deviations_double_4d
 !TODO NaN beruecksichtigen
 !=============================================================================
 
-SUBROUTINE ftg_compare_logical_0d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_logical_0d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL, INTENT(IN)                    :: field
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL, ALLOCATABLE                   :: stored_field
@@ -981,17 +981,19 @@ SUBROUTINE ftg_compare_logical_0d(fieldname, field, result, result_acc, fieldnam
     END IF 
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_logical_0d
 
-SUBROUTINE ftg_compare_logical_1d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_logical_1d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL, INTENT(IN)                    :: field(:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL, ALLOCATABLE                   :: stored_field(:)
@@ -1017,17 +1019,19 @@ SUBROUTINE ftg_compare_logical_1d(fieldname, field, result, result_acc, fieldnam
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_logical_1d
 
-SUBROUTINE ftg_compare_logical_2d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_logical_2d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL, INTENT(IN)                    :: field(:,:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL, ALLOCATABLE                   :: stored_field(:,:)
@@ -1053,17 +1057,19 @@ SUBROUTINE ftg_compare_logical_2d(fieldname, field, result, result_acc, fieldnam
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_logical_2d
 
-SUBROUTINE ftg_compare_logical_3d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_logical_3d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL, INTENT(IN)                    :: field(:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL, ALLOCATABLE                   :: stored_field(:,:,:)
@@ -1089,17 +1095,19 @@ SUBROUTINE ftg_compare_logical_3d(fieldname, field, result, result_acc, fieldnam
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_logical_3d
 
-SUBROUTINE ftg_compare_logical_4d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_logical_4d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL, INTENT(IN)                    :: field(:,:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL, ALLOCATABLE                   :: stored_field(:,:,:,:)
@@ -1125,17 +1133,19 @@ SUBROUTINE ftg_compare_logical_4d(fieldname, field, result, result_acc, fieldnam
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_logical_4d
 
-SUBROUTINE ftg_compare_bool_0d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_bool_0d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN)       :: field
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL(KIND=C_BOOL), ALLOCATABLE      :: stored_field
@@ -1157,17 +1167,19 @@ SUBROUTINE ftg_compare_bool_0d(fieldname, field, result, result_acc, fieldname_a
     END IF 
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_bool_0d
 
-SUBROUTINE ftg_compare_bool_1d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_bool_1d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN)       :: field(:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL(KIND=C_BOOL), ALLOCATABLE      :: stored_field(:)
@@ -1193,17 +1205,19 @@ SUBROUTINE ftg_compare_bool_1d(fieldname, field, result, result_acc, fieldname_a
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_bool_1d
 
-SUBROUTINE ftg_compare_bool_2d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_bool_2d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN)       :: field(:,:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL(KIND=C_BOOL), ALLOCATABLE      :: stored_field(:,:)
@@ -1229,17 +1243,19 @@ SUBROUTINE ftg_compare_bool_2d(fieldname, field, result, result_acc, fieldname_a
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_bool_2d
 
-SUBROUTINE ftg_compare_bool_3d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_bool_3d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN)       :: field(:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL(KIND=C_BOOL), ALLOCATABLE      :: stored_field(:,:,:)
@@ -1265,17 +1281,19 @@ SUBROUTINE ftg_compare_bool_3d(fieldname, field, result, result_acc, fieldname_a
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_bool_3d
 
-SUBROUTINE ftg_compare_bool_4d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_bool_4d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN)       :: field(:,:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL(KIND=C_BOOL), ALLOCATABLE      :: stored_field(:,:,:,:)
@@ -1301,17 +1319,19 @@ SUBROUTINE ftg_compare_bool_4d(fieldname, field, result, result_acc, fieldname_a
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_bool_4d
 
-SUBROUTINE ftg_compare_int_0d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_int_0d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER, INTENT(IN)                    :: field
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER, ALLOCATABLE                   :: stored_field
@@ -1333,17 +1353,19 @@ SUBROUTINE ftg_compare_int_0d(fieldname, field, result, result_acc, fieldname_al
     END IF 
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_int_0d
 
-SUBROUTINE ftg_compare_int_1d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_int_1d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER, INTENT(IN)                    :: field(:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER, ALLOCATABLE                   :: stored_field(:)
@@ -1369,17 +1391,19 @@ SUBROUTINE ftg_compare_int_1d(fieldname, field, result, result_acc, fieldname_al
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_int_1d
 
-SUBROUTINE ftg_compare_int_2d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_int_2d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER, INTENT(IN)                    :: field(:,:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER, ALLOCATABLE                   :: stored_field(:,:)
@@ -1405,17 +1429,19 @@ SUBROUTINE ftg_compare_int_2d(fieldname, field, result, result_acc, fieldname_al
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_int_2d
 
-SUBROUTINE ftg_compare_int_3d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_int_3d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER, INTENT(IN)                    :: field(:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER, ALLOCATABLE                   :: stored_field(:,:,:)
@@ -1441,17 +1467,19 @@ SUBROUTINE ftg_compare_int_3d(fieldname, field, result, result_acc, fieldname_al
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_int_3d
 
-SUBROUTINE ftg_compare_int_4d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_int_4d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER, INTENT(IN)                    :: field(:,:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER, ALLOCATABLE                   :: stored_field(:,:,:,:)
@@ -1477,17 +1505,19 @@ SUBROUTINE ftg_compare_int_4d(fieldname, field, result, result_acc, fieldname_al
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_int_4d
 
-SUBROUTINE ftg_compare_long_0d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_long_0d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN)       :: field
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER(KIND=C_LONG), ALLOCATABLE      :: stored_field
@@ -1509,17 +1539,19 @@ SUBROUTINE ftg_compare_long_0d(fieldname, field, result, result_acc, fieldname_a
     END IF 
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_long_0d
 
-SUBROUTINE ftg_compare_long_1d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_long_1d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN)       :: field(:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER(KIND=C_LONG), ALLOCATABLE      :: stored_field(:)
@@ -1545,17 +1577,19 @@ SUBROUTINE ftg_compare_long_1d(fieldname, field, result, result_acc, fieldname_a
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_long_1d
 
-SUBROUTINE ftg_compare_long_2d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_long_2d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN)       :: field(:,:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER(KIND=C_LONG), ALLOCATABLE      :: stored_field(:,:)
@@ -1581,17 +1615,19 @@ SUBROUTINE ftg_compare_long_2d(fieldname, field, result, result_acc, fieldname_a
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_long_2d
 
-SUBROUTINE ftg_compare_long_3d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_long_3d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN)       :: field(:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER(KIND=C_LONG), ALLOCATABLE      :: stored_field(:,:,:)
@@ -1617,17 +1653,19 @@ SUBROUTINE ftg_compare_long_3d(fieldname, field, result, result_acc, fieldname_a
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_long_3d
 
-SUBROUTINE ftg_compare_long_4d(fieldname, field, result, result_acc, fieldname_alias)
+SUBROUTINE ftg_compare_long_4d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN)       :: field(:,:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL       :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER(KIND=C_LONG), ALLOCATABLE      :: stored_field(:,:,:,:)
@@ -1653,17 +1691,19 @@ SUBROUTINE ftg_compare_long_4d(fieldname, field, result, result_acc, fieldname_a
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_long_4d
 
-SUBROUTINE ftg_compare_float_0d(fieldname, field, result, result_acc, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_float_0d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN)           :: field
   LOGICAL, INTENT(OUT)                     :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL         :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL         :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL   :: fieldname_alias
   CHARACTER(LEN=256)                       :: fieldname_print
   REAL(KIND=C_FLOAT), ALLOCATABLE          :: stored_field
@@ -1693,17 +1733,19 @@ SUBROUTINE ftg_compare_float_0d(fieldname, field, result, result_acc, tolerance,
     END IF 
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_float_0d
 
-SUBROUTINE ftg_compare_float_1d(fieldname, field, result, result_acc, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_float_1d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN)           :: field(:)
   LOGICAL, INTENT(OUT)                     :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL         :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL         :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL   :: fieldname_alias
   CHARACTER(LEN=256)                       :: fieldname_print
   REAL(KIND=C_FLOAT), ALLOCATABLE          :: stored_field(:)
@@ -1737,17 +1779,19 @@ SUBROUTINE ftg_compare_float_1d(fieldname, field, result, result_acc, tolerance,
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_float_1d
 
-SUBROUTINE ftg_compare_float_2d(fieldname, field, result, result_acc, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_float_2d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN)           :: field(:,:)
   LOGICAL, INTENT(OUT)                     :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL         :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL         :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL   :: fieldname_alias
   CHARACTER(LEN=256)                       :: fieldname_print
   REAL(KIND=C_FLOAT), ALLOCATABLE          :: stored_field(:,:)
@@ -1781,17 +1825,19 @@ SUBROUTINE ftg_compare_float_2d(fieldname, field, result, result_acc, tolerance,
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_float_2d
 
-SUBROUTINE ftg_compare_float_3d(fieldname, field, result, result_acc, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_float_3d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN)           :: field(:,:,:)
   LOGICAL, INTENT(OUT)                     :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL         :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL         :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL   :: fieldname_alias
   CHARACTER(LEN=256)                       :: fieldname_print
   REAL(KIND=C_FLOAT), ALLOCATABLE          :: stored_field(:,:,:)
@@ -1825,17 +1871,19 @@ SUBROUTINE ftg_compare_float_3d(fieldname, field, result, result_acc, tolerance,
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_float_3d
 
-SUBROUTINE ftg_compare_float_4d(fieldname, field, result, result_acc, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_float_4d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)             :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN)           :: field(:,:,:,:)
   LOGICAL, INTENT(OUT)                     :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL         :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL         :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL   :: fieldname_alias
   CHARACTER(LEN=256)                       :: fieldname_print
   REAL(KIND=C_FLOAT), ALLOCATABLE          :: stored_field(:,:,:,:)
@@ -1869,17 +1917,19 @@ SUBROUTINE ftg_compare_float_4d(fieldname, field, result, result_acc, tolerance,
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_float_4d
 
-SUBROUTINE ftg_compare_double_0d(fieldname, field, result, result_acc, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_double_0d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN)           :: field
   LOGICAL, INTENT(OUT)                      :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL          :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL          :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL    :: fieldname_alias
   CHARACTER(LEN=256)                        :: fieldname_print
   REAL(KIND=C_DOUBLE), ALLOCATABLE          :: stored_field
@@ -1909,17 +1959,19 @@ SUBROUTINE ftg_compare_double_0d(fieldname, field, result, result_acc, tolerance
     END IF 
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_double_0d
 
-SUBROUTINE ftg_compare_double_1d(fieldname, field, result, result_acc, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_double_1d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN)           :: field(:)
   LOGICAL, INTENT(OUT)                      :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL          :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL          :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL    :: fieldname_alias
   CHARACTER(LEN=256)                        :: fieldname_print
   REAL(KIND=C_DOUBLE), ALLOCATABLE          :: stored_field(:)
@@ -1953,17 +2005,19 @@ SUBROUTINE ftg_compare_double_1d(fieldname, field, result, result_acc, tolerance
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_double_1d
 
-SUBROUTINE ftg_compare_double_2d(fieldname, field, result, result_acc, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_double_2d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN)           :: field(:,:)
   LOGICAL, INTENT(OUT)                      :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL          :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL          :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL    :: fieldname_alias
   CHARACTER(LEN=256)                        :: fieldname_print
   REAL(KIND=C_DOUBLE), ALLOCATABLE          :: stored_field(:,:)
@@ -1997,17 +2051,19 @@ SUBROUTINE ftg_compare_double_2d(fieldname, field, result, result_acc, tolerance
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_double_2d
 
-SUBROUTINE ftg_compare_double_3d(fieldname, field, result, result_acc, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_double_3d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN)           :: field(:,:,:)
   LOGICAL, INTENT(OUT)                      :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL          :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL          :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL    :: fieldname_alias
   CHARACTER(LEN=256)                        :: fieldname_print
   REAL(KIND=C_DOUBLE), ALLOCATABLE          :: stored_field(:,:,:)
@@ -2041,17 +2097,19 @@ SUBROUTINE ftg_compare_double_3d(fieldname, field, result, result_acc, tolerance
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_double_3d
 
-SUBROUTINE ftg_compare_double_4d(fieldname, field, result, result_acc, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_double_4d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)              :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN)           :: field(:,:,:,:)
   LOGICAL, INTENT(OUT)                      :: result
-  LOGICAL, INTENT(INOUT), OPTIONAL          :: result_acc
+  INTEGER, INTENT(INOUT), OPTIONAL          :: failure_count
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL    :: fieldname_alias
   CHARACTER(LEN=256)                        :: fieldname_print
   REAL(KIND=C_DOUBLE), ALLOCATABLE          :: stored_field(:,:,:,:)
@@ -2085,8 +2143,10 @@ SUBROUTINE ftg_compare_double_4d(fieldname, field, result, result_acc, tolerance
     END IF
   END IF
   
-  IF (PRESENT(result_acc)) THEN
-    result_acc = result_acc .AND. result
+  IF (PRESENT(failure_count)) THEN
+    IF (.NOT. result) THEN
+      failure_count = failure_count + 1
+    END IF
   END IF
     
 END SUBROUTINE ftg_compare_double_4d
