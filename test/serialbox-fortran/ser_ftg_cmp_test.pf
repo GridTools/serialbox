@@ -117,7 +117,7 @@ CONTAINS
       INTEGER              :: integer2b(5,9)  
       INTEGER(KIND=C_LONG) :: longint3b(9,11,16)  
       REAL(KIND=C_FLOAT)   :: float4b(2,20,3,21)
-      REAL(KIND=C_DOUBLE)  :: double4b(2,20,3,22)
+      REAL(KIND=C_DOUBLE)  :: double4b(0:1,-50:-31,3:5,22)
     
       result = .FALSE.
       failure_count = 0
