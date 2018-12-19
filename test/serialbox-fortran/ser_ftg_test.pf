@@ -1162,6 +1162,7 @@ CONTAINS
       double4a(:,:,:,:)  = 109.23
       double4b(:,:,:,:)  = 109.23
       double4c(:,:,:,:)  = 109.23
+      double4d(:,:,:,:)  = 109.23
       double4d(2,20,3,1)  = 109.229
       
       CALL ftg_set_serializer(dir, base_name, 'w')
