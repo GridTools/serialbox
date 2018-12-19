@@ -1,5 +1,5 @@
-! TODO Test bullshit
-! TODO Test register only
+! TODO Test NaN
+! TODO Test tolerance
 
 MODULE ser_ftg_cmp_test
 
