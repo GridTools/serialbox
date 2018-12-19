@@ -1,4 +1,4 @@
-! TODO Test NaN
+! TODO Test NaN => Not possible: x = ieee_value(x, ieee_quiet_nan) always causes SIGFPE: Floating-point exception
 ! TODO Test tolerance
 
 MODULE ser_ftg_cmp_test
