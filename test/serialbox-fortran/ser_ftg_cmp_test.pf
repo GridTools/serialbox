@@ -12,16 +12,9 @@ MODULE ser_ftg_cmp_test
   
   PUBLIC
   
-  TYPE testt
-    INTEGER :: i0 
-    REAL(KIND=C_DOUBLE), ALLOCATABLE :: d3(:,:,:) 
-  END TYPE testt 
-  
   CHARACTER(len=*), PARAMETER :: dir = 'ftgcmpdata'
   CHARACTER(len=*), PARAMETER :: base_name = 'testCompare'
   CHARACTER(len=*), PARAMETER :: savepoint_name = 'test'
-  INTEGER, PARAMETER :: exp_size_scalar(4) = (/ 1, 0, 0, 0 /) 
-  INTEGER, PARAMETER :: exp_bounds_scalar(8) = (/ 0, 0, 0, 0, 0, 0, 0, 0 /) 
 
   LOGICAL              :: logical0a 
   LOGICAL(KIND=C_BOOL) :: boolean1a(-1:2)
@@ -32,11 +25,6 @@ MODULE ser_ftg_cmp_test
 
 CONTAINS
 
-   FUNCTION exp_size(var_shape)
-      INTEGER :: var_shape(:), exp_size(4)
-      exp_size = RESHAPE(var_shape, (/ 4 /), (/ 0, 0, 0, 0 /))
-   END FUNCTION exp_size
-   
 @Before
    SUBROUTINE mySetup()
 
