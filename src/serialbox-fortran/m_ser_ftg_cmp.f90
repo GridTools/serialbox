@@ -157,7 +157,7 @@ SUBROUTINE ftg_cmp_print_deviations_logical_0d(expected, actual, fieldname_print
   LOGICAL, INTENT(IN)          :: expected, actual
   CHARACTER(LEN=*), INTENT(IN) :: fieldname_print
   
-  IF (expected .NEQV. actual) THEN
+  IF (actual .NEQV. expected) THEN
     WRITE (*,'(A)',advance="no") "  -> expected: "
     WRITE (*,'(L0)',advance="no") expected
     WRITE (*,'(A)',advance="no") ", actual: "
@@ -170,7 +170,7 @@ SUBROUTINE ftg_cmp_print_deviations_bool_0d(expected, actual, fieldname_print)
   LOGICAL(KIND=C_BOOL), INTENT(IN) :: expected, actual
   CHARACTER(LEN=*), INTENT(IN)     :: fieldname_print
   
-  IF (expected .NEQV. actual) THEN
+  IF (actual .NEQV. expected) THEN
     WRITE (*,'(A)',advance="no") "  -> expected: "
     WRITE (*,'(L0)',advance="no") expected
     WRITE (*,'(A)',advance="no") ", actual: "
@@ -183,7 +183,7 @@ SUBROUTINE ftg_cmp_print_deviations_int_0d(expected, actual, fieldname_print)
   INTEGER, INTENT(IN)          :: expected, actual
   CHARACTER(LEN=*), INTENT(IN) :: fieldname_print
   
-  IF (expected /= actual) THEN
+  IF (actual /= expected) THEN
     WRITE (*,'(A)',advance="no") "  -> expected: "
     WRITE (*,'(L0)',advance="no") expected
     WRITE (*,'(A)',advance="no") ", actual: "
@@ -196,7 +196,7 @@ SUBROUTINE ftg_cmp_print_deviations_long_0d(expected, actual, fieldname_print)
   INTEGER(KIND=C_LONG), INTENT(IN) :: expected, actual
   CHARACTER(LEN=*), INTENT(IN)     :: fieldname_print
   
-  IF (expected /= actual) THEN
+  IF (actual /= expected) THEN
     WRITE (*,'(A)',advance="no") "  -> expected: "
     WRITE (*,'(L0)',advance="no") expected
     WRITE (*,'(A)',advance="no") ", actual: "
@@ -209,7 +209,7 @@ SUBROUTINE ftg_cmp_print_deviations_float_0d(expected, actual, fieldname_print)
   REAL(KIND=C_FLOAT), INTENT(IN) :: expected, actual
   CHARACTER(LEN=*), INTENT(IN)   :: fieldname_print
   
-  IF (expected /= actual) THEN
+  IF (.NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected) THEN
     WRITE (*,'(A)',advance="no") "  -> expected: "
     WRITE (*,'(L0)',advance="no") expected
     WRITE (*,'(A)',advance="no") ", actual: "
@@ -222,7 +222,7 @@ SUBROUTINE ftg_cmp_print_deviations_double_0d(expected, actual, fieldname_print)
   REAL(KIND=C_DOUBLE), INTENT(IN) :: expected, actual
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname_print
   
-  IF (expected /= actual) THEN
+  IF (.NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected) THEN
     WRITE (*,'(A)',advance="no") "  -> expected: "
     WRITE (*,'(L0)',advance="no") expected
     WRITE (*,'(A)',advance="no") ", actual: "
@@ -494,7 +494,7 @@ SUBROUTINE ftg_cmp_print_deviations_int_1d(expected, actual, fieldname_print)
   INTEGER, ALLOCATABLE         :: deltas(:)
   INTEGER                      :: indices(1), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -520,7 +520,7 @@ SUBROUTINE ftg_cmp_print_deviations_int_2d(expected, actual, fieldname_print)
   INTEGER, ALLOCATABLE         :: deltas(:,:)
   INTEGER                      :: indices(2), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -548,7 +548,7 @@ SUBROUTINE ftg_cmp_print_deviations_int_3d(expected, actual, fieldname_print)
   INTEGER, ALLOCATABLE         :: deltas(:,:,:)
   INTEGER                      :: indices(3), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -578,7 +578,7 @@ SUBROUTINE ftg_cmp_print_deviations_int_4d(expected, actual, fieldname_print)
   INTEGER, ALLOCATABLE         :: deltas(:,:,:,:)
   INTEGER                      :: indices(4), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -610,7 +610,7 @@ SUBROUTINE ftg_cmp_print_deviations_long_1d(expected, actual, fieldname_print)
   INTEGER(KIND=C_LONG), ALLOCATABLE :: deltas(:)
   INTEGER                           :: indices(1), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -636,7 +636,7 @@ SUBROUTINE ftg_cmp_print_deviations_long_2d(expected, actual, fieldname_print)
   INTEGER(KIND=C_LONG), ALLOCATABLE :: deltas(:,:)
   INTEGER                           :: indices(2), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -664,7 +664,7 @@ SUBROUTINE ftg_cmp_print_deviations_long_3d(expected, actual, fieldname_print)
   INTEGER(KIND=C_LONG), ALLOCATABLE :: deltas(:,:,:)
   INTEGER                           :: indices(3), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -694,7 +694,7 @@ SUBROUTINE ftg_cmp_print_deviations_long_4d(expected, actual, fieldname_print)
   INTEGER(KIND=C_LONG), ALLOCATABLE :: deltas(:,:,:,:)
   INTEGER                           :: indices(4), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -726,7 +726,7 @@ SUBROUTINE ftg_cmp_print_deviations_float_1d(expected, actual, fieldname_print)
   REAL(KIND=C_FLOAT), ALLOCATABLE :: deltas(:)
   INTEGER                         :: indices(1), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -752,7 +752,7 @@ SUBROUTINE ftg_cmp_print_deviations_float_2d(expected, actual, fieldname_print)
   REAL(KIND=C_FLOAT), ALLOCATABLE :: deltas(:,:)
   INTEGER                         :: indices(2), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -780,7 +780,7 @@ SUBROUTINE ftg_cmp_print_deviations_float_3d(expected, actual, fieldname_print)
   REAL(KIND=C_FLOAT), ALLOCATABLE :: deltas(:,:,:)
   INTEGER                         :: indices(3), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -810,7 +810,7 @@ SUBROUTINE ftg_cmp_print_deviations_float_4d(expected, actual, fieldname_print)
   REAL(KIND=C_FLOAT), ALLOCATABLE :: deltas(:,:,:,:)
   INTEGER                         :: indices(4), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -842,7 +842,7 @@ SUBROUTINE ftg_cmp_print_deviations_double_1d(expected, actual, fieldname_print)
   REAL(KIND=C_DOUBLE), ALLOCATABLE :: deltas(:)
   INTEGER                          :: indices(1), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -868,7 +868,7 @@ SUBROUTINE ftg_cmp_print_deviations_double_2d(expected, actual, fieldname_print)
   REAL(KIND=C_DOUBLE), ALLOCATABLE :: deltas(:,:)
   INTEGER                          :: indices(2), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -896,7 +896,7 @@ SUBROUTINE ftg_cmp_print_deviations_double_3d(expected, actual, fieldname_print)
   REAL(KIND=C_DOUBLE), ALLOCATABLE :: deltas(:,:,:)
   INTEGER                          :: indices(3), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -926,7 +926,7 @@ SUBROUTINE ftg_cmp_print_deviations_double_4d(expected, actual, fieldname_print)
   REAL(KIND=C_DOUBLE), ALLOCATABLE :: deltas(:,:,:,:)
   INTEGER                          :: indices(4), i, j
   
-  mask = expected /= actual
+  mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = expected - actual
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
@@ -1805,7 +1805,7 @@ SUBROUTINE ftg_compare_float_0d(fieldname, field, result, failure_count, toleran
   result = .TRUE.
 
   CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-  IF (ABS(field - stored_field) > t) THEN
+  IF (.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t) THEN
     result = .FALSE.
     WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
     IF (ftg_cmp_max_print_deviations > 0) THEN
@@ -1854,7 +1854,7 @@ SUBROUTINE ftg_compare_float_1d(fieldname, field, result, failure_count, toleran
     result = .FALSE.
   ELSE
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(ABS(field - stored_field) > t)) THEN
+    IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
@@ -1904,7 +1904,7 @@ SUBROUTINE ftg_compare_float_2d(fieldname, field, result, failure_count, toleran
     result = .FALSE.
   ELSE
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(ABS(field - stored_field) > t)) THEN
+    IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
@@ -1954,7 +1954,7 @@ SUBROUTINE ftg_compare_float_3d(fieldname, field, result, failure_count, toleran
     result = .FALSE.
   ELSE
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(ABS(field - stored_field) > t)) THEN
+    IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
@@ -2004,7 +2004,7 @@ SUBROUTINE ftg_compare_float_4d(fieldname, field, result, failure_count, toleran
     result = .FALSE.
   ELSE
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(ABS(field - stored_field) > t)) THEN
+    IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
@@ -2051,7 +2051,7 @@ SUBROUTINE ftg_compare_double_0d(fieldname, field, result, failure_count, tolera
   result = .TRUE.
 
   CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-  IF (ABS(field - stored_field) > t) THEN
+  IF (.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t) THEN
     result = .FALSE.
     WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
     IF (ftg_cmp_max_print_deviations > 0) THEN
@@ -2100,7 +2100,7 @@ SUBROUTINE ftg_compare_double_1d(fieldname, field, result, failure_count, tolera
     result = .FALSE.
   ELSE
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(ABS(field - stored_field) > t)) THEN
+    IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
@@ -2150,7 +2150,7 @@ SUBROUTINE ftg_compare_double_2d(fieldname, field, result, failure_count, tolera
     result = .FALSE.
   ELSE
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(ABS(field - stored_field) > t)) THEN
+    IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
@@ -2200,7 +2200,7 @@ SUBROUTINE ftg_compare_double_3d(fieldname, field, result, failure_count, tolera
     result = .FALSE.
   ELSE
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(ABS(field - stored_field) > t)) THEN
+    IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
@@ -2250,7 +2250,7 @@ SUBROUTINE ftg_compare_double_4d(fieldname, field, result, failure_count, tolera
     result = .FALSE.
   ELSE
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
-    IF (ANY(ABS(field - stored_field) > t)) THEN
+    IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
