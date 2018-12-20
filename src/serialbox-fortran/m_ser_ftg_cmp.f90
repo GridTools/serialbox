@@ -190,7 +190,6 @@ FUNCTION ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print)
 END FUNCTION ftg_cmp_bounds
 
 !=============================================================================
-!TODO UBOUND und LBOUND uebergeben und Indizes justieren
 !=============================================================================
 
 SUBROUTINE ftg_cmp_print_deviations_logical_0d(expected, actual, fieldname_print)
