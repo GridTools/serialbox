@@ -271,19 +271,25 @@ SUBROUTINE ftg_cmp_print_deviations_double_0d(expected, actual, fieldname_print)
 
 END SUBROUTINE ftg_cmp_print_deviations_double_0d
 
-SUBROUTINE ftg_cmp_print_deviations_logical_1d(expected, actual, fieldname_print)
-  LOGICAL, INTENT(IN)          :: expected(:), actual(:)
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname_print
-  LOGICAL, ALLOCATABLE         :: mask(:)
-  INTEGER                      :: i, counter
+SUBROUTINE ftg_cmp_print_deviations_logical_1d(expected, actual, fieldname_print, lbounds)
+  LOGICAL, INTENT(IN)           :: expected(:), actual(:)
+  CHARACTER(LEN=*), INTENT(IN)  :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL :: lbounds(1)
+  LOGICAL, ALLOCATABLE          :: mask(:)
+  INTEGER                       :: indexAdj(1), i, counter
   
   mask = expected .NEQV. actual
   counter = 1
+  IF (PRESENT(lbounds)) THEN
+    indexAdj = lbounds
+  ELSE
+    indexAdj(:) = 1
+  END IF
   
   outer: DO i = 1, SIZE(mask, 1)
           IF (mask(i)) THEN
             WRITE (*,'(A)',advance="no") "  -> ("
-            WRITE (*,'(I0)',advance="no") i
+            WRITE (*,'(I0)',advance="no") i + indexAdj(1) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
             WRITE (*,'(L0)',advance="no") expected(i)
             WRITE (*,'(A)',advance="no") ", actual: "
@@ -297,22 +303,28 @@ SUBROUTINE ftg_cmp_print_deviations_logical_1d(expected, actual, fieldname_print
   
 END SUBROUTINE ftg_cmp_print_deviations_logical_1d
 
-SUBROUTINE ftg_cmp_print_deviations_logical_2d(expected, actual, fieldname_print)
-  LOGICAL, INTENT(IN)          :: expected(:,:), actual(:,:)
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname_print
-  LOGICAL, ALLOCATABLE         :: mask(:,:)
-  INTEGER                      :: i, j, counter
+SUBROUTINE ftg_cmp_print_deviations_logical_2d(expected, actual, fieldname_print, lbounds)
+  LOGICAL, INTENT(IN)           :: expected(:,:), actual(:,:)
+  CHARACTER(LEN=*), INTENT(IN)  :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL :: lbounds(2)
+  LOGICAL, ALLOCATABLE          :: mask(:,:)
+  INTEGER                       :: indexAdj(2), i, j, counter
   
   mask = expected .NEQV. actual
   counter = 1
+  IF (PRESENT(lbounds)) THEN
+    indexAdj = lbounds
+  ELSE
+    indexAdj(:) = 1
+  END IF
   
   outer: DO i = 1, SIZE(mask, 1)
     DO j = 1, SIZE(mask, 2)
           IF (mask(i, j)) THEN
             WRITE (*,'(A)',advance="no") "  -> ("
-            WRITE (*,'(I0)',advance="no") i
+            WRITE (*,'(I0)',advance="no") i + indexAdj(1) - 1
             WRITE (*,'(A)',advance="no") ", "
-            WRITE (*,'(I0)',advance="no") j
+            WRITE (*,'(I0)',advance="no") j + indexAdj(2) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
             WRITE (*,'(L0)',advance="no") expected(i, j)
             WRITE (*,'(A)',advance="no") ", actual: "
@@ -327,25 +339,31 @@ SUBROUTINE ftg_cmp_print_deviations_logical_2d(expected, actual, fieldname_print
   
 END SUBROUTINE ftg_cmp_print_deviations_logical_2d
 
-SUBROUTINE ftg_cmp_print_deviations_logical_3d(expected, actual, fieldname_print)
-  LOGICAL, INTENT(IN)          :: expected(:,:,:), actual(:,:,:)
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname_print
-  LOGICAL, ALLOCATABLE         :: mask(:,:,:)
-  INTEGER                      :: i, j, k, counter
+SUBROUTINE ftg_cmp_print_deviations_logical_3d(expected, actual, fieldname_print, lbounds)
+  LOGICAL, INTENT(IN)           :: expected(:,:,:), actual(:,:,:)
+  CHARACTER(LEN=*), INTENT(IN)  :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL :: lbounds(3)
+  LOGICAL, ALLOCATABLE          :: mask(:,:,:)
+  INTEGER                       :: indexAdj(3), i, j, k, counter
   
   mask = expected .NEQV. actual
   counter = 1
+  IF (PRESENT(lbounds)) THEN
+    indexAdj = lbounds
+  ELSE
+    indexAdj(:) = 1
+  END IF
   
   outer: DO i = 1, SIZE(mask, 1)
     DO j = 1, SIZE(mask, 2)
       DO k = 1, SIZE(mask, 3)
           IF (mask(i, j, k)) THEN
             WRITE (*,'(A)',advance="no") "  -> ("
-            WRITE (*,'(I0)',advance="no") i
+            WRITE (*,'(I0)',advance="no") i + indexAdj(1) - 1
             WRITE (*,'(A)',advance="no") ", "
-            WRITE (*,'(I0)',advance="no") j
+            WRITE (*,'(I0)',advance="no") j + indexAdj(2) - 1
             WRITE (*,'(A)',advance="no") ", "
-            WRITE (*,'(I0)',advance="no") k
+            WRITE (*,'(I0)',advance="no") k + indexAdj(3) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
             WRITE (*,'(L0)',advance="no") expected(i, j, k)
             WRITE (*,'(A)',advance="no") ", actual: "
@@ -361,14 +379,20 @@ SUBROUTINE ftg_cmp_print_deviations_logical_3d(expected, actual, fieldname_print
   
 END SUBROUTINE ftg_cmp_print_deviations_logical_3d
 
-SUBROUTINE ftg_cmp_print_deviations_logical_4d(expected, actual, fieldname_print)
-  LOGICAL, INTENT(IN)          :: expected(:,:,:,:), actual(:,:,:,:)
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname_print
-  LOGICAL, ALLOCATABLE         :: mask(:,:,:,:)
-  INTEGER                      :: i, j, k, l, counter
+SUBROUTINE ftg_cmp_print_deviations_logical_4d(expected, actual, fieldname_print, lbounds)
+  LOGICAL, INTENT(IN)           :: expected(:,:,:,:), actual(:,:,:,:)
+  CHARACTER(LEN=*), INTENT(IN)  :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL :: lbounds(4)
+  LOGICAL, ALLOCATABLE          :: mask(:,:,:,:)
+  INTEGER                       :: indexAdj(4), i, j, k, l, counter
   
   mask = expected .NEQV. actual
   counter = 1
+  IF (PRESENT(lbounds)) THEN
+    indexAdj = lbounds
+  ELSE
+    indexAdj(:) = 1
+  END IF
   
   outer: DO i = 1, SIZE(mask, 1)
     DO j = 1, SIZE(mask, 2)
@@ -376,13 +400,13 @@ SUBROUTINE ftg_cmp_print_deviations_logical_4d(expected, actual, fieldname_print
         DO l = 1, SIZE(mask, 4)
           IF (mask(i, j, k, l)) THEN
             WRITE (*,'(A)',advance="no") "  -> ("
-            WRITE (*,'(I0)',advance="no") i
+            WRITE (*,'(I0)',advance="no") i + indexAdj(1) - 1
             WRITE (*,'(A)',advance="no") ", "
-            WRITE (*,'(I0)',advance="no") j
+            WRITE (*,'(I0)',advance="no") j + indexAdj(2) - 1
             WRITE (*,'(A)',advance="no") ", "
-            WRITE (*,'(I0)',advance="no") k
+            WRITE (*,'(I0)',advance="no") k + indexAdj(3) - 1
             WRITE (*,'(A)',advance="no") ", "
-            WRITE (*,'(I0)',advance="no") l
+            WRITE (*,'(I0)',advance="no") l + indexAdj(4) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
             WRITE (*,'(L0)',advance="no") expected(i, j, k, l)
             WRITE (*,'(A)',advance="no") ", actual: "
@@ -399,19 +423,25 @@ SUBROUTINE ftg_cmp_print_deviations_logical_4d(expected, actual, fieldname_print
   
 END SUBROUTINE ftg_cmp_print_deviations_logical_4d
 
-SUBROUTINE ftg_cmp_print_deviations_bool_1d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_bool_1d(expected, actual, fieldname_print, lbounds)
   LOGICAL(KIND=C_BOOL), INTENT(IN) :: expected(:), actual(:)
   CHARACTER(LEN=*), INTENT(IN)     :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL    :: lbounds(1)
   LOGICAL, ALLOCATABLE             :: mask(:)
-  INTEGER                          :: i, counter
+  INTEGER                          :: indexAdj(1), i, counter
   
   mask = expected .NEQV. actual
   counter = 1
+  IF (PRESENT(lbounds)) THEN
+    indexAdj = lbounds
+  ELSE
+    indexAdj(:) = 1
+  END IF
   
   outer: DO i = 1, SIZE(mask, 1)
           IF (mask(i)) THEN
             WRITE (*,'(A)',advance="no") "  -> ("
-            WRITE (*,'(I0)',advance="no") i
+            WRITE (*,'(I0)',advance="no") i + indexAdj(1) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
             WRITE (*,'(L0)',advance="no") expected(i)
             WRITE (*,'(A)',advance="no") ", actual: "
@@ -425,22 +455,28 @@ SUBROUTINE ftg_cmp_print_deviations_bool_1d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_bool_1d
 
-SUBROUTINE ftg_cmp_print_deviations_bool_2d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_bool_2d(expected, actual, fieldname_print, lbounds)
   LOGICAL(KIND=C_BOOL), INTENT(IN) :: expected(:,:), actual(:,:)
   CHARACTER(LEN=*), INTENT(IN)     :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL    :: lbounds(2)
   LOGICAL, ALLOCATABLE             :: mask(:,:)
-  INTEGER                          :: i, j, counter
+  INTEGER                          :: indexAdj(2), i, j, counter
   
   mask = expected .NEQV. actual
   counter = 1
+  IF (PRESENT(lbounds)) THEN
+    indexAdj = lbounds
+  ELSE
+    indexAdj(:) = 1
+  END IF
   
   outer: DO i = 1, SIZE(mask, 1)
     DO j = 1, SIZE(mask, 2)
           IF (mask(i, j)) THEN
             WRITE (*,'(A)',advance="no") "  -> ("
-            WRITE (*,'(I0)',advance="no") i
+            WRITE (*,'(I0)',advance="no") i + indexAdj(1) - 1
             WRITE (*,'(A)',advance="no") ", "
-            WRITE (*,'(I0)',advance="no") j
+            WRITE (*,'(I0)',advance="no") j + indexAdj(2) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
             WRITE (*,'(L0)',advance="no") expected(i, j)
             WRITE (*,'(A)',advance="no") ", actual: "
@@ -455,25 +491,31 @@ SUBROUTINE ftg_cmp_print_deviations_bool_2d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_bool_2d
 
-SUBROUTINE ftg_cmp_print_deviations_bool_3d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_bool_3d(expected, actual, fieldname_print, lbounds)
   LOGICAL(KIND=C_BOOL), INTENT(IN) :: expected(:,:,:), actual(:,:,:)
   CHARACTER(LEN=*), INTENT(IN)     :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL    :: lbounds(3)
   LOGICAL, ALLOCATABLE             :: mask(:,:,:)
-  INTEGER                          :: i, j, k, counter
+  INTEGER                          :: indexAdj(3), i, j, k, counter
   
   mask = expected .NEQV. actual
   counter = 1
+  IF (PRESENT(lbounds)) THEN
+    indexAdj = lbounds
+  ELSE
+    indexAdj(:) = 1
+  END IF
   
   outer: DO i = 1, SIZE(mask, 1)
     DO j = 1, SIZE(mask, 2)
       DO k = 1, SIZE(mask, 3)
           IF (mask(i, j, k)) THEN
             WRITE (*,'(A)',advance="no") "  -> ("
-            WRITE (*,'(I0)',advance="no") i
+            WRITE (*,'(I0)',advance="no") i + indexAdj(1) - 1
             WRITE (*,'(A)',advance="no") ", "
-            WRITE (*,'(I0)',advance="no") j
+            WRITE (*,'(I0)',advance="no") j + indexAdj(2) - 1
             WRITE (*,'(A)',advance="no") ", "
-            WRITE (*,'(I0)',advance="no") k
+            WRITE (*,'(I0)',advance="no") k + indexAdj(3) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
             WRITE (*,'(L0)',advance="no") expected(i, j, k)
             WRITE (*,'(A)',advance="no") ", actual: "
@@ -489,14 +531,20 @@ SUBROUTINE ftg_cmp_print_deviations_bool_3d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_bool_3d
 
-SUBROUTINE ftg_cmp_print_deviations_bool_4d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_bool_4d(expected, actual, fieldname_print, lbounds)
   LOGICAL(KIND=C_BOOL), INTENT(IN) :: expected(:,:,:,:), actual(:,:,:,:)
   CHARACTER(LEN=*), INTENT(IN)     :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL    :: lbounds(4)
   LOGICAL, ALLOCATABLE             :: mask(:,:,:,:)
-  INTEGER                          :: i, j, k, l, counter
+  INTEGER                          :: indexAdj(4), i, j, k, l, counter
   
   mask = expected .NEQV. actual
   counter = 1
+  IF (PRESENT(lbounds)) THEN
+    indexAdj = lbounds
+  ELSE
+    indexAdj(:) = 1
+  END IF
   
   outer: DO i = 1, SIZE(mask, 1)
     DO j = 1, SIZE(mask, 2)
@@ -504,13 +552,13 @@ SUBROUTINE ftg_cmp_print_deviations_bool_4d(expected, actual, fieldname_print)
         DO l = 1, SIZE(mask, 4)
           IF (mask(i, j, k, l)) THEN
             WRITE (*,'(A)',advance="no") "  -> ("
-            WRITE (*,'(I0)',advance="no") i
+            WRITE (*,'(I0)',advance="no") i + indexAdj(1) - 1
             WRITE (*,'(A)',advance="no") ", "
-            WRITE (*,'(I0)',advance="no") j
+            WRITE (*,'(I0)',advance="no") j + indexAdj(2) - 1
             WRITE (*,'(A)',advance="no") ", "
-            WRITE (*,'(I0)',advance="no") k
+            WRITE (*,'(I0)',advance="no") k + indexAdj(3) - 1
             WRITE (*,'(A)',advance="no") ", "
-            WRITE (*,'(I0)',advance="no") l
+            WRITE (*,'(I0)',advance="no") l + indexAdj(4) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
             WRITE (*,'(L0)',advance="no") expected(i, j, k, l)
             WRITE (*,'(A)',advance="no") ", actual: "
@@ -527,20 +575,26 @@ SUBROUTINE ftg_cmp_print_deviations_bool_4d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_bool_4d
 
-SUBROUTINE ftg_cmp_print_deviations_int_1d(expected, actual, fieldname_print)
-  INTEGER, INTENT(IN)          :: expected(:), actual(:)
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname_print
-  LOGICAL, ALLOCATABLE         :: mask(:)
-  INTEGER, ALLOCATABLE         :: deltas(:)
-  INTEGER                      :: indices(1), i, j
+SUBROUTINE ftg_cmp_print_deviations_int_1d(expected, actual, fieldname_print, lbounds)
+  INTEGER, INTENT(IN)           :: expected(:), actual(:)
+  CHARACTER(LEN=*), INTENT(IN)  :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL :: lbounds(1)
+  LOGICAL, ALLOCATABLE          :: mask(:)
+  INTEGER, ALLOCATABLE          :: deltas(:)
+  INTEGER                       :: indices(1), printIndices(1), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(I0)',advance="no") expected(indices(1))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -553,22 +607,28 @@ SUBROUTINE ftg_cmp_print_deviations_int_1d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_int_1d
 
-SUBROUTINE ftg_cmp_print_deviations_int_2d(expected, actual, fieldname_print)
-  INTEGER, INTENT(IN)          :: expected(:,:), actual(:,:)
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname_print
-  LOGICAL, ALLOCATABLE         :: mask(:,:)
-  INTEGER, ALLOCATABLE         :: deltas(:,:)
-  INTEGER                      :: indices(2), i, j
+SUBROUTINE ftg_cmp_print_deviations_int_2d(expected, actual, fieldname_print, lbounds)
+  INTEGER, INTENT(IN)           :: expected(:,:), actual(:,:)
+  CHARACTER(LEN=*), INTENT(IN)  :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL :: lbounds(2)
+  LOGICAL, ALLOCATABLE          :: mask(:,:)
+  INTEGER, ALLOCATABLE          :: deltas(:,:)
+  INTEGER                       :: indices(2), printIndices(2), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(2)
+      WRITE (*,'(I0)',advance="no") printIndices(2)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(I0)',advance="no") expected(indices(1), indices(2))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -581,24 +641,30 @@ SUBROUTINE ftg_cmp_print_deviations_int_2d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_int_2d
 
-SUBROUTINE ftg_cmp_print_deviations_int_3d(expected, actual, fieldname_print)
-  INTEGER, INTENT(IN)          :: expected(:,:,:), actual(:,:,:)
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname_print
-  LOGICAL, ALLOCATABLE         :: mask(:,:,:)
-  INTEGER, ALLOCATABLE         :: deltas(:,:,:)
-  INTEGER                      :: indices(3), i, j
+SUBROUTINE ftg_cmp_print_deviations_int_3d(expected, actual, fieldname_print, lbounds)
+  INTEGER, INTENT(IN)           :: expected(:,:,:), actual(:,:,:)
+  CHARACTER(LEN=*), INTENT(IN)  :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL :: lbounds(3)
+  LOGICAL, ALLOCATABLE          :: mask(:,:,:)
+  INTEGER, ALLOCATABLE          :: deltas(:,:,:)
+  INTEGER                       :: indices(3), printIndices(3), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(2)
+      WRITE (*,'(I0)',advance="no") printIndices(2)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(3)
+      WRITE (*,'(I0)',advance="no") printIndices(3)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(I0)',advance="no") expected(indices(1), indices(2), indices(3))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -611,26 +677,32 @@ SUBROUTINE ftg_cmp_print_deviations_int_3d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_int_3d
 
-SUBROUTINE ftg_cmp_print_deviations_int_4d(expected, actual, fieldname_print)
-  INTEGER, INTENT(IN)          :: expected(:,:,:,:), actual(:,:,:,:)
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname_print
-  LOGICAL, ALLOCATABLE         :: mask(:,:,:,:)
-  INTEGER, ALLOCATABLE         :: deltas(:,:,:,:)
-  INTEGER                      :: indices(4), i, j
+SUBROUTINE ftg_cmp_print_deviations_int_4d(expected, actual, fieldname_print, lbounds)
+  INTEGER, INTENT(IN)           :: expected(:,:,:,:), actual(:,:,:,:)
+  CHARACTER(LEN=*), INTENT(IN)  :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL :: lbounds(4)
+  LOGICAL, ALLOCATABLE          :: mask(:,:,:,:)
+  INTEGER, ALLOCATABLE          :: deltas(:,:,:,:)
+  INTEGER                       :: indices(4), printIndices(4), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(2)
+      WRITE (*,'(I0)',advance="no") printIndices(2)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(3)
+      WRITE (*,'(I0)',advance="no") printIndices(3)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(4)
+      WRITE (*,'(I0)',advance="no") printIndices(4)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(I0)',advance="no") expected(indices(1), indices(2), indices(3), indices(4))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -643,20 +715,26 @@ SUBROUTINE ftg_cmp_print_deviations_int_4d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_int_4d
 
-SUBROUTINE ftg_cmp_print_deviations_long_1d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_long_1d(expected, actual, fieldname_print, lbounds)
   INTEGER(KIND=C_LONG), INTENT(IN)  :: expected(:), actual(:)
   CHARACTER(LEN=*), INTENT(IN)      :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL     :: lbounds(1)
   LOGICAL, ALLOCATABLE              :: mask(:)
   INTEGER(KIND=C_LONG), ALLOCATABLE :: deltas(:)
-  INTEGER                           :: indices(1), i, j
+  INTEGER                           :: indices(1), printIndices(1), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(I19)',advance="no") expected(indices(1))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -669,22 +747,28 @@ SUBROUTINE ftg_cmp_print_deviations_long_1d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_long_1d
 
-SUBROUTINE ftg_cmp_print_deviations_long_2d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_long_2d(expected, actual, fieldname_print, lbounds)
   INTEGER(KIND=C_LONG), INTENT(IN)  :: expected(:,:), actual(:,:)
   CHARACTER(LEN=*), INTENT(IN)      :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL     :: lbounds(2)
   LOGICAL, ALLOCATABLE              :: mask(:,:)
   INTEGER(KIND=C_LONG), ALLOCATABLE :: deltas(:,:)
-  INTEGER                           :: indices(2), i, j
+  INTEGER                           :: indices(2), printIndices(2), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(2)
+      WRITE (*,'(I0)',advance="no") printIndices(2)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(I19)',advance="no") expected(indices(1), indices(2))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -697,24 +781,30 @@ SUBROUTINE ftg_cmp_print_deviations_long_2d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_long_2d
 
-SUBROUTINE ftg_cmp_print_deviations_long_3d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_long_3d(expected, actual, fieldname_print, lbounds)
   INTEGER(KIND=C_LONG), INTENT(IN)  :: expected(:,:,:), actual(:,:,:)
   CHARACTER(LEN=*), INTENT(IN)      :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL     :: lbounds(3)
   LOGICAL, ALLOCATABLE              :: mask(:,:,:)
   INTEGER(KIND=C_LONG), ALLOCATABLE :: deltas(:,:,:)
-  INTEGER                           :: indices(3), i, j
+  INTEGER                           :: indices(3), printIndices(3), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(2)
+      WRITE (*,'(I0)',advance="no") printIndices(2)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(3)
+      WRITE (*,'(I0)',advance="no") printIndices(3)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(I19)',advance="no") expected(indices(1), indices(2), indices(3))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -727,26 +817,32 @@ SUBROUTINE ftg_cmp_print_deviations_long_3d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_long_3d
 
-SUBROUTINE ftg_cmp_print_deviations_long_4d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_long_4d(expected, actual, fieldname_print, lbounds)
   INTEGER(KIND=C_LONG), INTENT(IN)  :: expected(:,:,:,:), actual(:,:,:,:)
   CHARACTER(LEN=*), INTENT(IN)      :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL     :: lbounds(4)
   LOGICAL, ALLOCATABLE              :: mask(:,:,:,:)
   INTEGER(KIND=C_LONG), ALLOCATABLE :: deltas(:,:,:,:)
-  INTEGER                           :: indices(4), i, j
+  INTEGER                           :: indices(4), printIndices(4), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(2)
+      WRITE (*,'(I0)',advance="no") printIndices(2)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(3)
+      WRITE (*,'(I0)',advance="no") printIndices(3)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(4)
+      WRITE (*,'(I0)',advance="no") printIndices(4)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(I19)',advance="no") expected(indices(1), indices(2), indices(3), indices(4))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -759,20 +855,26 @@ SUBROUTINE ftg_cmp_print_deviations_long_4d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_long_4d
 
-SUBROUTINE ftg_cmp_print_deviations_float_1d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_float_1d(expected, actual, fieldname_print, lbounds)
   REAL(KIND=C_FLOAT), INTENT(IN)  :: expected(:), actual(:)
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL   :: lbounds(1)
   LOGICAL, ALLOCATABLE            :: mask(:)
   REAL(KIND=C_FLOAT), ALLOCATABLE :: deltas(:)
-  INTEGER                         :: indices(1), i, j
+  INTEGER                         :: indices(1), printIndices(1), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(F0.14)',advance="no") expected(indices(1))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -785,22 +887,28 @@ SUBROUTINE ftg_cmp_print_deviations_float_1d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_float_1d
 
-SUBROUTINE ftg_cmp_print_deviations_float_2d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_float_2d(expected, actual, fieldname_print, lbounds)
   REAL(KIND=C_FLOAT), INTENT(IN)  :: expected(:,:), actual(:,:)
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL   :: lbounds(2)
   LOGICAL, ALLOCATABLE            :: mask(:,:)
   REAL(KIND=C_FLOAT), ALLOCATABLE :: deltas(:,:)
-  INTEGER                         :: indices(2), i, j
+  INTEGER                         :: indices(2), printIndices(2), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(2)
+      WRITE (*,'(I0)',advance="no") printIndices(2)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(F0.14)',advance="no") expected(indices(1), indices(2))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -813,24 +921,30 @@ SUBROUTINE ftg_cmp_print_deviations_float_2d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_float_2d
 
-SUBROUTINE ftg_cmp_print_deviations_float_3d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_float_3d(expected, actual, fieldname_print, lbounds)
   REAL(KIND=C_FLOAT), INTENT(IN)  :: expected(:,:,:), actual(:,:,:)
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL   :: lbounds(3)
   LOGICAL, ALLOCATABLE            :: mask(:,:,:)
   REAL(KIND=C_FLOAT), ALLOCATABLE :: deltas(:,:,:)
-  INTEGER                         :: indices(3), i, j
+  INTEGER                         :: indices(3), printIndices(3), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(2)
+      WRITE (*,'(I0)',advance="no") printIndices(2)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(3)
+      WRITE (*,'(I0)',advance="no") printIndices(3)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(F0.14)',advance="no") expected(indices(1), indices(2), indices(3))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -843,26 +957,32 @@ SUBROUTINE ftg_cmp_print_deviations_float_3d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_float_3d
 
-SUBROUTINE ftg_cmp_print_deviations_float_4d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_float_4d(expected, actual, fieldname_print, lbounds)
   REAL(KIND=C_FLOAT), INTENT(IN)  :: expected(:,:,:,:), actual(:,:,:,:)
   CHARACTER(LEN=*), INTENT(IN)    :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL   :: lbounds(4)
   LOGICAL, ALLOCATABLE            :: mask(:,:,:,:)
   REAL(KIND=C_FLOAT), ALLOCATABLE :: deltas(:,:,:,:)
-  INTEGER                         :: indices(4), i, j
+  INTEGER                         :: indices(4), printIndices(4), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(2)
+      WRITE (*,'(I0)',advance="no") printIndices(2)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(3)
+      WRITE (*,'(I0)',advance="no") printIndices(3)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(4)
+      WRITE (*,'(I0)',advance="no") printIndices(4)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(F0.14)',advance="no") expected(indices(1), indices(2), indices(3), indices(4))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -875,20 +995,26 @@ SUBROUTINE ftg_cmp_print_deviations_float_4d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_float_4d
 
-SUBROUTINE ftg_cmp_print_deviations_double_1d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_double_1d(expected, actual, fieldname_print, lbounds)
   REAL(KIND=C_DOUBLE), INTENT(IN)  :: expected(:), actual(:)
   CHARACTER(LEN=*), INTENT(IN)     :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL    :: lbounds(1)
   LOGICAL, ALLOCATABLE             :: mask(:)
   REAL(KIND=C_DOUBLE), ALLOCATABLE :: deltas(:)
-  INTEGER                          :: indices(1), i, j
+  INTEGER                          :: indices(1), printIndices(1), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(F0.14)',advance="no") expected(indices(1))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -901,22 +1027,28 @@ SUBROUTINE ftg_cmp_print_deviations_double_1d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_double_1d
 
-SUBROUTINE ftg_cmp_print_deviations_double_2d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_double_2d(expected, actual, fieldname_print, lbounds)
   REAL(KIND=C_DOUBLE), INTENT(IN)  :: expected(:,:), actual(:,:)
   CHARACTER(LEN=*), INTENT(IN)     :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL    :: lbounds(2)
   LOGICAL, ALLOCATABLE             :: mask(:,:)
   REAL(KIND=C_DOUBLE), ALLOCATABLE :: deltas(:,:)
-  INTEGER                          :: indices(2), i, j
+  INTEGER                          :: indices(2), printIndices(2), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(2)
+      WRITE (*,'(I0)',advance="no") printIndices(2)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(F0.14)',advance="no") expected(indices(1), indices(2))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -929,24 +1061,30 @@ SUBROUTINE ftg_cmp_print_deviations_double_2d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_double_2d
 
-SUBROUTINE ftg_cmp_print_deviations_double_3d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_double_3d(expected, actual, fieldname_print, lbounds)
   REAL(KIND=C_DOUBLE), INTENT(IN)  :: expected(:,:,:), actual(:,:,:)
   CHARACTER(LEN=*), INTENT(IN)     :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL    :: lbounds(3)
   LOGICAL, ALLOCATABLE             :: mask(:,:,:)
   REAL(KIND=C_DOUBLE), ALLOCATABLE :: deltas(:,:,:)
-  INTEGER                          :: indices(3), i, j
+  INTEGER                          :: indices(3), printIndices(3), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(2)
+      WRITE (*,'(I0)',advance="no") printIndices(2)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(3)
+      WRITE (*,'(I0)',advance="no") printIndices(3)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(F0.14)',advance="no") expected(indices(1), indices(2), indices(3))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -959,26 +1097,32 @@ SUBROUTINE ftg_cmp_print_deviations_double_3d(expected, actual, fieldname_print)
   
 END SUBROUTINE ftg_cmp_print_deviations_double_3d
 
-SUBROUTINE ftg_cmp_print_deviations_double_4d(expected, actual, fieldname_print)
+SUBROUTINE ftg_cmp_print_deviations_double_4d(expected, actual, fieldname_print, lbounds)
   REAL(KIND=C_DOUBLE), INTENT(IN)  :: expected(:,:,:,:), actual(:,:,:,:)
   CHARACTER(LEN=*), INTENT(IN)     :: fieldname_print
+  INTEGER, INTENT(IN), OPTIONAL    :: lbounds(4)
   LOGICAL, ALLOCATABLE             :: mask(:,:,:,:)
   REAL(KIND=C_DOUBLE), ALLOCATABLE :: deltas(:,:,:,:)
-  INTEGER                          :: indices(4), i, j
+  INTEGER                          :: indices(4), printIndices(4), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
   deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
+      IF (PRESENT(lbounds)) THEN
+        printIndices(:) = indices(:) + lbounds(:) - 1
+      ELSE
+        printIndices = indices
+      END IF
       WRITE (*,'(A)',advance="no") "  -> ("
-      WRITE (*,'(I0)',advance="no") indices(1)
+      WRITE (*,'(I0)',advance="no") printIndices(1)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(2)
+      WRITE (*,'(I0)',advance="no") printIndices(2)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(3)
+      WRITE (*,'(I0)',advance="no") printIndices(3)
       WRITE (*,'(A)',advance="no") ", "
-      WRITE (*,'(I0)',advance="no") indices(4)
+      WRITE (*,'(I0)',advance="no") printIndices(4)
       WRITE (*,'(A)',advance="no") "), expected: "
       WRITE (*,'(F0.14)',advance="no") expected(indices(1), indices(2), indices(3), indices(4))
       WRITE (*,'(A)',advance="no") ", actual: "
@@ -1063,7 +1207,7 @@ SUBROUTINE ftg_compare_logical_1d(fieldname, field, result, failure_count, lboun
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1111,7 +1255,7 @@ SUBROUTINE ftg_compare_logical_2d(fieldname, field, result, failure_count, lboun
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1159,7 +1303,7 @@ SUBROUTINE ftg_compare_logical_3d(fieldname, field, result, failure_count, lboun
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1207,7 +1351,7 @@ SUBROUTINE ftg_compare_logical_4d(fieldname, field, result, failure_count, lboun
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1293,7 +1437,7 @@ SUBROUTINE ftg_compare_bool_1d(fieldname, field, result, failure_count, lbounds,
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1341,7 +1485,7 @@ SUBROUTINE ftg_compare_bool_2d(fieldname, field, result, failure_count, lbounds,
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1389,7 +1533,7 @@ SUBROUTINE ftg_compare_bool_3d(fieldname, field, result, failure_count, lbounds,
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1437,7 +1581,7 @@ SUBROUTINE ftg_compare_bool_4d(fieldname, field, result, failure_count, lbounds,
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1523,7 +1667,7 @@ SUBROUTINE ftg_compare_int_1d(fieldname, field, result, failure_count, lbounds, 
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1571,7 +1715,7 @@ SUBROUTINE ftg_compare_int_2d(fieldname, field, result, failure_count, lbounds, 
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1619,7 +1763,7 @@ SUBROUTINE ftg_compare_int_3d(fieldname, field, result, failure_count, lbounds, 
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1667,7 +1811,7 @@ SUBROUTINE ftg_compare_int_4d(fieldname, field, result, failure_count, lbounds, 
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1753,7 +1897,7 @@ SUBROUTINE ftg_compare_long_1d(fieldname, field, result, failure_count, lbounds,
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1801,7 +1945,7 @@ SUBROUTINE ftg_compare_long_2d(fieldname, field, result, failure_count, lbounds,
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1849,7 +1993,7 @@ SUBROUTINE ftg_compare_long_3d(fieldname, field, result, failure_count, lbounds,
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1897,7 +2041,7 @@ SUBROUTINE ftg_compare_long_4d(fieldname, field, result, failure_count, lbounds,
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -1999,7 +2143,7 @@ SUBROUTINE ftg_compare_float_1d(fieldname, field, result, failure_count, lbounds
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -2055,7 +2199,7 @@ SUBROUTINE ftg_compare_float_2d(fieldname, field, result, failure_count, lbounds
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -2111,7 +2255,7 @@ SUBROUTINE ftg_compare_float_3d(fieldname, field, result, failure_count, lbounds
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -2167,7 +2311,7 @@ SUBROUTINE ftg_compare_float_4d(fieldname, field, result, failure_count, lbounds
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -2269,7 +2413,7 @@ SUBROUTINE ftg_compare_double_1d(fieldname, field, result, failure_count, lbound
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -2325,7 +2469,7 @@ SUBROUTINE ftg_compare_double_2d(fieldname, field, result, failure_count, lbound
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -2381,7 +2525,7 @@ SUBROUTINE ftg_compare_double_3d(fieldname, field, result, failure_count, lbound
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
@@ -2437,7 +2581,7 @@ SUBROUTINE ftg_compare_double_4d(fieldname, field, result, failure_count, lbound
       result = .FALSE.
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
       IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
       END IF 
     END IF
   END IF
