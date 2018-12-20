@@ -35,7 +35,7 @@ USE m_ser_ftg
 
 IMPLICIT NONE
 
-PUBLIC :: ftg_cmp_default_tolerance, ftg_cmp_max_print_deviations, ftg_cmp_message_prefix, ftg_compare
+PUBLIC :: ftg_cmp_default_tolerance, ftg_cmp_max_print_deviations, ftg_cmp_print_when_equal, ftg_cmp_message_prefix, ftg_compare
 
 PRIVATE
 
