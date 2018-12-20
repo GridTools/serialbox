@@ -35,7 +35,8 @@ USE m_ser_ftg
 
 IMPLICIT NONE
 
-PUBLIC :: ftg_cmp_default_tolerance, ftg_cmp_max_print_deviations, ftg_cmp_print_when_equal, ftg_cmp_message_prefix, ftg_compare
+PUBLIC :: ftg_cmp_default_tolerance, ftg_cmp_max_print_deviations, ftg_cmp_print_when_equal, &
+          ftg_cmp_count_different_bounds_as_failure, ftg_cmp_message_prefix, ftg_compare
 
 PRIVATE
 
@@ -112,6 +113,7 @@ END INTERFACE ftg_compare
 REAL              :: ftg_cmp_default_tolerance = 0.0
 INTEGER           :: ftg_cmp_max_print_deviations = 10
 LOGICAL           :: ftg_cmp_print_when_equal = .FALSE.
+LOGICAL           :: ftg_cmp_count_different_bounds_as_failure = .FALSE.
 CHARACTER(len=64) :: ftg_cmp_message_prefix = 'FTG Compare ***'
 
 CONTAINS
@@ -123,31 +125,69 @@ FUNCTION ftg_cmp_size(fieldname, actual_shape, fieldname_print)
 
   CHARACTER(LEN=*), INTENT(IN) :: fieldname, fieldname_print
   INTEGER, INTENT(IN)          :: actual_shape(:)
-  INTEGER                      :: rank, expected_shape(4), i
+  INTEGER                      :: rank, expected_shape(4), r
   LOGICAL                      :: ftg_cmp_size
   
   rank = SIZE(actual_shape)
   expected_shape = ftg_get_size(fieldname)
-  ftg_cmp_size =  ALL(actual_shape == expected_shape(:rank))
+  ftg_cmp_size = ALL(actual_shape == expected_shape(:rank))
+  
   IF (.NOT. ftg_cmp_size) THEN
-    WRITE (*,'(A,A,A,A)',advance="no") TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Size doesn't match, expected: ("
-    DO i = 1, rank
-      IF (i > 1) THEN
+    WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Size doesn't match"
+    WRITE (*,'(A)',advance="no") "  -> expected: ("
+    DO r = 1, rank
+      IF (r > 1) THEN
         WRITE(*,'(A)',advance="no") ', '
       END IF
-      WRITE (*,'(I0)',advance="no") expected_shape(i)
+      WRITE (*,'(I0)',advance="no") expected_shape(r)
     END DO
     WRITE (*,'(A)',advance="no") "), actual: ("
-    DO i = 1, rank
-      IF (i > 1) THEN
+    DO r = 1, rank
+      IF (r > 1) THEN
         WRITE(*,'(A)',advance="no") ', '
       END IF
-      WRITE (*,'(I0)',advance="no") actual_shape(i)
+      WRITE (*,'(I0)',advance="no") actual_shape(r)
     END DO
     WRITE (*,'(A)') ")"
   END IF
 
 END FUNCTION ftg_cmp_size
+
+FUNCTION ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print)
+
+  CHARACTER(LEN=*), INTENT(IN) :: fieldname, fieldname_print
+  INTEGER, INTENT(IN)          :: lbounds(:), ubounds(:)
+  INTEGER                      :: rank, expected_bounds(2, 4), r
+  LOGICAL                      :: ftg_cmp_bounds
+  
+  rank = SIZE(lbounds)
+  expected_bounds = RESHAPE(ftg_get_bounds(fieldname), (/2, 4/))
+  ftg_cmp_bounds = ALL(lbounds == expected_bounds(1,:rank)) .AND. ALL(ubounds == expected_bounds(2,:rank))
+  
+  IF (.NOT. ftg_cmp_bounds) THEN
+    WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Bounds don't match"
+    WRITE (*,'(A)',advance="no") "  -> expected: ("
+    DO r = 1, rank
+      IF (r > 1) THEN
+        WRITE(*,'(A)',advance="no") ', '
+      END IF
+      WRITE (*,'(I0)',advance="no") expected_bounds(1,r)
+      WRITE (*,'(A)',advance="no") ':'
+      WRITE (*,'(I0)',advance="no") expected_bounds(2,r)
+    END DO
+    WRITE (*,'(A)',advance="no") "), actual: ("
+    DO r = 1, rank
+      IF (r > 1) THEN
+        WRITE(*,'(A)',advance="no") ', '
+      END IF
+      WRITE (*,'(I0)',advance="no") lbounds(r)
+      WRITE (*,'(A)',advance="no") ':'
+      WRITE (*,'(I0)',advance="no") ubounds(r)
+    END DO
+    WRITE (*,'(A)') ")"
+  END IF
+
+END FUNCTION ftg_cmp_bounds
 
 !=============================================================================
 !TODO UBOUND und LBOUND uebergeben und Indizes justieren
@@ -992,7 +1032,7 @@ SUBROUTINE ftg_compare_logical_0d(fieldname, field, result, failure_count, field
     
 END SUBROUTINE ftg_compare_logical_0d
 
-SUBROUTINE ftg_compare_logical_1d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_logical_1d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL, INTENT(IN)                    :: field(:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1000,6 +1040,7 @@ SUBROUTINE ftg_compare_logical_1d(fieldname, field, result, failure_count, field
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL, ALLOCATABLE                   :: stored_field(:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(1), ubounds(1)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1012,6 +1053,11 @@ SUBROUTINE ftg_compare_logical_1d(fieldname, field, result, failure_count, field
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
@@ -1034,7 +1080,7 @@ SUBROUTINE ftg_compare_logical_1d(fieldname, field, result, failure_count, field
     
 END SUBROUTINE ftg_compare_logical_1d
 
-SUBROUTINE ftg_compare_logical_2d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_logical_2d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL, INTENT(IN)                    :: field(:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1042,6 +1088,7 @@ SUBROUTINE ftg_compare_logical_2d(fieldname, field, result, failure_count, field
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL, ALLOCATABLE                   :: stored_field(:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(2), ubounds(2)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1054,6 +1101,11 @@ SUBROUTINE ftg_compare_logical_2d(fieldname, field, result, failure_count, field
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
@@ -1076,7 +1128,7 @@ SUBROUTINE ftg_compare_logical_2d(fieldname, field, result, failure_count, field
     
 END SUBROUTINE ftg_compare_logical_2d
 
-SUBROUTINE ftg_compare_logical_3d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_logical_3d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL, INTENT(IN)                    :: field(:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1084,6 +1136,7 @@ SUBROUTINE ftg_compare_logical_3d(fieldname, field, result, failure_count, field
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL, ALLOCATABLE                   :: stored_field(:,:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(3), ubounds(3)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1096,6 +1149,11 @@ SUBROUTINE ftg_compare_logical_3d(fieldname, field, result, failure_count, field
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
@@ -1118,7 +1176,7 @@ SUBROUTINE ftg_compare_logical_3d(fieldname, field, result, failure_count, field
     
 END SUBROUTINE ftg_compare_logical_3d
 
-SUBROUTINE ftg_compare_logical_4d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_logical_4d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL, INTENT(IN)                    :: field(:,:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1126,6 +1184,7 @@ SUBROUTINE ftg_compare_logical_4d(fieldname, field, result, failure_count, field
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL, ALLOCATABLE                   :: stored_field(:,:,:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(4), ubounds(4)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1138,6 +1197,11 @@ SUBROUTINE ftg_compare_logical_4d(fieldname, field, result, failure_count, field
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
@@ -1198,7 +1262,7 @@ SUBROUTINE ftg_compare_bool_0d(fieldname, field, result, failure_count, fieldnam
     
 END SUBROUTINE ftg_compare_bool_0d
 
-SUBROUTINE ftg_compare_bool_1d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_bool_1d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN)       :: field(:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1206,6 +1270,7 @@ SUBROUTINE ftg_compare_bool_1d(fieldname, field, result, failure_count, fieldnam
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL(KIND=C_BOOL), ALLOCATABLE      :: stored_field(:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(1), ubounds(1)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1218,6 +1283,11 @@ SUBROUTINE ftg_compare_bool_1d(fieldname, field, result, failure_count, fieldnam
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
@@ -1240,7 +1310,7 @@ SUBROUTINE ftg_compare_bool_1d(fieldname, field, result, failure_count, fieldnam
     
 END SUBROUTINE ftg_compare_bool_1d
 
-SUBROUTINE ftg_compare_bool_2d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_bool_2d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN)       :: field(:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1248,6 +1318,7 @@ SUBROUTINE ftg_compare_bool_2d(fieldname, field, result, failure_count, fieldnam
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL(KIND=C_BOOL), ALLOCATABLE      :: stored_field(:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(2), ubounds(2)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1260,6 +1331,11 @@ SUBROUTINE ftg_compare_bool_2d(fieldname, field, result, failure_count, fieldnam
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
@@ -1282,7 +1358,7 @@ SUBROUTINE ftg_compare_bool_2d(fieldname, field, result, failure_count, fieldnam
     
 END SUBROUTINE ftg_compare_bool_2d
 
-SUBROUTINE ftg_compare_bool_3d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_bool_3d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN)       :: field(:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1290,6 +1366,7 @@ SUBROUTINE ftg_compare_bool_3d(fieldname, field, result, failure_count, fieldnam
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL(KIND=C_BOOL), ALLOCATABLE      :: stored_field(:,:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(3), ubounds(3)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1302,6 +1379,11 @@ SUBROUTINE ftg_compare_bool_3d(fieldname, field, result, failure_count, fieldnam
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
@@ -1324,7 +1406,7 @@ SUBROUTINE ftg_compare_bool_3d(fieldname, field, result, failure_count, fieldnam
     
 END SUBROUTINE ftg_compare_bool_3d
 
-SUBROUTINE ftg_compare_bool_4d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_bool_4d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   LOGICAL(KIND=C_BOOL), INTENT(IN)       :: field(:,:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1332,6 +1414,7 @@ SUBROUTINE ftg_compare_bool_4d(fieldname, field, result, failure_count, fieldnam
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   LOGICAL(KIND=C_BOOL), ALLOCATABLE      :: stored_field(:,:,:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(4), ubounds(4)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1344,6 +1427,11 @@ SUBROUTINE ftg_compare_bool_4d(fieldname, field, result, failure_count, fieldnam
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
@@ -1404,7 +1492,7 @@ SUBROUTINE ftg_compare_int_0d(fieldname, field, result, failure_count, fieldname
     
 END SUBROUTINE ftg_compare_int_0d
 
-SUBROUTINE ftg_compare_int_1d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_int_1d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER, INTENT(IN)                    :: field(:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1412,6 +1500,7 @@ SUBROUTINE ftg_compare_int_1d(fieldname, field, result, failure_count, fieldname
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER, ALLOCATABLE                   :: stored_field(:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(1), ubounds(1)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1424,6 +1513,11 @@ SUBROUTINE ftg_compare_int_1d(fieldname, field, result, failure_count, fieldname
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
@@ -1446,7 +1540,7 @@ SUBROUTINE ftg_compare_int_1d(fieldname, field, result, failure_count, fieldname
     
 END SUBROUTINE ftg_compare_int_1d
 
-SUBROUTINE ftg_compare_int_2d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_int_2d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER, INTENT(IN)                    :: field(:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1454,6 +1548,7 @@ SUBROUTINE ftg_compare_int_2d(fieldname, field, result, failure_count, fieldname
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER, ALLOCATABLE                   :: stored_field(:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(2), ubounds(2)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1466,6 +1561,11 @@ SUBROUTINE ftg_compare_int_2d(fieldname, field, result, failure_count, fieldname
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
@@ -1488,7 +1588,7 @@ SUBROUTINE ftg_compare_int_2d(fieldname, field, result, failure_count, fieldname
     
 END SUBROUTINE ftg_compare_int_2d
 
-SUBROUTINE ftg_compare_int_3d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_int_3d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER, INTENT(IN)                    :: field(:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1496,6 +1596,7 @@ SUBROUTINE ftg_compare_int_3d(fieldname, field, result, failure_count, fieldname
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER, ALLOCATABLE                   :: stored_field(:,:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(3), ubounds(3)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1508,6 +1609,11 @@ SUBROUTINE ftg_compare_int_3d(fieldname, field, result, failure_count, fieldname
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
@@ -1530,7 +1636,7 @@ SUBROUTINE ftg_compare_int_3d(fieldname, field, result, failure_count, fieldname
     
 END SUBROUTINE ftg_compare_int_3d
 
-SUBROUTINE ftg_compare_int_4d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_int_4d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER, INTENT(IN)                    :: field(:,:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1538,6 +1644,7 @@ SUBROUTINE ftg_compare_int_4d(fieldname, field, result, failure_count, fieldname
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER, ALLOCATABLE                   :: stored_field(:,:,:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(4), ubounds(4)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1550,6 +1657,11 @@ SUBROUTINE ftg_compare_int_4d(fieldname, field, result, failure_count, fieldname
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
@@ -1610,7 +1722,7 @@ SUBROUTINE ftg_compare_long_0d(fieldname, field, result, failure_count, fieldnam
     
 END SUBROUTINE ftg_compare_long_0d
 
-SUBROUTINE ftg_compare_long_1d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_long_1d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN)       :: field(:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1618,6 +1730,7 @@ SUBROUTINE ftg_compare_long_1d(fieldname, field, result, failure_count, fieldnam
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER(KIND=C_LONG), ALLOCATABLE      :: stored_field(:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(1), ubounds(1)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1630,6 +1743,11 @@ SUBROUTINE ftg_compare_long_1d(fieldname, field, result, failure_count, fieldnam
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
@@ -1652,7 +1770,7 @@ SUBROUTINE ftg_compare_long_1d(fieldname, field, result, failure_count, fieldnam
     
 END SUBROUTINE ftg_compare_long_1d
 
-SUBROUTINE ftg_compare_long_2d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_long_2d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN)       :: field(:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1660,6 +1778,7 @@ SUBROUTINE ftg_compare_long_2d(fieldname, field, result, failure_count, fieldnam
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER(KIND=C_LONG), ALLOCATABLE      :: stored_field(:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(2), ubounds(2)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1672,6 +1791,11 @@ SUBROUTINE ftg_compare_long_2d(fieldname, field, result, failure_count, fieldnam
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
@@ -1694,7 +1818,7 @@ SUBROUTINE ftg_compare_long_2d(fieldname, field, result, failure_count, fieldnam
     
 END SUBROUTINE ftg_compare_long_2d
 
-SUBROUTINE ftg_compare_long_3d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_long_3d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN)       :: field(:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1702,6 +1826,7 @@ SUBROUTINE ftg_compare_long_3d(fieldname, field, result, failure_count, fieldnam
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER(KIND=C_LONG), ALLOCATABLE      :: stored_field(:,:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(3), ubounds(3)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1714,6 +1839,11 @@ SUBROUTINE ftg_compare_long_3d(fieldname, field, result, failure_count, fieldnam
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
@@ -1736,7 +1866,7 @@ SUBROUTINE ftg_compare_long_3d(fieldname, field, result, failure_count, fieldnam
     
 END SUBROUTINE ftg_compare_long_3d
 
-SUBROUTINE ftg_compare_long_4d(fieldname, field, result, failure_count, fieldname_alias)
+SUBROUTINE ftg_compare_long_4d(fieldname, field, result, failure_count, lbounds, ubounds, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   INTEGER(KIND=C_LONG), INTENT(IN)       :: field(:,:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1744,6 +1874,7 @@ SUBROUTINE ftg_compare_long_4d(fieldname, field, result, failure_count, fieldnam
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   INTEGER(KIND=C_LONG), ALLOCATABLE      :: stored_field(:,:,:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(4), ubounds(4)
   
   IF (PRESENT(fieldname_alias)) THEN
     fieldname_print = fieldname_alias
@@ -1756,6 +1887,11 @@ SUBROUTINE ftg_compare_long_4d(fieldname, field, result, failure_count, fieldnam
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
@@ -1824,7 +1960,7 @@ SUBROUTINE ftg_compare_float_0d(fieldname, field, result, failure_count, toleran
     
 END SUBROUTINE ftg_compare_float_0d
 
-SUBROUTINE ftg_compare_float_1d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_float_1d(fieldname, field, result, failure_count, lbounds, ubounds, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN)         :: field(:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1832,6 +1968,7 @@ SUBROUTINE ftg_compare_float_1d(fieldname, field, result, failure_count, toleran
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   REAL(KIND=C_FLOAT), ALLOCATABLE        :: stored_field(:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(1), ubounds(1)
   REAL, INTENT(in), OPTIONAL             :: tolerance
   REAL                                   :: t
   
@@ -1852,6 +1989,11 @@ SUBROUTINE ftg_compare_float_1d(fieldname, field, result, failure_count, toleran
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
@@ -1874,7 +2016,7 @@ SUBROUTINE ftg_compare_float_1d(fieldname, field, result, failure_count, toleran
     
 END SUBROUTINE ftg_compare_float_1d
 
-SUBROUTINE ftg_compare_float_2d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_float_2d(fieldname, field, result, failure_count, lbounds, ubounds, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN)         :: field(:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1882,6 +2024,7 @@ SUBROUTINE ftg_compare_float_2d(fieldname, field, result, failure_count, toleran
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   REAL(KIND=C_FLOAT), ALLOCATABLE        :: stored_field(:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(2), ubounds(2)
   REAL, INTENT(in), OPTIONAL             :: tolerance
   REAL                                   :: t
   
@@ -1902,6 +2045,11 @@ SUBROUTINE ftg_compare_float_2d(fieldname, field, result, failure_count, toleran
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
@@ -1924,7 +2072,7 @@ SUBROUTINE ftg_compare_float_2d(fieldname, field, result, failure_count, toleran
     
 END SUBROUTINE ftg_compare_float_2d
 
-SUBROUTINE ftg_compare_float_3d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_float_3d(fieldname, field, result, failure_count, lbounds, ubounds, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN)         :: field(:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1932,6 +2080,7 @@ SUBROUTINE ftg_compare_float_3d(fieldname, field, result, failure_count, toleran
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   REAL(KIND=C_FLOAT), ALLOCATABLE        :: stored_field(:,:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(3), ubounds(3)
   REAL, INTENT(in), OPTIONAL             :: tolerance
   REAL                                   :: t
   
@@ -1952,6 +2101,11 @@ SUBROUTINE ftg_compare_float_3d(fieldname, field, result, failure_count, toleran
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
@@ -1974,7 +2128,7 @@ SUBROUTINE ftg_compare_float_3d(fieldname, field, result, failure_count, toleran
     
 END SUBROUTINE ftg_compare_float_3d
 
-SUBROUTINE ftg_compare_float_4d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_float_4d(fieldname, field, result, failure_count, lbounds, ubounds, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN)         :: field(:,:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -1982,6 +2136,7 @@ SUBROUTINE ftg_compare_float_4d(fieldname, field, result, failure_count, toleran
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   REAL(KIND=C_FLOAT), ALLOCATABLE        :: stored_field(:,:,:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(4), ubounds(4)
   REAL, INTENT(in), OPTIONAL             :: tolerance
   REAL                                   :: t
   
@@ -2002,6 +2157,11 @@ SUBROUTINE ftg_compare_float_4d(fieldname, field, result, failure_count, toleran
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
@@ -2070,7 +2230,7 @@ SUBROUTINE ftg_compare_double_0d(fieldname, field, result, failure_count, tolera
     
 END SUBROUTINE ftg_compare_double_0d
 
-SUBROUTINE ftg_compare_double_1d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_double_1d(fieldname, field, result, failure_count, lbounds, ubounds, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN)        :: field(:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -2078,6 +2238,7 @@ SUBROUTINE ftg_compare_double_1d(fieldname, field, result, failure_count, tolera
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   REAL(KIND=C_DOUBLE), ALLOCATABLE       :: stored_field(:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(1), ubounds(1)
   REAL, INTENT(in), OPTIONAL             :: tolerance
   REAL                                   :: t
   
@@ -2098,6 +2259,11 @@ SUBROUTINE ftg_compare_double_1d(fieldname, field, result, failure_count, tolera
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
@@ -2120,7 +2286,7 @@ SUBROUTINE ftg_compare_double_1d(fieldname, field, result, failure_count, tolera
     
 END SUBROUTINE ftg_compare_double_1d
 
-SUBROUTINE ftg_compare_double_2d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_double_2d(fieldname, field, result, failure_count, lbounds, ubounds, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN)        :: field(:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -2128,6 +2294,7 @@ SUBROUTINE ftg_compare_double_2d(fieldname, field, result, failure_count, tolera
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   REAL(KIND=C_DOUBLE), ALLOCATABLE       :: stored_field(:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(2), ubounds(2)
   REAL, INTENT(in), OPTIONAL             :: tolerance
   REAL                                   :: t
   
@@ -2148,6 +2315,11 @@ SUBROUTINE ftg_compare_double_2d(fieldname, field, result, failure_count, tolera
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
@@ -2170,7 +2342,7 @@ SUBROUTINE ftg_compare_double_2d(fieldname, field, result, failure_count, tolera
     
 END SUBROUTINE ftg_compare_double_2d
 
-SUBROUTINE ftg_compare_double_3d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_double_3d(fieldname, field, result, failure_count, lbounds, ubounds, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN)        :: field(:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -2178,6 +2350,7 @@ SUBROUTINE ftg_compare_double_3d(fieldname, field, result, failure_count, tolera
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   REAL(KIND=C_DOUBLE), ALLOCATABLE       :: stored_field(:,:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(3), ubounds(3)
   REAL, INTENT(in), OPTIONAL             :: tolerance
   REAL                                   :: t
   
@@ -2198,6 +2371,11 @@ SUBROUTINE ftg_compare_double_3d(fieldname, field, result, failure_count, tolera
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
@@ -2220,7 +2398,7 @@ SUBROUTINE ftg_compare_double_3d(fieldname, field, result, failure_count, tolera
     
 END SUBROUTINE ftg_compare_double_3d
 
-SUBROUTINE ftg_compare_double_4d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
+SUBROUTINE ftg_compare_double_4d(fieldname, field, result, failure_count, lbounds, ubounds, tolerance, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN)        :: field(:,:,:,:)
   LOGICAL, INTENT(OUT)                   :: result
@@ -2228,6 +2406,7 @@ SUBROUTINE ftg_compare_double_4d(fieldname, field, result, failure_count, tolera
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
   CHARACTER(LEN=256)                     :: fieldname_print
   REAL(KIND=C_DOUBLE), ALLOCATABLE       :: stored_field(:,:,:,:)
+  INTEGER, INTENT(IN), OPTIONAL          :: lbounds(4), ubounds(4)
   REAL, INTENT(in), OPTIONAL             :: tolerance
   REAL                                   :: t
   
@@ -2248,6 +2427,11 @@ SUBROUTINE ftg_compare_double_4d(fieldname, field, result, failure_count, tolera
   IF (.NOT. ftg_cmp_size(fieldname, SHAPE(field), fieldname_print)) THEN
     result = .FALSE.
   ELSE
+    IF (PRESENT(lbounds) .AND. PRESENT(ubounds)) THEN
+      IF (.NOT. ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print) .AND. ftg_cmp_count_different_bounds_as_failure) THEN
+        result = .FALSE.
+      END IF
+    END IF
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
