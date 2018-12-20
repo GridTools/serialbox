@@ -253,5 +253,37 @@ CONTAINS
       CALL ftg_destroy_serializer()      
     
     END SUBROUTINE testOneDifferentValue
+   
+@Test
+    SUBROUTINE testTolerances()
+    
+      LOGICAL :: result
+      INTEGER :: failure_count
+    
+      REAL(KIND=C_FLOAT)   :: float4e(2,20,3,21)
+      REAL(KIND=C_DOUBLE)  :: double4e(2,20,3,22)
+    
+      result = .FALSE.
+      failure_count = 0
+    
+      float4e(:,:,:,:)   = 109.23
+      float4e(2,20,3,1)   = 109.231
+      float4e(2,20,3,2)   = 109.229
+      double4e(:,:,:,:)  = 109.23
+      double4e(2,20,3,1)  = 109.231
+      double4e(2,20,3,2)  = 109.229
+            
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      
+      CALL ftg_compare("float4", float4e, result, failure_count, 0.001, fieldname_alias="float4e")
+      @assertFalse(result)
+      @assertEqual(1, failure_count)
+      CALL ftg_compare("double4", double4e, result, failure_count, 0.0011, fieldname_alias="double4e")
+      @assertTrue(result)
+      @assertEqual(1, failure_count)
+      
+      CALL ftg_destroy_serializer()      
+    
+    END SUBROUTINE testTolerances
       
 END MODULE ser_ftg_cmp_test
