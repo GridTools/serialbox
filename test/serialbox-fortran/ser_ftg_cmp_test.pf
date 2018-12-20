@@ -1,4 +1,4 @@
-! TODO Test NaN => Not possible: x = ieee_value(x, ieee_quiet_nan) always causes SIGFPE: Floating-point exception
+! TODO Test NaN => Not possible: With gfortan "x = ieee_value(x, ieee_quiet_nan)" always causes SIGFPE: Floating-point exception
 ! TODO Test tolerance
 
 MODULE ser_ftg_cmp_test
@@ -42,10 +42,10 @@ CONTAINS
    SUBROUTINE mySetup()
 
       CALL ftg_set_savepoint(savepoint_name)
-      ignore_bullshit = .TRUE.
-      ignore_bullshit_max_dim_size = 999999999
-      ignore_bullshit_allow_negative_indices = .TRUE.
-      ignore_not_existing = .TRUE.
+      
+      ftg_cmp_max_print_deviations = 10
+      ftg_cmp_print_when_equal = .TRUE.
+      ftg_cmp_message_prefix = 'FTG Compare Test ***'
       
       logical0a          = .TRUE.
       boolean1a(:)       = .FALSE.
