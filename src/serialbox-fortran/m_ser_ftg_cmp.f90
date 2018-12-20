@@ -1779,15 +1779,15 @@ SUBROUTINE ftg_compare_long_4d(fieldname, field, result, failure_count, fieldnam
 END SUBROUTINE ftg_compare_long_4d
 
 SUBROUTINE ftg_compare_float_0d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
-  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
-  REAL(KIND=C_FLOAT), INTENT(IN)           :: field
-  LOGICAL, INTENT(OUT)                     :: result
-  INTEGER, INTENT(INOUT), OPTIONAL         :: failure_count
-  CHARACTER(LEN=*), INTENT(IN), OPTIONAL   :: fieldname_alias
-  CHARACTER(LEN=256)                       :: fieldname_print
-  REAL(KIND=C_FLOAT), ALLOCATABLE          :: stored_field
-  REAL(KIND=C_FLOAT), INTENT(in), OPTIONAL :: tolerance
-  REAL(KIND=C_FLOAT)                       :: t
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN)         :: field
+  LOGICAL, INTENT(OUT)                   :: result
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
+  CHARACTER(LEN=256)                     :: fieldname_print
+  REAL(KIND=C_FLOAT), ALLOCATABLE        :: stored_field
+  REAL, INTENT(in), OPTIONAL             :: tolerance
+  REAL                                   :: t
   
   IF (PRESENT(tolerance)) THEN
     t = tolerance
@@ -1825,15 +1825,15 @@ SUBROUTINE ftg_compare_float_0d(fieldname, field, result, failure_count, toleran
 END SUBROUTINE ftg_compare_float_0d
 
 SUBROUTINE ftg_compare_float_1d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
-  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
-  REAL(KIND=C_FLOAT), INTENT(IN)           :: field(:)
-  LOGICAL, INTENT(OUT)                     :: result
-  INTEGER, INTENT(INOUT), OPTIONAL         :: failure_count
-  CHARACTER(LEN=*), INTENT(IN), OPTIONAL   :: fieldname_alias
-  CHARACTER(LEN=256)                       :: fieldname_print
-  REAL(KIND=C_FLOAT), ALLOCATABLE          :: stored_field(:)
-  REAL(KIND=C_FLOAT), INTENT(in), OPTIONAL :: tolerance
-  REAL(KIND=C_FLOAT)                       :: t
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN)         :: field(:)
+  LOGICAL, INTENT(OUT)                   :: result
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
+  CHARACTER(LEN=256)                     :: fieldname_print
+  REAL(KIND=C_FLOAT), ALLOCATABLE        :: stored_field(:)
+  REAL, INTENT(in), OPTIONAL             :: tolerance
+  REAL                                   :: t
   
   IF (PRESENT(tolerance)) THEN
     t = tolerance
@@ -1875,15 +1875,15 @@ SUBROUTINE ftg_compare_float_1d(fieldname, field, result, failure_count, toleran
 END SUBROUTINE ftg_compare_float_1d
 
 SUBROUTINE ftg_compare_float_2d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
-  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
-  REAL(KIND=C_FLOAT), INTENT(IN)           :: field(:,:)
-  LOGICAL, INTENT(OUT)                     :: result
-  INTEGER, INTENT(INOUT), OPTIONAL         :: failure_count
-  CHARACTER(LEN=*), INTENT(IN), OPTIONAL   :: fieldname_alias
-  CHARACTER(LEN=256)                       :: fieldname_print
-  REAL(KIND=C_FLOAT), ALLOCATABLE          :: stored_field(:,:)
-  REAL(KIND=C_FLOAT), INTENT(in), OPTIONAL :: tolerance
-  REAL(KIND=C_FLOAT)                       :: t
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN)         :: field(:,:)
+  LOGICAL, INTENT(OUT)                   :: result
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
+  CHARACTER(LEN=256)                     :: fieldname_print
+  REAL(KIND=C_FLOAT), ALLOCATABLE        :: stored_field(:,:)
+  REAL, INTENT(in), OPTIONAL             :: tolerance
+  REAL                                   :: t
   
   IF (PRESENT(tolerance)) THEN
     t = tolerance
@@ -1925,15 +1925,15 @@ SUBROUTINE ftg_compare_float_2d(fieldname, field, result, failure_count, toleran
 END SUBROUTINE ftg_compare_float_2d
 
 SUBROUTINE ftg_compare_float_3d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
-  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
-  REAL(KIND=C_FLOAT), INTENT(IN)           :: field(:,:,:)
-  LOGICAL, INTENT(OUT)                     :: result
-  INTEGER, INTENT(INOUT), OPTIONAL         :: failure_count
-  CHARACTER(LEN=*), INTENT(IN), OPTIONAL   :: fieldname_alias
-  CHARACTER(LEN=256)                       :: fieldname_print
-  REAL(KIND=C_FLOAT), ALLOCATABLE          :: stored_field(:,:,:)
-  REAL(KIND=C_FLOAT), INTENT(in), OPTIONAL :: tolerance
-  REAL(KIND=C_FLOAT)                       :: t
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN)         :: field(:,:,:)
+  LOGICAL, INTENT(OUT)                   :: result
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
+  CHARACTER(LEN=256)                     :: fieldname_print
+  REAL(KIND=C_FLOAT), ALLOCATABLE        :: stored_field(:,:,:)
+  REAL, INTENT(in), OPTIONAL             :: tolerance
+  REAL                                   :: t
   
   IF (PRESENT(tolerance)) THEN
     t = tolerance
@@ -1975,15 +1975,15 @@ SUBROUTINE ftg_compare_float_3d(fieldname, field, result, failure_count, toleran
 END SUBROUTINE ftg_compare_float_3d
 
 SUBROUTINE ftg_compare_float_4d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
-  CHARACTER(LEN=*), INTENT(IN)             :: fieldname
-  REAL(KIND=C_FLOAT), INTENT(IN)           :: field(:,:,:,:)
-  LOGICAL, INTENT(OUT)                     :: result
-  INTEGER, INTENT(INOUT), OPTIONAL         :: failure_count
-  CHARACTER(LEN=*), INTENT(IN), OPTIONAL   :: fieldname_alias
-  CHARACTER(LEN=256)                       :: fieldname_print
-  REAL(KIND=C_FLOAT), ALLOCATABLE          :: stored_field(:,:,:,:)
-  REAL(KIND=C_FLOAT), INTENT(in), OPTIONAL :: tolerance
-  REAL(KIND=C_FLOAT)                       :: t
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_FLOAT), INTENT(IN)         :: field(:,:,:,:)
+  LOGICAL, INTENT(OUT)                   :: result
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
+  CHARACTER(LEN=256)                     :: fieldname_print
+  REAL(KIND=C_FLOAT), ALLOCATABLE        :: stored_field(:,:,:,:)
+  REAL, INTENT(in), OPTIONAL             :: tolerance
+  REAL                                   :: t
   
   IF (PRESENT(tolerance)) THEN
     t = tolerance
@@ -2025,15 +2025,15 @@ SUBROUTINE ftg_compare_float_4d(fieldname, field, result, failure_count, toleran
 END SUBROUTINE ftg_compare_float_4d
 
 SUBROUTINE ftg_compare_double_0d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
-  CHARACTER(LEN=*), INTENT(IN)              :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN)           :: field
-  LOGICAL, INTENT(OUT)                      :: result
-  INTEGER, INTENT(INOUT), OPTIONAL          :: failure_count
-  CHARACTER(LEN=*), INTENT(IN), OPTIONAL    :: fieldname_alias
-  CHARACTER(LEN=256)                        :: fieldname_print
-  REAL(KIND=C_DOUBLE), ALLOCATABLE          :: stored_field
-  REAL(KIND=C_DOUBLE), INTENT(in), OPTIONAL :: tolerance
-  REAL(KIND=C_DOUBLE)                       :: t
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN)        :: field
+  LOGICAL, INTENT(OUT)                   :: result
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
+  CHARACTER(LEN=256)                     :: fieldname_print
+  REAL(KIND=C_DOUBLE), ALLOCATABLE       :: stored_field
+  REAL, INTENT(in), OPTIONAL             :: tolerance
+  REAL                                   :: t
   
   IF (PRESENT(tolerance)) THEN
     t = tolerance
@@ -2071,15 +2071,15 @@ SUBROUTINE ftg_compare_double_0d(fieldname, field, result, failure_count, tolera
 END SUBROUTINE ftg_compare_double_0d
 
 SUBROUTINE ftg_compare_double_1d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
-  CHARACTER(LEN=*), INTENT(IN)              :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN)           :: field(:)
-  LOGICAL, INTENT(OUT)                      :: result
-  INTEGER, INTENT(INOUT), OPTIONAL          :: failure_count
-  CHARACTER(LEN=*), INTENT(IN), OPTIONAL    :: fieldname_alias
-  CHARACTER(LEN=256)                        :: fieldname_print
-  REAL(KIND=C_DOUBLE), ALLOCATABLE          :: stored_field(:)
-  REAL(KIND=C_DOUBLE), INTENT(in), OPTIONAL :: tolerance
-  REAL(KIND=C_DOUBLE)                       :: t
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN)        :: field(:)
+  LOGICAL, INTENT(OUT)                   :: result
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
+  CHARACTER(LEN=256)                     :: fieldname_print
+  REAL(KIND=C_DOUBLE), ALLOCATABLE       :: stored_field(:)
+  REAL, INTENT(in), OPTIONAL             :: tolerance
+  REAL                                   :: t
   
   IF (PRESENT(tolerance)) THEN
     t = tolerance
@@ -2121,15 +2121,15 @@ SUBROUTINE ftg_compare_double_1d(fieldname, field, result, failure_count, tolera
 END SUBROUTINE ftg_compare_double_1d
 
 SUBROUTINE ftg_compare_double_2d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
-  CHARACTER(LEN=*), INTENT(IN)              :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN)           :: field(:,:)
-  LOGICAL, INTENT(OUT)                      :: result
-  INTEGER, INTENT(INOUT), OPTIONAL          :: failure_count
-  CHARACTER(LEN=*), INTENT(IN), OPTIONAL    :: fieldname_alias
-  CHARACTER(LEN=256)                        :: fieldname_print
-  REAL(KIND=C_DOUBLE), ALLOCATABLE          :: stored_field(:,:)
-  REAL(KIND=C_DOUBLE), INTENT(in), OPTIONAL :: tolerance
-  REAL(KIND=C_DOUBLE)                       :: t
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN)        :: field(:,:)
+  LOGICAL, INTENT(OUT)                   :: result
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
+  CHARACTER(LEN=256)                     :: fieldname_print
+  REAL(KIND=C_DOUBLE), ALLOCATABLE       :: stored_field(:,:)
+  REAL, INTENT(in), OPTIONAL             :: tolerance
+  REAL                                   :: t
   
   IF (PRESENT(tolerance)) THEN
     t = tolerance
@@ -2171,15 +2171,15 @@ SUBROUTINE ftg_compare_double_2d(fieldname, field, result, failure_count, tolera
 END SUBROUTINE ftg_compare_double_2d
 
 SUBROUTINE ftg_compare_double_3d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
-  CHARACTER(LEN=*), INTENT(IN)              :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN)           :: field(:,:,:)
-  LOGICAL, INTENT(OUT)                      :: result
-  INTEGER, INTENT(INOUT), OPTIONAL          :: failure_count
-  CHARACTER(LEN=*), INTENT(IN), OPTIONAL    :: fieldname_alias
-  CHARACTER(LEN=256)                        :: fieldname_print
-  REAL(KIND=C_DOUBLE), ALLOCATABLE          :: stored_field(:,:,:)
-  REAL(KIND=C_DOUBLE), INTENT(in), OPTIONAL :: tolerance
-  REAL(KIND=C_DOUBLE)                       :: t
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN)        :: field(:,:,:)
+  LOGICAL, INTENT(OUT)                   :: result
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
+  CHARACTER(LEN=256)                     :: fieldname_print
+  REAL(KIND=C_DOUBLE), ALLOCATABLE       :: stored_field(:,:,:)
+  REAL, INTENT(in), OPTIONAL             :: tolerance
+  REAL                                   :: t
   
   IF (PRESENT(tolerance)) THEN
     t = tolerance
@@ -2221,15 +2221,15 @@ SUBROUTINE ftg_compare_double_3d(fieldname, field, result, failure_count, tolera
 END SUBROUTINE ftg_compare_double_3d
 
 SUBROUTINE ftg_compare_double_4d(fieldname, field, result, failure_count, tolerance, fieldname_alias)
-  CHARACTER(LEN=*), INTENT(IN)              :: fieldname
-  REAL(KIND=C_DOUBLE), INTENT(IN)           :: field(:,:,:,:)
-  LOGICAL, INTENT(OUT)                      :: result
-  INTEGER, INTENT(INOUT), OPTIONAL          :: failure_count
-  CHARACTER(LEN=*), INTENT(IN), OPTIONAL    :: fieldname_alias
-  CHARACTER(LEN=256)                        :: fieldname_print
-  REAL(KIND=C_DOUBLE), ALLOCATABLE          :: stored_field(:,:,:,:)
-  REAL(KIND=C_DOUBLE), INTENT(in), OPTIONAL :: tolerance
-  REAL(KIND=C_DOUBLE)                       :: t
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  REAL(KIND=C_DOUBLE), INTENT(IN)        :: field(:,:,:,:)
+  LOGICAL, INTENT(OUT)                   :: result
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
+  CHARACTER(LEN=256)                     :: fieldname_print
+  REAL(KIND=C_DOUBLE), ALLOCATABLE       :: stored_field(:,:,:,:)
+  REAL, INTENT(in), OPTIONAL             :: tolerance
+  REAL                                   :: t
   
   IF (PRESENT(tolerance)) THEN
     t = tolerance
