@@ -35,7 +35,7 @@ USE m_ser_ftg
 
 IMPLICIT NONE
 
-PUBLIC :: ftg_cmp_default_tolerance, ftg_cmp_max_print_deviations, ftg_cmp_print_when_equal, &
+PUBLIC :: ftg_cmp_default_tolerance, ftg_cmp_quiet, ftg_cmp_max_print_deviations, ftg_cmp_print_when_equal, &
           ftg_cmp_count_different_bounds_as_failure, ftg_cmp_message_prefix, ftg_compare
 
 PRIVATE
@@ -111,6 +111,7 @@ INTERFACE ftg_compare
 END INTERFACE ftg_compare
 
 REAL              :: ftg_cmp_default_tolerance = 0.0
+LOGICAL           :: ftg_cmp_quiet = .FALSE.
 INTEGER           :: ftg_cmp_max_print_deviations = 10
 LOGICAL           :: ftg_cmp_print_when_equal = .FALSE.
 LOGICAL           :: ftg_cmp_count_different_bounds_as_failure = .FALSE.
@@ -132,7 +133,7 @@ FUNCTION ftg_cmp_size(fieldname, actual_shape, fieldname_print)
   expected_shape = ftg_get_size(fieldname)
   ftg_cmp_size = ALL(actual_shape == expected_shape(:rank))
   
-  IF (.NOT. ftg_cmp_size) THEN
+  IF (.NOT. ftg_cmp_size .AND. .NOT. ftg_cmp_quiet) THEN
     WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Size doesn't match"
     WRITE (*,'(A)',advance="no") "  -> expected: ("
     DO r = 1, rank
@@ -164,7 +165,7 @@ FUNCTION ftg_cmp_bounds(fieldname, lbounds, ubounds, fieldname_print)
   expected_bounds = RESHAPE(ftg_get_bounds(fieldname), (/2, 4/))
   ftg_cmp_bounds = ALL(lbounds == expected_bounds(1,:rank)) .AND. ALL(ubounds == expected_bounds(2,:rank))
   
-  IF (.NOT. ftg_cmp_bounds) THEN
+  IF (.NOT. ftg_cmp_bounds .AND. .NOT. ftg_cmp_quiet) THEN
     WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Bounds don't match"
     WRITE (*,'(A)',advance="no") "  -> expected: ("
     DO r = 1, rank
@@ -1157,14 +1158,16 @@ SUBROUTINE ftg_compare_logical_0d(fieldname, field, result, failure_count, field
   CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
   IF (field .NEQV. stored_field) THEN
     result = .FALSE.
-    WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-    IF (ftg_cmp_max_print_deviations > 0) THEN
-      CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
-    END IF 
+    IF (.NOT. ftg_cmp_quiet) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+      IF (ftg_cmp_max_print_deviations > 0) THEN
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+      END IF 
+    END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1204,15 +1207,17 @@ SUBROUTINE ftg_compare_logical_1d(fieldname, field, result, failure_count, lboun
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1252,15 +1257,17 @@ SUBROUTINE ftg_compare_logical_2d(fieldname, field, result, failure_count, lboun
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1300,15 +1307,17 @@ SUBROUTINE ftg_compare_logical_3d(fieldname, field, result, failure_count, lboun
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1348,15 +1357,17 @@ SUBROUTINE ftg_compare_logical_4d(fieldname, field, result, failure_count, lboun
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1387,14 +1398,16 @@ SUBROUTINE ftg_compare_bool_0d(fieldname, field, result, failure_count, fieldnam
   CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
   IF (field .NEQV. stored_field) THEN
     result = .FALSE.
-    WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-    IF (ftg_cmp_max_print_deviations > 0) THEN
-      CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
-    END IF 
+    IF (.NOT. ftg_cmp_quiet) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+      IF (ftg_cmp_max_print_deviations > 0) THEN
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+      END IF 
+    END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1434,15 +1447,17 @@ SUBROUTINE ftg_compare_bool_1d(fieldname, field, result, failure_count, lbounds,
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1482,15 +1497,17 @@ SUBROUTINE ftg_compare_bool_2d(fieldname, field, result, failure_count, lbounds,
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1530,15 +1547,17 @@ SUBROUTINE ftg_compare_bool_3d(fieldname, field, result, failure_count, lbounds,
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1578,15 +1597,17 @@ SUBROUTINE ftg_compare_bool_4d(fieldname, field, result, failure_count, lbounds,
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field .NEQV. stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1617,14 +1638,16 @@ SUBROUTINE ftg_compare_int_0d(fieldname, field, result, failure_count, fieldname
   CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
   IF (field /= stored_field) THEN
     result = .FALSE.
-    WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-    IF (ftg_cmp_max_print_deviations > 0) THEN
-      CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
-    END IF 
+    IF (.NOT. ftg_cmp_quiet) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+      IF (ftg_cmp_max_print_deviations > 0) THEN
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+      END IF 
+    END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1664,15 +1687,17 @@ SUBROUTINE ftg_compare_int_1d(fieldname, field, result, failure_count, lbounds, 
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1712,15 +1737,17 @@ SUBROUTINE ftg_compare_int_2d(fieldname, field, result, failure_count, lbounds, 
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1760,15 +1787,17 @@ SUBROUTINE ftg_compare_int_3d(fieldname, field, result, failure_count, lbounds, 
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1808,15 +1837,17 @@ SUBROUTINE ftg_compare_int_4d(fieldname, field, result, failure_count, lbounds, 
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1847,14 +1878,16 @@ SUBROUTINE ftg_compare_long_0d(fieldname, field, result, failure_count, fieldnam
   CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
   IF (field /= stored_field) THEN
     result = .FALSE.
-    WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-    IF (ftg_cmp_max_print_deviations > 0) THEN
-      CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
-    END IF 
+    IF (.NOT. ftg_cmp_quiet) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+      IF (ftg_cmp_max_print_deviations > 0) THEN
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+      END IF 
+    END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1894,15 +1927,17 @@ SUBROUTINE ftg_compare_long_1d(fieldname, field, result, failure_count, lbounds,
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1942,15 +1977,17 @@ SUBROUTINE ftg_compare_long_2d(fieldname, field, result, failure_count, lbounds,
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -1990,15 +2027,17 @@ SUBROUTINE ftg_compare_long_3d(fieldname, field, result, failure_count, lbounds,
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -2038,15 +2077,17 @@ SUBROUTINE ftg_compare_long_4d(fieldname, field, result, failure_count, lbounds,
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(field /= stored_field)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -2085,14 +2126,16 @@ SUBROUTINE ftg_compare_float_0d(fieldname, field, result, failure_count, toleran
   CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
   IF (.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t) THEN
     result = .FALSE.
-    WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-    IF (ftg_cmp_max_print_deviations > 0) THEN
-      CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
-    END IF 
+    IF (.NOT. ftg_cmp_quiet) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+      IF (ftg_cmp_max_print_deviations > 0) THEN
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+      END IF 
+    END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -2140,15 +2183,17 @@ SUBROUTINE ftg_compare_float_1d(fieldname, field, result, failure_count, lbounds
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -2196,15 +2241,17 @@ SUBROUTINE ftg_compare_float_2d(fieldname, field, result, failure_count, lbounds
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -2252,15 +2299,17 @@ SUBROUTINE ftg_compare_float_3d(fieldname, field, result, failure_count, lbounds
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -2308,15 +2357,17 @@ SUBROUTINE ftg_compare_float_4d(fieldname, field, result, failure_count, lbounds
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -2355,14 +2406,16 @@ SUBROUTINE ftg_compare_double_0d(fieldname, field, result, failure_count, tolera
   CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
   IF (.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t) THEN
     result = .FALSE.
-    WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-    IF (ftg_cmp_max_print_deviations > 0) THEN
-      CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
-    END IF 
+    IF (.NOT. ftg_cmp_quiet) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+      IF (ftg_cmp_max_print_deviations > 0) THEN
+        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print)
+      END IF 
+    END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -2410,15 +2463,17 @@ SUBROUTINE ftg_compare_double_1d(fieldname, field, result, failure_count, lbound
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -2466,15 +2521,17 @@ SUBROUTINE ftg_compare_double_2d(fieldname, field, result, failure_count, lbound
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -2522,15 +2579,17 @@ SUBROUTINE ftg_compare_double_3d(fieldname, field, result, failure_count, lbound
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
@@ -2578,15 +2637,17 @@ SUBROUTINE ftg_compare_double_4d(fieldname, field, result, failure_count, lbound
     CALL ftg_allocate_and_read_allocatable(fieldname, stored_field)
     IF (ANY(.NOT. (field /= field .AND. stored_field /= stored_field) .AND. ABS(field - stored_field) > t)) THEN
       result = .FALSE.
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
-      IF (ftg_cmp_max_print_deviations > 0) THEN
-        CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
-      END IF 
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          CALL ftg_cmp_print_deviations(stored_field, field, fieldname_print, lbounds)
+        END IF 
+      END IF
     END IF
   END IF
   
   IF (result) THEN
-    IF (ftg_cmp_print_when_equal) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
       WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
     END IF
   ELSE
