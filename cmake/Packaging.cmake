@@ -7,7 +7,8 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-cmake_minimum_required(VERSION 3.12)
+# this registers the build-tree with a global CMake-registry
+export(PACKAGE Serialbox)
 
 include(CMakePackageConfigHelpers)
 
@@ -38,3 +39,19 @@ write_basic_package_version_file(
 )
 install(FILES "${PROJECT_BINARY_DIR}/cmake/SerialboxConfigVersion.cmake" DESTINATION cmake)
 
+## For build tree
+export(TARGETS SerialboxStatic SerialboxObjects SerialboxFilesytemTarget
+    FILE ${PROJECT_BINARY_DIR}/SerialboxTargets.cmake
+    NAMESPACE Serialbox::
+)
+
+configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/SerialboxConfig.cmake.in
+    ${PROJECT_BINARY_DIR}/SerialboxConfig.cmake
+    INSTALL_DESTINATION ${PROJECT_BINARY_DIR}
+    PATH_VARS CMAKE_INSTALL_DIR
+)
+write_basic_package_version_file(
+  ${PROJECT_BINARY_DIR}/SerialboxConfigVersion.cmake
+  VERSION ${Serialbox_VERSION_STRING}
+  COMPATIBILITY AnyNewerVersion
+)
