@@ -495,7 +495,7 @@ SUBROUTINE ftg_cmp_print_deviations_int_1d(expected, actual, fieldname_print)
   INTEGER                      :: indices(1), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -521,7 +521,7 @@ SUBROUTINE ftg_cmp_print_deviations_int_2d(expected, actual, fieldname_print)
   INTEGER                      :: indices(2), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -549,7 +549,7 @@ SUBROUTINE ftg_cmp_print_deviations_int_3d(expected, actual, fieldname_print)
   INTEGER                      :: indices(3), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -579,7 +579,7 @@ SUBROUTINE ftg_cmp_print_deviations_int_4d(expected, actual, fieldname_print)
   INTEGER                      :: indices(4), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -611,7 +611,7 @@ SUBROUTINE ftg_cmp_print_deviations_long_1d(expected, actual, fieldname_print)
   INTEGER                           :: indices(1), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -637,7 +637,7 @@ SUBROUTINE ftg_cmp_print_deviations_long_2d(expected, actual, fieldname_print)
   INTEGER                           :: indices(2), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -665,7 +665,7 @@ SUBROUTINE ftg_cmp_print_deviations_long_3d(expected, actual, fieldname_print)
   INTEGER                           :: indices(3), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -695,7 +695,7 @@ SUBROUTINE ftg_cmp_print_deviations_long_4d(expected, actual, fieldname_print)
   INTEGER                           :: indices(4), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -727,7 +727,7 @@ SUBROUTINE ftg_cmp_print_deviations_float_1d(expected, actual, fieldname_print)
   INTEGER                         :: indices(1), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -753,7 +753,7 @@ SUBROUTINE ftg_cmp_print_deviations_float_2d(expected, actual, fieldname_print)
   INTEGER                         :: indices(2), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -781,7 +781,7 @@ SUBROUTINE ftg_cmp_print_deviations_float_3d(expected, actual, fieldname_print)
   INTEGER                         :: indices(3), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -811,7 +811,7 @@ SUBROUTINE ftg_cmp_print_deviations_float_4d(expected, actual, fieldname_print)
   INTEGER                         :: indices(4), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -843,7 +843,7 @@ SUBROUTINE ftg_cmp_print_deviations_double_1d(expected, actual, fieldname_print)
   INTEGER                          :: indices(1), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -869,7 +869,7 @@ SUBROUTINE ftg_cmp_print_deviations_double_2d(expected, actual, fieldname_print)
   INTEGER                          :: indices(2), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -897,7 +897,7 @@ SUBROUTINE ftg_cmp_print_deviations_double_3d(expected, actual, fieldname_print)
   INTEGER                          :: indices(3), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -927,7 +927,7 @@ SUBROUTINE ftg_cmp_print_deviations_double_4d(expected, actual, fieldname_print)
   INTEGER                          :: indices(4), i, j
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected
-  deltas = expected - actual
+  deltas = ABS(expected - actual)
   DO i = 1, ftg_cmp_max_print_deviations
     IF (ANY(mask)) THEN
       indices = MAXLOC(deltas, mask)
@@ -952,7 +952,6 @@ SUBROUTINE ftg_cmp_print_deviations_double_4d(expected, actual, fieldname_print)
 END SUBROUTINE ftg_cmp_print_deviations_double_4d
 
 !=============================================================================
-!TODO NaN beruecksichtigen
 !=============================================================================
 
 SUBROUTINE ftg_compare_logical_0d(fieldname, field, result, failure_count, fieldname_alias)
