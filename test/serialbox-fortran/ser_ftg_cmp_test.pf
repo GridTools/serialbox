@@ -18,7 +18,7 @@ MODULE ser_ftg_cmp_test
 
   LOGICAL              :: logical0a 
   LOGICAL(KIND=C_BOOL) :: boolean1a(-1:2)
-  INTEGER              :: integer2a(-2:2,-3:5)  
+  INTEGER              :: integer2a(5,9)  
   INTEGER(KIND=C_LONG) :: longint3a(-4:4,-5:5,-6:9)  
   REAL(KIND=C_FLOAT)   :: float4a(7:8,23:42,-4:-2,0:20)
   REAL(KIND=C_DOUBLE)  :: double4a(7:8,23:42,-4:-2,0:21)
@@ -32,6 +32,7 @@ CONTAINS
       
       ftg_cmp_max_print_deviations = 10
       ftg_cmp_print_when_equal = .TRUE.
+      ftg_cmp_count_different_bounds_as_failure = .FALSE.
       ftg_cmp_message_prefix = 'FTG Compare Test ***'
       
       logical0a          = .TRUE.
@@ -104,7 +105,7 @@ CONTAINS
       INTEGER              :: integer2b(5,9)  
       INTEGER(KIND=C_LONG) :: longint3b(9,11,16)  
       REAL(KIND=C_FLOAT)   :: float4b(2,20,3,21)
-      REAL(KIND=C_DOUBLE)  :: double4b(0:1,-50:-31,3:5,22)
+      REAL(KIND=C_DOUBLE)  :: double4b(2,20,3,22)
     
       result = .FALSE.
       failure_count = 0
@@ -140,6 +141,56 @@ CONTAINS
       CALL ftg_destroy_serializer()      
     
     END SUBROUTINE testEqualIsEqual
+   
+@Test
+    SUBROUTINE testBoundsCheck()
+    
+      LOGICAL :: result
+      INTEGER :: failure_count
+    
+      LOGICAL              :: logical0b 
+      LOGICAL(KIND=C_BOOL) :: boolean1b(4)
+      INTEGER              :: integer2b(5,9)  
+      INTEGER(KIND=C_LONG) :: longint3b(9,11,16)  
+      REAL(KIND=C_FLOAT)   :: float4b(2,20,3,21)
+      REAL(KIND=C_DOUBLE)  :: double4b(2,20,3,22)
+    
+      ftg_cmp_count_different_bounds_as_failure = .TRUE.
+    
+      result = .FALSE.
+      failure_count = 0
+    
+      logical0b          = .TRUE.
+      boolean1b(:)       = .FALSE.
+      integer2b(:,:)     = 42
+      longint3b(:,:,:)   = 42
+      float4b(:,:,:,:)   = 109.23
+      double4b(:,:,:,:)  = 109.23
+            
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      
+      CALL ftg_compare("logical0", logical0b, result, failure_count, fieldname_alias="logical0b")
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      CALL ftg_compare("boolean1", boolean1b, result, failure_count, LBOUND(boolean1b), UBOUND(boolean1b), fieldname_alias="boolean1b")
+      @assertFalse(result)
+      @assertEqual(1, failure_count)
+      CALL ftg_compare("integer2", integer2b, result, failure_count, LBOUND(integer2b), UBOUND(integer2b), fieldname_alias="integer2b")
+      @assertTrue(result)
+      @assertEqual(1, failure_count)
+      CALL ftg_compare("longint3", longint3b, result, failure_count, LBOUND(longint3b), UBOUND(longint3b), fieldname_alias="longint3b")
+      @assertFalse(result)
+      @assertEqual(2, failure_count)
+      CALL ftg_compare("float4", float4b, result, failure_count, LBOUND(float4b), UBOUND(float4b), fieldname_alias="float4b")
+      @assertFalse(result)
+      @assertEqual(3, failure_count)
+      CALL ftg_compare("double4", double4b, result, failure_count, LBOUND(double4b), UBOUND(double4b), fieldname_alias="double4b")
+      @assertFalse(result)
+      @assertEqual(4, failure_count)
+      
+      CALL ftg_destroy_serializer()      
+    
+    END SUBROUTINE testBoundsCheck
    
 @Test
     SUBROUTINE testSizeDifferent()
