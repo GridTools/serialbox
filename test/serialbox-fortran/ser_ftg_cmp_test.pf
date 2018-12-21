@@ -324,5 +324,34 @@ CONTAINS
       CALL ftg_destroy_serializer()      
     
     END SUBROUTINE testTolerances
+   
+@Test
+    SUBROUTINE testNotExists()
+    
+      LOGICAL :: result
+      INTEGER :: failure_count
+    
+      INTEGER  :: not_here(42)
+    
+      result = .FALSE.
+      failure_count = 0
+    
+      not_here(:)   = not_here
+            
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      
+      CALL ftg_compare("not_here", not_here, result, failure_count)
+      @assertFalse(result)
+      @assertEqual(1, failure_count)
+      
+      ftg_cmp_count_missing_field_as_failure = .FALSE.
+      
+      CALL ftg_compare("not_here", not_here, result, failure_count)
+      @assertTrue(result)
+      @assertEqual(1, failure_count)
+      
+      CALL ftg_destroy_serializer()      
+    
+    END SUBROUTINE testNotExists
       
 END MODULE ser_ftg_cmp_test
