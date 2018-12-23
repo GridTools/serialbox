@@ -44,7 +44,7 @@ def get_library():
     # To make it possible to run the unit tests without installing the SerialboxC shared
     # library into a default linker search path.  Always Try ctypes.cdll.LoadLibrary()
     # with all possible library names first, then try ctypes.util.find_library().
-    name = 'SerialboxC'
+    name = 'SerialboxCShared'
     errors = []
 
     cwd = path.dirname(path.realpath(__file__))
