@@ -226,7 +226,7 @@ SUBROUTINE ftg_cmp_print_deviations_int_0d(expected, actual, fieldname_print)
   
   IF (actual /= expected) THEN
     WRITE (*,'(A)',advance="no") "  -> expected: "
-    WRITE (*,'(L0)',advance="no") expected
+    WRITE (*,'(I0)',advance="no") expected
     WRITE (*,'(A)',advance="no") ", actual: "
     WRITE (*,'(I0)') actual
   END IF
@@ -239,7 +239,7 @@ SUBROUTINE ftg_cmp_print_deviations_long_0d(expected, actual, fieldname_print)
   
   IF (actual /= expected) THEN
     WRITE (*,'(A)',advance="no") "  -> expected: "
-    WRITE (*,'(L0)',advance="no") expected
+    WRITE (*,'(I19)',advance="no") expected
     WRITE (*,'(A)',advance="no") ", actual: "
     WRITE (*,'(I19)') actual
   END IF
@@ -252,7 +252,7 @@ SUBROUTINE ftg_cmp_print_deviations_float_0d(expected, actual, fieldname_print)
   
   IF (.NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected) THEN
     WRITE (*,'(A)',advance="no") "  -> expected: "
-    WRITE (*,'(L0)',advance="no") expected
+    WRITE (*,'(F0.14)',advance="no") expected
     WRITE (*,'(A)',advance="no") ", actual: "
     WRITE (*,'(F0.14)') actual
   END IF
@@ -265,7 +265,7 @@ SUBROUTINE ftg_cmp_print_deviations_double_0d(expected, actual, fieldname_print)
   
   IF (.NOT. (actual /= actual .AND. expected /= expected) .AND. actual /= expected) THEN
     WRITE (*,'(A)',advance="no") "  -> expected: "
-    WRITE (*,'(L0)',advance="no") expected
+    WRITE (*,'(F0.14)',advance="no") expected
     WRITE (*,'(A)',advance="no") ", actual: "
     WRITE (*,'(F0.14)') actual
   END IF
