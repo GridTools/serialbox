@@ -327,10 +327,6 @@ INTEGER :: ignore_bullshit_max_dim_size = 999999999
 LOGICAL :: ignore_bullshit_allow_negative_indices = .TRUE.
 LOGICAL :: ignore_not_existing = .TRUE.
 
-REAL              :: ftg_cmp_default_tolerance = 0.0
-INTEGER           :: ftg_cmp_max_print_deviations = 10
-CHARACTER(len=64) :: ftg_cmp_message_prefix = 'FTG Compare ***'
-
 TYPE(t_serializer), POINTER :: serializer => NULL()
 TYPE(t_savepoint),  POINTER :: savepoint  => NULL()
 
