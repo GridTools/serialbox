@@ -6,7 +6,6 @@ MODULE ser_ftg_test
   USE iso_fortran_env 
   USE pfunit_mod  
   USE m_ser_ftg
-  USE m_ser_ftg_cmp
   USE m_serialize
   
   IMPLICIT NONE
@@ -948,7 +947,7 @@ CONTAINS
       CALL ftg_allocate_and_read_pointer("testfield_i1", rp_testfield_i1)
       CALL ftg_allocate_and_read_pointer("testfield_i2", rp_testfield_i2)
       CALL ftg_allocate_and_read_pointer("testfield_i3", rp_testfield_i3)
-!      CALL ftg_allocate_and_read_pointer("testfield_i4", rp_testfield_i4)
+      CALL ftg_allocate_and_read_pointer("testfield_i4", rp_testfield_i4)
       CALL ftg_allocate_and_read_allocatable("testfield_i1", ra_testfield_i1)
       CALL ftg_allocate_and_read_allocatable("testfield_i2", ra_testfield_i2)
       CALL ftg_allocate_and_read_allocatable("testfield_i3", ra_testfield_i3)
@@ -958,7 +957,7 @@ CONTAINS
       @assertEqual(w_testfield_i1, rp_testfield_i1)
       @assertEqual(w_testfield_i2, rp_testfield_i2)
       @assertEqual(w_testfield_i3, rp_testfield_i3)
-!      @assertEqual(w_testfield_i4, rp_testfield_i4)
+      @assertEqual(w_testfield_i4, rp_testfield_i4)
       @assertEqual(w_testfield_i1, ra_testfield_i1)
       @assertEqual(w_testfield_i2, ra_testfield_i2)
       @assertEqual(w_testfield_i3, ra_testfield_i3)
