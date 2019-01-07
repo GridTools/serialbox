@@ -200,9 +200,9 @@ SUBROUTINE ftg_cmp_print_deviations_logical_0d(expected, actual, fieldname_print
   
   IF (actual .NEQV. expected) THEN
     WRITE (*,'(A)',advance="no") "  -> expected: "
-    WRITE (*,'(L0)',advance="no") expected
+    WRITE (*,'(L1)',advance="no") expected
     WRITE (*,'(A)',advance="no") ", actual: "
-    WRITE (*,'(L0)') actual
+    WRITE (*,'(L1)') actual
   END IF
 
 END SUBROUTINE ftg_cmp_print_deviations_logical_0d
@@ -213,9 +213,9 @@ SUBROUTINE ftg_cmp_print_deviations_bool_0d(expected, actual, fieldname_print)
   
   IF (actual .NEQV. expected) THEN
     WRITE (*,'(A)',advance="no") "  -> expected: "
-    WRITE (*,'(L0)',advance="no") expected
+    WRITE (*,'(L1)',advance="no") expected
     WRITE (*,'(A)',advance="no") ", actual: "
-    WRITE (*,'(L0)') actual
+    WRITE (*,'(L1)') actual
   END IF
 
 END SUBROUTINE ftg_cmp_print_deviations_bool_0d
@@ -292,9 +292,9 @@ SUBROUTINE ftg_cmp_print_deviations_logical_1d(expected, actual, fieldname_print
             WRITE (*,'(A)',advance="no") "  -> ("
             WRITE (*,'(I0)',advance="no") i + indexAdj(1) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
-            WRITE (*,'(L0)',advance="no") expected(i)
+            WRITE (*,'(L1)',advance="no") expected(i)
             WRITE (*,'(A)',advance="no") ", actual: "
-            WRITE (*,'(L0)') actual(i)
+            WRITE (*,'(L1)') actual(i)
             counter = counter + 1
             IF (counter > ftg_cmp_max_print_deviations) THEN
               EXIT outer
@@ -327,9 +327,9 @@ SUBROUTINE ftg_cmp_print_deviations_logical_2d(expected, actual, fieldname_print
             WRITE (*,'(A)',advance="no") ", "
             WRITE (*,'(I0)',advance="no") j + indexAdj(2) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
-            WRITE (*,'(L0)',advance="no") expected(i, j)
+            WRITE (*,'(L1)',advance="no") expected(i, j)
             WRITE (*,'(A)',advance="no") ", actual: "
-            WRITE (*,'(L0)') actual(i, j)
+            WRITE (*,'(L1)') actual(i, j)
             counter = counter + 1
             IF (counter > ftg_cmp_max_print_deviations) THEN
               EXIT outer
@@ -366,9 +366,9 @@ SUBROUTINE ftg_cmp_print_deviations_logical_3d(expected, actual, fieldname_print
             WRITE (*,'(A)',advance="no") ", "
             WRITE (*,'(I0)',advance="no") k + indexAdj(3) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
-            WRITE (*,'(L0)',advance="no") expected(i, j, k)
+            WRITE (*,'(L1)',advance="no") expected(i, j, k)
             WRITE (*,'(A)',advance="no") ", actual: "
-            WRITE (*,'(L0)') actual(i, j, k)
+            WRITE (*,'(L1)') actual(i, j, k)
             counter = counter + 1
             IF (counter > ftg_cmp_max_print_deviations) THEN
               EXIT outer
@@ -409,9 +409,9 @@ SUBROUTINE ftg_cmp_print_deviations_logical_4d(expected, actual, fieldname_print
             WRITE (*,'(A)',advance="no") ", "
             WRITE (*,'(I0)',advance="no") l + indexAdj(4) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
-            WRITE (*,'(L0)',advance="no") expected(i, j, k, l)
+            WRITE (*,'(L1)',advance="no") expected(i, j, k, l)
             WRITE (*,'(A)',advance="no") ", actual: "
-            WRITE (*,'(L0)') actual(i, j, k, l)
+            WRITE (*,'(L1)') actual(i, j, k, l)
             counter = counter + 1
             IF (counter > ftg_cmp_max_print_deviations) THEN
               EXIT outer
@@ -444,9 +444,9 @@ SUBROUTINE ftg_cmp_print_deviations_bool_1d(expected, actual, fieldname_print, l
             WRITE (*,'(A)',advance="no") "  -> ("
             WRITE (*,'(I0)',advance="no") i + indexAdj(1) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
-            WRITE (*,'(L0)',advance="no") expected(i)
+            WRITE (*,'(L1)',advance="no") expected(i)
             WRITE (*,'(A)',advance="no") ", actual: "
-            WRITE (*,'(L0)') actual(i)
+            WRITE (*,'(L1)') actual(i)
             counter = counter + 1
             IF (counter > ftg_cmp_max_print_deviations) THEN
               EXIT outer
@@ -479,9 +479,9 @@ SUBROUTINE ftg_cmp_print_deviations_bool_2d(expected, actual, fieldname_print, l
             WRITE (*,'(A)',advance="no") ", "
             WRITE (*,'(I0)',advance="no") j + indexAdj(2) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
-            WRITE (*,'(L0)',advance="no") expected(i, j)
+            WRITE (*,'(L1)',advance="no") expected(i, j)
             WRITE (*,'(A)',advance="no") ", actual: "
-            WRITE (*,'(L0)') actual(i, j)
+            WRITE (*,'(L1)') actual(i, j)
             counter = counter + 1
             IF (counter > ftg_cmp_max_print_deviations) THEN
               EXIT outer
@@ -518,9 +518,9 @@ SUBROUTINE ftg_cmp_print_deviations_bool_3d(expected, actual, fieldname_print, l
             WRITE (*,'(A)',advance="no") ", "
             WRITE (*,'(I0)',advance="no") k + indexAdj(3) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
-            WRITE (*,'(L0)',advance="no") expected(i, j, k)
+            WRITE (*,'(L1)',advance="no") expected(i, j, k)
             WRITE (*,'(A)',advance="no") ", actual: "
-            WRITE (*,'(L0)') actual(i, j, k)
+            WRITE (*,'(L1)') actual(i, j, k)
             counter = counter + 1
             IF (counter > ftg_cmp_max_print_deviations) THEN
               EXIT outer
@@ -561,9 +561,9 @@ SUBROUTINE ftg_cmp_print_deviations_bool_4d(expected, actual, fieldname_print, l
             WRITE (*,'(A)',advance="no") ", "
             WRITE (*,'(I0)',advance="no") l + indexAdj(4) - 1
             WRITE (*,'(A)',advance="no") "), expected: "
-            WRITE (*,'(L0)',advance="no") expected(i, j, k, l)
+            WRITE (*,'(L1)',advance="no") expected(i, j, k, l)
             WRITE (*,'(A)',advance="no") ", actual: "
-            WRITE (*,'(L0)') actual(i, j, k, l)
+            WRITE (*,'(L1)') actual(i, j, k, l)
             counter = counter + 1
             IF (counter > ftg_cmp_max_print_deviations) THEN
               EXIT outer
