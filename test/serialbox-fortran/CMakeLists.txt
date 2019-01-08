@@ -13,7 +13,7 @@ enable_language(Fortran)
 
 set(SOURCES serialbox_test)
 if (SERIALBOX_ENABLE_FTG)
-  set(SOURCES ${SOURCES} ser_ftg_test)
+  set(SOURCES ${SOURCES} ser_ftg_test ser_ftg_cmp_test)
 endif()
 
 # Setup external libraries

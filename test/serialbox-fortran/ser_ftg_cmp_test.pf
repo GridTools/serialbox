@@ -1,0 +1,357 @@
+! TODO Test NaN => Not possible: With gfortan "x = ieee_value(x, ieee_quiet_nan)" always causes SIGFPE: Floating-point exception
+
+MODULE ser_ftg_cmp_test
+
+  USE iso_c_binding
+  USE iso_fortran_env 
+  USE pfunit_mod  
+  USE m_ser_ftg
+  USE m_ser_ftg_cmp
+  
+  IMPLICIT NONE
+  
+  PUBLIC
+  
+  CHARACTER(len=*), PARAMETER :: dir = 'ftgcmpdata'
+  CHARACTER(len=*), PARAMETER :: base_name = 'testCompare'
+  CHARACTER(len=*), PARAMETER :: savepoint_name = 'test'
+
+  LOGICAL              :: logical0a 
+  LOGICAL(KIND=C_BOOL) :: boolean1a(-1:2)
+  INTEGER              :: integer2a(5,9)  
+  INTEGER(KIND=C_LONG) :: longint3a(-4:4,-5:5,-6:9)  
+  REAL(KIND=C_FLOAT)   :: float4a(7:8,23:42,-4:-2,0:20)
+  REAL(KIND=C_DOUBLE)  :: double4a(7:8,23:42,-4:-2,0:21)
+
+CONTAINS
+
+@Before
+   SUBROUTINE mySetup()
+
+      CALL ftg_set_savepoint(savepoint_name)
+      
+      ftg_cmp_quiet = .TRUE. ! Set to .FALSE. when output is needed
+      
+      ftg_cmp_print_when_equal = .TRUE.
+      ftg_cmp_count_different_bounds_as_failure = .FALSE.
+      ftg_cmp_message_prefix = 'FTG Compare Test ***'
+      
+      logical0a          = .TRUE.
+      boolean1a(:)       = .FALSE.
+      integer2a(:,:)     = 42
+      longint3a(:,:,:)   = 42
+      float4a(:,:,:,:)   = 109.23
+      double4a(:,:,:,:)  = 109.23
+      
+      CALL ftg_set_serializer(dir, base_name, 'w')
+      CALL ftg_write("logical0", logical0a)
+      CALL ftg_write("boolean1", boolean1a, LBOUND(boolean1a), UBOUND(boolean1a))
+      CALL ftg_write("integer2", integer2a, LBOUND(integer2a), UBOUND(integer2a))
+      CALL ftg_write("longint3", longint3a, LBOUND(longint3a), UBOUND(longint3a))
+      CALL ftg_write("float4", float4a, LBOUND(float4a), UBOUND(float4a))
+      CALL ftg_write("double4", double4a, LBOUND(double4a), UBOUND(double4a))
+      CALL ftg_destroy_serializer()
+      
+   END SUBROUTINE mySetup
+   
+@After
+   SUBROUTINE myTearDown()
+
+      CALL ftg_destroy_savepoint()
+      
+   END SUBROUTINE myTearDown
+   
+@Test
+    SUBROUTINE testSameIsEqual()
+    
+      LOGICAL :: result
+      INTEGER :: failure_count
+    
+      result = .FALSE.
+      failure_count = 0
+            
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      
+      CALL ftg_compare("logical0", logical0a, result, failure_count, fieldname_alias="logical0b")
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      CALL ftg_compare("boolean1", boolean1a, result, failure_count, fieldname_alias="boolean1a")
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      CALL ftg_compare("integer2", integer2a, result, failure_count, fieldname_alias="integer2a")
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      CALL ftg_compare("longint3", longint3a, result, failure_count, fieldname_alias="longint3a")
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      CALL ftg_compare("float4", float4a, result, failure_count, fieldname_alias="float4a")
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      CALL ftg_compare("double4", double4a, result, failure_count, fieldname_alias="double4a")
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      
+      CALL ftg_destroy_serializer()      
+    
+    END SUBROUTINE testSameIsEqual
+   
+@Test
+    SUBROUTINE testEqualIsEqual()
+    
+      LOGICAL :: result
+      INTEGER :: failure_count
+    
+      LOGICAL              :: logical0b 
+      LOGICAL(KIND=C_BOOL) :: boolean1b(4)
+      INTEGER              :: integer2b(5,9)  
+      INTEGER(KIND=C_LONG) :: longint3b(9,11,16)  
+      REAL(KIND=C_FLOAT)   :: float4b(2,20,3,21)
+      REAL(KIND=C_DOUBLE)  :: double4b(2,20,3,22)
+    
+      result = .FALSE.
+      failure_count = 0
+    
+      logical0b          = .TRUE.
+      boolean1b(:)       = .FALSE.
+      integer2b(:,:)     = 42
+      longint3b(:,:,:)   = 42
+      float4b(:,:,:,:)   = 109.23
+      double4b(:,:,:,:)  = 109.23
+            
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      
+      CALL ftg_compare("logical0", logical0b, result, failure_count, fieldname_alias="logical0b")
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      CALL ftg_compare("boolean1", boolean1b, result, failure_count, fieldname_alias="boolean1b")
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      CALL ftg_compare("integer2", integer2b, result, failure_count, fieldname_alias="integer2b")
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      CALL ftg_compare("longint3", longint3b, result, failure_count, fieldname_alias="longint3b")
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      CALL ftg_compare("float4", float4b, result, failure_count, fieldname_alias="float4b")
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      CALL ftg_compare("double4", double4b, result, failure_count, fieldname_alias="double4b")
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      
+      CALL ftg_destroy_serializer()      
+    
+    END SUBROUTINE testEqualIsEqual
+   
+@Test
+    SUBROUTINE testBoundsCheck()
+    
+      LOGICAL :: result
+      INTEGER :: failure_count
+    
+      LOGICAL              :: logical0b 
+      LOGICAL(KIND=C_BOOL) :: boolean1b(4)
+      INTEGER              :: integer2b(5,9)  
+      INTEGER(KIND=C_LONG) :: longint3b(9,11,16)  
+      REAL(KIND=C_FLOAT)   :: float4b(2,20,3,21)
+      REAL(KIND=C_DOUBLE)  :: double4b(2,20,3,22)
+    
+      ftg_cmp_count_different_bounds_as_failure = .TRUE.
+    
+      result = .FALSE.
+      failure_count = 0
+    
+      logical0b          = .TRUE.
+      boolean1b(:)       = .FALSE.
+      integer2b(:,:)     = 42
+      longint3b(:,:,:)   = 42
+      float4b(:,:,:,:)   = 109.23
+      double4b(:,:,:,:)  = 109.23
+            
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      
+      CALL ftg_compare("logical0", logical0b, result, failure_count, fieldname_alias="logical0b")
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      CALL ftg_compare("boolean1", boolean1b, result, failure_count, LBOUND(boolean1b), UBOUND(boolean1b), fieldname_alias="boolean1b")
+      @assertFalse(result)
+      @assertEqual(1, failure_count)
+      CALL ftg_compare("integer2", integer2b, result, failure_count, LBOUND(integer2b), UBOUND(integer2b), fieldname_alias="integer2b")
+      @assertTrue(result)
+      @assertEqual(1, failure_count)
+      CALL ftg_compare("longint3", longint3b, result, failure_count, LBOUND(longint3b), UBOUND(longint3b), fieldname_alias="longint3b")
+      @assertFalse(result)
+      @assertEqual(2, failure_count)
+      CALL ftg_compare("float4", float4b, result, failure_count, LBOUND(float4b), UBOUND(float4b), fieldname_alias="float4b")
+      @assertFalse(result)
+      @assertEqual(3, failure_count)
+      CALL ftg_compare("double4", double4b, result, failure_count, LBOUND(double4b), UBOUND(double4b), fieldname_alias="double4b")
+      @assertFalse(result)
+      @assertEqual(4, failure_count)
+      
+      CALL ftg_destroy_serializer()      
+    
+    END SUBROUTINE testBoundsCheck
+   
+@Test
+    SUBROUTINE testSizeDifferent()
+    
+      LOGICAL :: result
+      INTEGER :: failure_count
+    
+      LOGICAL(KIND=C_BOOL) :: boolean1c(5)
+      INTEGER              :: integer2c(5,8)  
+      INTEGER(KIND=C_LONG) :: longint3c(8,11,16)  
+      REAL(KIND=C_FLOAT)   :: float4c(2,21,3,21)
+      REAL(KIND=C_DOUBLE)  :: double4c(2,20,3,21)
+    
+      result = .FALSE.
+      failure_count = 0
+    
+      boolean1c(:)       = .FALSE.
+      integer2c(:,:)     = 42
+      longint3c(:,:,:)   = 42
+      float4c(:,:,:,:)   = 109.23
+      double4c(:,:,:,:)  = 109.23
+            
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      
+      CALL ftg_compare("boolean1", boolean1c, result, failure_count, fieldname_alias="boolean1c")
+      @assertFalse(result)
+      @assertEqual(1, failure_count)
+      CALL ftg_compare("integer2", integer2c, result, failure_count, fieldname_alias="integer2c")
+      @assertFalse(result)
+      @assertEqual(2, failure_count)
+      CALL ftg_compare("longint3", longint3c, result, failure_count, fieldname_alias="longint3c")
+      @assertFalse(result)
+      @assertEqual(3, failure_count)
+      CALL ftg_compare("float4", float4c, result, failure_count, fieldname_alias="float4c")
+      @assertFalse(result)
+      @assertEqual(4, failure_count)
+      CALL ftg_compare("double4", double4c, result, failure_count, fieldname_alias="double4c")
+      @assertFalse(result)
+      @assertEqual(5, failure_count)
+      
+      CALL ftg_destroy_serializer()      
+    
+    END SUBROUTINE testSizeDifferent
+   
+@Test
+    SUBROUTINE testOneDifferentValue()
+    
+      LOGICAL :: result
+      INTEGER :: failure_count
+    
+      LOGICAL              :: logical0d 
+      LOGICAL(KIND=C_BOOL) :: boolean1d(-1:2)
+      INTEGER              :: integer2d(5,9)  
+      INTEGER(KIND=C_LONG) :: longint3d(-4:4,-5:5,-6:9)  
+      REAL(KIND=C_FLOAT)   :: float4d(7:8,23:42,-4:-2,0:20)
+      REAL(KIND=C_DOUBLE)  :: double4d(7:8,23:42,-4:-2,0:21)
+    
+      result = .FALSE.
+      failure_count = 0
+    
+      logical0d          = .FALSE.
+      boolean1d(:)       = .FALSE.
+      boolean1d(-1)       = .TRUE.
+      integer2d(:,:)     = 42
+      integer2d(5,9)     = 43
+      longint3d(:,:,:)   = 42
+      longint3d(2,-3,-6)   = -42
+      float4d(:,:,:,:)   = 109.23
+      float4d(8,42,-2,0)   = 109.231
+      double4d(:,:,:,:)  = 109.23
+      double4d(8,42,-2,0)  = 109.229
+            
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      
+      CALL ftg_compare("logical0", logical0d, result, failure_count, fieldname_alias="logical0d")
+      @assertFalse(result)
+      @assertEqual(1, failure_count)
+      CALL ftg_compare("boolean1", boolean1d, result, failure_count, LBOUND(boolean1d), UBOUND(boolean1d), fieldname_alias="boolean1d")
+      @assertFalse(result)
+      @assertEqual(2, failure_count)
+      CALL ftg_compare("integer2", integer2d, result, failure_count, LBOUND(integer2d), UBOUND(integer2d), fieldname_alias="integer2d")
+      @assertFalse(result)
+      @assertEqual(3, failure_count)
+      CALL ftg_compare("longint3", longint3d, result, failure_count, LBOUND(longint3d), UBOUND(longint3d), fieldname_alias="longint3d")
+      @assertFalse(result)
+      @assertEqual(4, failure_count)
+      CALL ftg_compare("float4", float4d, result, failure_count, LBOUND(float4d), UBOUND(float4d), fieldname_alias="float4d")
+      @assertFalse(result)
+      @assertEqual(5, failure_count)
+      CALL ftg_compare("double4", double4d, result, failure_count, LBOUND(double4d), UBOUND(double4d), fieldname_alias="double4d")
+      @assertFalse(result)
+      @assertEqual(6, failure_count)
+      
+      CALL ftg_compare("logical0", logical0a, result, failure_count, fieldname_alias="logical0a")
+      @assertTrue(result)
+      @assertEqual(6, failure_count)
+      
+      CALL ftg_destroy_serializer()      
+    
+    END SUBROUTINE testOneDifferentValue
+   
+@Test
+    SUBROUTINE testTolerances()
+    
+      LOGICAL :: result
+      INTEGER :: failure_count
+    
+      REAL(KIND=C_FLOAT)   :: float4e(2,20,3,21)
+      REAL(KIND=C_DOUBLE)  :: double4e(2,20,3,22)
+    
+      result = .FALSE.
+      failure_count = 0
+    
+      float4e(:,:,:,:)   = 109.23
+      float4e(2,20,3,1)   = 109.231
+      float4e(2,20,3,2)   = 109.229
+      double4e(:,:,:,:)  = 109.23
+      double4e(2,20,3,1)  = 109.231
+      double4e(2,20,3,2)  = 109.229
+            
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      
+      CALL ftg_compare("float4", float4e, result, failure_count, tolerance=0.001, fieldname_alias="float4e")
+      @assertFalse(result)
+      @assertEqual(1, failure_count)
+      CALL ftg_compare("double4", double4e, result, failure_count, tolerance=0.0011, fieldname_alias="double4e")
+      @assertTrue(result)
+      @assertEqual(1, failure_count)
+      
+      CALL ftg_destroy_serializer()      
+    
+    END SUBROUTINE testTolerances
+   
+@Test
+    SUBROUTINE testNotExists()
+    
+      LOGICAL :: result
+      INTEGER :: failure_count
+    
+      INTEGER  :: not_here(42)
+    
+      result = .FALSE.
+      failure_count = 0
+    
+      not_here(:)   = not_here
+            
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      
+      CALL ftg_compare("not_here", not_here, result, failure_count)
+      @assertFalse(result)
+      @assertEqual(1, failure_count)
+      
+      ftg_cmp_count_missing_field_as_failure = .FALSE.
+      
+      CALL ftg_compare("not_here", not_here, result, failure_count)
+      @assertTrue(result)
+      @assertEqual(1, failure_count)
+      
+      CALL ftg_destroy_serializer()      
+    
+    END SUBROUTINE testNotExists
+      
+END MODULE ser_ftg_cmp_test

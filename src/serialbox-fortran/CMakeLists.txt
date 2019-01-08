@@ -21,7 +21,7 @@ if(SERIALBOX_ENABLE_FORTRAN)
   
   set(SOURCES_FORTRAN utils_ppser.f90 )
   if (SERIALBOX_ENABLE_FTG)
-    set(SOURCES_FORTRAN ${SOURCES_FORTRAN} m_ser_ftg.f90)
+    set(SOURCES_FORTRAN ${SOURCES_FORTRAN} m_ser_ftg.f90 m_ser_ftg_cmp.f90)
   endif()
 
   add_library(SerialboxFortranObjects OBJECT ${SOURCES_FORTRAN})
