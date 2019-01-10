@@ -16,14 +16,12 @@ Serialbox builds are run on Travis CI [here](https://travis-ci.org/eth-cscs/seri
 
 |  Toolchain   | Config         |                                                     Status                                                         |
 |:-------------|:---------------|:-------------------------------------------------------------------------------------------------------------------|
-| GCC 5.4      | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 5.4][GCC_54_Release.Badge]</a>            |
-| GCC 5.4      | RelWithDebInfo |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 5.4][GCC_54_RelWithDebInfo.Badge]</a>     |
-| GCC 6.3      | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 6.3][GCC_63_Release.Badge]</a>            |
-| GCC 6.3      | RelWithDebInfo |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 6.3][GCC_63_RelWithDebInfo.Badge]</a>     |
-| Clang 3.8    | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![Clang 3.8][Clang_38_Release.Badge]</a>        |
-| Clang 3.8    | RelWithDebInfo |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![Clang 3.8][Clang_38_RelWithDebInfo.Badge]</a> |
-| Clang 4.0    | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![Clang 4.0][Clang_40_Release.Badge]</a>        |
-| Clang 4.0    | RelWithDebInfo |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![Clang 4.0][Clang_40_RelWithDebInfo.Badge]</a> |
+| GCC 5.5      | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 5.5][GCC_55_Release.Badge]</a>            |
+| GCC 5.5      | RelWithDebInfo |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 5.5][GCC_55_RelWithDebInfo.Badge]</a>     |
+| GCC 7.4      | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 7.4][GCC_74_Release.Badge]</a>            |
+| GCC 7.4      | RelWithDebInfo |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 7.4][GCC_74_RelWithDebInfo.Badge]</a>     |
+| GCC 8.1      | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 8.1][GCC_81_Release.Badge]</a>            |
+| GCC 8.1      | RelWithDebInfo |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 8.1][GCC_81_RelWithDebInfo.Badge]</a>     |
 | Clang 5.0    | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![Clang 5.0][Clang_50_Release.Badge]</a>        |
 | Clang 5.0    | RelWithDebInfo |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![Clang 5.0][Clang_50_RelWithDebInfo.Badge]</a> |
 
@@ -49,17 +47,11 @@ This project is licensed under the terms of the **BSD** license.
 [Documentation.Badge]: https://img.shields.io/badge/documentation-link-blue.svg
 [BSD.License]: https://img.shields.io/badge/License-BSD-blue.svg
 [Version.Badge]: https://badge.fury.io/gh/eth-cscs%2Fserialbox2.svg
-[GCC_54_Release.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/3
-[GCC_54_RelWithDebInfo.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/4
-[GCC_63_Release.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/5
-[GCC_63_RelWithDebInfo.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/6
-[Clang_38_Release.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/7
-[Clang_38_RelWithDebInfo.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/8
-[Clang_40_Release.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/9
-[Clang_40_RelWithDebInfo.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/10
-[Clang_50_Release.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/11
-[Clang_50_RelWithDebInfo.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/12
-[Xcode_73_Release.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/13
-[Xcode_73_RelWithDebInfo.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/14
-[Xcode_80_Release.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/15
-[Xcode_80_RelWithDebInfo.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/16
+[GCC_55_Release.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/3
+[GCC_55_RelWithDebInfo.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/4
+[GCC_74_Release.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/5
+[GCC_74_RelWithDebInfo.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/6
+[GCC_81_Release.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/7
+[GCC_81_RelWithDebInfo.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/8
+[Clang_50_Release.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/9
+[Clang_50_RelWithDebInfo.Badge]: https://travis-matrix-badges.herokuapp.com/repos/eth-cscs/serialbox2/branches/master/10
