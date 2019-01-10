@@ -95,6 +95,7 @@ elif [ "$FC_COMPILER" = "pgfortran18.10" ]; then
     FC_COMPILER="pgfortran"
 else
     module swap PrgEnv-cray PrgEnv-gnu
+    module swap gcc gcc/5.3.0
 #    module load cray-netcdf
 #    module load cray-hdf5
 #    export NETCDF_ROOT=${NETCDF_DIR}
