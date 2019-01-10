@@ -255,7 +255,11 @@ fi
 # Run tests
 if [ "$ARG_RUN_TESTS" == "true" ]; then
 chmod  +x run_tests.sh
-./run_tests.sh
+if [ "$MYHOST" == "tave" ]; then
+    srun --account=c14 ./run_tests.sh
+else
+    ./run_tests.sh
+fi
 ret=$?
 exit $ret
 fi
