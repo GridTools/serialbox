@@ -71,7 +71,8 @@ module load CMake/3.12.0
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
     
-    module swap PrgEnv-cray PrgEnv-pgi
+    module rm PrgEnv-cray
+    module load PrgEnv-pgi
     module load gcc
 #    module load cray-netcdf
 #    module load cray-hdf5
@@ -87,7 +88,8 @@ elif [ "$FC_COMPILER" = "ifort" ]; then
     module load gcc
 
 else
-    module swap PrgEnv-cray PrgEnv-gnu
+    module rm PrgEnv-cray
+    module load PrgEnv-gnu
 #    module load cray-netcdf
 #    module load cray-hdf5
 #    export NETCDF_ROOT=${NETCDF_DIR}
