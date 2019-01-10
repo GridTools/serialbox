@@ -14,7 +14,7 @@
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "CMake install prefix")
 
 cmake_policy(SET CMP0048 NEW)
-project(Serialbox LANGUAGES C CXX VERSION 2.5.0)
+project(Serialbox LANGUAGES C CXX VERSION 2.5.1)
 cmake_minimum_required(VERSION 3.9.0)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -183,7 +183,10 @@ include(IDESupport)
 
 #---------------------------------------- GTest ----------------------------------------------------
 if(SERIALBOX_TESTING)
+  set(tmp_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
+  set(BUILD_SHARED_LIBS OFF)
   add_subdirectory(external/googletest)
+  set(BUILD_SHARED_LIBS ${tmp_BUILD_SHARED_LIBS})
 
   if(SERIALBOX_ENABLE_C)
     set(SERIALBOX_HAS_C 1)
