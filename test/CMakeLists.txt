@@ -51,6 +51,10 @@ function(serialbox_add_unittest_executable)
   if(DEFINED BUILD_STELLA)
     add_dependencies(${ARG_NAME} stella)
   endif()
+  
+  if(SERIALBOX_HAS_GRIDTOOLS)
+    target_link_libraries(${ARG_NAME} GridTools::gridtools)
+  endif()
 
   if(DEFINED COVERAGE_SUPPORTED)
     set_property(TARGET ${ARG_NAME} PROPERTY COMPILE_FLAGS ${CMAKE_CXX_FLAGS_COVERAGE})

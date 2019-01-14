@@ -89,7 +89,7 @@ endif(SERIALBOX_HAS_FORTRAN)
 #===---------------------------------------------------------------------------------------------===
 #   Find external libraries
 #====--------------------------------------------------------------------------------------------===
-if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
+if(NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
 
   include(CMakeFindDependencyMacro)
   #
@@ -173,7 +173,6 @@ endif()
 #===---------------------------------------------------------------------------------------------===
 #   Find pp_ser.py
 #====--------------------------------------------------------------------------------------------===
-if(SERIALBOX_ROOT)
-  find_file(SERIALBOX_PPSER pp_ser.py ${SERIALBOX_ROOT}/python/pp_ser)
-endif()
+find_file(SERIALBOX_PPSER pp_ser.py @PACKAGE_PYTHON_INSTALL_DIR@/pp_ser)
+include(@PACKAGE_CMAKE_INSTALL_DIR@/SerialboxTooling.cmake)
 
