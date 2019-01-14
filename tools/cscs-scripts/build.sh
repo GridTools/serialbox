@@ -192,16 +192,12 @@ else
 fi
 
 #NetCDF
-if [ ! -z ${NETCDF_ROOT+x} ]; then
-    SERIALBOX_USE_NETCDF=ON
-else
-    SERIALBOX_USE_NETCDF=OFF
-fi
-
+SERIALBOX_USE_NETCDF=ON
 
 #------------------------------ Build ------------------------------------------
 
-BUILD_DIR=${CURRENT_PATH}/../../build_gcc_${ARG_FC_COMPILER}
+ROOT_DIR=${CURRENT_PATH}/../..
+BUILD_DIR=${ROOT_DIR}/build_gcc_${ARG_FC_COMPILER}
 
 # Create build directory
 if [ -d "$BUILD_DIR" ]; then
@@ -234,17 +230,12 @@ cmake                                                                          \
  -DSERIALBOX_USE_NETCDF:BOOL=${SERIALBOX_USE_NETCDF}                           \
  -DSERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM:BOOL=ON                            \
  -DSERIALBOX_ENABLE_FTG:BOOL=ON                                                \
+ -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY=ON                                         \
  ${SET_PFUNIT_PATH}                                                            \
  ../
 
-# Run make
-if [ -z "${INSTALL_PREFIX}" ]; then
-    # don't install if no install path was specified
-    make -j8
-else
-    # make and install if a path was specified
-    make install -j8
-fi
+# make and install
+nice make install -j8
 
 ret=$?
 if [ ${ret} -ne 0 ]; then
@@ -252,15 +243,29 @@ if [ ${ret} -ne 0 ]; then
 fi
 
 
-# Run tests
 if [ "$ARG_RUN_TESTS" == "true" ]; then
-chmod  +x run_tests.sh
-if [ "$MYHOST" == "tave" ]; then
-    srun --account=c14 ./run_tests.sh
-else
-    ./run_tests.sh
-fi
-ret=$?
-exit $ret
+    # Run tests
+    chmod  +x run_tests.sh
+    if [ "$MYHOST" == "tave" ]; then
+        srun --account=c14 ./run_tests.sh
+    else
+        ./run_tests.sh
+    fi
+    ret=$?
+    if [ ${ret} -ne 0 ]; then
+        exit ${ret}
+    fi
+    
+    # build the standalone example (tests installation)
+    cd ${ROOT_DIR}/examples/fortran/perturbation
+    cmake -DSerialbox_DIR=${CMAKE_INSTALL_PREFIX}/cmake          \
+        -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY=ON              \
+        .
+    nice make -j4
+    ./run.sh
+    ret=$?
+    if [ ${ret} -ne 0 ]; then
+        exit ${ret}
+    fi
 fi
 
