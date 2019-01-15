@@ -38,7 +38,17 @@ if(SERIALBOX_ENABLE_FORTRAN)
   target_link_libraries(SerialboxFortranStatic PUBLIC SerialboxCStatic)
   set_target_properties(SerialboxFortranStatic PROPERTIES VERSION ${Serialbox_VERSION_STRING})
 
-  install(TARGETS SerialboxFortranStatic SerialboxFortranObjects SerialboxFortranSerializeObjects
+  if(BUILD_SHARED_LIBS)
+    set_target_properties( SerialboxFortranSerializeObjects PROPERTIES POSITION_INDEPENDENT_CODE ON )
+    set_target_properties( SerialboxFortranObjects PROPERTIES POSITION_INDEPENDENT_CODE ON )
+    add_library(SerialboxFortranShared SHARED $<TARGET_OBJECTS:SerialboxFortranSerializeObjects> $<TARGET_OBJECTS:SerialboxFortranObjects>)
+    target_link_libraries(SerialboxFortranShared PUBLIC SerialboxFortranObjects)
+    target_link_libraries(SerialboxFortranShared PUBLIC SerialboxFortranSerializeObjects)
+    target_link_libraries(SerialboxFortranShared PUBLIC SerialboxCShared)
+    set_target_properties(SerialboxFortranShared PROPERTIES VERSION ${Serialbox_VERSION_STRING})
+  endif()
+
+  install(TARGETS SerialboxFortranShared SerialboxFortranStatic SerialboxFortranObjects SerialboxFortranSerializeObjects
     EXPORT SerialboxTargets
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib

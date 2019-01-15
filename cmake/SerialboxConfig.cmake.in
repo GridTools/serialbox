@@ -84,17 +84,29 @@ endif(SERIALBOX_HAS_C)
 if(SERIALBOX_HAS_FORTRAN)
   get_property(_static_lib TARGET Serialbox::SerialboxFortranStatic PROPERTY LOCATION)
   message(STATUS "  Static serialbox FORTRAN: ${_static_lib}")
+
+  if(SERIALBOX_HAS_SHARED_LIBRARY)
+    get_property(_shared_lib TARGET Serialbox::SerialboxFortranShared PROPERTY LOCATION)
+    message(STATUS "  Shared serialbox FORTRAN: ${_shared_lib}")
+  endif()
+
 endif(SERIALBOX_HAS_FORTRAN)
 
 #===---------------------------------------------------------------------------------------------===
 #   Find external libraries
 #====--------------------------------------------------------------------------------------------===
+
+if( NOT DEFINED SERIALBOX_ROOT )
+  set( SERIALBOX_ROOT ${CMAKE_CURRENT_LIST_DIR}/.. )
+endif()
+
 if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
 
   include(CMakeFindDependencyMacro)
   #
   # Pthreads
   #
+  message( STATUS "Serialbox: find_depencency( Threads )" )
   find_dependency(Threads)
 
   #
@@ -111,7 +123,8 @@ if(SERIALBOX_ROOT AND NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
   set(BOOST_INCLUDEDIR "${SERIALBOX_BOOST_INCLUDE_DIRS}")
   set(Boost_NO_SYSTEM_PATHS "ON") # Force boost to search locations specified above
 
-  find_package(Boost 
+  message( STATUS "Serialbox: find_depencency( Boost ${SERIALBOX_BOOST_VERSION} EXACT COMPONENTS ${SERIALBOX_REQUIRED_BOOST_COMPONENTS}}")
+  find_dependency(Boost 
                ${SERIALBOX_BOOST_VERSION} EXACT COMPONENTS ${SERIALBOX_REQUIRED_BOOST_COMPONENTS})
   if(Boost_FOUND)
     list(APPEND SERIALBOX_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
