@@ -16,7 +16,6 @@
 #include "serialbox/core/SerializerImpl.h"
 #include "serialbox/core/Unreachable.h"
 #include "serialbox/core/frontend/stella/Utility.h"
-#include <boost/make_shared.hpp>
 #include <cstdlib>
 
 namespace serialbox {
@@ -61,15 +60,15 @@ void Serializer::Init(const std::string& directory, const std::string& prefix,
     switch(mode) {
     case SerializerOpenModeRead:
       serializerImpl_ =
-          boost::make_shared<SerializerImpl>(OpenModeKind::Read, directory, prefix, "Binary");
+          std::make_shared<SerializerImpl>(OpenModeKind::Read, directory, prefix, "Binary");
       break;
     case SerializerOpenModeWrite:
       serializerImpl_ =
-          boost::make_shared<SerializerImpl>(OpenModeKind::Write, directory, prefix, "Binary");
+          std::make_shared<SerializerImpl>(OpenModeKind::Write, directory, prefix, "Binary");
       break;
     case SerializerOpenModeAppend:
       serializerImpl_ =
-          boost::make_shared<SerializerImpl>(OpenModeKind::Append, directory, prefix, "Binary");
+          std::make_shared<SerializerImpl>(OpenModeKind::Append, directory, prefix, "Binary");
       break;
     }
   } catch(Exception& e) {

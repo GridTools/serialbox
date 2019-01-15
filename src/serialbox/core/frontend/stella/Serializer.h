@@ -26,11 +26,11 @@
 #include "serialbox/core/frontend/stella/MetainfoSet.h"
 #include "serialbox/core/frontend/stella/Savepoint.h"
 #include "serialbox/core/frontend/stella/SerializationException.h"
-#include <boost/shared_ptr.hpp>
 #include <map>
 #include <sstream>
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace serialbox {
 
@@ -290,12 +290,12 @@ public:
   std::string ToString() const;
 
   /// \brief Get implementation pointer
-  boost::shared_ptr<SerializerImpl>& getImpl() { return serializerImpl_; }
-  const boost::shared_ptr<SerializerImpl>& getImpl() const { return serializerImpl_; }
+  std::shared_ptr<SerializerImpl>& getImpl() { return serializerImpl_; }
+  const std::shared_ptr<SerializerImpl>& getImpl() const { return serializerImpl_; }
 
 private:
   // Implementation pointer
-  boost::shared_ptr<SerializerImpl> serializerImpl_;
+  std::shared_ptr<SerializerImpl> serializerImpl_;
 
   // These data-strucures allow to return refrences but do not actually own any data but they need
   // to be kept in sync with the data from serializerImpl!
