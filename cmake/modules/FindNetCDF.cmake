@@ -22,16 +22,6 @@ if(NETCDF_ROOT_ENV)
   set(NETCDF_ROOT ${NETCDF_ROOT_ENV} CACHE PATH "NetCDF install path.")
 endif()
 
-cmake_policy(SET CMP0074 NEW)
-set(hdf5_optional_components "")
-#if(CMAKE_Fortran_COMPILER)
-#    list(APPEND hdf5_optional_components Fortran)
-#endif()
-#if(CMAKE_Fortran_COMPILER)
-#    list(APPEND hdf5_optional_components C)
-#endif()
-#find_package(HDF5 COMPONENTS CXX HL ${hdf5_optional_components})
-
 if(NOT(DEFINED NETCDF_ROOT))
   find_path(NETCDF_ROOT NAMES include/netcdf.h)
 else()
@@ -45,9 +35,6 @@ find_library(NETCDF_LIBRARIES NAMES netcdf
             ${NETCDF_ROOT}/lib
             ${NETCDF_ROOT}/lib64
         )
-if(HDF5_FOUND)
-    list(APPEND NETCDF_LIBRARIES ${HDF5_HL_LIBRARIES})
-endif()
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (NetCDF DEFAULT_MSG NETCDF_LIBRARIES NETCDF_INCLUDES)
