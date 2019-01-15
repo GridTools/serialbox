@@ -90,9 +90,9 @@ else
 fi
 
 module load cray-netcdf
-#    module load cray-hdf5
+module load cray-hdf5
 export NETCDF_ROOT=${NETCDF_DIR}
-    
+
 export CXX=$(which g++)
 export CC=$(which gcc)
 export FC=$(which $FC_COMPILER)

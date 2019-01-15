@@ -53,17 +53,14 @@ target_link_libraries(m_ser Serialbox::SerialboxFortranStatic)
 ## Producer
 add_executable(fortran_producer_netcdf ${PP_OUTPUT}/main_producer.F90)
 target_link_libraries(fortran_producer_netcdf m_ser)
-set_target_properties(fortran_producer_netcdf PROPERTIES LINKER_LANGUAGE CXX)
 
 ## Consumer
 add_executable(fortran_consumer_netcdf ${PP_OUTPUT}/main_consumer.F90)
 target_link_libraries(fortran_consumer_netcdf m_ser)
-set_target_properties(fortran_consumer_netcdf PROPERTIES LINKER_LANGUAGE CXX)
 
 ## Perturbed Consumer
 add_executable(fortran_consumer_perturb_netcdf ${PP_OUTPUT}/main_consumer_perturb.F90)
 target_link_libraries(fortran_consumer_perturb_netcdf m_ser)
-set_target_properties(fortran_consumer_perturb_netcdf PROPERTIES LINKER_LANGUAGE CXX)
 
 #
 # Finally, copy our run script to the build directory
