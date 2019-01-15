@@ -36,6 +36,15 @@ endif()
 add_definitions(-DSERIALIZE)
 
 #
+# Use the CXX linker with the cray compiler
+#
+if("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Cray")
+    set(LINKER_LANGUAGE CXX)
+else()
+    set(LINKER_LANGUAGE Fortran)
+endif()
+
+#
 # Here we preprocess all the source files, using the preprocesser script pp_ser.py, and store them 
 # in ${CMAKE_SOURCE_DIR}/pp.
 
@@ -53,17 +62,14 @@ target_link_libraries(m_ser Serialbox::SerialboxFortranStatic)
 ## Producer
 add_executable(fortran_producer_netcdf ${PP_OUTPUT}/main_producer.F90)
 target_link_libraries(fortran_producer_netcdf m_ser)
-set_target_properties(fortran_producer_netcdf PROPERTIES LINKER_LANGUAGE Fortran)
 
 ## Consumer
 add_executable(fortran_consumer_netcdf ${PP_OUTPUT}/main_consumer.F90)
 target_link_libraries(fortran_consumer_netcdf m_ser)
-set_target_properties(fortran_consumer_netcdf PROPERTIES LINKER_LANGUAGE Fortran)
 
 ## Perturbed Consumer
 add_executable(fortran_consumer_perturb_netcdf ${PP_OUTPUT}/main_consumer_perturb.F90)
 target_link_libraries(fortran_consumer_perturb_netcdf m_ser)
-set_target_properties(fortran_consumer_perturb_netcdf PROPERTIES LINKER_LANGUAGE Fortran)
 
 #
 # Finally, copy our run script to the build directory

@@ -32,6 +32,15 @@ find_package(Serialbox REQUIRED COMPONENTS Fortran)
 add_definitions(-DSERIALIZE)
 
 #
+# Use the CXX linker with the cray compiler
+#
+if("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Cray")
+    set(LINKER_LANGUAGE CXX)
+else()
+    set(LINKER_LANGUAGE Fortran)
+endif()
+
+#
 # Here we preprocess all the source files, using the preprocesser script pp_ser.py, and store them 
 # in ${CMAKE_SOURCE_DIR}/pp.
 set(PP_OUTPUT ${CMAKE_SOURCE_DIR}/pp)
@@ -48,17 +57,14 @@ target_link_libraries(m_ser Serialbox::SerialboxFortranStatic)
 ## Producer
 add_executable(fortran_producer ${PP_OUTPUT}/main_producer.F90 )
 target_link_libraries(fortran_producer m_ser)
-set_target_properties(fortran_producer PROPERTIES LINKER_LANGUAGE Fortran)
 
 ## Consumer
 add_executable(fortran_consumer ${PP_OUTPUT}/main_consumer.F90)
 target_link_libraries(fortran_consumer m_ser)
-set_target_properties(fortran_consumer PROPERTIES LINKER_LANGUAGE Fortran)
 
 ## Perturbed Consumer
 add_executable(fortran_consumer_perturb ${PP_OUTPUT}/main_consumer_perturb.F90)
 target_link_libraries(fortran_consumer_perturb m_ser)
-set_target_properties(fortran_consumer_perturb PROPERTIES LINKER_LANGUAGE Fortran)
 
 #
 # Finally, copy our run script to the build directory
