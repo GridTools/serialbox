@@ -257,15 +257,32 @@ if [ "$ARG_RUN_TESTS" == "true" ]; then
     fi
     
     # build the standalone example (tests installation)
-    cd ${ROOT_DIR}/examples/fortran/perturbation
+    rel_path_to_example="examples/fortran/perturbation"
+    mkdir -p ${BUILD_DIR}/${rel_path_to_example}
+    cd ${BUILD_DIR}/${rel_path_to_example}
     cmake -DSerialbox_DIR=${CMAKE_INSTALL_PREFIX}/cmake          \
         -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY=ON              \
-        .
+        ${ROOT_DIR}/${rel_path_to_example}
     nice make -j4
-    ./run.sh
+    ${ROOT_DIR}/${rel_path_to_example}/run.sh
     ret=$?
     if [ ${ret} -ne 0 ]; then
         exit ${ret}
+    fi
+    
+    if [ "$SERIALBOX_USE_NETCDF" == "ON" ]; then
+        rel_path_to_example="examples/fortran/perturbation_netcdf"
+        mkdir -p ${BUILD_DIR}/${rel_path_to_example}
+        cd ${BUILD_DIR}/${rel_path_to_example}
+        cmake -DSerialbox_DIR=${CMAKE_INSTALL_PREFIX}/cmake          \
+            -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY=ON              \
+            ${ROOT_DIR}/${rel_path_to_example}
+        nice make -j4
+        ${ROOT_DIR}/${rel_path_to_example}/run.sh
+        ret=$?
+        if [ ${ret} -ne 0 ]; then
+            exit ${ret}
+        fi
     fi
 fi
 
