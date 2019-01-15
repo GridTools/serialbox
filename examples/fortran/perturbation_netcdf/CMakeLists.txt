@@ -39,8 +39,10 @@ add_definitions(-DSERIALIZE)
 # Use the CXX linker with the cray compiler
 #
 if("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Cray")
+    message(STATUS "set(LINKER_LANGUAGE CXX)")
     set(LINKER_LANGUAGE CXX)
 else()
+    message(STATUS "set(LINKER_LANGUAGE Fortran)")
     set(LINKER_LANGUAGE Fortran)
 endif()
 
