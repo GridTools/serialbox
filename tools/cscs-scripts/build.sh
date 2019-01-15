@@ -192,7 +192,11 @@ else
 fi
 
 #NetCDF
-SERIALBOX_USE_NETCDF=ON
+SERIALBOX_USE_NETCDF=OFF
+if [ "${FC_COMPILER}" = "gfortran" ]; then
+    SERIALBOX_USE_NETCDF=ON
+fi
+
 
 #------------------------------ Build ------------------------------------------
 
