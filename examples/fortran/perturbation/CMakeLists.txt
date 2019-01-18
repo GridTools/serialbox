@@ -34,12 +34,11 @@ add_definitions(-DSERIALIZE)
 #
 # Use the CXX linker with the cray compiler
 #
+set(example_linker_language "")
 if("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Cray")
-    message(STATUS "set(LINKER_LANGUAGE CXX)")
-    set(LINKER_LANGUAGE CXX)
+    set(example_linker_language CXX)
 else()
-    message(STATUS "set(LINKER_LANGUAGE Fortran)")
-    set(LINKER_LANGUAGE Fortran)
+    set(example_linker_language Fortran)
 endif()
 
 #
@@ -59,14 +58,17 @@ target_link_libraries(m_ser Serialbox::SerialboxFortranStatic)
 ## Producer
 add_executable(fortran_producer ${PP_OUTPUT}/main_producer.F90 )
 target_link_libraries(fortran_producer m_ser)
+set_target_properties(fortran_producer PROPERTIES LINKER_LANGUAGE ${example_linker_language})
 
 ## Consumer
 add_executable(fortran_consumer ${PP_OUTPUT}/main_consumer.F90)
 target_link_libraries(fortran_consumer m_ser)
+set_target_properties(fortran_consumer PROPERTIES LINKER_LANGUAGE ${example_linker_language})
 
 ## Perturbed Consumer
 add_executable(fortran_consumer_perturb ${PP_OUTPUT}/main_consumer_perturb.F90)
 target_link_libraries(fortran_consumer_perturb m_ser)
+set_target_properties(fortran_consumer_perturb PROPERTIES LINKER_LANGUAGE ${example_linker_language})
 
 #
 # Finally, copy our run script to the build directory
