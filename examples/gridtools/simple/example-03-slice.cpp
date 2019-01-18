@@ -18,8 +18,6 @@
 //
 // Include gridtools headers (Serialbox only supports C++11)
 //
-#define CXX11_ENABLED
-#define STRUCTURED_GRIDS
 #include <gridtools/stencil-composition/stencil-composition.hpp>
 
 //

@@ -246,18 +246,8 @@ endif(SERIALBOX_ENABLE_PYTHON)
   
 #---------------------------------------- GridTools ------------------------------------------------
 if(SERIALBOX_TESTING_GRIDTOOLS)
-
-  # If GRIDTOOLS_ROOT is not provided, we try to find it in external/
-  set(GRIDTOOLS_ROOT_ENV "$ENV{GRIDTOOLS_ROOT}")
-  if(NOT(GRIDTOOLS_ROOT) AND NOT(GRIDTOOLS_ROOT_ENV) AND 
-     EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/gridtools/CMakeLists.txt" )
-    message(STATUS "Using GridTools from: ${CMAKE_CURRENT_SOURCE_DIR}/external/gridtools")
-    set(GRIDTOOLS_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/external/gridtools")
-  endif()
-
   find_package(GridTools QUIET REQUIRED)
   set(SERIALBOX_HAS_GRIDTOOLS 1)
-  
 endif(SERIALBOX_TESTING_GRIDTOOLS)
 
 #---------------------------------------- std::experimental::filesystem ----------------------------
