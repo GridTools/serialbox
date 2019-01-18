@@ -268,7 +268,11 @@ if [ "$ARG_RUN_TESTS" == "true" ]; then
         -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY=ON              \
         ${ROOT_DIR}/${rel_path_to_example}
     nice make -j4
-    ${ROOT_DIR}/${rel_path_to_example}/run.sh
+    if [ "$MYHOST" == "tave" ]; then
+        srun --account=c14 ${ROOT_DIR}/${rel_path_to_example}/run.sh
+    else
+	    ${ROOT_DIR}/${rel_path_to_example}/run.sh
+    fi
     ret=$?
     if [ ${ret} -ne 0 ]; then
         exit ${ret}
@@ -282,7 +286,11 @@ if [ "$ARG_RUN_TESTS" == "true" ]; then
             -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY=ON              \
             ${ROOT_DIR}/${rel_path_to_example}
         nice make -j4
-        ${ROOT_DIR}/${rel_path_to_example}/run.sh
+        if [ "$MYHOST" == "tave" ]; then
+	        srun --account=c14 ${ROOT_DIR}/${rel_path_to_example}/run.sh
+	    else
+		    ${ROOT_DIR}/${rel_path_to_example}/run.sh
+	    fi
         ret=$?
         if [ ${ret} -ne 0 ]; then
             exit ${ret}
