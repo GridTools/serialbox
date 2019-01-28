@@ -70,30 +70,21 @@ module use /users/jenkins/easybuild/tave/modules/all
 module load CMake/3.12.0
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
-    
     module rm PrgEnv-cray
     module load PrgEnv-pgi
     module load gcc
-#    module load cray-netcdf
-#    module load cray-hdf5
-#    export NETCDF_ROOT=${NETCDF_DIR}
-    
 elif [ "$FC_COMPILER" = "ftn" ]; then
-  
     module load gcc
-    
 elif [ "$FC_COMPILER" = "ifort" ]; then
-
     module swap PrgEnv-cray PrgEnv-intel
     module load gcc
-
 else
     module rm PrgEnv-cray
     module load PrgEnv-gnu
-#    module load cray-netcdf
-#    module load cray-hdf5
-#    export NETCDF_ROOT=${NETCDF_DIR}
 fi
+
+module load cray-netcdf
+export NETCDF_ROOT=${NETCDF_DIR}
 
 export CXX=$(which g++)
 export CC=$(which gcc)

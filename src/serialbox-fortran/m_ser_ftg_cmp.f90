@@ -1210,7 +1210,7 @@ SUBROUTINE ftg_compare_logical_0d(fieldname, field, result, failure_count, field
   
   IF (result) THEN
     IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+      WRITE (*,'(A,A,A,A,L1,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK (", field, ")"
     END IF
   ELSE
     IF (PRESENT(failure_count)) THEN
@@ -1495,7 +1495,7 @@ SUBROUTINE ftg_compare_bool_0d(fieldname, field, result, failure_count, fieldnam
   
   IF (result) THEN
     IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+      WRITE (*,'(A,A,A,A,L1,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK (", field, ")"
     END IF
   ELSE
     IF (PRESENT(failure_count)) THEN
@@ -1780,7 +1780,7 @@ SUBROUTINE ftg_compare_int_0d(fieldname, field, result, failure_count, fieldname
   
   IF (result) THEN
     IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+      WRITE (*,'(A,A,A,A,I0,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK (", field, ")"
     END IF
   ELSE
     IF (PRESENT(failure_count)) THEN
@@ -2065,7 +2065,7 @@ SUBROUTINE ftg_compare_long_0d(fieldname, field, result, failure_count, fieldnam
   
   IF (result) THEN
     IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+      WRITE (*,'(A,A,A,A,I19,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK (", field, ")"
     END IF
   ELSE
     IF (PRESENT(failure_count)) THEN
@@ -2358,7 +2358,7 @@ SUBROUTINE ftg_compare_float_0d(fieldname, field, result, failure_count, toleran
   
   IF (result) THEN
     IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+      WRITE (*,'(A,A,A,A,F0.14,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK (", field, ")"
     END IF
   ELSE
     IF (PRESENT(failure_count)) THEN
@@ -2683,7 +2683,7 @@ SUBROUTINE ftg_compare_double_0d(fieldname, field, result, failure_count, tolera
   
   IF (result) THEN
     IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
-      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK"
+      WRITE (*,'(A,A,A,A,F0.14,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK (", field, ")"
     END IF
   ELSE
     IF (PRESENT(failure_count)) THEN

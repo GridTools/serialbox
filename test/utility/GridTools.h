@@ -19,9 +19,6 @@
 
 #ifdef SERIALBOX_HAS_GRIDTOOLS
 
-#define STRUCTURED_GRIDS
-#define SUPPRESS_MESSAGES
-
 #include "gridtools/stencil-composition/stencil-composition.hpp"
 #include "gridtools/storage/storage-facility.hpp"
 
@@ -67,18 +64,21 @@ struct gridtools_storage_types {
   // Storage Info
   using cpu_2d_real_meta_data_type = storage_traits_type::storage_info_t<1, 2, halo_2d_type>;
   using gpu_2d_real_meta_data_type =
-      gridtools::host_storage_info<2, gpu_2d_real_layout_type, halo_2d_type,
-                                   gridtools::alignment<gpu_alignment>>;
+      gridtools::storage_info_interface<2, gpu_2d_real_layout_type, halo_2d_type,
+                                        gridtools::alignment<gpu_alignment>>;
   using cpu_2d_meta_data_type =
       storage_traits_type::special_storage_info_t<3, gridtools::selector<1, 1, 0>, halo_3d_type>;
-  using gpu_2d_meta_data_type = gridtools::host_storage_info<4, gpu_2d_layout_type, halo_3d_type,
-                                                             gridtools::alignment<gpu_alignment>>;
+  using gpu_2d_meta_data_type =
+      gridtools::storage_info_interface<4, gpu_2d_layout_type, halo_3d_type,
+                                        gridtools::alignment<gpu_alignment>>;
   using cpu_3d_meta_data_type = storage_traits_type::storage_info_t<5, 3, halo_3d_type>;
-  using gpu_3d_meta_data_type = gridtools::host_storage_info<6, gpu_3d_layout_type, halo_3d_type,
-                                                             gridtools::alignment<gpu_alignment>>;
+  using gpu_3d_meta_data_type =
+      gridtools::storage_info_interface<6, gpu_3d_layout_type, halo_3d_type,
+                                        gridtools::alignment<gpu_alignment>>;
   using cpu_4d_meta_data_type = storage_traits_type::storage_info_t<7, 4, halo_4d_type>;
-  using gpu_4d_meta_data_type = gridtools::host_storage_info<8, gpu_4d_layout_type, halo_4d_type,
-                                                             gridtools::alignment<gpu_alignment>>;
+  using gpu_4d_meta_data_type =
+      gridtools::storage_info_interface<8, gpu_4d_layout_type, halo_4d_type,
+                                        gridtools::alignment<gpu_alignment>>;
 
   // Storage
   using cpu_2d_real_storage_type = storage_traits_type::data_store_t<T, cpu_2d_real_meta_data_type>;

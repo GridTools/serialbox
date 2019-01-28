@@ -85,9 +85,13 @@ elif [ "$FC_COMPILER" = "ftn" ]; then
     module load craype-network-infiniband
     module switch mvapich2_cce/2.2rc1.0.3_cuda80 mvapich2gdr_gnu/2.2_cuda_8.0
     module load gcc/5.4.0-2.26
+    module load netCDF-Fortran/4.4.4-CrayCCE-17.06
+    export NETCDF_ROOT=$EBROOTNETCDF
     export GCC_X86_64=$EBROOTGCCCORE
 else
     module load PrgEnv-gnu
+    module load netcdf-fortran/4.4.4-gmvolf-17.02
+    export NETCDF_ROOT=$EBROOTNETCDF
 fi
 
 export CXX=$(which g++)

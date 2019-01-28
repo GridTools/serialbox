@@ -77,7 +77,7 @@ target_include_directories(SerialboxObjects
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
         $<INSTALL_INTERFACE:include>
     )
-target_link_libraries(SerialboxObjects PUBLIC Boost::boost)
+target_link_libraries(SerialboxObjects PRIVATE Boost::boost)
 target_link_libraries(SerialboxObjects PUBLIC SerialboxFilesytemTarget)
 # we use "-lpthread" instead of ${CMAKE_THREAD_LIBS_INIT} on purpose, because ${CMAKE_THREAD_LIBS_INIT}
 # contains "-pthread" instead of "-lpthread" which is a problem if it propagates to nvcc via the target
@@ -98,7 +98,7 @@ if(SERIALBOX_USE_NETCDF)
         target_link_libraries(SerialboxShared PUBLIC NETCDF_TARGET)
     endif()
     #TODO try to make private once we protect our headers
-    target_include_directories(SerialboxObjects PUBLIC SYSTEM ${NETCDF_INCLUDES})
+    target_include_directories(SerialboxObjects SYSTEM PUBLIC ${NETCDF_INCLUDES})
 endif()
 
 if(BUILD_SHARED_LIBS)
