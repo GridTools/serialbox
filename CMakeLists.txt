@@ -111,12 +111,6 @@ find_package(Threads REQUIRED)
 # Set script directory
 set(SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tools)
 
-# If we build the C Interface we require shared libraries
-if(SERIALBOX_ENABLE_C AND NOT(SERIALBOX_BUILD_SHARED))
-  message(STATUS "SERIALBOX_ENABLE_C requires shared libraries, setting SERIALBOX_BUILD_SHARED=ON")
-  set(SERIALBOX_BUILD_SHARED ON)
-endif()
-
 # If we build the Fortran Interface, we need a Fortran compiler
 if(SERIALBOX_ENABLE_FORTRAN)
   enable_language(Fortran)
