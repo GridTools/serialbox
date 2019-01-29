@@ -44,6 +44,22 @@ if(SERIALBOX_ENABLE_FORTRAN)
     ARCHIVE DESTINATION lib
     )
 
+  if(BUILD_SHARED_LIBS)
+    set_target_properties( SerialboxFortranSerializeObjects PROPERTIES POSITION_INDEPENDENT_CODE ON )
+    set_target_properties( SerialboxFortranObjects PROPERTIES POSITION_INDEPENDENT_CODE ON )
+    add_library(SerialboxFortranShared SHARED $<TARGET_OBJECTS:SerialboxFortranSerializeObjects> $<TARGET_OBJECTS:SerialboxFortranObjects>)
+    target_link_libraries(SerialboxFortranShared PUBLIC SerialboxFortranObjects)
+    target_link_libraries(SerialboxFortranShared PUBLIC SerialboxFortranSerializeObjects)
+    target_link_libraries(SerialboxFortranShared PUBLIC SerialboxCShared)
+    set_target_properties(SerialboxFortranShared PROPERTIES VERSION ${Serialbox_VERSION_STRING})
+    
+    install(TARGETS SerialboxFortranShared
+      EXPORT SerialboxTargets
+      LIBRARY DESTINATION lib
+      ARCHIVE DESTINATION lib
+      )
+  endif()
+
   # Install mod files
   foreach(source ${SOURCES_FORTRAN} ${SOURCES_FORTRAN_SERIALIZE})
     get_filename_component(module_name ${source} NAME_WE)

@@ -111,12 +111,6 @@ find_package(Threads REQUIRED)
 # Set script directory
 set(SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tools)
 
-# If we build the C Interface we require shared libraries
-if(SERIALBOX_ENABLE_C AND NOT(SERIALBOX_BUILD_SHARED))
-  message(STATUS "SERIALBOX_ENABLE_C requires shared libraries, setting SERIALBOX_BUILD_SHARED=ON")
-  set(SERIALBOX_BUILD_SHARED ON)
-endif()
-
 # If we build the Fortran Interface, we need a Fortran compiler
 if(SERIALBOX_ENABLE_FORTRAN)
   enable_language(Fortran)
@@ -260,7 +254,7 @@ if(SERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM)
     if( STD_FILESYSTEM_LIB_CHECK )
       message(STATUS "Using std::experimental::filesystem (no dependency on compiled boost libs)")
       add_library(SerialboxFilesytemTarget INTERFACE)
-      target_link_libraries(SerialboxFilesytemTarget INTERFACE stdc++fs)
+      target_link_libraries(SerialboxFilesytemTarget INTERFACE ${STD_FILESYSTEM_LIB_CHECK})
       set(SERIALBOX_FILESYSTEM_LIBRARY_STRING "SERIALBOX_USE_STD_EXPERIMENTAL_FILESYSTEM")
       set(_use_boost_filesystem OFF)
     else()
