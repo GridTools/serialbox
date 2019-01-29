@@ -25,7 +25,7 @@ namespace stella {
 
 int Serializer::enabled_ = 0;
 
-Serializer::Serializer() { serializerImpl_ = nullptr; }
+Serializer::Serializer() {}
 
 SerializerOpenMode Serializer::mode() const {
   switch(serializerImpl_->mode()) {
