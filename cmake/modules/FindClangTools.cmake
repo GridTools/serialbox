@@ -11,9 +11,7 @@
 #
 # This module defines:
 #  CLANG_TIDY_BIN       The  path to the clang tidy binary
-#  CLANG_TIDY_FOUND     Whether clang tidy was found
 #  CLANG_FORMAT_BIN     The path to the clang format binary 
-#  CLANG_FORMAT_FOUND   Whether clang format was found
 #
 
 find_program(CLANG_TIDY_BIN 
