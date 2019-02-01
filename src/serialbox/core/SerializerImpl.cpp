@@ -390,6 +390,9 @@ std::ostream& operator<<(std::ostream& stream, const SerializerImpl& s) {
 void SerializerImpl::updateMetaData() {
   LOG(info) << "Update MetaData of Serializer";
 
+  if(mode_ == OpenModeKind::Read)
+    throw Exception("Trying to write meta data in Read mode.");
+
   json::json jsonNode = *this;
 
   // Write metaData to disk (just overwrite the file, we assume that there is never more than one
