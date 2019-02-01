@@ -87,8 +87,9 @@ void serialboxFortranSerializerGetFieldDimensions(const void* serializer, const 
  * \brief Returns the halos of the field `name`
  */
 void serialboxFortranSerializerGetFieldHalos(const void* serializer, const char* name,
-                                             int* iMinusHalo, int* iPlusHalo, int* jMinusHalo, int* jPlusHalo,
-                                             int* kMinusHalo, int* kPlusHalo, int* lMinusHalo, int* lPlusHalo);
+                                             int* iMinusHalo, int* iPlusHalo, int* jMinusHalo,
+                                             int* jPlusHalo, int* kMinusHalo, int* kPlusHalo,
+                                             int* lMinusHalo, int* lPlusHalo);
 
 /**
  * \brief Add a global meta-information `key=value` pair to the Serializer
@@ -105,7 +106,8 @@ void serialboxFortranSerializerAddMetainfoInt32(void* serializer, const char* ke
 void serialboxFortranSerializerAddMetainfoInt64(void* serializer, const char* key, long value);
 void serialboxFortranSerializerAddMetainfoFloat32(void* serializer, const char* key, float value);
 void serialboxFortranSerializerAddMetainfoFloat64(void* serializer, const char* key, double value);
-void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* key, const char* value);
+void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* key,
+                                                 const char* value);
 /** @} */
 
 /**
@@ -118,12 +120,18 @@ void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* k
  * \param value       Destination object for the value of the existing element
  * @{
  */
-void serialboxFortranSerializerGetMetainfoBoolean(const void* serializer, const char* key, int* value);
-void serialboxFortranSerializerGetMetainfoInt32(const void* serializer, const char* key, int* value);
-void serialboxFortranSerializerGetMetainfoInt64(const void* serializer, const char* key, long* value);
-void serialboxFortranSerializerGetMetainfoFloat32(const void* serializer, const char* key, float* value);
-void serialboxFortranSerializerGetMetainfoFloat64(const void* serializer, const char* key, double* value);
-void serialboxFortranSerializerGetMetainfoString(const void* serializer, const char* key, const char** value);
+void serialboxFortranSerializerGetMetainfoBoolean(const void* serializer, const char* key,
+                                                  int* value);
+void serialboxFortranSerializerGetMetainfoInt32(const void* serializer, const char* key,
+                                                int* value);
+void serialboxFortranSerializerGetMetainfoInt64(const void* serializer, const char* key,
+                                                long* value);
+void serialboxFortranSerializerGetMetainfoFloat32(const void* serializer, const char* key,
+                                                  float* value);
+void serialboxFortranSerializerGetMetainfoFloat64(const void* serializer, const char* key,
+                                                  double* value);
+void serialboxFortranSerializerGetMetainfoString(const void* serializer, const char* key,
+                                                 const char** value);
 /** @} */
 
 /**
@@ -227,7 +235,8 @@ void serialboxFortranSavepointAddMetainfoInt32(void* savepoint, const char* key,
 void serialboxFortranSavepointAddMetainfoInt64(void* savepoint, const char* key, long value);
 void serialboxFortranSavepointAddMetainfoFloat32(void* savepoint, const char* key, float value);
 void serialboxFortranSavepointAddMetainfoFloat64(void* savepoint, const char* key, double value);
-void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key, const char* value);
+void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key,
+                                                const char* value);
 /** @} */
 
 /**
@@ -240,12 +249,16 @@ void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key
  * \param value       Destination object for the value of the existing element
  * @{
  */
-void serialboxFortranSavepointGetMetainfoBoolean(const void* savepoint, const char* key, int* value);
+void serialboxFortranSavepointGetMetainfoBoolean(const void* savepoint, const char* key,
+                                                 int* value);
 void serialboxFortranSavepointGetMetainfoInt32(const void* savepoint, const char* key, int* value);
 void serialboxFortranSavepointGetMetainfoInt64(const void* savepoint, const char* key, long* value);
-void serialboxFortranSavepointGetMetainfoFloat32(const void* savepoint, const char* key, float* value);
-void serialboxFortranSavepointGetMetainfoFloat64(const void* savepoint, const char* key, double* value);
-void serialboxFortranSavepointGetMetainfoString(const void* savepoint, const char* key, const char** value);
+void serialboxFortranSavepointGetMetainfoFloat32(const void* savepoint, const char* key,
+                                                 float* value);
+void serialboxFortranSavepointGetMetainfoFloat64(const void* savepoint, const char* key,
+                                                 double* value);
+void serialboxFortranSavepointGetMetainfoString(const void* savepoint, const char* key,
+                                                const char** value);
 /** @} */
 
 /** @} @} */

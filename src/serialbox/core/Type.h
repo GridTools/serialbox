@@ -284,7 +284,7 @@ template <typename UnqualifiedType>
 struct cv_selector<UnqualifiedType, true, true> {
   using type = const volatile UnqualifiedType;
 };
-}
+} // namespace internal
 
 /// \brief Utility for constructing identically cv-qualified types
 ///

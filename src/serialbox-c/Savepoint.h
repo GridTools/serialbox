@@ -117,7 +117,8 @@ SERIALBOX_API size_t serialboxSavepointHash(const serialboxSavepoint_t* savepoin
  * \param savepoint  Savepoint to use
  * \return meta-information of the Savepoint
  */
-SERIALBOX_API serialboxMetainfo_t* serialboxSavepointGetMetainfo(const serialboxSavepoint_t* savepoint);
+SERIALBOX_API serialboxMetainfo_t*
+serialboxSavepointGetMetainfo(const serialboxSavepoint_t* savepoint);
 
 /** @} @} */
 

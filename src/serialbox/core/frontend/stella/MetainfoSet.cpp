@@ -33,7 +33,7 @@ checkKeyExists(const boost::shared_ptr<MetainfoMapImpl>& mapImpl, KeyType&& key)
     internal::throwSerializationException("Error: requested key %s is not in set", key);
   return it;
 }
-}
+} // namespace internal
 
 MetainfoSet::MetainfoSet() : mapImpl_(boost::make_shared<MetainfoMapImpl>()) {}
 
