@@ -341,7 +341,7 @@ if("$ENV{CMAKE_EXPORT_COMPILE_COMMANDS}" STREQUAL "1" OR CLANG_TIDY_FOUND)
   set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 endif()
 
-if(CLANG_FORMAT_FOUND)
+if(CLANG_FORMAT_BIN)
   # Runs clang format and updates files in place.
   add_custom_target(format 
                     COMMAND ${SCRIPT_DIR}/run-clang-format.sh 
@@ -361,7 +361,7 @@ if(CLANG_FORMAT_FOUND)
                           -name \*.h -print -o -name \*.cpp -print`)
 endif()
 
-if(CLANG_TIDY_FOUND)
+if(CLANG_TIDY_BIN)
   # Runs clang-tidy and attempts to fix any warning automatically
   add_custom_target(clang-tidy 
                     COMMAND ${SCRIPT_DIR}/run-clang-tidy.sh 
