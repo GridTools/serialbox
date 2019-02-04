@@ -379,12 +379,11 @@ void Serializer::ReadField(std::string name, TDataField& field, const Savepoint&
   allStrides.push_back(stridesSTELLA.ComputeStride(1, 0, 0) * bytesPerElement);
   allStrides.push_back(stridesSTELLA.ComputeStride(0, 1, 0) * bytesPerElement);
   allStrides.push_back(stridesSTELLA.ComputeStride(0, 0, 1) * bytesPerElement);
-  for (int i = 0; i < 4; ++i) {
-      if (allSizes[i] > 1)
-      {
-          size.push_back(allSizes[i]);
-          strides.push_back(allStrides[i]);
-      }
+  for(int i = 0; i < 4; ++i) {
+    if(allSizes[i] > 1) {
+      size.push_back(allSizes[i]);
+      strides.push_back(allStrides[i]);
+    }
   }
   size.resize(4, 0);
 
@@ -393,17 +392,17 @@ void Serializer::ReadField(std::string name, TDataField& field, const Savepoint&
                 field.boundary().jMinusOffset(), field.boundary().jPlusOffset(),
                 field.boundary().kMinusOffset(), field.boundary().kPlusOffset());
 
-
-  if((info.iSize() != size[0]) || (info.jSize() != size[1]) ||
-     (info.kSize() != size[2]) || (info.lSize() != 0)) {
+  if((info.iSize() != size[0]) || (info.jSize() != size[1]) || (info.kSize() != size[2]) ||
+     (info.lSize() != 0)) {
     // Throw exception
     std::ostringstream errorstr;
     errorstr << "Error: the requested field " << name << " has a different size than"
              << " the provided data field.\n";
     errorstr << "Registerd as: " << info.iSize() << "x" << info.jSize() << "x" << info.kSize()
              << "x" << info.lSize() << "\n";
-    errorstr << "Given       : " << size[0] << "x" << size[1] << "x" << size[2]
-             << "x" << size[3] << "x0" << "\n";
+    errorstr << "Given       : " << size[0] << "x" << size[1] << "x" << size[2] << "x" << size[3]
+             << "x0"
+             << "\n";
     SerializationException exception;
     exception.Init(errorstr.str());
     throw exception;

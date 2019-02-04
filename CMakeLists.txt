@@ -336,27 +336,50 @@ endif(SERIALBOX_TESTING_STELLA)
 
 #---------------------------------------- ClangTools -----------------------------------------------
 
-#find_package(clang-format EXACT 6.0)
+find_package(ClangTools)
+if("$ENV{CMAKE_EXPORT_COMPILE_COMMANDS}" STREQUAL "1" OR CLANG_TIDY_FOUND)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+endif()
 
-#if(${CLANG_TIDY_FOUND})
-#  # Runs clang-tidy and attempts to fix any warning automatically
-#  add_custom_target(clang-tidy 
-#                    COMMAND ${SCRIPT_DIR}/run-clang-tidy.sh 
-#                    ${CLANG_TIDY_BIN} 
-#                    ${CMAKE_BINARY_DIR}/compile_commands.json 
-#                    1
-#                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
-#                          -name \*.h -print -o -name \*.cpp -print`)
-#
-#  # Runs clang-tidy and exits with a non-zero exit code if any errors are found.
-#  add_custom_target(check-clang-tidy 
-#                    COMMAND ${SCRIPT_DIR}/run-clang-tidy.sh 
-#                    ${CLANG_TIDY_BIN} 
-#                    ${CMAKE_BINARY_DIR}/compile_commands.json
-#                    0
-#                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
-#                          -name \*.h -print -o -name \*.cpp -print`)
-#endif()
+if(CLANG_FORMAT_BIN)
+  # Runs clang format and updates files in place.
+  add_custom_target(format 
+                    COMMAND ${SCRIPT_DIR}/run-clang-format.sh 
+                    ${CMAKE_CURRENT_SOURCE_DIR} 
+                    ${CLANG_FORMAT_BIN} 
+                    1
+                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
+                          -name \*.h -print -o -name \*.cpp -print`)
+
+  # Runs clang format and exits with a non-zero exit code if any files need to be reformatted
+  add_custom_target(check-format 
+                    COMMAND ${SCRIPT_DIR}/run-clang-format.sh 
+                    ${CMAKE_CURRENT_SOURCE_DIR} 
+                    ${CLANG_FORMAT_BIN} 
+                    0
+                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
+                          -name \*.h -print -o -name \*.cpp -print`)
+endif()
+
+if(CLANG_TIDY_BIN)
+  # Runs clang-tidy and attempts to fix any warning automatically
+  add_custom_target(clang-tidy 
+                    COMMAND ${SCRIPT_DIR}/run-clang-tidy.sh 
+                    ${CLANG_TIDY_BIN} 
+                    ${CMAKE_BINARY_DIR}/compile_commands.json 
+                    1
+                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
+                          -name \*.h -print -o -name \*.cpp -print`)
+
+  # Runs clang-tidy and exits with a non-zero exit code if any errors are found.
+  add_custom_target(check-clang-tidy 
+                    COMMAND ${SCRIPT_DIR}/run-clang-tidy.sh 
+                    ${CLANG_TIDY_BIN} 
+                    ${CMAKE_BINARY_DIR}/compile_commands.json
+                    0
+                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
+                          -name \*.h -print -o -name \*.cpp -print`)
+endif()
 
 # --------------------------------------- Code Coverage --------------------------------------------
 if(SERIALBOX_CODE_COVERAGE)

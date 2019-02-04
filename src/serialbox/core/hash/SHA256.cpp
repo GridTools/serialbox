@@ -199,7 +199,7 @@ static void sha256(const void* data, int size, byte_t hash[32]) {
   sha256_final(&context, hash);
 }
 
-} // sha256
+} // namespace sha256
 
 const char* SHA256::Name = "SHA256";
 
