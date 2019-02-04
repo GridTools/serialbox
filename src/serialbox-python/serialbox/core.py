@@ -75,11 +75,4 @@ class Config(object):
     def __repr__(self):
         return "<Config {0}>".format(self.instance.compile_options)
 
-def init_serialbox():
-    """Initialize the SerialboxC library by installing the error handler.
-    """
-    lib.serialboxInstallFatalErrorHandler(lib.serialboxStateErrorHandler)
-
-
 register_library(lib)
-init_serialbox()

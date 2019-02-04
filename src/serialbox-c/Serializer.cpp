@@ -53,7 +53,7 @@ std::vector<int> make_dims(int iSize, int jSize, int kSize, int lSize) {
     dims.push_back(lSize);
   return dims;
 }
-}
+} // namespace
 
 /*===------------------------------------------------------------------------------------------===*\
  *     Construction & Destruction
@@ -89,7 +89,8 @@ serialboxSerializer_t* serialboxSerializerCreate(int mode, const char* directory
 
 void serialboxSerializerDestroy(serialboxSerializer_t* serializer) {
   if(serializer) {
-    serialboxSerializerUpdateMetaData(serializer);
+    if(serialboxSerializerGetMode(serializer) != Read)
+      serialboxSerializerUpdateMetaData(serializer);
     Serializer* ser = toSerializer(serializer);
     if(serializer->ownsData)
       delete ser;
