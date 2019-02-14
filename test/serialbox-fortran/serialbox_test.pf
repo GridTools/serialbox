@@ -838,5 +838,130 @@ CONTAINS
       CALL fs_destroy_savepoint(savepoint)
     
     END SUBROUTINE testSavepointMetainfo    
+   
+@Test
+    SUBROUTINE testZeroSlice()
+      INTEGER, PARAMETER :: n = 10 
+      INTEGER, PARAMETER :: nk = 2 
+      REAL :: arr(n,n,nk), r_arr(n,n,nk)
+      INTEGER :: i
+      INTEGER :: k
+      TYPE(t_serializer) :: serializer
+      
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_zeroslice'
+
+      PRINT *, ""
+      PRINT *, "------------------- Output for testZeroSlice -----------------"
+      i = 3
+      k = nk-i+1 ! = 0 
+
+      arr(:,:,1) = 11.11
+      arr(:,:,2) = 22.22
+      r_arr(:,:,1) = 33.33
+      r_arr(:,:,1) = 44.44
+
+      ! Write serialization data
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      WRITE (*,'(A,I2)') "CALLEE: SIZE(arr(:,:,i:)) = ", SIZE(arr(:,:,i:))
+      CALL write_slice(k, arr(:,:,i:))
+      CALL fs_destroy_serializer(serializer)
+
+      ! Read serialization data
+      CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      CALL read_slice(k, r_arr(:,:,i:))
+      CALL fs_destroy_serializer(serializer)
+
+      ! Force failure until fixed and cleaned up
+      @assertTrue(.FALSE.)
+      PRINT *, "--------------------------------------------------------------"
+
+      CONTAINS
+
+        SUBROUTINE write_slice(k, slice)
+          INTEGER, INTENT(IN) :: k
+          REAL, INTENT(IN)    :: slice(n,n,k)
+
+
+          WRITE (*,'(A,I2,A,I2)') "WRITE: SIZE(slice) = ", SIZE(slice), " vs k = ", k
+
+          CALL fs_write_field(serializer, savepoint, "testfield_zeroslice1", slice)
+
+        END SUBROUTINE write_slice
+
+        SUBROUTINE read_slice(k, slice)
+          INTEGER, INTENT(IN) :: k
+          REAL, INTENT(INOUT) :: slice(n,n,k)
+          REAL :: wrong(n,n)
+          
+          WRITE (*, '(A,I2,A,I2)') "READ: SIZE(slice) = ", SIZE(slice), " vs k = ", k
+          @assertTrue(fs_field_exists(serializer, "testfield_zeroslice1"))
+   !       @assertEqual(exp_size(SHAPE(slice)), fs_get_size(serializer, "testfield_zeroslice1"))
+          CALL fs_read_field(serializer, savepoint, "testfield_zeroslice1", wrong)
+          PRINT *, "WRITTEN SLICE DATA: ", wrong
+   !       CALL fs_read_field(serializer, savepoint, "testfield_zeroslice1", slice)
+
+        END SUBROUTINE read_slice
+    
+    END SUBROUTINE testZeroSlice
+   
+@Test
+    SUBROUTINE testZeroSized()
+      INTEGER, PARAMETER :: n = 10 
+      INTEGER, PARAMETER :: nk = 2 
+      INTEGER :: i
+      INTEGER :: k
+      TYPE(t_serializer) :: serializer
+      
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_zerosized'
+
+      PRINT *, ""
+      PRINT *, "------------------- Output for testZeroSized -----------------"
+
+      i = 3
+      k = nk-i+1 ! = 0 
+
+      ! Write serialization data
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL write_zerosized(k)
+      CALL fs_destroy_serializer(serializer)
+
+      ! Read serialization data
+      CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      CALL read_zerosized(k)
+      CALL fs_destroy_serializer(serializer)
+
+      ! Force failure until fixed and cleaned up
+      @assertTrue(.FALSE.)
+      PRINT *, "--------------------------------------------------------------"
+
+      CONTAINS
+
+        SUBROUTINE write_zerosized(k)
+          INTEGER, INTENT(IN) :: k
+          REAL    :: arr_zero(n,k)
+
+          arr_zero = -42.42
+
+          WRITE (*, '(A,I2,A,I2)') "READ: SIZE(arr_zero) = ", SIZE(arr_zero), " vs k = ", k
+
+          CALL fs_write_field(serializer, savepoint, "testfield_zerosized1", arr_zero)
+
+        END SUBROUTINE write_zerosized
+
+        SUBROUTINE read_zerosized(k)
+          INTEGER, INTENT(IN) :: k
+          REAL :: wrong(n)
+          REAL :: arr_zero(n,k)
+          
+          WRITE (*,'(A,I2,A,I2)'), "WRITE: SIZE(arr_zero) = ", SIZE(arr_zero), " vs k = ", k
+          @assertTrue(fs_field_exists(serializer, "testfield_zerosized1"))
+   !       @assertEqual(exp_size(SHAPE(arr_zero)), fs_get_size(serializer, "testfield_zerosized1"))
+          CALL fs_read_field(serializer, savepoint, "testfield_zerosized1", wrong)
+          PRINT *, "WRITTEN ZERO SIZED DATA: ", wrong
+   !       CALL fs_read_field(serializer, savepoint, "testfield_zerosized1", arr_zero)
+
+        END SUBROUTINE read_zerosized
+    
+    END SUBROUTINE testZeroSized
 
 END MODULE serialbox_test
