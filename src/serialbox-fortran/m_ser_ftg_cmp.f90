@@ -585,6 +585,7 @@ SUBROUTINE ftg_cmp_print_deviations_int_1d(expected, actual, fieldname_print, lb
   INTEGER                       :: indices(1), indexAdj(1), i, j
   
   mask = actual /= expected
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -618,6 +619,7 @@ SUBROUTINE ftg_cmp_print_deviations_int_2d(expected, actual, fieldname_print, lb
   INTEGER                       :: indices(2), indexAdj(2), i, j
   
   mask = actual /= expected
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -653,6 +655,7 @@ SUBROUTINE ftg_cmp_print_deviations_int_3d(expected, actual, fieldname_print, lb
   INTEGER                       :: indices(3), indexAdj(3), i, j
   
   mask = actual /= expected
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -690,6 +693,7 @@ SUBROUTINE ftg_cmp_print_deviations_int_4d(expected, actual, fieldname_print, lb
   INTEGER                       :: indices(4), indexAdj(4), i, j
   
   mask = actual /= expected
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -729,6 +733,7 @@ SUBROUTINE ftg_cmp_print_deviations_long_1d(expected, actual, fieldname_print, l
   INTEGER                           :: indices(1), indexAdj(1), i, j
   
   mask = actual /= expected
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -762,6 +767,7 @@ SUBROUTINE ftg_cmp_print_deviations_long_2d(expected, actual, fieldname_print, l
   INTEGER                           :: indices(2), indexAdj(2), i, j
   
   mask = actual /= expected
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -797,6 +803,7 @@ SUBROUTINE ftg_cmp_print_deviations_long_3d(expected, actual, fieldname_print, l
   INTEGER                           :: indices(3), indexAdj(3), i, j
   
   mask = actual /= expected
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -834,6 +841,7 @@ SUBROUTINE ftg_cmp_print_deviations_long_4d(expected, actual, fieldname_print, l
   INTEGER                           :: indices(4), indexAdj(4), i, j
   
   mask = actual /= expected
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -875,6 +883,7 @@ SUBROUTINE ftg_cmp_print_deviations_float_1d(expected, actual, fieldname_print, 
   
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. ABS(actual - expected) > t
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -910,6 +919,7 @@ SUBROUTINE ftg_cmp_print_deviations_float_2d(expected, actual, fieldname_print, 
   
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. ABS(actual - expected) > t
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -947,6 +957,7 @@ SUBROUTINE ftg_cmp_print_deviations_float_3d(expected, actual, fieldname_print, 
   
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. ABS(actual - expected) > t
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -986,6 +997,7 @@ SUBROUTINE ftg_cmp_print_deviations_float_4d(expected, actual, fieldname_print, 
   
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. ABS(actual - expected) > t
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -1027,6 +1039,7 @@ SUBROUTINE ftg_cmp_print_deviations_double_1d(expected, actual, fieldname_print,
   
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. ABS(actual - expected) > t
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -1062,6 +1075,7 @@ SUBROUTINE ftg_cmp_print_deviations_double_2d(expected, actual, fieldname_print,
   
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. ABS(actual - expected) > t
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -1099,6 +1113,7 @@ SUBROUTINE ftg_cmp_print_deviations_double_3d(expected, actual, fieldname_print,
   
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. ABS(actual - expected) > t
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
@@ -1138,6 +1153,7 @@ SUBROUTINE ftg_cmp_print_deviations_double_4d(expected, actual, fieldname_print,
   
   
   mask = .NOT. (actual /= actual .AND. expected /= expected) .AND. ABS(actual - expected) > t
+  ALLOCATE(deltas, MOLD=expected)
   deltas = ABS(expected - actual)
   IF (PRESENT(lbounds)) THEN
     indexAdj = lbounds
