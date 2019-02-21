@@ -43,11 +43,11 @@ static std::string vecToString(VecType&& vec) {
 
 std::vector<int> make_dims(int iSize, int jSize, int kSize, int lSize) {
   std::vector<int> dims;
-  if(iSize > 0)
+  if(iSize > 0 or jSize > 0 or kSize > 0 or lSize > 0)
     dims.push_back(iSize);
-  if(jSize > 0)
+  if(jSize > 0 or kSize > 0 or lSize > 0)
     dims.push_back(jSize);
-  if(kSize > 0)
+  if(kSize > 0 or lSize > 0)
     dims.push_back(kSize);
   if(lSize > 0)
     dims.push_back(lSize);
