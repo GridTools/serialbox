@@ -9,7 +9,7 @@
 
 # General Flags (add to default)
 set(CMAKE_Fortran_FLAGS 
-    "${CMAKE_Fortran_FLAGS} -ffree -eZ -N255 -ec -eC -eI -eF -hnosecond_underscore -hflex_mp=conservative -Ofp1 -hadd_paren -ra")
+    "${CMAKE_Fortran_FLAGS} -ffree -N255 -ec -eC -eI -eF -hnosecond_underscore -hflex_mp=conservative -Ofp1 -hadd_paren -ra")
 
 # OpenACC flags
 set(OpenACC_FLAGS "-hnoacc")
@@ -19,4 +19,4 @@ set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} ${OpenACC_FLAGS}")
 set(CMAKE_Fortran_FLAGS_RELEASE "")
 
 # Debug Options (replace default)
-set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} -O0 -g -eZ -eD -Rb -Rc -Rd -Rp -Rs")
+set(CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG} -O0 -g -eD -Rb -Rc -Rd -Rp -Rs")

@@ -66,7 +66,7 @@
 ///
 /// On compilers which support it, expands to an expression which states that it is undefined
 /// behaviour for the compiler to reach this point. Otherwise is not defined.
-#if __has_builtin(__builtin_unreachable) || SERIALBOX_GNUC_PREREQ(4, 5, 0)
+#if (__has_builtin(__builtin_unreachable) || SERIALBOX_GNUC_PREREQ(4, 5, 0) ) && ! defined(_CRAYC)
 #define SERIALBOX_BUILTIN_UNREACHABLE __builtin_unreachable()
 #elif defined(_MSC_VER)
 #define SERIALBOX_BUILTIN_UNREACHABLE __assume(false)

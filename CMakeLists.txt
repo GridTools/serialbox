@@ -81,7 +81,9 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Shared architecture flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+if( NOT ( CMAKE_CXX_COMPILER_ID MATCHES "Cray" ) )
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+endif()
 
 # Compiler specific
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
@@ -115,16 +117,6 @@ set(SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tools)
 if(SERIALBOX_ENABLE_FORTRAN)
   enable_language(Fortran)
   include(SerialboxFortranCompilerFlags)
-endif()
-
-# CRAY does not want to build shared libraries
-if("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Cray")
-  message(STATUS "Disabling shared libraries for Cray compiler")
-  set(SERIALBOX_BUILD_SHARED OFF)
-  set(BUILD_SHARED_LIBS OFF)
-  message(STATUS "Disabling python")
-  set(SERIALBOX_ENABLE_PYTHON OFF)
-  set(SERIALBOX_ENABLE_SDB OFF)
 endif()
 
 # Set shared library flags
