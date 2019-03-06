@@ -18,7 +18,7 @@ project(SerialboxSmagorinskyExample CXX)
 # command-line).
 #
 if(NOT(DEFINED SERIALBOX_ROOT))
-	set(SERIALBOX_ROOT "${CMAKE_SOURCE_DIR}/../../../install")
+	set(SERIALBOX_ROOT "${PROJECT_SOURCE_DIR}/../../../install")
 endif()
 
 #
@@ -26,7 +26,7 @@ endif()
 # Usually you want to bundle this module with your own project and therefore we copied it into 
 # "cmake/". We need to tell CMake about this.
 #
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 #
 # We call the find_package-module of Serialbox and gridtools and set the include directories

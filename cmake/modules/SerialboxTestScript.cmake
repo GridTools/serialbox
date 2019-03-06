@@ -15,7 +15,7 @@ include(CMakeParseArguments)
 ## Setup the test_script.
 ##
 function(serialbox_test_init)
-  set(SERIALBOX_TEST_SCRIPT ${CMAKE_BINARY_DIR}/run_tests.sh CACHE PATH "Test script path")
+  set(SERIALBOX_TEST_SCRIPT ${PROJECT_BINARY_DIR}/run_tests.sh CACHE PATH "Test script path")
   file(WRITE ${SERIALBOX_TEST_SCRIPT} "#!/bin/bash\n")
   file(APPEND ${SERIALBOX_TEST_SCRIPT} "res=0\n")
 endfunction(serialbox_test_init)
@@ -40,7 +40,7 @@ function(serialbox_add_test)
   cmake_parse_arguments(serialbox_add_test "" "NAME" "TARGET;EXECUTABLE" ${ARGN})
   
   set(target_list ${serialbox_add_test_TARGET})
-  set(exectuable_list ${serialbox_add_test_EXECUTABLE})
+  set(executable_list ${serialbox_add_test_EXECUTABLE})
   set(name ${serialbox_add_test_NAME})
 
   set(test_already_added_to_ctest FALSE)
@@ -64,10 +64,10 @@ function(serialbox_add_test)
     set(test_already_added_to_ctest TRUE)
   endif()
   
-  if(exectuable_list)
+  if(executable_list)
     list(GET exectuable_list 0 exectuable)
     
-    set(args ${exectuable_list})
+    set(args ${executable_list})
     list(REMOVE_AT args 0)
     
     set(flat_args "")
@@ -76,7 +76,7 @@ function(serialbox_add_test)
     endforeach()
     
     if(NOT(name))
-      list(GET exectuable_list 1 name_with_whitespaces)
+      list(GET executable_list 1 name_with_whitespaces)
       string(STRIP ${name_with_whitespaces} name)
     endif()
   
@@ -86,7 +86,7 @@ function(serialbox_add_test)
     file(APPEND ${SERIALBOX_TEST_SCRIPT} "res=$((res || ret ))\n")
     
     if(NOT(test_already_added_to_ctest))
-      add_test(NAME ${name} COMMAND ${exectuable_list})
+      add_test(NAME ${name} COMMAND ${executable_list})
     endif()
   endif()
 
@@ -106,7 +106,7 @@ function(serialbox_test_end)
        "  printf \"\\n  ALL TESTS PASSED\\n\\n\"\n"
        "fi\n"
        "exit $res")
-  file(INSTALL ${SERIALBOX_TEST_SCRIPT} DESTINATION ${CMAKE_BINARY_DIR}/install
+  file(INSTALL ${SERIALBOX_TEST_SCRIPT} DESTINATION ${PROJECT_BINARY_DIR}/install
        FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ)
 endfunction(serialbox_test_end)
 
