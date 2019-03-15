@@ -79,10 +79,13 @@ if [ "$FC_COMPILER" = "pgfortran" ]; then
 elif [ "$FC_COMPILER" = "ftn" ]; then
   module load CrayCCE/.18.12
   module load netCDF-Fortran/4.4.4-CrayCCE-18.12
+
   export GCC_X86_64=$EBROOTGCCCORE
 else
   module load PrgEnv-gnu
 fi
+
+export NETCDF_ROOT=${EBROOTNETCDFMINFORTRAN}
 
 export CXX=$(which g++)
 export CC=$(which gcc)
