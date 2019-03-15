@@ -77,17 +77,16 @@ module load cmake
 if [ "$FC_COMPILER" = "pgfortran" ]; then
   module load PrgEnv-pgi/18.10
   module load netcdf-fortran/4.4.4-pgi-18.10-gcc-5.4.0-2.26
-  export NETCDF_ROOT=/apps/escha/UES/jenkins/RH7.5/pgi_PE18.10/easybuild/software/netcdf-fortran/4.4.4-pgi-18.10-gcc-5.4.0-2.26/
 elif [ "$FC_COMPILER" = "ftn" ]; then
   module load CrayCCE/.18.12
   module load netCDF-Fortran/4.4.4-CrayCCE-18.12
   export GCC_X86_64=$EBROOTGCCCORE
-  export NETCDF_ROOT=/apps/escha/UES/jenkins/RH7.5/cray_PE18.12/easybuild/software/netCDF-Fortran/4.4.4-CrayCCE-18.12/
 else
   module load PrgEnv-gnu
   module load netcdf-fortran/4.4.4-gmvolf-17.02
-  export NETCDF_ROOT=/apps/escha/UES/jenkins/RH7.5/gnu_PE17.02/easybuild/software/netcdf/4.4.1.1-gmvolf-17.02
 fi
+
+export NETCDF_ROOT=${EBROOTNETCDFMINFORTRAN}
 
 export CXX=$(which g++)
 export CC=$(which gcc)
