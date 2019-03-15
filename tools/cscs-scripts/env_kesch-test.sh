@@ -67,36 +67,21 @@ fi
 #------------------------------ Set environment --------------------------------
 
 module purge
-module load cmake/3.9.1
+module load PE/18.12
+module load craype-network-infiniband
+module load craype-haswell
+module load gcc/5.4.0-2.26
+module load cmake
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
-
-module unuse /apps/escha/UES/generic/modulefiles:/apps/escha/UES/PrgEnv-gnu-17.02/modulefiles:/apps/escha/UES/PrgEnv-cray-17.06/modulefiles:/apps/escha/UES/experimental/modulefiles
-module use /apps/escha/UES/jenkins/RH7.4/gnu_PE17.02/easybuild/modules/all
-module use /apps/escha/UES/jenkins/RH7.4/generic/easybuild/modules/all
-module use /apps/escha/UES/jenkins/RH7.4/cray_PE17.06/easybuild/modules/all
-
-    module load craype-haswell
-    module load craype-accel-nvidia35
-    module switch mvapich2_cce/2.2rc1.0.3_cuda80 mvapich2gdr_gnu/2.2_cuda_8.0
-    module load PrgEnv-pgi/17.10
-    module load gcc/5.4.0-2.26
-    
+  module load PrgEnv-pgi/18.10
+  module load netcdf-fortran/4.4.4-pgi-18.10-gcc-5.4.0-2.26
 elif [ "$FC_COMPILER" = "ftn" ]; then
-module unuse /apps/escha/UES/generic/modulefiles:/apps/escha/UES/PrgEnv-gnu-17.02/modulefiles:/apps/escha/UES/PrgEnv-cray-17.06/modulefiles:/apps/escha/UES/experimental/modulefiles
-module use /apps/escha/UES/jenkins/RH7.4/gnu_PE17.02/easybuild/modules/all
-module use /apps/escha/UES/jenkins/RH7.4/generic/easybuild/modules/all
-module use /apps/escha/UES/jenkins/RH7.4/cray_PE17.06/easybuild/modules/all
-
-    module load craype-haswell
-    module load PrgEnv-cray
-    module load craype-accel-nvidia35
-    module load craype-network-infiniband
-    module switch mvapich2_cce/2.2rc1.0.3_cuda80 mvapich2gdr_gnu/2.2_cuda_8.0
-    module load gcc/5.4.0-2.26
-    export GCC_X86_64=$EBROOTGCCCORE
+  module load CrayCCE/.18.12
+  module load netCDF-Fortran/4.4.4-CrayCCE-18.12
+  export GCC_X86_64=$EBROOTGCCCORE
 else
-    module load PrgEnv-gnu
+  module load PrgEnv-gnu
 fi
 
 export CXX=$(which g++)
