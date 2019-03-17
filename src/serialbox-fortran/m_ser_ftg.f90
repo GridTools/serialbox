@@ -120,6 +120,7 @@ END INTERFACE
 
 INTERFACE ftg_write
   MODULE PROCEDURE &
+    ftg_write_string, &
     ftg_write_logical_0d, &
     ftg_write_logical_1d, &
     ftg_write_logical_2d, &
@@ -154,6 +155,7 @@ END INTERFACE
 
 INTERFACE ftg_read
   MODULE PROCEDURE &
+    ftg_read_string, &
     ftg_read_logical_0d, &
     ftg_read_logical_1d, &
     ftg_read_logical_2d, &
@@ -784,6 +786,27 @@ END FUNCTION ftg_loc_hex
 
 !=============================================================================
 !=============================================================================
+
+SUBROUTINE ftg_write_string(fieldname, field)
+  CHARACTER(LEN=*), INTENT(IN)         :: fieldname
+  CHARACTER(LEN=*), INTENT(IN), TARGET :: field
+
+  CHARACTER(LEN=LEN(field)), POINTER :: padd
+  LOGICAL                            :: bullshit
+
+  padd => field
+  bullshit = .FALSE.
+  IF (ignore_bullshit) THEN
+    bullshit = .NOT. ASSOCIATED(padd)
+  END IF
+
+  IF (.NOT. bullshit) THEN
+    CALL fs_write_field(ftg_get_serializer(), ftg_get_savepoint(), fieldname, field)
+    CALL ftg_add_field_metainfo(TRIM(fieldname), 'ftg:registered_only', .FALSE.)
+    CALL ftg_add_field_metainfo(TRIM(fieldname), 'ftg:loc', TRIM(ADJUSTL(ftg_loc_hex(C_LOC(field)))))
+  END IF
+
+END SUBROUTINE ftg_write_string
 
 SUBROUTINE ftg_write_logical_0d(fieldname, field)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname
@@ -1669,6 +1692,20 @@ END SUBROUTINE ftg_write_double_4d
 
 !=============================================================================
 !=============================================================================
+
+SUBROUTINE ftg_read_string(fieldname, field, rperturb)
+  CHARACTER(LEN=*), INTENT(IN)          :: fieldname
+  CHARACTER(LEN=*), INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN), OPTIONAL            :: rperturb
+  LOGICAL                               :: registered_only
+
+  IF (.NOT. ignore_not_existing .OR. ftg_field_exists(fieldname)) THEN
+    CALL ftg_get_field_metainfo(fieldname, 'ftg:registered_only', registered_only)
+    IF (.NOT. registered_only) THEN
+      CALL fs_read_field(serializer, savepoint, fieldname, field, rperturb)
+    END IF
+  END IF
+END SUBROUTINE ftg_read_string
 
 SUBROUTINE ftg_read_logical_0d(fieldname, field, rperturb)
   CHARACTER(LEN=*), INTENT(IN) :: fieldname

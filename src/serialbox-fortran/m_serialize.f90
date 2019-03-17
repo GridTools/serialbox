@@ -224,6 +224,7 @@ PRIVATE
   !------------------------------------------------------------------------------
   INTERFACE fs_write_field
     MODULE PROCEDURE &
+      fs_write_string, &
       fs_write_logical_0d, &
       fs_write_logical_1d, &
       fs_write_logical_2d, &
@@ -262,6 +263,7 @@ PRIVATE
   !------------------------------------------------------------------------------
   INTERFACE fs_read_field
     MODULE PROCEDURE &
+      fs_read_string, &
       fs_read_logical_0d, &
       fs_read_logical_1d, &
       fs_read_logical_2d, &
@@ -1516,6 +1518,27 @@ END SUBROUTINE fs_get_savepoint_metainfo_d
 !=============================================================================
 !=============================================================================
 
+SUBROUTINE fs_write_string(serializer, savepoint, fieldname, field)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*), INTENT(IN)            :: fieldname
+  CHARACTER(LEN=*, KIND=C_CHAR), INTENT(IN), TARGET :: field
+
+  ! Local variables
+  INTEGER(KIND=C_INT), ALLOCATABLE :: ascii(:)
+  INTEGER :: i
+
+  ALLOCATE(ascii(LEN(field)))
+  DO i = 1, LEN(field)
+    ascii(i) = IACHAR(field(i:i), C_INT)
+  END DO
+  CALL fs_write_field(serializer, savepoint, fieldname, ascii)
+
+END SUBROUTINE fs_write_string
+
+!=============================================================================
+!=============================================================================
+  
 SUBROUTINE fs_write_logical_0d(serializer, savepoint, fieldname, field)
   TYPE(t_serializer), INTENT(IN)          :: serializer
   TYPE(t_savepoint) , INTENT(IN)          :: savepoint
@@ -2300,6 +2323,33 @@ END SUBROUTINE fs_write_double_4d
 !=============================================================================
 !=============================================================================
 
+SUBROUTINE fs_read_string(serializer, savepoint, fieldname, field, rperturb)
+  TYPE(t_serializer), INTENT(IN)          :: serializer
+  TYPE(t_savepoint) , INTENT(IN)          :: savepoint
+  CHARACTER(LEN=*), INTENT(IN)            :: fieldname
+  CHARACTER(LEN=*, KIND=C_CHAR), INTENT(OUT), TARGET :: field
+  REAL, INTENT(IN), OPTIONAL               :: rperturb
+
+  ! Local variables
+  INTEGER(KIND=C_INT), ALLOCATABLE :: ascii(:)
+  INTEGER :: i
+
+  ALLOCATE(ascii(fs_get_total_size(serializer, fieldname)))
+  CALL fs_read_field(serializer, savepoint, fieldname, ascii)
+  DO i = 1, MIN(LEN(field), SIZE(ascii))
+    field(i:i) = ACHAR(ascii(i), C_CHAR)
+  END DO
+  IF (LEN(field) > SIZE(ascii)) THEN
+    DO i = LEN(field) + 1, SIZE(ascii)
+      field(i:i) = ' '
+    END DO
+  END IF
+
+END SUBROUTINE fs_read_string
+
+!=============================================================================
+!=============================================================================
+  
 SUBROUTINE fs_read_logical_0d(serializer, savepoint, fieldname, field, rperturb)
   TYPE(t_serializer), INTENT(IN)           :: serializer
   TYPE(t_savepoint) , INTENT(IN)           :: savepoint

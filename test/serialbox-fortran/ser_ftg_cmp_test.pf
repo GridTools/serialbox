@@ -353,5 +353,39 @@ CONTAINS
       CALL ftg_destroy_serializer()      
     
     END SUBROUTINE testNotExists
+    
+  @Test
+    SUBROUTINE testStrings()
+    
+      LOGICAL :: result
+      INTEGER :: failure_count
+    
+      CHARACTER(10) :: w_testfield_len10
+      
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_strings'
+    
+      result = .FALSE.
+      failure_count = 0
+      
+      
+      w_testfield_len10 = 'abcde'
+
+      CALL ftg_set_serializer(dir, base_name, 'w')
+      CALL ftg_write("testfield_len10", w_testfield_len10)
+      CALL ftg_destroy_serializer()
+      
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      CALL ftg_compare("testfield_len10", "abcde     ", result, failure_count)
+      @assertTrue(result)
+      @assertEqual(0, failure_count)
+      CALL ftg_compare("testfield_len10", "abcdedefgh", result, failure_count)
+      @assertFalse(result)
+      @assertEqual(1, failure_count)
+      CALL ftg_compare("testfield_len10", "abcde", result, failure_count)
+      @assertFalse(result)
+      @assertEqual(2, failure_count)
+      CALL ftg_destroy_serializer()
+    
+    END SUBROUTINE testStrings    
       
 END MODULE ser_ftg_cmp_test
