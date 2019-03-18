@@ -838,5 +838,36 @@ CONTAINS
       CALL fs_destroy_savepoint(savepoint)
     
     END SUBROUTINE testSavepointMetainfo    
+    
+@Test
+    SUBROUTINE testStrings()
+    
+      TYPE(t_serializer) :: serializer
+      CHARACTER(10) :: w_testfield_len10, r_testfield_len10
+      
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_strings'
+      
+      w_testfield_len10 = 'abcde'
+
+      CALL fs_create_serializer(dir, base_name, 'w', serializer)
+      CALL fs_write_field(serializer, savepoint, "testfield_len10", w_testfield_len10)
+      CALL fs_destroy_serializer(serializer)
+      
+      CALL fs_create_serializer(dir, base_name, 'r', serializer)
+      
+      @assertTrue(fs_field_exists(serializer, "testfield_len10"))
+      @assertEqual(10, fs_get_total_size(serializer, "testfield_len10"))
+      @assertEqual((/ 10, 0, 0, 0 /), fs_get_size(serializer, "testfield_len10"))
+      
+      CALL fs_read_field(serializer, savepoint, "testfield_len10", r_testfield_len10)
+      
+      CALL fs_destroy_serializer(serializer)
+      
+      @assertEqual('a', CHAR(ICHAR('a')))
+      @assertEqual(w_testfield_len10, r_testfield_len10)
+      @assertEqual('abcde     ', r_testfield_len10)
+      @assertEqual('abcde', TRIM(r_testfield_len10))
+    
+    END SUBROUTINE testStrings
 
 END MODULE serialbox_test

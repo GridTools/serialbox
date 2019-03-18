@@ -1111,6 +1111,35 @@ CONTAINS
       @assertTrue(ftg_field_exists("testc2"))
       CALL ftg_destroy_serializer()
       
-    END SUBROUTINE testTypeComponents  
+    END SUBROUTINE testTypeComponents
+    
+  @Test
+    SUBROUTINE testStrings()
+    
+      CHARACTER(10) :: w_testfield_len10, r_testfield_len10
+      
+      CHARACTER(len=*), PARAMETER :: base_name = 'test_strings'
+      
+      w_testfield_len10 = 'abcde'
+
+      CALL ftg_set_serializer(dir, base_name, 'w')
+      CALL ftg_write("testfield_len10", w_testfield_len10)
+      CALL ftg_destroy_serializer()
+      
+      CALL ftg_set_serializer(dir, base_name, 'r')
+      
+      @assertTrue(ftg_field_exists("testfield_len10"))
+      @assertEqual((/ 10, 0, 0, 0 /), ftg_get_size("testfield_len10"))
+      
+      CALL ftg_read("testfield_len10", r_testfield_len10)
+      
+      CALL ftg_destroy_serializer()
+      
+      @assertEqual('a', CHAR(ICHAR('a')))
+      @assertEqual(w_testfield_len10, r_testfield_len10)
+      @assertEqual('abcde     ', r_testfield_len10)
+      @assertEqual('abcde', TRIM(r_testfield_len10))
+    
+    END SUBROUTINE testStrings
       
 END MODULE ser_ftg_test

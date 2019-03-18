@@ -78,6 +78,7 @@ END INTERFACE ftg_cmp_print_deviations
 
 INTERFACE ftg_compare
   MODULE PROCEDURE &
+    ftg_compare_string, &
     ftg_compare_logical_0d, &
     ftg_compare_logical_1d, &
     ftg_compare_logical_2d, &
@@ -1218,6 +1219,62 @@ END SUBROUTINE ftg_cmp_print_deviations_double_4d
 
 !=============================================================================
 !=============================================================================
+
+SUBROUTINE ftg_compare_string(fieldname, field, result, failure_count, fieldname_alias)
+  CHARACTER(LEN=*), INTENT(IN)           :: fieldname
+  CHARACTER(LEN=*), INTENT(IN)           :: field
+  LOGICAL, INTENT(OUT)                   :: result
+  INTEGER, INTENT(INOUT), OPTIONAL       :: failure_count
+  CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: fieldname_alias
+  CHARACTER(LEN=256)                     :: fieldname_print
+  CHARACTER(LEN=LEN(field))              :: stored_field
+  
+  IF (PRESENT(fieldname_alias)) THEN
+    fieldname_print = fieldname_alias
+  ELSE
+    fieldname_print = fieldname
+  END IF
+  
+  result = .TRUE.
+  
+  IF (.NOT. ftg_field_exists(fieldname)) THEN
+    IF (ftg_cmp_count_missing_field_as_failure) THEN
+      result = .FALSE.
+    END IF
+    IF (.NOT. ftg_cmp_quiet) THEN
+      WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Don't exist in Serializer"
+    END IF
+  ELSE
+    CALL ftg_read(fieldname, stored_field)
+    IF (.NOT. ftg_cmp_size(fieldname, (/ LEN(field) /), fieldname_print)) THEN
+      result = .FALSE.
+    ELSE IF (field /= stored_field) THEN
+      result = .FALSE.
+      IF (.NOT. ftg_cmp_quiet) THEN
+        WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
+        IF (ftg_cmp_max_print_deviations > 0) THEN
+          WRITE (*,'(A)',advance="no") '  -> expected: "'
+          WRITE (*,'(A)',advance="no") TRIM(stored_field)
+          WRITE (*,'(A)') '"'
+          WRITE (*,'(A)',advance="no") '       actual: "'
+          WRITE (*,'(A)',advance="no") TRIM(field)
+          WRITE (*,'(A)') '"'
+        END IF 
+      END IF
+    END IF
+  END IF
+  
+  IF (result) THEN
+    IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
+      WRITE (*,'(A,A,A,A,A,A)') TRIM(ftg_cmp_message_prefix), ' ', TRIM(fieldname_print), ' : OK ("', TRIM(field), '")'
+    END IF
+  ELSE
+    IF (PRESENT(failure_count)) THEN
+      failure_count = failure_count + 1
+    END IF
+  END IF
+    
+END SUBROUTINE ftg_compare_string
 
 SUBROUTINE ftg_compare_logical_0d(fieldname, field, result, failure_count, fieldname_alias)
   CHARACTER(LEN=*), INTENT(IN)           :: fieldname
