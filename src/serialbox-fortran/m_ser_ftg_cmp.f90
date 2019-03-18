@@ -1205,10 +1205,12 @@ SUBROUTINE ftg_compare_string(fieldname, field, result, failure_count, fieldname
       IF (.NOT. ftg_cmp_quiet) THEN
         WRITE (*,'(A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : Not equal"
         IF (ftg_cmp_max_print_deviations > 0) THEN
-          WRITE (*,'(A)',advance="no") "  -> expected: "
+          WRITE (*,'(A)',advance="no") '  -> expected: "'
           WRITE (*,'(A)',advance="no") TRIM(stored_field)
-          WRITE (*,'(A)',advance="no") ", actual: "
-          WRITE (*,'(A)') TRIM(field)
+          WRITE (*,'(A)') '"'
+          WRITE (*,'(A)',advance="no") '       actual: "'
+          WRITE (*,'(A)',advance="no") TRIM(field)
+          WRITE (*,'(A)') '"'
         END IF 
       END IF
     END IF
@@ -1216,7 +1218,7 @@ SUBROUTINE ftg_compare_string(fieldname, field, result, failure_count, fieldname
   
   IF (result) THEN
     IF (.NOT. ftg_cmp_quiet .AND. ftg_cmp_print_when_equal) THEN
-      WRITE (*,'(A,A,A,A,A,A)') TRIM(ftg_cmp_message_prefix), " ", TRIM(fieldname_print), " : OK (", TRIM(field), ")"
+      WRITE (*,'(A,A,A,A,A,A)') TRIM(ftg_cmp_message_prefix), ' ', TRIM(fieldname_print), ' : OK ("', TRIM(field), '")'
     END IF
   ELSE
     IF (PRESENT(failure_count)) THEN
