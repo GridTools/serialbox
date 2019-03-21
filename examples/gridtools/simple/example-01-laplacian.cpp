@@ -23,8 +23,8 @@
 //
 // Include gridtools headers (Serialbox only supports C++11)
 //
-#include <gridtools/stencil-composition/stencil-composition.hpp>
-#include <gridtools/storage/storage-facility.hpp>
+#include <gridtools/stencil_composition/stencil_composition.hpp>
+#include <gridtools/storage/storage_facility.hpp>
 
 //
 // Include Serialbox headers

@@ -12,12 +12,13 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "utility/CInterfaceTestBase.h"
-#include "utility/Storage.h"
 #include "serialbox-c/FieldMetainfo.h"
 #include "serialbox-c/Metainfo.h"
 #include "serialbox-c/Savepoint.h"
 #include "serialbox-c/Serializer.h"
+#include "utility/CInterfaceTestBase.h"
+#include "utility/Storage.h"
+#include <algorithm>
 #include <gtest/gtest.h>
 
 namespace {
@@ -43,14 +44,14 @@ TEST_F(CSerializerUtilityTest, Construction) {
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
     EXPECT_EQ(serialboxSerializerGetMode(ser), Write);
-    
+
     char* dir = serialboxSerializerGetDirectory(ser);
     EXPECT_STREQ(dir, directory->path().c_str());
     std::free(dir);
 
     char* prefix = serialboxSerializerGetPrefix(ser);
     EXPECT_STREQ(prefix, "Field");
-    std::free(prefix);    
+    std::free(prefix);
 
     serialboxSerializerUpdateMetaData(ser);
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
@@ -91,8 +92,7 @@ TEST_F(CSerializerUtilityTest, Construction) {
 
   {
     // MetaData-prefix.json does not exist -> Exception
-    filesystem::remove((directory->path() / "dir-is-created-from-write") /
-                          "MetaData-Field.json");
+    filesystem::remove((directory->path() / "dir-is-created-from-write") / "MetaData-Field.json");
 
     serialboxSerializer_t* ser = serialboxSerializerCreate(
         Read, (directory->path() / "dir-is-created-from-write").c_str(), "Field", "Binary");
