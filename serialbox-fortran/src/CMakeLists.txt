@@ -7,7 +7,7 @@
 ##
 ##===------------------------------------------------------------------------------------------===##
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.12.4)
 
 if(SERIALBOX_ENABLE_FORTRAN)
 
@@ -15,11 +15,11 @@ if(SERIALBOX_ENABLE_FORTRAN)
   add_library(SerialboxFortranSerializeObjects OBJECT ${SOURCES_FORTRAN_SERIALIZE})
   target_include_directories(SerialboxFortranSerializeObjects
     PUBLIC
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
         $<INSTALL_INTERFACE:include>
     )
-  set(SOURCES_FORTRAN utils_ppser.f90 utils_ppser_kbuff.f90)
 
+  set(SOURCES_FORTRAN utils_ppser.f90 utils_ppser_kbuff.f90)
   if (SERIALBOX_ENABLE_FTG)
     set(SOURCES_FORTRAN ${SOURCES_FORTRAN} m_ser_ftg.f90 m_ser_ftg_cmp.f90)
   endif()
@@ -33,31 +33,32 @@ if(SERIALBOX_ENABLE_FORTRAN)
     )
 
   add_library(SerialboxFortranStatic STATIC $<TARGET_OBJECTS:SerialboxFortranSerializeObjects> $<TARGET_OBJECTS:SerialboxFortranObjects>)
-  set_target_properties(SerialboxFortranStatic PROPERTIES OUTPUT_NAME SerialboxFortran)
   target_link_libraries(SerialboxFortranStatic PUBLIC SerialboxFortranObjects)
   target_link_libraries(SerialboxFortranStatic PUBLIC SerialboxFortranSerializeObjects)
   target_link_libraries(SerialboxFortranStatic PUBLIC SerialboxCStatic)
   set_target_properties(SerialboxFortranStatic PROPERTIES VERSION ${Serialbox_VERSION_STRING})
 
+  install(TARGETS SerialboxFortranStatic SerialboxFortranObjects SerialboxFortranSerializeObjects
+    EXPORT SerialboxTargets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    )
 
   if(BUILD_SHARED_LIBS)
     set_target_properties( SerialboxFortranSerializeObjects PROPERTIES POSITION_INDEPENDENT_CODE ON )
     set_target_properties( SerialboxFortranObjects PROPERTIES POSITION_INDEPENDENT_CODE ON )
     add_library(SerialboxFortranShared SHARED $<TARGET_OBJECTS:SerialboxFortranSerializeObjects> $<TARGET_OBJECTS:SerialboxFortranObjects>)
-    set_target_properties(SerialboxFortranShared PROPERTIES OUTPUT_NAME SerialboxFortran)
     target_link_libraries(SerialboxFortranShared PUBLIC SerialboxFortranObjects)
     target_link_libraries(SerialboxFortranShared PUBLIC SerialboxFortranSerializeObjects)
     target_link_libraries(SerialboxFortranShared PUBLIC SerialboxCShared)
     set_target_properties(SerialboxFortranShared PROPERTIES VERSION ${Serialbox_VERSION_STRING})
+
+    install(TARGETS SerialboxFortranShared
+      EXPORT SerialboxTargets
+      LIBRARY DESTINATION lib
+      ARCHIVE DESTINATION lib
+      )
   endif()
-
-  serialbox_install_targets( TARGETS
-    SerialboxFortranStatic
-    SerialboxFortranShared
-    SerialboxFortranObjects
-    SerialboxFortranSerializeObjects
-  )
-
 
   # Install mod files
   foreach(source ${SOURCES_FORTRAN} ${SOURCES_FORTRAN_SERIALIZE})
@@ -69,5 +70,4 @@ if(SERIALBOX_ENABLE_FORTRAN)
 
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${module_name}.mod" DESTINATION include)
   endforeach()
-
 endif()
