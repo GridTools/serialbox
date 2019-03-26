@@ -174,7 +174,7 @@ endif()
 
 #---------------------------------------- GridTools ------------------------------------------------
 if(SERIALBOX_TESTING_GRIDTOOLS)
-  find_package(GridTools QUIET REQUIRED)
+  find_package(GridTools 0.22.0 REQUIRED)
   set(SERIALBOX_HAS_GRIDTOOLS 1)
 endif(SERIALBOX_TESTING_GRIDTOOLS)
 
