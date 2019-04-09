@@ -14431,7 +14431,7 @@ class basic_json
         {
             basic_json&& key = init.begin()->moved_or_copied();
             push_back(typename object_t::value_type(
-                          std::move(key.get_ref<string_t&>()), (init.begin() + 1)->moved_or_copied()));
+                          std::move(key.template get_ref<string_t&>()), (init.begin() + 1)->moved_or_copied()));
         }
         else
         {
