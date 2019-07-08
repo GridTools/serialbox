@@ -18,6 +18,7 @@
 # Export paths
 #
 export PYTHONPATH="$PYTHONPATH:${SERIALBOX_PYTHON_MODULE}:${SERIALBOX_PYTHON_MODULE}/sdb"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:${PROJECT_BINARY_DIR}/src/serialbox-c"
 
 #
 # Check if nose exists
