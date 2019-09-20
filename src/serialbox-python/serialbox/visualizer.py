@@ -65,7 +65,7 @@ class Visualizer(object):
         self.__figure = plt.figure()
 
         # Slider
-        slideraxes = plt.axes([0.15, 0.02, 0.5, 0.03], axisbg='lightgoldenrodyellow')
+        slideraxes = plt.axes([0.15, 0.02, 0.5, 0.03], facecolor='lightgoldenrodyellow')
         self.__slider = Slider(slideraxes, 'K level', 0, field.shape[2] - 1, valinit=0)
         self.__slider.valfmt = '%2d'
         self.__slider.set_val(0)
