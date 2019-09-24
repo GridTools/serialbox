@@ -43,8 +43,8 @@ endif()
 
 #
 # Here we preprocess all the source files, using the preprocesser script pp_ser.py, and store them 
-# in ${CMAKE_SOURCE_DIR}/pp.
-set(PP_OUTPUT ${CMAKE_SOURCE_DIR}/pp)
+# in ${PROJECT_SOURCE_DIR}/pp.
+set(PP_OUTPUT ${PROJECT_SOURCE_DIR}/pp)
 serialbox_run_pp_ser(SOURCES main_producer.F90  
                              main_consumer.F90
                              main_consumer_perturb.F90
@@ -73,5 +73,5 @@ set_target_properties(fortran_consumer_perturb PROPERTIES LINKER_LANGUAGE ${exam
 #
 # Finally, copy our run script to the build directory
 #
-file(COPY ${CMAKE_SOURCE_DIR}/run.sh DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${PROJECT_SOURCE_DIR}/run.sh DESTINATION ${PROJECT_BINARY_DIR})
 

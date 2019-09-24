@@ -20,10 +20,11 @@ cmake_minimum_required(VERSION 3.9.0)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_EXTENSIONS OFF)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
 include(ExternalProject)
 include(CMakeParseArguments)
 include(CheckCXXCompilerFlag)
+include(SerialboxInstallTargets)
 
 #---------------------------------------- Configure ------------------------------------------------
 
@@ -102,11 +103,13 @@ if(NOT CMAKE_BUILD_TYPE)
 endif(NOT CMAKE_BUILD_TYPE)
 
 # Clear all cmake generated files
-add_custom_target(clean-all
-                  COMMAND ${CMAKE_MAKE_PROGRAM} clean
-                  COMMAND ${CMAKE_COMMAND} -P  
-                  "${CMAKE_SOURCE_DIR}/cmake/modules/SerialboxCleanAll.cmake")
-                  
+if( NOT TARGET clean-all )
+  add_custom_target(clean-all
+                    COMMAND ${CMAKE_MAKE_PROGRAM} clean
+                    COMMAND ${CMAKE_COMMAND} -P  
+                    "${PROJECT_SOURCE_DIR}/cmake/modules/SerialboxCleanAll.cmake")
+endif()
+
 # We need thread support
 find_package(Threads REQUIRED)
 
@@ -208,6 +211,7 @@ if(${SERIALBOX_USE_NETCDF})
     message(FATAL_ERROR "NetCDF library not found!")
   endif()
   set(SERIALBOX_HAS_NETCDF 1)
+  serialbox_install_targets( TARGETS NETCDF_TARGET )
 endif()
 
 #---------------------------------------- Python ---------------------------------------------------
@@ -273,9 +277,7 @@ if(_use_boost_filesystem)
     set(SERIALBOX_FILESYSTEM_LIBRARY_STRING "SERIALBOX_USE_BOOST_FILESYSTEM")
 endif()
 
-install(TARGETS SerialboxFilesytemTarget
-    EXPORT SerialboxTargets
-    )
+serialbox_install_targets( TARGETS SerialboxFilesytemTarget )
 
 
 #---------------------------------------- STELLA ---------------------------------------------------
@@ -383,6 +385,7 @@ if(SERIALBOX_CODE_COVERAGE)
 endif(SERIALBOX_CODE_COVERAGE)
 
 #---------------------------------------- Compilation ----------------------------------------------
+
 # Generate serialbox/core/Config.h
 set(SERIALBOX_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file will be lost!")
 set(SERIALBOX_CXX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/src/serialbox/core/Config.h.cmake)
@@ -419,9 +422,9 @@ if(SERIALBOX_TESTING)
   
   # Generate utility/Config.h
   set(SERIALBOX_CPP_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/test/utility/Config.h.cmake)
-  set(SERIALBOX_CPP_CONFIG_FILE ${CMAKE_BINARY_DIR}/test/utility/Config.h)
+  set(SERIALBOX_CPP_CONFIG_FILE ${PROJECT_BINARY_DIR}/test/utility/Config.h)
   configure_file(${SERIALBOX_CPP_CONFIG_FILE_IN} ${SERIALBOX_CPP_CONFIG_FILE})
-  include_directories(${CMAKE_BINARY_DIR}/test)
+  include_directories(${PROJECT_BINARY_DIR}/test)
   
   add_subdirectory(test)
 endif(SERIALBOX_TESTING)
@@ -441,5 +444,3 @@ if(SERIALBOX_TESTING)
 endif(SERIALBOX_TESTING)
 
 include(cmake/Packaging.cmake)
-
-
