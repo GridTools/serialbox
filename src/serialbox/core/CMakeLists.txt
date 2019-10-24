@@ -74,7 +74,7 @@ set(SOURCES
 add_library(SerialboxObjects OBJECT ${SOURCES})
 target_include_directories(SerialboxObjects
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
         $<INSTALL_INTERFACE:include>
     )
 target_link_libraries(SerialboxObjects PRIVATE Boost::boost)
@@ -105,16 +105,8 @@ if(BUILD_SHARED_LIBS)
     set_property(TARGET SerialboxObjects PROPERTY POSITION_INDEPENDENT_CODE 1)
 endif()
 
-install(TARGETS SerialboxStatic SerialboxObjects
-    EXPORT SerialboxTargets
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    )
-
-if(BUILD_SHARED_LIBS)
-    install(TARGETS SerialboxShared
-        EXPORT SerialboxTargets
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        )
-endif()
+serialbox_install_targets( TARGETS 
+  SerialboxStatic
+  SerialboxObjects
+  SerialboxShared
+)

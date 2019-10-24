@@ -25,7 +25,7 @@ set(SOURCES
 )
 
 add_library(SerialboxUnittestUtilityObjects OBJECT ${SOURCES})
-target_include_directories(SerialboxUnittestUtilityObjects PUBLIC ${CMAKE_SOURCE_DIR}/test)
+target_include_directories(SerialboxUnittestUtilityObjects PUBLIC ${PROJECT_SOURCE_DIR}/test)
 target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC Boost::boost)
 target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC gtest_main)
 target_link_libraries(SerialboxUnittestUtilityObjects PUBLIC SerialboxFilesytemTarget)

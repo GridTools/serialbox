@@ -29,7 +29,7 @@ file(WRITE ${generated_src_dir}/testSuites.inc "")
   
 #SerialboxFortran mod files
 #TODO: is there a better way to do this
-include_directories(${CMAKE_BINARY_DIR}/src/serialbox-fortran)
+include_directories(${PROJECT_BINARY_DIR}/src/serialbox-fortran)
 include_directories(${generated_src_dir} ${PFUNIT_INCLUDE_DIRS})
   
 set(_test_sources)
