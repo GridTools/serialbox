@@ -65,7 +65,7 @@ PRIVATE
 
   LOGICAL :: first_call = .false.
 
-  LOGICAL, PARAMETER :: debug = .true.
+  LOGICAL, PARAMETER :: debug = .false.
 
 CONTAINS
 
