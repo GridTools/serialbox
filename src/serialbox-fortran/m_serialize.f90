@@ -68,6 +68,7 @@ PRIVATE
 
   TYPE :: t_savepoint
     TYPE(C_PTR) :: savepoint_ptr = C_NULL_PTR
+    CHARACTER(LEN=256) :: savepoint_name = ""
   END TYPE t_savepoint
 
   INTERFACE
@@ -1261,6 +1262,7 @@ SUBROUTINE fs_create_savepoint(savepointname, savepoint)
   CALL fs_destroy_savepoint(savepoint)
 
   savepoint%savepoint_ptr = fs_create_savepoint_(TRIM(savepointname)//C_NULL_CHAR)
+  savepoint%savepoint_name = TRIM(savepointname)
 
 END SUBROUTINE fs_create_savepoint
 
@@ -1288,6 +1290,7 @@ SUBROUTINE fs_destroy_savepoint(savepoint)
   ENDIF
 
   savepoint%savepoint_ptr = C_NULL_PTR
+  savepoint%savepoint_name = ""
 
 END SUBROUTINE fs_destroy_savepoint
 

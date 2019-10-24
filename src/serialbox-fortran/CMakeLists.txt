@@ -11,7 +11,7 @@ cmake_minimum_required(VERSION 3.12)
 
 if(SERIALBOX_ENABLE_FORTRAN)
 
-  set(SOURCES_FORTRAN_SERIALIZE m_serialize.f90 m_ser_perturb.f90)
+  set(SOURCES_FORTRAN_SERIALIZE m_serialize.f90 m_ser_perturb.f90 m_ser_kbuffer.f90)
   add_library(SerialboxFortranSerializeObjects OBJECT ${SOURCES_FORTRAN_SERIALIZE})
   target_include_directories(SerialboxFortranSerializeObjects
     PUBLIC

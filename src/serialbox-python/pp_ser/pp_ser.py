@@ -100,6 +100,7 @@ class PpSer:
             'datawrite':        'fs_write_field',
             'dataread':         'fs_read_field',
             'datareadperturb':  'fs_read_field',
+            'datakbuff':        'fs_write_kbuff',
             'option':           'fs_Option',
             'serinfo':          'fs_add_serializer_metainfo',
             'register':         'fs_register_field',
@@ -116,6 +117,7 @@ class PpSer:
         self.language = {
             'cleanup':         ['CLEANUP', 'CLE'],
             'data':            ['DATA', 'DAT'],
+            'kbuff':           ['KBUFF', 'KBU'],
             'accdata':         ['ACCDATA', 'ACC'],
             'mode':            ['MODE', 'MOD'],
             'init':            ['INIT', 'INI'],
@@ -456,6 +458,38 @@ class PpSer:
             l += 'ENDIF\n'
         self.__line = l
 
+    # KBUFF directive
+    def __ser_kbuff(self, args, isacc=False):
+
+        (dirs, keys, values, if_statement) = self.__ser_arg_parse(args)
+
+        # generate serialization code
+        l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
+        tab = ''
+        if if_statement:
+            l += 'IF (' + if_statement + ') THEN\n'
+            tab = '  '
+
+        for v in values:
+            v = re.sub(r'\(.+\)', '', v)
+            if v not in self.intentin_to_remove:
+                self.intentin_to_remove.append(v)
+
+        for k, v in zip(keys, values):
+            if k == 'k':
+                k_value = v
+            if k == 'k_size':
+                k_size = v
+
+        for k, v in zip(keys, values):
+            if (k != 'k') and (k != 'k_size'):
+              l += tab + '    ' + 'call ' + self.methods['datakbuff'] + \
+                  '(ppser_serializer, ppser_savepoint, \'' + k + '\', ' + v + ', k=' + k_value + ', k_size=' + k_size + ')\n'
+
+        if if_statement:
+            l += 'ENDIF\n'
+        self.__line = l
+
     # DATA directive
     def __ser_data(self, args, isacc=False):
 
@@ -659,6 +693,8 @@ class PpSer:
                     self.__ser_data(args, True)
                 elif args[0].upper() in self.language['data']:
                     self.__ser_data(args)
+                elif args[0].upper() in self.language['kbuff']:
+                    self.__ser_kbuff(args)
                 elif args[0].upper() in self.language['tracer']:
                     self.__ser_tracer(args)
                 elif args[0].upper() in self.language['registertracers']:
