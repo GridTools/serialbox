@@ -117,7 +117,7 @@ class PpSer:
         self.language = {
             'cleanup':         ['CLEANUP', 'CLE'],
             'data':            ['DATA', 'DAT'],
-            'kbuff':           ['KBUFF', 'KBU'],
+            'data_kbuff':      ['DATA_KBUFF', 'KBU'],
             'accdata':         ['ACCDATA', 'ACC'],
             'mode':            ['MODE', 'MOD'],
             'init':            ['INIT', 'INI'],
@@ -474,7 +474,10 @@ class PpSer:
             v = re.sub(r'\(.+\)', '', v)
             if v not in self.intentin_to_remove:
                 self.intentin_to_remove.append(v)
-
+                
+        l += tab +  'IF (' + self.methods['getmode'] + '()'  + '/=' + str(self.modes['write']) + ') then\n'
+        l += tab + tab + 'PRINT *, \'ERROR, can only use kbuffer in write mode\'\ncall abort()\n'
+        l+= tab + 'ENDIF\n'
         for k, v in zip(keys, values):
             if k == 'k':
                 k_value = v
@@ -693,7 +696,7 @@ class PpSer:
                     self.__ser_data(args, True)
                 elif args[0].upper() in self.language['data']:
                     self.__ser_data(args)
-                elif args[0].upper() in self.language['kbuff']:
+                elif args[0].upper() in self.language['data_kbuff']:
                     self.__ser_kbuff(args)
                 elif args[0].upper() in self.language['tracer']:
                     self.__ser_tracer(args)
