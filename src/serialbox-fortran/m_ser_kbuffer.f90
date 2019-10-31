@@ -140,6 +140,7 @@ SUBROUTINE fs_write_kbuff_float_3d_r8(serializer, savepoint, fieldname, field, &
   ! local vars
   INTEGER :: kbuff_id = 0
   INTEGER :: field_type = 3
+
   ! find kbuff_id and check if a buffer slot was found
   call setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, &
                     SIZE(field,1), SIZE(field,2), k_size, k, minushalos, plushalos)
