@@ -40,10 +40,11 @@ USE m_serialize
   TYPE(t_serializer) :: ppser_serializer_ref
   TYPE(t_savepoint)  :: ppser_savepoint
   LOGICAL            :: ppser_initialized = .false.
+  LOGICAL            :: ppser_hasref = .false.
 
   INTEGER            :: ppser_intlength, ppser_reallength
   CHARACTER (LEN=6)  :: ppser_realtype
-  REAL               :: ppser_zrperturb
+  REAL               :: ppser_zrperturb = 0.0
 
   ! 0 corresponds to "read"
   ! 1 corresponds to "write"
@@ -89,8 +90,10 @@ SUBROUTINE ppser_initialize(directory, prefix, mode, prefix_ref, mpi_rank, rprec
       END IF
     END IF
     CALL fs_create_savepoint('', ppser_savepoint)
+    ppser_mode = 0
     IF ( PRESENT(mode) ) ppser_mode = mode
     IF ( PRESENT(prefix_ref) ) THEN
+      ppser_hasref = .true.
       IF ( PRESENT(mpi_rank) ) THEN
         IF ( PRESENT(archive) ) THEN
           CALL fs_create_serializer(directory, TRIM(prefix_ref)//TRIM(suffix), 'r', ppser_serializer_ref, archive)
@@ -125,6 +128,7 @@ SUBROUTINE ppser_initialize(directory, prefix, mode, prefix_ref, mpi_rank, rprec
     ppser_realtype = 'double'
   END IF
 
+  ppser_zrperturb = 0.0
   IF ( PRESENT(rprecision) .AND. PRESENT(rperturb) ) THEN
     ! generate epsilon
     IF (rperturb > 0.0) THEN
@@ -158,6 +162,9 @@ SUBROUTINE ppser_finalize()
   IF ( ppser_initialized ) THEN
     CALL fs_destroy_savepoint(ppser_savepoint)
     CALL fs_destroy_serializer(ppser_serializer)
+    IF ( ppser_hasref ) THEN
+      CALL fs_destroy_serializer(ppser_serializer_ref)
+    ENDIF
   ENDIF
   ppser_initialized = .FALSE.
 
