@@ -37,7 +37,7 @@ USE m_serialize
 IMPLICIT NONE
 
 PUBLIC :: &
-  fs_write_kbuff
+  fs_write_kbuff, finalize_kbuff
 
 PRIVATE
 
