@@ -110,7 +110,9 @@ class PpSer:
             'spinfo':           'fs_add_savepoint_metainfo',
             'fieldinfo':        'fs_add_field_metainfo',
             'on':               'fs_enable_serialization',
-            'off':              'fs_disable_serialization'
+            'off':              'fs_disable_serialization',
+            'count_savepoints_on':  'fs_count_savepoints_on',
+            'count_savepoints_off':  'fs_count_savepoints_off',
         }
 
         # language definition (also public)
@@ -130,7 +132,9 @@ class PpSer:
             'savepoint':       ['SAVEPOINT', 'SAV'],
             'tracer':          ['TRACER', 'TRA'],
             'on':              ['ON'],
-            'off':             ['OFF']
+            'off':             ['OFF'],
+            'count_savepoints_on':         ['COUNT_SAVEPOINTS_ON'],
+            'count_savepoints_off':        ['COUNT_SAVEPOINTS_OFF']
         }
 
         self.modes = {
@@ -441,6 +445,38 @@ class PpSer:
             l += 'ENDIF\n'
         self.__line = l
 
+    # COUNT_SAVEPOINTS_ON directive
+    def __ser_count_savepoints_on(self, args):
+        (dirs, keys, values, if_statement) = self.__ser_arg_parse(args)
+        self.__calls.add(self.methods['count_savepoints_on'])
+        l = ''
+        tab = ''
+        if if_statement:
+            l += 'IF (' + if_statement + ') THEN\n'
+            tab = '  '
+        self.__calls.add(self.methods['count_savepoints_on'])     
+        l += tab + 'call ' + self.methods['count_savepoints_on'] + '()\n'
+        
+        if if_statement:
+            l += 'ENDIF\n'
+        self.__line = l
+
+    # COUNT_SAVEPOINTS_OFF directive
+    def __ser_count_savepoints_off(self, args):
+        (dirs, keys, values, if_statement) = self.__ser_arg_parse(args)
+        self.__calls.add(self.methods['count_savepoints_off'])
+        l = ''
+        tab = ''
+        if if_statement:
+            l += 'IF (' + if_statement + ') THEN\n'
+            tab = '  '
+        self.__calls.add(self.methods['count_savepoints_off'])     
+        l += tab + 'call ' + self.methods['count_savepoints_off'] + '()\n'
+        
+        if if_statement:
+            l += 'ENDIF\n'
+        self.__line = l
+
     # MODE directive
     def __ser_mode(self, args):
         self.__calls.add(self.methods['mode'])
@@ -464,6 +500,8 @@ class PpSer:
         (dirs, keys, values, if_statement) = self.__ser_arg_parse(args)
 
         # generate serialization code
+        self.__calls.add(self.methods['getmode'])
+        
         l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
         tab = ''
         if if_statement:
@@ -474,10 +512,7 @@ class PpSer:
             v = re.sub(r'\(.+\)', '', v)
             if v not in self.intentin_to_remove:
                 self.intentin_to_remove.append(v)
-                
-        l += tab +  'IF (' + self.methods['getmode'] + '()'  + '/=' + str(self.modes['write']) + ') then\n'
-        l += tab + tab + 'PRINT *, \'ERROR, can only use kbuffer in write mode\'\ncall abort()\n'
-        l+= tab + 'ENDIF\n'
+            
         for k, v in zip(keys, values):
             if k == 'k':
                 k_value = v
@@ -487,7 +522,8 @@ class PpSer:
         for k, v in zip(keys, values):
             if (k != 'k') and (k != 'k_size'):
               l += tab + '    ' + 'call ' + self.methods['datakbuff'] + \
-                  '(ppser_serializer, ppser_savepoint, \'' + k + '\', ' + v + ', k=' + k_value + ', k_size=' + k_size + ')\n'
+                  '(ppser_serializer, ppser_savepoint, \'' + k + '\', ' + v + ', k=' + \
+                  k_value + ', k_size=' + k_size + ', mode=' + self.methods['getmode'] +'(), allowed_modes=[' + str(self.modes['write']) + '])\n'
 
         if if_statement:
             l += 'ENDIF\n'
@@ -710,6 +746,10 @@ class PpSer:
                     self.__ser_off(args)
                 elif args[0].upper() in self.language['mode']:
                     self.__ser_mode(args)
+                elif args[0].upper() in self.language['count_savepoints_on']:
+                    self.__ser_count_savepoints_on(args)
+                elif args[0].upper() in self.language['count_savepoints_off']:
+                    self.__ser_count_savepoints_off(args)
                 else:
                     self.__exit_error(directive=args[0],
                                       msg='Unknown directive encountered')
@@ -784,7 +824,8 @@ class PpSer:
         ncalls = len(calls_pp) + len(calls_fs)
         if ncalls > 0:
             calls_pp += ['ppser_savepoint', 'ppser_serializer', 'ppser_serializer_ref',
-                         'ppser_intlength', 'ppser_reallength', 'ppser_realtype', 'ppser_zrperturb']
+                         'ppser_intlength', 'ppser_reallength', 'ppser_realtype', 'ppser_zrperturb',
+                         'ppser_get_mode']
             self.__line += '\n'
             if self.ifdef:
                 self.__line += '#ifdef ' + self.ifdef + '\n'

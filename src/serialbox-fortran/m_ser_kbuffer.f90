@@ -33,7 +33,7 @@ MODULE m_ser_kbuffer
 
 USE iso_c_binding
 USE m_serialize
-
+      
 IMPLICIT NONE
 
 PUBLIC :: &
@@ -42,12 +42,13 @@ PUBLIC :: &
 PRIVATE
 
   TYPE kbuff_type
+
     LOGICAL :: in_use = .FALSE.                   ! is this buffer in use?
     TYPE(C_PTR) :: serializer                     ! serializer object associated with buffer
-    TYPE(C_PTR) :: savepoint                      ! savepoint object associated with buffer
-    CHARACTER(LEN=256) :: savepointname
+    CHARACTER(LEN=256) :: savepoint_name
     CHARACTER(LEN=256) :: fieldname
-    INTEGER :: dim_i = 0, dim_j = 0, dim_k = 0    ! dimensions of 3d-field to be serialized
+    INTEGER :: dim_i = 0, dim_j = 0, dim_k = 0 ! dimensions of 3d-field to be serialized
+    INTEGER :: call_index=0 ! track multiple kbuffers for the same savepoint name and field being filled in parallel  
     LOGICAL :: has_minushalos, has_plushalos
     INTEGER :: minushalos(3), plushalos(3)
     INTEGER :: field_type = 0                     ! 0 = not used, 1 = int, 2 = r4, 3 = r8
@@ -90,12 +91,13 @@ SUBROUTINE init_kbuff()
   DO idx = 1, max_kbuff
     kbuff(idx)%in_use = .FALSE.
     kbuff(idx)%fieldname = ""
-    kbuff(idx)%savepointname = ""
+    kbuff(idx)%savepoint_name = ""
   END DO
 
 END SUBROUTINE init_kbuff
 
 !============================================================================
+
 
 ! finalize buffering: should be called once all buffers have been flushed
 SUBROUTINE finalize_kbuff()
@@ -127,23 +129,28 @@ END SUBROUTINE finalize_kbuff
 
 ! overloads fs_write_kbuff: version for r8 floats and 3d fields
 SUBROUTINE fs_write_kbuff_float_3d_r8(serializer, savepoint, fieldname, field, &
-                                      k, k_size, minushalos, plushalos)
+                                      k, k_size, mode, allowed_modes, minushalos, plushalos)
+
   IMPLICIT NONE
 
   TYPE(t_serializer), TARGET, INTENT(IN)  :: serializer
   TYPE(t_savepoint), TARGET, INTENT(IN)   :: savepoint
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET  :: field(:,:)
-  INTEGER, INTENT(IN)                     :: k, k_size
+  INTEGER, INTENT(IN)                     :: k, k_size, mode
+  INTEGER, INTENT(IN)                     :: allowed_modes(:)    
   INTEGER, INTENT(IN), OPTIONAL           :: minushalos(3), plushalos(3)
 
   ! local vars
   INTEGER :: kbuff_id = 0
   INTEGER :: field_type = 3
 
+  IF (.NOT. (fs_is_serialization_on())) THEN
+         return
+  ENDIF
   ! find kbuff_id and check if a buffer slot was found
   call setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, &
-                    SIZE(field,1), SIZE(field,2), k_size, k, minushalos, plushalos)
+                    SIZE(field,1), SIZE(field,2), k_size, k,  mode, allowed_modes, minushalos, plushalos)
 
 
   ! store data
@@ -181,25 +188,31 @@ END SUBROUTINE fs_write_kbuff_float_3d_r8
 
 !============================================================================
 
+
 ! overloads fs_write_kbuff: version for r4 floats and 3d fields
 SUBROUTINE fs_write_kbuff_float_3d_r4(serializer, savepoint, fieldname, field, &
-                                      k, k_size, minushalos, plushalos)
+                                      k, k_size, mode, allowed_modes, minushalos, plushalos)
   IMPLICIT NONE
 
   TYPE(t_serializer), TARGET, INTENT(IN)  :: serializer
   TYPE(t_savepoint), TARGET, INTENT(IN)   :: savepoint
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET  :: field(:,:)
-  INTEGER, INTENT(IN)                     :: k, k_size
+  INTEGER, INTENT(IN)                     :: k, k_size, mode
+  INTEGER, INTENT(IN)                     :: allowed_modes(:) 
   INTEGER, INTENT(IN), OPTIONAL           :: minushalos(3), plushalos(3)
-
+  
   ! local vars
   INTEGER :: kbuff_id = 0
   INTEGER :: field_type = 2
 
+  IF (.NOT. (fs_is_serialization_on())) THEN
+         return
+  ENDIF
   ! find kbuff_id and check if a buffer slot was found
+
   call setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, &
-                    SIZE(field,1), SIZE(field,2), k_size, k, minushalos, plushalos)
+                    SIZE(field,1), SIZE(field,2), k_size, k,  mode, allowed_modes, minushalos, plushalos)
 
 
   ! store data
@@ -230,32 +243,40 @@ SUBROUTINE fs_write_kbuff_float_3d_r4(serializer, savepoint, fieldname, field, &
         CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_r4)
       END IF
     END IF
+
     CALL destroy_kbuff(kbuff_id)
   END IF
 
 END SUBROUTINE fs_write_kbuff_float_3d_r4
 
+
 !============================================================================
 
 ! overloads fs_write_kbuff: version for i4 integers and 3d fields
 SUBROUTINE fs_write_kbuff_integer_3d_i4(serializer, savepoint, fieldname, field, &
-                                        k, k_size, minushalos, plushalos)
+                                        k, k_size, mode, allowed_modes, minushalos, plushalos)
+
   IMPLICIT NONE
 
   TYPE(t_serializer), TARGET, INTENT(IN)  :: serializer
   TYPE(t_savepoint), TARGET, INTENT(IN)   :: savepoint
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   INTEGER, INTENT(IN), TARGET             :: field(:,:)
-  INTEGER, INTENT(IN)                     :: k, k_size
+  INTEGER, INTENT(IN)                     :: k, k_size, mode
+  INTEGER, INTENT(IN)                     :: allowed_modes(:) 
   INTEGER, INTENT(IN), OPTIONAL           :: minushalos(3), plushalos(3)
 
   ! local vars
   INTEGER :: kbuff_id = 0
   INTEGER :: field_type = 1
 
+  IF (.NOT. (fs_is_serialization_on())) THEN
+         return
+  ENDIF
   ! find kbuff_id and check if a buffer slot was found
+
   call setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, &
-                    SIZE(field,1), SIZE(field,2), k_size, k, minushalos, plushalos)
+                    SIZE(field,1), SIZE(field,2), k_size, k, mode, allowed_modes, minushalos, plushalos)
 
   ! store data
   IF (debug) THEN
@@ -292,39 +313,60 @@ END SUBROUTINE fs_write_kbuff_integer_3d_i4
 
 !============================================================================
 
+
 ! checks if a buffer exists for this fields and if yes, checks consistency with
 ! current request. if not, it creates a new buffer.
 SUBROUTINE setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, &
-                        field_nx, field_ny, k_size, k, minushalos, plushalos)
+                        field_nx, field_ny, k_size, k, mode, allowed_modes, minushalos, plushalos)
   IMPLICIT NONE
   TYPE(t_serializer), TARGET, INTENT(IN)  :: serializer
   TYPE(t_savepoint), TARGET, INTENT(IN)   :: savepoint
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
-  INTEGER, INTENT(IN)                     :: k, k_size, field_nx, field_ny, field_type
+  INTEGER, INTENT(IN)                     :: k, k_size, mode, field_nx, field_ny, field_type
+  INTEGER, INTENT(IN)                     :: allowed_modes(:) 
   INTEGER, INTENT(IN), OPTIONAL           :: minushalos(3), plushalos(3)
   INTEGER, INTENT(OUT)                    :: kbuff_id
-
+  INTEGER                                 :: call_index=0, i
+  LOGICAL                                 :: mode_match = .FALSE.
+      
   IF (debug) THEN
     WRITE(0,*) 'DEBUG setup_buffer: savepoint=', TRIM(savepoint%savepoint_name)
     WRITE(0,*) 'DEBUG setup_buffer: fieldname=', TRIM(fieldname)
     WRITE(0,*) 'DEBUG setup_buffer: k=', k
     WRITE(0,*) 'DEBUG setup_buffer: k_size=', k_size
   END IF
-
+! ppser mode numbers do not align with m_serialize constants....
+  do i=1,size(allowed_modes)
+      IF( mode  == allowed_modes(i)) THEN
+         mode_match = .TRUE.
+      END IF
+  END DO
+      
+   IF (.NOT.(mode_match)) THEN      
+      WRITE(0,*) 'ERROR, can only use kbuffer in write mode'
+      STOP
+  END IF
+ 
   ! initialize if this is the first call
   IF (first_call) THEN
     CALL init_kbuff()
   END IF
-
+ 
   ! find ID if it already exists
-  CALL find_kbuff_id(fieldname, savepoint%savepoint_name, kbuff_id)
 
+  CALL find_kbuff_id(fieldname, savepoint, k, kbuff_id, call_index)
+  IF (debug) THEN
+    WRITE(0,*) 'DEBUG fs_write_kbuff_float_3d_r8: find kbuff_id=', kbuff_id
+      END IF
   ! check if a buffer slot was found
   IF ( kbuff_id == 0 ) THEN
     ! no, so create a new buffer
     CALL get_free_kbuff_id(kbuff_id)
+    IF (debug) THEN
+      WRITE(0,*) 'DEBUG fs_write_kbuff_float_3d: kbuff_id=', kbuff_id
+    END IF
     CALL create_kbuff(kbuff_id, serializer, savepoint, fieldname, field_type, &
-                      field_nx, field_ny, k_size, minushalos, plushalos)
+                     field_nx, field_ny, k_size, call_index, minushalos, plushalos)
   ELSE
     ! yes, so check for consistency of current request with stored metadata
     CALL check_kbuff(kbuff_id, serializer, savepoint, fieldname, field_type, &
@@ -335,9 +377,11 @@ SUBROUTINE setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, 
 
 !============================================================================
 
+
 ! create a new buffer (allocate memory, store metadata)
 SUBROUTINE create_kbuff(kbuff_id, serializer, savepoint, fieldname, field_type, &
-                        dim_i, dim_j, dim_k, minushalos, plushalos)
+                       dim_i, dim_j, dim_k, call_index, minushalos, plushalos)
+
   IMPLICIT NONE
 
   INTEGER, INTENT(IN)                     :: kbuff_id
@@ -345,9 +389,9 @@ SUBROUTINE create_kbuff(kbuff_id, serializer, savepoint, fieldname, field_type, 
   TYPE(t_savepoint), TARGET, INTENT(IN)   :: savepoint
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   INTEGER, INTENT(IN)                     :: field_type
-  INTEGER, INTENT(IN)                     :: dim_i, dim_j, dim_k
+  INTEGER, INTENT(IN)                     :: dim_i, dim_j, dim_k, call_index
   INTEGER, INTENT(IN), OPTIONAL           :: minushalos(3), plushalos(3)
-
+  
   ! debug information
   IF (debug) THEN
     WRITE(0,*) 'DEBUG create_kbuff: kbuff_id=', kbuff_id
@@ -366,12 +410,13 @@ SUBROUTINE create_kbuff(kbuff_id, serializer, savepoint, fieldname, field_type, 
     WRITE(0,*) 'ERROR in m_ser_kbuffer: create called for buffer already in use'
     STOP
   END IF
+ 
 
   ! store metadata
   kbuff(kbuff_id)%in_use = .TRUE.
   kbuff(kbuff_id)%serializer = serializer%serializer_ptr
-  kbuff(kbuff_id)%savepoint = savepoint%savepoint_ptr
-  kbuff(kbuff_id)%savepointname = TRIM(savepoint%savepoint_name)
+  kbuff(kbuff_id)%call_index = call_index
+  kbuff(kbuff_id)%savepoint_name = TRIM(savepoint%savepoint_name)
   kbuff(kbuff_id)%fieldname = TRIM(fieldname)
   kbuff(kbuff_id)%dim_i = dim_i
   kbuff(kbuff_id)%dim_j = dim_j
@@ -415,11 +460,11 @@ SUBROUTINE destroy_kbuff(kbuff_id)
   IMPLICIT NONE
 
   INTEGER, INTENT(IN)                     :: kbuff_id
-
+  INTEGER                                 :: idx
   ! debug information
   IF (debug) THEN
     WRITE(0,*) 'DEBUG destroy_kbuff: kbuff_id=', kbuff_id
-    WRITE(0,*) 'DEBUG destroy_kbuff: savepoint=', TRIM(kbuff(kbuff_id)%savepointname)
+    WRITE(0,*) 'DEBUG destroy_kbuff: savepoint=', TRIM(kbuff(kbuff_id)%savepoint_name)
     WRITE(0,*) 'DEBUG destroy_kbuff: fieldname=', TRIM(kbuff(kbuff_id)%fieldname)
   END IF
 
@@ -432,7 +477,21 @@ SUBROUTINE destroy_kbuff(kbuff_id)
     WRITE(0,*) 'ERROR in m_ser_kbuffer: destroy called for buffer not in use'
     STOP
   END IF
+ ! update the call_index of the rest of the related kbuffers     
+ 
 
+  DO idx = 1, max_kbuff
+    IF (idx /= kbuff_id .and. kbuff(idx)%in_use) THEN 
+      IF (TRIM(kbuff(kbuff_id)%fieldname) == TRIM(kbuff(idx)%fieldname)) THEN
+        IF (TRIM( kbuff(kbuff_id)%savepoint_name) == TRIM(kbuff(idx)%savepoint_name)) THEN
+          ! This should not be needed, calls should stay in order...
+          IF (kbuff(idx)%call_index >  kbuff(kbuff_id)%call_index) THEN 
+            kbuff(idx)%call_index = kbuff(idx)%call_index - 1
+          END IF
+        END IF
+      END IF
+    END IF
+  END DO
   ! release memory
   SELECT CASE (kbuff(kbuff_id)%field_type)
     CASE(1)
@@ -449,8 +508,8 @@ SUBROUTINE destroy_kbuff(kbuff_id)
   ! reset metadata
   kbuff(kbuff_id)%in_use = .FALSE.
   kbuff(kbuff_id)%serializer = C_NULL_PTR
-  kbuff(kbuff_id)%savepoint = C_NULL_PTR
-  kbuff(kbuff_id)%savepointname = ""
+  kbuff(kbuff_id)%savepoint_name = ""
+  kbuff(kbuff_id)%call_index = 0
   kbuff(kbuff_id)%fieldname = ""
   kbuff(kbuff_id)%field_type = 0
   kbuff(kbuff_id)%dim_i = 0
@@ -517,7 +576,7 @@ SUBROUTINE check_kbuff(kbuff_id, serializer, savepoint, fieldname, field_type, &
 !    WRITE(0,*) 'ERROR in m_ser_kbuffer: write called for same field but different savepoint'
 !    STOP
 !  END IF
-  IF (.NOT. (TRIM(kbuff(kbuff_id)%savepointname) == TRIM(savepoint%savepoint_name))) THEN
+  IF (.NOT. (TRIM(kbuff(kbuff_id)%savepoint_name) == TRIM(savepoint%savepoint_name))) THEN
     WRITE(0,*) 'ERROR in m_ser_kbuffer: write called for same field but different savepoint'
     STOP
   END IF
@@ -544,7 +603,8 @@ SUBROUTINE check_kbuff(kbuff_id, serializer, savepoint, fieldname, field_type, &
   IF (kbuff(kbuff_id)%field_type /= field_type) THEN
     WRITE(0,*) 'ERROR in m_ser_kbuffer: write with inconsistent field_type encountered'
     STOP
-  END IF
+      END IF
+  ! Should be redudant, but doesn't hurt to recheck
   IF (kbuff(kbuff_id)%ok(k)) THEN
     WRITE(0,*) 'ERROR in m_ser_kbuffer: k-index already written'
     STOP
@@ -554,37 +614,53 @@ END SUBROUTINE check_kbuff
 
 !============================================================================
 
+
 ! find the ID of a buffer given name of field and savepoint
-SUBROUTINE find_kbuff_id(fieldname, savepointname, kbuff_id)
+SUBROUTINE find_kbuff_id(fieldname, savepoint, k, kbuff_id, call_index)
   IMPLICIT NONE
 
-  CHARACTER(LEN=*), INTENT(IN) :: fieldname
-  CHARACTER(LEN=*), INTENT(IN) :: savepointname
-  INTEGER, INTENT(OUT)         :: kbuff_id
+  CHARACTER(LEN=*), INTENT(IN)            :: fieldname
+  TYPE(t_savepoint), TARGET, INTENT(IN)   :: savepoint
+  INTEGER, INTENT(IN)                     :: k    
+  INTEGER, INTENT(OUT)                    :: kbuff_id, call_index
 
   ! local vars
   INTEGER :: idx
-
-  kbuff_id = 0
-
+  
+  
+   kbuff_id = 0
+   call_index = 0
   IF (debug) THEN
-    WRITE(0,*) 'DEBUG find_kbuff_id: fieldname=', TRIM(fieldname), ' savepoint=', TRIM(savepointname)
+    WRITE(0,*) 'DEBUG find_kbuff_id: fieldname=', TRIM(fieldname), ' savepoint=', TRIM(savepoint%savepoint_name), ' k=', k
   END IF
 
   DO idx = 1, max_kbuff
-    IF (TRIM(fieldname) == TRIM(kbuff(idx)%fieldname)) THEN
-      IF (TRIM(savepointname) == TRIM(kbuff(idx)%savepointname)) THEN
-        kbuff_id = idx
-        EXIT
+    IF (kbuff(idx)%in_use) THEN 
+      IF (TRIM(fieldname) == TRIM(kbuff(idx)%fieldname)) THEN
+        IF (TRIM( savepoint%savepoint_name) == TRIM(kbuff(idx)%savepoint_name)) THEN
+          IF(debug) THEN
+              WRITE(0, *) 'DEBUG found name match at ', idx, 'k=',k, kbuff(idx)%ok(k)
+          END IF
+          IF (kbuff(idx)%ok(k)) THEN
+            ! The k for this buffer has already been filled, keep looking for another with the same name
+            call_index = call_index + 1
+          ELSE
+            IF(debug) THEN
+              WRITE(0, *) 'DEBUG found kbuff_id', idx, ', counted similar buffers: ', call_index
+            END IF
+            kbuff_id = idx
+            EXIT
+          END IF
+        END IF     
       END IF
     END IF
   END DO
 
   IF (debug) THEN
     IF (kbuff_id == 0) THEN
-      WRITE(0,*) 'DEBUG find_kbuff_id: no kbuff found'
+      WRITE(0,*) 'DEBUG find_kbuff_id: no kbuff found, call_index=', call_index
     ELSE
-      WRITE(0,*) 'DEBUG find_kbuff_id: found kbuff_id=', kbuff_id
+      WRITE(0,*) 'DEBUG find_kbuff_id: found kbuff_id=', kbuff_id, ' call_index=', call_index
     END IF
   END IF
 
