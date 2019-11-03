@@ -67,9 +67,9 @@ PRIVATE
       MODULE PROCEDURE fs_write_kbuff_float_3d_r8
   END INTERFACE
 
-  LOGICAL :: first_call = .false.                 ! used for initialization
+  LOGICAL :: first_call = .TRUE.                  ! used for initialization
 
-  LOGICAL, PARAMETER :: debug = .false.           ! get verbose messaging
+  LOGICAL, PARAMETER :: debug = .FALSE.           ! get verbose messaging
 
 CONTAINS
 
@@ -117,6 +117,8 @@ SUBROUTINE finalize_kbuff()
       WRITE(0,*) 'ERROR in m_ser_kbuffer: finalize called before all buffers have been flushed'
       STOP
     END IF
+    kbuff(idx)%fieldname = ""
+    kbuff(idx)%savepoint_name = ""
   END DO
 
   first_call = .TRUE.
