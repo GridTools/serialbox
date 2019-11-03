@@ -111,8 +111,6 @@ class PpSer:
             'fieldinfo':        'fs_add_field_metainfo',
             'on':               'fs_enable_serialization',
             'off':              'fs_disable_serialization',
-            'count_savepoints_on':  'fs_count_savepoints_on',
-            'count_savepoints_off':  'fs_count_savepoints_off',
         }
 
         # language definition (also public)
@@ -133,8 +131,6 @@ class PpSer:
             'tracer':          ['TRACER', 'TRA'],
             'on':              ['ON'],
             'off':             ['OFF'],
-            'count_savepoints_on':         ['COUNT_SAVEPOINTS_ON'],
-            'count_savepoints_off':        ['COUNT_SAVEPOINTS_OFF']
         }
 
         self.modes = {
@@ -445,38 +441,6 @@ class PpSer:
             l += 'ENDIF\n'
         self.__line = l
 
-    # COUNT_SAVEPOINTS_ON directive
-    def __ser_count_savepoints_on(self, args):
-        (dirs, keys, values, if_statement) = self.__ser_arg_parse(args)
-        self.__calls.add(self.methods['count_savepoints_on'])
-        l = ''
-        tab = ''
-        if if_statement:
-            l += 'IF (' + if_statement + ') THEN\n'
-            tab = '  '
-        self.__calls.add(self.methods['count_savepoints_on'])     
-        l += tab + 'call ' + self.methods['count_savepoints_on'] + '()\n'
-        
-        if if_statement:
-            l += 'ENDIF\n'
-        self.__line = l
-
-    # COUNT_SAVEPOINTS_OFF directive
-    def __ser_count_savepoints_off(self, args):
-        (dirs, keys, values, if_statement) = self.__ser_arg_parse(args)
-        self.__calls.add(self.methods['count_savepoints_off'])
-        l = ''
-        tab = ''
-        if if_statement:
-            l += 'IF (' + if_statement + ') THEN\n'
-            tab = '  '
-        self.__calls.add(self.methods['count_savepoints_off'])     
-        l += tab + 'call ' + self.methods['count_savepoints_off'] + '()\n'
-        
-        if if_statement:
-            l += 'ENDIF\n'
-        self.__line = l
-
     # MODE directive
     def __ser_mode(self, args):
         self.__calls.add(self.methods['mode'])
@@ -746,10 +710,6 @@ class PpSer:
                     self.__ser_off(args)
                 elif args[0].upper() in self.language['mode']:
                     self.__ser_mode(args)
-                elif args[0].upper() in self.language['count_savepoints_on']:
-                    self.__ser_count_savepoints_on(args)
-                elif args[0].upper() in self.language['count_savepoints_off']:
-                    self.__ser_count_savepoints_off(args)
                 else:
                     self.__exit_error(directive=args[0],
                                       msg='Unknown directive encountered')
