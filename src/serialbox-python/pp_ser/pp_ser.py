@@ -110,7 +110,7 @@ class PpSer:
             'spinfo':           'fs_add_savepoint_metainfo',
             'fieldinfo':        'fs_add_field_metainfo',
             'on':               'fs_enable_serialization',
-            'off':              'fs_disable_serialization',
+            'off':              'fs_disable_serialization'
         }
 
         # language definition (also public)
@@ -130,7 +130,7 @@ class PpSer:
             'savepoint':       ['SAVEPOINT', 'SAV'],
             'tracer':          ['TRACER', 'TRA'],
             'on':              ['ON'],
-            'off':             ['OFF'],
+            'off':             ['OFF']
         }
 
         self.modes = {
@@ -270,7 +270,7 @@ class PpSer:
 
         (dirs, keys, values, if_statement) = self.__ser_arg_parse(args)
 
-        l = ''
+        l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
         tab = ''
         if if_statement:
             l += 'IF (' + if_statement + ') THEN\n'
@@ -288,10 +288,11 @@ class PpSer:
         else:
             if_pos = len(args)
 
+        self.__calls.add(self.methods['init'])
         l += tab + 'call ' + self.methods['init'] + '( &\n' + ' '*11 + (', &\n' + ' '*11).join(args[1:if_pos]) + ')\n'
         if if_statement:
             l += 'ENDIF\n'
-        self.__calls.add(self.methods['init'])
+
         self.__line = l
 
     # OPTION directive
@@ -300,9 +301,12 @@ class PpSer:
         if len(dirs) != 0:
             self.__exit_error(directive=args[0],
                               msg='Must specify a name and a list of key=value pairs')
-        l = ''
+
+        l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
         if if_statement:
             l += 'IF (' + if_statement + ') THEN\n'
+
+        self.__calls.add(self.methods['option'])
         l += 'call ' + self.methods['option'] + '('
         for i in range(len(keys)):
             if keys[i].lower() == 'verbosity':
@@ -315,25 +319,32 @@ class PpSer:
             else:
                 l += ', ' + keys[i] + '=' + values[i]
         l += ')\n'
+
         if if_statement:
             l += 'ENDIF\n'
-        self.__calls.add(self.methods['option'])
+
         self.__line = l
 
     # METAINFO directive
     def __ser_metainfo(self, args):
         (dirs, keys, values, if_statement) = self.__ser_arg_parse(args)
-        l, tab = '', ''
-        self.__calls.add(self.methods['serinfo'])
+
+        l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
+        tab = ''
+
         if if_statement:
             l += 'IF (' + if_statement + ') THEN\n'
             tab = '  '
+
+        self.__calls.add(self.methods['serinfo'])
         for k, v in zip(keys, values):
-            l += tab + 'CALL ' + self.methods['serinfo'] + '(ppser_serializer, "' + k + '", ' + v + ')\n'
+            l += tab + 'call ' + self.methods['serinfo'] + '(ppser_serializer, "' + k + '", ' + v + ')\n'
         for d in dirs:
-            l += tab + 'CALL ' + self.methods['serinfo'] + '(ppser_serializer, "' + d + '", ' + d + ')\n'
+            l += tab + 'call ' + self.methods['serinfo'] + '(ppser_serializer, "' + d + '", ' + d + ')\n'
+
         if if_statement:
             l += 'ENDIF\n'
+
         self.__line = l
 
     # VERBATIM directive
@@ -372,8 +383,9 @@ class PpSer:
                 dirs[3:4] = l
 
         # REGISTER [arg ...]
-        l = ''
+        l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
         tab = ''
+
         if if_statement:
             l += 'IF (' + if_statement + ') THEN\n'
             tab = '  '
@@ -397,8 +409,11 @@ class PpSer:
 
     # REGISTERTRACERS directive
     def __ser_registertracers(self, args):
-        l = 'call fs_RegisterAllTracers()\n'
+        l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
+
         self.__calls.add(self.methods['registertracers'])
+        l += 'call fs_RegisterAllTracers()\n'
+        
         self.__line = l
 
     # ZERO directive
@@ -407,55 +422,71 @@ class PpSer:
         if len(keys) > 0:
             self.__exit_error(directive=args[0],
                               msg='Must specify a list of fields')
-        l = ''
+
+        l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
         tab = ''
+
         if if_statement:
             l += 'IF (' + if_statement + ') THEN\n'
             tab = '  '
+
         for arg in dirs:
             l += tab + arg + ' = 0.0_' + self.real + '\n'
+
         if if_statement:
             l += 'ENDIF\n'
+
         self.__line = l
 
     # SAVEPOINT directive
     def __ser_savepoint(self, args):
         (dirs, keys, values, if_statement) = self.__ser_arg_parse(args)
+
         # extract save point name
         if len(dirs) != 1:
             self.__exit_error(directive=args[0],
                               msg='Must specify a name and a list of key=value pairs')
         name = dirs[0]
+
         # generate serialization code
-        l = ''
+        l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
         tab = ''
+
         if if_statement:
             l += 'IF (' + if_statement + ') THEN\n'
             tab = '  '
+
         self.__calls.add(self.methods['savepoint'])
         self.__calls.add(self.methods['spinfo'])
         l += tab + 'call ' + self.methods['savepoint'] + '(\'' + name + '\', ppser_savepoint)\n'
         for k, v in zip(keys, values):
             l += tab + 'call ' + self.methods['spinfo'] + '(ppser_savepoint, \'' + k + '\', ' + v + ')\n'
+
         if if_statement:
             l += 'ENDIF\n'
+
         self.__line = l
 
     # MODE directive
     def __ser_mode(self, args):
-        self.__calls.add(self.methods['mode'])
         (dirs, keys, values, if_statement) = self.__ser_arg_parse(args)
-        l = ''
+
+        l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
         tab = ''
+
         if if_statement:
             l += 'IF (' + if_statement + ') THEN\n'
             tab = '  '
+
+        self.__calls.add(self.methods['mode'])
         if args[1] in self.modes:
             l += tab + 'call ' + self.methods['mode'] + '(' + str(self.modes[args[1]]) + ')\n'
         else:
             l += tab + 'call ' + self.methods['mode'] + '(' + args[1] + ')\n'
+
         if if_statement:
             l += 'ENDIF\n'
+
         self.__line = l
 
     # KBUFF directive
@@ -463,11 +494,10 @@ class PpSer:
 
         (dirs, keys, values, if_statement) = self.__ser_arg_parse(args)
 
-        # generate serialization code
-        self.__calls.add(self.methods['getmode'])
-        
+        # generate serialization code        
         l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
         tab = ''
+
         if if_statement:
             l += 'IF (' + if_statement + ') THEN\n'
             tab = '  '
@@ -483,6 +513,7 @@ class PpSer:
             if k == 'k_size':
                 k_size = v
 
+        self.__calls.add(self.methods['getmode'])
         for k, v in zip(keys, values):
             if (k != 'k') and (k != 'k_size'):
               l += tab + '    ' + 'call ' + self.methods['datakbuff'] + \
@@ -491,6 +522,7 @@ class PpSer:
 
         if if_statement:
             l += 'ENDIF\n'
+
         self.__line = l
 
     # DATA directive
@@ -503,8 +535,10 @@ class PpSer:
         self.__calls.add(self.methods['dataread'])
         self.__calls.add(self.methods['datareadperturb'])
         self.__calls.add(self.methods['getmode'])
+
         l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
         tab = ''
+
         if if_statement:
             l += 'IF (' + if_statement + ') THEN\n'
             tab = '  '
@@ -559,6 +593,7 @@ class PpSer:
 
         if if_statement:
             l += 'ENDIF\n'
+
         self.__line = l
 
     # TRACER directive
@@ -566,8 +601,9 @@ class PpSer:
 
         (tracerspec, if_statement) = self.__ser_tracer_parse(args)
 
-        l = ''
+        l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
         tab = ''
+
         if if_statement:
             l += 'IF (' + if_statement + ') THEN\n'
             tab = '  '
@@ -606,26 +642,35 @@ class PpSer:
 
         if if_statement:
             l += 'ENDIF\n'
+
         self.__line = l
 
     # CLEANUP directive
     def __ser_cleanup(self, args):
-        l = ''
+        l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
         l += '! cleanup serialization environment\n'
-        l += 'call ' + self.methods['cleanup'] + '(' + ','.join(args[1:]) + ')\n'
+        
         self.__calls.add(self.methods['cleanup'])
+        l += 'call ' + self.methods['cleanup'] + '(' + ','.join(args[1:]) + ')\n'
+
         self.__line = l
 
     # ON directive
     def __ser_on(self, args):
-        l = 'call ' + self.methods['on'] + '()\n'
+        l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
+        
+        l += 'call ' + self.methods['on'] + '()\n'
         self.__calls.add(self.methods['on'])
+        
         self.__line = l
 
     # OFF directive
     def __ser_off(self, args):
-        l = 'call ' + self.methods['off'] + '()\n'
+        l = '! file: ' + self.infile + ' lineno: #' + str(self.__linenum) + '\n'
+        
+        l += 'call ' + self.methods['off'] + '()\n'
         self.__calls.add(self.methods['off'])
+        
         self.__line = l
 
     # LINE: module/program
@@ -642,6 +687,7 @@ class PpSer:
             if m.group('statement').upper() == 'MODULE':
                 self.__use_stmt_in_module = True
             self.__module = m.group('identifier')
+
         return m
 
     # LINE: subroutine or function

@@ -46,8 +46,8 @@ PRIVATE
     TYPE(C_PTR) :: serializer                     ! serializer object associated with buffer
     CHARACTER(LEN=256) :: savepoint_name
     CHARACTER(LEN=256) :: fieldname
-    INTEGER :: dim_i = 0, dim_j = 0, dim_k = 0 ! dimensions of 3d-field to be serialized
-    INTEGER :: call_index=0 ! track multiple kbuffers for the same savepoint name and field being filled in parallel  
+    INTEGER :: dim_i = 0, dim_j = 0, dim_k = 0    ! dimensions of 3d-field to be serialized
+    INTEGER :: call_index = 0                     ! track multiple kbuffers for the same savepoint name and field being filled in parallel  
     LOGICAL :: has_minushalos, has_plushalos
     INTEGER :: minushalos(3), plushalos(3)
     INTEGER :: field_type = 0                     ! 0 = not used, 1 = int, 2 = r4, 3 = r8
