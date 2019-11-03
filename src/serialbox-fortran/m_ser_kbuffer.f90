@@ -104,12 +104,7 @@ SUBROUTINE finalize_kbuff()
   INTEGER :: idx
 
   IF (debug) THEN
-    WRITE(0,*) 'DEBUG init_kbuff'
-  END IF
-
-  IF (first_call) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: finalize called before init'
-    STOP
+    WRITE(0,*) 'DEBUG finalize_kbuff'
   END IF
 
   DO idx = 1, max_kbuff
