@@ -519,7 +519,7 @@ class PpSer:
             if (k != 'k') and (k != 'k_size'):
               l += tab + '    ' + 'call ' + self.methods['datakbuff'] + \
                   '(ppser_serializer, ppser_savepoint, \'' + k + '\', ' + v + ', k=' + \
-                  k_value + ', k_size=' + k_size + ', mode=' + self.methods['getmode'] +'()])\n'
+                  k_value + ', k_size=' + k_size + ', mode=' + self.methods['getmode'] +'())\n'
 
         if if_statement:
             l += 'ENDIF\n'
