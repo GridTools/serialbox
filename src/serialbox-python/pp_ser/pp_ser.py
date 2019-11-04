@@ -132,7 +132,8 @@ class PpSer:
             'on':              ['ON'],
             'off':             ['OFF']
         }
-
+        # If you change any of these, please check equivalent parameters in
+        # serialbox-fortran/utils_ppser.f90
         self.modes = {
             'write':        0,
             'read':         1,
@@ -518,7 +519,7 @@ class PpSer:
             if (k != 'k') and (k != 'k_size'):
               l += tab + '    ' + 'call ' + self.methods['datakbuff'] + \
                   '(ppser_serializer, ppser_savepoint, \'' + k + '\', ' + v + ', k=' + \
-                  k_value + ', k_size=' + k_size + ', mode=' + self.methods['getmode'] +'(), allowed_modes=[' + str(self.modes['write']) + '])\n'
+                  k_value + ', k_size=' + k_size + ', mode=' + self.methods['getmode'] +'()])\n'
 
         if if_statement:
             l += 'ENDIF\n'

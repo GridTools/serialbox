@@ -10,20 +10,19 @@
 cmake_minimum_required(VERSION 3.12)
 
 if(SERIALBOX_ENABLE_FORTRAN)
-
-  set(SOURCES_FORTRAN_SERIALIZE m_serialize.f90 m_ser_perturb.f90 m_ser_kbuffer.f90)
+  
+  set(SOURCES_FORTRAN_SERIALIZE m_serialize.f90 m_ser_perturb.f90 m_ser_kbuffer.f90 utils_ppser.f90)
   add_library(SerialboxFortranSerializeObjects OBJECT ${SOURCES_FORTRAN_SERIALIZE})
   target_include_directories(SerialboxFortranSerializeObjects
     PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
         $<INSTALL_INTERFACE:include>
     )
-  
-  set(SOURCES_FORTRAN utils_ppser.f90 )
+    
   if (SERIALBOX_ENABLE_FTG)
     set(SOURCES_FORTRAN ${SOURCES_FORTRAN} m_ser_ftg.f90 m_ser_ftg_cmp.f90)
   endif()
-
+  
   if(SERIALBOX_FORTRAN_SAVEPOINT_UNIQUE_ID)
     add_definitions(-DSERIALBOX_FORTRAN_SAVEPOINT_UNIQUE_ID)
   endif()

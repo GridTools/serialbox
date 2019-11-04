@@ -33,7 +33,8 @@ MODULE m_ser_kbuffer
 
 USE iso_c_binding
 USE m_serialize
-
+USE utils_ppser
+      
 IMPLICIT NONE
 
 PUBLIC :: &
@@ -124,7 +125,7 @@ END SUBROUTINE finalize_kbuff
 
 ! overloads fs_write_kbuff: version for r8 floats and 3d fields
 SUBROUTINE fs_write_kbuff_float_3d_r8(serializer, savepoint, fieldname, field, &
-                                      k, k_size, mode, allowed_modes, minushalos, plushalos)
+                                      k, k_size, mode, minushalos, plushalos)
   IMPLICIT NONE
 
   TYPE(t_serializer), TARGET, INTENT(IN)  :: serializer
@@ -132,21 +133,20 @@ SUBROUTINE fs_write_kbuff_float_3d_r8(serializer, savepoint, fieldname, field, &
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_DOUBLE), INTENT(IN), TARGET :: field(:,:)
   INTEGER, INTENT(IN)                     :: k, k_size, mode
-  INTEGER, INTENT(IN)                     :: allowed_modes(:)    
   INTEGER, INTENT(IN), OPTIONAL           :: minushalos(3), plushalos(3)
 
   ! local vars
   INTEGER :: kbuff_id = 0
   INTEGER :: field_type = 3
 
-  ! do nothing in case serialization is swtiched off
+  ! do nothing in case serialization is switched off
   IF (.NOT. (fs_is_serialization_on())) THEN
     RETURN
   ENDIF
 
   ! find kbuff_id and check if a buffer slot was found
   call setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, &
-                    SIZE(field,1), SIZE(field,2), k_size, k,  mode, allowed_modes, minushalos, plushalos)
+                    SIZE(field,1), SIZE(field,2), k_size, k,  mode, minushalos, plushalos)
 
   ! store data
   IF (debug) THEN
@@ -185,7 +185,7 @@ END SUBROUTINE fs_write_kbuff_float_3d_r8
 
 ! overloads fs_write_kbuff: version for r4 floats and 3d fields
 SUBROUTINE fs_write_kbuff_float_3d_r4(serializer, savepoint, fieldname, field, &
-                                      k, k_size, mode, allowed_modes, minushalos, plushalos)
+                                      k, k_size, mode, minushalos, plushalos)
   IMPLICIT NONE
 
   TYPE(t_serializer), TARGET, INTENT(IN)  :: serializer
@@ -193,21 +193,20 @@ SUBROUTINE fs_write_kbuff_float_3d_r4(serializer, savepoint, fieldname, field, &
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   REAL(KIND=C_FLOAT), INTENT(IN), TARGET  :: field(:,:)
   INTEGER, INTENT(IN)                     :: k, k_size, mode
-  INTEGER, INTENT(IN)                     :: allowed_modes(:) 
   INTEGER, INTENT(IN), OPTIONAL           :: minushalos(3), plushalos(3)
 
   ! local vars
   INTEGER :: kbuff_id = 0
   INTEGER :: field_type = 2
 
-  ! do nothing in case serialization is swtiched off
+  ! do nothing in case serialization is switched off
   IF (.NOT. (fs_is_serialization_on())) THEN
     RETURN
   ENDIF
 
   ! find kbuff_id and check if a buffer slot was found
   call setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, &
-                    SIZE(field,1), SIZE(field,2), k_size, k,  mode, allowed_modes, minushalos, plushalos)
+                    SIZE(field,1), SIZE(field,2), k_size, k,  mode, minushalos, plushalos)
 
   ! store data
   IF (debug) THEN
@@ -247,7 +246,7 @@ END SUBROUTINE fs_write_kbuff_float_3d_r4
 
 ! overloads fs_write_kbuff: version for i4 integers and 3d fields
 SUBROUTINE fs_write_kbuff_integer_3d_i4(serializer, savepoint, fieldname, field, &
-                                        k, k_size, mode, allowed_modes, minushalos, plushalos)
+                                        k, k_size, mode, minushalos, plushalos)
   IMPLICIT NONE
 
   TYPE(t_serializer), TARGET, INTENT(IN)  :: serializer
@@ -255,21 +254,20 @@ SUBROUTINE fs_write_kbuff_integer_3d_i4(serializer, savepoint, fieldname, field,
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   INTEGER, INTENT(IN), TARGET             :: field(:,:)
   INTEGER, INTENT(IN)                     :: k, k_size, mode
-  INTEGER, INTENT(IN)                     :: allowed_modes(:) 
   INTEGER, INTENT(IN), OPTIONAL           :: minushalos(3), plushalos(3)
 
   ! local vars
   INTEGER :: kbuff_id = 0
   INTEGER :: field_type = 1
 
-  ! do nothing in case serialization is swtiched off
+  ! do nothing in case serialization is switched off
   IF (.NOT. (fs_is_serialization_on())) THEN
     RETURN
   ENDIF
 
   ! find kbuff_id and check if a buffer slot was found
   call setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, &
-                    SIZE(field,1), SIZE(field,2), k_size, k, mode, allowed_modes, minushalos, plushalos)
+                    SIZE(field,1), SIZE(field,2), k_size, k, mode, minushalos, plushalos)
 
   ! store data
   IF (debug) THEN
@@ -309,21 +307,19 @@ END SUBROUTINE fs_write_kbuff_integer_3d_i4
 ! checks if a buffer exists for this fields and if yes, checks consistency with
 ! current request. if not, it creates a new buffer.
 SUBROUTINE setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, &
-                        field_nx, field_ny, k_size, k, mode, allowed_modes, minushalos, plushalos)
+                        field_nx, field_ny, k_size, k, mode, minushalos, plushalos)
   IMPLICIT NONE
 
   TYPE(t_serializer), TARGET, INTENT(IN)  :: serializer
   TYPE(t_savepoint), TARGET, INTENT(IN)   :: savepoint
   CHARACTER(LEN=*), INTENT(IN)            :: fieldname
   INTEGER, INTENT(IN)                     :: k, k_size, mode, field_nx, field_ny, field_type
-  INTEGER, INTENT(IN)                     :: allowed_modes(:) 
   INTEGER, INTENT(IN), OPTIONAL           :: minushalos(3), plushalos(3)
   INTEGER, INTENT(OUT)                    :: kbuff_id
 
   ! local vars
   INTEGER :: call_index = 0
   INTEGER :: i
-  LOGICAL :: mode_match = .FALSE.
       
   IF (debug) THEN
     WRITE(0,*) 'DEBUG setup_buffer: savepoint=', TRIM(savepoint%savepoint_name)
@@ -333,14 +329,10 @@ SUBROUTINE setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, 
   END IF
 
   ! ppser mode numbers do not align with m_serialize constants....
-  DO i = 1, SIZE(allowed_modes)
-    IF( mode  == allowed_modes(i)) THEN
-      mode_match = .TRUE.
-    ELSE
+  IF( mode  /= PPSER_WRITE_MODE) THEN
       WRITE(0,*) 'ERROR, can only use kbuffer in write mode'
       STOP
-    END IF
-  END DO
+  END IF
  
   ! initialize if this is the first call
   IF (first_call) THEN
