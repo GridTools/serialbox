@@ -77,5 +77,5 @@ source code using the pp_ser.py script.
 Function arguments::
 
   SOURCES       - Sources to preprocess
-  OUTPUT_DIR    - Output directory of the the source files. If nothing is specified ${CMAKE_BINARY_DIR}/pp is used. 
+  OUTPUT_DIR    - Output directory of the the source files. If nothing is specified ${PROJECT_BINARY_DIR}/pp is used. 
 

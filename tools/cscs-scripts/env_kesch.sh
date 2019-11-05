@@ -67,29 +67,28 @@ fi
 #------------------------------ Set environment --------------------------------
 
 module purge
-module use /users/jenkins/easybuild/kesch/modules/all
-module load cmake/3.12.0
+
+module load PE/17.06
+module load craype-network-infiniband
+module load craype-haswell
+module load cmake/3.13.4 
+module load python/3.6.2-gmvolf-17.02
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
-
-    module load craype-haswell
-    module load craype-accel-nvidia35
-    module switch mvapich2_cce/2.2rc1.0.3_cuda80 mvapich2gdr_gnu/2.2_cuda_8.0
-    module load PrgEnv-pgi/17.10
+    module load PrgEnv-pgi/18.5
+    module load netcdf-fortran/4.4.4-pgi-18.5-gcc-5.4.0-2.26
+    export NETCDF_ROOT=$EBROOTNETCDF
     module load gcc/5.4.0-2.26
     
 elif [ "$FC_COMPILER" = "ftn" ]; then
-    module load craype-haswell
-    module load PrgEnv-cray
-    module load craype-accel-nvidia35
-    module load craype-network-infiniband
-    module switch mvapich2_cce/2.2rc1.0.3_cuda80 mvapich2gdr_gnu/2.2_cuda_8.0
+    module unload mvapich2/2.2-gcc-5.4.0-2.26
+    module load PrgEnv-CrayCCE/17.06
     module load gcc/5.4.0-2.26
     module load netCDF-Fortran/4.4.4-CrayCCE-17.06
     export NETCDF_ROOT=$EBROOTNETCDF
     export GCC_X86_64=$EBROOTGCCCORE
 else
-    module load PrgEnv-gnu
+    module load PrgEnv-gnu/17.02
     module load netcdf-fortran/4.4.4-gmvolf-17.02
     export NETCDF_ROOT=$EBROOTNETCDF
 fi

@@ -13,7 +13,7 @@ target_link_libraries( simple_m_ser
                         SerialboxFortranStatic 
                         ${CMAKE_THREAD_LIBS_INIT}
                         )
-target_include_directories(simple_m_ser PUBLIC ${CMAKE_BINARY_DIR}/src/serialbox-fortran)
+target_include_directories(simple_m_ser PUBLIC ${PROJECT_BINARY_DIR}/src/serialbox-fortran)
 if(${CMAKE_Fortran_COMPILER_ID} STREQUAL "PGI" OR ${CMAKE_Fortran_COMPILER_ID} STREQUAL "Intel")
     set_target_properties( simple_m_ser PROPERTIES LINKER_LANGUAGE Fortran)
 endif()

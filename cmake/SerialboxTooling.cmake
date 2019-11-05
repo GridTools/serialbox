@@ -18,7 +18,7 @@
 #
 #   SOURCES       - Sources to preprocess
 #   OUTPUT_DIR    - Output directory of the the source files. If nothing is specified 
-#                   `${CMAKE_BINARY_DIR}/pp` is used. 
+#                   `${PROJECT_BINARY_DIR}/pp` is used. 
 #
 
 include(CMakeParseArguments)
@@ -47,8 +47,8 @@ function(serialbox_run_pp_ser)
   endif()
   
   if(NOT(output_dir))
-    # If output_dir is not set, we place them in ${CMAKE_BINARY_DIR}/pp
-    set(output_dir ${CMAKE_BINARY_DIR}/pp)  
+    # If output_dir is not set, we place them in ${PROJECT_BINARY_DIR}/pp
+    set(output_dir ${PROJECT_BINARY_DIR}/pp)  
   endif()
   
   # Create directory if it does not exist

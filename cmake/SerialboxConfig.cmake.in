@@ -41,11 +41,77 @@ set(SERIALBOX_BOOST_INCLUDE_DIRS "@Boost_INCLUDE_DIRS@")
 set(SERIALBOX_REQUIRED_BOOST_COMPONENTS "@REQUIRED_BOOST_COMPONENTS@")
 
 #===---------------------------------------------------------------------------------------------===
+#   Helper functions used in this file
+#====--------------------------------------------------------------------------------------------===
+
+function( serialbox_print_targets )
+  #
+  # serialbox_print_targets( targets_list )
+  #
+  #    Print exported and unavailable targets
+  #
+  message( STATUS "Serialbox exported targets:")
+  foreach( target ${ARGV} )
+    if( TARGET ${target} )
+      message( STATUS "  ${target}" )
+    else()
+      list( APPEND _unavailable_targets ${target} )
+    endif()
+  endforeach()
+  if( _unavailable_targets )
+    message( STATUS "Serialbox unavailable targets:")
+    foreach( target ${_unavailable_targets} )
+      message( STATUS "  ${target}" )
+    endforeach()
+  endif()
+endfunction()
+
+function( serialbox_alias_targets )
+  #
+  # serialbox_alias_targets( alias target_shared target_static align )
+  #
+  #    Creates ALIAS target for given targets. Prefer target_shared if availabe
+  #
+  set( _alias ${ARGV0} )
+  set( _target_shared ${ARGV1} )
+  set( _target_static ${ARGV2} )
+  set( _align ${ARGV3} )
+  string( REPLACE "Serialbox::" "" _target_shared_build "${_target_shared}" )
+  string( REPLACE "Serialbox::" "" _target_static_build "${_target_static}" )
+  if( TARGET ${_target_shared_build} )
+    message( STATUS "  ${_alias} ${_align}--> Serialbox::${_target_shared_build}" )
+    if( NOT TARGET ${_alias} )
+      add_library( ${_alias} ALIAS ${_target_shared_build} )
+    endif()
+  elseif( TARGET ${_target_shared} AND CMAKE_VERSION GREATER 3.11 )
+    message( STATUS "  ${_alias} ${_align}--> ${_target_shared}" )
+    set_target_properties( ${_target_shared} PROPERTIES IMPORTED_GLOBAL TRUE) # required for aliasing imports
+    if( NOT TARGET ${_alias} )
+      add_library( ${_alias} ALIAS ${_target_shared} )
+    endif()
+  elseif( TARGET ${_target_static_build} )
+    message( STATUS "  ${_alias} ${_align}--> Serialbox::${_target_static_build}" )
+    if( NOT TARGET ${_alias} )
+      add_library( ${_alias} ALIAS ${_target_static_build} )
+    endif()
+  elseif( TARGET ${_target_static} AND CMAKE_VERSION GREATER 3.11 )
+    message( STATUS "  ${_alias} ${_align}--> ${_target_static}" )
+    set_target_properties( ${_target_static} PROPERTIES IMPORTED_GLOBAL TRUE) # required for aliasing imports
+    if( NOT TARGET ${_alias} )
+      add_library( ${_alias} ALIAS ${_target_static} )
+    endif()
+  endif()
+endfunction()
+
+#===---------------------------------------------------------------------------------------------===
 #   Find Serialbox libraries
 #====--------------------------------------------------------------------------------------------===
 
 # Import library targets
-include("${CMAKE_CURRENT_LIST_DIR}/SerialboxTargets.cmake")
+if( NOT @PROJECT_NAME@_TARGETS_EXPORTED )
+  include("${CMAKE_CURRENT_LIST_DIR}/SerialboxTargets.cmake")
+  set( ${PROJECT_NAME}_TARGETS_EXPORTED TRUE )
+endif()
 
 set(SERIALBOX_HAS_SHARED_LIBRARY FALSE)
 if(TARGET Serialbox::SerialboxShared)
@@ -60,37 +126,22 @@ if(TARGET Serialbox::SerialboxFortranStatic)
   set(SERIALBOX_HAS_FORTRAN TRUE)
 endif()
 
-# Report findings
-message(STATUS "Found Serialbox version: ${SERIALBOX_VERSION}")
+### Report findings
 
-get_property(_static_lib TARGET Serialbox::SerialboxStatic PROPERTY LOCATION)
-message(STATUS "  Static serialbox: ${_static_lib}")
+message(STATUS "Found Serialbox (version: ${SERIALBOX_VERSION}) in ${PACKAGE_PREFIX_DIR}" )
 
-if(SERIALBOX_HAS_SHARED_LIBRARY)
-  get_property(_shared_lib TARGET Serialbox::SerialboxShared PROPERTY LOCATION)
-  message(STATUS "  Shared serialbox: ${_shared_lib}")
-endif()
+serialbox_print_targets(
+  Serialbox::SerialboxCStatic
+  Serialbox::SerialboxCShared
+  Serialbox::SerialboxFortranStatic
+  Serialbox::SerialboxFortranShared
+)
 
-if(SERIALBOX_HAS_C)
-  get_property(_static_lib TARGET Serialbox::SerialboxCStatic PROPERTY LOCATION)
-  message(STATUS "  Static serialbox-c: ${_static_lib}")
+### Create ALIAS targets
 
-  if(SERIALBOX_HAS_SHARED_LIBRARY)
-    get_property(_shared_lib TARGET Serialbox::SerialboxCShared PROPERTY LOCATION)
-    message(STATUS "  Shared serialbox-c: ${_shared_lib}")
-  endif()
-endif(SERIALBOX_HAS_C)
-
-if(SERIALBOX_HAS_FORTRAN)
-  get_property(_static_lib TARGET Serialbox::SerialboxFortranStatic PROPERTY LOCATION)
-  message(STATUS "  Static serialbox FORTRAN: ${_static_lib}")
-
-  if(SERIALBOX_HAS_SHARED_LIBRARY)
-    get_property(_shared_lib TARGET Serialbox::SerialboxFortranShared PROPERTY LOCATION)
-    message(STATUS "  Shared serialbox FORTRAN: ${_shared_lib}")
-  endif()
-
-endif(SERIALBOX_HAS_FORTRAN)
+message( STATUS "Serialbox ALIAS targets:" )
+serialbox_alias_targets( Serialbox::Serialbox_C       Serialbox::SerialboxCShared       Serialbox::SerialboxCStatic "      " )
+serialbox_alias_targets( Serialbox::Serialbox_Fortran Serialbox::SerialboxFortranShared Serialbox::SerialboxFortranStatic )
 
 #===---------------------------------------------------------------------------------------------===
 #   Find external libraries
