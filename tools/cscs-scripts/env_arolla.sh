@@ -71,36 +71,21 @@ module load craype-network-infiniband
 module load slurm
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
-    echo "not defined"
-    exit 1
-    # module swap PrgEnv-cray PrgEnv-pgi
-    # module load gcc
+    module load PrgEnv-pgi/19.4
+    module load gcc
 elif [ "$FC_COMPILER" = "ftn" ]; then
-    echo "not defined"
-    exit 1
-    # module load gcc
+    module load PrgEnv-cray
+    module load gcc
 elif [ "$FC_COMPILER" = "ifort" ]; then
     echo "not defined"
     exit 1
-    # module swap PrgEnv-cray PrgEnv-intel
-    # module load gcc/7.3.0
-elif [ "$FC_COMPILER" = "pgfortran18.10" ]; then
-    echo "not defined"
-    exit 1
-    # module use /project/c14/data-eniac/modulefiles
-    # module swap PrgEnv-cray PrgEnv-pgi
-    # module load eniac/pgi-18.10
-    # module load gcc
-    # FC_COMPILER="pgfortran"
 else
     module load PrgEnv-gnu
-    module swap gcc gcc/5.3.0
 fi
 
-module load boost/1.70.0-gmvolf-18.12-python2
-module load netcdf/4.6.3-gmvolf-18.12
-module load hdf5/1.10.5-gmvolf-18.12
-export NETCDF_ROOT=${EBROOTNETCDF}
+#module load netcdf-c++/4.3.0-gmvolf-18.12
+#module load hdf5/1.10.5-gmvolf-18.12
+#export NETCDF_ROOT=${EBROOTNETCDF}
 
 export CXX=$(which g++)
 export CC=$(which gcc)
@@ -109,6 +94,5 @@ export FC=$(which $FC_COMPILER)
 export Boost_NO_SYSTEM_PATHS=true
 export Boost_NO_BOOST_CMAKE=true
 
-# export BOOST_ROOT=/project/c14/install/daint/boost/boost_1_67_0
-# export BOOST_INCLUDE={BOOST_ROOT}/include/
-# export LD_LIBRARY_PATH=${BOOST_ROOT}/lib:$LD_LIBRARY_PATH
+export BOOST_ROOT=/project/c14/install/daint/boost/boost_1_67_0
+
