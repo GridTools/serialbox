@@ -329,7 +329,7 @@ SUBROUTINE setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, 
   END IF
 
   ! ppser mode numbers do not align with m_serialize constants....
-  IF( mode  /= PPSER_WRITE_MODE) THEN
+  IF( mode  /= PPSER_MODE_WRITE) THEN
     WRITE(0,*) 'ERROR, can only use kbuffer in write mode'
     STOP
   END IF

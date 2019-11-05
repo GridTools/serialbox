@@ -51,7 +51,7 @@ USE m_serialize
   INTEGER            :: ppser_mode = 0
   ! This is defined in serialbox-python/pp_ser/pp_ser.py,
   ! Please update there if you change it here and vice versa
-  INTEGER, PARAMETER, PUBLIC :: PPSER_WRITE_MODE = 0
+  INTEGER, PARAMETER, PUBLIC :: PPSER_MODE_WRITE = 0
       
 PUBLIC :: &
   ppser_serializer, ppser_savepoint, ppser_initialize,  &
