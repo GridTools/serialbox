@@ -330,8 +330,8 @@ SUBROUTINE setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, 
 
   ! ppser mode numbers do not align with m_serialize constants....
   IF( mode  /= PPSER_WRITE_MODE) THEN
-      WRITE(0,*) 'ERROR, can only use kbuffer in write mode'
-      STOP
+    WRITE(0,*) 'ERROR, can only use kbuffer in write mode'
+    STOP
   END IF
  
   ! initialize if this is the first call
@@ -556,12 +556,7 @@ SUBROUTINE check_kbuff(kbuff_id, serializer, savepoint, fieldname, field_type, &
     WRITE(0,*) 'ERROR in m_ser_kbuffer: write called for same field but different serializer'
     STOP
   END IF
-  ! NOTE: we cannot check savepoint consistency since we are probably creating a new
-  ! savepoint for every k-loop iteration.
-!  IF (.NOT. (C_ASSOCIATED(kbuff(kbuff_id)%savepoint, savepoint%savepoint_ptr))) THEN
-!    WRITE(0,*) 'ERROR in m_ser_kbuffer: write called for same field but different savepoint'
-!    STOP
-!  END IF
+  
   IF (.NOT. (TRIM(kbuff(kbuff_id)%savepoint_name) == TRIM(savepoint%savepoint_name))) THEN
     WRITE(0,*) 'ERROR in m_ser_kbuffer: write called for same field but different savepoint'
     STOP
