@@ -27,7 +27,7 @@ Serialbox builds are run on Travis CI [here](https://travis-ci.org/eth-cscs/seri
 
 <!-- 
 ### OSX
-
+ 
 |  Toolchain   | Config         |                                                     Status                                                           |
 |:-------------|:---------------|:---------------------------------------------------------------------------------------------------------------------|
 | Xcode 7.3    | Release        |  <a target="_blank" href="https://travis-ci.org/eth-cscs/eth-cscs">![GCC 5.4][Xcode_73_Release.Badge]</a>            |
