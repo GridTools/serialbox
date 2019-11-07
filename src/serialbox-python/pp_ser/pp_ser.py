@@ -509,11 +509,9 @@ class PpSer:
             if v not in self.intentin_to_remove:
                 self.intentin_to_remove.append(v)
             
-        for k, v in zip(keys, values):
-            if k == 'k':
-                k_value = v
-            if k == 'k_size':
-                k_size = v
+        d = dict(zip(keys, values))
+        k_value = d.pop('k')
+        k_size = d.pop('k_size')
 
         self.__calls.add(self.methods['getmode'])
         for k, v in zip(keys, values):
