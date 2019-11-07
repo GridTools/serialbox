@@ -49,6 +49,7 @@ USE m_serialize
   ! 0 corresponds to "read"
   ! 1 corresponds to "write"
   INTEGER            :: ppser_mode = 0
+
   ! This is defined in serialbox-python/pp_ser/pp_ser.py,
   ! Please update there if you change it here and vice versa
   INTEGER, PARAMETER, PUBLIC :: PPSER_MODE_WRITE = 0

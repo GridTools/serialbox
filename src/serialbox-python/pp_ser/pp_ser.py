@@ -132,6 +132,7 @@ class PpSer:
             'on':              ['ON'],
             'off':             ['OFF']
         }
+
         # If you change any of these, please check equivalent parameters in
         # serialbox-fortran/utils_ppser.f90
         self.modes = {

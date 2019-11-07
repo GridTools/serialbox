@@ -48,7 +48,8 @@ PRIVATE
     CHARACTER(LEN=256) :: savepoint_name
     CHARACTER(LEN=256) :: fieldname
     INTEGER :: dim_i = 0, dim_j = 0, dim_k = 0    ! dimensions of 3d-field to be serialized
-    INTEGER :: call_index = 0                     ! track multiple kbuffers for the same savepoint name and field being filled in parallel  
+    INTEGER :: call_index = 0                     ! track multiple kbuffers for the same savepoint name 
+                                                  ! and field being filled in parallel  
     LOGICAL :: has_minushalos, has_plushalos
     INTEGER :: minushalos(3), plushalos(3)
     INTEGER :: field_type = 0                     ! 0 = not used, 1 = int, 2 = r4, 3 = r8
@@ -92,6 +93,7 @@ SUBROUTINE init_kbuff()
     kbuff(idx)%in_use = .FALSE.
     kbuff(idx)%fieldname = ""
     kbuff(idx)%savepoint_name = ""
+    kbuff(idx)%call_index = 0
   END DO
 
 END SUBROUTINE init_kbuff
@@ -176,6 +178,7 @@ SUBROUTINE fs_write_kbuff_float_3d_r8(serializer, savepoint, fieldname, field, &
         CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_r8)
       END IF
     END IF
+
     CALL destroy_kbuff(kbuff_id)
   END IF
 
@@ -297,6 +300,7 @@ SUBROUTINE fs_write_kbuff_integer_3d_i4(serializer, savepoint, fieldname, field,
         CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_i4)
       END IF
     END IF
+
     CALL destroy_kbuff(kbuff_id)
   END IF
 
@@ -329,13 +333,13 @@ SUBROUTINE setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, 
   END IF
 
   ! ppser mode numbers do not align with m_serialize constants....
-  IF( mode  /= PPSER_MODE_WRITE) THEN
+  IF ( mode /= PPSER_MODE_WRITE ) THEN
     WRITE(0,*) 'ERROR, can only use kbuffer in write mode'
     STOP
   END IF
  
   ! initialize if this is the first call
-  IF (first_call) THEN
+  IF ( first_call ) THEN
     CALL init_kbuff()
   END IF
 
