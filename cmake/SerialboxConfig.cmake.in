@@ -2,7 +2,7 @@
 ##
 ##                                   S E R I A L B O X
 ##
-## This file is distributed under terms of BSD license. 
+## This file is distributed under terms of BSD license.
 ## See LICENSE.txt for more information.
 ##
 ##===------------------------------------------------------------------------------------------===##
@@ -71,7 +71,7 @@ function( serialbox_alias_targets )
   # serialbox_alias_targets( alias target_shared target_static align )
   #
   #    Creates ALIAS target for given targets. Prefer target_shared if availabe
-  # 
+  #
   set( _alias ${ARGV0} )
   set( _target_shared ${ARGV1} )
   set( _target_static ${ARGV2} )
@@ -107,7 +107,7 @@ endfunction()
 #   Find Serialbox libraries
 #====--------------------------------------------------------------------------------------------===
 
-# Import library targets 
+# Import library targets
 if( NOT @PROJECT_NAME@_TARGETS_EXPORTED )
   include("${CMAKE_CURRENT_LIST_DIR}/SerialboxTargets.cmake")
   set( ${PROJECT_NAME}_TARGETS_EXPORTED TRUE )
@@ -151,57 +151,46 @@ if(NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
   #
   # Pthreads
   #
-  message( STATUS "Serialbox: find_depencency( Threads )" )
+  message( STATUS "Serialbox: find_dependency(Threads)" )
   find_dependency(Threads)
 
-  #
-  # Boost (Serialbox always uses the shared Boost libraries)
-  #
-  get_property(SHARED_LIB_SUPPORT GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS)
-  if (SHARED_LIB_SUPPORT)
-      set(Boost_USE_STATIC_LIBS OFF)
-      set(Boost_USE_STATIC_RUNTIME OFF)
-      set(Boost_USE_MULTITHREADED ON)
-  endif()
-  
   set(BOOST_LIBRARYDIR "${SERIALBOX_BOOST_LIBRARY_DIRS}")
   set(BOOST_INCLUDEDIR "${SERIALBOX_BOOST_INCLUDE_DIRS}")
   set(Boost_NO_SYSTEM_PATHS "ON") # Force boost to search locations specified above
 
-  message( STATUS "Serialbox: find_depencency( Boost ${SERIALBOX_BOOST_VERSION} EXACT COMPONENTS ${SERIALBOX_REQUIRED_BOOST_COMPONENTS}}")
-  find_dependency(Boost 
-               ${SERIALBOX_BOOST_VERSION} EXACT COMPONENTS ${SERIALBOX_REQUIRED_BOOST_COMPONENTS})
+  message( STATUS "Serialbox: find_dependency(Boost ${SERIALBOX_BOOST_VERSION} COMPONENTS ${SERIALBOX_REQUIRED_BOOST_COMPONENTS})")
+  find_dependency(Boost
+               ${SERIALBOX_BOOST_VERSION} COMPONENTS ${SERIALBOX_REQUIRED_BOOST_COMPONENTS})
   if(Boost_FOUND)
     list(APPEND SERIALBOX_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
   else()
-  
     # Give some diagnostic infos
     set(WARN_STR "Serialbox: Boost (${SERIALBOX_BOOST_VERSION}) NOT found!")
-  
+
     if(DEFINED Boost_LIB_VERSION)
       string(REPLACE "_" "." FOUND_BOOST_VERSION ${Boost_LIB_VERSION})
-      list(APPEND WARN_STR " (Found Boost ${FOUND_BOOST_VERSION})")  
+      list(APPEND WARN_STR " (Found Boost ${FOUND_BOOST_VERSION})")
     endif()
-    
+
     list(APPEND WARN_STR "\nRequired components:")
-    
+
     foreach(component ${SERIALBOX_REQUIRED_BOOST_COMPONENTS})
       list(APPEND WARN_STR "\n - ${component}")
     endforeach()
-    
+
     message(WARNING ${WARN_STR} "\n")
   endif()
-  
+
   #
   # OpenSSL
   #
   if(SERIALBOX_HAS_OPENSSL)
     find_package(OpenSSL QUIET)
-    if(NOT OpenSSL_FOUND)  
+    if(NOT OpenSSL_FOUND)
       message(WARNING "Serialbox depends on the OpenSSL libraries")
     endif()
   endif()
-  
+
   #
   # NetCDF
   #
@@ -210,7 +199,7 @@ if(NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
     if(NETCDF_ROOT_ENV)
       set(NETCDF_ROOT ${NETCDF_ROOT_ENV} CACHE PATH "NetCDF install path.")
     endif()
-    
+
     if(NOT(DEFINED NETCDF_ROOT))
       find_path(NETCDF_ROOT NAMES include/netcdf.h)
     else()
@@ -222,7 +211,7 @@ if(NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
     if(NETCDF_LIBRARIES)
       mark_as_advanced(NETCDF_LIBRARIES)
     else()
-      message(WARNING 
+      message(WARNING
               "Serialbox depends on the NetCDF-4 libraries. (Try setting NETCDF_ROOT in the env)")
     endif()
   endif()
@@ -233,4 +222,3 @@ endif()
 #====--------------------------------------------------------------------------------------------===
 find_file(SERIALBOX_PPSER pp_ser.py @PACKAGE_PYTHON_INSTALL_DIR@/pp_ser)
 include(@PACKAGE_CMAKE_INSTALL_DIR@/SerialboxTooling.cmake)
-

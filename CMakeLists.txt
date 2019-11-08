@@ -14,7 +14,7 @@
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "CMake install prefix")
 
 cmake_policy(SET CMP0048 NEW)
-project(Serialbox LANGUAGES C CXX VERSION 2.5.4)
+project(Serialbox LANGUAGES C CXX VERSION 2.5.5)
 cmake_minimum_required(VERSION 3.9.0)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
