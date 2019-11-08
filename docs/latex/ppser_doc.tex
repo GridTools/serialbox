@@ -130,6 +130,8 @@ Examples:
 !$ser data_kbuff k_value=k k_size=ke pt=pt(:,:) pq=pq(:,:)
 \end{lstlisting}
 
+Note: Currently only 3d-fields adhering to the (i,j,k) indexing convention are supported.
+
 \subsection{\texttt{ACCDATA}}
 Serialize the data field located on the accelerator. Same options as DATA clause.
 OpenACC update host/device are generated before reading
