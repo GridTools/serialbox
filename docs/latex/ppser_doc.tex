@@ -1,0 +1,310 @@
+\documentclass{article}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\lstset{%
+	backgroundcolor=\color{gray!40},
+	breaklines=true,
+	basicstyle=\ttfamily,
+	commentstyle=\ttfamily,
+	language=fortran
+}
+\usepackage{enumerate}
+
+\newcommand{\ppser}{\texttt{pp\_ser.py}}
+
+\title{Documentation on \ppser}
+\author{Xiaolin Guo}
+\date{November 22, 2015\\\vspace{1em}v0.1}
+
+\setlength\parindent{0pt}
+\setlength{\parskip}{1em}
+
+\begin{document}
+\maketitle
+
+\ppser{} is a parser to expand \texttt{!\$SER} serialization directives in Fortran code in order to generate serialization code using the \texttt{m\_serialize.f90} interface for the STELLA serialization framework.
+
+The grammar is defined by a set of \texttt{!\$SER} directives. All directives are case-insensitive. The main keywords are \texttt{INIT} for initialization, \texttt{VERBATIM} for echoing some Fortran statements, \texttt{OPTION} for setting specific options for the serialization module, \texttt{REGISTER} for registering a data field meta-information, \texttt{ZERO} for setting some field to zero, \texttt{SAVEPOINT} for registering a savepoint with some optional information, \texttt{DATA} for serializing a data field, and \texttt{CLEANUP} for finishing serialization.
+
+\ppser{} adds the macro \texttt{SERIALIZE} around the translated directives like this:
+\begin{lstlisting}
+#ifdef SERIALIZE
+...
+#end
+\end{lstlisting}
+
+\ppser{} also supports serializing data on GPU with OpenACC directives.
+
+\section{Script options}
+
+\subsection{\texttt{OpenACC IF clause}}
+An \texttt{IF} clause can be added to the generated OpenACC update directives. To add the clause, the option \texttt{--acc-if=value} must be used. 
+
+Usage:
+\begin{lstlisting}
+$ ./pp_ser.py -d . --acc-if="i_am_accel_node"
+\end{lstlisting}
+
+
+\subsection{\texttt{OpenACC pre-processor macro}}
+OpenACC directives to update the field from/to the accelerator are generated with an ACC\_PREFIX. This pre-processor macro is automatically defined with the value !\$acc at the beginning of the file. The option \texttt{--no-prefix} disable the automatic generation. 
+
+Usage:
+\begin{lstlisting}
+$ ./pp_ser.py -d . --no-prefix
+\end{lstlisting}
+
+\section{Keywords}
+
+\subsection{\texttt{INIT}}
+Initialize the serialization framework.
+
+\begin{lstlisting}
+!$ser init directory=dir prefix=pre [mode=] [prefix_ref=] [mpi_rank=] [rprecision=] [rperturb=] [realtype=] [if if_statement]
+\end{lstlisting}
+
+\begin{itemize}
+\item \texttt{dir}: the directory of the main database
+\item \texttt{prefix}: the prefix of the main database file names
+\item \texttt{mode}: 0 or 1
+\item \texttt{prefix\_ref}: the prefix of the reference database file names. If reference database is set, the serializer reads from the reference database and writes to the main database.
+\item \texttt{mpi\_rank}: the MPI rank (optional). If the MPI rank is set, database files will be suffixed with it. 
+\item \texttt{rprecision}: specify the precision for the perturbation.
+\item \texttt{rperturb}: specify the desired magnitude of perturbation.
+\item \texttt{realtype}: specify the size of the real type with an integer value.
+\item \texttt{if\_statement}: under which condition is the directive executed
+\end{itemize}
+
+Examples:
+\begin{lstlisting}
+!$ser init directory='.' prefix='Field' mpi_rank=my_cart_id
+!$ser init directory='.' prefix='database' prefix_ref='ref_database'
+!$ser init directory='.' prefix='Field' if ser_test_mode==0
+\end{lstlisting}
+
+\begin{lstlisting}
+REAL(KIND=8) :: rprecision
+rprecision = 10.0**(-PRECISION(1.0))
+
+!$ser init directory='.' prefix='SerialboxTest-output' &
+!$ser prefix_ref='SerialboxTest' rprecision=rprecision &
+!$ser rperturb=1.0e-5_8
+\end{lstlisting}
+
+\subsection{\texttt{MODE}}
+Set the serialization mode (\texttt{ppser\_mode}). 0 = write, 1 = read, 2 = read with perturbation. \texttt{ppser\_mode} is by default 0.
+
+\begin{lstlisting}
+!$ser mode [[read | write | read-perturb] | [0 | 1] | variable] [if if_statement]
+\end{lstlisting}
+
+When the mode \lstinline!read-perturb! is used, the initialization must be made with \lstinline!rprecision! and \lstinline!rperturb! values.
+
+Examples:
+\begin{lstlisting}
+!$ser mode 0
+!$ser mode read if i_am_accel_node
+!$ser mode ser_test_mode
+\end{lstlisting}
+
+\subsection{\texttt{DATA}}
+Serialize the data field.
+
+\begin{lstlisting}
+!$ser data field=variable [field2=variable2 ...] [if if_statement]
+\end{lstlisting}
+
+Examples:
+\begin{lstlisting}
+!$ser data pt=pt(:,kk) pq=pq(:,kk)
+!$ser data pp=pp(:) 
+!$ser data pp_field=pp pq=pq if test_counter<30
+\end{lstlisting}
+
+\subsection{\texttt{DATA\_KBUFF}}
+Serialize a data field within a loop over the k-index. This directive has the same general syntax as \texttt{DATA} but the user is required to provide the current value of the k-loop index (k\_value) and the extent of the k-loop (k\_size).
+
+Examples:
+\begin{lstlisting}
+!$ser data_kbuff k_value=k k_size=ke pt=pt(:,:) pq=pq(:,:)
+\end{lstlisting}
+
+Note: Currently only 3d-fields adhering to the (i,j,k) indexing convention are supported.
+
+\subsection{\texttt{ACCDATA}}
+Serialize the data field located on the accelerator. Same options as DATA clause.
+OpenACC update host/device are generated before reading
+or writing data from the accelerator.
+
+Examples:
+\begin{lstlisting}
+!$ser accdata pt=pt(:,kk) pq=pq(:,kk)
+!$ser data pp=pp(:)
+\end{lstlisting}
+
+\subsection{\texttt{VERBATIM}}
+Examples:
+\begin{lstlisting}
+!$ser verbatim PRINT *, 'ser_test_mode =', ser_test_mode
+\end{lstlisting}
+
+See more examples in Section~\ref{sec:examples}.
+
+\subsection{\texttt{SAVEPOINT}}
+Create a savepoint with optional meta information.
+
+\begin{lstlisting}
+!$ser savepoint name [meta-information] [if if_statement]
+\end{lstlisting}
+
+Examples:
+\begin{lstlisting}
+!$ser savepoint cuadjtq.DoStep-in iteration=test_counter
+!$ser savepoint cuadjtq_out if i_am_accel_node
+\end{lstlisting}
+
+
+\subsection{\texttt{ON} and \texttt{OFF}}
+Turn on and turn off the serializer.
+\begin{lstlisting}
+!$ser [on | off]
+\end{lstlisting}
+
+Examples:
+\begin{lstlisting}
+!$ser on
+!$ser off
+\end{lstlisting}
+
+\subsection{\texttt{ZERO}}
+Set the field to be zero.
+\begin{lstlisting}
+!$ser zero variable1 [variable2 ...] [if if_statement]
+\end{lstlisting}
+
+Examples:
+\begin{lstlisting}
+!$ser zero test_counter
+!$ser zero pt pq
+!$ser zero pt if test_counter==0
+\end{lstlisting}
+
+\section{Examples}
+\label{sec:examples}
+
+\subsection{A first example}
+\label{ex:first}
+Here is a first example of how the directives look like in real codes.
+\begin{lstlisting}
+MODULE mo_cuadjust
+...
+SUBROUTINE cuadjtq()
+ACC_PREFIX DATA PCOPY(pt(:,kk), pq(:,kk)), IF (i_am_accel_node)
+
+    !$ser init directory='.' prefix='Field'
+
+    !$ser savepoint cuadjtq.DoStep-in
+    !$ser mode write
+    !$ser data pt=pt(:,kk) pq=pq(:,kk)
+    !$ser data pp=pp(:)
+
+ACC_PREFIX PARALLEL, IF (i_am_accel_node)
+...
+ACC_PREFIX END PARALLEL
+
+    !$ser savepoint cuadjtq.DoStep-out
+    !$ser mode write
+    !$ser data pt=pt(:,kk) pq=pq(:,kk)
+
+ACC_PREFIX END DATA
+END SUBROUTINE cuadjtq
+END module mo_cuadjust
+\end{lstlisting}
+
+In this example, we first initialize the serializer, then create a new savepoint for the inputs and set the mode. We serialize \texttt{pt}, \texttt{pq} and \texttt{pp}. Here \texttt{pp} is marked as \texttt{INTENT(IN)} and we need to remove that. After some computation, we create a savepoint for the outputs, set the mode and serialize the data again.
+
+\subsection{Decide the mode dynamically}
+\label{ex:mode}
+What if we need one executable to perform differently: sometimes reading input and sometimes writing the input. This is achieved by
+\begin{lstlisting}
+MODULE mo_cuadjust
+  !$ser verbatim USE mo_run_config, ONLY: ser_test_mode
+  IMPLICIT NONE
+SUBROUTINE cuadjtq()
+    !$ser savepoint cuadjtq.DoStep-in
+    !$ser mode ser_test_mode
+    !$ser data ...
+
+END SUBROUTINE cuadjtq
+END module mo_cuadjust
+\end{lstlisting}
+
+Here \texttt{ser\_test\_mode} is in the namelist \texttt{mo\_run\_config} (added in the namelist manually!). If we want to write the inputs, we set \texttt{ser\_test\_mode} to be 0 in the configuration file. Otherwise we set it to be 1.
+
+\subsection{Adding meta-information to a savepoint}
+\label{ex:metainfo}
+Savepoints are considered equal if they have the same name and the same meta-information. If the subroutine in \ref{ex:first} is called twice, then we end up creating the same savepoint twice. To solve this, we keep track of how many times the subroutine is called and add this as meta-information.
+
+\begin{lstlisting}
+MODULE mo_cuadjust
+
+  IMPLICIT NONE
+
+  PRIVATE
+
+  !$ser verbatim INTEGER :: test_counter = 0    ! number of times subroutine is called
+SUBROUTINE cuadjtq()
+
+    !$ser savepoint cuadjtq.DoStep-in iteration=test_counter
+
+ACC_PREFIX PARALLEL, IF (i_am_accel_node)
+...
+ACC_PREFIX END PARALLEL
+
+    !$ser savepoint cuadjtq.DoStep-out iteration=test_counter
+
+    !$ser verbatim test_counter = test_counter + 1
+
+END SUBROUTINE cuadjtq
+END module mo_cuadjust
+\end{lstlisting}
+
+\subsection{Turn off the serializer after a certain number of function call}
+With the counter defined in \ref{ex:metainfo}, we can turn off the serializer if we do not want it to produce too much data.
+\begin{lstlisting}
+    !$ser verbatim IF (test_counter<100) THEN
+    !$ser off
+    !$ser verbatim ENDIF
+\end{lstlisting}
+
+We can also set the serializer to be off at the beginning, and turn it on from the point we feel like serializing.
+\begin{lstlisting}
+    !$ser off
+    !$ser verbatim IF (test_counter>10) THEN
+    !$ser on
+    !$ser verbatim ENDIF
+\end{lstlisting}
+
+\subsection{Reference database}
+An extension to \ref{ex:mode} is that when we write the input, we are generating the reference database. When we read the input, we are generating the test database, and we would like to read from the reference database and write to the test database. One solution to this is
+\begin{lstlisting}
+MODULE mo_cuadjust
+  !$ser verbatim USE mo_run_config, ONLY: ser_test_mode
+  IMPLICIT NONE
+SUBROUTINE cuadjtq()
+    !$ser init directory='.' prefix='ref_' if ser_test_mode==0
+    !$ser init directory='.' prefix='test_' prefix_ref='ref_' if ser_test_mode==1
+
+    !$ser savepoint cuadjtq.DoStep-in
+    !$ser mode ser_test_mode
+    !$ser data ...
+
+END SUBROUTINE cuadjtq
+END module mo_cuadjust
+\end{lstlisting}
+
+If \texttt{ser\_test\_mode} is 0, we are generating the reference database. If it is 1, we are generating the test database.
+
+
+\end{document}
