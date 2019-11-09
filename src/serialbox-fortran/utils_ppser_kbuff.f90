@@ -11,7 +11,7 @@
 !
 !------------------------------------------------------------------------------
 
-MODULE m_ser_kbuffer
+MODULE utils_ppser_kbuff
 
 !------------------------------------------------------------------------------
 !
@@ -112,7 +112,7 @@ SUBROUTINE finalize_kbuff()
 
   DO idx = 1, max_kbuff
     IF (kbuff(idx)%in_use) THEN
-      WRITE(0,*) 'ERROR in m_ser_kbuffer: finalize called before all buffers have been flushed'
+      WRITE(0,*) 'ERROR in utils_ppser_kbuff: finalize called before all buffers have been flushed'
       STOP
     END IF
     kbuff(idx)%fieldname = ""
@@ -394,11 +394,11 @@ SUBROUTINE create_kbuff(kbuff_id, serializer, savepoint, fieldname, field_type, 
 
   ! security check
   IF (kbuff_id < 1 .OR. kbuff_id > max_kbuff) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: illegal kbuff_id encountered'
+    WRITE(0,*) 'ERROR in utils_ppser_kbuff: illegal kbuff_id encountered'
     STOP
   END IF
   IF (kbuff(kbuff_id)%in_use) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: create called for buffer already in use'
+    WRITE(0,*) 'ERROR in utils_ppser_kbuff: create called for buffer already in use'
     STOP
   END IF
 
@@ -434,7 +434,7 @@ SUBROUTINE create_kbuff(kbuff_id, serializer, savepoint, fieldname, field_type, 
     CASE(3)
       ALLOCATE(kbuff(kbuff_id)%buff_r8(dim_i, dim_j, dim_k))
     CASE DEFAULT
-      WRITE(0,*) 'ERROR in m_ser_kbuffer: unsupported field_type encountered'
+      WRITE(0,*) 'ERROR in utils_ppser_kbuff: unsupported field_type encountered'
   END SELECT
   ALLOCATE(kbuff(kbuff_id)%ok(dim_k))
 
@@ -460,11 +460,11 @@ SUBROUTINE destroy_kbuff(kbuff_id)
 
   ! security check
   IF (kbuff_id < 1 .OR. kbuff_id > max_kbuff) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: illegal kbuff_id encountered'
+    WRITE(0,*) 'ERROR in utils_ppser_kbuff: illegal kbuff_id encountered'
     STOP
   END IF
   IF (.NOT. kbuff(kbuff_id)%in_use) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: destroy called for buffer not in use'
+    WRITE(0,*) 'ERROR in utils_ppser_kbuff: destroy called for buffer not in use'
     STOP
   END IF
 
@@ -491,7 +491,7 @@ SUBROUTINE destroy_kbuff(kbuff_id)
     CASE(3)
       DEALLOCATE(kbuff(kbuff_id)%buff_r8)
     CASE DEFAULT
-      WRITE(0,*) 'ERROR in m_ser_kbuffer: unsupported field_type encountered in destroy'
+      WRITE(0,*) 'ERROR in utils_ppser_kbuff: unsupported field_type encountered in destroy'
   END SELECT
   DEALLOCATE(kbuff(kbuff_id)%ok)
 
@@ -543,55 +543,55 @@ SUBROUTINE check_kbuff(kbuff_id, serializer, savepoint, fieldname, field_type, &
 
   ! security check
   IF (kbuff_id < 1 .OR. kbuff_id > max_kbuff) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: illegal kbuff_id encountered'
+    WRITE(0,*) 'ERROR in utils_ppser_kbuff: illegal kbuff_id encountered'
     STOP
   END IF
   IF (.NOT. kbuff(kbuff_id)%in_use) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: check called for buffer not in use'
+    WRITE(0,*) 'ERROR in utils_ppser_kbuff: check called for buffer not in use'
     STOP
   END IF
 
   ! check consistency
   IF (.NOT. (TRIM(kbuff(kbuff_id)%fieldname) == TRIM(fieldname))) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: inconsistent name encountered'
+    WRITE(0,*) 'ERROR in utils_ppser_kbuff: inconsistent name encountered'
     STOP
   END IF
   IF (.NOT. (C_ASSOCIATED(kbuff(kbuff_id)%serializer, serializer%serializer_ptr))) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: write called for same field but different serializer'
+    WRITE(0,*) 'ERROR in utils_ppser_kbuff: write called for same field but different serializer'
     STOP
   END IF
   
   IF (.NOT. (TRIM(kbuff(kbuff_id)%savepoint_name) == TRIM(savepoint%savepoint_name))) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: write called for same field but different savepoint'
+    WRITE(0,*) 'ERROR in utils_ppser_kbuff: write called for same field but different savepoint'
     STOP
   END IF
   IF (ANY( (/kbuff(kbuff_id)%dim_i, kbuff(kbuff_id)%dim_j, kbuff(kbuff_id)%dim_k/) /= (/dim_i, dim_j, dim_k/) )) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: write called with inconsistent dimensions'
+    WRITE(0,*) 'ERROR in utils_ppser_kbuff: write called with inconsistent dimensions'
     STOP
   END IF
   IF ((k < 1) .OR. (k > dim_k)) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: out of bound k-index encountered'
+    WRITE(0,*) 'ERROR in utils_ppser_kbuff: out of bound k-index encountered'
     STOP
   END IF
   IF (kbuff(kbuff_id)%has_minushalos .AND. PRESENT(minushalos)) THEN
     IF (ANY(kbuff(kbuff_id)%minushalos /= minushalos)) THEN
-      WRITE(0,*) 'ERROR in m_ser_kbuffer: inconsistent minushalos encountered'
+      WRITE(0,*) 'ERROR in utils_ppser_kbuff: inconsistent minushalos encountered'
       STOP
     END IF
   END IF
   IF (kbuff(kbuff_id)%has_plushalos .AND. PRESENT(plushalos)) THEN
     IF (ANY(kbuff(kbuff_id)%plushalos /= plushalos)) THEN
-      WRITE(0,*) 'ERROR in m_ser_kbuffer: inconsistent plushalos encountered'
+      WRITE(0,*) 'ERROR in utils_ppser_kbuff: inconsistent plushalos encountered'
       STOP
     END IF
   END IF
   IF (kbuff(kbuff_id)%field_type /= field_type) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: write with inconsistent field_type encountered'
+    WRITE(0,*) 'ERROR in utils_ppser_kbuff: write with inconsistent field_type encountered'
     STOP
   END IF
   ! Should be redundant, but doesn't hurt to recheck
   IF (kbuff(kbuff_id)%ok(k)) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: k-index already written'
+    WRITE(0,*) 'ERROR in utils_ppser_kbuff: k-index already written'
     STOP
   END IF
 
@@ -673,7 +673,7 @@ SUBROUTINE get_free_kbuff_id(kbuff_id)
 
   ! abort if no free index has been found
   IF (idx > max_kbuff) THEN
-    WRITE(0,*) 'ERROR in m_ser_kbuffer: no more free buffers (increase max_kbuff)'
+    WRITE(0,*) 'ERROR in utils_ppser_kbuff: no more free buffers (increase max_kbuff)'
     STOP
   END IF
 
@@ -681,4 +681,4 @@ END SUBROUTINE get_free_kbuff_id
 
 !============================================================================
 
-END MODULE m_ser_kbuffer
+END MODULE utils_ppser_kbuff
