@@ -8,5 +8,6 @@
    "cpp.clangdArgs": "--background-index",
    "cpp.clangdExecutable": "/usr/bin/clangd",
    "cpp.clangTidy": true,
-   "cpp.trace.server": "verbose"
+   "cpp.trace.server": "verbose",
+   "cmake.ignoreKitEnv": true
 }
