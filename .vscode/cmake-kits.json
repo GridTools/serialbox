@@ -1,9 +1,2 @@
 [
-  {
-    "name": "Dummy",
-    "compilers": {
-      "C": "/usr/bin/cc",
-      "CXX": "/usr/bin/c++"
-    }
-  }
 ]
