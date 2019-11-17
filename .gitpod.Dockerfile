@@ -8,6 +8,6 @@ RUN apt-get update \
 
 USER gitpod
 
-RUN pip3 install nose
+RUN pip3 install nose numpy
 
 USER root
