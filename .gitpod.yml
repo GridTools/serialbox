@@ -1,0 +1,5 @@
+image: mrtravis/gridtools:gcc-9
+
+vscode:
+  extensions:
+    - ms-vscode.cmake-tools@1.2.2:bvle64RVGSPzs1C5GcClZg==
