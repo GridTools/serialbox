@@ -4,3 +4,10 @@ image:
 vscode:
   extensions:
     - ms-vscode.cmake-tools@1.2.2:bvle64RVGSPzs1C5GcClZg==
+
+tasks:
+- init: >
+    mkdir \build &&
+    cd \build &&
+    cmake -D CMAKE_EXPORT_COMPILE_COMMANDS=ON .. &&
+    make
