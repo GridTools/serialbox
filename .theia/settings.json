@@ -11,6 +11,13 @@
     "cpp.trace.server": "verbose",
     "cmake.ignoreKitEnv": true,
     "cmake.useCMakeServer": false,
-    "editor.formatOnSave": true,
-    "cmake.configureOnOpen": true
+    "cmake.configureOnOpen": true,
+    "cmake.configureArgs": [
+        "-DSERIALBOX_ENABLE_FORTRAN=ON",
+        "-DSERIALBOX_TESTING=ON",
+        // "-DSERIALBOX_TESTING_FORTRAN=ON",
+        "-DSERIALBOX_TESTING_DEATH_TESTS=ON",
+        // "-DSERIALBOX_TESTING_PYTHON=ON"
+    ],
+    "editor.formatOnSave": true
 }
