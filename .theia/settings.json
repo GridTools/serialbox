@@ -17,7 +17,7 @@
         "-DSERIALBOX_TESTING=ON",
         // "-DSERIALBOX_TESTING_FORTRAN=ON",
         "-DSERIALBOX_TESTING_DEATH_TESTS=ON",
-        // "-DSERIALBOX_TESTING_PYTHON=ON"
+        "-DSERIALBOX_TESTING_PYTHON=ON"
     ],
     "editor.formatOnSave": true
 }
