@@ -1,14 +1,16 @@
 {
-   "cpp.buildConfigurations": [
-      {
-         "name": "Debug",
-         "directory": "/workspace/serialbox2/build"
-      }
-   ],
-   "cpp.clangdArgs": "--background-index",
-   "cpp.clangdExecutable": "/usr/bin/clangd",
-   "cpp.clangTidy": true,
-   "cpp.trace.server": "verbose",
-   "cmake.ignoreKitEnv": true,
-   "cmake.useCMakeServer": false,
+    "cpp.buildConfigurations": [
+        {
+            "name": "Debug",
+            "directory": "/workspace/serialbox2/build"
+        }
+    ],
+    "cpp.clangdArgs": "--background-index",
+    "cpp.clangdExecutable": "/usr/bin/clangd",
+    "cpp.clangTidy": true,
+    "cpp.trace.server": "verbose",
+    "cmake.ignoreKitEnv": true,
+    "cmake.useCMakeServer": false,
+    "editor.formatOnSave": true,
+    "cmake.configureOnOpen": true
 }
