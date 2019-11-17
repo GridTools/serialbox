@@ -9,5 +9,6 @@
    "cpp.clangdExecutable": "/usr/bin/clangd",
    "cpp.clangTidy": true,
    "cpp.trace.server": "verbose",
-   "cmake.ignoreKitEnv": true
+   "cmake.ignoreKitEnv": true,
+   "cmake.useCMakeServer": false,
 }
