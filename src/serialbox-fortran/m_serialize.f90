@@ -39,7 +39,7 @@ USE iso_c_binding
 IMPLICIT NONE
 
 PUBLIC :: &
-  t_serializer, t_savepoint, &
+  t_serializer, t_savepoint, fs_init, &
   fs_create_serializer, fs_destroy_serializer, fs_serializer_openmode, fs_add_serializer_metainfo, fs_get_serializer_metainfo, &
   fs_create_savepoint, fs_destroy_savepoint, fs_add_savepoint_metainfo, fs_get_savepoint_metainfo, &
   fs_field_exists, fs_register_field, fs_add_field_metainfo, fs_get_field_metainfo, fs_write_field, fs_read_field, &
@@ -307,9 +307,8 @@ PRIVATE
       fs_read_double_4d
   END INTERFACE
 
-#ifdef SERIALBOX_FORTRAN_SAVEPOINT_UNIQUE_ID
-  INTEGER :: savepoint_ID = 0
-#endif
+  LOGICAL :: enable_savepoint_ID = .FALSE.
+  INTEGER :: current_savepoint_ID = 0
 
 CONTAINS
 
@@ -359,6 +358,21 @@ FUNCTION fs_doublesize()
 
   fs_doublesize = INT(SIZE(TRANSFER(doublevalue, buffer)))
 END FUNCTION fs_doublesize
+
+
+!==============================================================================
+!+ Module procedure to initialize Fortran side of serializer
+!------------------------------------------------------------------------------
+SUBROUTINE fs_init(enable_unique_savepoint_id)
+  LOGICAL, OPTIONAL :: enable_unique_savepoint_id
+
+  IF (PRESENT(enable_unique_savepoint_id)) THEN
+    enable_savepoint_ID = enable_unique_savepoint_id
+  ELSE
+    enable_savepoint_ID = .FALSE.
+  END IF
+    
+END SUBROUTINE fs_init
 
 
 !==============================================================================
@@ -1288,10 +1302,10 @@ SUBROUTINE fs_create_savepoint(savepointname, savepoint)
   savepoint%savepoint_ptr = fs_create_savepoint_(TRIM(savepointname)//C_NULL_CHAR)
   savepoint%savepoint_name = TRIM(savepointname)
 
-#ifdef SERIALBOX_FORTRAN_SAVEPOINT_UNIQUE_ID
-  CALL fs_add_savepoint_metainfo_i(savepoint, 'ID', savepoint_ID)
-  savepoint_ID = savepoint_ID + 1
-#endif
+  IF (enable_savepoint_ID) THEN
+    CALL fs_add_savepoint_metainfo_i(savepoint, 'ID', current_savepoint_ID)
+    current_savepoint_ID = current_savepoint_ID + 1
+  END IF
 
 END SUBROUTINE fs_create_savepoint
 
