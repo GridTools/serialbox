@@ -45,13 +45,13 @@ PUBLIC :: &
   fs_field_exists, fs_register_field, fs_add_field_metainfo, fs_get_field_metainfo, fs_write_field, fs_read_field, &
   fs_enable_serialization, fs_disable_serialization, fs_print_debuginfo, &
   fs_get_size, fs_get_halos, fs_get_rank, fs_get_total_size, &
-  fs_boolsize, fs_intsize, fs_longsize, fs_floatsize, fs_doublesize
+  fs_boolsize, fs_intsize, fs_longsize, fs_floatsize, fs_doublesize, fs_is_serialization_on
+     
   INTEGER, PARAMETER :: MODE_READ = 0
   INTEGER, PARAMETER :: MODE_WRITE = 1
   INTEGER, PARAMETER :: MODE_APPEND = 2
 
   INTEGER, PARAMETER :: MAX_LENGTH_ARCHIVE_NAME = 16
-
 
 PRIVATE
 
@@ -68,6 +68,7 @@ PRIVATE
 
   TYPE :: t_savepoint
     TYPE(C_PTR) :: savepoint_ptr = C_NULL_PTR
+    CHARACTER(LEN=256) :: savepoint_name = ""
   END TYPE t_savepoint
 
   INTERFACE
@@ -79,7 +80,15 @@ PRIVATE
        CHARACTER(C_CHAR), DIMENSION(*)   :: name
      END FUNCTION fs_field_exists_
   END INTERFACE
-
+      
+  INTERFACE
+     FUNCTION fs_serialization_status_() &
+          BIND(c, name='serialboxSerializationStatus')
+       USE, INTRINSIC :: iso_c_binding
+       INTEGER(C_INT)      :: fs_serialization_status_
+     END FUNCTION fs_serialization_status_
+  END INTERFACE
+            
   INTERFACE
      SUBROUTINE fs_write_field_(serializer, savepoint, fieldname, &
                                fielddata, istride, jstride, kstride, lstride) &
@@ -134,7 +143,9 @@ PRIVATE
        USE, INTRINSIC :: iso_c_binding
      END SUBROUTINE fs_disable_serialization
   END INTERFACE
+      
 
+ 
   !==============================================================================
   !+ Module interface to attach metainformation to the given serializer
   !------------------------------------------------------------------------------
@@ -295,6 +306,10 @@ PRIVATE
       fs_read_double_3d, &
       fs_read_double_4d
   END INTERFACE
+
+#ifdef SERIALBOX_FORTRAN_SAVEPOINT_UNIQUE_ID
+  INTEGER :: savepoint_ID = 0
+#endif
 
 CONTAINS
 
@@ -1017,6 +1032,16 @@ FUNCTION fs_field_exists(serializer, fieldname)
 END FUNCTION fs_field_exists
 
 !==============================================================================
+!+ Module procedure the checks if serialization is turned on
+!------------------------------------------------------------------------------
+FUNCTION fs_is_serialization_on()
+  LOGICAL            :: fs_is_serialization_on
+
+  fs_is_serialization_on = fs_serialization_status_()  > 0 
+
+END FUNCTION fs_is_serialization_on
+
+!==============================================================================
 !+ Module procedure that checks that the size of the requested field is
 !  consistent with what the serializer has.
 !  If the sizes are not consistent, as error message is printed and the
@@ -1261,6 +1286,12 @@ SUBROUTINE fs_create_savepoint(savepointname, savepoint)
   CALL fs_destroy_savepoint(savepoint)
 
   savepoint%savepoint_ptr = fs_create_savepoint_(TRIM(savepointname)//C_NULL_CHAR)
+  savepoint%savepoint_name = TRIM(savepointname)
+
+#ifdef SERIALBOX_FORTRAN_SAVEPOINT_UNIQUE_ID
+  CALL fs_add_savepoint_metainfo_i(savepoint, 'ID', savepoint_ID)
+  savepoint_ID = savepoint_ID + 1
+#endif
 
 END SUBROUTINE fs_create_savepoint
 
@@ -1288,6 +1319,7 @@ SUBROUTINE fs_destroy_savepoint(savepoint)
   ENDIF
 
   savepoint%savepoint_ptr = C_NULL_PTR
+  savepoint%savepoint_name = ""
 
 END SUBROUTINE fs_destroy_savepoint
 
