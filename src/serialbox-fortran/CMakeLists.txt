@@ -2,7 +2,7 @@
 ##
 ##                                   S E R I A L B O X
 ##
-## This file is distributed under terms of BSD license. 
+## This file is distributed under terms of BSD license.
 ## See LICENSE.txt for more information.
 ##
 ##===------------------------------------------------------------------------------------------===##
@@ -10,7 +10,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 if(SERIALBOX_ENABLE_FORTRAN)
-  
+
   set(SOURCES_FORTRAN_SERIALIZE m_serialize.f90 m_ser_perturb.f90)
   add_library(SerialboxFortranSerializeObjects OBJECT ${SOURCES_FORTRAN_SERIALIZE})
   target_include_directories(SerialboxFortranSerializeObjects
@@ -22,10 +22,6 @@ if(SERIALBOX_ENABLE_FORTRAN)
 
   if (SERIALBOX_ENABLE_FTG)
     set(SOURCES_FORTRAN ${SOURCES_FORTRAN} m_ser_ftg.f90 m_ser_ftg_cmp.f90)
-  endif()
-  
-  if(SERIALBOX_FORTRAN_SAVEPOINT_UNIQUE_ID)
-    add_definitions(-DSERIALBOX_FORTRAN_SAVEPOINT_UNIQUE_ID)
   endif()
 
   add_library(SerialboxFortranObjects OBJECT ${SOURCES_FORTRAN})
@@ -50,10 +46,10 @@ if(SERIALBOX_ENABLE_FORTRAN)
     target_link_libraries(SerialboxFortranShared PUBLIC SerialboxFortranObjects)
     target_link_libraries(SerialboxFortranShared PUBLIC SerialboxFortranSerializeObjects)
     target_link_libraries(SerialboxFortranShared PUBLIC SerialboxCShared)
-    set_target_properties(SerialboxFortranShared PROPERTIES VERSION ${Serialbox_VERSION_STRING})    
+    set_target_properties(SerialboxFortranShared PROPERTIES VERSION ${Serialbox_VERSION_STRING})
   endif()
 
-  serialbox_install_targets( TARGETS 
+  serialbox_install_targets( TARGETS
     SerialboxFortranStatic
     SerialboxFortranShared
     SerialboxFortranObjects
@@ -68,7 +64,7 @@ if(SERIALBOX_ENABLE_FORTRAN)
     if("${CMAKE_Fortran_COMPILER_ID}" MATCHES "Cray")
       string(TOUPPER ${module_name} module_name)
     endif()
-    
+
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${module_name}.mod" DESTINATION include)
   endforeach()
 
