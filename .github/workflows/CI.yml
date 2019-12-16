@@ -24,7 +24,7 @@ jobs:
         tar xf $PFUNIT_FILE
         cd $PFUNIT_DIR
         mkdir -p build && cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=${{ GITHUB_WORKSPACE }}/pfunit
+        cmake .. -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/pfunit
         make -j8 install
     - name: configure
       run: mkdir build && cd build && FC=`which gfortran` CXX=`which ${{ matrix.compiler }}` cmake ..
