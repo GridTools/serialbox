@@ -4,11 +4,10 @@ on: [push]
 
 jobs:
   build:
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    container: mrtravis/gridtools:gcc-7
     strategy:
       matrix:
-        os: [ubuntu-latest]
         compiler: [g++]
 
     steps:
