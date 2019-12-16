@@ -16,10 +16,16 @@ jobs:
     - name: pFUnit
       env:
         PFUNIT_VERSION: 3.2.9
-        PFUNIT_FILE: pFUnit-${{ PFUNIT_VERSION }}.tgz
-        PFUNIT_LINK: https://downloads.sourceforge.net/project/pfunit/Source/${{ PFUNIT_FILE }}
-        PFUNIT_DIR: pFUnit-${{ PFUNIT_VERSION }}
-      run: wget $PFUNIT_LINK && tar xf $PFUNIT_FILE && cd $PFUNIT_DIR && mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=${{ GITHUB_WORKSPACE }}/pfunit && make -j8 install && cd ../.. && rm $PFUNIT_FILE && rm -rf $PFUNIT_DIR 
+      run: |
+        export PFUNIT_FILE=pFUnit-${PFUNIT_VERSION}.tgz
+        export PFUNIT_LINK=https://downloads.sourceforge.net/project/pfunit/Source/${PFUNIT_FILE}
+        export PFUNIT_DIR=pFUnit-${PFUNIT_VERSION}
+        wget $PFUNIT_LINK
+        tar xf $PFUNIT_FILE
+        cd $PFUNIT_DIR
+        mkdir -p build && cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=${{ GITHUB_WORKSPACE }}/pfunit
+        make -j8 install
     - name: configure
       run: mkdir build && cd build && FC=`which gfortran` CXX=`which ${{ matrix.compiler }}` cmake ..
     - name: build
