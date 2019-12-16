@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: pFUnit
-      if: startsWith(${{ matrix.compiler }}, 'gcc')
+      if: startsWith(matrix.compiler, 'gcc')
       env:
         PFUNIT_VERSION: 3.2.9
       run: |
