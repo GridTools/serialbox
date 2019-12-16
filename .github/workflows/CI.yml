@@ -1,0 +1,28 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        compiler: [g++]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: pFUnit
+      env:
+        PFUNIT_VERSION: 3.2.9
+        PFUNIT_FILE: pFUnit-${PFUNIT_VERSION}.tgz
+        PFUNIT_LINK: https://downloads.sourceforge.net/project/pfunit/Source/${PFUNIT_FILE}
+        PFUNIT_DIR: pFUnit-${PFUNIT_VERSION}
+      run: wget $PFUNIT_LINK && tar xf $PFUNIT_FILE && cd $PFUNIT_DIR && mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local && make -j8 install && cd ../.. && rm $PFUNIT_FILE && rm -rf $PFUNIT_DIR 
+    - name: configure
+      run: mkdir build && cd build && FC=`which gfortran` CXX=`which ${{ matrix.compiler }}` cmake ..
+    - name: build
+      run: cmake --build build --parallel 2
+    - name: test
+      run: cd build && ctest
