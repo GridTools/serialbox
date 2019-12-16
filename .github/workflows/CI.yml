@@ -9,6 +9,7 @@ jobs:
     strategy:
       matrix:
         compiler: [gcc-7]
+        build_type: [Release]
 
     steps:
     - uses: actions/checkout@v1
@@ -23,12 +24,12 @@ jobs:
         tar xf $PFUNIT_FILE
         cd $PFUNIT_DIR
         mkdir -p build && cd build
-        FC=`which gfortran-7` cmake .. -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/pfunit
+        FC=`which gfortran-7` cmake .. -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/pfunit 
         make -j8 install
     - name: configure
       run: |
         mkdir build && cd build
-        FC=`which gfortran-7` cmake ..
+        FC=`which gfortran-7` cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}  -DPYTHON_EXECUTABLE=`which python3` -DSERIALBOX_TESTING=ON -DSERIALBOX_ENABLE_FORTRAN=ON -DSERIALBOX_TESTING_FORTRAN=ON -DpFUnit_DIR=${GITHUB_WORKSPACE}/pfunit
     - name: build
       run: cmake --build build --parallel 2
     - name: test
