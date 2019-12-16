@@ -16,7 +16,6 @@ jobs:
       env:
         PFUNIT_VERSION: 3.2.9
       run: |
-        which gfortran
         which gfortran-7
         export PFUNIT_FILE=pFUnit-${PFUNIT_VERSION}.tgz
         export PFUNIT_LINK=https://downloads.sourceforge.net/project/pfunit/Source/${PFUNIT_FILE}
