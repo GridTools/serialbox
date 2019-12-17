@@ -53,9 +53,9 @@ PRIVATE
     LOGICAL :: has_minushalos, has_plushalos
     INTEGER :: minushalos(3), plushalos(3)
     INTEGER :: field_type = 0                     ! 0 = not used, 1 = int, 2 = r4, 3 = r8
-    INTEGER, ALLOCATABLE :: buff_i4(:,:,:)
-    REAL(KIND=C_FLOAT), ALLOCATABLE :: buff_r4(:,:,:)
-    REAL(KIND=C_DOUBLE), ALLOCATABLE :: buff_r8(:,:,:)
+    INTEGER, ALLOCATABLE :: buff_3d_i4(:,:,:)
+    REAL(KIND=C_FLOAT), ALLOCATABLE :: buff_3d_r4(:,:,:)
+    REAL(KIND=C_DOUBLE), ALLOCATABLE :: buff_3d_r8(:,:,:)
     LOGICAL, ALLOCATABLE :: ok(:)                 ! has this k-level been written?
   END TYPE kbuff_type
 
@@ -64,9 +64,9 @@ PRIVATE
 
   ! overload interface for different types and dimensions
   INTERFACE fs_write_kbuff
-      MODULE PROCEDURE fs_write_kbuff_integer_3d_i4
-      MODULE PROCEDURE fs_write_kbuff_float_3d_r4
-      MODULE PROCEDURE fs_write_kbuff_float_3d_r8
+      MODULE PROCEDURE fs_write_kbuff_3d_i4
+      MODULE PROCEDURE fs_write_kbuff_3d_r4
+      MODULE PROCEDURE fs_write_kbuff_3d_r8
   END INTERFACE
 
   LOGICAL :: first_call = .TRUE.                  ! used for initialization
@@ -126,7 +126,7 @@ END SUBROUTINE finalize_kbuff
 !============================================================================
 
 ! overloads fs_write_kbuff: version for r8 floats and 3d fields
-SUBROUTINE fs_write_kbuff_float_3d_r8(serializer, savepoint, fieldname, field, &
+SUBROUTINE fs_write_kbuff_3d_r8(serializer, savepoint, fieldname, field, &
                                       k, k_size, mode, minushalos, plushalos)
   IMPLICIT NONE
 
@@ -152,42 +152,42 @@ SUBROUTINE fs_write_kbuff_float_3d_r8(serializer, savepoint, fieldname, field, &
 
   ! store data
   IF (debug) THEN
-    WRITE(0,*) 'DEBUG fs_write_kbuff_float_3d_r8: store data'
+    WRITE(0,*) 'DEBUG fs_write_kbuff_3d_r8: store data'
   END IF
-  kbuff(kbuff_id)%buff_r8(:,:,k) = field(:,:)
+  kbuff(kbuff_id)%buff_3d_r8(:,:,k) = field(:,:)
   kbuff(kbuff_id)%ok(k) = .TRUE.
 
   ! write if we are complete
   IF (ALL(kbuff(kbuff_id)%ok(:))) THEN
     IF (debug) THEN
-      WRITE(0,*) 'DEBUG fs_write_kbuff_float_3d_r8: flush data'
+      WRITE(0,*) 'DEBUG fs_write_kbuff_3d_r8: flush data'
     END IF
     IF (kbuff(kbuff_id)%has_minushalos) THEN
       IF (kbuff(kbuff_id)%has_plushalos) THEN
-        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_r8, &
+        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_3d_r8, &
           minushalos=kbuff(kbuff_id)%minushalos, plushalos=kbuff(kbuff_id)%plushalos)
       ELSE
-        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_r8, &
+        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_3d_r8, &
           minushalos=kbuff(kbuff_id)%minushalos)
       END IF
     ELSE
       IF (kbuff(kbuff_id)%has_plushalos) THEN
-        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_r8, &
+        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_3d_r8, &
           plushalos=kbuff(kbuff_id)%plushalos)
       ELSE
-        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_r8)
+        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_3d_r8)
       END IF
     END IF
 
     CALL destroy_kbuff(kbuff_id)
   END IF
 
-END SUBROUTINE fs_write_kbuff_float_3d_r8
+END SUBROUTINE fs_write_kbuff_3d_r8
 
 !============================================================================
 
 ! overloads fs_write_kbuff: version for r4 floats and 3d fields
-SUBROUTINE fs_write_kbuff_float_3d_r4(serializer, savepoint, fieldname, field, &
+SUBROUTINE fs_write_kbuff_3d_r4(serializer, savepoint, fieldname, field, &
                                       k, k_size, mode, minushalos, plushalos)
   IMPLICIT NONE
 
@@ -213,42 +213,42 @@ SUBROUTINE fs_write_kbuff_float_3d_r4(serializer, savepoint, fieldname, field, &
 
   ! store data
   IF (debug) THEN
-    WRITE(0,*) 'DEBUG fs_write_kbuff_float_3d_r4: store data'
+    WRITE(0,*) 'DEBUG fs_write_kbuff_3d_r4: store data'
   END IF
-  kbuff(kbuff_id)%buff_r4(:,:,k) = field(:,:)
+  kbuff(kbuff_id)%buff_3d_r4(:,:,k) = field(:,:)
   kbuff(kbuff_id)%ok(k) = .TRUE.
 
   ! write if we are complete
   IF (ALL(kbuff(kbuff_id)%ok(:))) THEN
     IF (debug) THEN
-      WRITE(0,*) 'DEBUG fs_write_kbuff_float_3d_r4: flush data'
+      WRITE(0,*) 'DEBUG fs_write_kbuff_3d_r4: flush data'
     END IF
     IF (kbuff(kbuff_id)%has_minushalos) THEN
       IF (kbuff(kbuff_id)%has_plushalos) THEN
-        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_r4, &
+        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_3d_r4, &
           minushalos=kbuff(kbuff_id)%minushalos, plushalos=kbuff(kbuff_id)%plushalos)
       ELSE
-        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_r4, &
+        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_3d_r4, &
           minushalos=kbuff(kbuff_id)%minushalos)
       END IF
     ELSE
       IF (kbuff(kbuff_id)%has_plushalos) THEN
-        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_r4, &
+        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_3d_r4, &
           plushalos=kbuff(kbuff_id)%plushalos)
       ELSE
-        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_r4)
+        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_3d_r4)
       END IF
     END IF
 
     CALL destroy_kbuff(kbuff_id)
   END IF
 
-END SUBROUTINE fs_write_kbuff_float_3d_r4
+END SUBROUTINE fs_write_kbuff_3d_r4
 
 !============================================================================
 
 ! overloads fs_write_kbuff: version for i4 integers and 3d fields
-SUBROUTINE fs_write_kbuff_integer_3d_i4(serializer, savepoint, fieldname, field, &
+SUBROUTINE fs_write_kbuff_3d_i4(serializer, savepoint, fieldname, field, &
                                         k, k_size, mode, minushalos, plushalos)
   IMPLICIT NONE
 
@@ -274,37 +274,37 @@ SUBROUTINE fs_write_kbuff_integer_3d_i4(serializer, savepoint, fieldname, field,
 
   ! store data
   IF (debug) THEN
-    WRITE(0,*) 'DEBUG fs_write_kbuff_integer_3d_i4: store data'
+    WRITE(0,*) 'DEBUG fs_write_kbuff_3d_i4: store data'
   END IF
-  kbuff(kbuff_id)%buff_i4(:,:,k) = field(:,:)
+  kbuff(kbuff_id)%buff_3d_i4(:,:,k) = field(:,:)
   kbuff(kbuff_id)%ok(k) = .TRUE.
 
   ! write if we are complete
   IF (ALL(kbuff(kbuff_id)%ok(:))) THEN
     IF (debug) THEN
-      WRITE(0,*) 'DEBUG fs_write_kbuff_integer_3d_i4: flush data'
+      WRITE(0,*) 'DEBUG fs_write_kbuff_3d_i4: flush data'
     END IF
     IF (kbuff(kbuff_id)%has_minushalos) THEN
       IF (kbuff(kbuff_id)%has_plushalos) THEN
-        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_i4, &
+        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_3d_i4, &
           minushalos=kbuff(kbuff_id)%minushalos, plushalos=kbuff(kbuff_id)%plushalos)
       ELSE
-        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_i4, &
+        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_3d_i4, &
           minushalos=kbuff(kbuff_id)%minushalos)
       END IF
     ELSE
       IF (kbuff(kbuff_id)%has_plushalos) THEN
-        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_i4, &
+        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_3d_i4, &
           plushalos=kbuff(kbuff_id)%plushalos)
       ELSE
-        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_i4)
+        CALL fs_write_field(serializer, savepoint, fieldname, kbuff(kbuff_id)%buff_3d_i4)
       END IF
     END IF
 
     CALL destroy_kbuff(kbuff_id)
   END IF
 
-END SUBROUTINE fs_write_kbuff_integer_3d_i4
+END SUBROUTINE fs_write_kbuff_3d_i4
 
 !============================================================================
 
@@ -346,7 +346,7 @@ SUBROUTINE setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, 
   ! find ID if it already exists
   CALL find_kbuff_id(fieldname, savepoint, k, kbuff_id, call_index)
   IF (debug) THEN
-    WRITE(0,*) 'DEBUG fs_write_kbuff_float_3d_r8: find kbuff_id=', kbuff_id
+    WRITE(0,*) 'DEBUG fs_write_kbuff_3d_r8: find kbuff_id=', kbuff_id
   END IF
 
   ! check if a buffer slot was found
@@ -354,7 +354,7 @@ SUBROUTINE setup_buffer(kbuff_id, serializer, savepoint, fieldname, field_type, 
     ! no, so create a new buffer
     CALL get_free_kbuff_id(kbuff_id)
     IF (debug) THEN
-      WRITE(0,*) 'DEBUG fs_write_kbuff_float_3d: kbuff_id=', kbuff_id
+      WRITE(0,*) 'DEBUG fs_write_kbuff_3d: kbuff_id=', kbuff_id
     END IF
     CALL create_kbuff(kbuff_id, serializer, savepoint, fieldname, field_type, &
                      field_nx, field_ny, k_size, call_index, minushalos, plushalos)
@@ -428,11 +428,11 @@ SUBROUTINE create_kbuff(kbuff_id, serializer, savepoint, fieldname, field_type, 
   ! allocate memory
   SELECT CASE (field_type)
     CASE(1)
-      ALLOCATE(kbuff(kbuff_id)%buff_i4(dim_i, dim_j, dim_k))
+      ALLOCATE(kbuff(kbuff_id)%buff_3d_i4(dim_i, dim_j, dim_k))
     CASE(2)
-      ALLOCATE(kbuff(kbuff_id)%buff_r4(dim_i, dim_j, dim_k))
+      ALLOCATE(kbuff(kbuff_id)%buff_3d_r4(dim_i, dim_j, dim_k))
     CASE(3)
-      ALLOCATE(kbuff(kbuff_id)%buff_r8(dim_i, dim_j, dim_k))
+      ALLOCATE(kbuff(kbuff_id)%buff_3d_r8(dim_i, dim_j, dim_k))
     CASE DEFAULT
       WRITE(0,*) 'ERROR in utils_ppser_kbuff: unsupported field_type encountered'
   END SELECT
@@ -485,11 +485,11 @@ SUBROUTINE destroy_kbuff(kbuff_id)
   ! release memory
   SELECT CASE (kbuff(kbuff_id)%field_type)
     CASE(1)
-      DEALLOCATE(kbuff(kbuff_id)%buff_i4)
+      DEALLOCATE(kbuff(kbuff_id)%buff_3d_i4)
     CASE(2)
-      DEALLOCATE(kbuff(kbuff_id)%buff_r4)
+      DEALLOCATE(kbuff(kbuff_id)%buff_3d_r4)
     CASE(3)
-      DEALLOCATE(kbuff(kbuff_id)%buff_r8)
+      DEALLOCATE(kbuff(kbuff_id)%buff_3d_r8)
     CASE DEFAULT
       WRITE(0,*) 'ERROR in utils_ppser_kbuff: unsupported field_type encountered in destroy'
   END SELECT

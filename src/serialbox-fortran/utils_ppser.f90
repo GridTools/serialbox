@@ -63,7 +63,7 @@ CONTAINS
 
 !============================================================================
 
-SUBROUTINE ppser_initialize(directory, prefix, mode, prefix_ref, mpi_rank, rprecision, rperturb, realtype, archive)
+SUBROUTINE ppser_initialize(directory, prefix, mode, prefix_ref, mpi_rank, rprecision, rperturb, realtype, archive, unique_id)
   CHARACTER(LEN=*), INTENT(IN)           :: directory, prefix
   INTEGER, OPTIONAL, INTENT(IN)          :: mode
   CHARACTER(LEN=*), OPTIONAL, INTENT(IN) :: prefix_ref
@@ -71,6 +71,7 @@ SUBROUTINE ppser_initialize(directory, prefix, mode, prefix_ref, mpi_rank, rprec
   REAL(KIND=8), OPTIONAL, INTENT(IN)     :: rprecision, rperturb
   INTEGER, OPTIONAL, INTENT(IN)          :: realtype
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: archive
+  LOGICAL, INTENT(IN), OPTIONAL          :: unique_id
 
   CHARACTER(LEN=1), DIMENSION(128)       :: buffer
   CHARACTER(LEN=15)                      :: suffix
@@ -79,6 +80,7 @@ SUBROUTINE ppser_initialize(directory, prefix, mode, prefix_ref, mpi_rank, rprec
 
   ! Initialize serializer and savepoint
   IF ( .NOT. ppser_initialized ) THEN
+    CALL fs_init(enable_unique_savepoint_id=unique_id)
     IF ( PRESENT(mpi_rank) ) THEN
       WRITE(suffix, '(A5,I0)') "_rank", mpi_rank
       IF ( PRESENT(archive) ) THEN

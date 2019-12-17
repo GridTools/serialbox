@@ -1,0 +1,23 @@
+{
+    "cpp.buildConfigurations": [
+        {
+            "name": "Debug",
+            "directory": "/workspace/serialbox2/build"
+        }
+    ],
+    "cpp.clangdArgs": "--background-index",
+    "cpp.clangdExecutable": "/usr/bin/clangd",
+    "cpp.clangTidy": true,
+    "cpp.trace.server": "verbose",
+    "cmake.ignoreKitEnv": true,
+    "cmake.useCMakeServer": false,
+    "cmake.configureOnOpen": true,
+    "cmake.configureArgs": [
+        "-DSERIALBOX_ENABLE_FORTRAN=ON",
+        "-DSERIALBOX_TESTING=ON",
+        "-DSERIALBOX_TESTING_FORTRAN=ON",
+        "-DSERIALBOX_TESTING_DEATH_TESTS=ON",
+        "-DSERIALBOX_TESTING_PYTHON=ON"
+    ],
+    "editor.formatOnSave": true
+}

@@ -24,10 +24,6 @@ if(SERIALBOX_ENABLE_FORTRAN)
     set(SOURCES_FORTRAN ${SOURCES_FORTRAN} m_ser_ftg.f90 m_ser_ftg_cmp.f90)
   endif()
   
-  if(SERIALBOX_FORTRAN_SAVEPOINT_UNIQUE_ID)
-    add_definitions(-DSERIALBOX_FORTRAN_SAVEPOINT_UNIQUE_ID)
-  endif()
-
   add_library(SerialboxFortranObjects OBJECT ${SOURCES_FORTRAN})
   target_link_libraries(SerialboxFortranObjects SerialboxFortranSerializeObjects)
   target_include_directories(SerialboxFortranObjects
