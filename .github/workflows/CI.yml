@@ -10,27 +10,28 @@ jobs:
       matrix:
         compiler: [gcc-7, gcc-8, clang-9]
         build_type: [Release]
-    env:
-      TEST_FORTRAN: OFF # default will be overwritten in the pFUnit step 
 
     steps:
     - uses: actions/checkout@v1
-    - name: set defaults
+    - name: Set defaults
       run: |
         export GCC_VERSION=$(echo ${{ matrix.compiler }} | cut -d'-' -f2)
         echo "::set-env name=FC::gfortran-${GCC_VERSION}"
+        echo "::set-env name=TEST_FORTRAN::OFF"  # default will be overwritten in the next step
+    - name: Enable Fortran
+      if: startsWith(matrix.compiler, 'gcc')
+      run: echo "::set-env name=TEST_FORTRAN::ON"
     - name: Cache pFUnit
       id: cache-pfunit
       uses: actions/cache@v1
       with:
         path: pfunit
         key: ${{ matrix.compiler }}-pfunit
-    - name: pFUnit
-      if: startsWith(matrix.compiler, 'gcc') && steps.cache-pfunit.outputs.cache-hit != 'true'
+    - name: Install pFUnit
+      if: steps.cache-pfunit.outputs.cache-hit != 'true'
       env:
         PFUNIT_VERSION: 3.2.9
       run: |
-        echo "::set-env name=TEST_FORTRAN::ON"
         export PFUNIT_FILE=pFUnit-${PFUNIT_VERSION}.tgz
         export PFUNIT_LINK=https://downloads.sourceforge.net/project/pfunit/Source/${PFUNIT_FILE}
         export PFUNIT_DIR=pFUnit-${PFUNIT_VERSION}
@@ -40,11 +41,11 @@ jobs:
         mkdir -p build && cd build
         cmake .. -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/pfunit 
         make -j8 install
-    - name: configure
+    - name: Configure
       run: |
         mkdir build && cd build
         cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}  -DPYTHON_EXECUTABLE=`which python3` -DSERIALBOX_TESTING=ON -DSERIALBOX_ENABLE_FORTRAN=${TEST_FORTRAN} -DSERIALBOX_TESTING_FORTRAN=${TEST_FORTRAN} -DpFUnit_DIR=${GITHUB_WORKSPACE}/pfunit
-    - name: build
+    - name: Build
       run: cmake --build build --parallel 2
-    - name: test
+    - name: Execute tests
       run: cd build && ctest
