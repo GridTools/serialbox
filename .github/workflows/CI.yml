@@ -19,8 +19,14 @@ jobs:
       run: |
         export GCC_VERSION=$(echo ${{ matrix.compiler }} | cut -d'-' -f2)
         echo "::set-env name=FC::gfortran-${GCC_VERSION}"
+    - name: Cache pFUnit
+      id: cache-pfunit # what is this id?
+      uses: actions/cache@v1
+      with:
+        path: ${GITHUB_WORKSPACE}/pfunit
+        key: ${{ matrix.compiler }}-pfunit
     - name: pFUnit
-      if: startsWith(matrix.compiler, 'gcc')
+      if: startsWith(matrix.compiler, 'gcc') # TODO if
       env:
         PFUNIT_VERSION: 3.2.9
       run: |
