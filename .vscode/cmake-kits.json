@@ -1,0 +1,9 @@
+[
+  {
+    "name": "Dummy to suppress scanning for kits",
+    "compilers": {
+      "C": "/usr/bin/cc",
+      "CXX": "/usr/bin/c++"
+    }
+  }
+]

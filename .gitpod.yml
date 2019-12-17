@@ -1,0 +1,14 @@
+image:
+  file: .gitpod.Dockerfile
+
+vscode:
+  extensions:
+    - ms-vscode.cmake-tools@1.2.2:bvle64RVGSPzs1C5GcClZg==
+    - krvajalm.linter-gfortran@2.1.1:JzzIpu7Ei4c6gAB1ojj1iQ==
+
+tasks:
+  - init: >
+      mkdir build &&
+      cd build &&
+      cmake -D CMAKE_EXPORT_COMPILE_COMMANDS=ON .. &&
+      cp compile_commands.json ..

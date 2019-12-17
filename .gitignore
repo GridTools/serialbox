@@ -34,3 +34,7 @@ gh-pages*
 /.cproject
 /.pydevproject
 
+#theia/vscode/gitpod settings
+/compile_commands.json
+/.clangd
+
