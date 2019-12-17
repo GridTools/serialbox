@@ -8,8 +8,15 @@ jobs:
     container: mrtravis/gridtools:${{ matrix.compiler }}
     strategy:
       matrix:
-        compiler: [gcc-7, gcc-8, clang-9]
-        build_type: [Release]
+        compiler: [gcc-7, gcc-8, gcc-9, clang-9]
+        build_type: [Debug, Release]
+        exclude:
+          - compiler: gcc-7
+            build_type: Debug
+          - compiler: gcc-8
+            build_type: Debug
+          - compiler: clang-9
+            build_type: Debug
 
     steps:
     - uses: actions/checkout@v1
@@ -28,7 +35,7 @@ jobs:
         path: pfunit
         key: ${{ matrix.compiler }}-pfunit
     - name: Install pFUnit
-      if: steps.cache-pfunit.outputs.cache-hit != 'true'
+      if: startsWith(matrix.compiler, 'gcc') && steps.cache-pfunit.outputs.cache-hit != 'true'
       env:
         PFUNIT_VERSION: 3.2.9
       run: |
