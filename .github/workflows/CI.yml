@@ -20,13 +20,13 @@ jobs:
         export GCC_VERSION=$(echo ${{ matrix.compiler }} | cut -d'-' -f2)
         echo "::set-env name=FC::gfortran-${GCC_VERSION}"
     - name: Cache pFUnit
-      id: cache-pfunit # what is this id?
+      id: cache-pfunit
       uses: actions/cache@v1
       with:
-        path: ${GITHUB_WORKSPACE}/pfunit
+        path: pfunit
         key: ${{ matrix.compiler }}-pfunit
     - name: pFUnit
-      if: startsWith(matrix.compiler, 'gcc') # TODO if
+      if: startsWith(matrix.compiler, 'gcc') && steps.cache-pfunit.outputs.cache-hit != 'true'
       env:
         PFUNIT_VERSION: 3.2.9
       run: |
@@ -40,11 +40,11 @@ jobs:
         mkdir -p build && cd build
         cmake .. -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/pfunit 
         make -j8 install
-    - name: configure
-      run: |
-        mkdir build && cd build
-        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}  -DPYTHON_EXECUTABLE=`which python3` -DSERIALBOX_TESTING=ON -DSERIALBOX_ENABLE_FORTRAN=${TEST_FORTRAN} -DSERIALBOX_TESTING_FORTRAN=${TEST_FORTRAN} -DpFUnit_DIR=${GITHUB_WORKSPACE}/pfunit
-    - name: build
-      run: cmake --build build --parallel 2
-    - name: test
-      run: cd build && ctest
+#    - name: configure
+#      run: |
+#        mkdir build && cd build
+#        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}  -DPYTHON_EXECUTABLE=`which python3` -DSERIALBOX_TESTING=ON -DSERIALBOX_ENABLE_FORTRAN=${TEST_FORTRAN} -DSERIALBOX_TESTING_FORTRAN=${TEST_FORTRAN} -DpFUnit_DIR=${GITHUB_WORKSPACE}/pfunit
+#    - name: build
+#      run: cmake --build build --parallel 2
+#    - name: test
+#      run: cd build && ctest
