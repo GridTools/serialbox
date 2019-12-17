@@ -55,7 +55,7 @@ jobs:
     - name: Configure
       run: |
         mkdir build && cd build
-        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}  -DPYTHON_EXECUTABLE=`which python3` -DSERIALBOX_TESTING=ON -DSERIALBOX_ENABLE_FORTRAN=${TEST_FORTRAN} -DSERIALBOX_TESTING_FORTRAN=${TEST_FORTRAN} -DpFUnit_DIR=${GITHUB_WORKSPACE}/pfunit
+        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}  -DPYTHON_EXECUTABLE=`which python3` -DSERIALBOX_TESTING=ON -DSERIALBOX_ENABLE_FORTRAN=${TEST_FORTRAN} -DSERIALBOX_TESTING_FORTRAN=${TEST_FORTRAN} -DSERIALBOX_TESTING_PYTHON=ON -DpFUnit_DIR=${GITHUB_WORKSPACE}/pfunit
     - name: Build
       run: cmake --build build --parallel 2
     - name: Execute tests
