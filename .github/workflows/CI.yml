@@ -32,8 +32,6 @@ jobs:
     - name: Enable Fortran
       if: startsWith(matrix.compiler, 'gcc')
       run: echo "::set-env name=TEST_FORTRAN::ON"
-    - name : Install python modules
-      run: pip3 install --user nose
     - name: Cache pFUnit
       id: cache-pfunit
       uses: actions/cache@v1
