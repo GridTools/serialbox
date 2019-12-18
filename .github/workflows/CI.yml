@@ -31,7 +31,9 @@ jobs:
         echo "::set-env name=TEST_FORTRAN::OFF"  # default will be overwritten in the next step
     - name: Enable Fortran
       if: startsWith(matrix.compiler, 'gcc')
-      run: echo "::set-env name=TEST_FORTRAN::ON"
+      run: echo "::set-env name=TEST_FORTRAN::ON"\
+    - name: Install python modules
+      run: pip install --user nose numpy
     - name: Cache pFUnit
       id: cache-pfunit
       uses: actions/cache@v1
