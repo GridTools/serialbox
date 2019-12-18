@@ -2,7 +2,7 @@
     "cpp.buildConfigurations": [
         {
             "name": "Debug",
-            "directory": "/workspace/serialbox2/build"
+            "directory": "/workspace/serialbox/build"
         }
     ],
     "cpp.clangdArgs": "--background-index",
@@ -17,7 +17,8 @@
         "-DSERIALBOX_TESTING=ON",
         "-DSERIALBOX_TESTING_FORTRAN=ON",
         "-DSERIALBOX_TESTING_DEATH_TESTS=ON",
-        "-DSERIALBOX_TESTING_PYTHON=ON"
+        "-DSERIALBOX_TESTING_PYTHON=ON",
+        "-DCMAKE_INSTALL_PREFIX=/workspace/serialbox/install"
     ],
     "editor.formatOnSave": true
 }
