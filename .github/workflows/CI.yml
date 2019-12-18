@@ -1,6 +1,10 @@
 name: CI
 
-on: [push]
+on:
+  push:
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
@@ -28,6 +32,8 @@ jobs:
     - name: Enable Fortran
       if: startsWith(matrix.compiler, 'gcc')
       run: echo "::set-env name=TEST_FORTRAN::ON"
+    - name: Install python modules
+      run: pip3 install --user nose numpy
     - name: Cache pFUnit
       id: cache-pfunit
       uses: actions/cache@v1
@@ -51,8 +57,8 @@ jobs:
     - name: Configure
       run: |
         mkdir build && cd build
-        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}  -DPYTHON_EXECUTABLE=`which python3` -DSERIALBOX_TESTING=ON -DSERIALBOX_ENABLE_FORTRAN=${TEST_FORTRAN} -DSERIALBOX_TESTING_FORTRAN=${TEST_FORTRAN} -DpFUnit_DIR=${GITHUB_WORKSPACE}/pfunit
+        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}  -DPYTHON_EXECUTABLE=`which python3` -DSERIALBOX_TESTING=ON -DSERIALBOX_ENABLE_FORTRAN=${TEST_FORTRAN} -DSERIALBOX_TESTING_FORTRAN=${TEST_FORTRAN} -DSERIALBOX_TESTING_PYTHON=ON -DpFUnit_DIR=${GITHUB_WORKSPACE}/pfunit
     - name: Build
       run: cmake --build build --parallel 2
     - name: Execute tests
-      run: cd build && ctest
+      run: cd build && ctest -V
