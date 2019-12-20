@@ -3,7 +3,8 @@ image:
 
 vscode:
   extensions:
-    - ms-vscode.cmake-tools@1.2.2:bvle64RVGSPzs1C5GcClZg==
+    - twxs.cmake@0.0.17:9s7m9CWOr6i6NZ7CNNF4kw==
+    - ms-vscode.cmake-tools@1.2.3:qLtqI3aUcEBX9EpuK0ZCyw==
     - krvajalm.linter-gfortran@2.1.1:JzzIpu7Ei4c6gAB1ojj1iQ==
 
 tasks:
