@@ -81,11 +81,6 @@ include(SerialboxCheckCxxCompilerSupport)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Shared architecture flags
-if( NOT ( CMAKE_CXX_COMPILER_ID MATCHES "Cray" ) )
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
-endif()
-
 # Compiler specific
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")            
