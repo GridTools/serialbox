@@ -1,6 +1,6 @@
-<a href="https://eth-cscs.github.io/serialbox2"><img src="docs/logo/logo.png" width="559" height="212" border="0" alt="Serialbox2 documentation" /></a>
+<a href="https://gridtools.github.io/serialbox/"><img src="docs/logo/logo.png" width="559" height="212" border="0" alt="Serialbox documentation" /></a>
 
-![](https://github.com/GridTools/serialbox/workflows/CI/badge.svg?branch=master) <a target="_blank" href="http://semver.org">![Version][Version.Badge]</a> <a target="_blank" href="https://opensource.org/licenses/BSD-2-Clause">![License: BSD][BSD.License]</a> <a target="_blank" href="https://eth-cscs.github.io/serialbox2">![Documentation][Documentation.Badge]</a>
+![](https://github.com/GridTools/serialbox/workflows/CI/badge.svg?branch=master) <a target="_blank" href="http://semver.org">![Version][Version.Badge]</a> <a target="_blank" href="https://opensource.org/licenses/BSD-2-Clause">![License: BSD][BSD.License]</a> <a target="_blank" href="https://gridtools.github.io/serialbox/">![Documentation][Documentation.Badge]</a>
 
 ## Introduction
 
@@ -21,4 +21,4 @@ Contributions to the GridTools framework are welcome. Please open an issue for a
 <!-- Links -->
 [Documentation.Badge]: https://img.shields.io/badge/documentation-link-blue.svg
 [BSD.License]: https://img.shields.io/badge/License-BSD-blue.svg
-[Version.Badge]: https://badge.fury.io/gh/eth-cscs%2Fserialbox2.svg
+[Version.Badge]: https://badge.fury.io/gh/GridTools%2Fserialbox.svg
