@@ -61,4 +61,4 @@ jobs:
     - name: Build
       run: cmake --build build --parallel 2
     - name: Execute tests
-      run: cd build && ctest -V
+      run: cd build && ctest --output-on-failure

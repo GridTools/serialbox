@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 ##===-----------------------------------------------------------------------------*- Python -*-===##
 ##
-##                                   S E R I A L B O X
+# S E R I A L B O X
 ##
-## This file is distributed under terms of BSD license. 
-## See LICENSE.txt for more information.
+# This file is distributed under terms of BSD license.
+# See LICENSE.txt for more information.
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## This file contains shared utility functions.
+# This file contains shared utility functions.
 ##
 ##===------------------------------------------------------------------------------------------===##
 
@@ -44,7 +44,7 @@ def get_library():
     # To make it possible to run the unit tests without installing the SerialboxC shared
     # library into a default linker search path.  Always Try ctypes.cdll.LoadLibrary()
     # with all possible library names first, then try ctypes.util.find_library().
-    name = 'SerialboxCShared'
+    name = 'SerialboxC'
     errors = []
 
     cwd = path.dirname(path.realpath(__file__))
