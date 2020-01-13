@@ -2,7 +2,7 @@
 ##
 ##                                   S E R I A L B O X
 ##
-## This file is distributed under terms of BSD license. 
+## This file is distributed under terms of BSD license.
 ## See LICENSE.txt for more information.
 ##
 ##===------------------------------------------------------------------------------------------===##
@@ -14,7 +14,7 @@
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "CMake install prefix")
 
 cmake_policy(SET CMP0048 NEW)
-project(Serialbox LANGUAGES C CXX VERSION 2.5.5)
+project(Serialbox LANGUAGES C CXX VERSION 2.6.0)
 cmake_minimum_required(VERSION 3.9.0)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -37,9 +37,9 @@ if(WIN32)
 endif(WIN32)
 
 # Serialbox version
-set(Serialbox_VERSION_STRING 
+set(Serialbox_VERSION_STRING
     "${Serialbox_VERSION_MAJOR}.${Serialbox_VERSION_MINOR}.${Serialbox_VERSION_PATCH}")
-    
+
 message(STATUS "Serialbox version: ${Serialbox_VERSION_STRING}")
 
 #---------------------------------------- User options ---------------------------------------------
@@ -71,33 +71,28 @@ option(SERIALBOX_DOCUMENTATION "Build and install the documentation" OFF)
 
 option(SERIALBOX_CODE_COVERAGE "Generate code coverage" OFF)
 option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" OFF)
-  
+
 #---------------------------------------- CMake options --------------------------------------------
 
 ## Perform checks to make sure we support the current compiler
 include(SerialboxCheckCxxCompilerSupport)
- 
+
 ## Set C++ standard to C++11
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Shared architecture flags
-if( NOT ( CMAKE_CXX_COMPILER_ID MATCHES "Cray" ) )
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
-endif()
-
 # Compiler specific
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")            
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-compare")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -wd488")
 endif()
-  
+
 # Set build type to Release if nothing was specified (instead of Debug)
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release" CACHE STRING 
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING
       "Choose the type of build, options are: Debug Release RelWithDebInfo" FORCE)
   message(STATUS "Setting build type to 'Release' as none was specified")
 endif(NOT CMAKE_BUILD_TYPE)
@@ -106,7 +101,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 if( NOT TARGET clean-all )
   add_custom_target(clean-all
                     COMMAND ${CMAKE_MAKE_PROGRAM} clean
-                    COMMAND ${CMAKE_COMMAND} -P  
+                    COMMAND ${CMAKE_COMMAND} -P
                     "${PROJECT_SOURCE_DIR}/cmake/modules/SerialboxCleanAll.cmake")
 endif()
 
@@ -135,7 +130,7 @@ if(SERIALBOX_BUILD_SHARED)
   set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
   set(CMAKE_MACOSX_RPATH "${CMAKE_INSTALL_RPATH}")
 
-  # Add the automatically determined parts of the RPATH which point to directories outside the 
+  # Add the automatically determined parts of the RPATH which point to directories outside the
   # build tree to the install RPATH
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
@@ -160,8 +155,8 @@ endif(SERIALBOX_ASYNC_API)
 set(SERIALBOX_EXTERNAL_LIBRARIES)
 
 ## Enable testing if one ore more of the tests is requested
-if(SERIALBOX_TESTING_GRIDTOOLS OR 
-   SERIALBOX_TESTING_STELLA OR 
+if(SERIALBOX_TESTING_GRIDTOOLS OR
+   SERIALBOX_TESTING_STELLA OR
    SERIALBOX_TESTING_DEATH_TESTS OR
    SERIALBOX_TESTING_FORTRAN)
  set(SERIALBOX_TESTING ON)
@@ -191,7 +186,7 @@ if(SERIALBOX_TESTING_FORTRAN)
     message(WARNING "You need to enable Fortran (-DSERIALBOX_ENABLE_FORTRAN=ON) to build the Fortran tests.")
   endif()
 endif()
-  
+
 
 #---------------------------------------- OpenSSL --------------------------------------------------
 if(${SERIALBOX_USE_OPENSSL})
@@ -200,7 +195,7 @@ if(${SERIALBOX_USE_OPENSSL})
     message(FATAL_ERROR "OpenSSL library not found!")
   endif()
   include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
-  set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${OPENSSL_LIBRARIES})  
+  set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} ${OPENSSL_LIBRARIES})
   set(SERIALBOX_HAS_OPENSSL 1)
 endif()
 
@@ -217,23 +212,23 @@ endif()
 #---------------------------------------- Python ---------------------------------------------------
 if(SERIALBOX_ENABLE_PYTHON)
   find_package(PythonInterp 3.4)
-  
+
   # Python tests are enabled by default if we can find "nose" and "numpy"
   set(ENABLE_PYTHON_TESTS OFF)
   if(SERIALBOX_TESTING AND PYTHONINTERP_FOUND)
     include(FindPythonModule)
     find_python_module(nose)
     find_python_module(numpy)
-    if(PY_NOSE_FOUND AND PY_NUMPY_FOUND)   
+    if(PY_NOSE_FOUND AND PY_NUMPY_FOUND)
       set(ENABLE_PYTHON_TESTS ON)
     endif()
   endif()
-  
+
   option(SERIALBOX_TESTING_PYTHON "Run Python tests" ${ENABLE_PYTHON_TESTS})
   mark_as_advanced(ENABLE_PYTHON_TESTS)
-  
+
 endif(SERIALBOX_ENABLE_PYTHON)
-  
+
 #---------------------------------------- GridTools ------------------------------------------------
 if(SERIALBOX_TESTING_GRIDTOOLS)
   find_package(GridTools QUIET REQUIRED)
@@ -285,21 +280,21 @@ if(SERIALBOX_TESTING_STELLA)
 
   # If STELLA_ROOT is not provided, we try to find it in external/
   set(STELLA_ROOT_ENV "$ENV{STELLA_ROOT}")
-  if(NOT(STELLA_ROOT) AND NOT(STELLA_ROOT_ENV) AND 
+  if(NOT(STELLA_ROOT) AND NOT(STELLA_ROOT_ENV) AND
      EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/stella/CMakeLists.txt")
-   
+
     set(STELLA_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/external/stella")
-    
+
     set(BUILD_STELLA "ON" BOOL)
     set(STELLA_INSTALL_DIR "${CMAKE_BINARY_DIR}/external/stella/install")
-    
+
     # Forward toolchain
     set(CMAKE_EXTERNAL_ARGS -Wno-dev
       -DSTELLA_ENABLE_BENCHMARK=OFF
       -DSTELLA_ENABLE_COMMUNICATION=OFF
       -DSTELLA_ENABLE_SERIALIZATION=OFF
       -DSTELLA_ENABLE_TESTING=OFF
-      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} 
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
       -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
       -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
       -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
@@ -322,7 +317,7 @@ if(SERIALBOX_TESTING_STELLA)
   else()
     find_package(STELLA QUIET REQUIRED)
   endif()
-  
+
   include_directories(SYSTEM ${STELLA_INCLUDE_DIRS})
   set(SERIALBOX_HAS_STELLA 1)
 
@@ -337,41 +332,41 @@ endif()
 
 if(CLANG_FORMAT_BIN)
   # Runs clang format and updates files in place.
-  add_custom_target(format 
-                    COMMAND ${SCRIPT_DIR}/run-clang-format.sh 
-                    ${CMAKE_CURRENT_SOURCE_DIR} 
-                    ${CLANG_FORMAT_BIN} 
+  add_custom_target(format
+                    COMMAND ${SCRIPT_DIR}/run-clang-format.sh
+                    ${CMAKE_CURRENT_SOURCE_DIR}
+                    ${CLANG_FORMAT_BIN}
                     1
-                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
+                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src
                           -name \*.h -print -o -name \*.cpp -print`)
 
   # Runs clang format and exits with a non-zero exit code if any files need to be reformatted
-  add_custom_target(check-format 
-                    COMMAND ${SCRIPT_DIR}/run-clang-format.sh 
-                    ${CMAKE_CURRENT_SOURCE_DIR} 
-                    ${CLANG_FORMAT_BIN} 
+  add_custom_target(check-format
+                    COMMAND ${SCRIPT_DIR}/run-clang-format.sh
+                    ${CMAKE_CURRENT_SOURCE_DIR}
+                    ${CLANG_FORMAT_BIN}
                     0
-                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
+                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src
                           -name \*.h -print -o -name \*.cpp -print`)
 endif()
 
 if(CLANG_TIDY_BIN)
   # Runs clang-tidy and attempts to fix any warning automatically
-  add_custom_target(clang-tidy 
-                    COMMAND ${SCRIPT_DIR}/run-clang-tidy.sh 
-                    ${CLANG_TIDY_BIN} 
-                    ${CMAKE_BINARY_DIR}/compile_commands.json 
+  add_custom_target(clang-tidy
+                    COMMAND ${SCRIPT_DIR}/run-clang-tidy.sh
+                    ${CLANG_TIDY_BIN}
+                    ${CMAKE_BINARY_DIR}/compile_commands.json
                     1
-                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
+                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src
                           -name \*.h -print -o -name \*.cpp -print`)
 
   # Runs clang-tidy and exits with a non-zero exit code if any errors are found.
-  add_custom_target(check-clang-tidy 
-                    COMMAND ${SCRIPT_DIR}/run-clang-tidy.sh 
-                    ${CLANG_TIDY_BIN} 
+  add_custom_target(check-clang-tidy
+                    COMMAND ${SCRIPT_DIR}/run-clang-tidy.sh
+                    ${CLANG_TIDY_BIN}
                     ${CMAKE_BINARY_DIR}/compile_commands.json
                     0
-                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src 
+                    `find ${CMAKE_CURRENT_SOURCE_DIR}/src
                           -name \*.h -print -o -name \*.cpp -print`)
 endif()
 
@@ -380,7 +375,7 @@ if(SERIALBOX_CODE_COVERAGE)
   include(SerialboxCoverage)
   serialbox_enable_coverage(${CMAKE_BINARY_DIR})
 
-  set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES} 
+  set(SERIALBOX_EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES}
                                    ${CMAKE_SHARED_LINKER_FLAGS_COVERAGE})
 endif(SERIALBOX_CODE_COVERAGE)
 
@@ -391,15 +386,15 @@ set(SERIALBOX_CONFIG_FILE_DISCLAIMER "WARNING! All changes made in this file wil
 set(SERIALBOX_CXX_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/src/serialbox/core/Config.h.cmake)
 set(SERIALBOX_CXX_CONFIG_FILE ${PROJECT_SOURCE_DIR}/src/serialbox/core/Config.h)
 configure_file(${SERIALBOX_CXX_CONFIG_FILE_IN} ${SERIALBOX_CXX_CONFIG_FILE})
-install(FILES ${SERIALBOX_CXX_CONFIG_FILE} 
+install(FILES ${SERIALBOX_CXX_CONFIG_FILE}
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/serialbox/core)
 
 # Install serialbox headers
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox DESTINATION include 
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox DESTINATION include
     FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp")
 
 if(SERIALBOX_ENABLE_C)
-    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox-c DESTINATION include 
+    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/serialbox-c DESTINATION include
         FILES_MATCHING PATTERN "*.h")
 endif()
 
@@ -411,21 +406,21 @@ if(SERIALBOX_TESTING)
   enable_testing()
   include(SerialboxTestScript)
   serialbox_test_init()
-  
+
   if(SERIALBOX_TESTING_DEATH_TESTS)
     add_definitions(-DSERIALBOX_RUN_DEATH_TESTS)
   endif()
-  
+
   if(SERIALBOX_TESTING_LARGE_FILE_TESTS)
     add_definitions(-DSERIALBOX_RUN_LARGE_FILE_TESTS)
   endif()
-  
+
   # Generate utility/Config.h
   set(SERIALBOX_CPP_CONFIG_FILE_IN ${PROJECT_SOURCE_DIR}/test/utility/Config.h.cmake)
   set(SERIALBOX_CPP_CONFIG_FILE ${PROJECT_BINARY_DIR}/test/utility/Config.h)
   configure_file(${SERIALBOX_CPP_CONFIG_FILE_IN} ${SERIALBOX_CPP_CONFIG_FILE})
   include_directories(${PROJECT_BINARY_DIR}/test)
-  
+
   add_subdirectory(test)
 endif(SERIALBOX_TESTING)
 
