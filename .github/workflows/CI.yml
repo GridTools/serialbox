@@ -61,6 +61,7 @@ jobs:
           string(TIMESTAMP current_date "%Y-%m-%d-%H;%M;%S" UTC)
           message("::set-output name=timestamp::${current_date}")
       - name: Set ccache environment
+        run: |
           echo "::set-env name=CCACHE_MAXSIZE::400M"
           echo "::set-env name=CCACHE_BASEDIR::$GITHUB_WORKSPACE"
           echo "::set-env name=CCACHE_DIR::$GITHUB_WORKSPACE/.ccache"
