@@ -22,6 +22,8 @@
 #ifndef SERIALBOX_CORE_JSON_H
 #define SERIALBOX_CORE_JSON_H
 
+
+
 // On purpose including relatively as we are going out of the serialbox include directory. We don't
 // want to install json.hpp to prevent accidently including it in the public interface.
 // TODO split public and private headers properly in separate directories.
