@@ -71,9 +71,9 @@ jobs:
         uses: actions/cache@v1
         with:
           path: .ccache
-          key: ${ { matrix.config.name } }-ccache-${ { steps.ccache_cache_timestamp.outputs.timestamp } }
+          key: ${{ matrix.compiler }}-${{ matrix.build_type }}-ccache-${ { steps.ccache_cache_timestamp.outputs.timestamp } }
           restore-keys: |
-            ${ { matrix.config.name } }-ccache-
+            ${{ matrix.compiler }}-${{ matrix.build_type }}-ccache-
       - name: Configure
         run: |
           mkdir build && cd build
