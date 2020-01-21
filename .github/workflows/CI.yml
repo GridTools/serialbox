@@ -67,6 +67,7 @@ jobs:
           echo "::set-env name=CCACHE_DIR::$GITHUB_WORKSPACE/.ccache"
           echo "::set-env name=CCACHE_COMPRESS::true"
           echo "::set-env name=CCACHE_COMPRESSLEVEL::6"
+          ccache -s
       - name: ccache cache files
         uses: actions/cache@v1
         with:
