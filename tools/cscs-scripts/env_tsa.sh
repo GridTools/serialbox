@@ -69,7 +69,7 @@ fi
 module load craype-x86-skylake
 module load craype-network-infiniband
 module load slurm
-module load cmake/3.14.3
+module load cmake/3.14.5
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
     module load PrgEnv-pgi
