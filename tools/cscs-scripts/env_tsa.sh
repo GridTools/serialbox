@@ -69,24 +69,20 @@ fi
 module load craype-x86-skylake
 module load craype-network-infiniband
 module load slurm
-module load cmake/3.14.3
+module load cmake/3.14.5
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
-    module load PrgEnv-pgi/19.4
+    module load PrgEnv-pgi
     module load gcc
 elif [ "$FC_COMPILER" = "ftn" ]; then
-    module load PrgEnv-cray
-    module load gcc
+    echo "$FC_COMPILER not available on tsa"
+    exit 1
 elif [ "$FC_COMPILER" = "ifort" ]; then
-    echo "not defined"
+    echo "$FC_COMPILER not available on tsa"
     exit 1
 else
     module load PrgEnv-gnu
 fi
-
-#module load netcdf-c++/4.3.0-gmvolf-18.12
-#module load hdf5/1.10.5-gmvolf-18.12
-#export NETCDF_ROOT=${EBROOTNETCDF}
 
 export CXX=$(which g++)
 export CC=$(which gcc)
@@ -95,5 +91,5 @@ export FC=$(which $FC_COMPILER)
 export Boost_NO_SYSTEM_PATHS=true
 export Boost_NO_BOOST_CMAKE=true
 
-export BOOST_ROOT=/project/c14/install/daint/boost/boost_1_67_0
+export BOOST_ROOT=/project/c14/install/tsa/boost/boost_1_67_0
 

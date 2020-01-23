@@ -71,7 +71,9 @@ elif [ "$(hostname | grep kesch)" != "" ] ; then
 elif [ "$(hostname | grep daint)" != "" ] ; then
     MYHOST="daint"
 elif [ "$(hostname | grep arolla)" != "" ] ; then
-    MYHOST="arolla"
+    MYHOST="tsa"
+elif [ "$(hostname | grep tsa)" != "" ] ; then
+    MYHOST="tsa"
 elif [ "$(hostname | grep tave)" != "" ] ; then
     MYHOST="tave"
 else
@@ -195,7 +197,7 @@ fi
 
 #NetCDF
 SERIALBOX_USE_NETCDF=OFF
-if [ "${FC_COMPILER}" = "gfortran" ] && [ "$MYHOST" != "arolla" ]; then
+if [ "${FC_COMPILER}" = "gfortran" ] && [ "$MYHOST" != "tsa" ]; then
     SERIALBOX_USE_NETCDF=ON
 fi
 
