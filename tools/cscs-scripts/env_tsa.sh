@@ -72,11 +72,11 @@ module load slurm
 module load cmake/3.14.3
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
-    module load PrgEnv-pgi/19.4
+    module load PrgEnv-pgi
     module load gcc
 elif [ "$FC_COMPILER" = "ftn" ]; then
-    module load PrgEnv-cray
-    module load gcc
+    echo "not defined"
+    exit 1
 elif [ "$FC_COMPILER" = "ifort" ]; then
     echo "not defined"
     exit 1
@@ -95,5 +95,5 @@ export FC=$(which $FC_COMPILER)
 export Boost_NO_SYSTEM_PATHS=true
 export Boost_NO_BOOST_CMAKE=true
 
-export BOOST_ROOT=/project/c14/install/daint/boost/boost_1_67_0
+export BOOST_ROOT=/project/c14/install/tsa/boost/boost_1_67_0
 
