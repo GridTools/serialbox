@@ -59,7 +59,7 @@ PRIVATE
     LOGICAL, ALLOCATABLE :: ok(:)                 ! has this k-level been written?
   END TYPE kbuff_type
 
-  INTEGER, PARAMETER :: max_kbuff = 999           ! increase in case you get errors
+  INTEGER, PARAMETER :: max_kbuff = 9999           ! increase in case you get errors
   TYPE(kbuff_type) :: kbuff(max_kbuff)            ! array containing buffers
 
   ! overload interface for different types and dimensions
@@ -113,6 +113,9 @@ SUBROUTINE finalize_kbuff()
   DO idx = 1, max_kbuff
     IF (kbuff(idx)%in_use) THEN
       WRITE(0,*) 'ERROR in utils_ppser_kbuff: finalize called before all buffers have been flushed'
+      WRITE(0,*) kbuff(idx)%savepoint_name
+      WRITE(0,*) kbuff(idx)%fieldname
+      WRITE(0,*) kbuff(idx)%ok(:)
       STOP
     END IF
     kbuff(idx)%fieldname = ""
