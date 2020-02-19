@@ -113,9 +113,9 @@ SUBROUTINE finalize_kbuff()
   DO idx = 1, max_kbuff
     IF (kbuff(idx)%in_use) THEN
       WRITE(0,*) 'ERROR in utils_ppser_kbuff: finalize called before all buffers have been flushed'
-      WRITE(0,*) kbuff(idx)%savepoint_name
-      WRITE(0,*) kbuff(idx)%fieldname
-      WRITE(0,*) kbuff(idx)%ok(:)
+      WRITE(0,*) 'savepoint_name: ', TRIM(kbuff(idx)%savepoint_name)
+      WRITE(0,*) 'name of partially emty field: ', TRIM(kbuff(idx)%fieldname)
+      WRITE(0,*) 'vertical indices filled boolean: ', kbuff(idx)%ok(:)
       STOP
     END IF
     kbuff(idx)%fieldname = ""
