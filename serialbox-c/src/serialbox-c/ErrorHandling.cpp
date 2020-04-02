@@ -13,7 +13,7 @@
 \*===------------------------------------------------------------------------------------------===*/
 
 #include "serialbox-c/ErrorHandling.h"
-#include "serialbox/core/Compiler.h"
+// #include "serialbox/core/Compiler.h"
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>

@@ -16,7 +16,7 @@
 #define SERIALBOX_C_TYPE_H
 
 #include "serialbox-c/Api.h"
-#include "serialbox/core/Config.h"
+// #include "serialbox/core/Config.h"
 #include <stdint.h>
 
 #ifdef __cplusplus

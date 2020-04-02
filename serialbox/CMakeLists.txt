@@ -19,7 +19,6 @@ project(Serialbox VERSION ${__SERIALBOX_VERSION} LANGUAGES CXX)
 cmake_minimum_required(VERSION 3.12.4)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_C_EXTENSIONS OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/modules") # TODO fix location
 include(ExternalProject)

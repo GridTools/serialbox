@@ -14,7 +14,8 @@
  *
 \*===------------------------------------------------------------------------------------------===*/
 
-#include "serialbox/core/Config.h"
+// TODO remove all this config shit
+//# include "serialbox/core/Config.h"
 
 #ifndef SERIALBOX_C_CONFIG_H
 #define SERIALBOX_C_CONFIG_H

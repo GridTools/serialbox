@@ -29,7 +29,7 @@ else()
 endif()
 
 ## Generate and install SerialboxConfig.cmake
-configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/SerialboxConfig.cmake.in
+configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/SerialboxConfig.cmake.in
     "${PROJECT_BINARY_DIR}/cmake/SerialboxConfig.cmake"
     INSTALL_DESTINATION ${CMAKE_INSTALL_DIR}
     PATH_VARS CMAKE_INSTALL_DIR
