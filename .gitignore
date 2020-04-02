@@ -29,7 +29,7 @@ external/*
 # Ignore gh-pages folder
 gh-pages*
 
-#Ignore Eclipse files
+# Eclipse files
 /.settings/
 /.cproject
 /.pydevproject
@@ -37,4 +37,3 @@ gh-pages*
 #theia/vscode/gitpod settings
 /compile_commands.json
 /.clangd
-

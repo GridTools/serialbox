@@ -25,7 +25,7 @@
 // On purpose including relatively as we are going out of the serialbox include directory. We don't
 // want to install json.hpp to prevent accidently including it in the public interface.
 // TODO split public and private headers properly in separate directories.
-#include "../../external/json/json.hpp"
+#include "../../../external/json/json.hpp"
 
 /// \namespace json
 /// \brief Namespace of the JSON library
