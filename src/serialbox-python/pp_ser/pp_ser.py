@@ -462,7 +462,7 @@ class PpSer:
         self.__calls.add(self.methods['spinfo'])
         l += tab + 'call ' + self.methods['savepoint'] + '(\'' + name + '\', ppser_savepoint)\n'
         for k, v in zip(keys, values):
-            l += tab + 'call ' + self.methods['spinfo'] + '(ppser_savepoint, \'' + k + '\', ' + v + ')\n'
+            l += tab + 'call ' + self.methods['spinfo'] + '(ppser_savepoint, ' + k + ', ' + v + ')\n'
 
         if if_statement:
             l += 'ENDIF\n'
