@@ -40,6 +40,11 @@ std::pair<int, int> getValuePair<int>() {
 }
 
 template <>
+std::pair<long, long> getValuePair<long>() {
+  return std::make_pair<std::int64_t, std::int64_t>(1.0, 2.2);
+}
+
+template <>
 std::pair<std::int64_t, std::int64_t> getValuePair<std::int64_t>() {
   return std::make_pair<std::int64_t, std::int64_t>(1, 2);
 }
@@ -103,15 +108,15 @@ TYPED_TEST(MetainfoValueImplTest, Constrcution) {
   TypeParam&& v1_rref = getValue1();
   MetainfoValueImpl value1_rref(v1_rref);
   EXPECT_EQ(value1_rref.as<TypeParam>(), pair.first);
-  
+
   // Construct with Array
   Array<TypeParam> array = {pair.first, pair.second};
-  MetainfoValueImpl valueArray(array);  
+  MetainfoValueImpl valueArray(array);
 
   // Explicit conversion
   EXPECT_EQ(value1.as<TypeParam>(), pair.first);
   EXPECT_EQ(value2.as<TypeParam>(), pair.second);
-  
+
   EXPECT_EQ(valueArray.as<Array<TypeParam>>()[0], pair.first);
   EXPECT_EQ(valueArray.as<Array<TypeParam>>()[1], pair.second);
 
@@ -120,7 +125,7 @@ TYPED_TEST(MetainfoValueImplTest, Constrcution) {
   TypeParam v2 = value2;
   EXPECT_TRUE(v1 == pair.first);
   EXPECT_TRUE(v2 == pair.second);
-  
+
   // Conversion to different type
 
   //
@@ -202,15 +207,15 @@ TYPED_TEST(MetainfoValueImplTest, Constrcution) {
     EXPECT_EQ(value2.as<double>(), 55.0);
     EXPECT_EQ(value2.as<std::string>(), "55");
   }
-  
+
   MetainfoValueImpl valueInvalid;
-  
+
   // Conversion from Invalid -> Exception
   EXPECT_THROW(valueInvalid.as<TypeParam>(), Exception);
-  
+
   // Conversion from non-array type to array -> Exception
-  EXPECT_THROW(valueInvalid.as<Array<TypeParam>>(), Exception);  
-  
+  EXPECT_THROW(valueInvalid.as<Array<TypeParam>>(), Exception);
+
   // Swap
   value1.swap(value2);
   EXPECT_EQ(value1.as<TypeParam>(), pair.second);

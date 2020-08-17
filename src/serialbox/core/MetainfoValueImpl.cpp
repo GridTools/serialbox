@@ -296,6 +296,11 @@ std::int64_t MetainfoValueImpl::as() const {
 }
 
 template <>
+long MetainfoValueImpl::as() const {
+  return internal::makePrimitiveOf<std::int64_t>(any_, type_);
+}
+
+template <>
 float MetainfoValueImpl::as() const {
   return internal::makePrimitiveOf<float>(any_, type_);
 }

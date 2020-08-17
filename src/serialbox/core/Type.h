@@ -88,7 +88,7 @@ template <class T>
 struct IsSupported {
 
   /// \brief Set of supported types
-  using SupportedTypesSet = boost::mpl::set<bool, int, std::int64_t, float, double, std::string>;
+  using SupportedTypesSet = boost::mpl::set<bool, int, std::int64_t, long, float, double, std::string>;
 
   /// \brief True iff the type is supported
   constexpr static bool value = boost::mpl::has_key<SupportedTypesSet, T>::type::value;
@@ -144,6 +144,11 @@ struct ToTypeID<std::int32_t> {
 
 template <>
 struct ToTypeID<std::int64_t> {
+  static constexpr TypeID value = TypeID::Int64;
+};
+
+template <>
+struct ToTypeID<long> {
   static constexpr TypeID value = TypeID::Int64;
 };
 
