@@ -223,7 +223,7 @@ void serialboxFortranSerializerAddMetainfoInt32(void* serializer, const char* ke
   }
 }
 
-void serialboxFortranSerializerAddMetainfoInt64(void* serializer, const char* key, long value) {
+void serialboxFortranSerializerAddMetainfoInt64(void* serializer, const char* key, std::int64_t value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {
     ser->addGlobalMetainfo(key, value);
@@ -270,7 +270,7 @@ void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* k
 
 SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Boolean, int);
 SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Int32, int);
-SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Int64, long);
+SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Int64, std::int64_t);
 SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Float32, float);
 SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(Float64, double);
 SERIALBOX_FORTRAN_SERIALIZER_GET_METAINFO(String, const char*);
@@ -318,7 +318,7 @@ void serialboxFortranSerializerAddFieldMetainfoInt32(void* serializer, const cha
 }
 
 void serialboxFortranSerializerAddFieldMetainfoInt64(void* serializer, const char* field,
-                                                     const char* key, long value) {
+                                                     const char* key, std::int64_t value) {
   Serializer* ser = toSerializer(static_cast<serialboxSerializer_t*>(serializer));
   try {
     if(!ser->addFieldMetainfoImpl(field, key, value))
@@ -380,7 +380,7 @@ void serialboxFortranSerializerAddFieldMetainfoString(void* serializer, const ch
 
 SERIALBOX_FORTRAN_SERIALIZER_GET_FIELD_METAINFO(Boolean, int);
 SERIALBOX_FORTRAN_SERIALIZER_GET_FIELD_METAINFO(Int32, int);
-SERIALBOX_FORTRAN_SERIALIZER_GET_FIELD_METAINFO(Int64, long);
+SERIALBOX_FORTRAN_SERIALIZER_GET_FIELD_METAINFO(Int64, std::int64_t);
 SERIALBOX_FORTRAN_SERIALIZER_GET_FIELD_METAINFO(Float32, float);
 SERIALBOX_FORTRAN_SERIALIZER_GET_FIELD_METAINFO(Float64, double);
 SERIALBOX_FORTRAN_SERIALIZER_GET_FIELD_METAINFO(String, const char*);
@@ -409,7 +409,7 @@ void serialboxFortranSavepointAddMetainfoInt32(void* savepoint, const char* key,
   }
 }
 
-void serialboxFortranSavepointAddMetainfoInt64(void* savepoint, const char* key, long value) {
+void serialboxFortranSavepointAddMetainfoInt64(void* savepoint, const char* key, std::int64_t value) {
   Savepoint* sp = toSavepoint(static_cast<serialboxSavepoint_t*>(savepoint));
   try {
     sp->addMetainfo(key, value);
@@ -456,7 +456,7 @@ void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key
 
 SERIALBOX_FORTRAN_SAVEPOINT_GET_METAINFO(Boolean, int);
 SERIALBOX_FORTRAN_SAVEPOINT_GET_METAINFO(Int32, int);
-SERIALBOX_FORTRAN_SAVEPOINT_GET_METAINFO(Int64, long);
+SERIALBOX_FORTRAN_SAVEPOINT_GET_METAINFO(Int64, std::int64_t);
 SERIALBOX_FORTRAN_SAVEPOINT_GET_METAINFO(Float32, float);
 SERIALBOX_FORTRAN_SAVEPOINT_GET_METAINFO(Float64, double);
 SERIALBOX_FORTRAN_SAVEPOINT_GET_METAINFO(String, const char*);
