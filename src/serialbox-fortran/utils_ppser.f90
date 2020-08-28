@@ -63,20 +63,27 @@ CONTAINS
 
 !============================================================================
 
-SUBROUTINE ppser_initialize(directory, prefix, mode, prefix_ref, mpi_rank, rprecision, rperturb, realtype, archive, unique_id)
+SUBROUTINE ppser_initialize(directory, prefix, mode, directory_ref, prefix_ref, &
+                mpi_rank, rprecision, rperturb, realtype, archive, unique_id)
   CHARACTER(LEN=*), INTENT(IN)           :: directory, prefix
   INTEGER, OPTIONAL, INTENT(IN)          :: mode
-  CHARACTER(LEN=*), OPTIONAL, INTENT(IN) :: prefix_ref
+  CHARACTER(LEN=*), OPTIONAL, INTENT(IN) :: directory_ref, prefix_ref ! use a different serializer for reading (optional)
   INTEGER, OPTIONAL, INTENT(IN)          :: mpi_rank
   REAL(KIND=8), OPTIONAL, INTENT(IN)     :: rprecision, rperturb
   INTEGER, OPTIONAL, INTENT(IN)          :: realtype
   CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: archive
   LOGICAL, INTENT(IN), OPTIONAL          :: unique_id
 
+  CHARACTER(LEN=256)                     :: dir_ref
   CHARACTER(LEN=1), DIMENSION(128)       :: buffer
   CHARACTER(LEN=15)                      :: suffix
   INTEGER                                :: intvalue
   
+  IF (PRESENT(directory_ref)) THEN
+    dir_ref = directory_ref
+  ELSE
+    dir_ref = directory
+  ENDIF
 
   ! Initialize serializer and savepoint
   IF ( .NOT. ppser_initialized ) THEN
@@ -102,15 +109,15 @@ SUBROUTINE ppser_initialize(directory, prefix, mode, prefix_ref, mpi_rank, rprec
       ppser_hasref = .true.
       IF ( PRESENT(mpi_rank) ) THEN
         IF ( PRESENT(archive) ) THEN
-          CALL fs_create_serializer(directory, TRIM(prefix_ref)//TRIM(suffix), 'r', ppser_serializer_ref, archive)
+          CALL fs_create_serializer(dir_ref, TRIM(prefix_ref)//TRIM(suffix), 'r', ppser_serializer_ref, archive)
         ELSE
-          CALL fs_create_serializer(directory, TRIM(prefix_ref)//TRIM(suffix), 'r', ppser_serializer_ref)
+          CALL fs_create_serializer(dir_ref, TRIM(prefix_ref)//TRIM(suffix), 'r', ppser_serializer_ref)
         END IF
       ELSE
         IF ( PRESENT(archive) ) THEN
-          CALL fs_create_serializer(directory, TRIM(prefix_ref), 'r', ppser_serializer_ref, archive)
+          CALL fs_create_serializer(dir_ref, TRIM(prefix_ref), 'r', ppser_serializer_ref, archive)
         ELSE
-          CALL fs_create_serializer(directory, TRIM(prefix_ref), 'r', ppser_serializer_ref)
+          CALL fs_create_serializer(dir_ref, TRIM(prefix_ref), 'r', ppser_serializer_ref)
         END IF
       END IF
     END IF

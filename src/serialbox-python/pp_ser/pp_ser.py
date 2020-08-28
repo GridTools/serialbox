@@ -77,7 +77,7 @@ class PpSer:
 
     def __init__(self, infile, outfile='', ifdef='SERIALIZE', real='ireals',
                  module='m_serialize', identical=True, verbose=False,
-                 acc_prefix=True, acc_if='', modules=''):
+                 acc_prefix=True, acc_if='', modules='', sp_as_var=False):
 
         # public variables
         self.verbose = verbose
@@ -89,6 +89,7 @@ class PpSer:
         self.identical = identical    # write identical files (no preprocessing done)?
         self.acc_prefix = acc_prefix  # generate preprocessing marco for ACC_PREFIX
         self.acc_if = acc_if          # generate IF clause after OpenACC update
+        self.sp_as_var = sp_as_var    # Syntax for savepoints using variable instead of string
 
         # setup (also public)
         self.methods = {
@@ -460,7 +461,10 @@ class PpSer:
 
         self.__calls.add(self.methods['savepoint'])
         self.__calls.add(self.methods['spinfo'])
-        l += tab + 'call ' + self.methods['savepoint'] + '(\'' + name + '\', ppser_savepoint)\n'
+        if not self.sp_as_var:
+            l += tab + 'call ' + self.methods['savepoint'] + '(\'' + name + '\', ppser_savepoint)\n'
+        else:
+            l += tab + 'call ' + self.methods['savepoint'] + '(' + name + ', ppser_savepoint)\n'
         for k, v in zip(keys, values):
             l += tab + 'call ' + self.methods['spinfo'] + '(ppser_savepoint, \'' + k + '\', ' + v + ')\n'
 
@@ -1057,6 +1061,8 @@ def parse_args():
                       default='', type=str, dest='acc_if')
     parser.add_option('-m', '--module', help='Extra MODULE to be add to the use statement',
                       default='', type=str, dest='modules')
+    parser.add_option('-s', '--sp-as-var', help='Savepoint specified as variable instead of string',
+                      default=False, action='store_true', dest='sp_as_var')
     (options, args) = parser.parse_args()
     if len(args) < 1:
         parser.error('Need at least one source file to process')
@@ -1098,5 +1104,5 @@ if __name__ == "__main__":
             print('Processing file', infile)
             ser = PpSer(infile, real='wp', outfile=outfile, identical=(not options.ignore_identical),
                         verbose=options.verbose, acc_prefix=options.acc_prefix, acc_if=options.acc_if,
-                        modules=options.modules)
+                        modules=options.modules, sp_as_var=options.sp_as_var)
             ser.preprocess()
