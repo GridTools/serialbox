@@ -34,7 +34,7 @@ from sdbgui.tabstate import TabState
 
 
 class MainWindow(QMainWindow):
-    OnlineHelpUrl = QUrl("https://eth-cscs.github.io/serialbox2/sdb.html")
+    OnlineHelpUrl = QUrl("https://eth-cscs.github.io/serialbox/sdb.html")
 
     def __init__(self):
         super().__init__()

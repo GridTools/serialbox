@@ -7,7 +7,7 @@
 !
 !------------------------------------------------------------------------------
 !
-!+ This module contains the FortranTestGenerator (FTG) frontend of Serialbox2.
+!+ This module contains the FortranTestGenerator (FTG) frontend of serialbox.
 !+ For FTG see https://github.com/fortesg/fortrantestgenerator
 !
 !------------------------------------------------------------------------------
@@ -19,7 +19,7 @@ MODULE m_ser_ftg
 ! Description:
 !
 !   This module contains simplified wrapper subroutines for the Fortran interface
-!   of Serialbox2 (m_serialize.f90) to be used by the FortranTestGenerator
+!   of serialbox (m_serialize.f90) to be used by the FortranTestGenerator
 !   (https://github.com/fortesg/fortrantestgenerator), plus additional subroutines
 !   for allocating array variables based on the stored sizes and bounds.
 !

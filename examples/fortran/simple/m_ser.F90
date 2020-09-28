@@ -96,7 +96,7 @@ USE utils_ppser, ONLY:  &
           prefix_ref='SerialboxTest',rprecision=rprecision,rperturb=1.0e-5_8)
     call fs_create_savepoint('sp1', ppser_savepoint)
     call ppser_set_mode(2)
-    ! file: /Volumes/MeteoSwissCode/serialbox2/examples/Fortran/with_pp_ser/m_ser.f90 lineno: #40
+    ! file: /Volumes/MeteoSwissCode/serialbox/examples/Fortran/with_pp_ser/m_ser.f90 lineno: #40
     SELECT CASE ( ppser_get_mode() )
       CASE(0)
         call fs_write_field(ppser_serializer, ppser_savepoint, 'ser_a', a)

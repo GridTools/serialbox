@@ -21,8 +21,8 @@ To build Serialbox you need a C++11 toolchain, `CMake <http://www.cmake.org/>`_ 
 
    .. code-block:: console
 
-     $ git clone https://github.com/eth-cscs/serialbox2.git
-     $ cd serialbox2
+     $ git clone https://github.com/eth-cscs/serialbox.git
+     $ cd serialbox
      $ mkdir build
      $ cd build
 
@@ -45,7 +45,7 @@ To build Serialbox you need a C++11 toolchain, `CMake <http://www.cmake.org/>`_ 
 
    The underlying build tool can be invoked directly, of course, e.g ``make -j4``.
 
-#. After Serialbox has finished building, install it from the build directory. The files will be installed into the top-level ``install`` directory (i.e ``serialbox2/install``).
+#. After Serialbox has finished building, install it from the build directory. The files will be installed into the top-level ``install`` directory (i.e ``serialbox/install``).
 
    .. code-block:: console
 

@@ -7,7 +7,7 @@
 !
 !------------------------------------------------------------------------------
 !
-!+ This module contains the FortranTestGenerator (FTG) frontend of Serialbox2.
+!+ This module contains the FortranTestGenerator (FTG) frontend of serialbox.
 !+ For FTG see https://github.com/fortesg/fortrantestgenerator
 !
 !------------------------------------------------------------------------------

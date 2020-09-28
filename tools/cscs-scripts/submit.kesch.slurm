@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --job-name=serialbox2-unittest
+#SBATCH --job-name=serialbox-unittest
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --ntasks-per-socket=1
-#SBATCH --output=serialbox2-unittest.out
+#SBATCH --output=serialbox-unittest.out
 #SBATCH --partition=debug
 #SBATCH --time=00:2:00
 #SBATCH --cpus-per-task=12
