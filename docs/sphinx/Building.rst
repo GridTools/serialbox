@@ -21,7 +21,7 @@ To build Serialbox you need a C++11 toolchain, `CMake <http://www.cmake.org/>`_ 
 
    .. code-block:: console
 
-     $ git clone https://github.com/eth-cscs/serialbox.git
+     $ git clone https://github.com/GridTools/serialbox.git
      $ cd serialbox
      $ mkdir build
      $ cd build
@@ -266,5 +266,4 @@ External project specific variables
 
 **NETCDF_ROOT**:PATH
   Install directory of `NetCDF-4 <http://www.unidata.ucar.edu/software/netcdf/>`_.
-
 
