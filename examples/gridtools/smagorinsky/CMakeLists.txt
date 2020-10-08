@@ -32,7 +32,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 # We call the find_package-module of Serialbox and gridtools and set the include directories
 #
 find_package(Serialbox REQUIRED HINTS
-    "${CMAKE_CURRENT_LIST_DIR}/../serialbox2/install/cmake"
+    "${CMAKE_CURRENT_LIST_DIR}/../serialbox/install/cmake"
     "${SERIALBOX_ROOT}/cmake"
     "${SERIALBOX_DIR}/cmake"
     "$ENV{SERIALBOX_ROOT}/cmake")
