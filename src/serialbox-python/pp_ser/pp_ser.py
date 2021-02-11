@@ -48,13 +48,6 @@ __date__ = 'Sun Mar 23 22:06:44 2014'
 __email__ = 'oliver.fuhrer@meteoswiss.ch'
 
 
-def to_ascii(text):
-    if sys.version_info[0] == 3:
-        return bytes(text, 'ascii')
-    else:
-        return str(text)
-
-
 def filter_fortran(f):
     return (f.split('.')[-1].lower() in ['f90', 'inc', 'incf', 'f', 'f03'])
 
@@ -944,10 +937,10 @@ class PpSer:
         self.parse(generate=True)   # second pass, preprocess
         # write output
         if self.outfile != '':
-            output_file = tempfile.NamedTemporaryFile(delete=False)
+            output_file = tempfile.NamedTemporaryFile(mode='w+', delete=False)
             # same permissions as infile
             os.chmod(output_file.name, os.stat(self.infile).st_mode)
-            output_file.write(to_ascii(self.__outputBuffer))
+            output_file.write(self.__outputBuffer)
             output_file.close()
             useit = True
             if os.path.isfile(self.outfile) and not self.identical:
