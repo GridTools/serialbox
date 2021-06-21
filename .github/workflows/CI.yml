@@ -27,11 +27,11 @@ jobs:
       - name: Set defaults
         run: |
           export GCC_VERSION=$(echo ${{ matrix.compiler }} | cut -d'-' -f2)
-          echo "::set-env name=FC::gfortran-${GCC_VERSION}"
-          echo "::set-env name=TEST_FORTRAN::OFF"  # default will be overwritten in the next step
+          echo "FC=gfortran-${GCC_VERSION}" >> $GITHUB_ENV
+          echo "TEST_FORTRAN=OFF" >> $GITHUB_ENV  # default will be overwritten in the next step
       - name: Enable Fortran
         if: startsWith(matrix.compiler, 'gcc')
-        run: echo "::set-env name=TEST_FORTRAN::ON"
+        run: echo "TEST_FORTRAN=ON" >> $GITHUB_ENV
       - name: Install python modules
         run: pip3 install --user nose numpy
       - name: Cache pFUnit
