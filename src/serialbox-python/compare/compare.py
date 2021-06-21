@@ -307,7 +307,7 @@ def compare_fields(serializers, field, savepoint, dim_bounds):
     return False
 
 
-def compare(serializers, field_to_check, dim_bounds):
+def compare(serializers, field_to_check, dim_bounds, substr):
     """ Compare the data and info at every savepoint of field_1 to field_2 and returns
         True on success
     """
@@ -349,6 +349,10 @@ def compare(serializers, field_to_check, dim_bounds):
             fields_to_check = fields_at_savepoint
         else:
             fields_to_check = [field_to_check] if field_to_check in fields_at_savepoint else []
+
+        # Only check fields with name including substr if argument substr given
+        if substr != '':
+            fields_to_check = [field for field in fields_to_check if not field.find(substr)]
 
         savepoint_start_time = time()
         if fields_to_check:
@@ -449,6 +453,9 @@ def main(arguments=None):
     parser.add_argument("-q", "--info-only", dest="field_info_only", action="store_true",
                         help="only compare field meta-info (no data comparison) "
                              "(default: {})".format(get_config().FIELD_INFO_ONLY))
+    parser.add_argument("-f", "--filter-string", dest="substr", type=str,
+                        default='',
+                        help="only compare field names with SUBSTR in it")
     for dim in ["i", "j", "k", "l"]:
         parser.add_argument("-{}".format(dim), dest="{}".format(dim), metavar="START[:END]",
                             help="only compare the {} dimension 'START' or if 'END' is supplied "
@@ -492,7 +499,7 @@ def main(arguments=None):
     # Perform comparison
     ret = 1
     try:
-        ret = compare([serializer_1, serializer_2], field_1, dim_bounds)
+        ret = compare([serializer_1, serializer_2], field_1, dim_bounds, args.substr)
     except ser.SerialboxError as e:
         fatal_error(e)
     return ret
