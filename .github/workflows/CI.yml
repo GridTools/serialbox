@@ -27,11 +27,11 @@ jobs:
       - name: Set defaults
         run: |
           export GCC_VERSION=$(echo ${{ matrix.compiler }} | cut -d'-' -f2)
-          echo "::set-env name=FC::gfortran-${GCC_VERSION}"
-          echo "::set-env name=TEST_FORTRAN::OFF"  # default will be overwritten in the next step
+          echo "FC=gfortran-${GCC_VERSION}" >> $GITHUB_ENV
+          echo "TEST_FORTRAN=OFF" >> $GITHUB_ENV  # default will be overwritten in the next step
       - name: Enable Fortran
         if: startsWith(matrix.compiler, 'gcc')
-        run: echo "::set-env name=TEST_FORTRAN::ON"
+        run: echo "TEST_FORTRAN=ON" >> $GITHUB_ENV
       - name: Install python modules
         run: pip3 install --user nose numpy
       - name: Cache pFUnit
@@ -62,11 +62,11 @@ jobs:
           message("::set-output name=timestamp::${current_date}")
       - name: Set ccache environment
         run: |
-          echo "::set-env name=CCACHE_MAXSIZE::400M"
-          echo "::set-env name=CCACHE_BASEDIR::$GITHUB_WORKSPACE"
-          echo "::set-env name=CCACHE_DIR::$GITHUB_WORKSPACE/.ccache"
-          echo "::set-env name=CCACHE_COMPRESS::true"
-          echo "::set-env name=CCACHE_COMPRESSLEVEL::6"
+          echo "CCACHE_MAXSIZE=400M" >> $GITHUB_ENV
+          echo "CCACHE_BASEDIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+          echo "CCACHE_DIR=$GITHUB_WORKSPACE/.ccache" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESS=true" >> $GITHUB_ENV
+          echo "CCACHE_COMPRESSLEVEL=6" >> $GITHUB_ENV
       - name: ccache cache files
         uses: actions/cache@v1
         with:
