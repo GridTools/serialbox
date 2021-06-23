@@ -103,7 +103,7 @@ void serialboxFortranSerializerGetFieldHalos(const void* serializer, const char*
  */
 void serialboxFortranSerializerAddMetainfoBoolean(void* serializer, const char* key, int value);
 void serialboxFortranSerializerAddMetainfoInt32(void* serializer, const char* key, int value);
-void serialboxFortranSerializerAddMetainfoInt64(void* serializer, const char* key, long value);
+void serialboxFortranSerializerAddMetainfoInt64(void* serializer, const char* key, int64_t value);
 void serialboxFortranSerializerAddMetainfoFloat32(void* serializer, const char* key, float value);
 void serialboxFortranSerializerAddMetainfoFloat64(void* serializer, const char* key, double value);
 void serialboxFortranSerializerAddMetainfoString(void* serializer, const char* key,
@@ -125,7 +125,7 @@ void serialboxFortranSerializerGetMetainfoBoolean(const void* serializer, const 
 void serialboxFortranSerializerGetMetainfoInt32(const void* serializer, const char* key,
                                                 int* value);
 void serialboxFortranSerializerGetMetainfoInt64(const void* serializer, const char* key,
-                                                long* value);
+                                                int64_t* value);
 void serialboxFortranSerializerGetMetainfoFloat32(const void* serializer, const char* key,
                                                   float* value);
 void serialboxFortranSerializerGetMetainfoFloat64(const void* serializer, const char* key,
@@ -182,7 +182,7 @@ void serialboxFortranSerializerAddFieldMetainfoBoolean(void* serializer, const c
 void serialboxFortranSerializerAddFieldMetainfoInt32(void* serializer, const char* field,
                                                      const char* key, int value);
 void serialboxFortranSerializerAddFieldMetainfoInt64(void* serializer, const char* field,
-                                                     const char* key, long value);
+                                                     const char* key, int64_t value);
 void serialboxFortranSerializerAddFieldMetainfoFloat32(void* serializer, const char* field,
                                                        const char* key, float value);
 void serialboxFortranSerializerAddFieldMetainfoFloat64(void* serializer, const char* field,
@@ -207,7 +207,7 @@ void serialboxFortranSerializerGetFieldMetainfoBoolean(const void* serializer, c
 void serialboxFortranSerializerGetFieldMetainfoInt32(const void* serializer, const char* field,
                                                      const char* key, int* value);
 void serialboxFortranSerializerGetFieldMetainfoInt64(const void* serializer, const char* field,
-                                                     const char* key, long* value);
+                                                     const char* key, int64_t* value);
 void serialboxFortranSerializerGetFieldMetainfoFloat32(const void* serializer, const char* field,
                                                        const char* key, float* value);
 void serialboxFortranSerializerGetFieldMetainfoFloat64(const void* serializer, const char* field,
@@ -232,7 +232,7 @@ void serialboxFortranSerializerGetFieldMetainfoString(const void* serializer, co
  */
 void serialboxFortranSavepointAddMetainfoBoolean(void* savepoint, const char* key, int value);
 void serialboxFortranSavepointAddMetainfoInt32(void* savepoint, const char* key, int value);
-void serialboxFortranSavepointAddMetainfoInt64(void* savepoint, const char* key, long value);
+void serialboxFortranSavepointAddMetainfoInt64(void* savepoint, const char* key, int64_t value);
 void serialboxFortranSavepointAddMetainfoFloat32(void* savepoint, const char* key, float value);
 void serialboxFortranSavepointAddMetainfoFloat64(void* savepoint, const char* key, double value);
 void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key,
@@ -252,7 +252,7 @@ void serialboxFortranSavepointAddMetainfoString(void* savepoint, const char* key
 void serialboxFortranSavepointGetMetainfoBoolean(const void* savepoint, const char* key,
                                                  int* value);
 void serialboxFortranSavepointGetMetainfoInt32(const void* savepoint, const char* key, int* value);
-void serialboxFortranSavepointGetMetainfoInt64(const void* savepoint, const char* key, long* value);
+void serialboxFortranSavepointGetMetainfoInt64(const void* savepoint, const char* key, int64_t* value);
 void serialboxFortranSavepointGetMetainfoFloat32(const void* savepoint, const char* key,
                                                  float* value);
 void serialboxFortranSavepointGetMetainfoFloat64(const void* savepoint, const char* key,
