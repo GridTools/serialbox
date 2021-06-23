@@ -48,9 +48,17 @@ __date__ = 'Sun Mar 23 22:06:44 2014'
 __email__ = 'oliver.fuhrer@meteoswiss.ch'
 
 
-def to_ascii(text):
+def open23(name, mode='r'):
     if sys.version_info[0] == 3:
-        return bytes(text, 'ascii')
+        return open(name, mode,
+                    encoding=(None if 'b' in mode else 'UTF-8'))
+    else:
+        return open(name, mode)
+
+
+def bytes23(text):
+    if sys.version_info[0] == 3:
+        return bytes(text, 'UTF-8')
     else:
         return str(text)
 
@@ -902,7 +910,7 @@ class PpSer:
             self.__outputBuffer += '#define ACC_PREFIX !$acc\n'
 
         # open and parse file
-        input_file = open(os.path.join(self.infile), 'r')
+        input_file = open23(os.path.join(self.infile), 'r')
         try:
             self.line = ''
             for line in input_file:
@@ -947,7 +955,7 @@ class PpSer:
             output_file = tempfile.NamedTemporaryFile(delete=False)
             # same permissions as infile
             os.chmod(output_file.name, os.stat(self.infile).st_mode)
-            output_file.write(to_ascii(self.__outputBuffer))
+            output_file.write(bytes23(self.__outputBuffer))
             output_file.close()
             useit = True
             if os.path.isfile(self.outfile) and not self.identical:
