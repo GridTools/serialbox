@@ -121,6 +121,6 @@ jobs:
       - name: Configure
         run: ccache -s
       - name: Build
-        run: pip install src/serialbox-python
+        run: pip3 install src/serialbox-python
       - name: Execute tests
         run: cd build && python -m nose test/serialbox-python/serialbox
