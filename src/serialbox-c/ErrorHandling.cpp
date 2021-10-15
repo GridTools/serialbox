@@ -45,7 +45,7 @@ void serialboxFatalError(const char* reason) {
 void serialboxDefaultFatalErrorHandler(const char* reason) {
   std::fprintf(stderr, "Serialbox: ERROR: %s\n", reason);
   std::fflush(stderr);
-  std::exit(1);
+  serialboxStateErrorHandler(reason);
 }
 
 namespace internal {
