@@ -8,6 +8,7 @@ import os
 from setuptools import setup, Extension, find_packages
 from setuptools.command.build_ext import build_ext
 
+DIR = os.path.abspath(os.path.dirname(__file__))
 
 # Convert distutils Windows platform specifiers to CMake -A arguments
 PLAT_TO_CMAKE = {
@@ -141,7 +142,7 @@ setup(
     # description="A test project using pybind11 and CMake",
     # long_description="",
     install_requires=["numpy"],
-    ext_modules=[CMakeExtension("libSerialboxC", sourcedir="../../")],
+    ext_modules=[CMakeExtension("libSerialboxC", sourcedir=os.path.join(DIR, "../../"))],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
     # extras_require={"test": ["pytest"]},
