@@ -114,7 +114,7 @@ jobs:
         run: |
           export GCC_VERSION=$(echo ${{ matrix.compiler }} | cut -d'-' -f2)
           echo "FC=gfortran-${GCC_VERSION}" >> $GITHUB_ENV
-          echo "CMAKE_ARGS="-DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache" >> $GITHUB_ENV
+          echo "CMAKE_ARGS=-DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache" >> $GITHUB_ENV
           echo "TEST_FORTRAN=OFF" >> $GITHUB_ENV  # default will be overwritten in the next step
       - name: Install python dependencies
         run: pip3 install --user nose numpy
