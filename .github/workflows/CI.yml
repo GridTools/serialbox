@@ -129,4 +129,4 @@ jobs:
         run: |
           pip3 install src/serialbox-python
       - name: Execute tests
-        run: python -m nose test/serialbox-python/serialbox
+        run: python3 -m nose test/serialbox-python/serialbox
