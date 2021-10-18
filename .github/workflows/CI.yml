@@ -125,10 +125,6 @@ jobs:
         run: ccache -s
       - name: Build
         run: |
-          pwd
-          ls -l /
-          ls -l
-          pip3 --version
           pip3 install src/serialbox-python
       - name: Execute tests
-        run: cd build && python -m nose test/serialbox-python/serialbox
+        run: python -m nose test/serialbox-python/serialbox

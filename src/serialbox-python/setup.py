@@ -133,19 +133,13 @@ class CMakeBuild(build_ext):
 
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.
-print(DIR)
-print(os.path.join(DIR, "../../"))
 setup(
     name="serialbox",
     version="0.0.1",
     author="Serialbox Developers",
     packages=find_packages(),
-    # author_email="",
-    # description="A test project using pybind11 and CMake",
-    # long_description="",
     install_requires=["numpy"],
     ext_modules=[CMakeExtension("libSerialboxC", sourcedir=os.path.join(DIR, "../../"))],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
-    # extras_require={"test": ["pytest"]},
 )
