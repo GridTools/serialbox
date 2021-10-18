@@ -117,7 +117,7 @@ jobs:
           echo "CMAKE_ARGS=-DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache" >> $GITHUB_ENV
           echo "TEST_FORTRAN=OFF" >> $GITHUB_ENV  # default will be overwritten in the next step
       - name: Install python dependencies
-        run:
+        run: |
           pip3 --version
           pip3 install --upgrade pip setuptools wheel
           pip3 install --user nose numpy
