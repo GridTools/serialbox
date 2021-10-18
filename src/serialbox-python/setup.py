@@ -133,6 +133,8 @@ class CMakeBuild(build_ext):
 
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.
+print(DIR)
+print(os.path.join(DIR, "../../"))
 setup(
     name="serialbox",
     version="0.0.1",
