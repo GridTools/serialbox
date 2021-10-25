@@ -66,8 +66,6 @@ fi
 
 #------------------------------ Set environment --------------------------------
 
-module load craype-x86-skylake
-module load craype-network-infiniband
 module load slurm
 module load cmake/3.14.5
 
@@ -91,5 +89,5 @@ export FC=$(which $FC_COMPILER)
 export Boost_NO_SYSTEM_PATHS=true
 export Boost_NO_BOOST_CMAKE=true
 
-export BOOST_ROOT=/project/c14/install/tsa/boost/boost_1_67_0
+export BOOST_ROOT=/apps/tsa/SSL/gridtools/jenkins/boost_1_77_0
 
