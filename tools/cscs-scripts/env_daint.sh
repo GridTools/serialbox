@@ -68,7 +68,7 @@ fi
 
 module load daint-gpu
 module use /users/jenkins/easybuild/daint/haswell/modules/all
-module load CMake/3.12.0
+module load CMake
 
 if [ "$FC_COMPILER" = "pgfortran" ]; then
     module swap PrgEnv-cray PrgEnv-pgi
@@ -77,16 +77,9 @@ elif [ "$FC_COMPILER" = "ftn" ]; then
     module load gcc
 elif [ "$FC_COMPILER" = "ifort" ]; then
     module swap PrgEnv-cray PrgEnv-intel
-    module load gcc/7.3.0
-elif [ "$FC_COMPILER" = "pgfortran18.10" ]; then
-    module use /project/c14/data-eniac/modulefiles
-    module swap PrgEnv-cray PrgEnv-pgi
-    module load eniac/pgi-18.10
     module load gcc
-    FC_COMPILER="pgfortran"
 else
     module swap PrgEnv-cray PrgEnv-gnu
-    module swap gcc gcc/5.3.0
 fi
 
 module load cray-netcdf
@@ -100,7 +93,7 @@ export FC=$(which $FC_COMPILER)
 export Boost_NO_SYSTEM_PATHS=true
 export Boost_NO_BOOST_CMAKE=true
 
-export BOOST_ROOT=/project/c14/install/daint/boost/boost_1_67_0
+export BOOST_ROOT=/apps/daint/SSL/gridtools/jenkins/boost_1_77_0
 export BOOST_INCLUDE={BOOST_ROOT}/include/
 export LD_LIBRARY_PATH=${BOOST_ROOT}/lib:$LD_LIBRARY_PATH
 
