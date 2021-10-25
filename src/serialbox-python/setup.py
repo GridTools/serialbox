@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+# NOTE: Serialbox does not support Windows.
+# Windows instructions in this file are inherited from the template
+# https://github.com/pybind/cmake_example/blob/master/setup.py.
 import os
 import re
 import subprocess
