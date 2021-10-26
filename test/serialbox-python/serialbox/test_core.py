@@ -21,7 +21,8 @@ from serialbox import Config
 class TestCore(unittest.TestCase):
     def test_config(self):
         config = Config().compile_options
-        self.assertTrue("BOOST_VERSION" in config)
+        self.assertIsInstance(config, dict)
+        self.assertTrue(len(config) > 0)
 
 
 if __name__ == "__main__":

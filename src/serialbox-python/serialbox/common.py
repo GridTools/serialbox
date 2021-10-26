@@ -48,7 +48,7 @@ def get_library():
     errors = []
 
     cwd = path.dirname(path.realpath(__file__))
-    dirs = (cwd, path.join(cwd, "../../lib"),)
+    dirs = (cwd, path.join(cwd, "../../lib"), path.join(cwd, ".."))
 
     for d in dirs:
         t = platform.system()
