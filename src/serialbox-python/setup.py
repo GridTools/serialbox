@@ -72,6 +72,7 @@ class CMakeBuild(build_ext):
             from distutils import sysconfig
             vars = sysconfig.get_config_vars()
             vars["SO"] = ".dylib"
+            vars["EXT_SUFFIX"] = ".dylib"
 
         if self.compiler.compiler_type != "msvc":
             # Using Ninja-build since it a) is available as a wheel and b)
