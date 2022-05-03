@@ -32,7 +32,7 @@ class Config(object):
         >>> d = config.get_dict()
         >>> d
         {'SERIALBOX_HAS_NETCDF': '1',
-         'SERIALBOX_CXX_FLAGS': '-std=c++11  -march=native -fPIC -O2 -g -DNDEBUG',
+         'SERIALBOX_CXX_FLAGS': '-std=c++11  -fPIC -O2 -g -DNDEBUG',
          'BOOST_VERSION': '1_61',
          'SERIALBOX_ASYNC_API': '1',
          'SERIALBOX_CXX_COMPILER': '/usr/bin/clang',
