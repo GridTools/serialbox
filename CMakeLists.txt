@@ -120,6 +120,7 @@ endif()
 if(SERIALBOX_BUILD_SHARED AND CMAKE_Fortran_COMPILER_ID MATCHES "Cray")
   message(WARNING "Cray Fortran compiler detected, disabling shared libraries")
   set(SERIALBOX_BUILD_SHARED OFF)
+  set(SERIALBOX_ENABLE_SDB OFF)
   set(SERIALBOX_ENABLE_PYTHON OFF)
 endif()
 
