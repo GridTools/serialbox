@@ -49,6 +49,7 @@ jobs:
         env:
           PFUNIT_VERSION: 4.4.1
         run: |
+          apt-get update && apt-get -y install m4
           git clone --branch v${PFUNIT_VERSION} --depth 1 https://github.com/Goddard-Fortran-Ecosystem/pFUnit.git
           cd pFUnit
           mkdir -p build && cd build
