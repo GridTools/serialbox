@@ -49,7 +49,7 @@ jobs:
         env:
           PFUNIT_VERSION: 4.4.1
         run: |
-          git clone --branch ${PFUNIT_VERSION} --depth 1 https://github.com/Goddard-Fortran-Ecosystem/pFUnit.git
+          git clone --branch v${PFUNIT_VERSION} --depth 1 https://github.com/Goddard-Fortran-Ecosystem/pFUnit.git
           cd pFUnit
           mkdir -p build && cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/pfunit 
