@@ -120,6 +120,10 @@ endif()
 # Set shared library flags
 if(SERIALBOX_BUILD_SHARED)
   set(BUILD_SHARED_LIBS ON)
+  if(CMAKE_Fortran_COMPILER_ID MATCHES "Cray")
+    message(WARNING "Cray Fortran compiler detected, disabling shared libraries")
+    set(BUILD_SHARED_LIBS OFF)
+  endif()
 
   # Use, i.e. don't skip the full RPATH for the build tree
   set(CMAKE_SKIP_BUILD_RPATH FALSE)
