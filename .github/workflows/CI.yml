@@ -17,8 +17,6 @@ jobs:
         compiler: [gcc-8, gcc-10, gcc-11, clang-9, clang-12, clang-13]
         build_type: [Debug, Release]
         exclude:
-          - compiler: gcc-7
-            build_type: Debug
           - compiler: gcc-10
             build_type: Debug
           - compiler: clang-9
