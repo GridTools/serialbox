@@ -11,17 +11,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: mrtravis/gridtools:${{ matrix.compiler }}
+    container: ghcr.io/gridtools/gridtools-base:${{ matrix.compiler }}
     strategy:
       matrix:
-        compiler: [gcc-7, gcc-8, gcc-9, clang-9]
+        compiler: [gcc-8, gcc-10, gcc-11, clang-9, clang-12, clang-13]
         build_type: [Debug, Release]
         exclude:
-          - compiler: gcc-7
-            build_type: Debug
-          - compiler: gcc-8
+          - compiler: gcc-10
             build_type: Debug
           - compiler: clang-9
+            build_type: Debug
+          - compiler: clang-12
             build_type: Debug
 
     steps:
@@ -32,7 +32,7 @@ jobs:
           echo "FC=gfortran-${GCC_VERSION}" >> $GITHUB_ENV
           echo "TEST_FORTRAN=OFF" >> $GITHUB_ENV  # default will be overwritten in the next step
       - name: Enable Fortran
-        if: startsWith(matrix.compiler, 'gcc')
+        if: startsWith(matrix.compiler, 'clang') == 'false'
         run: echo "TEST_FORTRAN=ON" >> $GITHUB_ENV
       - name: Install python modules
         run: pip3 install --user nose numpy
@@ -45,14 +45,11 @@ jobs:
       - name: Install pFUnit
         if: startsWith(matrix.compiler, 'gcc') && steps.cache-pfunit.outputs.cache-hit != 'true'
         env:
-          PFUNIT_VERSION: 3.2.9
+          PFUNIT_VERSION: 4.4.1
         run: |
-          export PFUNIT_FILE=pFUnit-${PFUNIT_VERSION}.tgz
-          export PFUNIT_LINK=https://downloads.sourceforge.net/project/pfunit/Source/${PFUNIT_FILE}
-          export PFUNIT_DIR=pFUnit-${PFUNIT_VERSION}
-          wget $PFUNIT_LINK
-          tar xf $PFUNIT_FILE
-          cd $PFUNIT_DIR
+          apt-get update && apt-get -y install m4
+          git clone --branch v${PFUNIT_VERSION} --depth 1 https://github.com/Goddard-Fortran-Ecosystem/pFUnit.git
+          cd pFUnit
           mkdir -p build && cd build
           cmake .. -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/pfunit 
           make -j8 install
@@ -87,7 +84,7 @@ jobs:
             -DSERIALBOX_ENABLE_FORTRAN=${TEST_FORTRAN} \
             -DSERIALBOX_TESTING_FORTRAN=${TEST_FORTRAN} \
             -DSERIALBOX_TESTING_PYTHON=ON \
-            -DpFUnit_DIR=${GITHUB_WORKSPACE}/pfunit \
+            -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/pfunit \
             -DCMAKE_C_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
       - name: Build

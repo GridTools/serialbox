@@ -1,7 +1,7 @@
 MODULE serialbox_test
    
   USE ISO_FORTRAN_ENV
-  USE pfunit_mod
+  USE funit
   USE m_serialize
   USE iso_c_binding
   

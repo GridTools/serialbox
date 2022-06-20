@@ -4,7 +4,7 @@ MODULE ser_ftg_cmp_test
 
   USE iso_c_binding
   USE iso_fortran_env 
-  USE pfunit_mod  
+  USE funit  
   USE m_ser_ftg
   USE m_ser_ftg_cmp
   

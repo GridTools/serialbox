@@ -11,6 +11,7 @@
 *.settings
 .idea
 */unittest-tmp-dir/*
+*.venv
 
 # Build directories
 build*/
@@ -38,4 +39,3 @@ gh-pages*
 #theia/vscode/gitpod settings
 /compile_commands.json
 /.clangd
-
