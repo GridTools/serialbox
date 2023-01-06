@@ -51,7 +51,7 @@ class TypeID(Enum):
     ArrayOfString = Array | String
 
 
-BooleanTypes = (bool, np.bool_,)
+BooleanTypes = (bool,)
 Int32Types = (int, np.int8, np.int16, np.int32, np.uint8, np.uint16, np.uint32,)
 Int64Types = (np.int64, np.uint64,)
 Float32Types = (np.float32,)
@@ -80,7 +80,7 @@ def typeID2numpy(typeid):
     """Convert serialbox.TypeID to numpy.dtype
     """
     if typeid == TypeID.Boolean:
-        return np.bool_
+        return bool
     elif typeid == TypeID.Int32:
         return np.int32
     elif typeid == TypeID.Int64:
