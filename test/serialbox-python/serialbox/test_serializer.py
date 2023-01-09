@@ -344,7 +344,7 @@ class TestSerializer(unittest.TestCase):
         #
         # Setup fields
         #
-        field_bool = np.ndarray(dtype=np.bool, shape=[N, N, N])
+        field_bool = np.ndarray(dtype=bool, shape=[N, N, N])
         field_int32 = np.ndarray(dtype=np.int32, shape=[N, N, N])
         field_int64 = np.ndarray(dtype=np.int64, shape=[N, N, N])
         field_float32 = np.ndarray(dtype=np.float32, shape=[N, N, N])
