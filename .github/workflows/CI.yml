@@ -92,38 +92,33 @@ jobs:
       - name: Execute tests
         run: cd build && ctest --output-on-failure
 
-  build-pip:
+  build-python:
     runs-on: ubuntu-latest
-    container: mrtravis/gridtools:${{ matrix.compiler }}
     strategy:
       matrix:
-        compiler: [gcc-7, gcc-8, gcc-9, clang-9]
-        build_type: [Debug, Release]
-        exclude:
-          - compiler: gcc-7
-            build_type: Debug
-          - compiler: gcc-8
-            build_type: Debug
-          - compiler: clang-9
-            build_type: Debug
-
+        python-version: [ "3.10" ]
     steps:
-      - uses: actions/checkout@v1
-      - name: Set defaults
+      - uses: actions/checkout@v3
+      - name: install requirements
         run: |
-          export GCC_VERSION=$(echo ${{ matrix.compiler }} | cut -d'-' -f2)
-          echo "FC=gfortran-${GCC_VERSION}" >> $GITHUB_ENV
-          echo "CMAKE_ARGS=-DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache" >> $GITHUB_ENV
-          echo "TEST_FORTRAN=OFF" >> $GITHUB_ENV  # default will be overwritten in the next step
+          sudo apt-get update
+          sudo apt-get install libboost-all-dev
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+            python-version: ${{ matrix.python-version }}
+
       - name: Install python dependencies
         run: |
-          pip3 --version
-          pip3 install --user nose numpy
-      - name: Configure
-        run: ccache -s
-      - name: Build
+          python -m pip install --upgrade pip setuptools wheel
+
+      - name: setup python env install
         run: |
-          pip3 install src/serialbox-python
+              python -m venv .venv
+              source .venv/bin/activate
+              pip install -r src/serialbox-python/requirements.txt
+
       - name: Execute tests
         run: |
-          python3 -m nose test/serialbox-python/serialbox
+          pytest -v test/serialbox-python/serialbox  
