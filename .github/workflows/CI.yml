@@ -118,7 +118,7 @@ jobs:
       - name: Install python dependencies
         run: |
           pip3 --version
-          pip3 install --user numpy pytest
+          pip3 install --user nose numpy
       - name: Configure
         run: ccache -s
       - name: Build
@@ -126,4 +126,4 @@ jobs:
           pip3 install src/serialbox-python
       - name: Execute tests
         run: |
-          pytest -v test/serialbox-python/serialbox
+          python3 -m nose test/serialbox-python/serialbox
