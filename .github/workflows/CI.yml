@@ -101,9 +101,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: install boost
-        uses: MarkusJx/install-boost@v2.4.1
-        with:
-          boost_version: 1.74.0
+        if: matrix.os == "ubuntu-latest"
+        run: |
+          sudo apt-get update
+          sudo apt-get install libboost-all-dev
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -121,7 +122,4 @@ jobs:
               source .venv/bin/activate
               pip install -r src/serialbox-python/requirements.txt
               pip install src/serialbox-python
-          
-      - name: test
-        run: |  
-              pytest -v test/serialbox-python/serialbox  
+              pytest -v test/serialbox-python/serialbox
