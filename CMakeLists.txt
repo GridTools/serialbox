@@ -135,7 +135,7 @@ if(SERIALBOX_BUILD_SHARED)
   set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
   set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-  set(CMAKE_MACOSX_RPATH "${CMAKE_INSTALL_RPATH}")
+  set(CMAKE_MACOSX_RPATH ON)
 
   # Add the automatically determined parts of the RPATH which point to directories outside the
   # build tree to the install RPATH
