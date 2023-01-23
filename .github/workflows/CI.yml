@@ -95,16 +95,21 @@ jobs:
   build-python:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
         python-version: [ "3.10"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       - name: install boost
-        if: ${{ matrix.os }} == 'ubuntu-latest'
+        if: ${{ matrix.os }} == 'macos-latest'
         run: |
-          sudo apt-get update
-          sudo apt-get install libboost-all-dev
+            brew install boost
+        else:
+          run: |
+            sudo apt-get update
+            sudo apt-get install libboost-all-dev
+
+        
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -112,14 +117,21 @@ jobs:
             python-version: ${{ matrix.python-version }}
             cache: 'pip'
 
-      - name:  upgrade python
+      - name:  upgrade python tools
         run: |
           python -m pip install --upgrade pip setuptools wheel
 
       - name: install dependencies
         run: |
-              python -m venv .venv
-              source .venv/bin/activate
+              echo "installing dependencies" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
               pip install -r src/serialbox-python/requirements.txt
               pip install src/serialbox-python
-              pytest -v test/serialbox-python/serialbox
+      - name: run tests
+        run: | 
+             echo "running tests" >> $GITHUB_STEP_SUMMARY
+             echo "" >> $GITHUB_STEP_SUMMARY
+             pytest -v test/serialbox-python/serialbox >> $GITHUB_STEP_SUMMARY
+
+      - name: clean up
+        run: pip uninstall --yes serialbox
