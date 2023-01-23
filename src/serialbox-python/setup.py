@@ -51,6 +51,7 @@ class CMakeBuild(build_ext):
         cmake_args = [
             "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}".format(extdir),
             "-DPYTHON_EXECUTABLE={}".format(sys.executable),
+            "-DCMAKE_MACOSX_RPATH=true",
             "-DCMAKE_BUILD_TYPE={}".format(cfg),  # not used on MSVC, but no harm
             "-DSERIALBOX_ENABLE_FORTRAN=false",
             "-DCMAKE_BUILD_RPATH={}".format(origin),
