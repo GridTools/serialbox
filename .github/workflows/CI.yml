@@ -127,6 +127,3 @@ jobs:
 
       - name: run tests
         run: pytest -v test/serialbox-python/serialbox >> $GITHUB_STEP_SUMMARY
-
-      - name: clean up
-        run: pip uninstall --yes serialbox
