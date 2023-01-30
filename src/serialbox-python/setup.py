@@ -2,7 +2,6 @@
 # NOTE: Serialbox does not support Windows.
 # Windows instructions in this file are inherited from the template
 # https://github.com/pybind/cmake_example/blob/master/setup.py.
-import os
 import re
 import subprocess
 import sys
@@ -34,7 +33,7 @@ class CMakeExtension(Extension):
 class CMakeBuild(build_ext):
     def build_extension(self, ext):
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-
+        origin = self._get_origin()
         # required for auto-detection & inclusion of auxiliary "native" libs
         if not extdir.endswith(os.path.sep):
             extdir += os.path.sep
@@ -54,6 +53,7 @@ class CMakeBuild(build_ext):
             "-DPYTHON_EXECUTABLE={}".format(sys.executable),
             "-DCMAKE_BUILD_TYPE={}".format(cfg),  # not used on MSVC, but no harm
             "-DSERIALBOX_ENABLE_FORTRAN=false",
+            "-DCMAKE_BUILD_RPATH={}".format(origin),
             "-DSERIALBOX_ENABLE_SDB=false",
             "-DSERIALBOX_ASYNC_API=false",
 
@@ -133,6 +133,14 @@ class CMakeBuild(build_ext):
         subprocess.check_call(
             ["cmake", "--build", "."] + build_args, cwd=self.build_temp
         )
+
+    def _get_origin(self):
+        origin = ""
+        if sys.platform == "linux":
+            origin = "${ORIGIN}"
+        elif sys.platform == "darwin":
+            origin = "@loader_path"
+        return origin
 
 
 # The information here can also be placed in setup.cfg - better separation of

@@ -1,0 +1,6 @@
+numpy >= 1.23
+pytest>=7.2
+pytest-cache>=1.0
+setuptools>=40.8.0
+wheel>=0.37.1
+cmake>=3.25
