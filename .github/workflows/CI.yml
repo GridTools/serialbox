@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Set defaults
-        if: startsWith(matrix.compiler, 'clang') == 'true' or startsWith(matrix.compiler, 'gcc') == 'true'
+        if: startsWith(matrix.compiler, 'clang') == 'true' || startsWith(matrix.compiler, 'gcc') == 'true'
         run: |
           export GCC_VERSION=$(echo ${{ matrix.compiler }} | cut -d'-' -f2)
           echo "FC=gfortran-${GCC_VERSION}" >> $GITHUB_ENV
