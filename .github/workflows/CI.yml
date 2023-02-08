@@ -55,7 +55,7 @@ jobs:
         shell: cmake -P {0}
         run: |
           string(TIMESTAMP current_date "%Y-%m-%d-%H;%M;%S" UTC)
-          echo "timestamp=${current_date}" >> $GITHUB_OUTPUT
+          message('echo "timestamp=${current_date}" >> $GITHUB_OUTPUT')
       - name: Set ccache environment
         run: |
           echo "CCACHE_MAXSIZE=400M" >> $GITHUB_ENV
