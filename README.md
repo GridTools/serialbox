@@ -1,5 +1,5 @@
 <a href="https://gridtools.github.io/serialbox/"><img src="docs/logo/logo.png" width="559" height="212" border="0" alt="Serialbox documentation" /></a>
-
+ 
 ![](https://github.com/GridTools/serialbox/workflows/CI/badge.svg?branch=master) <a target="_blank" href="http://semver.org">![Version][Version.Badge]</a> <a target="_blank" href="https://opensource.org/licenses/BSD-2-Clause">![License: BSD][BSD.License]</a> <a target="_blank" href="https://gridtools.github.io/serialbox/">![Documentation][Documentation.Badge]</a>
 
 ## Introduction
