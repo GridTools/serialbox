@@ -14,12 +14,14 @@ jobs:
     container: ghcr.io/gridtools/gridtools-base:${{ matrix.compiler }}
     strategy:
       matrix:
-        compiler: [gcc-8, gcc-10, gcc-11, clang-9, clang-12, clang-13]
+        compiler: [gcc-8, gcc-9, gcc-10, gcc-11, clang-10, clang-12, clang-13]
         build_type: [Debug, Release]
         exclude:
+          - compiler: gcc-9
+            build_type: Debug
           - compiler: gcc-10
             build_type: Debug
-          - compiler: clang-9
+          - compiler: clang-10
             build_type: Debug
           - compiler: clang-12
             build_type: Debug
@@ -35,7 +37,7 @@ jobs:
         if: startsWith(matrix.compiler, 'clang') == 'false'
         run: echo "TEST_FORTRAN=ON" >> $GITHUB_ENV
       - name: Install python modules
-        run: pip3 install --user nose numpy
+        run: pip3 install --user nose-py3 numpy
       - name: Cache pFUnit
         id: cache-pfunit
         uses: actions/cache@v1
@@ -96,34 +98,34 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        python-version: [ "3.10"]
+        python-version: ["3.10"]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
       - name: install boost on macos
         if: ${{ matrix.os  == 'macos-latest'}}
         run: |
-            brew install boost
-      - name:  install boost for ubuntu
+          brew install boost
+      - name: install boost for ubuntu
         if: ${{ matrix.os   == 'ubuntu-latest'}}
         run: |
-            sudo apt-get update
-            sudo apt-get install libboost-all-dev
+          sudo apt-get update
+          sudo apt-get install libboost-all-dev
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
-            python-version: ${{ matrix.python-version }}
-            cache: 'pip'
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
 
-      - name:  upgrade python tools
+      - name: upgrade python tools
         run: python -m pip install --upgrade pip setuptools wheel
 
       - name: install dependencies
         run: pip install -r src/serialbox-python/requirements.txt
 
       - name: build
-        run:  pip install src/serialbox-python
+        run: pip install src/serialbox-python
 
       - name: run tests
         run: pytest -v test/serialbox-python/serialbox >> $GITHUB_STEP_SUMMARY

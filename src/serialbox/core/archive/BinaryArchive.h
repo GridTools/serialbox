@@ -16,10 +16,10 @@
 #define SERIALBOX_CORE_ARCHIVE_BINARYARCHIVE_H
 
 #include "serialbox/core/Compiler.h"
-#include "serialbox/core/Filesystem.h"
 #include "serialbox/core/Json.h"
 #include "serialbox/core/archive/Archive.h"
 #include "serialbox/core/hash/Hash.h"
+#include <filesystem>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -149,10 +149,10 @@ public:
 
 private:
   OpenModeKind mode_;
-  filesystem::path directory_;
+  std::filesystem::path directory_;
   std::string prefix_;
 
-  filesystem::path metaDatafile_;
+  std::filesystem::path metaDatafile_;
   std::unique_ptr<Hash> hash_;
   json::json json_;
   FieldTable fieldTable_;

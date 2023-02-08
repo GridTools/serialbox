@@ -78,7 +78,6 @@ target_include_directories(SerialboxObjects
         $<INSTALL_INTERFACE:include>
     )
 target_link_libraries(SerialboxObjects PRIVATE Boost::boost)
-target_link_libraries(SerialboxObjects PUBLIC SerialboxFilesytemTarget)
 # we use "-lpthread" instead of ${CMAKE_THREAD_LIBS_INIT} on purpose, because ${CMAKE_THREAD_LIBS_INIT}
 # contains "-pthread" instead of "-lpthread" which is a problem if it propagates to nvcc via the target
 target_link_libraries(SerialboxObjects PUBLIC pthread)

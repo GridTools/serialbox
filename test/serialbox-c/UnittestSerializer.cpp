@@ -64,7 +64,7 @@ TEST_F(CSerializerUtilityTest, Construction) {
         Write, (directory->path() / "dir-is-created-from-write").c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
 
-    ASSERT_TRUE(filesystem::exists(directory->path() / "dir-is-created-from-write"));
+    ASSERT_TRUE(std::filesystem::exists(directory->path() / "dir-is-created-from-write"));
 
     serialboxSerializerUpdateMetaData(ser);
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
@@ -92,7 +92,8 @@ TEST_F(CSerializerUtilityTest, Construction) {
 
   {
     // MetaData-prefix.json does not exist -> Exception
-    filesystem::remove((directory->path() / "dir-is-created-from-write") / "MetaData-Field.json");
+    std::filesystem::remove((directory->path() / "dir-is-created-from-write") /
+                            "MetaData-Field.json");
 
     serialboxSerializer_t* ser = serialboxSerializerCreate(
         Read, (directory->path() / "dir-is-created-from-write").c_str(), "Field", "Binary");
@@ -116,7 +117,7 @@ TEST_F(CSerializerUtilityTest, Construction) {
     serialboxSerializer_t* ser = serialboxSerializerCreate(
         Append, (directory->path() / "dir-is-created-from-append").c_str(), "Field", "Binary");
     ASSERT_FALSE(this->hasErrorAndReset()) << this->getLastErrorMsg();
-    ASSERT_TRUE(filesystem::exists(directory->path() / "dir-is-created-from-append"));
+    ASSERT_TRUE(std::filesystem::exists(directory->path() / "dir-is-created-from-append"));
     serialboxSerializerDestroy(ser);
   }
 }

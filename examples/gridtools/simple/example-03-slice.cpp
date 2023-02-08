@@ -16,7 +16,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 //
-// Include gridtools headers (Serialbox only supports C++11)
+// Include gridtools headers
 //
 #include <gridtools/stencil_composition/stencil_composition.hpp>
 
@@ -60,7 +60,8 @@ int main() {
     std::default_random_engine gen;
     std::uniform_real_distribution<double> dist(0.0, 1.0);
 
-    storage_t field_in(storage_info, [&](int i, int j, int k) { return dist(gen); }, "storage");
+    storage_t field_in(
+        storage_info, [&](int i, int j, int k) { return dist(gen); }, "storage");
     storage_t field_out(storage_info, -1., "storage");
 
     //

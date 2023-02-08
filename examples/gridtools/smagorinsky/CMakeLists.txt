@@ -43,9 +43,9 @@ include_directories(SYSTEM ${SERIALBOX_INCLUDE_DIRS})
 include_directories(SYSTEM ${GRIDTOOLS_INCLUDE_DIRS})
 
 #
-# Serialbox requires C++11
+# Serialbox requires C++17
 #
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 
 #
 # Don't use Debug symbols, gcc takes to long otherwise ;)

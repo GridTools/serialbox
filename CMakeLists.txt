@@ -55,7 +55,6 @@ option(SERIALBOX_LOGGING "Enable logging" ON)
 option(SERIALBOX_ASYNC_API "Enable the asynchronous API" ON)
 option(SERIALBOX_EXAMPLES "Build example exectuables" ON)
 
-option(SERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM "Use std::experimental::filesystem if available" ON)
 option(SERIALBOX_USE_OPENSSL "Use OpenSSL library" OFF)
 option(SERIALBOX_USE_NETCDF "Use NetCDF library" OFF)
 
@@ -77,8 +76,8 @@ option(SERIALBOX_VERBOSE_WARNINGS "Enable verbose warnings (-Wall)" OFF)
 ## Perform checks to make sure we support the current compiler
 include(SerialboxCheckCxxCompilerSupport)
 
-## Set C++ standard to C++11
-set(CMAKE_CXX_STANDARD 11)
+## Set C++ standard to C++17
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Compiler specific
@@ -237,51 +236,19 @@ if(SERIALBOX_ENABLE_PYTHON)
 
 endif(SERIALBOX_ENABLE_PYTHON)
 
+#---------------------------------------- Filesystem -----------------------------------------------
+# link with stdc++fs for gcc < 9.0 (in gcc 9 it's part of the runtime)
+link_libraries( "$<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:-lstdc++fs>" )
+
 #---------------------------------------- GridTools ------------------------------------------------
 if(SERIALBOX_TESTING_GRIDTOOLS)
   find_package(GridTools QUIET REQUIRED)
   set(SERIALBOX_HAS_GRIDTOOLS 1)
 endif(SERIALBOX_TESTING_GRIDTOOLS)
 
-#---------------------------------------- std::experimental::filesystem ----------------------------
-if(SERIALBOX_ENABLE_EXPERIMENTAL_FILESYSTEM)
-    unset(STD_FILESYSTEM_LIB_CHECK) #
-    find_library( STD_FILESYSTEM_LIB_CHECK NAMES stdc++fs PATHS
-        ${CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES}
-        )
-    mark_as_advanced(STD_FILESYSTEM_LIB_CHECK)
-    if( STD_FILESYSTEM_LIB_CHECK )
-      message(STATUS "Using std::experimental::filesystem (no dependency on compiled boost libs)")
-      add_library(SerialboxFilesytemTarget INTERFACE)
-      target_link_libraries(SerialboxFilesytemTarget INTERFACE ${STD_FILESYSTEM_LIB_CHECK})
-      set(SERIALBOX_FILESYSTEM_LIBRARY_STRING "SERIALBOX_USE_STD_EXPERIMENTAL_FILESYSTEM")
-      set(_use_boost_filesystem OFF)
-    else()
-      message(STATUS "std::experimental::filesystem not found, falling back to boost::filesystem")
-      set(_use_boost_filesystem ON)
-    endif()
-else()
-    set(_use_boost_filesystem ON)
-endif()
-
-#---------------------------------------- Boost ----------------------------------------------------
-if(_use_boost_filesystem)
-    set(REQUIRED_BOOST_COMPONENTS filesystem system)
-endif()
-
 # If ${REQUIRED_BOOST_COMPONENTS} is empty we still need the headers
-find_package(Boost 1.54 REQUIRED ${REQUIRED_BOOST_COMPONENTS})
-link_directories(${Boost_LIBRARY_DIRS})
+find_package(Boost 1.54 REQUIRED)
 set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
-
-if(_use_boost_filesystem)
-    add_library(SerialboxFilesytemTarget INTERFACE)
-    target_link_libraries(SerialboxFilesytemTarget INTERFACE Boost::filesystem)
-    set(SERIALBOX_FILESYSTEM_LIBRARY_STRING "SERIALBOX_USE_BOOST_FILESYSTEM")
-endif()
-
-serialbox_install_targets( TARGETS SerialboxFilesytemTarget )
-
 
 #---------------------------------------- STELLA ---------------------------------------------------
 if(SERIALBOX_TESTING_STELLA)
