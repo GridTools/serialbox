@@ -54,7 +54,7 @@ jobs:
         id: ccache_cache_timestamp
         shell: cmake -P {0}
         run: |
-          string(TIMESTAMP current_date "%Y-%m-%d-%H;%M;%S" UTC)
+          string(TIMESTAMP current_date "%Y-%m-%d-%H-%M-%S" UTC)
           echo "timestamp=${current_date}" >> $GITHUB_OUTPUT
       - name: Set ccache environment
         run: |
