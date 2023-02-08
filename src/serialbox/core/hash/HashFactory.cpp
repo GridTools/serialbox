@@ -14,7 +14,6 @@
 
 #include "serialbox/core/hash/HashFactory.h"
 #include "serialbox/core/Exception.h"
-#include "serialbox/core/STLExtras.h"
 #include "serialbox/core/hash/MD5.h"
 #include "serialbox/core/hash/SHA256.h"
 #include <sstream>

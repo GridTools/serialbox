@@ -14,7 +14,6 @@
 
 #include "utility/BenchmarkEnvironment.h"
 #include "serialbox/core/Logging.h"
-#include "serialbox/core/STLExtras.h"
 #include <boost/format.hpp>
 #include <iostream>
 

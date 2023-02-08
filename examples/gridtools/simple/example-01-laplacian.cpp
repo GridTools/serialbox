@@ -21,7 +21,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 //
-// Include gridtools headers (Serialbox only supports C++11)
+// Include gridtools headers
 //
 #include <gridtools/stencil_composition/stencil_composition.hpp>
 #include <gridtools/storage/storage_facility.hpp>
@@ -96,7 +96,8 @@ void write() {
   std::default_random_engine gen;
   std::uniform_real_distribution<double> dist(0.0, 1.0);
 
-  storage_t phi(storage_info, [&](int i, int j, int k) { return dist(gen); }, "phi");
+  storage_t phi(
+      storage_info, [&](int i, int j, int k) { return dist(gen); }, "phi");
   storage_t lap(storage_info, -1., "lap");
 
   //

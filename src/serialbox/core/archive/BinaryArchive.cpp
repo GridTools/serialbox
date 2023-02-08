@@ -14,7 +14,6 @@
 
 #include "serialbox/core/archive/BinaryArchive.h"
 #include "serialbox/core/Logging.h"
-#include "serialbox/core/STLExtras.h"
 #include "serialbox/core/Version.h"
 #include "serialbox/core/hash/HashFactory.h"
 #include <boost/algorithm/string.hpp>

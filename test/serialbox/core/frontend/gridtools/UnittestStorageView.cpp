@@ -12,9 +12,8 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "utility/GridTools.h"
-#include "serialbox/core/STLExtras.h"
 #include "serialbox/core/StorageView.h"
+#include "utility/GridTools.h"
 #include <gtest/gtest.h>
 #include <memory>
 

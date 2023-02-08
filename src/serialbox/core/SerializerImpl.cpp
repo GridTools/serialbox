@@ -16,7 +16,6 @@
 #include "serialbox/core/Compiler.h"
 #include "serialbox/core/FieldMapSerializer.h"
 #include "serialbox/core/MetainfoMapImplSerializer.h"
-#include "serialbox/core/STLExtras.h"
 #include "serialbox/core/SavepointVectorSerializer.h"
 #include "serialbox/core/Type.h"
 #include "serialbox/core/Unreachable.h"
