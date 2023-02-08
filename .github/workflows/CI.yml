@@ -33,7 +33,7 @@ jobs:
           echo "FC=gfortran-${GCC_VERSION}" >> $GITHUB_ENV
           echo "TEST_FORTRAN=OFF" >> $GITHUB_ENV  # default will be overwritten in the next step
       - name: Enable Fortran
-        if: startsWith(matrix.compiler, 'clang') == 'false'
+        if: startsWith(matrix.compiler, 'gcc') || startsWith(matrix.compiler, 'nvhpc')
         run: echo "TEST_FORTRAN=ON" >> $GITHUB_ENV
       - name: Install python modules
         run: pip3 install --user nose numpy
