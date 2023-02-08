@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Set defaults
-        if: startsWith(matrix.compiler, 'clang') == 'true' || startsWith(matrix.compiler, 'nvhpc') == 'true'
+        if: startsWith(matrix.compiler, 'clang') == 'true' || startsWith(matrix.compiler, 'gcc') == 'true'
         run: |
           export GCC_VERSION=$(echo ${{ matrix.compiler }} | cut -d'-' -f2)
           echo "FC=gfortran-${GCC_VERSION}" >> $GITHUB_ENV
@@ -44,7 +44,7 @@ jobs:
           path: pfunit
           key: ${{ matrix.compiler }}-pfunit
       - name: Install pFUnit
-        if: (startsWith(matrix.compiler, 'gcc') || startsWith(matrix.compiler, 'gcc')) && steps.cache-pfunit.outputs.cache-hit != 'true'
+        if: (startsWith(matrix.compiler, 'gcc') || startsWith(matrix.compiler, 'nvhpc')) && steps.cache-pfunit.outputs.cache-hit != 'true'
         env:
           PFUNIT_VERSION: 4.6.3
         run: |
