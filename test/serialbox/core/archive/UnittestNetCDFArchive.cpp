@@ -12,10 +12,10 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/core/Compiler.h"
+#include "serialbox/core/archive/NetCDFArchive.h"
 #include "utility/SerializerTestBase.h"
 #include "utility/Storage.h"
-#include "serialbox/core/archive/NetCDFArchive.h"
-#include "serialbox/core/Compiler.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 
@@ -54,7 +54,7 @@ TEST_F(NetCDFArchiveUtilityTest, Construction) {
   {
     NetCDFArchive b(OpenModeKind::Write, (this->directory->path() / "this-dir-is-created").string(),
                     "field");
-    EXPECT_TRUE(filesystem::exists(this->directory->path() / "this-dir-is-created"));
+    EXPECT_TRUE(std::filesystem::exists(this->directory->path() / "this-dir-is-created"));
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ TEST_F(NetCDFArchiveUtilityTest, Construction) {
   {
     NetCDFArchive b(OpenModeKind::Append, (this->directory->path() / "nest1" / "nest2").string(),
                     "field");
-    EXPECT_TRUE(filesystem::exists(this->directory->path() / "nest1" / "nest2"));
+    EXPECT_TRUE(std::filesystem::exists(this->directory->path() / "nest1" / "nest2"));
   }
 }
 
@@ -159,7 +159,7 @@ TEST_F(NetCDFArchiveUtilityTest, MetaData) {
   // MetaData not found
   // -----------------------------------------------------------------------------------------------
   {
-    filesystem::remove(filename);
+    std::filesystem::remove(filename);
     ASSERT_THROW(NetCDFArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
                  Exception);
   }
@@ -397,10 +397,10 @@ TYPED_TEST(NetCDFArchiveReadWriteTest, WriteAndRead) {
   // -----------------------------------------------------------------------------------------------
   {
     NetCDFArchive archiveWrite(OpenModeKind::Write, this->directory->path().string(), "field");
-    EXPECT_FALSE(filesystem::exists(this->directory->path() / ("field_u.nc")));
-    EXPECT_FALSE(filesystem::exists(this->directory->path() / ("field_v.nc")));
-    EXPECT_FALSE(filesystem::exists(this->directory->path() / ("field_storage_2d.nc")));
-    EXPECT_FALSE(filesystem::exists(this->directory->path() / ("field_storage_7d.nc")));
+    EXPECT_FALSE(std::filesystem::exists(this->directory->path() / ("field_u.nc")));
+    EXPECT_FALSE(std::filesystem::exists(this->directory->path() / ("field_v.nc")));
+    EXPECT_FALSE(std::filesystem::exists(this->directory->path() / ("field_storage_2d.nc")));
+    EXPECT_FALSE(std::filesystem::exists(this->directory->path() / ("field_storage_7d.nc")));
   }
 }
 

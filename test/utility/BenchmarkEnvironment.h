@@ -47,8 +47,8 @@ public:
   virtual void SetUp() override;
   virtual void TearDown() override;
 
-  const filesystem::path& directory() const noexcept { return (*directory_); }
-  filesystem::path& directory() noexcept { return (*directory_); }
+  const std::filesystem::path& directory() const noexcept { return (*directory_); }
+  std::filesystem::path& directory() noexcept { return (*directory_); }
 
   /// \brief Add a benchmark results
   void appendResult(const BenchmarkResult& result) { results_.push_back(result); }
@@ -63,7 +63,7 @@ public:
   std::string testName() const;
 
 private:
-  std::unique_ptr<filesystem::path> directory_;
+  std::unique_ptr<std::filesystem::path> directory_;
   std::vector<BenchmarkResult> results_;
 
   std::vector<Size> sizes_;

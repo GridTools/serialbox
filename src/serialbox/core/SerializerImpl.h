@@ -16,11 +16,11 @@
 #define SERIALBOX_CORE_SERIALIZERIMPL_H
 
 #include "serialbox/core/FieldMap.h"
-#include "serialbox/core/Filesystem.h"
 #include "serialbox/core/MetainfoMapImpl.h"
 #include "serialbox/core/SavepointVector.h"
 #include "serialbox/core/StorageView.h"
 #include "serialbox/core/archive/Archive.h"
+#include <filesystem>
 #include <iosfwd>
 
 namespace serialbox {
@@ -101,7 +101,7 @@ public:
   OpenModeKind mode() const noexcept { return mode_; }
 
   /// \brief Access the directory in which the Serializer and Archive are opened
-  const filesystem::path& directory() const noexcept { return directory_; }
+  const std::filesystem::path& directory() const noexcept { return directory_; }
 
   /// \brief Access prefix of all filenames
   std::string prefix() const noexcept { return prefix_; }
@@ -110,7 +110,7 @@ public:
   std::string archiveName() const noexcept { return archive_->name(); }
 
   /// \brief Access the path to the meta-data file
-  const filesystem::path& metaDataFile() const noexcept { return metaDataFile_; }
+  const std::filesystem::path& metaDataFile() const noexcept { return metaDataFile_; }
 
   /// \brief Drop all field and savepoint meta-data.
   ///
@@ -424,8 +424,8 @@ protected:
 
 protected:
   OpenModeKind mode_;
-  filesystem::path directory_;
-  filesystem::path metaDataFile_;
+  std::filesystem::path directory_;
+  std::filesystem::path metaDataFile_;
   std::string prefix_;
 
   std::shared_ptr<SavepointVector> savepointVector_;

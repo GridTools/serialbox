@@ -46,8 +46,5 @@
 /* SERIALBOX was compiled with logging support */
 #cmakedefine SERIALBOX_HAS_LOGGING ${SERIALBOX_HAS_LOGGING}
 
-/* SERIALBOX was compiled with the following filesystem */
-#define ${SERIALBOX_FILESYSTEM_LIBRARY_STRING}
-
 #endif
 

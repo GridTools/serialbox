@@ -18,7 +18,6 @@
 #include "utility/BenchmarkEnvironment.h"
 #include "utility/FileUtility.h"
 #include "utility/UnittestEnvironment.h"
-#include "serialbox/core/STLExtras.h"
 #include <gtest/gtest.h>
 #include <memory>
 

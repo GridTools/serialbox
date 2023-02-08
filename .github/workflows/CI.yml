@@ -14,32 +14,38 @@ jobs:
     container: ghcr.io/gridtools/gridtools-base:${{ matrix.compiler }}
     strategy:
       matrix:
-        compiler: [gcc-8, gcc-10, gcc-11, clang-9, clang-12, clang-13, nvhpc-23.1]
+        compiler:
+          [
+            gcc-8,
+            gcc-10,
+            gcc-11,
+            gcc-12,
+            clang-10,
+            clang-14,
+            clang-15,
+            nvhpc-23.1,
+          ]
         build_type: [Debug, Release]
         exclude:
           - compiler: gcc-10
             build_type: Debug
-          - compiler: clang-9
+          - compiler: gcc-11
             build_type: Debug
-          - compiler: clang-12
+          - compiler: clang-10
+            build_type: Debug
+          - compiler: clang-14
             build_type: Debug
 
     steps:
       - uses: actions/checkout@v1
-      - name: Set defaults
-        if: startsWith(matrix.compiler, 'clang') == 'true' || startsWith(matrix.compiler, 'gcc') == 'true'
-        run: |
-          export GCC_VERSION=$(echo ${{ matrix.compiler }} | cut -d'-' -f2)
-          echo "FC=gfortran-${GCC_VERSION}" >> $GITHUB_ENV
-          echo "TEST_FORTRAN=OFF" >> $GITHUB_ENV  # default will be overwritten in the next step
       - name: Enable Fortran
         if: startsWith(matrix.compiler, 'gcc') || startsWith(matrix.compiler, 'nvhpc')
         run: echo "TEST_FORTRAN=ON" >> $GITHUB_ENV
       - name: Install python modules
-        run: pip3 install --user nose numpy
+        run: pip3 install --user nose-py3 numpy
       - name: Cache pFUnit
         id: cache-pfunit
-        uses: actions/cache@v1
+        uses: actions/cache@v3.2.4
         with:
           path: pfunit
           key: ${{ matrix.compiler }}-pfunit
@@ -58,8 +64,8 @@ jobs:
         id: ccache_cache_timestamp
         shell: cmake -P {0}
         run: |
-          string(TIMESTAMP current_date "%Y-%m-%d-%H;%M;%S" UTC)
-          message("::set-output name=timestamp::${current_date}")
+          string(TIMESTAMP current_date "%Y-%m-%d-%H-%M-%S" UTC)
+          message("echo \"timestamp=${current_date}\" >> $GITHUB_OUTPUT")
       - name: Set ccache environment
         run: |
           echo "CCACHE_MAXSIZE=400M" >> $GITHUB_ENV
@@ -68,10 +74,10 @@ jobs:
           echo "CCACHE_COMPRESS=true" >> $GITHUB_ENV
           echo "CCACHE_COMPRESSLEVEL=6" >> $GITHUB_ENV
       - name: ccache cache files
-        uses: actions/cache@v1
+        uses: actions/cache@v3.2.4
         with:
           path: .ccache
-          key: ${{ matrix.compiler }}-${{ matrix.build_type }}-ccache-${ { steps.ccache_cache_timestamp.outputs.timestamp } }
+          key: ${{ matrix.compiler }}-${{ matrix.build_type }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
           restore-keys: |
             ${{ matrix.compiler }}-${{ matrix.build_type }}-ccache-
       - name: Configure
@@ -92,39 +98,3 @@ jobs:
         run: cmake --build build --parallel 2
       - name: Execute tests
         run: cd build && ctest --output-on-failure
-
-  build-python:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-        python-version: [ "3.10"]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: install boost on macos
-        if: ${{ matrix.os  == 'macos-latest'}}
-        run: |
-            brew install boost
-      - name:  install boost for ubuntu
-        if: ${{ matrix.os   == 'ubuntu-latest'}}
-        run: |
-            sudo apt-get update
-            sudo apt-get install libboost-all-dev
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-            python-version: ${{ matrix.python-version }}
-            cache: 'pip'
-
-      - name:  upgrade python tools
-        run: python -m pip install --upgrade pip setuptools wheel
-
-      - name: install dependencies
-        run: pip install -r src/serialbox-python/requirements.txt
-
-      - name: build
-        run:  pip install src/serialbox-python
-
-      - name: run tests
-        run: pytest -v test/serialbox-python/serialbox >> $GITHUB_STEP_SUMMARY

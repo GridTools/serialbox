@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 ##===-----------------------------------------------------------------------------*- Python -*-===##
 ##
-##                                   S E R I A L B O X
+# S E R I A L B O X
 ##
-## This file is distributed under terms of BSD license. 
-## See LICENSE.txt for more information.
+# This file is distributed under terms of BSD license.
+# See LICENSE.txt for more information.
 ##
 ##===------------------------------------------------------------------------------------------===##
 ##
-## Setup serialboxC library.
+# Setup serialboxC library.
 ##
 ##===------------------------------------------------------------------------------------------===##
 
@@ -32,7 +32,7 @@ class Config(object):
         >>> d = config.get_dict()
         >>> d
         {'SERIALBOX_HAS_NETCDF': '1',
-         'SERIALBOX_CXX_FLAGS': '-std=c++11  -march=native -fPIC -O2 -g -DNDEBUG',
+         'SERIALBOX_CXX_FLAGS': '-std=c++17  -march=native -fPIC -O2 -g -DNDEBUG',
          'BOOST_VERSION': '1_61',
          'SERIALBOX_ASYNC_API': '1',
          'SERIALBOX_CXX_COMPILER': '/usr/bin/clang',
@@ -74,5 +74,6 @@ class Config(object):
 
     def __repr__(self):
         return "<Config {0}>".format(self.instance.compile_options)
+
 
 register_library(lib)

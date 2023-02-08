@@ -15,7 +15,7 @@
 #ifndef SERIALBOX_UTILITY_UNITTESTENVIRONMENT_H
 #define SERIALBOX_UTILITY_UNITTESTENVIRONMENT_H
 
-#include "serialbox/core/Filesystem.h"
+#include <filesystem>
 #include <gtest/gtest.h>
 
 namespace serialbox {
@@ -33,8 +33,8 @@ public:
   virtual void SetUp() override;
   virtual void TearDown() override;
 
-  const filesystem::path& directory() const noexcept { return (*directory_); }
-  filesystem::path& directory() noexcept { return (*directory_); }
+  const std::filesystem::path& directory() const noexcept { return (*directory_); }
+  std::filesystem::path& directory() noexcept { return (*directory_); }
 
   bool cleanup() const noexcept { return cleanup_; }
 
@@ -43,7 +43,7 @@ public:
 
 private:
   bool cleanup_;
-  std::unique_ptr<filesystem::path> directory_;
+  std::unique_ptr<std::filesystem::path> directory_;
   static UnittestEnvironment* instance_;
 };
 

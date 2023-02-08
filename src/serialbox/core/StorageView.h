@@ -17,7 +17,6 @@
 #define SERIALBOX_CORE_STORAGEVIEW_H
 
 #include "serialbox/core/Logging.h"
-#include "serialbox/core/STLExtras.h"
 #include "serialbox/core/Slice.h"
 #include "serialbox/core/StorageViewIterator.h"
 #include "serialbox/core/Type.h"

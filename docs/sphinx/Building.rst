@@ -12,7 +12,7 @@ Serialbox relies on `CMake <http://www.cmake.org/>`_ (>= 3.1), a cross-platform 
 Quick start
 ===========
 
-To build Serialbox you need a C++11 toolchain, `CMake <http://www.cmake.org/>`_ and a fairly recent version of `Boost <http://www.boost.org/>`_. We use here the command-line, non-interactive CMake interface.
+To build Serialbox you need a C++17 toolchain, `CMake <http://www.cmake.org/>`_ and a fairly recent version of `Boost <http://www.boost.org/>`_. We use here the command-line, non-interactive CMake interface.
 
 #. Make sure you have installed all the tools and dependencies, especially Boost and CMake. 
    See `Dependencies`_. 
@@ -104,20 +104,19 @@ The Fortran interface can be built by setting the CMake variable ``SERIALBOX_ENA
 Dependencies
 ============
 
-Serialbox requires a C++11 compatible compiler:
+Serialbox requires a C++17 compatible compiler:
 
 ============  =======
 Compiler      Version
 ============  =======
-GNU gcc       >= 4.9    
-LLVM clang    >= 3.4    
-Intel icc     >= 17.0  
-XCode         >= 6.1   
+GNU gcc       >= 8.1    
+LLVM clang    >= 7    
+Intel icc     >= 19.1.0 
 ============  =======
 
 Serialbox depends on the `Boost <http://www.boost.org/>`_ modules: filesystem and log. Optionally, Serialbox can be compiled with `NetCDF-4 <http://www.unidata.ucar.edu/software/netcdf/>`_ support. The Cray and PGI compilers are currently not able to compile the C++/C part of Serialbox.
 
-Ubuntu (16.04)
+Ubuntu (22.04)
 --------------
   
 The following will install all the necessary dependencies:

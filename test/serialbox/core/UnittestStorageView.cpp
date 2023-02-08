@@ -12,11 +12,10 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "utility/Storage.h"
 #include "serialbox/core/Exception.h"
-#include "serialbox/core/STLExtras.h"
 #include "serialbox/core/StorageView.h"
 #include "serialbox/core/Type.h"
+#include "utility/Storage.h"
 #include <boost/algorithm/string.hpp>
 #include <cstring>
 #include <gtest/gtest.h>
@@ -136,19 +135,21 @@ protected:
         rowMajor, Dims{dim1, dim2, dim3},
         Padding{{pad1_left, pad1_right}, {pad2_left, pad2_right}, {pad3_left, pad3_right}});
 
-    storage_5d_col_major_padded = std::make_unique<Storage<T>>(
-        colMajor, Dims{dim1, dim2, dim3, dim4, dim5}, Padding{{pad1_left, pad1_right},
-                                                              {pad2_left, pad2_right},
-                                                              {pad3_left, pad3_right},
-                                                              {pad4_left, pad4_right},
-                                                              {pad5_left, pad5_right}});
+    storage_5d_col_major_padded =
+        std::make_unique<Storage<T>>(colMajor, Dims{dim1, dim2, dim3, dim4, dim5},
+                                     Padding{{pad1_left, pad1_right},
+                                             {pad2_left, pad2_right},
+                                             {pad3_left, pad3_right},
+                                             {pad4_left, pad4_right},
+                                             {pad5_left, pad5_right}});
 
-    storage_5d_row_major_padded = std::make_unique<Storage<T>>(
-        rowMajor, Dims{dim1, dim2, dim3, dim4, dim5}, Padding{{pad1_left, pad1_right},
-                                                              {pad2_left, pad2_right},
-                                                              {pad3_left, pad3_right},
-                                                              {pad4_left, pad4_right},
-                                                              {pad5_left, pad5_right}});
+    storage_5d_row_major_padded =
+        std::make_unique<Storage<T>>(rowMajor, Dims{dim1, dim2, dim3, dim4, dim5},
+                                     Padding{{pad1_left, pad1_right},
+                                             {pad2_left, pad2_right},
+                                             {pad3_left, pad3_right},
+                                             {pad4_left, pad4_right},
+                                             {pad5_left, pad5_right}});
   }
 
   virtual void TearDown() override {}
@@ -419,7 +420,7 @@ TEST(StorageViewSliceTest, Iteration) {
   auto sv_1d = storage_1d.toStorageView();
   auto sv_2d = storage_2d.toStorageView();
   auto sv_3d = storage_3d.toStorageView();
-  
+
   // -----------------------------------------------------------------------------------------------
   // 1D
   // -----------------------------------------------------------------------------------------------
@@ -428,7 +429,7 @@ TEST(StorageViewSliceTest, Iteration) {
     auto it = sv_1d.begin();
     for(int i = 0; i < dim1; ++i, ++it)
       ASSERT_EQ(it.as<double>(), storage_1d(i)) << "(i) = (" << i << ")";
-    
+
     // Sliced StorageView are always treated as uncopyable
     ASSERT_FALSE(sv_1d.isMemCopyable());
   }
@@ -476,8 +477,8 @@ TEST(StorageViewSliceTest, Iteration) {
     for(int k = 0; k < dim3; ++k)
       for(int j = 0; j < dim2; ++j)
         for(int i = 0; i < dim1; ++i, ++it)
-          ASSERT_EQ(it.as<double>(), storage_3d(i, j, k)) << "(i,j,k) = (" << i << "," << j << ","
-                                                          << k << ")";
+          ASSERT_EQ(it.as<double>(), storage_3d(i, j, k))
+              << "(i,j,k) = (" << i << "," << j << "," << k << ")";
   }
 
   {
@@ -486,8 +487,8 @@ TEST(StorageViewSliceTest, Iteration) {
     for(int k = 5; k < 10; ++k)
       for(int j = 0; j < dim2; ++j)
         for(int i = 0; i < dim1; ++i, ++it)
-          ASSERT_EQ(it.as<double>(), storage_3d(i, j, k)) << "(i,j,k) = (" << i << "," << j << ","
-                                                          << k << ")";
+          ASSERT_EQ(it.as<double>(), storage_3d(i, j, k))
+              << "(i,j,k) = (" << i << "," << j << "," << k << ")";
   }
 
   {
@@ -496,7 +497,7 @@ TEST(StorageViewSliceTest, Iteration) {
     for(int k = 5; k < 10; ++k)
       for(int j = 2; j < 3; ++j)
         for(int i = 2; i < dim1; ++i, ++it)
-          ASSERT_EQ(it.as<double>(), storage_3d(i, j, k)) << "(i,j,k) = (" << i << "," << j << ","
-                                                          << k << ")";
+          ASSERT_EQ(it.as<double>(), storage_3d(i, j, k))
+              << "(i,j,k) = (" << i << "," << j << "," << k << ")";
   }
 }

@@ -15,9 +15,7 @@
 #include "serialbox/core/SerializerImpl.h"
 #include "serialbox/core/Compiler.h"
 #include "serialbox/core/FieldMapSerializer.h"
-#include "serialbox/core/Filesystem.h"
 #include "serialbox/core/MetainfoMapImplSerializer.h"
-#include "serialbox/core/STLExtras.h"
 #include "serialbox/core/SavepointVectorSerializer.h"
 #include "serialbox/core/Type.h"
 #include "serialbox/core/Unreachable.h"
@@ -26,6 +24,7 @@
 #include "serialbox/core/archive/BinaryArchive.h"
 #include "serialbox/core/hash/HashFactory.h"
 #include <boost/algorithm/string.hpp>
+#include <filesystem>
 #include <fstream>
 #include <memory>
 #include <type_traits>
@@ -79,11 +78,10 @@ SerializerImpl::SerializerImpl(OpenModeKind mode, const std::string& directory,
   // Validate integrity of directory (non-existent directories are created by the archive)
 
   try {
-    if(mode_ == OpenModeKind::Read && !filesystem::exists(directory_))
-      //    if(mode_ == OpenModeKind::Read && !filesystem::exists(directory_))
+    if(mode_ == OpenModeKind::Read && !std::filesystem::exists(directory_))
       throw Exception("cannot create Serializer: directory %s does not exist", directory_);
-  } catch(filesystem::filesystem_error& e) {
-    throw Exception("filesystem error: %s", e.what());
+  } catch(std::filesystem::filesystem_error& e) {
+    throw Exception("std::filesystem error: %s", e.what());
   }
 
   // Check if we deal with an older version of serialbox and perform necessary upgrades, otherwise
@@ -312,7 +310,7 @@ void SerializerImpl::constructMetaDataFromJson() {
   LOG(info) << "Constructing Serializer from MetaData ... ";
 
   // Try open meta-data file
-  if(!filesystem::exists(metaDataFile_)) {
+  if(!std::filesystem::exists(metaDataFile_)) {
     if(mode_ != OpenModeKind::Read)
       return;
     else
@@ -416,7 +414,7 @@ void SerializerImpl::constructArchive(const std::string& archiveName) {
 //===------------------------------------------------------------------------------------------===//
 
 bool SerializerImpl::upgradeMetaData() {
-  filesystem::path oldMetaDataFile = directory_ / (prefix_ + ".json");
+  std::filesystem::path oldMetaDataFile = directory_ / (prefix_ + ".json");
 
   //
   // Check if upgrade is necessary
@@ -424,18 +422,19 @@ bool SerializerImpl::upgradeMetaData() {
 
   try {
     // Check if prefix.json exists
-    if(!filesystem::exists(oldMetaDataFile))
+    if(!std::filesystem::exists(oldMetaDataFile))
       return false;
 
     LOG(info) << "Detected old serialbox meta-data " << oldMetaDataFile;
 
     // Check if we already upgraded this archive
-    if(filesystem::exists(metaDataFile_) && (filesystem::last_write_time(oldMetaDataFile) <
-                                             filesystem::last_write_time(metaDataFile_))) {
+    if(std::filesystem::exists(metaDataFile_) &&
+       (std::filesystem::last_write_time(oldMetaDataFile) <
+        std::filesystem::last_write_time(metaDataFile_))) {
       return false;
     }
-  } catch(filesystem::filesystem_error& e) {
-    throw Exception("filesystem error: %s", e.what());
+  } catch(std::filesystem::filesystem_error& e) {
+    throw Exception("std::filesystem error: %s", e.what());
   }
 
   LOG(info) << "Upgrading meta-data to serialbox version (" << SERIALBOX_VERSION_STRING << ") ...";

@@ -12,7 +12,6 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
-#include "serialbox/core/STLExtras.h"
 #include "utility/Storage.h"
 #include <gtest/gtest.h>
 
