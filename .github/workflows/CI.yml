@@ -14,9 +14,11 @@ jobs:
     container: ghcr.io/gridtools/gridtools-base:${{ matrix.compiler }}
     strategy:
       matrix:
-        compiler: [gcc-9, gcc-10, gcc-11, clang-10, clang-12, clang-13]
+        compiler: [gcc-8, gcc-9, gcc-10, gcc-11, clang-10, clang-12, clang-13]
         build_type: [Debug, Release]
         exclude:
+          - compiler: gcc-9
+            build_type: Debug
           - compiler: gcc-10
             build_type: Debug
           - compiler: clang-10

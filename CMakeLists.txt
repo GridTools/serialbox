@@ -236,6 +236,10 @@ if(SERIALBOX_ENABLE_PYTHON)
 
 endif(SERIALBOX_ENABLE_PYTHON)
 
+#---------------------------------------- Filesystem -----------------------------------------------
+# link with stdc++fs for gcc < 9.0 (in gcc 9 it's part of the runtime)
+link_libraries( "$<$<AND:$<CXX_COMPILER_ID:GNU>,$<VERSION_LESS:$<CXX_COMPILER_VERSION>,9.0>>:-lstdc++fs>" )
+
 #---------------------------------------- GridTools ------------------------------------------------
 if(SERIALBOX_TESTING_GRIDTOOLS)
   find_package(GridTools QUIET REQUIRED)
