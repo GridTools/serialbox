@@ -175,7 +175,7 @@ NetCDFArchive::NetCDFArchive(OpenModeKind mode, const std::string& directory,
   metaDatafile_ = directory_ / ("ArchiveMetaData-" + prefix_ + ".json");
 
   try {
-    bool isDir = filesystem::is_directory(directory_);
+    bool isDir = std::filesystem::is_directory(directory_);
 
     switch(mode_) {
     // We are reading, the directory needs to exist
@@ -187,10 +187,10 @@ NetCDFArchive::NetCDFArchive(OpenModeKind mode, const std::string& directory,
     case OpenModeKind::Write:
     case OpenModeKind::Append:
       if(!isDir)
-        filesystem::create_directories(directory_);
+        std::filesystem::create_directories(directory_);
       break;
     }
-  } catch(filesystem::filesystem_error& e) {
+  } catch(std::filesystem::filesystem_error& e) {
     throw Exception(e.what());
   }
 
@@ -233,7 +233,7 @@ void NetCDFArchive::readMetaDataFromJson() {
   LOG(info) << "Reading MetaData for NetCDF archive ... ";
 
   // Check if metaData file exists
-  if(!filesystem::exists(metaDatafile_)) {
+  if(!std::filesystem::exists(metaDatafile_)) {
     if(mode_ != OpenModeKind::Read)
       return;
     throw Exception("archive meta data not found in directory '%s'", directory_.string());
@@ -298,7 +298,7 @@ FieldID NetCDFArchive::write(const StorageView& storageView, const std::string& 
   auto it = fieldMap_.find(field);
 
   FieldID fieldID{field, 0};
-  filesystem::path filename = directory_ / (prefix_ + "_" + field + ".nc");
+  std::filesystem::path filename = directory_ / (prefix_ + "_" + field + ".nc");
 
   if(it != fieldMap_.end()) {
     it->second++;
@@ -423,7 +423,7 @@ void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID,
   if(fieldID.id > it->second)
     throw Exception("invalid id '%i' of field '%s'", fieldID.id, fieldID.name);
 
-  filesystem::path filename = directory_ / (prefix_ + "_" + fieldID.name + ".nc");
+  std::filesystem::path filename = directory_ / (prefix_ + "_" + fieldID.name + ".nc");
 
   // Open file for reading
   NETCDF_CHECK(nc_open(filename.c_str(), NC_NOWRITE, &ncID));
@@ -455,7 +455,7 @@ void NetCDFArchive::read(StorageView& storageView, const FieldID& fieldID,
 void NetCDFArchive::readFromFile(std::string filename, StorageView& storageView,
                                  const std::string& field) {
 
-  if(!filesystem::exists(filename))
+  if(!std::filesystem::exists(filename))
     throw Exception("cannot open %s: file does not exist", filename);
 
   int ncID, varID, errorCode;
@@ -487,13 +487,13 @@ void NetCDFArchive::readFromFile(std::string filename, StorageView& storageView,
 }
 
 void NetCDFArchive::clear() {
-  filesystem::directory_iterator end;
-  for(filesystem::directory_iterator it(directory_); it != end; ++it) {
-    if(filesystem::is_regular_file(it->path()) &&
+  std::filesystem::directory_iterator end;
+  for(std::filesystem::directory_iterator it(directory_); it != end; ++it) {
+    if(std::filesystem::is_regular_file(it->path()) &&
        boost::algorithm::starts_with(it->path().filename().string(), prefix_ + "_") &&
-       filesystem::path(it->path()).extension() == ".nc") {
+       std::filesystem::path(it->path()).extension() == ".nc") {
 
-      if(!filesystem::remove(it->path()))
+      if(!std::filesystem::remove(it->path()))
         LOG(warning) << "NetCDFArchive: cannot remove file " << it->path();
     }
   }

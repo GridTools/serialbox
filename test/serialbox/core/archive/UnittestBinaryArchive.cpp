@@ -12,10 +12,10 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/core/Version.h"
+#include "serialbox/core/archive/BinaryArchive.h"
 #include "utility/SerializerTestBase.h"
 #include "utility/Storage.h"
-#include "serialbox/core/archive/BinaryArchive.h"
-#include "serialbox/core/Version.h"
 #include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 
@@ -52,7 +52,7 @@ TEST_F(BinaryArchiveUtilityTest, Construction) {
   {
     BinaryArchive b(OpenModeKind::Write, (this->directory->path() / "this-dir-is-created").string(),
                     "field");
-    EXPECT_TRUE(filesystem::exists(this->directory->path() / "this-dir-is-created"));
+    EXPECT_TRUE(std::filesystem::exists(this->directory->path() / "this-dir-is-created"));
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ TEST_F(BinaryArchiveUtilityTest, Construction) {
   {
     BinaryArchive b(OpenModeKind::Append, (this->directory->path() / "nest1" / "nest2").string(),
                     "field");
-    EXPECT_TRUE(filesystem::exists(this->directory->path() / "nest1" / "nest2"));
+    EXPECT_TRUE(std::filesystem::exists(this->directory->path() / "nest1" / "nest2"));
   }
 }
 
@@ -157,7 +157,7 @@ TEST_F(BinaryArchiveUtilityTest, MetaData) {
   // MetaData not found
   // -----------------------------------------------------------------------------------------------
   {
-    filesystem::remove(filename);
+    std::filesystem::remove(filename);
     ASSERT_THROW(BinaryArchive(OpenModeKind::Read, this->directory->path().string(), "field"),
                  Exception);
   }
@@ -282,8 +282,8 @@ TEST_F(BinaryArchiveUtilityTest, SliceWriteAndRead) {
       archiveRead.read(sv_2d, FieldID{"2d", 0}, nullptr);
       for(int j = 1; j < 2; ++j)
         for(int i = 0; i < dim1; ++i)
-          ASSERT_EQ(storage_2d_input(i, j), storage_2d_output(i, j)) << "(i,j) = (" << i << "," << j
-                                                                     << ")";
+          ASSERT_EQ(storage_2d_input(i, j), storage_2d_output(i, j))
+              << "(i,j) = (" << i << "," << j << ")";
     }
 
     storage_2d_output.forEach(Storage::random);
@@ -294,8 +294,8 @@ TEST_F(BinaryArchiveUtilityTest, SliceWriteAndRead) {
       archiveRead.read(sv_2d, FieldID{"2d", 0}, nullptr);
       for(int j = 1; j < 2; ++j)
         for(int i = 0; i < dim1; i += 2)
-          ASSERT_EQ(storage_2d_input(i, j), storage_2d_output(i, j)) << "(i,j) = (" << i << "," << j
-                                                                     << ")";
+          ASSERT_EQ(storage_2d_input(i, j), storage_2d_output(i, j))
+              << "(i,j) = (" << i << "," << j << ")";
     }
 
     storage_2d_output.forEach(Storage::random);
@@ -306,8 +306,8 @@ TEST_F(BinaryArchiveUtilityTest, SliceWriteAndRead) {
       archiveRead.read(sv_2d, FieldID{"2d", 0}, nullptr);
       for(int j = 1; j < 4; j += 2)
         for(int i = 0; i < dim1; i += 2)
-          ASSERT_EQ(storage_2d_input(i, j), storage_2d_output(i, j)) << "(i,j) = (" << i << "," << j
-                                                                     << ")";
+          ASSERT_EQ(storage_2d_input(i, j), storage_2d_output(i, j))
+              << "(i,j) = (" << i << "," << j << ")";
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -544,9 +544,9 @@ TYPED_TEST(BinaryArchiveReadWriteTest, WriteAndRead) {
   // -----------------------------------------------------------------------------------------------
   {
     BinaryArchive archiveWrite(OpenModeKind::Write, this->directory->path().string(), "field");
-    EXPECT_FALSE(filesystem::exists(this->directory->path() / ("field_u.dat")));
-    EXPECT_FALSE(filesystem::exists(this->directory->path() / ("field_v.dat")));
-    EXPECT_FALSE(filesystem::exists(this->directory->path() / ("field_storage_2d.dat")));
-    EXPECT_FALSE(filesystem::exists(this->directory->path() / ("field_storage_7d.dat")));
+    EXPECT_FALSE(std::filesystem::exists(this->directory->path() / ("field_u.dat")));
+    EXPECT_FALSE(std::filesystem::exists(this->directory->path() / ("field_v.dat")));
+    EXPECT_FALSE(std::filesystem::exists(this->directory->path() / ("field_storage_2d.dat")));
+    EXPECT_FALSE(std::filesystem::exists(this->directory->path() / ("field_storage_7d.dat")));
   }
 }

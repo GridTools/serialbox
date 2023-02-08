@@ -12,6 +12,7 @@
 .idea
 */unittest-tmp-dir/*
 *.venv
+.cache/
 
 # Build directories
 build*/

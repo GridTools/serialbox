@@ -47,17 +47,17 @@ void BenchmarkEnvironment::SetUp() {
 
   // Try to create a path to run our unittests in the form "$(pwd)/benchmark-tmp-dir/"
   try {
-    directory_ = std::make_unique<filesystem::path>(filesystem::current_path() /
-                                                    filesystem::path("benchmark-tmp-dir"));
+    directory_ = std::make_unique<std::filesystem::path>(
+        std::filesystem::current_path() / std::filesystem::path("benchmark-tmp-dir"));
 
-    if(filesystem::exists(*directory_))
-      serialbox::remove_all(*directory_);
+    if(std::filesystem::exists(*directory_))
+      std::filesystem::remove_all(*directory_);
 
-    hasError = !filesystem::create_directories(*directory_);
+    hasError = !std::filesystem::create_directories(*directory_);
 
     LOG(info) << "Creating unittest directory: " << directory_->string();
-  } catch(filesystem::filesystem_error& e) {
-    LOG(warning) << "unresolved filesystem::filesystem_error: " << e.what();
+  } catch(std::filesystem::filesystem_error& e) {
+    LOG(warning) << "unresolved std::filesystem::filesystem_error: " << e.what();
     hasError = true;
     errStr += e.what();
   }
@@ -76,9 +76,9 @@ void BenchmarkEnvironment::SetUp() {
 void BenchmarkEnvironment::TearDown() {
   reportResults();
   try {
-    auto numFiles = serialbox::remove_all(*directory_);
+    auto numFiles = std::filesystem::remove_all(*directory_);
     LOG(info) << "Removed " << numFiles << " files";
-  } catch(filesystem::filesystem_error& e) {
+  } catch(std::filesystem::filesystem_error& e) {
     LOG(warning) << e.what();
   }
 }

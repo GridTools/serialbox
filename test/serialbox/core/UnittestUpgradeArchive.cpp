@@ -12,10 +12,10 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/core/SerializerImpl.h"
 #include "utility/FileUtility.h"
 #include "utility/Serialbox.h"
 #include "utility/Storage.h"
-#include "serialbox/core/SerializerImpl.h"
 #include <gtest/gtest.h>
 
 #if SERIALBOX_HAS_SERIALBOX_OLD
@@ -232,12 +232,12 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
 
   // Old archives can only be used in Read mode
   {
-    auto timeStampBeforeConstruction = filesystem::last_write_time(
+    auto timeStampBeforeConstruction = std::filesystem::last_write_time(
         this->directory->path() / "MetaData-UpgradeArchiveTest.json");
 
     // Mark old serialbox data as newer
-    filesystem::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
-                                   timeStampBeforeConstruction + 1);
+    std::filesystem::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
+                                     timeStampBeforeConstruction + 1);
 
     // Try to perform upgrade but fail because open mode is write -> Exception
     ASSERT_THROW(SerializerImpl(OpenModeKind::Write, this->directory->path().string(),
@@ -247,18 +247,18 @@ TYPED_TEST(UpgradeArchiveTest, upgrade) {
 
   // Old meta data is outdated -> no upgrade
   {
-    auto timeStampBeforeConstruction = filesystem::last_write_time(
+    auto timeStampBeforeConstruction = std::filesystem::last_write_time(
         this->directory->path() / "MetaData-UpgradeArchiveTest.json");
 
     // Set old-meta data to be out-dated
-    filesystem::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
-                                   timeStampBeforeConstruction - 1);
+    std::filesystem::last_write_time(this->directory->path() / "UpgradeArchiveTest.json",
+                                     timeStampBeforeConstruction - 1);
 
     // Should perform no upgrade
     SerializerImpl ser_read(OpenModeKind::Read, this->directory->path().string(),
                             "UpgradeArchiveTest", "Binary");
 
-    auto timeStampAfterConstruction = filesystem::last_write_time(ser_read.metaDataFile());
+    auto timeStampAfterConstruction = std::filesystem::last_write_time(ser_read.metaDataFile());
 
     ASSERT_EQ(timeStampBeforeConstruction, timeStampAfterConstruction);
   }
