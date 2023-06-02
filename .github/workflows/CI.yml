@@ -23,7 +23,7 @@ jobs:
             clang-10,
             clang-14,
             clang-15,
-            nvhpc-23.3,
+            nvhpc-23.5,
           ]
         build_type: [Debug, Release]
         exclude:
