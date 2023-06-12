@@ -19,6 +19,7 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/core/hash/SHA256.h"
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
