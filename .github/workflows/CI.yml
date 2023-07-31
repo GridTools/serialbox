@@ -23,7 +23,7 @@ jobs:
             clang-10,
             clang-14,
             clang-15,
-            nvhpc-23.5,
+            nvhpc-23.7,
           ]
         build_type: [Debug, Release]
         exclude:
@@ -52,7 +52,7 @@ jobs:
       - name: Install pFUnit
         if: (startsWith(matrix.compiler, 'gcc') || startsWith(matrix.compiler, 'nvhpc')) && steps.cache-pfunit.outputs.cache-hit != 'true'
         env:
-          PFUNIT_VERSION: 4.6.3
+          PFUNIT_VERSION: 4.7.3
         run: |
           apt-get update && apt-get -y install m4
           git clone --branch v${PFUNIT_VERSION} --depth 1 https://github.com/Goddard-Fortran-Ecosystem/pFUnit.git
