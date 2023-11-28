@@ -14,7 +14,7 @@ jobs:
     container: ghcr.io/gridtools/gridtools-base:${{ matrix.compiler }}
     strategy:
       matrix:
-        compiler: [nvhpc-23.9]
+        compiler: [nvhpc-23.11]
         build_type: [Debug, Release]
         exclude:
           - compiler: gcc-10
@@ -46,7 +46,7 @@ jobs:
       - name: Install pFUnit
         if: (startsWith(matrix.compiler, 'gcc') || startsWith(matrix.compiler, 'nvhpc')) && steps.cache-pfunit.outputs.cache-hit != 'true'
         env:
-          PFUNIT_VERSION: 4.7.3
+          PFUNIT_VERSION: 4.7.4
         run: |
           apt-get update && apt-get -y install m4
           git clone --branch v${PFUNIT_VERSION} --depth 1 https://github.com/Goddard-Fortran-Ecosystem/pFUnit.git
