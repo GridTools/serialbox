@@ -89,7 +89,7 @@ function(serialbox_run_pp_ser)
   
   if(pp_ser_input)
     add_custom_command(OUTPUT ${pp_ser_output}
-                       COMMAND ${PYTHON_EXECUTABLE} ${SERIALBOX_PPSER} --verbose 
+                       COMMAND ${Python3_EXECUTABLE} ${SERIALBOX_PPSER} --verbose 
                                                                        --ignore-identical 
                                                                        --output-dir=${output_dir} 
                                                                        ${pp_ser_input}
@@ -97,4 +97,3 @@ function(serialbox_run_pp_ser)
                        COMMENT "Preprocessing for serialization")
   endif()
 endfunction(serialbox_run_pp_ser)
-

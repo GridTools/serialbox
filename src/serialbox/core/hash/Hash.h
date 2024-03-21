@@ -36,6 +36,7 @@ public:
   ///
   /// \return Hex representation as string of the computed hash
   virtual std::string hash(const void* data, int length) = 0;
+  virtual ~Hash() = default;
 };
 
 } // namespace serialbox

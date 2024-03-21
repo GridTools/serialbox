@@ -45,18 +45,17 @@ class CMakeBuild(build_ext):
         # Can be set with Conda-Build, for example.
         cmake_generator = os.environ.get("CMAKE_GENERATOR", "")
 
-        # Set Python_EXECUTABLE instead if you use PYBIND11_FINDPYTHON
+        # Set Python3_EXECUTABLE instead if you use PYBIND11_FINDPYTHON
         # EXAMPLE_VERSION_INFO shows you how to pass a value into the C++ code
         # from Python.
         cmake_args = [
             "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}".format(extdir),
-            "-DPYTHON_EXECUTABLE={}".format(sys.executable),
+            "-DPython3_EXECUTABLE={}".format(sys.executable),
             "-DCMAKE_BUILD_TYPE={}".format(cfg),  # not used on MSVC, but no harm
             "-DSERIALBOX_ENABLE_FORTRAN=false",
             "-DCMAKE_BUILD_RPATH={}".format(origin),
             "-DSERIALBOX_ENABLE_SDB=false",
             "-DSERIALBOX_ASYNC_API=false",
-
         ]
         build_args = []
         # Adding CMake arguments set as environment variable
@@ -70,6 +69,7 @@ class CMakeBuild(build_ext):
         ]
         if sys.platform == "darwin":
             from distutils import sysconfig
+
             vars = sysconfig.get_config_vars()
             vars["SO"] = ".dylib"
             vars["EXT_SUFFIX"] = ".dylib"
@@ -89,7 +89,6 @@ class CMakeBuild(build_ext):
                     pass
 
         else:
-
             # Single config generators are handled "normally"
             single_config = any(x in cmake_generator for x in {"NMake", "Ninja"})
 
@@ -151,7 +150,9 @@ setup(
     author="Serialbox Developers",
     packages=find_packages(),
     install_requires=["numpy"],
-    ext_modules=[CMakeExtension("libSerialboxC", sourcedir=os.path.join(DIR, "../../"))],
+    ext_modules=[
+        CMakeExtension("libSerialboxC", sourcedir=os.path.join(DIR, "../../"))
+    ],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
 )

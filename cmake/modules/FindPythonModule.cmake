@@ -4,7 +4,7 @@
 #
 #   find_python_module(PyQt5 REQUIRED)
 #
-# The module makes use of the ${PYTHON_EXECUTABLE} which needs to be set before calling the 
+# The module makes use of the ${Python3_EXECUTABLE} which needs to be set before calling the 
 # find_python_module function.
 #
 # Variables defined by this cmake module:
@@ -25,7 +25,7 @@ function(find_python_module module)
     endif()
 
     # A module's location is usually a directory, but for binary modules it's a .so file.
-    execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c" 
+    execute_process(COMMAND "${Python3_EXECUTABLE}" "-c" 
       "import re, ${module}; print(re.compile('/__init__.py.*').sub('',${module}.__file__))"
       RESULT_VARIABLE _${module}_status 
       OUTPUT_VARIABLE _${module}_location
@@ -34,7 +34,7 @@ function(find_python_module module)
 
     # Set result
     if(NOT _${module}_status)
-      message(STATUS "Found Python module \"${module}\" for Python: ${PYTHON_EXECUTABLE}")
+      message(STATUS "Found Python module \"${module}\" for Python: ${Python3_EXECUTABLE}")
       set(PY_${module_upper}_PATH ${_${module}_location} 
           CACHE STRING "Location of Python module ${module}")
       set(PY_${module_upper}_FOUND TRUE
@@ -43,11 +43,10 @@ function(find_python_module module)
     else()
       set(PY_${module_upper}_FOUND FALSE)
         if(${module}_FIND_REQUIRED)
-          message(FATAL_ERROR "Could NOT find module ${module} for python ${PYTHON_EXECUTABLE}")
+          message(FATAL_ERROR "Could NOT find module ${module} for python ${Python3_EXECUTABLE}")
         else()
-          message(STATUS "Could NOT find \"${module}\" for python: ${PYTHON_EXECUTABLE}")
+          message(STATUS "Could NOT find \"${module}\" for python: ${Python3_EXECUTABLE}")
         endif()
     endif()
   endif(NOT PY_${module_upper}_FOUND)
 endfunction(find_python_module)
-
