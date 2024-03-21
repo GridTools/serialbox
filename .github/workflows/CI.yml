@@ -82,7 +82,7 @@ jobs:
           mkdir build && cd build
           cmake .. \
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-            -DPYTHON_EXECUTABLE=`which python3` \
+            -DPython3_EXECUTABLE=`which python3` \
             -DSERIALBOX_TESTING=ON \
             -DSERIALBOX_ENABLE_FORTRAN=${TEST_FORTRAN} \
             -DSERIALBOX_TESTING_FORTRAN=${TEST_FORTRAN} \
