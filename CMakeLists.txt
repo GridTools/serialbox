@@ -14,8 +14,8 @@
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "CMake install prefix")
 
 cmake_policy(SET CMP0048 NEW)
-project(Serialbox LANGUAGES C CXX VERSION 2.6.1)
 cmake_minimum_required(VERSION 3.12.0)
+project(Serialbox LANGUAGES C CXX VERSION 2.6.1)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_EXTENSIONS OFF)
@@ -218,7 +218,7 @@ endif()
 
 #---------------------------------------- Python ---------------------------------------------------
 if(SERIALBOX_ENABLE_PYTHON)
-  find_package(PythonInterp 3.4)
+  find_package(Python3 COMPONENTS Interpreter)
 
   # Python tests are enabled by default if we can find "nose" and "numpy"
   set(ENABLE_PYTHON_TESTS OFF)
