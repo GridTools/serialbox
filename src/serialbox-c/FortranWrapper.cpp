@@ -36,7 +36,7 @@ void make_4D(std::vector<int>& v) {
     throw Exception(
         "The FortranWrapper supports up to 4 dimensions (field with %i dimensions was passed).",
         v.size());
-  v.resize(4, 0);
+  v.resize(4, -1);
 }
 
 std::vector<int> make_strides(int istride, int jstride, int kstride, int lstride) {
