@@ -37,8 +37,12 @@ jobs:
       - name: Enable Fortran
         if: startsWith(matrix.compiler, 'gcc')
         run: echo "TEST_FORTRAN=ON" >> $GITHUB_ENV
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.12
       - name: Install python modules
-        run: pip3 install nose-py3 numpy
+        run: python3 -m pip install nose-py3 numpy
       - name: Cache pFUnit
         id: cache-pfunit
         uses: actions/cache@v3.2.4
