@@ -38,7 +38,7 @@ jobs:
         if: startsWith(matrix.compiler, 'gcc')
         run: echo "TEST_FORTRAN=ON" >> $GITHUB_ENV
       - name: Install python modules
-        run: pip3 install --user nose-py3 numpy
+        run: pip3 install nose-py3 numpy
       - name: Cache pFUnit
         id: cache-pfunit
         uses: actions/cache@v3.2.4
