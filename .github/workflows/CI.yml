@@ -14,7 +14,7 @@ jobs:
     container: ghcr.io/gridtools/gridtools-base:${{ matrix.compiler }}
     strategy:
       matrix:
-        compiler: [gcc-8, gcc-10, gcc-11, gcc-12, gcc-13, clang-10, clang-15, clang-16, clang-17, clang-18]
+        compiler: [gcc-10, gcc-11, gcc-12, gcc-13, clang-10, clang-15, clang-16, clang-17, clang-18]
         build_type: [Debug, Release]
         exclude:
           - compiler: gcc-10
@@ -38,9 +38,9 @@ jobs:
         if: startsWith(matrix.compiler, 'gcc')
         run: echo "TEST_FORTRAN=ON" >> $GITHUB_ENV
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version: '3.10'
       - name: Install python modules
         run: python3 -m pip install nose-py3 numpy
       - name: Cache pFUnit
