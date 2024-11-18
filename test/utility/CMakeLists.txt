@@ -17,7 +17,6 @@ set(SOURCES
   FileUtility.h
   GridTools.h
   Storage.h
-  STELLA.h
   Serialbox.h
   SerializerTestBase.h
   UnittestEnvironment.h

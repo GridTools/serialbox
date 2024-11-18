@@ -40,3 +40,4 @@ gh-pages*
 #theia/vscode/gitpod settings
 /compile_commands.json
 /.clangd
+/.vscode

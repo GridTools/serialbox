@@ -70,17 +70,6 @@ Serialbox has several unittest which use the external library they are built for
 
    $ cmake -DSERIALBOX_TESTING=ON -DSERIALBOX_TESTING_GRIDTOOLS=ON -DSERIALBOX_GRIDTOOLS_ROOT=<path-to-gridtools> ../
    
-Similarly, you can build the unittest for `STELLA <https://github.com/MeteoSwiss-APN/stella>`_ and the compatible tests with the old `Serialbox <https://github.com/MeteoSwiss-APN/serialbox>`_. If you clone those projects in ``external/``, CMake will automatically find and **build** them. The following will enable all possible unittests:
-
-.. code-block:: console
-
-  $ cd $(git rev-parse --show-toplevel) # Change to top-level directory
-  $ git clone git@github.com:eth-cscs/gridtools.git external/gridtools
-  $ git clone git@github.com:MeteoSwiss-APN/stella.git external/stella
-  $ git clone https://github.com/MeteoSwiss-APN/serialbox external/serialbox
-  $ cd build
-  $ cmake -DSERIALBOX_TESTING=ON -DSERIALBOX_TESTING_GRIDTOOLS=ON -DSERIALBOX_TESTING_OLD_SERIALBOX=ON -DSERIALBOX_TESTING_STELLA=ON ../
-
 To run the unittests via CTest:
 
 .. code-block:: console
@@ -227,12 +216,6 @@ Serialbox specific variables
 **SERIALBOX_TESTING_GRIDTOOLS**:BOOL
   Build `gridtools <https://github.com/eth-cscs/gridtools>`_ unittests and examples.
 
-**SERIALBOX_TESTING_STELLA**:BOOL
-  Build `STELLA <https://github.com/MeteoSwiss-APN/stella>`_ unittests.
-  
-**SERIALBOX_TESTING_OLD_SERIALBOX**:BOOL
-  Build the compatiblity unitests against the old `Serialbox <https://github.com/MeteoSwiss-APN/serialbox>`_.
-  
 **SERIALBOX_TESTING_DEATH_TESTS**:BOOL
   Compile the death-tests.
 
@@ -260,9 +243,5 @@ External project specific variables
 **SERIALBOX_OLD_ROOT**:PATH
   Install directory of old `Serialbox <https://github.com/MeteoSwiss-APN/serialbox>`_.
 
-**STELLA_ROOT**:PATH
-  Install directory of `STELLA <https://github.com/MeteoSwiss-APN/stella>`_.
-
 **NETCDF_ROOT**:PATH
   Install directory of `NetCDF-4 <http://www.unidata.ucar.edu/software/netcdf/>`_.
-
