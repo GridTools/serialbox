@@ -34,9 +34,6 @@
 /* SERIALBOX version string */
 #define SERIALBOX_VERSION_STRING "${Serialbox_VERSION_MAJOR}.${Serialbox_VERSION_MINOR}.${Serialbox_VERSION_PATCH}"
 
-/* Boost version used during compilation */
-#define SERIALBOX_BOOST_VERSION ${SERIALBOX_BOOST_VERSION} 
-
 /* Define if OpenSSL is available */
 #cmakedefine SERIALBOX_HAS_OPENSSL ${SERIALBOX_HAS_OPENSSL}
 
@@ -47,4 +44,3 @@
 #cmakedefine SERIALBOX_HAS_LOGGING ${SERIALBOX_HAS_LOGGING}
 
 #endif
-

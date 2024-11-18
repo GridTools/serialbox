@@ -28,7 +28,6 @@ The CMake build system of Serialbox takes care of setting the correct flags for 
 Using the Fortran Interface
 ===========================
 
-To use the Fortran interface in your project, you need to link against ``libSerialboxFortran`` and the C++ standard library used to compile the code (e.g ``libstdc++`` for GNU gcc) as well as the dependency libraries (Boost and possibly NetCDF and OpenSSL). As this can be tedious, Serialbox provides a CMake find_package module (:ref:`FindSerialbox`) to handle this task. 
+To use the Fortran interface in your project, you need to link against ``libSerialboxFortran`` and the C++ standard library used to compile the code (e.g ``libstdc++`` for GNU gcc) as well as the dependency libraries (possibly NetCDF and OpenSSL). As this can be tedious, Serialbox provides a CMake find_package module (:ref:`FindSerialbox`) to handle this task. 
 
 To use the preprocessing script ``pp_ser.py``, take a look at the CMake module :ref:`SerialboxTooling`. For a self-contained example see ``examples/fortran/perturbation``.
-

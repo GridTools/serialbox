@@ -12,6 +12,7 @@
 ///
 //===------------------------------------------------------------------------------------------===//
 
+#include "serialbox/core/Exception.h"
 #include "serialbox/core/MetainfoValueImpl.h"
 #include <gtest/gtest.h>
 #include <utility>

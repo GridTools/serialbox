@@ -30,7 +30,7 @@ Consider the following minimalistic example, ``test.c``, which simply creates an
     serialboxSerializerDestroy(serializer);
   }
   
-To compile this sample program, you have to link against ``SerialboxC`` and the dependency libraries. The dependency libraries include the Boost libraries (filesystem, system, chrono, log, date_time, log_setup, thread, regex and atomic) as well as the NetCDF and OpenSSL libraries. However, if you choose to link dynamically (i.e against ``libSerialboxC.so``), the dependencies will be resolved automatically:
+To compile this sample program, you have to link against ``SerialboxC`` and the dependency libraries. The dependency libraries include the NetCDF and OpenSSL libraries. However, if you choose to link dynamically (i.e against ``libSerialboxC.so``), the dependencies will be resolved automatically:
 
 .. code-block:: console
 
@@ -39,4 +39,3 @@ To compile this sample program, you have to link against ``SerialboxC`` and the 
    $ export LD_LIBRARY_PATH=$SERIALBOX_INSTALL_PATH/lib; ./test 
 
 In general, it is **strongly** advised to use the CMake find_package-module of Serialbox which takes care of linking against the correct libraries (see :doc:`Usage`).
-

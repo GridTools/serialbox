@@ -15,7 +15,6 @@
 
 #include "serialbox/core/MetainfoMapImpl.h"
 #include "serialbox/core/MetainfoMapImplSerializer.h"
-#include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 
 using namespace serialbox;
@@ -85,7 +84,7 @@ TEST(MetainfoMapImplTest, Construction) {
   ASSERT_TRUE(map2.empty());
 
   // Iterate values
-  std::vector<boost::any> anyvec;
+  std::vector<std::any> anyvec;
   for(const auto& map_element : map)
     anyvec.push_back(map_element.second.any());
   EXPECT_EQ(anyvec.size(), map.size());

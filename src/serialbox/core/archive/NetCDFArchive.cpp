@@ -19,7 +19,6 @@
 #include "serialbox/core/Unreachable.h"
 #include "serialbox/core/Version.h"
 #include "serialbox/core/archive/NetCDFArchive.h"
-#include <boost/algorithm/string.hpp>
 #include <fstream>
 #include <memory>
 #include <netcdf.h>
@@ -489,7 +488,8 @@ void NetCDFArchive::clear() {
   std::filesystem::directory_iterator end;
   for(std::filesystem::directory_iterator it(directory_); it != end; ++it) {
     if(std::filesystem::is_regular_file(it->path()) &&
-       boost::algorithm::starts_with(it->path().filename().string(), prefix_ + "_") &&
+       (it->path().filename().string().rfind(prefix_ + "_", 0) ==
+        0) && // replace with starts_with in c++20
        std::filesystem::path(it->path()).extension() == ".nc") {
 
       if(!std::filesystem::remove(it->path()))

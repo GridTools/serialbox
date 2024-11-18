@@ -15,7 +15,6 @@
 
 #include "serialbox/core/FieldMetainfoImpl.h"
 #include "serialbox/core/FieldMetainfoImplSerializer.h"
-#include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 
 using nlohmann::basic_json;

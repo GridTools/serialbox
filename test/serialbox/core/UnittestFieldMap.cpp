@@ -14,7 +14,6 @@
 
 #include "serialbox/core/FieldMap.h"
 #include "serialbox/core/FieldMapSerializer.h"
-#include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 
 using namespace serialbox;
@@ -295,7 +294,7 @@ TEST(FieldMapTest, toString) {
 
   std::stringstream ss;
   ss << map;
-  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "FieldMap"));
+  EXPECT_TRUE(ss.str().rfind("FieldMap", 0) == 0); // replace by starts_with in C++20
   EXPECT_NE(ss.str().find("field1"), std::string::npos);
   EXPECT_NE(ss.str().find("key1"), std::string::npos);
   EXPECT_NE(ss.str().find("key2"), std::string::npos);
