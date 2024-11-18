@@ -43,9 +43,9 @@ print_help()
     # --help
     printf "  %-35s %s\n" "-h, --help" "Print this help statement."
     
-    printf "\nThe unittests for gridtools and stella will be built " 
+    printf "\nThe unittests for gridtools will be built " 
     printf "automatically they are checked out in external/ or " 
-    printf "GRIDTOOLS_ROOT and/or STELLA_ROOT are set.\n"
+    printf "GRIDTOOLS_ROOT is set.\n"
     exit 0
 }
 
@@ -176,16 +176,6 @@ else
     SERIALBOX_TESTING_GRIDTOOLS=OFF
 fi
 
-# STELLA
-if [ ! -z ${STELLA_ROOT+x} ]; then
-    SERIALBOX_TESTING_STELLA=ON
-elif [ -d "${EXTERNAL_DIR}/stella" ]; then
-    SERIALBOX_TESTING_STELLA=ON
-    export GRIDTOOLS_ROOT=${EXTERNAL_DIR}/stella
-else
-    SERIALBOX_TESTING_STELLA=OFF
-fi
-
 # pFUnit
 if [ ! -z ${PFUNIT_INSTALL_DIR+x} ]; then
     SERIALBOX_TESTING_FORTRAN=ON
@@ -233,7 +223,6 @@ cmake                                                                          \
  -DSERIALBOX_ENABLE_C:BOOL=${SERIALBOX_ENABLE_C}                               \
  -DSERIALBOX_ENABLE_FORTRAN:BOOL=${SERIALBOX_ENABLE_FORTRAN}                   \
  -DSERIALBOX_TESTING_GRIDTOOLS:BOOL=${SERIALBOX_TESTING_GRIDTOOLS}             \
- -DSERIALBOX_TESTING_STELLA:BOOL=${SERIALBOX_TESTING_STELLA}                   \
  -DSERIALBOX_TESTING_FORTRAN:BOOL=${SERIALBOX_TESTING_FORTRAN}                 \
  -DSERIALBOX_USE_NETCDF:BOOL=${SERIALBOX_USE_NETCDF}                           \
  -DSERIALBOX_ENABLE_FTG:BOOL=ON                                                \

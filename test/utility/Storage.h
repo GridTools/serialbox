@@ -43,7 +43,7 @@ struct Padding {
   std::initializer_list<std::pair<int, int>> padding;
 };
 
-/// \brief Represent a dummy storage to test the StorageView in absence of gridtools or STELLA
+/// \brief Represent a dummy storage to test the StorageView in absence of gridtools
 template <class T>
 struct Storage {
   using value_type = T;

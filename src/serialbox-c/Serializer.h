@@ -98,7 +98,7 @@ SERIALBOX_API void serialboxSerializerUpdateMetaData(serialboxSerializer_t* seri
  * The return value can be:
  *
  *  0: the variable is not yet initialized -> the serialization is enabled if the environment
- *     variable `STELLA_SERIALIZATION_DISABLE` or `SERIALBOX_SERIALIZATION_DISABLE` is not set to a
+ *     variable `SERIALBOX_SERIALIZATION_DISABLE` is not set to a
  *     positive value. The first Serializer which is initialized has to set this value either to +1
  *     or to -1 according to the environment.
  * +1: the serialization is enabled, independently of the environment

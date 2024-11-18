@@ -116,7 +116,7 @@ static inline bool dimsEqual(const std::vector<int>& dims1, const std::vector<in
     return false;
 
   // If a dimensions is negative, 0 or 1 it is ignored. We have to do this as gridtools treats empty
-  // dimensions as 0 while STELLA and Frotran usually set them to 1.
+  // dimensions as 0 while Fortran usually set them to 1.
   for(std::size_t i = 0; i < dims1.size(); ++i)
     if(dims1[i] != dims2[i] && !(dims1[i] <= 1 && dims2[i] <= 1))
       return false;

@@ -23,7 +23,7 @@
 \begin{document}
 \maketitle
 
-\ppser{} is a parser to expand \texttt{!\$SER} serialization directives in Fortran code in order to generate serialization code using the \texttt{m\_serialize.f90} interface for the STELLA serialization framework.
+\ppser{} is a parser to expand \texttt{!\$SER} serialization directives in Fortran code in order to generate serialization code using the \texttt{m\_serialize.f90} interface.
 
 The grammar is defined by a set of \texttt{!\$SER} directives. All directives are case-insensitive. The main keywords are \texttt{INIT} for initialization, \texttt{VERBATIM} for echoing some Fortran statements, \texttt{OPTION} for setting specific options for the serialization module, \texttt{REGISTER} for registering a data field meta-information, \texttt{ZERO} for setting some field to zero, \texttt{SAVEPOINT} for registering a savepoint with some optional information, \texttt{DATA} for serializing a data field, and \texttt{CLEANUP} for finishing serialization.
 

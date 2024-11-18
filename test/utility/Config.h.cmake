@@ -17,9 +17,6 @@
 /* Define if GridTools Unittests are built */
 #cmakedefine SERIALBOX_HAS_GRIDTOOLS ${SERIALBOX_HAS_GRIDTOOLS}
 
-/* Define if STELLA Unittests are built */
-#cmakedefine SERIALBOX_HAS_STELLA ${SERIALBOX_HAS_STELLA}
-
 /* Define if compatibility Unittests with old serialbox are built */
 #cmakedefine SERIALBOX_HAS_SERIALBOX_OLD ${SERIALBOX_HAS_SERIALBOX_OLD}
 
