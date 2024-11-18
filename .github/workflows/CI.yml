@@ -14,7 +14,7 @@ jobs:
     container: ghcr.io/gridtools/gridtools-base:${{ matrix.compiler }}
     strategy:
       matrix:
-        compiler: [gcc-10, gcc-11, gcc-12, gcc-13, clang-10, clang-15, clang-16, clang-17, clang-18]
+        compiler: [nvhpc-24.11]
         build_type: [Debug, Release]
         exclude:
           - compiler: gcc-10
@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Enable Fortran
-        if: startsWith(matrix.compiler, 'gcc')
+        if: startsWith(matrix.compiler, 'gcc') || startsWith(matrix.compiler, 'nvhpc')
         run: echo "TEST_FORTRAN=ON" >> $GITHUB_ENV
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -50,9 +50,9 @@ jobs:
           path: pfunit
           key: ${{ matrix.compiler }}-pfunit
       - name: Install pFUnit
-        if: startsWith(matrix.compiler, 'gcc') && steps.cache-pfunit.outputs.cache-hit != 'true'
+        if: (startsWith(matrix.compiler, 'gcc') || startsWith(matrix.compiler, 'nvhpc')) && steps.cache-pfunit.outputs.cache-hit != 'true'
         env:
-          PFUNIT_VERSION: 4.6.3
+          PFUNIT_VERSION: 4.9.0
         run: |
           apt-get update && apt-get -y install m4
           git clone --branch v${PFUNIT_VERSION} --depth 1 https://github.com/Goddard-Fortran-Ecosystem/pFUnit.git
