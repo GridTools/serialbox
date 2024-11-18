@@ -244,8 +244,7 @@ if(SERIALBOX_TESTING_GRIDTOOLS)
   set(SERIALBOX_HAS_GRIDTOOLS 1)
 endif(SERIALBOX_TESTING_GRIDTOOLS)
 
-# If ${REQUIRED_BOOST_COMPONENTS} is empty we still need the headers
-find_package(Boost 1.54 REQUIRED)
+find_package(Boost 1.54 REQUIRED) # only Boost headers
 set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
 
 #---------------------------------------- ClangTools -----------------------------------------------

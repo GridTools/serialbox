@@ -12,7 +12,7 @@ Serialbox relies on `CMake <http://www.cmake.org/>`_ (>= 3.1), a cross-platform 
 Quick start
 ===========
 
-To build Serialbox you need a C++17 toolchain, `CMake <http://www.cmake.org/>`_ and a fairly recent version of `Boost <http://www.boost.org/>`_. We use here the command-line, non-interactive CMake interface.
+To build Serialbox you need a C++17 toolchain, `CMake <http://www.cmake.org/>`_ and `Boost <http://www.boost.org/>`_ headers. We use here the command-line, non-interactive CMake interface.
 
 #. Make sure you have installed all the tools and dependencies, especially Boost and CMake. 
    See `Dependencies`_. 
