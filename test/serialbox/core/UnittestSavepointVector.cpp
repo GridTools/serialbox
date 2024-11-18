@@ -14,7 +14,6 @@
 
 #include "serialbox/core/SavepointVector.h"
 #include "serialbox/core/SavepointVectorSerializer.h"
-#include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 
 using namespace serialbox;
@@ -386,7 +385,7 @@ TEST(SavepointVectorTest, toString) {
   ASSERT_TRUE(s.addField(savepoint1, FieldID{"u", 0}));
 
   ss << s;
-  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "SavepointVector"));
+  EXPECT_TRUE(ss.str().rfind("SavepointVector", 0) == 0); // replace by starts_with in C++20
   EXPECT_NE(ss.str().find("savepoint"), std::string::npos);
   EXPECT_NE(ss.str().find("key1"), std::string::npos);
 }

@@ -45,7 +45,7 @@ TEST_F(NetCDFArchiveUtilityTest, Construction) {
     NetCDFArchive b(OpenModeKind::Write, this->directory->path().string(), "field");
     b.updateMetaData();
 
-    EXPECT_TRUE(boost::algorithm::starts_with(b.name(), "NetCDF"));
+    EXPECT_TRUE(b.name().rfind("NetCDF", 0) == 0); // replace by starts_with in C++20
     EXPECT_EQ(b.mode(), OpenModeKind::Write);
     EXPECT_EQ(b.prefix(), "field");
   }
@@ -177,7 +177,7 @@ TEST_F(NetCDFArchiveUtilityTest, toString) {
 
   ss << archive;
 
-  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "NetCDFArchive"));
+  EXPECT_TRUE(ss.str().rfind("NetCDFArchive", 0) == 0); // replace by starts_with in C++20
   EXPECT_NE(ss.str().find("directory"), std::string::npos);
   EXPECT_NE(ss.str().find("mode"), std::string::npos);
   EXPECT_NE(ss.str().find("prefix"), std::string::npos);

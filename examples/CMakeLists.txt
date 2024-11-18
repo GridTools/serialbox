@@ -53,7 +53,3 @@ endif()
 if(SERIALBOX_ENABLE_PYTHON)
   add_subdirectory(python)
 endif()
-
-if(SERIALBOX_TESTING_GRIDTOOLS)
-  add_subdirectory(gridtools)
-endif()
