@@ -54,10 +54,6 @@ function(serialbox_add_unittest_executable)
     add_dependencies(${ARG_NAME} serialbox-old)
   endif()
   
-  if(DEFINED BUILD_STELLA)
-    add_dependencies(${ARG_NAME} stella)
-  endif()
-  
   if(SERIALBOX_HAS_GRIDTOOLS)
     target_link_libraries(${ARG_NAME} GridTools::gridtools)
   endif()

@@ -40,19 +40,9 @@ set(SOURCES
   frontend/gridtools/UnittestFieldMetaInfo.cpp  
   frontend/gridtools/UnittestSavepoint.cpp    
   frontend/gridtools/UnittestSerializer.cpp    
-  
-  # frontend/stella/
-  frontend/stella/UnittestStorageView.cpp
-  frontend/stella/UnittestMetainfoSet.cpp
-  frontend/stella/UnittestException.cpp
-  frontend/stella/UnittestSavepoint.cpp  
-  frontend/stella/UnittestSerializer.cpp
-  frontend/stella/UnittestDataFieldInfo.cpp
-  frontend/stella/UnittestUtility.cpp  
 )
   
 serialbox_add_unittest_executable(NAME SerialboxCppUnittest 
                                   SOURCES ${SOURCES} UnittestMain.cpp
                                   LIBRARIES SerialboxStatic
 )
-

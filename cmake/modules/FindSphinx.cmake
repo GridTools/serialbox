@@ -7,7 +7,7 @@
 # Variables defined by this module:
 #
 #   SPHINX_FOUND         System has Sphinx
-#   STELLA_EXECUTABLE    The location sphinx-build
+#   SPHINX_EXECUTABLE    The location sphinx-build
 #
 include(FindPackageHandleStandardArgs)
 
@@ -20,4 +20,3 @@ find_program(SPHINX_EXECUTABLE
 find_package_handle_standard_args(Sphinx
                                   "Failed to locate sphinx-build executable"
                                   SPHINX_EXECUTABLE)
-

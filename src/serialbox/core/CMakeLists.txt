@@ -60,15 +60,6 @@ set(SOURCES
   archive/NetCDFArchive.h
   archive/MockArchive.cpp
   archive/MockArchive.h
-  
-  frontend/stella/MetainfoSet.cpp
-  frontend/stella/MetainfoSet.h
-  frontend/stella/Savepoint.cpp
-  frontend/stella/Savepoint.h
-  frontend/stella/Serializer.cpp
-  frontend/stella/Serializer.h
-  frontend/stella/DataFieldInfo.cpp
-  frontend/stella/DataFieldInfo.h
 )
 
 add_library(SerialboxObjects OBJECT ${SOURCES})

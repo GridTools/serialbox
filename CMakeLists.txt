@@ -15,7 +15,7 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "CMake
 
 cmake_policy(SET CMP0048 NEW)
 cmake_minimum_required(VERSION 3.12.0)
-project(Serialbox LANGUAGES C CXX VERSION 2.6.1)
+project(Serialbox LANGUAGES C CXX VERSION 2.6.2)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_EXTENSIONS OFF)
@@ -60,7 +60,6 @@ option(SERIALBOX_USE_NETCDF "Use NetCDF library" OFF)
 
 option(SERIALBOX_TESTING "Build unittest executables" OFF)
 option(SERIALBOX_TESTING_GRIDTOOLS "Build gridtools unitests and examples" OFF)
-option(SERIALBOX_TESTING_STELLA "Build STELLA unitests" OFF)
 option(SERIALBOX_TESTING_DEATH_TESTS "Run death-tests" OFF)
 option(SERIALBOX_TESTING_LARGE_FILE_TESTS "Run large file (>4GB) tests" OFF)
 option(SERIALBOX_TESTING_FORTRAN "Build tests for the Fortran interface")
@@ -162,7 +161,6 @@ set(SERIALBOX_EXTERNAL_LIBRARIES)
 
 ## Enable testing if one ore more of the tests is requested
 if(SERIALBOX_TESTING_GRIDTOOLS OR
-   SERIALBOX_TESTING_STELLA OR
    SERIALBOX_TESTING_DEATH_TESTS OR
    SERIALBOX_TESTING_FORTRAN)
  set(SERIALBOX_TESTING ON)
@@ -249,54 +247,6 @@ endif(SERIALBOX_TESTING_GRIDTOOLS)
 # If ${REQUIRED_BOOST_COMPONENTS} is empty we still need the headers
 find_package(Boost 1.54 REQUIRED)
 set(SERIALBOX_BOOST_VERSION ${Boost_VERSION})
-
-#---------------------------------------- STELLA ---------------------------------------------------
-if(SERIALBOX_TESTING_STELLA)
-
-  # If STELLA_ROOT is not provided, we try to find it in external/
-  set(STELLA_ROOT_ENV "$ENV{STELLA_ROOT}")
-  if(NOT(STELLA_ROOT) AND NOT(STELLA_ROOT_ENV) AND
-     EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/stella/CMakeLists.txt")
-
-    set(STELLA_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/external/stella")
-
-    set(BUILD_STELLA "ON" BOOL)
-    set(STELLA_INSTALL_DIR "${CMAKE_BINARY_DIR}/external/stella/install")
-
-    # Forward toolchain
-    set(CMAKE_EXTERNAL_ARGS -Wno-dev
-      -DSTELLA_ENABLE_BENCHMARK=OFF
-      -DSTELLA_ENABLE_COMMUNICATION=OFF
-      -DSTELLA_ENABLE_SERIALIZATION=OFF
-      -DSTELLA_ENABLE_TESTING=OFF
-      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-      -DCMAKE_GENERATOR=${CMAKE_GENERATOR}
-      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-      -DCMAKE_INSTALL_PREFIX=${STELLA_INSTALL_DIR}
-    )
-
-    # Build STELLA
-    ExternalProject_Add(
-        stella
-        URL        "${CMAKE_CURRENT_SOURCE_DIR}/external/stella"
-        PREFIX     "external/stella"
-        CMAKE_ARGS ${CMAKE_EXTERNAL_ARGS}
-    )
-    message(STATUS "Building STELLA from: ${CMAKE_CURRENT_SOURCE_DIR}/external/stella")
-
-    set(STELLA_INCLUDE_DIRS "${STELLA_INSTALL_DIR}/include/STELLA")
-    set(STELLA_LIBRARIES "${STELLA_INSTALL_DIR}/lib/libSharedInfrastructure.a"
-                         "${STELLA_INSTALL_DIR}/lib/libStella.a"
-                         "${STELLA_INSTALL_DIR}/lib/libStellaUtils.a")
-  else()
-    find_package(STELLA QUIET REQUIRED)
-  endif()
-
-  include_directories(SYSTEM ${STELLA_INCLUDE_DIRS})
-  set(SERIALBOX_HAS_STELLA 1)
-
-endif(SERIALBOX_TESTING_STELLA)
 
 #---------------------------------------- ClangTools -----------------------------------------------
 

@@ -23,8 +23,7 @@ import tempfile
 pp_ser.py
 
 Parser to expand $!SER serialization directives in Fortran code in order to generate
-serialization code using the m_serialize.f90 interface for the STELLA serialization
-framework.
+serialization code using the m_serialize.f90 interface.
 
 The grammar is defined by a set of !$SER directives. All directives are case-
 insensitive. The main keywords are INIT for initialization, VERBATIM for echoeing

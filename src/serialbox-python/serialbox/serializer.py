@@ -314,7 +314,7 @@ class Serializer(object):
         """Enable serialization.
 
         Serialization is enabled by default, but it can be disabled either by setting the
-        environment variable ``STELLA_SERIALIZATION_DISABLE`` to a positive value or by calling the
+        environment variable ``SERIALBOX_SERIALIZATION_DISABLE`` to a positive value or by calling the
         function :func:`Serializer.disable <serialbox.Serializer.disable>`.
         With this function you enable the serialization independently of the current environment.
 
@@ -328,7 +328,7 @@ class Serializer(object):
         """Disable serialization.
 
         Serialization is enabled by default, but it can be disabled either by setting the
-        environment variable ``STELLA_SERIALIZATION_DISABLE`` to a positive value or by calling the
+        environment variable ``SERIALBOX_SERIALIZATION_DISABLE`` to a positive value or by calling the
         function :func:`Serializer.disable <serialbox.Serializer.disable>`.
         With this function you disable the serialization independently of the current environment.
 
@@ -344,7 +344,7 @@ class Serializer(object):
         The status is represented as an integer which can take the following values:
 
         - 0: the variable is not yet initialized i.e the serialization is enabled if the environment
-          variable ``STELLA_SERIALIZATION_DISABLE`` or ``SERIALBOX_SERIALIZATION_DISABLE`` is not
+          variable ``SERIALBOX_SERIALIZATION_DISABLE`` is not
           set to a positive value. The first Serializer which is initialized has to set this value
           either to +1 or to -1 according to the environment.
         - +1: the serialization is enabled, independently of the environment
