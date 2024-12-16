@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build_sdist:
-    name: Build Python distribution
+    name: Build source distribution
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -21,13 +21,13 @@ jobs:
         python -m pip install build --user
     - name: Build source tarball
       run: |
-        cd bindings/python
+        cd src/serialbox-python
         python -m build --sdist --outdir dist/
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: sdist
-        path: ./bindings/python/dist/**
+        path: ./src/serialbox-python/dist/**
 
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -45,6 +45,7 @@ jobs:
         env:
           CIBW_SKIP: pp* *musllinux*
           CIBW_BEFORE_BUILD_LINUX: yum -y install boost-devel
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
           CIBW_BEFORE_BUILD_MACOS: brew install boost # should be ok as we only use headers
         with:
           package-dir: src/serialbox-python
