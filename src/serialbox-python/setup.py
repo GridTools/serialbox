@@ -146,7 +146,7 @@ class CMakeBuild(build_ext):
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
     name="serialbox",
-    version="0.0.1",
+    version="2.6.2",
     author="Serialbox Developers",
     packages=find_packages(),
     install_requires=["numpy"],
