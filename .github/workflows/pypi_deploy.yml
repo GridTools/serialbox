@@ -47,6 +47,7 @@ jobs:
           CIBW_BEFORE_BUILD_LINUX: yum -y install boost-devel
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
           CIBW_BEFORE_BUILD_MACOS: brew install boost # should be ok as we only use headers
+          MACOSX_DEPLOYMENT_TARGET: 10.15
         with:
           package-dir: src/serialbox-python
           output-dir: dist
