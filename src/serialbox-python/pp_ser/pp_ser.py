@@ -47,11 +47,31 @@ __date__ = 'Sun Mar 23 22:06:44 2014'
 __email__ = 'oliver.fuhrer@meteoswiss.ch'
 
 
-def to_ascii(text):
+def open23(name, mode='r'):
     if sys.version_info[0] == 3:
-        return bytes(text, 'ascii')
+        return open(name, mode,
+                    encoding=(None if 'b' in mode else 'UTF-8'),
+                    errors=(None if 'b' in mode else 'surrogateescape'))
+    else:
+        return open(name, mode)
+
+
+def bytes23(text):
+    if sys.version_info[0] == 3:
+        return bytes(text, 'UTF-8', 'surrogateescape')
     else:
         return str(text)
+
+
+def getline(filename, lineno):
+    try:
+        return linecache.getline(filename, lineno)
+    except:
+        with open23(filename, 'r') as f:
+            for i, line in enumerate(f, start=1):
+                if i == lineno:
+                    return line
+            return ''
 
 
 def filter_fortran(f):
@@ -708,12 +728,12 @@ class PpSer:
             lookahead_index = self.__linenum + 1
 
             # look ahead
-            nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
+            nextline = getline(os.path.join(self.infile), lookahead_index)
             r_continued_line = re.compile('^([^!]*)&', re.IGNORECASE)
             while r_continued_line.search(nextline):
                 self.__line += nextline
                 lookahead_index += 1
-                nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
+                nextline = getline(os.path.join(self.infile), lookahead_index)
             self.__line += nextline
             self.__skip_next_n_lines = lookahead_index - self.__linenum
             self.__produce_use_stmt()
@@ -808,12 +828,12 @@ class PpSer:
                 # set to line after the intent declaration
                 lookahead_index += 1
                 # look ahead
-                nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
+                nextline = getline(os.path.join(self.infile), lookahead_index)
                 while nextline:
                     self.__check_intent_in(nextline)
                     if nextline.find('&') != -1:
                         lookahead_index += 1
-                        nextline = linecache.getline(os.path.join(self.infile), lookahead_index)
+                        nextline = getline(os.path.join(self.infile), lookahead_index)
                     else:
                         nextline = None
 
@@ -901,7 +921,7 @@ class PpSer:
             self.__outputBuffer += '#define ACC_PREFIX !$acc\n'
 
         # open and parse file
-        input_file = open(os.path.join(self.infile), 'r')
+        input_file = open23(os.path.join(self.infile), 'r')
         try:
             self.line = ''
             for line in input_file:
@@ -946,7 +966,7 @@ class PpSer:
             output_file = tempfile.NamedTemporaryFile(delete=False)
             # same permissions as infile
             os.chmod(output_file.name, os.stat(self.infile).st_mode)
-            output_file.write(to_ascii(self.__outputBuffer))
+            output_file.write(bytes23(self.__outputBuffer))
             output_file.close()
             useit = True
             if os.path.isfile(self.outfile) and not self.identical:
