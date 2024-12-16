@@ -145,7 +145,7 @@ class CMakeBuild(build_ext):
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
-    name="serialbox",
+    name="serialbox4py",
     version="2.6.2",
     author="Serialbox Developers",
     packages=find_packages(),
