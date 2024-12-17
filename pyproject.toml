@@ -8,7 +8,11 @@ requires = [
 ]
 
 [project]
-dependencies = ['numpy>=1.23']
+dependencies = [
+  'numpy>=1.23',
+  'packaging>=20.0'
+]
+
 description = 'Serialbox - Serialization Library for C, C++, Fortran and Python'
 name = 'serialbox4py'
 # note: version should not be changed manually, use bump-my-version instead:
