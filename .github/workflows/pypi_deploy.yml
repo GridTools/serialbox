@@ -21,13 +21,12 @@ jobs:
         python -m pip install build --user
     - name: Build source tarball
       run: |
-        cd src/serialbox-python
         python -m build --sdist --outdir dist/
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: sdist
-        path: ./src/serialbox-python/dist/**
+        path: ./dist/**
 
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -45,11 +44,11 @@ jobs:
         env:
           CIBW_SKIP: pp* *musllinux*
           CIBW_BEFORE_BUILD_LINUX: yum -y install boost-devel
+          CIBW_ARCHS_LINUX: "x86_64"
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
           CIBW_BEFORE_BUILD_MACOS: brew install boost # should be ok as we only use headers
           MACOSX_DEPLOYMENT_TARGET: 10.15
         with:
-          package-dir: src/serialbox-python
           output-dir: dist
 
       - uses: actions/upload-artifact@v4
