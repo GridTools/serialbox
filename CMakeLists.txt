@@ -15,6 +15,9 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/install" CACHE PATH "CMake
 
 cmake_policy(SET CMP0048 NEW)
 cmake_minimum_required(VERSION 3.12.0)
+# note: version should not be changed manually, use bump-my-version instead:
+# install: pip install bump-my-version
+# example: bump-my-version bump patch
 project(Serialbox LANGUAGES C CXX VERSION 2.6.2)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
