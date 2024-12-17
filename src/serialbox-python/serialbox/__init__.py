@@ -4,7 +4,7 @@
 ##
 ##                                   S E R I A L B O X
 ##
-## This file is distributed under terms of BSD license. 
+## This file is distributed under terms of BSD license.
 ## See LICENSE.txt for more information.
 ##
 ##===------------------------------------------------------------------------------------------===##
@@ -15,8 +15,10 @@
 
 """'Serialbox Python Interface'"""
 
-__versioninfo__ = (2, 2, 0)
-__version__ = '.'.join(str(v) for v in __versioninfo__)
+from packaging import version as pkg_version
+
+__version__ = "2.6.2"
+__versioninfo__ = pkg_version.parse(__version__)
 
 #
 # Check python version
@@ -31,6 +33,7 @@ if version_info < (3, 4):
 #
 try:
     import numpy
+
     del numpy
 except ImportError:
     raise Exception("Serialbox requires numpy")
@@ -49,6 +52,17 @@ from .fieldmetainfo import FieldMetainfo
 from .archive import Archive
 from .slice import Slice
 
-__all__ = ['Config', 'TypeID', 'SerialboxError', 'Logging', 'Serializer', 'Savepoint',
-           'SavepointCollection', 'MetainfoMap', 'FieldMetainfo', 'OpenModeKind', 'Archive',
-           'Slice']
+__all__ = [
+    "Config",
+    "TypeID",
+    "SerialboxError",
+    "Logging",
+    "Serializer",
+    "Savepoint",
+    "SavepointCollection",
+    "MetainfoMap",
+    "FieldMetainfo",
+    "OpenModeKind",
+    "Archive",
+    "Slice",
+]
