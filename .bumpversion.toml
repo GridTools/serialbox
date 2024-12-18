@@ -23,4 +23,7 @@ post_commit_hooks = []
 filename = "CMakeLists.txt"
 
 [[tool.bumpversion.files]]
-filename = "src/serialbox-python/setup.py"
+filename = "pyproject.toml"
+
+[[tool.bumpversion.files]]
+filename = "src/serialbox-python/serialbox/__init__.py"

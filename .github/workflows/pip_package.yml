@@ -40,7 +40,7 @@ jobs:
         run: pip install -r src/serialbox-python/requirements.txt
 
       - name: build
-        run: pip install src/serialbox-python
+        run: pip install .
 
       - name: run tests
         run: pytest -v test/serialbox-python/serialbox >> $GITHUB_STEP_SUMMARY

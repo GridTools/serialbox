@@ -52,11 +52,18 @@ if(SERIALBOX_ENABLE_PYTHON)
   add_dependencies(SerialboxCShared SerialboxPython)
 
   # Install python source
-  install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/serialbox-python/serialbox/
+  if(SKBUILD_PROJECT_NAME)
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/serialbox-python/serialbox/
+          DESTINATION .
+          FILES_MATCHING PATTERN "*.py"
+          PATTERN "*__pycache__*" EXCLUDE) 
+  else()
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/serialbox-python/serialbox/
           DESTINATION python/serialbox
           FILES_MATCHING PATTERN "*.py"
           PATTERN "*__pycache__*" EXCLUDE)
-
+  endif()
+  
   install(CODE "
       EXECUTE_PROCESS(COMMAND
         ln -sf

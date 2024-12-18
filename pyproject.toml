@@ -1,0 +1,67 @@
+[build-system]
+build-backend = 'scikit_build_core.build'
+requires = [
+    'cmake>=3.25',
+    'numpy >= 1.23',
+    'scikit-build-core>=0.10.7',
+    'wheel>=0.45.1',
+]
+
+[project]
+dependencies = [
+  'numpy>=1.23',
+  'packaging>=20.0'
+]
+
+description = 'Serialbox - Serialization Library for C, C++, Fortran and Python'
+name = 'serialbox4py'
+# note: version should not be changed manually, use bump-my-version instead:
+# install: pip install bump-my-version
+# example: bump-my-version bump patch
+version = '2.6.2'
+license = {text = "BSD-3 License"}
+readme = {file = 'README.md', content-type = 'text/markdown'}
+authors = [{email = 'gridtools@cscs.ch'}, {name = 'ETH Zurich'}]
+classifiers = [
+  'Development Status :: 5 - Production/Stable',
+  'Intended Audience :: Science/Research',
+  'License :: OSI Approved :: BSD License',
+  'Operating System :: POSIX',
+  'Programming Language :: Python',
+  'Programming Language :: Python :: 3',
+  'Programming Language :: Python :: 3 :: Only',
+  'Programming Language :: Python :: 3.8',
+  'Programming Language :: Python :: 3.9',
+  'Programming Language :: Python :: 3.10',
+  'Programming Language :: Python :: 3.11',
+  'Programming Language :: Python :: 3.12',
+  'Programming Language :: Python :: 3.13',
+  'Programming Language :: Python :: Implementation :: CPython',
+  'Topic :: File Formats',
+  'Topic :: Scientific/Engineering :: Atmospheric Science',
+  'Topic :: Scientific/Engineering :: Physics',
+  'Topic :: Software Development :: Testing',
+  'Topic :: System :: Archiving'
+]
+
+[project.urls]
+repository = 'https://github.com/GridTools/serialbox'
+
+[project.optional-dependencies]
+test = ['pytest', 'pytest-cache']
+
+[tool.scikit-build]
+minimum-version = '0.5'
+cmake.minimum-version = '3.25'
+cmake.verbose = true
+cmake.source-dir = "."
+cmake.build-type = "Release"
+cmake.args = [
+    "-DSERIALBOX_ENABLE_FORTRAN=false",
+    "-DSERIALBOX_ENABLE_SDB=false",
+    "-DSERIALBOX_ASYNC_API=false"
+]
+wheel.expand-macos-universal-tags = true
+wheel.install-dir = "serialbox"
+wheel.packages = []
+wheel.license-files = []

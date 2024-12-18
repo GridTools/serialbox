@@ -21,11 +21,19 @@ function( serialbox_install_targets )
 
   foreach( target ${target_list} )
     if( TARGET ${target} )
-      install(TARGETS ${target}
-        EXPORT SerialboxTargets
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-      )
+      if(SKBUILD_PROJECT_NAME)
+        install(TARGETS ${target}
+          EXPORT SerialboxTargets
+          LIBRARY DESTINATION .
+          ARCHIVE DESTINATION .
+        )
+      else()
+        install(TARGETS ${target}
+          EXPORT SerialboxTargets
+          LIBRARY DESTINATION lib
+          ARCHIVE DESTINATION lib
+        )
+      endif()
       export( TARGETS ${target}
         APPEND FILE ${PROJECT_BINARY_DIR}/SerialboxTargets.cmake
         NAMESPACE Serialbox::

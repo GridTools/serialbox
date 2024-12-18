@@ -1,0 +1,123 @@
+name: Deploy Python Distribution
+
+on: [push, pull_request]
+
+jobs:
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+    - name: Install boost
+      run: |
+        sudo apt-get update
+        sudo apt-get install libboost-dev
+    - name: Install pypa/build
+      run: |
+        python -m pip install build --user
+    - name: Build source tarball
+      run: |
+        python -m build --sdist --outdir dist/
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: sdist
+        path: ./dist/**
+
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-13 # intel
+          - macos-14 # apple silicon
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.22.0
+        env:
+          CIBW_SKIP: pp* *musllinux* cp36-* cp37-*
+          CIBW_BEFORE_BUILD_LINUX: yum -y install boost-devel
+          CIBW_ARCHS_LINUX: "x86_64"
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
+          CIBW_BEFORE_BUILD_MACOS: brew install boost # should be ok as we only use headers
+          MACOSX_DEPLOYMENT_TARGET: 10.15
+        with:
+          output-dir: dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+          path: ./dist/*.whl
+          
+  test_wheels:
+    name: Test wheel on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: [build_wheels]
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-13 # intel
+          - macos-14 # apple silicon
+    steps:
+    - name: Download wheel
+      uses: actions/download-artifact@v4
+      with:
+        path: dist
+        merge-multiple: true
+    - name: Test wheel
+      run: |
+        python -m venv .venv
+        . .venv/bin/activate
+        python -m pip install --find-links ./dist serialbox4py
+        python -c "from serialbox import *"
+
+  # publish-pypi:
+  #   name: Publish Python distribution to pypi.org
+  #   runs-on: ubuntu-latest
+  #   needs: [build_wheels, build_sdist]
+  #   if: ${{ github.event_name == 'workflow-dispatch' }}
+  #   environment:
+  #     name: pypi
+  #     url: https://pypi.org/project/serialbox4py/
+  #   permissions:
+  #     id-token: write
+  #   steps:
+  #   - name: Download wheel
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       path: dist
+  #       merge-multiple: true
+  #   - name: Publish distribution to PyPI
+  #     uses: pypa/gh-action-pypi-publish@release/v1
+  #     with:
+  #       repository-url: https://pypi.org/legacy/
+
+  publish-test-pypi:
+    name: Publish Python distribution to test.pypi.org
+    runs-on: ubuntu-latest
+    needs: [build_wheels, build_sdist]
+    if: ${{ github.event_name == 'workflow_dispatch' }} # TODO: once working, enable line below
+    # if: ${{ github.event_name == 'release' }} # triggered by releasing on github, test first before manually triggering the deployment to PyPI (see release documentation)
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/serialbox4py/
+    permissions:
+      id-token: write
+    steps:
+    - name: Download wheel
+      uses: actions/download-artifact@v4
+      with:
+        path: dist
+        merge-multiple: true
+    - name: Publish distribution to Test PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
