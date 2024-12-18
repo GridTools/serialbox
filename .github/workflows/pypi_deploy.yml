@@ -55,6 +55,29 @@ jobs:
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./dist/*.whl
+          
+  test_wheels:
+    name: Test wheel on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: [build_wheels]
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-13 # intel
+          - macos-14 # apple silicon
+    steps:
+    - name: Download wheel
+      uses: actions/download-artifact@v4
+      with:
+        path: dist
+        merge-multiple: true
+    - name: Test wheel
+      run: |
+        python -m venv .venv
+        . .venv/bin/activate
+        python -m pip install --find-links ./dist serialbox4py
+        python -c "from serialbox import *"
 
   # publish-test-pypi:
   #   name: Publish Python distribution to test.pypi.org
