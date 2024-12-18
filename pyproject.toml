@@ -37,8 +37,7 @@ cmake.build-type = "Release"
 cmake.args = [
     "-DSERIALBOX_ENABLE_FORTRAN=false",
     "-DSERIALBOX_ENABLE_SDB=false",
-    "-DSERIALBOX_ASYNC_API=false",
-#    "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY="
+    "-DSERIALBOX_ASYNC_API=false"
 ]
 wheel.expand-macos-universal-tags = true
 wheel.install-dir = "serialbox"

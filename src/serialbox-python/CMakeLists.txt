@@ -64,11 +64,6 @@ if(SERIALBOX_ENABLE_PYTHON)
           PATTERN "*__pycache__*" EXCLUDE)
   endif()
   
-  # install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/serialbox-python/serialbox/
-  #         DESTINATION .
-  #         FILES_MATCHING PATTERN "*.py"
-  #         PATTERN "*__pycache__*" EXCLUDE)
-
   install(CODE "
       EXECUTE_PROCESS(COMMAND
         ln -sf
