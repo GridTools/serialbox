@@ -3,8 +3,8 @@ build-backend = 'scikit_build_core.build'
 requires = [
     'cmake>=3.25',
     'numpy >= 1.23',
-    'scikit-build-core',
-    'wheel',
+    'scikit-build-core>=0.10.7',
+    'wheel>=0.45.1',
 ]
 
 [project]
