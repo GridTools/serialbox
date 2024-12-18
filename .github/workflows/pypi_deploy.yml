@@ -1,4 +1,4 @@
-name: Build
+name: Deploy Python Distribution
 
 on: [push, pull_request]
 
@@ -79,8 +79,8 @@ jobs:
         python -m pip install --find-links ./dist serialbox4py
         python -c "from serialbox import *"
 
-  # publish-test-pypi:
-  #   name: Publish Python distribution to test.pypi.org
+  # publish-pypi:
+  #   name: Publish Python distribution to pypi.org
   #   runs-on: ubuntu-latest
   #   needs: [build_wheels, build_sdist]
   #   if: ${{ github.event_name == 'workflow-dispatch' }}
