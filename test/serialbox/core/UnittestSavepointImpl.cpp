@@ -14,7 +14,6 @@
 
 #include "serialbox/core/SavepointImpl.h"
 #include "serialbox/core/SavepointImplSerializer.h"
-#include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 #include <unordered_map>
 

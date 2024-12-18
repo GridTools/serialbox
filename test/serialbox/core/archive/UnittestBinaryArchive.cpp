@@ -16,7 +16,6 @@
 #include "serialbox/core/archive/BinaryArchive.h"
 #include "utility/SerializerTestBase.h"
 #include "utility/Storage.h"
-#include <boost/algorithm/string.hpp>
 #include <gtest/gtest.h>
 
 using namespace serialbox;
@@ -174,7 +173,7 @@ TEST_F(BinaryArchiveUtilityTest, toString) {
   archive.write(sv, "storage", nullptr);
 
   ss << archive;
-  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "BinaryArchive"));
+  EXPECT_TRUE(ss.str().rfind("BinaryArchive", 0) == 0); // replace by starts_with in C++20
   EXPECT_NE(ss.str().find("directory"), std::string::npos);
   EXPECT_NE(ss.str().find("mode"), std::string::npos);
   EXPECT_NE(ss.str().find("prefix"), std::string::npos);

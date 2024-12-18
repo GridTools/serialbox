@@ -16,10 +16,8 @@
 #define SERIALBOX_CORE_METAINFOVALUEIMPL_H
 
 #include "serialbox/core/Array.h"
-#include "serialbox/core/Exception.h"
 #include "serialbox/core/Type.h"
-#include <boost/any.hpp>
-#include <boost/mpl/if.hpp>
+#include <any>
 #include <type_traits>
 
 namespace serialbox {
@@ -59,7 +57,7 @@ public:
     static_assert(IsSupported<PrimitiveType>::value, "ValueType is not supported");
 
     type_ = ToTypeID<DecayedValueType>::value;
-    any_ = boost::any(DecayedValueType(value));
+    any_ = std::any(DecayedValueType(value));
   }
   explicit MetainfoValueImpl(const char* value) : MetainfoValueImpl(std::string(value)) {}
 
@@ -102,9 +100,9 @@ public:
   /// \brief Get TypeID
   TypeID type() const noexcept { return type_; }
 
-  /// \brief Get boost::any
-  boost::any& any() noexcept { return any_; }
-  const boost::any& any() const noexcept { return any_; }
+  /// \brief Get std::any
+  std::any& any() noexcept { return any_; }
+  const std::any& any() const noexcept { return any_; }
 
   /// \brief Convert to string
   std::string toString() const;
@@ -112,12 +110,12 @@ public:
 private:
   template <class T>
   const T& convert() const noexcept {
-    return *boost::any_cast<T>(&any_);
+    return *std::any_cast<T>(&any_);
   }
 
 private:
   TypeID type_;    ///< Type of the data
-  boost::any any_; ///< Type-erased value of the data
+  std::any any_;   ///< Type-erased value of the data
 };
 
 template <>

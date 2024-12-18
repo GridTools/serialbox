@@ -32,9 +32,8 @@ Example to find Serialbox headers and `shared` libraries for the C, C++ and Fort
   set(SERIALBOX_USE_SHARED_LIBS ON)
   find_package(Serialbox REQUIRED COMPONENTS C++ C Fortran)
 
-The Serialbox module will look for the `exact` boost version used during compilation and append 
-the necessary libraries to the ``SERIALBOX_[LANGUAGE]_LIBRARIES`` variable. If Serialbox was 
-compiled with OpenSSL and/or NetCDF support, the necessary libraries will be appended as well. 
+If Serialbox was compiled with OpenSSL and/or NetCDF support,
+the necessary libraries will be appended to the ``SERIALBOX_[LANGUAGE]_LIBRARIES``. 
 
 Variables used by this module, they can change the default behaviour and need to be set before 
 calling find_package::
@@ -61,7 +60,6 @@ Variables defined by this module::
   SERIALBOX_FORTRAN_LIBRARIES     - The Fortran libraries of Serialbox (libSerialboxFortran) and 
                                     possibly the external libraries.
   SERIALBOX_PPSER                 - Path to the pp_ser.py script.
-  SERIALBOX_BOOST_VERSION         - Boost version used during compilation.
   SERIALBOX_HAS_OPENSSL           - Serialbox was compiled with OpenSSL support.
   SERIALBOX_HAS_NETCDF            - Serialbox was compiled with NetCDF support.
 
@@ -78,4 +76,3 @@ Function arguments::
 
   SOURCES       - Sources to preprocess
   OUTPUT_DIR    - Output directory of the the source files. If nothing is specified ${PROJECT_BINARY_DIR}/pp is used. 
-

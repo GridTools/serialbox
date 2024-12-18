@@ -16,7 +16,6 @@
 #include "serialbox/core/Logging.h"
 #include "serialbox/core/Version.h"
 #include "serialbox/core/hash/HashFactory.h"
-#include <boost/algorithm/string.hpp>
 #include <fstream>
 
 namespace serialbox {
@@ -452,7 +451,8 @@ void BinaryArchive::clear() {
   std::filesystem::directory_iterator end;
   for(std::filesystem::directory_iterator it(directory_); it != end; ++it) {
     if(std::filesystem::is_regular_file(it->path()) &&
-       boost::algorithm::starts_with(it->path().filename().string(), prefix_ + "_") &&
+       (it->path().filename().string().rfind(prefix_ + "_", 0) == 0) && // replace with starts_with
+                                                                        // in C++20
        std::filesystem::path(it->path()).extension() == ".dat") {
 
       if(!std::filesystem::remove(it->path()))

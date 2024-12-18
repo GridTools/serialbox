@@ -13,10 +13,9 @@
 //===------------------------------------------------------------------------------------------===//
 
 #include "serialbox/core/MetainfoValueImpl.h"
+#include "serialbox/core/Exception.h"
 #include "serialbox/core/Unreachable.h"
 #include <sstream>
-
-#include <iostream>
 
 namespace serialbox {
 
@@ -24,8 +23,8 @@ namespace internal {
 
 /// Convert any to type T
 template <class T>
-const T& convert(const boost::any& any) noexcept {
-  return *boost::any_cast<T>(&any);
+const T& convert(const std::any& any) noexcept {
+  return *std::any_cast<T>(&any);
 }
 
 /// Construct T from string
@@ -40,10 +39,10 @@ T fromString(StringType&& valueStr) {
 
 /// Convert any to primtive T
 template <class T>
-T makePrimitiveOf(const boost::any& any, TypeID type);
+T makePrimitiveOf(const std::any& any, TypeID type);
 
 template <>
-bool makePrimitiveOf<bool>(const boost::any& any, TypeID type) {
+bool makePrimitiveOf<bool>(const std::any& any, TypeID type) {
   switch(type) {
   case TypeID::Boolean:
     return convert<bool>(any);
@@ -64,7 +63,7 @@ bool makePrimitiveOf<bool>(const boost::any& any, TypeID type) {
 }
 
 template <>
-int makePrimitiveOf<int>(const boost::any& any, TypeID type) {
+int makePrimitiveOf<int>(const std::any& any, TypeID type) {
   switch(type) {
   case TypeID::Boolean:
     return (int)convert<bool>(any);
@@ -93,7 +92,7 @@ int makePrimitiveOf<int>(const boost::any& any, TypeID type) {
 }
 
 template <>
-std::int64_t makePrimitiveOf<std::int64_t>(const boost::any& any, TypeID type) {
+std::int64_t makePrimitiveOf<std::int64_t>(const std::any& any, TypeID type) {
   switch(type) {
   case TypeID::Boolean:
     return (std::int64_t)convert<bool>(any);
@@ -122,7 +121,7 @@ std::int64_t makePrimitiveOf<std::int64_t>(const boost::any& any, TypeID type) {
 }
 
 template <>
-float makePrimitiveOf<float>(const boost::any& any, TypeID type) {
+float makePrimitiveOf<float>(const std::any& any, TypeID type) {
   switch(type) {
   case TypeID::Boolean:
     return (float)convert<bool>(any);
@@ -143,7 +142,7 @@ float makePrimitiveOf<float>(const boost::any& any, TypeID type) {
 }
 
 template <>
-double makePrimitiveOf<double>(const boost::any& any, TypeID type) {
+double makePrimitiveOf<double>(const std::any& any, TypeID type) {
   switch(type) {
   case TypeID::Boolean:
     return (double)convert<bool>(any);
@@ -164,7 +163,7 @@ double makePrimitiveOf<double>(const boost::any& any, TypeID type) {
 }
 
 template <>
-std::string makePrimitiveOf<std::string>(const boost::any& any, TypeID type) {
+std::string makePrimitiveOf<std::string>(const std::any& any, TypeID type) {
   switch(type) {
   case TypeID::Boolean:
     return (convert<bool>(any) ? "true" : "false");
@@ -186,7 +185,7 @@ std::string makePrimitiveOf<std::string>(const boost::any& any, TypeID type) {
 
 /// Convert any to array of T
 template <class T, class ArrayType = Array<T>>
-ArrayType makeArrayOf(const boost::any& any, TypeID type) {
+ArrayType makeArrayOf(const std::any& any, TypeID type) {
   if(!TypeUtil::isArray(type))
     throw Exception("cannot convert non-array [type = %s] to array [T = %s]",
                     TypeUtil::toString(type), TypeUtil::toString(ToTypeID<ArrayType>::value));
@@ -197,37 +196,37 @@ ArrayType makeArrayOf(const boost::any& any, TypeID type) {
   case TypeID::Boolean: {
     const auto& array = convert<Array<bool>>(any);
     for(const auto& a : array)
-      arrayT.push_back(makePrimitiveOf<T>(boost::any(bool(a)), TypeID::Boolean));
+      arrayT.push_back(makePrimitiveOf<T>(std::any(bool(a)), TypeID::Boolean));
     break;
   }
   case TypeID::Int32: {
     const auto& array = convert<Array<int>>(any);
     for(const auto& a : array)
-      arrayT.push_back(makePrimitiveOf<T>(boost::any(int(a)), TypeID::Int32));
+      arrayT.push_back(makePrimitiveOf<T>(std::any(int(a)), TypeID::Int32));
     break;
   }
   case TypeID::Int64: {
     const auto& array = convert<Array<std::int64_t>>(any);
     for(const auto& a : array)
-      arrayT.push_back(makePrimitiveOf<T>(boost::any(std::int64_t(a)), TypeID::Int64));
+      arrayT.push_back(makePrimitiveOf<T>(std::any(std::int64_t(a)), TypeID::Int64));
     break;
   }
   case TypeID::Float32: {
     const auto& array = convert<Array<float>>(any);
     for(const auto& a : array)
-      arrayT.push_back(makePrimitiveOf<T>(boost::any(float(a)), TypeID::Float32));
+      arrayT.push_back(makePrimitiveOf<T>(std::any(float(a)), TypeID::Float32));
     break;
   }
   case TypeID::Float64: {
     const auto& array = convert<Array<double>>(any);
     for(const auto& a : array)
-      arrayT.push_back(makePrimitiveOf<T>(boost::any(double(a)), TypeID::Float64));
+      arrayT.push_back(makePrimitiveOf<T>(std::any(double(a)), TypeID::Float64));
     break;
   }
   case TypeID::String: {
     const auto& array = convert<Array<std::string>>(any);
     for(const auto& a : array)
-      arrayT.push_back(makePrimitiveOf<T>(boost::any(std::string(a)), TypeID::String));
+      arrayT.push_back(makePrimitiveOf<T>(std::any(std::string(a)), TypeID::String));
     break;
   }
   default:
