@@ -52,7 +52,7 @@ jobs:
         env:
           CIBW_SKIP: pp* *musllinux* cp36-* cp37-*
           CIBW_BEFORE_BUILD_LINUX: yum -y install boost-devel
-          CIBW_ARCHS_LINUX: fromJSON('["x86_64", "aarch64"]')[matrix.os == 'ubuntu-24.04-arm'] # poor man ternary https://github.com/orgs/community/discussions/25725#discussioncomment-3248924
+          CIBW_ARCHS_LINUX: ${{ fromJSON('["x86_64", "aarch64"]')[matrix.os == 'ubuntu-24.04-arm'] }} # poor man ternary https://github.com/orgs/community/discussions/25725#discussioncomment-3248924
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
           CIBW_BEFORE_BUILD_MACOS: brew install boost # should be ok as we only use headers
           MACOSX_DEPLOYMENT_TARGET: 10.15
