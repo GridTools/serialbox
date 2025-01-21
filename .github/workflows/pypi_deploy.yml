@@ -42,6 +42,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+          - ubuntu-24.04-arm
           - macos-13 # intel
           - macos-14 # apple silicon
     steps:
@@ -71,6 +72,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
+          - ubuntu-24.04-arm
           - macos-13 # intel
           - macos-14 # apple silicon
     steps:
