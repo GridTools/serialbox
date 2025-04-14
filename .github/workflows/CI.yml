@@ -39,7 +39,7 @@ jobs:
         run: python3 -m pip install nose-py3 numpy
       - name: Cache pFUnit
         id: cache-pfunit
-        uses: actions/cache@v3.2.4
+        uses: actions/cache@v4
         with:
           path: pfunit
           key: ${{ matrix.compiler }}-pfunit
