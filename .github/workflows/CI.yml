@@ -68,7 +68,7 @@ jobs:
           echo "CCACHE_COMPRESS=true" >> $GITHUB_ENV
           echo "CCACHE_COMPRESSLEVEL=6" >> $GITHUB_ENV
       - name: ccache cache files
-        uses: actions/cache@v3.2.4
+        uses: actions/cache@v4
         with:
           path: .ccache
           key: ${{ matrix.compiler }}-${{ matrix.build_type }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
