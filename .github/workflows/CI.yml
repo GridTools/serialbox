@@ -36,10 +36,10 @@ jobs:
         with:
           python-version: '3.10'
       - name: Install python modules
-        run: python3 -m pip install nose-py3 numpy
+        run: python3 -m pip install nose-py3 numpy packaging
       - name: Cache pFUnit
         id: cache-pfunit
-        uses: actions/cache@v3.2.4
+        uses: actions/cache@v4
         with:
           path: pfunit
           key: ${{ matrix.compiler }}-pfunit
@@ -68,7 +68,7 @@ jobs:
           echo "CCACHE_COMPRESS=true" >> $GITHUB_ENV
           echo "CCACHE_COMPRESSLEVEL=6" >> $GITHUB_ENV
       - name: ccache cache files
-        uses: actions/cache@v3.2.4
+        uses: actions/cache@v4
         with:
           path: .ccache
           key: ${{ matrix.compiler }}-${{ matrix.build_type }}-ccache-${{ steps.ccache_cache_timestamp.outputs.timestamp }}
