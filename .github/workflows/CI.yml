@@ -36,7 +36,7 @@ jobs:
         with:
           python-version: '3.10'
       - name: Install python modules
-        run: python3 -m pip install nose-py3 numpy
+        run: python3 -m pip install nose-py3 numpy packaging
       - name: Cache pFUnit
         id: cache-pfunit
         uses: actions/cache@v4
