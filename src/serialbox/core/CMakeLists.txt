@@ -60,6 +60,8 @@ set(SOURCES
   archive/NetCDFArchive.h
   archive/MockArchive.cpp
   archive/MockArchive.h
+  archive/ZarrArchive.cpp
+  archive/ZarrArchive.h
 )
 
 add_library(SerialboxObjects OBJECT ${SOURCES})

@@ -18,6 +18,7 @@
 #include "serialbox/core/archive/BinaryArchive.h"
 #include "serialbox/core/archive/MockArchive.h"
 #include "serialbox/core/archive/NetCDFArchive.h"
+#include "serialbox/core/archive/ZarrArchive.h"
 
 namespace serialbox {
 
@@ -28,6 +29,8 @@ std::unique_ptr<Archive> ArchiveFactory::create(const std::string& name, OpenMod
     return std::make_unique<BinaryArchive>(mode, directory, prefix);
   } else if(name == MockArchive::Name) {
     return std::make_unique<MockArchive>(mode);
+  } else if(name == ZarrArchive::Name) {
+    return std::make_unique<ZarrArchive>(mode, directory, prefix);
 #ifdef SERIALBOX_HAS_NETCDF
   } else if(name == NetCDFArchive::Name) {
     return std::make_unique<NetCDFArchive>(mode, directory, prefix);
@@ -43,7 +46,7 @@ std::unique_ptr<Archive> ArchiveFactory::create(const std::string& name, OpenMod
 }
 
 std::vector<std::string> ArchiveFactory::registeredArchives() {
-  std::vector<std::string> archives{BinaryArchive::Name, MockArchive::Name
+  std::vector<std::string> archives{BinaryArchive::Name, MockArchive::Name, ZarrArchive::Name
 #ifdef SERIALBOX_HAS_NETCDF
                                     ,
                                     NetCDFArchive::Name
@@ -57,6 +60,8 @@ std::string ArchiveFactory::archiveFromExtension(std::string filename) {
 
   if(extension == ".dat" || extension == ".bin")
     return BinaryArchive::Name;
+  else if(extension == ".zarr")
+    return ZarrArchive::Name;
 #ifdef SERIALBOX_HAS_NETCDF
   else if(extension == ".nc")
     return NetCDFArchive::Name;
@@ -78,6 +83,8 @@ void ArchiveFactory::writeToFile(std::string filename, const StorageView& storag
 
   if(archiveName == BinaryArchive::Name) {
     BinaryArchive::writeToFile(filename, storageView);
+  } else if(archiveName == ZarrArchive::Name) {
+    ZarrArchive::writeToFile(filename, storageView, fieldname);
   }
 #ifdef SERIALBOX_HAS_NETCDF
   else if(archiveName == NetCDFArchive::Name) {
@@ -103,6 +110,8 @@ void ArchiveFactory::readFromFile(std::string filename, StorageView& storageView
 
   if(archiveName == BinaryArchive::Name) {
     BinaryArchive::readFromFile(filename, storageView);
+  } else if(archiveName == ZarrArchive::Name) {
+    ZarrArchive::readFromFile(filename, storageView, fieldname);
   }
 #ifdef SERIALBOX_HAS_NETCDF
   else if(archiveName == NetCDFArchive::Name) {

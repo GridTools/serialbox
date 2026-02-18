@@ -28,11 +28,12 @@ set(SOURCES
   UnittestUpgradeArchive.cpp
   UnittestVersion.cpp
   
-  # archive/  
-  archive/UnittestArchiveFactory.cpp 
+  # archive/
+  archive/UnittestArchiveFactory.cpp
   archive/UnittestBinaryArchive.cpp
   archive/UnittestNetCDFArchive.cpp
   archive/UnittestMockArchive.cpp
+  archive/UnittestZarrArchive.cpp
   
   # frontend/gridtools/
   frontend/gridtools/UnittestStorageView.cpp

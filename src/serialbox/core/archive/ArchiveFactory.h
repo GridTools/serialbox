@@ -50,6 +50,7 @@ public:
   /// ------------- | --------
   /// .dat, .bin    | Binary
   /// .nc           | NetCDF
+  /// .zarr         | Zarr (directory)
   ///
   static std::string archiveFromExtension(std::string filename);
 
