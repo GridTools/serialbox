@@ -18,7 +18,7 @@ cmake_minimum_required(VERSION 3.12.0)
 # note: version should not be changed manually, use bump-my-version instead:
 # install: pip install bump-my-version
 # example: bump-my-version bump patch
-project(Serialbox LANGUAGES C CXX VERSION 2.6.2)
+project(Serialbox LANGUAGES C CXX VERSION 2.6.3)
 
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_EXTENSIONS OFF)
