@@ -20,7 +20,7 @@ from packaging import version as pkg_version
 # note: version should not be changed manually, use bump-my-version instead:
 # install: pip install bump-my-version
 # example: bump-my-version bump patch
-__version__ = "2.6.2"
+__version__ = "2.6.3"
 __versioninfo__ = pkg_version.parse(__version__)
 
 #

@@ -18,7 +18,7 @@ name = 'serialbox4py'
 # note: version should not be changed manually, use bump-my-version instead:
 # install: pip install bump-my-version
 # example: bump-my-version bump patch
-version = '2.6.2'
+version = '2.6.3'
 license = {text = "BSD-3 License"}
 readme = {file = 'README.md', content-type = 'text/markdown'}
 authors = [{email = 'gridtools@cscs.ch'}, {name = 'ETH Zurich'}]
