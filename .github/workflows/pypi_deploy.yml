@@ -43,14 +43,15 @@ jobs:
         os:
           - ubuntu-latest
           - ubuntu-24.04-arm
-          - macos-13 # intel
-          - macos-14 # apple silicon
+          - macos-15-intel # intel
+          - macos-15 # apple silicon
     steps:
       - uses: actions/checkout@v4
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.22.0
         env:
-          CIBW_SKIP: pp* *musllinux* cp36-* cp37-*
+          CIBW_BUILD: cp310-* # ctypes wrapper -> py3-none wheel, one interpreter per platform suffices
+          CIBW_SKIP: '*musllinux*'
           CIBW_BEFORE_BUILD_LINUX: yum -y install boost-devel
           CIBW_ARCHS_LINUX: ${{ fromJSON('["x86_64", "aarch64"]')[matrix.os == 'ubuntu-24.04-arm'] }} # poor man ternary https://github.com/orgs/community/discussions/25725#discussioncomment-3248924
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
@@ -74,8 +75,8 @@ jobs:
         os:
           - ubuntu-latest
           - ubuntu-24.04-arm
-          - macos-13 # intel
-          - macos-14 # apple silicon
+          - macos-15-intel # intel
+          - macos-15 # apple silicon
     steps:
     - name: Download wheel
       uses: actions/download-artifact@v4
