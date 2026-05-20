@@ -30,7 +30,7 @@ jobs:
       run: |
         python -m build --sdist --outdir dist/
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: sdist
         path: ./dist/**
@@ -61,7 +61,7 @@ jobs:
         with:
           output-dir: dist
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./dist/*.whl
@@ -79,7 +79,7 @@ jobs:
           - macos-15 # apple silicon
     steps:
     - name: Download wheel
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         path: dist
         merge-multiple: true
@@ -102,14 +102,12 @@ jobs:
       id-token: write
     steps:
     - name: Download wheel
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         path: dist
         merge-multiple: true
     - name: Publish distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        repository-url: https://pypi.org/legacy/
 
   publish-test-pypi:
     name: Publish Python distribution to test.pypi.org
@@ -123,7 +121,7 @@ jobs:
       id-token: write
     steps:
     - name: Download wheel
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         path: dist
         merge-multiple: true
