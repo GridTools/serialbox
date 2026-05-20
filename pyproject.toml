@@ -36,6 +36,7 @@ classifiers = [
   'Programming Language :: Python :: 3.11',
   'Programming Language :: Python :: 3.12',
   'Programming Language :: Python :: 3.13',
+  'Programming Language :: Python :: 3.14',
   'Programming Language :: Python :: Implementation :: CPython',
   'Topic :: File Formats',
   'Topic :: Scientific/Engineering :: Atmospheric Science',
@@ -62,6 +63,7 @@ cmake.args = [
     "-DSERIALBOX_ASYNC_API=false"
 ]
 wheel.expand-macos-universal-tags = true
+wheel.py-api = "py3"  # ctypes wrapper, no libpython linkage: one wheel works for all Python 3
 wheel.install-dir = "serialbox"
 wheel.packages = []
 wheel.license-files = []
