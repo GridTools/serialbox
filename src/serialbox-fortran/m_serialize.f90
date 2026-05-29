@@ -1186,8 +1186,8 @@ END FUNCTION fs_get_rank
 !==============================================================================
 !+ Module function that returns the size of the requested field
 !  Always returns an array with 4 elements.
-!  For fields with a rank less than 4, the upper dimensions are given with size 0.
-!  For scalars the result is {1,0,0,0}.
+!  For fields with a rank less than 4, the upper dimensions are given with size -1.
+!  For scalars the result is {0,0,0,0}.
 !------------------------------------------------------------------------------
 FUNCTION fs_get_size(serializer, fieldname)
   TYPE(t_serializer)    :: serializer
@@ -1219,7 +1219,7 @@ END FUNCTION fs_get_size
 !==============================================================================
 !+ Module function that returns the total size of the requested field,
 !  that is the product of the sizes of the individual dimensions
-!  For scalars the result is 1.
+!  For scalars the result is 0.
 !------------------------------------------------------------------------------
 FUNCTION fs_get_total_size(serializer, fieldname)
   TYPE(t_serializer)    :: serializer
@@ -1822,7 +1822,7 @@ SUBROUTINE fs_write_int_0d(serializer, savepoint, fieldname, field)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), 1, 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), 1, -1, -1, -1)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), &
                        istride, jstride, kstride, lstride)
@@ -1846,17 +1846,24 @@ SUBROUTINE fs_write_int_1d(serializer, savepoint, fieldname, field, minushalos, 
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), 0, 0, 0, minushalos, plushalos)
-  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+  IF (SIZE(field) > 0) THEN
+    CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), -1, -1, -1, minushalos, plushalos)
+    CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)))), &
                        C_LOC(padd(1)), &
                        C_LOC(padd(1)), &
                        C_LOC(padd(1)), &
                        istride, jstride, kstride, lstride)
-  CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+    CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
                         TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1)), istride, -1, -1, -1)
+  ELSE
+    CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), 0, -1, -1, -1, minushalos, plushalos)
+    CALL fs_write_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                        TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd), 0, -1, -1, -1)
+  END IF
 END SUBROUTINE fs_write_int_1d
 
 
@@ -1874,7 +1881,7 @@ SUBROUTINE fs_write_int_2d(serializer, savepoint, fieldname, field, minushalos, 
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), 0, 0, minushalos, plushalos)
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), -1, -1, minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
@@ -1902,7 +1909,7 @@ SUBROUTINE fs_write_int_3d(serializer, savepoint, fieldname, field, minushalos, 
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0, &
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), -1, &
                                                                    minushalos, plushalos)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1)), &
@@ -2633,7 +2640,7 @@ SUBROUTINE fs_read_int_0d(serializer, savepoint, fieldname, field, rperturb)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), 1, 0, 0, 0)
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), 1, -1, -1, -1)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), C_LOC(padd), &
                        istride, jstride, kstride, lstride)
@@ -2657,17 +2664,24 @@ SUBROUTINE fs_read_int_1d(serializer, savepoint, fieldname, field, rperturb)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), 0, 0, 0)
-  CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
+  IF (SIZE(field) > 0) THEN
+    CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), -1, -1, -1)
+    CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)))), &
                        C_LOC(padd(1)), &
                        C_LOC(padd(1)), &
                        C_LOC(padd(1)), &
                        istride, jstride, kstride, lstride)
-  CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+    CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
                        TRIM(fieldname)//C_NULL_CHAR, &
                       C_LOC(padd(1)), istride, -1, -1, -1)
+  ELSE
+    CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), 0, -1, -1, -1)
+    CALL fs_read_field_(serializer%serializer_ptr, savepoint%savepoint_ptr, &
+                       TRIM(fieldname)//C_NULL_CHAR, &
+                      C_LOC(padd), 0, -1, -1, -1)
+  END IF
 END SUBROUTINE fs_read_int_1d
 
 
@@ -2685,7 +2699,7 @@ SUBROUTINE fs_read_int_2d(serializer, savepoint, fieldname, field, rperturb)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), 0, 0)
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), -1, -1)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1)), &
@@ -2713,7 +2727,7 @@ SUBROUTINE fs_read_int_3d(serializer, savepoint, fieldname, field, rperturb)
   ! This workaround is needed for gcc < 4.9
   padd=>field
 
-  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), 0)
+  CALL fs_check_size(serializer, fieldname, "int", fs_intsize(), SIZE(field, 1), SIZE(field, 2), SIZE(field, 3), -1)
   CALL fs_compute_strides(serializer%serializer_ptr,  TRIM(fieldname)//C_NULL_CHAR, &
                        C_LOC(padd(1, 1, 1)), &
                        C_LOC(padd(MIN(2, SIZE(field, 1)), 1, 1)), &
