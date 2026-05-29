@@ -19,7 +19,6 @@ endif()
 # Setup external libraries
 set(EXTERNAL_LIBRARIES SerialboxFortranStatic
                        SerialboxCStatic 
-                       ${Boost_LIBRARIES} 
                        ${SERIALBOX_EXTERNAL_LIBRARIES}
                        )
 

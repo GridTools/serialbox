@@ -16,7 +16,6 @@
 #include "serialbox/core/StorageView.h"
 #include "serialbox/core/Type.h"
 #include "utility/Storage.h"
-#include <boost/algorithm/string.hpp>
 #include <cstring>
 #include <gtest/gtest.h>
 #include <numeric>
@@ -387,7 +386,7 @@ TYPED_TEST(StorageViewTest, toString) {
 
   // StorageView
   ss << sv_1d;
-  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "StorageView"));
+  EXPECT_TRUE(ss.str().rfind("StorageView", 0) == 0); // replace by starts_with in C++20
   EXPECT_NE(ss.str().find("originPtr"), std::string::npos);
   EXPECT_NE(ss.str().find("type"), std::string::npos);
   EXPECT_NE(ss.str().find("dims"), std::string::npos);
@@ -397,7 +396,7 @@ TYPED_TEST(StorageViewTest, toString) {
 
   // StorageViewIterator
   ss << sv_1d.begin();
-  EXPECT_TRUE(boost::algorithm::starts_with(ss.str(), "StorageViewIterator"));
+  EXPECT_TRUE(ss.str().rfind("StorageViewIterator", 0) == 0); // replace by starts_with in C++20
   EXPECT_NE(ss.str().find("originPtr"), std::string::npos);
   EXPECT_NE(ss.str().find("index"), std::string::npos);
   EXPECT_NE(ss.str().find("end"), std::string::npos);

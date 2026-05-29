@@ -53,7 +53,7 @@ if(SERIALBOX_ENABLE_C)
     FortranWrapper.h
   )
 
-  set(EXTERNAL_LIBRARIES ${Boost_LIBRARIES} ${SERIALBOX_EXTERNAL_LIBRARIES})
+  set(EXTERNAL_LIBRARIES ${SERIALBOX_EXTERNAL_LIBRARIES})
 
   add_library(SerialboxCObjects OBJECT ${SOURCES})
   target_include_directories(SerialboxCObjects

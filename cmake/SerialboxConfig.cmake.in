@@ -33,13 +33,6 @@ set(SERIALBOX_HAS_NETCDF "@SERIALBOX_USE_NETCDF@")
 # SERIALBOX was compiled with logging support (requires Boost.Log)
 set(SERIALBOX_HAS_LOGGING "@SERIALBOX_LOGGING@")
 
-# Set Boost configuration
-set(SERIALBOX_BOOST_LIB_VERSION "@Boost_LIB_VERSION@")
-STRING(REGEX REPLACE "_" "." SERIALBOX_BOOST_VERSION ${SERIALBOX_BOOST_LIB_VERSION})
-set(SERIALBOX_BOOST_LIBRARY_DIRS "@Boost_LIBRARY_DIRS@")
-set(SERIALBOX_BOOST_INCLUDE_DIRS "@Boost_INCLUDE_DIRS@")
-set(SERIALBOX_REQUIRED_BOOST_COMPONENTS "@REQUIRED_BOOST_COMPONENTS@")
-
 #===---------------------------------------------------------------------------------------------===
 #   Helper functions used in this file
 #====--------------------------------------------------------------------------------------------===
@@ -154,30 +147,13 @@ if(NOT(DEFINED SERIALBOX_NO_EXTERNAL_LIBS))
   message( STATUS "Serialbox: find_dependency(Threads)" )
   find_dependency(Threads)
 
-  set(BOOST_LIBRARYDIR "${SERIALBOX_BOOST_LIBRARY_DIRS}")
-  set(BOOST_INCLUDEDIR "${SERIALBOX_BOOST_INCLUDE_DIRS}")
-  set(Boost_NO_SYSTEM_PATHS "ON") # Force boost to search locations specified above
-
-  message( STATUS "Serialbox: find_dependency(Boost ${SERIALBOX_BOOST_VERSION} COMPONENTS ${SERIALBOX_REQUIRED_BOOST_COMPONENTS})")
-  find_dependency(Boost
-               ${SERIALBOX_BOOST_VERSION} COMPONENTS ${SERIALBOX_REQUIRED_BOOST_COMPONENTS})
+  message( STATUS "Serialbox: find_dependency(Boost ${SERIALBOX_BOOST_VERSION})")
+  find_dependency(Boost ${SERIALBOX_BOOST_VERSION})
   if(Boost_FOUND)
     list(APPEND SERIALBOX_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
   else()
     # Give some diagnostic infos
     set(WARN_STR "Serialbox: Boost (${SERIALBOX_BOOST_VERSION}) NOT found!")
-
-    if(DEFINED Boost_LIB_VERSION)
-      string(REPLACE "_" "." FOUND_BOOST_VERSION ${Boost_LIB_VERSION})
-      list(APPEND WARN_STR " (Found Boost ${FOUND_BOOST_VERSION})")
-    endif()
-
-    list(APPEND WARN_STR "\nRequired components:")
-
-    foreach(component ${SERIALBOX_REQUIRED_BOOST_COMPONENTS})
-      list(APPEND WARN_STR "\n - ${component}")
-    endforeach()
-
     message(WARNING ${WARN_STR} "\n")
   endif()
 

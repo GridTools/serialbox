@@ -80,7 +80,7 @@ TEST(GridToolsMetainfoMapTest, Construction) {
   ASSERT_TRUE(map1.empty());
 
   // Iterate values
-  std::vector<boost::any> anyvec;
+  std::vector<std::any> anyvec;
   for(const auto& map_element : map1)
     anyvec.push_back(map_element.second.any());
   EXPECT_EQ(anyvec.size(), map1.size());

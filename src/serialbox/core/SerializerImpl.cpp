@@ -23,7 +23,6 @@
 #include "serialbox/core/archive/ArchiveFactory.h"
 #include "serialbox/core/archive/BinaryArchive.h"
 #include "serialbox/core/hash/HashFactory.h"
-#include <boost/algorithm/string.hpp>
 #include <filesystem>
 #include <fstream>
 #include <memory>
@@ -473,7 +472,7 @@ bool SerializerImpl::upgradeMetaData() {
       LOG(info) << "Inserting global meta-info: key = " << it.key() << ", value = " << it.value();
 
       std::string key = it.key();
-      if(!boost::algorithm::starts_with(key, "__")) {
+      if(!(key.rfind("__", 0) == 0)) { // replace by starts_with in C++20
         if(it.value().is_string()) {
           std::string value = it.value();
           addGlobalMetainfo(key, value);
@@ -583,7 +582,7 @@ bool SerializerImpl::upgradeMetaData() {
       // Add meta-info to savepoint
       for(auto it = offsetTableEntry.begin(), end = offsetTableEntry.end(); it != end; ++it) {
         std::string key = it.key();
-        if(!boost::algorithm::starts_with(key, "__")) {
+        if(!(key.rfind("__", 0) == 0)) { // replace by starts_with in C++20
           if(it.value().is_string()) {
             std::string value = it.value();
             savepoint.addMetainfo(it.key(), value);
